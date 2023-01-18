@@ -1,0 +1,17 @@
+#!/usr/bin/env raku
+
+use json-infer;
+use infer-rustdoc;
+use gjson;
+
+sub MAIN {
+
+    crates-for-proj("bitcoin")
+    ==> sort()
+    ==> map({create-paradigm-map-for-crate($_)})
+    ==> my @paradigm-maps;
+
+    my %merged = merge-paradigm-maps(@paradigm-maps);
+
+    create-json-classes(%merged);
+}

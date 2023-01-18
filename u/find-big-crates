@@ -1,0 +1,14 @@
+#!/usr/bin/env raku
+use File::Find;
+
+my @crates = ".".IO.dir.grep: /bitcoin\-*/;
+
+my @items = gather for @crates -> $crate {
+    my $rs = find(dir => $crate).grep: /\.rs/;
+
+    my $lines = $rs.List>>.IO>>.slurp.lines.elems;
+
+    take ($lines, ~$crate);
+};
+
+.say for @items.sort#: { $^a[1] cmp $^b[1] };

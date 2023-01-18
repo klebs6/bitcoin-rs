@@ -1,0 +1,73 @@
+#!/usr/bin/env raku
+use File::Find;
+
+sub maybe-write-src-dst(Bool $write, $src, $dst) {
+    if $src ne $dst {
+        if $write {
+            shell "mv $src $dst";
+        } else {
+            say "mv $src $dst";
+        }
+    }
+}
+
+sub validate-pairs(@pairs) {
+    die if not @pairs>>.[1].unique.elems eq @pairs.elems;
+}
+
+sub bitcoin-move-clean(:$crate, Bool :$write) {
+
+    my @files = find(dir => "bitcoin-$crate/src");
+
+    my @pairs = @files.map: {
+        ($_, $_.subst(:g, "{$crate}_", ""))
+    };
+
+    validate-pairs(@pairs);
+
+    for @pairs -> ($src, $dst) {
+        maybe-write-src-dst($write, $src, $dst);
+    }
+}
+
+sub redo-add-fuzz(Bool :$write) {
+    my @files = find(dir => "bitcoin-fuzz/src");
+
+    my @pairs = @files.map: {
+        ($_, $_.subst("src\/", "src/fuzz_"))
+    };
+
+    validate-pairs(@pairs);
+
+    for @pairs -> ($src, $dst) {
+        maybe-write-src-dst($write, $src, $dst);
+    }
+}
+
+sub redo-format-tests(Bool :$write) {
+
+    my @files = find(dir => "bitcoin-test/src");
+
+    my @pairs;
+
+    for @files {
+        if $_ ~~ /_tests/ {
+            @pairs.push: (
+                $_, 
+                $_.subst("src\/", "src/test_").subst("_tests", "")
+            )
+        }
+    }
+
+    validate-pairs(@pairs);
+
+    for @pairs -> ($src, $dst) {
+        maybe-write-src-dst($write, $src, $dst);
+    }
+}
+
+sub MAIN(:$crate, Bool :$write) {
+    #bitcoin-move-clean(:$crate, :$write);
+    #redo-add-fuzz(:$write);
+    redo-format-tests(:$write);
+}

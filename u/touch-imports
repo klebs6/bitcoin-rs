@@ -1,0 +1,7 @@
+#!/usr/bin/env raku
+
+my @crates = ".".IO.dir.grep: /bitcoin*/; 
+
+for @crates.map: {$_ ~ "/src/imports.rs"} {
+    shell "touch $_";
+}

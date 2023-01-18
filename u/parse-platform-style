@@ -1,0 +1,49 @@
+#!/usr/bin/env raku
+use lib '../translator/raku';
+use quoted-string-token;
+use ident-token;
+use numeric-token;
+
+grammar PlatformStyles 
+does QuotedStringToken
+does NumericToken
+does IdentToken {
+
+    rule TOP {
+        <.ws>
+        <platform-style>+ %% ","
+    }
+
+    rule platform-style {
+        '{'
+            <platform_id=quoted-string> ','
+            <images_on_buttons=identifier>    ','
+            <colorize_icons=identifier>      ','
+            <use_extra_spacing=identifier> 
+        '}'
+    }
+}
+
+class PlatformStyles::Actions {
+
+    method TOP($/) {
+        make $/<platform-style>>>.made>>.chomp.join(",\n")
+    }
+
+    method platform-style($/) {
+        make qq:to/END/
+        PlatformStyleDescriptor \{
+            platform_id:        {~$/<platform_id>},
+            images_on_buttons:  {~$/<images_on_buttons>},
+            colorize_icons:     {~$/<colorize_icons>},
+            use_extra_spacing:  {~$/<use_extra_spacing>},
+        \}
+        END
+    }
+}
+
+sub MAIN {
+    say PlatformStyles.parse($*IN.slurp, 
+        actions => PlatformStyles::Actions.new
+    ).made;
+}

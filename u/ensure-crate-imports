@@ -1,0 +1,14 @@
+#!/usr/bin/env raku
+
+".".IO.dir
+==> grep ({ /bitcoin/ })
+==> map  ({ ~$_ ~ "/src/imports.rs" })
+==> map  ({ .IO })
+==> my @imports;
+
+for @imports -> $f {
+    if $f.e {
+        my $input  = $f.slurp.subst(:g, "pub use", "pub(crate) use");
+        $f.spurt: $input;
+    }
+}

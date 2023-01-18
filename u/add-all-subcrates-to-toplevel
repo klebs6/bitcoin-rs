@@ -1,0 +1,19 @@
+#!/usr/bin/env raku
+use cargo-workspace;
+
+sub MAIN {
+    my @crates = ".".IO.dir.grep: /bitcoin\-/;
+
+    for @crates -> $crate {
+        add-workspace-crate-to-neighbor-cargo-toml(
+            workspace-crate => ~$crate, 
+            neighbor        => "bitcoin",
+            write => True,
+        );
+
+        glob-import-from-crates("bitcoin", [
+            ~$crate.subst(:g, "-","_")
+        ]);
+
+    }
+}

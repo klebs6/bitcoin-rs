@@ -1,0 +1,138 @@
+#!/usr/bin/env raku
+
+use File::Find;
+use Data::Dump::Tree;
+use Chomper::CargoWorkspace;
+
+my @problems = qq:to/END/.lines;
+bitcoin-http EvUtilSocket
+bitcoin-peerman ADDRV2_FORMAT
+bitcoin-peerman DEFAULT_MAX_MEMPOOL_SIZE
+bitcoin-peerman MAX_STANDARD_TX_WEIGHT
+bitcoin-peerman get_fetch_flags
+bitcoin-peerman get_local_addr_for_peer
+bitcoin-peerman is_peer_addr_local_good
+bitcoin-peerman is_proxy
+END
+
+sub build-typedef-map {
+
+    my @all-filenames = find(dir => '.', name => /\.rs/, exclude => /vendor|target/).grep: /bitcoin/;
+
+    my $type-kw = /^^ 'pub enum' <wb> | ^^ 'pub struct' <wb> | ^^ 'pub type' <wb> | ^^ 'pub fn' <wb>/;
+
+    my %typedef-map;
+
+    for @all-filenames -> $filename {
+
+        my @lines-with-typedef = $filename.IO.slurp.lines.grep: $type-kw;
+
+        my @types = do for @lines-with-typedef -> $line {
+
+            $line.split(" ")[2]
+        };
+
+        for @types -> $type {
+            %typedef-map{$filename}.push: $type.split("<")[0];
+        }
+    }
+
+    %typedef-map
+}
+
+sub crate-for-file($file) {
+    $file.split("/")[0]
+}
+
+sub find-item($crate-missing-item, $item, %typedef-map) {
+
+    my @files = gather for %typedef-map.keys -> $filename {
+
+
+        next if crate-for-file($filename) ~~ $crate-missing-item;
+
+        my $types = %typedef-map{$filename}.SetHash;
+
+        if $item (elem) $types {
+            take $filename;
+        }
+    };
+
+    @files>>.&crate-for-file
+}
+
+sub build-repair-map(%typedef-map) {
+
+    my %need-add;
+
+    for @problems {
+
+        my @pair = $_.split(" ");
+
+        my $crate-missing-item = @pair[0];
+        my $item               = @pair[1];
+
+        next unless $item;
+
+        my @crates-with-item = find-item($crate-missing-item, $item, %typedef-map);
+
+        my @cur = %need-add{$crate-missing-item}.List;
+
+        %need-add{$crate-missing-item} = [|@cur, |@crates-with-item].grep({ $_ !~~ Nil}).SetHash.keys.grep({ so $_ }).grep({ $_ !~~ "bitcoin"}).List;
+    }
+
+    %need-add
+}
+
+sub build-item-map(%typedef-map) {
+
+    my %item-map;
+
+    for %typedef-map.keys -> $filename {
+
+        my $crate = crate-for-file($filename);
+
+        my @items = %typedef-map{$filename}.List;
+
+        for @items -> $item {
+            %item-map{$item}.push: $crate;
+        }
+    }
+
+    %item-map
+}
+
+sub repair-missing(Bool :$write = False) {
+
+    my %typedef-map = build-typedef-map();            # file --> which tokens does it define?
+    my %repair-map  = build-repair-map(%typedef-map); # crate --> missing deps
+    my %item-map    = build-item-map(%typedef-map);   # token --> which crate is it in?
+
+    for %repair-map.keys -> $crate {
+
+        say "----------------[Will repair missing deps for: $crate]";
+
+        my @deps = %repair-map{$crate}.List;
+
+        .say for @deps;
+
+        for @deps -> $dep {
+
+            if $write {
+                add-workspace-crate-to-neighbor-cargo-toml(
+                    workspace-crate => $dep, 
+                    neighbor        => $crate,
+                    write           => True,
+                );
+
+                glob-import-from-crates($crate, [
+                    $dep.subst(:g, "-","_")
+                ]);
+            } 
+        }
+    }
+}
+
+sub MAIN {
+    repair-missing(write => True);
+}

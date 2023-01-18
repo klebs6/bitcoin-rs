@@ -1,0 +1,72 @@
+#!/usr/bin/env raku
+
+my $done = set <
+bitcoin-qt
+bitcoin-fuzz
+bitcoin-tor
+bitcoin-cli
+bitcoin-merkle
+bitcoin-bench
+bitcoin-test
+bitcoin-daemon
+bitcoin-http
+bitcoin-zmq
+bitcoin-init
+bitcoin-node
+bitcoin-signer
+bitcoin-miner
+bitcoin-addrman
+bitcoin-amount
+bitcoin-argsman
+bitcoin-banman
+bitcoin-base58
+bitcoin-bech32
+bitcoin-block
+bitcoin-blockfilter
+bitcoin-bloom
+bitcoin-client-ui
+bitcoin-compat
+bitcoin-compressor
+bitcoin-connman
+bitcoin-consensus
+bitcoin-crc32c
+bitcoin-crypto
+bitcoin-cuckoo-cache
+bitcoin-db
+bitcoin-derive
+bitcoin-epoch
+bitcoin-fees
+bitcoin-golombrice
+bitcoin-hash
+bitcoin-index
+bitcoin-indirectmap
+bitcoin-ipc
+bitcoin-leveldb
+bitcoin-log
+bitcoin-net
+bitcoin-peerman
+bitcoin-pow
+bitcoin-primitives
+bitcoin-psbt
+bitcoin-random
+bitcoin-scheduler
+bitcoin-script
+bitcoin-secp256k1
+bitcoin-serialize
+bitcoin-service-flags
+bitcoin-settings
+bitcoin-string
+bitcoin-support
+bitcoin-sync
+bitcoin-txmempool
+bitcoin-univalue
+bitcoin-version
+>;
+
+my $crates = set ".".IO.dir.grep(/bitcoin/).map({$_.Str});
+
+my $remaining = $crates (-) $done ;
+
+for $remaining.keys {
+    say "#ACTIVE := $_";
+}

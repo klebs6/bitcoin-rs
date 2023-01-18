@@ -1,0 +1,35 @@
+#!/usr/bin/env raku
+use Chomper::CargoWorkspace;
+
+sub MAIN(Str $name, Bool :$write) {
+
+    add-workspace-crate($name, :$write);
+
+    add-workspace-crate-to-neighbor-cargo-toml(
+        workspace-crate => "bitcoin-derive", 
+        neighbor        => $name,
+        write => True
+    );
+
+    add-workspace-crate-to-neighbor-cargo-toml(
+        workspace-crate => "bitcoin-imports", 
+        neighbor        => $name,
+        write => True
+    );
+
+    add-starter-lib-file-for-crate($name);
+
+    glob-import-from-crates($name, [
+        "bitcoin_imports", 
+        "bitcoin_derive",
+    ]);
+
+=begin comment
+    batch-add-dependencies-to-cargo-toml(
+        [$name], 
+        deps => ["lazy_static", "static_assertions"],
+        ver => "*",
+        write => True,
+    );
+=end comment
+}

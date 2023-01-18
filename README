@@ -1,0 +1,68 @@
+Note from translation author:
+
+hello,
+
+It seems this translation task is now
+parallelized.
+
+I modularized the codebase into units, each
+smaller than the original 300k+ lines of code and
+more manageable.
+
+The modular structure will be easier to read,
+easier to work with, easier to integrate with, and
+easier to use -- for everybody on the planet.
+
+After setting the scaffold, I translated crates
+one by one, roughly in alphabetical order.
+
+I did this until I realized the task was parallel.
+
+It is more optimal to post it back to the
+community.
+
+Any individual should be able to use and
+fruitfully interact with the whole interface.
+
+We can finish this together *much* faster than
+with a single thread of translation.
+
+I have kept *everything* (from a functional and
+logical perspective) how I found it -- in commit
+ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the
+original c++ codebase.
+
+This may be independently verified.  
+
+Most of the function bodies are rust scaffolding
+wrapping `todo!()` blocks and commented c++ code.  
+
+The functionality of the codebase itself will
+become testable once the rest of the program is
+translated.
+
+I have included all tests/benchmarks/fuzzes from
+the original project (at the noted c++ commit)
+
+I hope this translation process challenges and
+strengthens the antifragility properties of the
+system.
+
+Please see the TODO file for notes on how best
+I imagine the challenge of translation completion
+can be tackled.
+
+Please see the CHOMPER file for notes on
+a transpiler I have developed for this purpose.
+
+I plan to come back to this project, though I have
+some other work to attend to for a few months at
+least (as of January 2023).
+
+One day, I hope that we and the rust programs we
+write will be able to speak bitcoin with each
+other.
+
+best,
+
+-klebs

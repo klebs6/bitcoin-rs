@@ -1,0 +1,7 @@
+#!/usr/bin/env raku
+use v6;
+my $in = $*IN.slurp;
+
+$in ~~ s:g/\n\n\n/\n/;
+
+say $in

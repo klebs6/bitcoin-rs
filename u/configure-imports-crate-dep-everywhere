@@ -1,0 +1,7 @@
+#!/usr/bin/env raku
+
+use Chomper::ConfigureImportsCrateDep;
+
+sub MAIN {
+    configure-imports-crate-dep-everywhere(root-dir => $*CWD);
+}

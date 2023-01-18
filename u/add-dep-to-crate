@@ -1,0 +1,17 @@
+#!/usr/bin/env raku
+
+use Chomper::CargoWorkspace;
+
+sub MAIN($crate, $dep) {
+
+    batch-add-dependencies-to-cargo-toml(
+        [$crate], 
+        deps => [$dep],
+        ver => "*",
+        write => True,
+    );
+
+    glob-import-from-crates($crate, [
+        $dep.subst("-","_"), 
+    ]);
+}

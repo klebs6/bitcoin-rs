@@ -1,0 +1,100 @@
+#!/usr/bin/env raku
+use v6;
+use Data::Dump;
+
+my SetHash $extensions = SetHash.new;
+my Hash $mapping = Hash.new;
+
+my @filetypes = <txt h H hpp actions c cc cpp hlsl rst osl ocio s S>;
+
+sub strip-parent-prefixes($rfile is rw) {
+    $rfile ~~ s:g/bitcoin\-//;
+    $rfile ~~ s:g/src\-//;
+    $rfile
+}
+
+sub get-rfile($base, @toks) {
+    my SetHash $seen = SetHash.new;
+    my @stack;
+    for @toks {
+        my $item = $_.split(".")[0];
+        if not $seen{$item}:exists {
+            $seen.set($item);
+            if not ["include", "lib", "c"].grep: $item {
+                @stack.push($item);
+            }
+        } 
+    }
+    my $name = @stack.join("_");
+    my $rfile = "$name.rs".lc;
+    $rfile ~~ s:g/_/-/;
+    $rfile = strip-parent-prefixes($rfile);
+    #"src/$base/$rfile"
+    "src/$rfile"
+}
+
+sub walk($base, $path) {
+    my @items = dir $path;
+    for @items {
+        if $_.IO.d {
+            walk($base, $_);
+        } else {
+            my $path = $_;
+
+            my $bn   = $path.basename;
+            my $ext  = $bn.split(".")[1];
+
+            my @toks = $path.Str.split("/")[1..*];
+            my $name = get-rfile($base, @toks);
+
+            if $ext {
+                $extensions.set($ext);
+                if @filetypes.grep: $ext {
+                    $mapping{$name}{$ext}.push: $path.Str;
+                }
+            }
+        }
+    }
+}
+
+
+sub MAIN(:$write = False) {
+
+    walk("", ".cpp/bitcoin/src");
+
+    say $extensions;
+
+    for $mapping.kv -> $rfile, $v {
+        if not $write {
+            say $rfile;
+        }
+
+        for @filetypes {
+            my $ext = $_;
+            if $v{$_}:exists  { 
+                my $files = $v{$_};  
+                for $files {
+                    my $file = $_;
+                    if $_.IO.f {
+                        if $write {
+                            try {
+                                my $text = qqx/tab2space {$_[0]}/;
+                                spurt $rfile, "//-------------------------------------------[$file]\n", :append;
+                                spurt $rfile, $text, :append;
+                                CATCH {
+                                    default {
+                                        say "error while processing: $_"
+                                    }
+                                }
+                            } 
+                        } else {
+                            say $_;
+                        }
+                    }
+                }
+            }
+        }
+        say "";
+    }
+}
+

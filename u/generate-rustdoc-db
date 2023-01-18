@@ -1,0 +1,8 @@
+#!/usr/bin/env raku
+use JSON::Pretty;
+use Config::TOML;
+use Data::Dump::Tree;
+use json;
+use cargo;
+
+generate-single-rustdoc-db("bitcoin-bloom");

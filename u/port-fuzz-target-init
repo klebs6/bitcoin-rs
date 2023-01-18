@@ -1,0 +1,39 @@
+#!/usr/bin/env raku
+
+use lib '../translator/raku';
+use util;
+use snake-case;
+use ident-token;
+
+my $input = $*IN.slurp;
+
+my ($head, $body) = 
+chop_function_body($input);
+
+grammar HeadGrammar does IdentToken {
+    rule TOP {
+        <.ws>
+        'FUZZ_TARGET_INIT'
+        '(' 
+        <name=identifier> ',' <initfn=identifier>
+        ')'
+    }
+}
+
+class Actions {
+    method TOP($/) {
+        my $name   = snake-case($/<name>.Str);
+        my $initfn = snake-case($/<initfn>.Str);
+        make qq:to/END/
+        #[fuzz_test(initializer = "$initfn")]
+        fn $name\(\) \{
+            todo!();
+            /*
+            {$body.indent(4)}
+            */
+        \}
+        END
+    }
+}
+
+say HeadGrammar.parse($head, actions => Actions).made;

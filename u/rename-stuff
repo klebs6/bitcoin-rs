@@ -1,0 +1,25 @@
+#!/usr/bin/env raku
+
+my $in = $*IN.slurp;
+
+$in ~~ s:g/ <.wb> bitcoin\-amount <.wb>/bitcoin-amt/;
+$in ~~ s:g/ <.wb> bitcoin\-address <.wb>/bitcoin-addr/;
+$in ~~ s:g/ <.wb> bitcoin\-bech32 <.wb>/bitcoin-bech32m/;
+$in ~~ s:g/ <.wb> bitcoin\-chain <.wb>/bitcoin-indexed-chain/;
+$in ~~ s:g/ <.wb> bitcoin\-consensus <.wb>/bitcoin-chain-consensus/;
+$in ~~ s:g/ <.wb> bitcoin\-rpc <.wb>/bitcoin-remote/;
+$in ~~ s:g/ <.wb> bitcoin\-script <.wb>/bitcoin-scripting/;
+$in ~~ s:g/ <.wb> bitcoin\-zmq <.wb>/bitcoin-net-zmq/;
+$in ~~ s:g/ <.wb> bitcoin\-wallet <.wb>/bitcoinwallet-library/;
+
+$in ~~ s:g/ <.wb> bitcoin_amount <.wb>/bitcoin_amt/;
+$in ~~ s:g/ <.wb> bitcoin_address <.wb>/bitcoin_addr/;
+$in ~~ s:g/ <.wb> bitcoin_bech32 <.wb>/bitcoin_bech32m/;
+$in ~~ s:g/ <.wb> bitcoin_chain <.wb>/bitcoin_indexed_chain/;
+$in ~~ s:g/ <.wb> bitcoin_consensus <.wb>/bitcoin_chain_consensus/;
+$in ~~ s:g/ <.wb> bitcoin_rpc <.wb>/bitcoin_remote/;
+$in ~~ s:g/ <.wb> bitcoin_script <.wb>/bitcoin_scripting/;
+$in ~~ s:g/ <.wb> bitcoin_zmq <.wb>/bitcoin_net_zmq/;
+$in ~~ s:g/ <.wb> bitcoin_wallet <.wb>/bitcoinwallet_library/;
+
+say $in

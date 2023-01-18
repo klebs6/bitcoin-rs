@@ -1,0 +1,26 @@
+#!/usr/bin/env raku
+use lib '../translator/raku';
+use ident-token;
+
+my $ex = "BOOST_FIXTURE_TEST_SUITE(descriptor_tests, BasicTestingSetup)";
+
+grammar FixtureHeader does IdentToken {
+    rule TOP {
+        <.ws>
+        'BOOST_FIXTURE_TEST_SUITE' '(' <name=identifier> ',' <fixture=identifier> ')'
+    }
+}
+
+class FixtureHeader::Actions {
+    method TOP($/) {
+    make qq:to/END/;
+    #[cfg(test)]
+    #[fixture({$/<fixture>})]
+    pub mod $/<name> \{
+
+    \}
+    END
+    }
+}
+
+say FixtureHeader.parse($*IN.slurp, actions => FixtureHeader::Actions).made;

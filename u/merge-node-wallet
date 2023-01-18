@@ -1,0 +1,17 @@
+#!/usr/bin/env raku
+
+my $node-dir     = "bitcoin-node/src";
+my $wallet-dir   = "bitcoin-wallet/src";
+my @wallet-files = $wallet-dir.IO.dir;
+
+for @wallet-files -> $src {
+
+    my $stem   = $src.basename;
+    my $target = $node-dir ~ "/" ~ $stem;
+
+    if $target.IO.e {
+        shell "/bin/cat $src >> $target";
+    } else {
+        shell "mv $src $target";
+    }
+}

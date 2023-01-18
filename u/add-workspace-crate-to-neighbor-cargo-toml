@@ -1,0 +1,7 @@
+#!/usr/bin/env raku
+use Chomper::CargoWorkspace;
+
+sub MAIN($src, $dst, Bool :$write) {
+
+    add-neighbor-dependency(:$src, :$dst, :$write);
+}

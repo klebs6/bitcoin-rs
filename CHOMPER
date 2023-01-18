@@ -1,0 +1,36 @@
+NOTE: I have developed a (rough, useful but
+incomplete) transpiler named `chomper` for this
+purpose.  
+
+It may be found here:
+https://github.com/klebz/chomper
+
+The language is `Raku` which is wonderful for text
+processing.
+
+In my case, I am writing in neovim and use
+`chomper` as a text filter to operate on the
+visual selection.
+
+`chomper` is helpful to translate c++ to *rough*
+"baby" rust. 
+
+This "baby" rust typically needs further
+refinement after its generation.  
+
+Starting from a clean compile, I typically
+automatically translate several full c++
+statements at a time, adjust manually as
+necessary, recompile, and repeat.
+
+I improve `chomper` within this feedback loop.
+
+The result is that more and more of the c++
+function bodies can be translated directly and
+into rust with one shot.
+
+`chomper` is not perfect yet, though it can handle
+many of the manual steps involved in translation.
+
+I hope you find it useful for your various
+purposes.

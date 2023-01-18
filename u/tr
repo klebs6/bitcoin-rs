@@ -1,0 +1,44 @@
+#!/usr/bin/env raku
+
+use case;
+
+my %token-map = %(
+bitcoinconsensus_ERR_OK                                  => "BitcoinConsensusError::Ok",
+bitcoinconsensus_ERR_TX_INDEX                            => "BitcoinConsensusError::TxIndex",
+bitcoinconsensus_ERR_TX_SIZE_MISMATCH                    => "BitcoinConsensusError::TX_SIZE_MISMATCH",
+bitcoinconsensus_ERR_TX_DESERIALIZE                      => "BitcoinConsensusError::TX_DESERIALIZE",
+bitcoinconsensus_ERR_AMOUNT_REQUIRED                     => "BitcoinConsensusError::AMOUNT_REQUIRED",
+bitcoinconsensus_ERR_INVALID_FLAGS                       => "BitcoinConsensusError::INVALID_FLAGS",
+bitcoinconsensus_SCRIPT_FLAGS_VERIFY_NONE                => "ScriptVerifyFlags::NONE",
+bitcoinconsensus_SCRIPT_FLAGS_VERIFY_P2SH                => "ScriptVerifyFlags::P2SH",
+bitcoinconsensus_SCRIPT_FLAGS_VERIFY_DERSIG              => "ScriptVerifyFlags::DERSIG",
+bitcoinconsensus_SCRIPT_FLAGS_VERIFY_NULLDUMMY           => "ScriptVerifyFlags::NULLDUMMY",
+bitcoinconsensus_SCRIPT_FLAGS_VERIFY_CHECKLOCKTIMEVERIFY => "ScriptVerifyFlags::CHECKLOCKTIMEVERIFY",
+bitcoinconsensus_SCRIPT_FLAGS_VERIFY_CHECKSEQUENCEVERIFY => "ScriptVerifyFlags::CHECKSEQUENCEVERIFY",
+bitcoinconsensus_SCRIPT_FLAGS_VERIFY_WITNESS             => "ScriptVerifyFlags::WITNESS",
+bitcoinconsensus_SCRIPT_FLAGS_VERIFY_ALL                 => "ScriptVerifyFlags::ALL",
+);
+
+our sub tr-bitcoin-tokens(Bool :$strip-ns = False) {
+
+    my $input = $*IN.slurp;
+
+    for %token-map.keys -> $tok {
+        my $target = %token-map{$tok};
+
+        if $strip-ns {
+            $target = $target.split("::")[1];
+        }
+
+        $target = screaming-snake-case-to-camel-case($target);
+
+        $input = $input.subst(:g, $tok, $target);
+    }
+
+    say $input;
+}
+
+sub MAIN(Bool :$strip-ns = False) {
+    tr-bitcoin-tokens(:$strip-ns);
+}
+

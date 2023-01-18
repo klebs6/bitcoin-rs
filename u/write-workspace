@@ -1,0 +1,90 @@
+#!/usr/bin/env raku
+
+use File::Find;
+use Config::TOML;
+
+class WorkItem {
+    has $.submodule-name;
+    has $.future-crate-path;
+    has $.future-cargo-toml-path;
+    has $.current-src-directory;
+    has $.future-src-directory;
+    has @.files;
+
+    submethod BUILD(:$submodule-name) {
+        $!submodule-name         = $submodule-name;
+        $!current-src-directory  = "bitcoin/src/$submodule-name";
+        $!future-crate-path      = "bitcoin-$!submodule-name";
+        $!future-cargo-toml-path = "bitcoin-$!submodule-name/Cargo.toml";
+        $!future-src-directory   = "bitcoin-$!submodule-name/src";
+    }
+
+    method initialize-new-crate {
+        shell "mkdir $!future-crate-path";
+        shell "mv $!current-src-directory $!future-src-directory";
+        shell "cd $!future-crate-path && cargo init --lib";
+    }
+
+    method gist {
+        qq:to/END/;
+        WorkItem:  $!future-crate-path
+        Files:     {@!files}
+        FutureSrc: {$!future-src-directory}
+        END
+    }
+}
+
+my @submodules = <
+    bench
+    chain
+    compat
+    consensus
+    crc32c
+    crypto
+    fuzz
+    index
+    init
+    interfaces
+    ipc
+    leveldb
+    net
+    node
+    policy
+    qt
+    rpc
+    script
+    secp256k1
+    support
+    test
+    univalue
+    wallet
+    zmq
+    >;
+
+sub initialize-new-crate(@work-items) {
+    for @work-items {
+        $_.initialize-new-crate();
+    }
+}
+
+sub add-cargo-workspace-line(@work-items) {
+
+    my $cargo-toml = "Cargo.toml";
+    my $toml       = from-toml(file => $cargo-toml);
+
+    for @work-items {
+        $toml<workspace><members>.push: $_.future-crate-path;
+    }
+    
+    spurt $cargo-toml, to-toml($toml);
+}
+
+sub MAIN {
+
+    my @work-items = @submodules.map: {
+        WorkItem.new(submodule-name => $_)
+    };
+
+    #add-cargo-workspace-line(@work-items);
+    initialize-new-crate(@work-items);
+}

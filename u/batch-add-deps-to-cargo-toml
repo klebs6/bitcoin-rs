@@ -1,0 +1,15 @@
+#!/usr/bin/env raku
+
+use cargo-workspace;
+
+sub MAIN(@deps, Bool :$write) {
+
+    my @crates = ".".IO.dir.grep: /bitcoin*/; 
+
+    batch-add-dependencies-to-cargo-toml(
+        @crates, 
+        :@deps,
+        ver => "*",
+        :$write,
+    );
+}

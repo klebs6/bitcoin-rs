@@ -1,0 +1,69 @@
+#!/usr/bin/env raku
+
+my @crates = <
+bitcoinleveldb-arena
+bitcoinleveldb-batch
+bitcoinleveldb-bench
+bitcoinleveldb-block
+bitcoinleveldb-bloom
+bitcoinleveldb-cache
+bitcoinleveldb-coding
+bitcoinleveldb-compaction
+bitcoinleveldb-comparator
+bitcoinleveldb-compat
+bitcoinleveldb-crc32
+bitcoinleveldb-db
+bitcoinleveldb-dumpfile
+bitcoinleveldb-duplex
+bitcoinleveldb-env
+bitcoinleveldb-file
+bitcoinleveldb-filter
+bitcoinleveldb-footer
+bitcoinleveldb-hash
+bitcoinleveldb-histogram
+bitcoinleveldb-iterator
+bitcoinleveldb-limiter
+bitcoinleveldb-log
+bitcoinleveldb-lru
+bitcoinleveldb-memenv
+bitcoinleveldb-memtable
+bitcoinleveldb-merger
+bitcoinleveldb-meta
+bitcoinleveldb-options
+bitcoinleveldb-posix
+bitcoinleveldb-rand
+bitcoinleveldb-repair
+bitcoinleveldb-skiplist
+bitcoinleveldb-slice
+bitcoinleveldb-snapshot
+bitcoinleveldb-status
+bitcoinleveldb-sync
+bitcoinleveldb-table
+bitcoinleveldb-test
+bitcoinleveldb-util
+>;
+
+sub MAIN(:$write = False) {
+
+    for @crates -> $crate {
+
+        my $srcdir = $crate ~ "/src";
+
+        my $libfile = $srcdir ~ "/lib.rs";
+
+        my @spare = ["lib.rs", "imports.rs"];
+
+        my @files = $srcdir.IO.dir.grep: {$_ !~~ /@spare/ };
+
+        my @directives = do for @files {
+            my $bn = $_.basename.split(".")[0];
+            'x!{' ~ $bn ~ '}'
+        };
+
+        my $append-this = @directives.join("\n");
+
+        if $write {
+            $libfile.IO.spurt: $append-this, :append;
+        }
+    }
+}

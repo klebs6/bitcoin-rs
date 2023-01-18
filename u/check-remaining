@@ -1,0 +1,43 @@
+#!/usr/bin/env raku
+
+my @done = [
+    "bitcoin-addrman",
+    "bitcoin-amount",
+    "bitcoin-argsman",
+    "bitcoin-banman",
+    "bitcoin-base58",
+    "bitcoin-bech32",
+    "bitcoin-bench",
+    "bitcoin-block",
+    "bitcoin-blockfilter",
+    "bitcoin-bloom",
+    "bitcoin-cfg",
+    "bitcoin-cli",
+    "bitcoin-connman",
+    "bitcoin-compressor",
+    "bitcoin-merkle",
+    "bitcoin-psbt",
+    "bitcoin-random",
+    "bitcoin-peerman",
+    "bitcoin-connman",
+];
+
+my $btc-dir = %*ENV<REPO> ~ "/bitcoin-rs";
+die if not $btc-dir.IO.e;
+
+my @all = $btc-dir.IO.dir.grep: {
+    $_.basename ~~ /bitcoin/
+};
+
+my Set $todo =  @all.Set (-) @done.Set;
+
+my @lines = do for $todo.keys -> $repo {
+    my $out = qqx!find $repo -type f -name "*.rs" | xargs /bin/cat | wc -l!;
+    ($repo.basename, $out.chomp.Num)
+};
+
+.say for @lines.sort: {$^a[1] cmp $^b[1]};
+
+say [+] @lines.map: {
+    $_[1]
+}

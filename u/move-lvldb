@@ -1,0 +1,211 @@
+#!/usr/bin/env raku
+
+my %map = (
+    bitcoinleveldb-arena => [
+        "bitcoin-leveldb/src/arena.rs",
+        "bitcoin-leveldb/src/test/arena_test.rs",
+    ],
+    bitcoinleveldb-batch => [
+        "bitcoin-leveldb/src/write_batch.rs",
+        "bitcoin-leveldb/src/db/write_batch.rs",
+        "bitcoin-leveldb/src/db/write_batch_test.rs",
+    ],
+    bitcoinleveldb-bench => [
+        "bitcoin-leveldb/src/bench/mod.rs",
+        "bitcoin-leveldb/src/bench/db_bench.rs",
+        "bitcoin-leveldb/src/bench/db_bench_sqlite3.rs",
+        "bitcoin-leveldb/src/bench/db_bench_tree_db.rs",
+    ],
+    bitcoinleveldb-block => [
+        "bitcoin-leveldb/src/table/block.rs",
+        "bitcoin-leveldb/src/table/block_builder.rs",
+    ],
+    bitcoinleveldb-bloom => [
+        "bitcoin-leveldb/src/bloom.rs",
+        "bitcoin-leveldb/src/test/bloom_test.rs",
+    ],
+    bitcoinleveldb-cache => [
+        "bitcoin-leveldb/src/cache.rs",
+        "bitcoin-leveldb/src/test/cache_test.rs",
+    ],
+    bitcoinleveldb-coding => [
+        "bitcoin-leveldb/src/coding.rs",
+        "bitcoin-leveldb/src/test/coding_test.rs",
+    ],
+    bitcoinleveldb-compaction => [
+        "bitcoin-leveldb/src/db/autocompact_test.rs",
+        "bitcoin-leveldb/src/db/compaction.rs",
+    ],
+    bitcoinleveldb-comparator => [
+        "bitcoin-leveldb/src/comparator.rs",
+    ],
+    bitcoinleveldb-compat => [
+        "bitcoin-leveldb/src/port/port_stdcxx.rs",
+        "bitcoin-leveldb/src/port/port_config.rs",
+        "bitcoin-leveldb/src/port/mod.rs",
+    ],
+    bitcoinleveldb-crc32 => [
+        "bitcoin-leveldb/src/crc32c.rs",
+        "bitcoin-leveldb/src/test/crc32c_test.rs",
+    ],
+    bitcoinleveldb-db => [
+        "bitcoin-leveldb/src/db/db_impl.rs",
+        "bitcoin-leveldb/src/db/db_test.rs",
+        "bitcoin-leveldb/src/db/db.rs",
+        "bitcoin-leveldb/src/db/mod.rs",
+        "bitcoin-leveldb/src/db/dbformat.rs",
+        "bitcoin-leveldb/src/db/dbformat_test.rs",
+    ],
+    bitcoinleveldb-dumpfile => [
+        "bitcoin-leveldb/src/dumpfile.rs",
+        "bitcoin-leveldb/src/db/dumpfile.rs",
+    ],
+    bitcoinleveldb-duplex => [
+        "bitcoin-leveldb/src/table/two_level_iterator.rs",
+    ],
+    bitcoinleveldb-env => [
+        "bitcoin-leveldb/src/lvldb_env.rs",
+        "bitcoin-leveldb/src/test/env_test.rs",
+        "bitcoin-leveldb/src/test/env_windows_helper_test.rs",
+        "bitcoin-leveldb/src/test/env_windows_test.rs",
+    ],
+    bitcoinleveldb-file => [
+        "bitcoin-leveldb/src/db/filename.rs",
+        "bitcoin-leveldb/src/db/filename_test.rs",
+    ],
+    bitcoinleveldb-filter => [
+        "bitcoin-leveldb/src/filter_policy.rs",
+        "bitcoin-leveldb/src/table/filter_block.rs",
+        "bitcoin-leveldb/src/table/filter_block_test.rs",
+    ],
+    bitcoinleveldb-footer => [
+        "bitcoin-leveldb/src/table/footer.rs",
+    ],
+    bitcoinleveldb-hash => [
+        "bitcoin-leveldb/src/hash.rs",
+        "bitcoin-leveldb/src/test/hash.rs",
+    ],
+    bitcoinleveldb-histogram => [
+        "bitcoin-leveldb/src/histogram.rs",
+    ],
+    bitcoinleveldb-iterator => [
+        "bitcoin-leveldb/src/iterator.rs",
+        "bitcoin-leveldb/src/db/db_iter.rs",
+        "bitcoin-leveldb/src/table/iterator.rs",
+        "bitcoin-leveldb/src/table/iterator_wrapper.rs",
+    ],
+    bitcoinleveldb-limiter => [
+        "bitcoin-leveldb/src/limiter.rs",
+    ],
+    bitcoinleveldb-log => [
+        "bitcoin-leveldb/src/log/format.rs",
+        "bitcoin-leveldb/src/log/logging.rs",
+        "bitcoin-leveldb/src/log/mod.rs",
+        "bitcoin-leveldb/src/log/posix_logger.rs",
+        "bitcoin-leveldb/src/log/reader.rs",
+        "bitcoin-leveldb/src/log/test.rs",
+        "bitcoin-leveldb/src/log/writer.rs",
+        "bitcoin-leveldb/src/test/logging_test.rs",
+    ],
+    bitcoinleveldb-lru => [
+        "bitcoin-leveldb/src/lru_cache.rs",
+    ],
+    bitcoinleveldb-memenv => [
+        "bitcoin-leveldb/src/memenv.rs",
+        "bitcoin-leveldb/src/test/leveldb_helpers_memenv_memenv_test.rs",
+    ],
+    bitcoinleveldb-memtable => [
+        "bitcoin-leveldb/src/db/memtable.rs",
+    ],
+    bitcoinleveldb-merger => [
+        "bitcoin-leveldb/src/table/merger.rs",
+    ],
+    bitcoinleveldb-meta => [
+        "bitcoin-leveldb/src/db/version_edit.rs",
+        "bitcoin-leveldb/src/db/version_edit_test.rs",
+        "bitcoin-leveldb/src/db/version_set.rs",
+        "bitcoin-leveldb/src/db/version_set_test.rs",
+    ],
+    bitcoinleveldb-options => [
+        "bitcoin-leveldb/src/options.rs",
+    ],
+    bitcoinleveldb-posix => [
+        "bitcoin-leveldb/src/env_posix.rs",
+        "bitcoin-leveldb/src/test/env_posix_test.rs",
+    ],
+    bitcoinleveldb-rand => [
+        "bitcoin-leveldb/src/random.rs",
+    ],
+    bitcoinleveldb-repair => [
+        "bitcoin-leveldb/src/db/repair.rs",
+    ],
+    bitcoinleveldb-skiplist => [
+        "bitcoin-leveldb/src/db/skiplist.rs",
+        "bitcoin-leveldb/src/db/skiplist_test.rs",
+    ],
+    bitcoinleveldb-slice => [
+        "bitcoin-leveldb/src/slice.rs",
+    ],
+    bitcoinleveldb-snapshot => [
+        "bitcoin-leveldb/src/db/snapshot.rs",
+    ],
+    bitcoinleveldb-status => [
+        "bitcoin-leveldb/src/status.rs",
+        "bitcoin-leveldb/src/test/status_test.rs",
+    ],
+    bitcoinleveldb-sync => [
+        "bitcoin-leveldb/src/port/thread_annotations.rs",
+        "bitcoin-leveldb/src/mutexlock.rs",
+    ],
+    bitcoinleveldb-table => [
+        "bitcoin-leveldb/src/db/builder.rs",
+        "bitcoin-leveldb/src/db/leveldb_db_table_cache.rs",
+        "bitcoin-leveldb/src/table/builder.rs",
+        "bitcoin-leveldb/src/table/leveldb_table_format.rs",
+        "bitcoin-leveldb/src/table/mod.rs",
+        "bitcoin-leveldb/src/table/table.rs",
+        "bitcoin-leveldb/src/table/table_test.rs",
+    ],
+    bitcoinleveldb-test => [
+        "bitcoin-leveldb/src/test/util.rs",
+        "bitcoin-leveldb/src/test/harness.rs",
+        "bitcoin-leveldb/src/test/mod.rs",
+        "bitcoin-leveldb/src/db/corruption_test.rs",
+        "bitcoin-leveldb/src/db/c_test.rs",
+        "bitcoin-leveldb/src/db/fault_injection_test.rs",
+        "bitcoin-leveldb/src/db/recovery_test.rs",
+        "bitcoin-leveldb/src/issues/mod.rs",
+        "bitcoin-leveldb/src/issues/issue200_test.rs",
+        "bitcoin-leveldb/src/issues/issue320_test.rs",
+        "bitcoin-leveldb/src/issues/issue178_test.rs",
+    ],
+    bitcoinleveldb-util => [
+        "bitcoin-leveldb/src/db/leveldbutil.rs",
+        "bitcoin-leveldb/src/test/no_destructor_test.rs",
+        "bitcoin-leveldb/src/no_destructor.rs",
+    ],
+);
+
+for %map.keys -> $crate {
+    my @sources = %map{$crate}.List;
+    my $target = $crate ~ "/src/";
+
+    die if not $target.IO.d;
+
+    my $seen = SetHash.new;
+
+    for @sources {
+
+        my $basename   = $_.IO.basename;
+
+        if $basename (elem) $seen {
+            $basename = $basename.split(".")[0] ~ "_alt.rs";
+        }
+
+        $seen.set($basename);
+
+        my $filetarget = $target ~ $basename;
+
+        shell "mv -n $_ $filetarget";
+    }
+}

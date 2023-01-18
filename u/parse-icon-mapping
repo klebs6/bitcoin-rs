@@ -1,0 +1,49 @@
+#!/usr/bin/env raku
+
+use lib '../translator/raku';
+use quoted-string-token;
+use ident-token;
+use numeric-token;
+
+grammar G 
+does QuotedStringToken
+does NumericToken
+does IdentToken {
+
+    rule TOP {
+        <.ws>
+        <line-item>+ %% ","
+    }
+
+    rule line-item {
+        '{'
+            <method_name=quoted-string> ','
+            <param_idx=numeric> ','
+            <param_name=quoted-string>
+        '}'
+    }
+}
+
+class G::Actions {
+
+    method TOP($/) {
+        make $/<line-item>>>.made>>.chomp.join(",\n")
+    }
+
+    method line-item($/) {
+        make qq:to/END/
+        RPCConvertParam \{
+            method_name: {~$/<method_name>},
+            param_idx:   {~$/<param_idx>},
+            param_name:  {~$/<param_name>},
+        \}
+        END
+    }
+}
+
+sub MAIN {
+    say G.parse($*IN.slurp, 
+        actions => G::Actions.new
+    ).made;
+}
+

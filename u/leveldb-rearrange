@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+
+mv bitcoin/src/leveldb/bench/leveldb_benchmarks_db_bench_sqlite3.rs bitcoin/src/leveldb/bench/db_bench_sqlite3.rs
+mv bitcoin/src/leveldb/bench/leveldb_benchmarks_db_bench.rs bitcoin/src/leveldb/bench/db_bench.rs
+mv bitcoin/src/leveldb/bench/leveldb_benchmarks_db_bench_tree_db.rs bitcoin/src/leveldb/bench/db_bench_tree_db.rs

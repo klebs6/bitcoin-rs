@@ -1,0 +1,37 @@
+#!/usr/bin/env raku
+use Config::TOML;
+
+sub add-build-deps-to-toml-file($toml-file, :@deps) {
+
+    my $toml = from-toml($toml-file.IO.slurp);
+
+    for @deps {
+        $toml{"build-dependencies"}{$_}{"path"} = "../$_";
+    }
+
+    $toml-file.IO.spurt: to-toml($toml);
+}
+
+my @crates = ".".IO.dir.grep: /bitcoin/;
+
+for @crates -> $crate {
+    next if $crate ~~ /bitcoin\-cfg|bitcoin\-imports/;
+
+    my $cargo-toml = $crate ~ "/Cargo.toml";
+    my $build-rs   = $crate ~ "/build.rs";
+
+    add-build-deps-to-toml-file(
+        $cargo-toml, 
+        deps => ["bitcoin-cfg"]
+    );
+
+    my $build-rs-text = q:to/END/;
+    fn main() {
+        bitcoin_cfg::setup();
+    }
+    END
+
+    unless $build-rs.IO.e {
+        $build-rs.IO.spurt: $build-rs-text;
+    }
+}

@@ -1,0 +1,17 @@
+#!/usr/bin/env raku
+use File::Find;
+
+sub MAIN(:$write = False) {
+
+    my @commands = find(dir => 'bitcoin/src').map: { 
+        "mv $_ {$_.subst("-", "_", :g)}"
+    };
+
+    for @commands {
+        if $write {
+            shell $_;
+        } else {
+            say $_;
+        }
+    }
+}

@@ -1,0 +1,49 @@
+#!/usr/bin/env raku
+
+".".IO.dir
+==> grep({
+    $_ ~~ /^^ bitcoin/
+})
+==> grep({
+    $_.IO.changed.DateTime gt DateTime.now.earlier(:1hour)
+})
+==> sort()
+==> my @new-crates;
+
+for @new-crates -> $crate {
+    my $srcdir  = $crate ~ "/src";
+    my $libfile = $srcdir ~ "/lib.rs";
+
+    my @others = $srcdir.IO.dir.grep: {
+        $_ !~~ /lib\.rs|imports\.rs/
+    };
+
+    my @import-statements = do for @others {
+
+        my $stem = $_.basename.split(".")[0];
+
+        'x!{' ~ $stem ~ '}'
+    };
+
+    my @libfile-keep-lines = gather for $libfile.IO.slurp.lines {
+
+        if $_ !~~ /'x!{'/ {
+            take $_;
+        }
+    };
+
+    my @already-importing = gather for $libfile.IO.slurp.lines {
+
+        if $_ ~~ /'x!{'/ {
+            take $_;
+        }
+    };
+
+    my $new-text = qq:to/END/;
+    {@libfile-keep-lines.join("\n")}
+    {@import-statements.join("\n")}
+    END
+
+    say "writing: $libfile";
+    $libfile.IO.spurt: $new-text;
+}
