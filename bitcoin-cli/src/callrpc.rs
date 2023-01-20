@@ -6,6 +6,10 @@ pub fn callrpc(
         args:       &Vec<String>,
         rpcwallet:  Option<&str>) -> Result<UniValue,StdException> {
 
+    todo!("in order to uncomment this, need a proper libevent-sys with http headers included (among others) -- see github: https://github.com/jmagnuson/libevent-rs/pull/19");
+
+    /*
+
     let mut host = String::default();
 
     //  In preference order, we choose the following for the port:
@@ -349,4 +353,5 @@ pub fn callrpc(
 
         return Err(runtime_error(msg));
     }
+    */
 }

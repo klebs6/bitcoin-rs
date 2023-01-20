@@ -61,6 +61,9 @@ pub fn http_request_done(
         return;
     }
 
+    todo!("in order to uncomment this, need a proper libevent-sys with http headers included (among others) -- see github: https://github.com/jmagnuson/libevent-rs/pull/19");
+
+    /*
     unsafe {
         (*reply).status = 
             evhttp_request_get_response_code(req)
@@ -107,6 +110,7 @@ pub fn http_request_done(
             evbuffer_drain(buf, size.try_into().unwrap());
         }
     }
+    */
 }
 
 #[cfg(LIBEVENT_VERSION_NUMBER_GTE_0x02010300)]
