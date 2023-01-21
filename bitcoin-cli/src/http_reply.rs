@@ -40,6 +40,8 @@ pub fn http_errorstring(code: i32) -> &'static str {
     }
 }
 
+pub type evhttp_request = Broken;
+
 pub fn http_request_done(
         req: *mut evhttp_request,
         ctx: *mut c_void)  {
