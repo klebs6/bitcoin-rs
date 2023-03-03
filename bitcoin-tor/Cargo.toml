@@ -17,11 +17,9 @@ version = "0.1.12-alpha.0"
 path = "../bitcoin-support"
 version = "0.1.12-alpha.0"
 [dependencies.libevent]
-git = "https://github.com/klebz/libevent-rs"
 version = "0.1.0"
 [dependencies.libevent-sys]
-git = "https://github.com/klebz/libevent-rs"
-version = "0.2.4"
+version = "0.2.6"
 [package]
 authors = [ "klebs <none>" ]
 description = "tor control and connections"

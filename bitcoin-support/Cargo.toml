@@ -10,11 +10,9 @@ version = "0.1.12-alpha.0"
 [dependencies.lazy_static]
 version = "1.4.0"
 [dependencies.libevent]
-git = "https://github.com/klebz/libevent-rs"
 version = "0.1.0"
 [dependencies.libevent-sys]
-git = "https://github.com/klebz/libevent-rs"
-version = "0.2.4"
+version = "0.2.6"
 [dependencies.multimap]
 version = "0.8.3"
 [dependencies.parking_lot]

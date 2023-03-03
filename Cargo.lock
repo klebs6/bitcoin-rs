@@ -4433,7 +4433,8 @@ dependencies = [
 [[package]]
 name = "libevent"
 version = "0.1.0"
-source = "git+https://github.com/klebz/libevent-rs#3c48e71621f21ed01d99e14194e7a6d6561a9a57"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f20387ce8f5b41320b1a651f53667d6bca1ab4b1532c379c6e39d8392151dff"
 dependencies = [
  "bitflags 1.3.2",
  "libevent-sys",
@@ -4441,8 +4442,9 @@ dependencies = [
 
 [[package]]
 name = "libevent-sys"
-version = "0.2.5"
-source = "git+https://github.com/klebz/libevent-rs#3c48e71621f21ed01d99e14194e7a6d6561a9a57"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "53ee7686f2596cd3ca79a4b5be75a40a7684cf9883ba0c9e4ad034050e4c2dc1"
 dependencies = [
  "bindgen",
  "openssl-sys",
