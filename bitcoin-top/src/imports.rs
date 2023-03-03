@@ -68,7 +68,7 @@ pub(crate) use bitcoin_net_zmq::*;
 pub(crate) use bitcoin_tokenpipe::*;
 pub(crate) use bitcoin_system::*;
 pub(crate) use bitcoin_signet::*;
-pub(crate) use bitcoin_rest::*;
+pub(crate) use bitcoin_restapi::*;
 pub(crate) use bitcoin_noui::*;
 pub(crate) use bitcoin_message::*;
 pub(crate) use bitcoin_asmap::*;

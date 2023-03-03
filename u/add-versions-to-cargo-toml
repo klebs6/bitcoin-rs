@@ -91,7 +91,7 @@ my @tomls = [
     "bitcoin-random/Cargo.toml",
     "bitcoin-rbf/Cargo.toml",
     "bitcoin-remote/Cargo.toml",
-    "bitcoin-rest/Cargo.toml",
+    "bitcoin-restapi/Cargo.toml",
     "bitcoin-ripemd/Cargo.toml",
     "bitcoin-sam/Cargo.toml",
     "bitcoin-scheduler/Cargo.toml",

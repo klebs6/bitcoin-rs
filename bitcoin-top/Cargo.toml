@@ -171,8 +171,8 @@ version = "0.1.12-alpha.0"
 [dependencies.bitcoin-remote]
 path = "../bitcoin-remote"
 version = "0.1.12-alpha.0"
-[dependencies.bitcoin-rest]
-path = "../bitcoin-rest"
+[dependencies.bitcoin-restapi]
+path = "../bitcoin-restapi"
 version = "0.1.12-alpha.0"
 [dependencies.bitcoin-scheduler]
 path = "../bitcoin-scheduler"
