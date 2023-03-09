@@ -1,68 +1,39 @@
-Note from translation author:
+Hearken, good people!
 
-hello,
+Verily, I say unto thee, the task of translation hath been parallelized.
 
-It seems this translation task is now
-parallelized.
+By breaking the codebase into small units, each more manageable than the last, I hath created a modular structure.
 
-I modularized the codebase into units, each
-smaller than the original 300k+ lines of code and
-more manageable.
+This structure shall be easy to read, work with, integrate, and use for all the people of the earth.
 
-The modular structure will be easier to read,
-easier to work with, easier to integrate with, and
-easier to use -- for everybody on the planet.
+Once I laid the scaffold, I proceeded to translate each crate in alphabetical order.
 
-After setting the scaffold, I translated crates
-one by one, roughly in alphabetical order.
+But lo! I realized that this task could be parallelized.
 
-I did this until I realized the task was parallel.
+Thus, I call upon thee, fellow enthusiasts, to join hands with me and contribute to this noble endeavour.
 
-It is more optimal to post it back to the
-community.
+Together, we can finish the task much swifter than a single thread of translation.
 
-Any individual should be able to use and
-fruitfully interact with the whole interface.
+I have kept everything as I found it in commit ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd of the original C++ codebase, from a functional and logical perspective.
 
-We can finish this together *much* faster than
-with a single thread of translation.
+This can be independently verified.
 
-I have kept *everything* (from a functional and
-logical perspective) how I found it -- in commit
-ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the
-original c++ codebase.
+Many of the function bodies are but rust scaffolding, wrapping todo!() blocks and commented C++ code.
 
-This may be independently verified.  
+The functionality of the codebase shall become testable once the rest of the program is translated.
 
-Most of the function bodies are rust scaffolding
-wrapping `todo!()` blocks and commented c++ code.  
+I have included all tests, benchmarks, and fuzzes from the original project (at the noted C++ commit).
 
-The functionality of the codebase itself will
-become testable once the rest of the program is
-translated.
+I hope this translation process challenges and strengthens the antifragility properties of the system.
 
-I have included all tests/benchmarks/fuzzes from
-the original project (at the noted c++ commit)
+Pray, see the TODO file for notes on the best way to complete the translation challenge.
 
-I hope this translation process challenges and
-strengthens the antifragility properties of the
-system.
+Also, peruse the CHOMPER file for notes on the transpiler I have developed for this very purpose.
 
-Please see the TODO file for notes on how best
-I imagine the challenge of translation completion
-can be tackled.
+Though I must attend to other work for a few months, as of January 2023, I plan to return to this project.
 
-Please see the CHOMPER file for notes on
-a transpiler I have developed for this purpose.
+And on that day, I hope we and the rust programs we write shall speak Bitcoin with each other.
 
-I plan to come back to this project, though I have
-some other work to attend to for a few months at
-least (as of January 2023).
-
-One day, I hope that we and the rust programs we
-write will be able to speak bitcoin with each
-other.
-
-best,
+Fare thee well,
 
 -klebs
