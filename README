@@ -1,39 +1,57 @@
-Hearken, good people!
+Note from translation author:
 
-Verily, I say unto thee, the task of translation hath been parallelized.
+Greetings!
 
-By breaking the codebase into small units, each more manageable than the last, I hath created a modular structure.
+I am happy to announce the task of translating
+this codebase is now parallelized.
 
-This structure shall be easy to read, work with, integrate, and use for all the people of the earth.
+Earlier, I divided the program into smaller units
+to create a modular structure.
 
-Once I laid the scaffold, I proceeded to translate each crate in alphabetical order.
+This structure will be easy for anyone to read,
+work with, integrate, and use.
 
-But lo! I realized that this task could be parallelized.
+After laying the foundation, I began to translate
+each subcomponent in alphabetical order.
 
-Thus, I call upon thee, fellow enthusiasts, to join hands with me and contribute to this noble endeavour.
+However, I soon realized that this task could be
+accelerated by parallelizing it.
 
-Together, we can finish the task much swifter than a single thread of translation.
+I have kept *everything* (from a functional and
+logical perspective) how I found it -- in commit
+ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the
+original c++ codebase.
 
-I have kept everything as I found it in commit ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd of the original C++ codebase, from a functional and logical perspective.
+This may be independently verified.  
 
-This can be independently verified.
+Many of the function bodies are Rust scaffolding,
+wrapping todo!() blocks and commented C++ code.
 
-Many of the function bodies are but rust scaffolding, wrapping todo!() blocks and commented C++ code.
+The functionality of the codebase will become
+testable once the rest of the program is
+translated.
 
-The functionality of the codebase shall become testable once the rest of the program is translated.
+All tests, benchmarks, and fuzzes from the
+original project (at the noted C++ commit) are
+included.
 
-I have included all tests, benchmarks, and fuzzes from the original project (at the noted C++ commit).
+I hope this translation process challenges and
+strengthens the antifragility properties of the
+system.
 
-I hope this translation process challenges and strengthens the antifragility properties of the system.
+Please see the TODO file for notes on the best way
+to complete the translation.
 
-Pray, see the TODO file for notes on the best way to complete the translation challenge.
+Additionally, there is a CHOMPER file for notes on
+the transpiler I have created for this purpose.
 
-Also, peruse the CHOMPER file for notes on the transpiler I have developed for this very purpose.
+Although I will attend to other work for a few
+months, I plan to return to this project (as of
+January 2023).
 
-Though I must attend to other work for a few months, as of January 2023, I plan to return to this project.
+On that day, I hope we and the Rust programs we
+write will speak Bitcoin with each other.
 
-And on that day, I hope we and the rust programs we write shall speak Bitcoin with each other.
-
-Fare thee well,
+best regards,
 
 -klebs
