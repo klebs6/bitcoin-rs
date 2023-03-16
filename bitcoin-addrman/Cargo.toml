@@ -63,7 +63,6 @@ documentation = "https://docs.rs/bitcoin-addrman"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-addrman"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.12-alpha.0"
 [package.metadata]
