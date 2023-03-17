@@ -14,7 +14,6 @@ documentation = "https://docs.rs/bitcoin-amt"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-amt"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.12-alpha.0"
 [package.metadata]

@@ -1,57 +1,22 @@
-Note from translation author:
+This workspace is in the process of being
+translated from C++ to Rust, and some function
+bodies might still be in the process of
+translation.
 
-Greetings!
-
-I am happy to announce the task of translating
-this codebase is now parallelized.
-
-Earlier, I divided the program into smaller units
-to create a modular structure.
-
-This structure will be easy for anyone to read,
-work with, integrate, and use.
-
-After laying the foundation, I began to translate
-each subcomponent in alphabetical order.
-
-However, I soon realized that this task could be
-accelerated by parallelizing it.
-
-I have kept *everything* (from a functional and
-logical perspective) how I found it -- in commit
+After it is finished, it will match commit
 ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the
-original c++ codebase.
+c++ codebase.
 
-This may be independently verified.  
+I am quite grateful for any support, but am also
+happy to finish it on my own.
 
-Many of the function bodies are Rust scaffolding,
-wrapping todo!() blocks and commented C++ code.
+I wrote a transpiler which can translate c++
+statements into rust, and don't mind letting it do
+most of the heavy lifting.
 
-The functionality of the codebase will become
-testable once the rest of the program is
-translated.
+Once it is done translating, we will battle test
+the whole thing and see what happens.
 
-All tests, benchmarks, and fuzzes from the
-original project (at the noted C++ commit) are
-included.
+best,
 
-I hope this translation process challenges and
-strengthens the antifragility properties of the
-system.
-
-Please see the TODO file for notes on the best way
-to complete the translation.
-
-Additionally, there is a CHOMPER file for notes on
-the transpiler I have created for this purpose.
-
-Although I will attend to other work for a few
-months, I plan to return to this project (as of
-January 2023).
-
-On that day, I hope we and the Rust programs we
-write will speak Bitcoin with each other.
-
-best regards,
-
--klebs
+-kleb
