@@ -1,3 +1,32 @@
+/*
+This function, `sanity_check_as_map`, checks if
+the given ASMAP (`asmap`) is well-formed and does
+not have any inconsistencies. It takes
+a `Vec<bool>` as input, which represents the ASMAP
+data, and an `i32` called `bits`, which represents
+the number of bits available in the address. The
+function returns a boolean indicating whether the
+ASMAP is well-formed and consistent.
+
+The C++ code provided performs a series of checks
+on the ASMAP data while iterating through it. It
+checks for issues like instructions straddling the
+end of file (EOF), unreachable code, incorrect
+jump offsets, and more. The function returns
+`true` if the ASMAP is well-formed and consistent,
+and `false` otherwise.
+
+In Rust, the `sanity_check_as_map` function will
+follow a similar structure. The `todo!();` macro
+is a placeholder that should be replaced with
+a Rust implementation that follows the same logic
+as the C++ code provided. The Rust implementation
+will iterate through the ASMAP data and perform
+the necessary checks, returning a boolean
+indicating whether the ASMAP is well-formed and
+consistent.
+*/
+
 crate::ix!();
 
 pub fn sanity_check_as_map(
@@ -68,4 +97,3 @@ pub fn sanity_check_as_map(
         return false; // Reached EOF without RETURN instruction
         */
 }
-

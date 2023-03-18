@@ -1,3 +1,44 @@
+/*!
+This function, `decode_bits`, decodes a value from
+a provided iterator of boolean values using the
+given bit sizes. The iterator `bitpos` represents
+the current position in the ASMAP data, and
+`endpos` represents the end position of the
+data. The `minval` parameter is the minimum value
+of the decoded result, and the `bit_sizes` vector
+contains the list of bit sizes to be used for
+decoding. The purpose of this function is to
+decode a value from the compact representation in
+the ASMAP data.
+
+Here's a brief explanation of the C++ code:
+
+1. It initializes the `val` variable with the
+   provided `minval`.
+
+2. It iterates through the `bit_sizes` vector,
+   using a nested loop to decode the value based
+   on the bits in the ASMAP data.
+
+3. If the iterator reaches the end position
+   (`endpos`) during decoding, it returns
+   `INVALID`. This means that the decoding has
+   reached the end of the file or an unexpected
+   position, and the resulting value is considered
+   invalid.
+
+4. If the decoding completes successfully, it
+   returns the decoded value `val`.
+
+In Rust, the `decode_bits` function will have
+a similar structure. It will decode a value from
+the given iterator, end position, minimum value,
+and bit sizes vector. The `todo!();` macro is
+a placeholder that should be replaced with the
+Rust implementation that follows the same logic as
+the C++ code provided.
+*/
+
 crate::ix!();
 
 pub fn decode_bits<'a, I>(

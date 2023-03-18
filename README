@@ -7,8 +7,7 @@ After it is finished, it will match commit
 ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the
 c++ codebase.
 
-I am quite grateful for any support, but am also
-happy to finish it on my own.
+I am quite grateful for any support.
 
 I wrote a transpiler which can translate c++
 statements into rust, and don't mind letting it do
