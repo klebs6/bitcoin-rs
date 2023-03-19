@@ -41,7 +41,6 @@ documentation = "https://docs.rs/bitcoin-blockman"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-blockman"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.14-alpha.0"
 [package.metadata]
