@@ -29,7 +29,6 @@ documentation = "https://docs.rs/bitcoin-chain-consensus"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-chain-consensus"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.14-alpha.0"
 [package.metadata]
