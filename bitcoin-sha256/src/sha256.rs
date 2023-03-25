@@ -5,8 +5,8 @@ crate::ix!();
 /**
   | A hasher class for SHA-256.
   |
-  | Translated with guidance from George
-  | Bickerstaff in Greenwich CT, 12/2021
+  | Translated with guidance from G.W.
+  | Bickerstaff, 12/2021
   */
 #[derive(Serialize,Deserialize)]
 pub struct Sha256 {
