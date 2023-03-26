@@ -152,4 +152,3 @@ lazy_static!{
     static ref HASHER_TAPBRANCH:  HashWriter = tagged_hash("TapBranch");
     static ref HASHER_TAPTWEAK:   HashWriter = tagged_hash("TapTweak");
 }
-
