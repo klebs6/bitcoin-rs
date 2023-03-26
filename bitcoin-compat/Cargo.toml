@@ -15,7 +15,6 @@ documentation = "https://docs.rs/bitcoin-compat"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-compat"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.13-alpha.0"
 [package.metadata]

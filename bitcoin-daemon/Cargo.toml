@@ -35,7 +35,6 @@ documentation = "https://docs.rs/bitcoin-daemon"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-daemon"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.14-alpha.0"
 [package.metadata]
