@@ -109,8 +109,8 @@ impl AddressBookSortFilterProxyModel {
     }
 }
 
-///----------------------------
 impl Drop for AddressBookPage {
+
     fn drop(&mut self) {
         todo!();
         /*
