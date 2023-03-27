@@ -755,7 +755,6 @@ impl Default for Inv {
     }
 }
 
-
 /**
   | Get a vector of all valid message types
   | (see above)
@@ -768,4 +767,3 @@ pub fn get_all_net_message_types() -> &'static Vec<String> {
             return allNetMessageTypesVec;
         */
 }
-
