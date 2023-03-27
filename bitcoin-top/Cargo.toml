@@ -93,9 +93,6 @@ version = "0.1.13-alpha.0"
 [dependencies.bitcoin-hash]
 path = "../bitcoin-hash"
 version = "0.1.13-alpha.0"
-[dependencies.bitcoin-hdkeypath]
-path = "../bitcoin-hdkeypath"
-version = "0.1.13-alpha.0"
 [dependencies.bitcoin-http]
 path = "../bitcoin-http"
 version = "0.1.14-alpha.0"

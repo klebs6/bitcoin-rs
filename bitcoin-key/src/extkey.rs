@@ -1,6 +1,5 @@
 crate::ix!();
 
-///-------------------
 pub struct ExtKey {
     n_depth:         u8,
     vch_fingerprint: [u8; 4],
@@ -99,4 +98,3 @@ impl ExtKey {
         */
     }
 }
-

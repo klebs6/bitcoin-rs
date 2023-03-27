@@ -63,8 +63,6 @@ pub(crate) use bitcoinwallet_feature::*;
 pub(crate) use bitcoinwallet_context::*;
 pub(crate) use bitcoinwallet_interface::*;
 pub(crate) use bitcoinwallet_client::*;
-pub(crate) use bitcoin_keypool::*;
-pub(crate) use bitcoin_keymetadata::*;
 pub(crate) use bitcoin_db::*;
 pub(crate) use bitcoin_blockfilter::*;
 pub(crate) use bitcoin_muhash::*;

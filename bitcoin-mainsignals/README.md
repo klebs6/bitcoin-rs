@@ -1,0 +1,154 @@
+# `bitcoin-mainsignals`
+
+The `bitcoin-mainsignals` crate is a Rust
+translation of the `mainsignals` module of the
+Bitcoin codebase, responsible for signaling events
+and calling registered callbacks when specific
+actions occur within the Bitcoin system.
+
+This crate provides the `MainSignalsInstance`
+struct, which represents an instance of the
+`MainSignals` class in the Bitcoin system. The
+`MainSignalsInstance` struct is used to register
+and unregister callbacks for various events, such
+as the addition or removal of transactions from
+the memory pool, or the connection or
+disconnection of a new block to the blockchain.
+
+The `MainSignalsInstance` struct also provides
+functions for iterating over all currently
+registered callbacks, and for clearing all
+currently registered callbacks.
+
+Additionally, the `MainSignalsInstance` struct
+provides functions for registering and
+unregistering background signal schedulers, which
+are responsible for periodically calling certain
+registered callbacks.
+
+Note that this crate is part of a direct
+translation of the Bitcoin codebase from C++ to
+Rust, and some function bodies may still be in the
+process of being translated.
+
+In the Bitcoin system, the `MainSignals` module is
+an important part of the overall event signaling
+and callback system. Its proper use and
+integration is critical to the correct functioning
+of the system.
+
+98> which callbacks do we register in the bitcoin
+system?
+
+In the context of the `bitcoin-mainsignals` crate,
+callbacks can be registered for various events
+that occur in the Bitcoin system. Some of these
+include:
+
+- `block_checked`: Called when a block has been
+  checked for validity.
+
+- `block_connected`: Called when a block has been
+  connected to the blockchain.
+
+- `block_disconnected`: Called when a block has
+  been disconnected from the blockchain.
+
+- `chain_state_flushed`: Called when the chain
+  state has been flushed to disk.
+
+- `transaction_added_to_mempool`: Called when
+  a transaction has been added to the mempool.
+
+- `transaction_removed_from_mempool`: Called when
+  a transaction has been removed from the mempool.
+
+- `updated_block_tip`: Called when the block tip
+  of the blockchain has been updated.
+
+These callbacks can be used to perform additional
+actions or trigger other events based on these
+system events.
+
+99> what is a signal scheduler and how does it
+work?
+
+In the context of the Bitcoin system, a signal
+scheduler is responsible for executing callbacks
+in response to specific signals. It is essentially
+a mechanism for asynchronous event handling.
+
+When a signal is triggered, the signal scheduler
+identifies any callbacks that have been registered
+for that particular signal and adds them to a list
+of pending callbacks. The scheduler then executes
+each callback in turn, passing along any relevant
+data as arguments.
+
+The signal scheduler in Bitcoin uses a background
+thread to execute callbacks, which allows the main
+thread to continue processing other tasks without
+being blocked. The background thread waits for
+pending callbacks to be added to the list and then
+executes them in the order they were added.
+
+In addition to registering callbacks for specific
+signals, it is also possible to register
+a background signal scheduler. This scheduler will
+execute callbacks on a separate thread, allowing
+the main thread to continue processing other tasks
+without being blocked.
+
+100> thanks -- are there other event callbacks we
+are interested in?
+
+Yes, there are other event callbacks that we might
+be interested in. Some examples include:
+
+- `transaction_added_to_mempool`: This event is
+  triggered when a new transaction is added to the
+  mempool.
+
+- `transaction_removed_from_mempool`: This event
+  is triggered when a transaction is removed from
+  the mempool.
+
+- `block_connected`: This event is triggered when
+  a new block is connected to the main chain.
+
+- `block_disconnected`: This event is triggered
+  when a block is disconnected from the main
+  chain.
+
+- `block_checked`: This event is triggered when
+  a block is checked for validity.
+
+- `updated_block_tip`: This event is triggered
+  when the current block tip is updated.
+
+- `chain_state_flushed`: This event is triggered
+  when the chain state is flushed to disk.
+
+These events allow us to keep track of important
+changes in the bitcoin system and to perform
+certain actions in response to those changes.
+
+101> is there a difference between a signal and an
+event?
+
+In the context of the Bitcoin system, the terms
+"signal" and "event" are often used
+interchangeably. They both refer to a notification
+that something has happened or is about to happen
+within the Bitcoin software, and provide a way for
+external code to respond to those changes.
+
+However, in general programming terminology, there
+can be some differences between signals and
+events. In some systems, a signal refers to a type
+of interrupt or notification that is generated by
+the operating system, while an event is
+a notification that is generated by a specific
+application or program. However, this distinction
+is not always consistent across different systems
+or programming languages.

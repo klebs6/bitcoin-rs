@@ -88,12 +88,6 @@ version = "0.1.14-alpha.0"
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
 version = "0.1.14-alpha.0"
-[dependencies.bitcoin-keymetadata]
-path = "../bitcoin-keymetadata"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-keypool]
-path = "../bitcoin-keypool"
-version = "0.1.14-alpha.0"
 [dependencies.bitcoin-log]
 path = "../bitcoin-log"
 version = "0.1.13-alpha.0"

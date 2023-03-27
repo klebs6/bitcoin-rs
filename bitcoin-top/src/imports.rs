@@ -75,5 +75,4 @@ pub(crate) use bitcoin_asmap::*;
 pub(crate) use bitcoin_checkqueue::*;
 pub(crate) use bitcoin_deployment::*;
 pub(crate) use bitcoin_portmap::*;
-pub(crate) use bitcoin_hdkeypath::*;
 
