@@ -8,6 +8,7 @@ x!{cleanse}
 x!{events}
 x!{lockedpool}
 x!{getuniquepath}
+x!{system}
 
 pub struct Signal<T> { p: std::marker::PhantomData<T> }
 
