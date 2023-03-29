@@ -1,7 +1,5 @@
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/helpers/memenv/memenv_test.cc]
 
 struct MemEnvTest {
