@@ -47,11 +47,9 @@ pub fn repairdb(
         dbname:  &String,
         options: &Options) -> crate::Status {
     
-    todo!();
-        /*
-            Repairer repairer(dbname, options);
-      return repairer.Run();
-        */
+    let repairer: Repairer = Repairer::new(dbname, options);
+
+    repairer.run()
 }
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/repair.cc]
@@ -122,15 +120,20 @@ impl Repairer {
     }
     
     pub fn run(&mut self) -> crate::Status {
+
+        let mut status: Status = find_files();
+
+        if status.ok() {
+
+            convert_log_files_to_tables();
+
+            extract_meta_data();
+
+            status = write_descriptor();
+        }
         
         todo!();
         /*
-            Status status = FindFiles();
-        if (status.ok()) {
-          ConvertLogFilesToTables();
-          ExtractMetaData();
-          status = WriteDescriptor();
-        }
         if (status.ok()) {
           unsigned long long bytes = 0;
           for (size_t i = 0; i < tables_.size(); i++) {
