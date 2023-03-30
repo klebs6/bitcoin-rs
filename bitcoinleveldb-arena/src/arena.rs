@@ -32,6 +32,7 @@ pub struct Arena {
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/arena.cc]
 impl Drop for Arena {
+
     fn drop(&mut self) {
         todo!();
         /*

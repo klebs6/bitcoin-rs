@@ -1,6 +1,3 @@
-hello! the following is from the bitcoinchain-notifications crate.
-could you please write me a readme for it? thanks!
-
 crate::ix!();
 
 /**

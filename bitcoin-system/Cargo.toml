@@ -1,221 +1,30 @@
-[build-dependencies.bitcoin-cfg]
-path = "../bitcoin-cfg"
-version = "0.1.13-alpha.0"
-[dependencies.atomic]
-version = "0.5.1"
-[dependencies.bitcoin-addrman]
-path = "../bitcoin-addrman"
-version = "0.1.14-alpha.0"
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
 version = "0.1.14-alpha.0"
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
 version = "0.1.14-alpha.0"
-[dependencies.bitcoin-asmap]
-path = "../bitcoin-asmap"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-banman]
-path = "../bitcoin-banman"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-base58]
-path = "../bitcoin-base58"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-bech32m]
-path = "../bitcoin-bech32m"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-bench]
-path = "../bitcoin-bench"
-version = "0.1.14-alpha.0"
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-blockfilter]
-path = "../bitcoin-blockfilter"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-bloom]
-path = "../bitcoin-bloom"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-chain-consensus]
-path = "../bitcoin-chain-consensus"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-chainman]
-path = "../bitcoin-chainman"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-checkqueue]
-path = "../bitcoin-checkqueue"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-cli]
-path = "../bitcoin-cli"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-client-ui]
-path = "../bitcoin-client-ui"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-compat]
-path = "../bitcoin-compat"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-compressor]
-path = "../bitcoin-compressor"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-connman]
-path = "../bitcoin-connman"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-crc32c]
-path = "../bitcoin-crc32c"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-cuckoo-cache]
-path = "../bitcoin-cuckoo-cache"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-daemon]
-path = "../bitcoin-daemon"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-db]
-path = "../bitcoin-db"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-deployment]
-path = "../bitcoin-deployment"
 version = "0.1.14-alpha.0"
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.13-alpha.0"
-[dependencies.bitcoin-epoch]
-path = "../bitcoin-epoch"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-fees]
-path = "../bitcoin-fees"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-fuzz]
-path = "../bitcoin-fuzz"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-golombrice]
-path = "../bitcoin-golombrice"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-hash]
-path = "../bitcoin-hash"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-http]
-path = "../bitcoin-http"
-version = "0.1.14-alpha.0"
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
 version = "0.1.13-alpha.0"
-[dependencies.bitcoin-index]
-path = "../bitcoin-index"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-indexed-chain]
-path = "../bitcoin-indexed-chain"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-indirectmap]
-path = "../bitcoin-indirectmap"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-init]
-path = "../bitcoin-init"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-ipc]
-path = "../bitcoin-ipc"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-key]
-path = "../bitcoin-key"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-leveldb]
-path = "../bitcoin-leveldb"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-log]
-path = "../bitcoin-log"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-merkle]
-path = "../bitcoin-merkle"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-message]
-path = "../bitcoin-message"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-miner]
-path = "../bitcoin-miner"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-net]
-path = "../bitcoin-net"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-net-zmq]
-path = "../bitcoin-net-zmq"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-node]
-path = "../bitcoin-node"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-noui]
-path = "../bitcoin-noui"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-peerman]
-path = "../bitcoin-peerman"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-portmap]
-path = "../bitcoin-portmap"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-pow]
-path = "../bitcoin-pow"
-version = "0.1.14-alpha.0"
 [dependencies.bitcoin-primitives]
 path = "../bitcoin-primitives"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-psbt]
-path = "../bitcoin-psbt"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-qt]
-path = "../bitcoin-qt"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-random]
-path = "../bitcoin-random"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-remote]
-path = "../bitcoin-remote"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-restapi]
-path = "../bitcoin-restapi"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-scheduler]
-path = "../bitcoin-scheduler"
 version = "0.1.13-alpha.0"
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
 version = "0.1.14-alpha.0"
-[dependencies.bitcoin-secp256k1]
-path = "../bitcoin-secp256k1"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-serialize]
-path = "../bitcoin-serialize"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-service-flags]
-path = "../bitcoin-service-flags"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-settings]
-path = "../bitcoin-settings"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-signet]
-path = "../bitcoin-signet"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-signingprovider]
-path = "../bitcoin-signingprovider"
-version = "0.1.14-alpha.0"
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
-version = "0.1.14-alpha.0"
-[dependencies.bitcoin-support]
-path = "../bitcoin-support"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-sync]
-path = "../bitcoin-sync"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-test]
-path = "../bitcoin-test"
 version = "0.1.14-alpha.0"
 [dependencies.bitcoin-time]
 path = "../bitcoin-time"
 version = "0.1.13-alpha.0"
-[dependencies.bitcoin-tokenpipe]
-path = "../bitcoin-tokenpipe"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoin-tor]
-path = "../bitcoin-tor"
-version = "0.1.14-alpha.0"
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
 version = "0.1.14-alpha.0"
@@ -225,31 +34,13 @@ version = "0.1.14-alpha.0"
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
 version = "0.1.13-alpha.0"
-[dependencies.bitcoin-version]
-path = "../bitcoin-version"
-version = "0.1.13-alpha.0"
-[dependencies.bitcoinrpc-util]
-path = "../bitcoinrpc-util"
-version = "0.1.14-alpha.0"
-[dependencies.lazy_static]
-version = "1.4.0"
-[dependencies.libc]
-version = "0.2.126"
-[dependencies.maplit]
-version = "1.0.2"
-[dependencies.modular-bitfield]
-version = "0.11.2"
-[dependencies.parking_lot]
-version = "0.12.1"
-[dependencies.static_assertions]
-version = "1.1.0"
 [package]
 authors = [ "klebs <none>" ]
-description = "this exposes the rest of the bitcoin crate ecosystem"
-documentation = "https://docs.rs/bitcoin-top"
+description = "system-level utilities"
+documentation = "https://docs.rs/bitcoin-system"
 edition = "2021"
 license = "MIT"
-name = "bitcoin-top"
+name = "bitcoin-system"
 readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.14-alpha.0"

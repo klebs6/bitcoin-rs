@@ -1064,14 +1064,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bitcoin-hdkeypath"
-version = "0.1.13-alpha.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
-]
-
-[[package]]
 name = "bitcoin-http"
 version = "0.1.14-alpha.0"
 dependencies = [
@@ -1210,8 +1202,6 @@ dependencies = [
  "bitcoin-imports",
  "bitcoin-index",
  "bitcoin-key",
- "bitcoin-keymetadata",
- "bitcoin-keypool",
  "bitcoin-log",
  "bitcoin-mem",
  "bitcoin-merkle",
@@ -1321,24 +1311,6 @@ dependencies = [
  "bitcoin-support",
  "bitcoin-univalue",
  "bitcoinleveldb-table",
-]
-
-[[package]]
-name = "bitcoin-keymetadata"
-version = "0.1.14-alpha.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoin-key",
-]
-
-[[package]]
-name = "bitcoin-keypool"
-version = "0.1.14-alpha.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoin-key",
 ]
 
 [[package]]
@@ -1959,8 +1931,6 @@ dependencies = [
  "bitcoin-hdchain",
  "bitcoin-imports",
  "bitcoin-key",
- "bitcoin-keymetadata",
- "bitcoin-keypool",
  "bitcoin-primitives",
  "bitcoin-psbt",
  "bitcoin-scripting",
@@ -2312,7 +2282,6 @@ dependencies = [
  "bitcoin-fuzz",
  "bitcoin-golombrice",
  "bitcoin-hash",
- "bitcoin-hdkeypath",
  "bitcoin-http",
  "bitcoin-imports",
  "bitcoin-index",
@@ -2350,7 +2319,6 @@ dependencies = [
  "bitcoin-string",
  "bitcoin-support",
  "bitcoin-sync",
- "bitcoin-system",
  "bitcoin-test",
  "bitcoin-time",
  "bitcoin-tokenpipe",
@@ -3547,8 +3515,6 @@ dependencies = [
  "bitcoin-hdchain",
  "bitcoin-imports",
  "bitcoin-key",
- "bitcoin-keymetadata",
- "bitcoin-keypool",
  "bitcoin-net",
  "bitcoin-network",
  "bitcoin-primitives",

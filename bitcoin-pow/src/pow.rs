@@ -1,5 +1,3 @@
-hello! could you teach me how this crate works?
-
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/pow.h]

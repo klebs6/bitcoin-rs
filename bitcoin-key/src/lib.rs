@@ -3,8 +3,9 @@
 #[macro_use] mod imports; use imports::*;
 
 x!{extkey}
-x!{keyorigin}
 x!{key}
+x!{keyorigin}
+x!{keypool}
 x!{meta}
 x!{privkey}
-x!{keypool}
+x!{pubkey}

@@ -1,5 +1,3 @@
-this is the source file for Service:
-
 crate::ix!();
 
 /**
