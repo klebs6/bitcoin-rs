@@ -29,7 +29,6 @@ documentation = "https://docs.rs/bitcoin-key"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-key"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

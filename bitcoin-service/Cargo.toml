@@ -23,7 +23,6 @@ documentation = "https://docs.rs/bitcoin-service"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-service"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

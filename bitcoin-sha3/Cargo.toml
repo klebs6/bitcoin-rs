@@ -9,12 +9,11 @@ path = "../bitcoin-imports"
 version = "0.1.15-alpha.0"
 [package]
 authors = [ "klebs <none>" ]
-description = "(from wikipedia) Although part of the same series of standards, SHA-3 (Keccak) is internally different from the MD5-like structure of SHA-1 and SHA-2. -- Keccak is based on a novel approach called sponge construction. Sponge construction is based on a wide random function or random permutation, and allows inputting (`absorbing` in sponge terminology) any amount of data, and outputting (`squeezing`) any amount of data, while acting as a pseudorandom function with regard to all previous inputs. This leads to great flexibility."
+description = "Although part of the same series of standards, SHA-3 (Keccak) is internally different from the MD5-like structure of SHA-1 and SHA-2. -- Keccak is based on a novel approach called sponge construction. Sponge construction is based on a wide random function or random permutation, and allows inputting (`absorbing` in sponge terminology) any amount of data, and outputting (`squeezing`) any amount of data, while acting as a pseudorandom function with regard to all previous inputs. This leads to great flexibility. (from wikipedia)"
 documentation = "https://docs.rs/bitcoin-sha3"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-sha3"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

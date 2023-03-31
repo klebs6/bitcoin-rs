@@ -12,12 +12,11 @@ path = "../bitcoin-primitives"
 version = "0.1.15-alpha.0"
 [package]
 authors = [ "klebs <none>" ]
-description = "(from wikipedia) Although designed for use as a hash function to ensure security, SipHash is fundamentally different from cryptographic hash functions like SHA in that it is only suitable as a message authentication code: a keyed hash function like HMAC. That is, SHA is designed so that it is difficult for an attacker to find two messages X and Y such that SHA(X) = SHA(Y), even though anyone may compute SHA(X). SipHash instead guarantees that, having seen Xi and SipHash(Xi, k), an attacker who does not know the key k cannot find (any information about) k or SipHash(Y, k) for any message Y ∉ {Xi} which they have not seen before."
+description = "Although designed for use as a hash function to ensure security, SipHash is fundamentally different from cryptographic hash functions like SHA in that it is only suitable as a message authentication code: a keyed hash function like HMAC. That is, SHA is designed so that it is difficult for an attacker to find two messages X and Y such that SHA(X) = SHA(Y), even though anyone may compute SHA(X). SipHash instead guarantees that, having seen Xi and SipHash(Xi, k), an attacker who does not know the key k cannot find (any information about) k or SipHash(Y, k) for any message Y ∉ {Xi} which they have not seen before. (from wikipedia)"
 documentation = "https://docs.rs/bitcoin-siphash"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-siphash"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

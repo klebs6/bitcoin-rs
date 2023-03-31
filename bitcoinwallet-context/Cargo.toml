@@ -20,7 +20,6 @@ documentation = "https://docs.rs/bitcoinwallet-context"
 edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-context"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

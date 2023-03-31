@@ -14,7 +14,6 @@ documentation = "https://docs.rs/bitcoinwallet-feature"
 edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-feature"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

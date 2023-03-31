@@ -14,7 +14,6 @@ documentation = "https://docs.rs/bitcoinchain-client"
 edition = "2021"
 license = "MIT"
 name = "bitcoinchain-client"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

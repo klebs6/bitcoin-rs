@@ -36,7 +36,6 @@ documentation = "https://docs.rs/bitcoin-db"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-db"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

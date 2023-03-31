@@ -14,7 +14,6 @@ documentation = "https://docs.rs/bitcoinleveldb-cfg"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-cfg"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

@@ -35,7 +35,6 @@ documentation = "https://docs.rs/bitcoinnode-stats"
 edition = "2021"
 license = "MIT"
 name = "bitcoinnode-stats"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

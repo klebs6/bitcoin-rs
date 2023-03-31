@@ -38,7 +38,6 @@ documentation = "https://docs.rs/bitcoinwallet-fees"
 edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-fees"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

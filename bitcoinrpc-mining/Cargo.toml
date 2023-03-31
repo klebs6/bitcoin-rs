@@ -53,7 +53,6 @@ documentation = "https://docs.rs/bitcoinrpc-mining"
 edition = "2021"
 license = "MIT"
 name = "bitcoinrpc-mining"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]

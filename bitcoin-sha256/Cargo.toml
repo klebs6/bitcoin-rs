@@ -17,12 +17,11 @@ version = "1.0.152"
 version = "0.4.1"
 [package]
 authors = [ "klebs <none>" ]
-description = "(from wikipedia) SHA-256 and SHA-512 are novel hash functions computed with eight 32-bit and 64-bit words, respectively. They use different shift amounts and additive constants, but their structures are otherwise virtually identical, differing only in the number of rounds."
+description = "SHA-256 and SHA-512 are novel hash functions computed with eight 32-bit and 64-bit words, respectively. They use different shift amounts and additive constants, but their structures are otherwise virtually identical, differing only in the number of rounds. (from wikipedia)"
 documentation = "https://docs.rs/bitcoin-sha256"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-sha256"
-readme = "../README"
 repository = "https://github.com/klebz/bitcoin-rs"
 version = "0.1.15-alpha.0"
 [package.metadata]
