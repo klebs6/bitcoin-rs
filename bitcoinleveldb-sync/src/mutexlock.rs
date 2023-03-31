@@ -17,8 +17,6 @@
 
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/mutexlock.h]
 
 #[SCOPED_LOCKABLE]

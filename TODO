@@ -6,17 +6,8 @@ translation project is as follows:
 
 (see note in the file `CHOMPER`)
 
-It is likely the best way to translate each crate
-is on a separate branch, merging back in to main
-once the crate is fully filled in. 
-
-It is in this respect that I consider the
-translation to be parallelized: the working
-branches for each crate translation may all exist
-simultaneously.
-
 --------------------------
-2) merge all translated crate branches
+2) merge results of #1 if necessary
 
 It may be that certain functions/structures will
 need to get moved around some (though probably not
@@ -24,10 +15,9 @@ very much)
 
 It may be that certain inter-crate dependencies
 will emerge as the `todo` blocks of commented c++
-code are uncommented. This is natural and
-expected.  
+code are uncommented. This is expected.  
 
-3) translate all tests and benchmarks
+3) translate tests + benchmarks
 
 4) pass full test suite
 
