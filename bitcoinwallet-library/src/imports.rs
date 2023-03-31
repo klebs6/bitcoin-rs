@@ -1,4 +1,3 @@
-
 pub(crate) use bitcoin_amt::*;
 pub(crate) use bitcoin_argsman::*;
 pub(crate) use bitcoin_block::*;
@@ -27,4 +26,3 @@ pub(crate) use bitcoinchain_notifications::*;
 pub(crate) use bitcoinwallet_context::*;
 pub(crate) use bitcoinwallet_feature::*;
 pub(crate) use bitcoinwallet_interface::*;
-
