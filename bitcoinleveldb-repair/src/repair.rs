@@ -47,9 +47,13 @@ pub fn repairdb(
         dbname:  &String,
         options: &Options) -> crate::Status {
     
+    todo!();
+
+    /*
     let repairer: Repairer = Repairer::new(dbname, options);
 
     repairer.run()
+    */
 }
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/repair.cc]
@@ -121,6 +125,8 @@ impl Repairer {
     
     pub fn run(&mut self) -> crate::Status {
 
+        todo!();
+        /*
         let mut status: Status = find_files();
 
         if status.ok() {
@@ -131,6 +137,7 @@ impl Repairer {
 
             status = write_descriptor();
         }
+        */
         
         todo!();
         /*
