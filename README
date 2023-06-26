@@ -1,20 +1,42 @@
-This workspace is in the process of being
-translated from C++ to Rust, and some function
-bodies might still be in the process of
-translation.
+Greetings!
 
-After it is finished, it will match commit
-ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the
-c++ codebase.
+This workspace is in the process of being translated from C++ to Rust. 
+Some function bodies are still in the process of translation. 
+As such, this codebase is not yet ready for production use.  
+However, it is still ready for experimentation and development collaboration.
 
-I am grateful for any support.
+After each function body is translated, this codebase will match commit
+ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the C++ upstream.  
 
-I wrote a transpiler which can translate c++
-statements into rust, and don't mind letting it do
-most of the heavy lifting.
+Once we have a match of ab25ef8c, we can iteratively patch until we match the C++ HEAD.
 
-Once it is done translating, we will battle test
-the whole codebase and optimize it for ease of use.
+I think there is a way to distribute the C++ commit patches into the rust workspace crates here such that we get a single patch chain for each crate.
+This way, our patching process becomes much less complex than if we tried to apply the whole patch chain globally.
+
+I think that ultimately, what we want to do here is fully match the C++ core in a modular, high performance, easy to use rust workspace. 
+
+If this goal resonates with you, I am grateful for your support :) This can be in the form of development, testing, and/or feedback.
+
+I am happy to take pull requests completing (and testing) the translation of one or more of these crates.
+I am also happy to transfer crates.io ownership of any crate whose translation arrives in this way as a pull request from another developer in the community 
+(The goal being to increase the distributed nature of project development).
+
+I make no claim to the "ownership" of these crates, and am in fact happiest if the development of each grows to become fully distributed.
+
+I wrote a prototype C++ to rust transpiler which can translate C++ statements into rust. I don't mind letting it do most of the heavy lifting. 
+However, I have identified the fact that it needs a performance upgrade in order to be practical.
+
+Currently, the prototype transpiler is written in Raku.  
+It evolved out of a set of text filters I had been using to facilitate scaffolding C++ to Rust translation projects.
+As a prototype, it is *decent*, but it needs to be faster.
+
+The goal is to rewrite the transpiler in *Rust*, so that it can achieve these performance goals as well as integrate with the other rust-ecosystem compiler components.
+
+Please note: before executing this transpiler productionization, there are a few related, but also some unrelated items I must to attend to. 
+It will be a few months at least before I am ready to get back to it.
+So, this is the reason the project seems stalled.  If anybody else is interested in collaborating in the meantime, I can provide support and help get it *un-stalled*.
+
+I am looking forward to collectively battle testing this thing so that we can all work with bitcoin together in rust.
 
 best,
 
