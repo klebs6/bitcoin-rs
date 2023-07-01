@@ -26,8 +26,8 @@ I am happiest if the development of each crate provided here grows to become ful
 I wrote a prototype C++ to rust transpiler which can translate C++ statements into rust. I don't mind letting it do most of the heavy lifting. 
 However, it needs a performance upgrade in order to be practical.
 
-There are several auxiliary items I must attend before providing this performance upgrade.
-It will be a few months at least before I am ready to get back to it.
+There are auxiliary items I must attend before providing this performance upgrade.
+It will be a few months at least before I get back to it.
 
 If there are developers out there who are interested in collaborating in the meantime, I am happy to provide support and facilitate this endeavor.
 
