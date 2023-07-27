@@ -19,10 +19,10 @@ The goal is to fully match the C++ core in a modular, high performance rust work
 
 If this goal resonates with you, the writer is grateful for support accelerating the translation and testing. 
 
-One purpose of the writer in this message is to indicate that the translation task is now fully parallelized.  
-Even before the c++ to rust transpiler is finished (see below), we can attack this codebase in parallel if we work together.
+One purpose of the writer in this message is to indicate the translation task is now fully parallelized.  
+Even before the c++ to rust transpiler is finished (see below), we can whack machete this codebase in parallel.
 
-If this starts to happen, I will likely pause whatever else I am working on so that I can resume cranking this project alongside you.
+If this starts to happen, I will pause whatever else I am working on to resume cranking this project alongside you, whoever comes along with the machetes.
 
 Here are some things which are helpful:
 - pull requests completing (and testing) the translation of one or more of these crates.
@@ -33,7 +33,7 @@ The writer has prototyped a C++ to Rust transpiler which can translate C++ state
 Once this transpiler is productionized, it will become possible for it to perform most of the heavy lifting involved in translating this codebase automatically.
 
 The transpiler needs a performance upgrade in order to become practical for this purpose.
-The writer has some stuff to do for a few months.  Then he will be back to help.
+The writer has auxiliary tasks to complete.  In a few months, he will be back to help.
 
 If there are developers out there who are interested in collaborating in the meantime, support will be provided.
 
