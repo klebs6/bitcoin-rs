@@ -1,7 +1,5 @@
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/test/bip32_tests.cpp]
 
 pub struct TestDerivation {

@@ -1,7 +1,5 @@
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/test/base58_tests.cpp]
 
 pub fn read_json(jsondata: &String) -> UniValue {

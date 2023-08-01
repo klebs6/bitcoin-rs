@@ -1,7 +1,5 @@
 crate::ix!();
 
-
-
 /**
    | Read the hardware time stamp counter when
    | available.

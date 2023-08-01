@@ -1,7 +1,5 @@
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/test/blockencodings_tests.cpp]
 
 lazy_static!{
@@ -442,3 +440,4 @@ pub mod blockencodings_tests {
         */
     }
 }
+

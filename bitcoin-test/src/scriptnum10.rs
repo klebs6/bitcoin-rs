@@ -50,6 +50,7 @@ impl Ord for ScriptNum10 {
 }
 
 impl PartialOrd<i64> for ScriptNum10 {
+
     fn partial_cmp(&self, other: &i64) -> Option<Ordering> {
         Some(self.cmp(&ScriptNum10{ value: other.clone() }))
     }
@@ -68,6 +69,7 @@ impl PartialEq<ScriptNum10> for ScriptNum10 {
 impl Eq for ScriptNum10 {}
 
 impl PartialOrd<ScriptNum10> for ScriptNum10 {
+
     fn partial_cmp(&self, other: &ScriptNum10) -> Option<Ordering> {
         Some(self.cmp(other))
     }
@@ -142,6 +144,7 @@ impl SubAssign<ScriptNum10> for ScriptNum10 {
 }
 
 impl Neg for ScriptNum10 {
+
     type Output = Self;
     
     fn neg(self) -> Self::Output {

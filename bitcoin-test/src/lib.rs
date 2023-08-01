@@ -3,7 +3,6 @@
 x!{test_main}
 x!{db_not_found_error}
 x!{scriptnum10}
-x!{test_addrman}
 x!{test_allocator}
 x!{test_amount}
 x!{test_arith_uint256}
