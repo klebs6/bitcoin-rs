@@ -1,0 +1,94 @@
+hello! 
+
+I am writing a rust crate called bitcoinchain-interface. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+activate_best_chain
+coins_tip
+LocatorType
+broadcast_transaction
+check_chain_limits
+check_final_tx
+contains
+estimate_max_blocks
+estimate_smart_fee
+find_coins
+find_locator_fork
+get_adjusted_time
+get_block_hash
+get_locator
+get_package_limits
+get_rw_setting
+get_setting
+get_settings_list
+get_tip_locator
+get_transaction_ancestry
+guess_verification_progress
+handle_notifications
+handle_rpc
+has_blocks
+has_descendants_in_mempool
+have_block_on_disk
+have_pruned
+height
+init_error
+init_message
+init_warning
+is_in_mempool
+is_ready_to_broadcast
+is_taproot_active
+mempool_min_fee
+next
+relay_dust_fee
+relay_incremental_fee
+relay_min_fee
+request_mempool_transactions
+rpc_enable_deprecated
+rpc_run_later
+rpc_serialization_flags
+show_progress
+shutdown_requested
+tip
+update_rw_setting
+wait_for_notifications_if_tip_changed

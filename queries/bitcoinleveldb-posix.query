@@ -1,0 +1,118 @@
+hello! 
+
+I am writing a rust crate called bitcoinleveldb-posix. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+BackgroundWork
+BackgroundWorkItem
+Inner
+PosixDefaultEnv
+PosixEnv
+PosixFileLock
+PosixLockTable
+PosixMmapReadableFile
+PosixRandomAccessFile
+PosixSequentialFile
+PosixWritableFile
+SingletonEnv
+append
+assert_env_not_initialized
+background_thread_entry_point
+background_thread_main
+basename
+close
+create_dir
+default
+delete_dir
+delete_file
+dirname
+drop
+env
+fd
+file_exists
+filename
+flush
+flush_buffer
+get_children
+get_file_size
+get_name
+get_test_directory
+insert
+is_manifest
+lock_file
+lock_or_unlock
+max_mmaps
+max_open_files
+now_micros
+posix_error
+read
+remove
+rename_file
+schedule
+skip
+sleep_for_microseconds
+start_thread
+sync
+sync_dir_if_manifest
+sync_fd
+unlock_file
+write_unbuffered
+EnvPosixTest
+EnvPosixTestHelper
+check_close_on_exec_does_not_leak_fds
+default
+env_posix_test_close_on_exec_appendable_file
+env_posix_test_close_on_exec_lock_file
+env_posix_test_close_on_exec_logger
+env_posix_test_close_on_exec_random_access_file
+env_posix_test_close_on_exec_sequential_file
+env_posix_test_close_on_exec_writable_file
+env_posix_test_open_on_read
+get_max_file_descriptor
+get_open_file_descriptors
+set_file_limits
+set_read_only_fd_limit
+set_read_only_mmap_limit
+test_close_on_exec_helper_main
+testenv_posix_test_main

@@ -1,0 +1,241 @@
+hello! 
+
+I am writing a rust crate called bitcoin-secp256k1. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+context_preallocated_destroy
+run_tests
+secp256k1_valgrind_ctime_test_main
+testrand256
+testrand256_test
+testrand32
+testrand_bits
+testrand_bytes_test
+testrand_finish
+testrand_flip
+testrand_init
+testrand_int
+testrand_seed
+buffer_append
+declassify
+ec_privkey_negate
+ec_privkey_tweak_add
+ec_privkey_tweak_mul
+ec_pubkey_cmp
+ec_pubkey_combine
+ec_pubkey_create
+ec_pubkey_create_helper
+ec_pubkey_negate
+ec_pubkey_parse
+ec_pubkey_serialize
+ec_pubkey_tweak_add
+ec_pubkey_tweak_add_helper
+ec_pubkey_tweak_mul
+ec_seckey_negate
+ec_seckey_tweak_add
+ec_seckey_tweak_add_helper
+ec_seckey_tweak_mul
+ec_seckey_verify
+ecdsa_sign_inner
+is
+nonce_function_rfc6979
+pubkey_load
+pubkey_save
+scratch_space_create
+scratch_space_destroy
+serialization
+tagged_sha256
+EcMultMultiData
+assign_big_endian
+bytes
+check_fe_equal
+checking
+coprime
+counting_illegal_callback_fn
+damage_array
+ec_pubkey_parse_pointtest
+ecdsa_sig_get0
+ecmult_const_chain_multiply
+ecmult_const_commutativity
+ecmult_const_mult_zero_one
+ecmult_const_random_mult
+ecmult_multi_callback
+ecmult_multi_false_callback
+fe_cmov_test
+fe_memcmp_var
+fe_storage_cmov_test
+ge_equals_ge
+ge_equals_gej
+ge_storage_cmov_test
+gej_xyz_equals_gej
+get_openssl_key
+int_cmov_test
+is
+is_empty_signature
+modinv2p64
+mulmod256
+mutate_sign_signed30
+mutate_sign_signed62
+nonce_function_test_fail
+nonce_function_test_retry
+of
+precomputed_nonce_function
+random_ber_signature
+random_fe
+random_fe_non_square
+random_fe_non_zero
+random_fe_test
+random_field_element_magnitude
+random_field_element_test
+random_group_element_jacobian_test
+random_group_element_test
+random_scalar_order
+random_scalar_order_b32
+random_scalar_order_test
+random_sign
+run_cmov_tests
+run_context_tests
+run_ctz_tests
+run_ec_combine
+run_ec_pubkey_parse_test
+run_ecdsa_der_parse
+run_ecdsa_edge_cases
+run_ecdsa_end_to_end
+run_ecdsa_openssl
+run_ecdsa_sign_verify
+run_eckey_edge_case_test
+run_eckey_negate_test
+run_ecmult_chain
+run_ecmult_const_tests
+run_ecmult_constants
+run_ecmult_gen_blind
+run_ecmult_multi_tests
+run_ecmult_near_split_bound
+run_endomorphism_tests
+run_fe_mul
+run_field_convert
+run_field_misc
+run_ge
+run_group_decompress
+run_hmac_sha256_tests
+run_inverse_tests
+run_memczero_test
+run_modinv_tests
+run_point_times_order
+run_pubkey_comparison
+run_rand_bits
+run_rand_int
+run_random_pubkeys
+run_rfc6979_hmac_sha256_tests
+run_scalar_set_b32_seckey_tests
+run_scalar_tests
+run_scratch_tests
+run_sha256_tests
+run_sqr
+run_sqrt
+run_tagged_sha256_tests
+run_wnaf
+scalar_cmov_test
+scalar_test
+secp256k1_tests_main
+signed30_to_uint16
+signed62_to_uint16
+test_add_neg_y_diff_x
+test_constant_wnaf
+test_constant_wnaf_negate
+test_ec_combine
+test_ecdsa_der_parse
+test_ecdsa_edge_cases
+test_ecdsa_end_to_end
+test_ecdsa_openssl
+test_ecdsa_sign_verify
+test_ecmult_constants
+test_ecmult_gen_blind
+test_ecmult_gen_blind_reset
+test_ecmult_multi
+test_ecmult_multi_batch_single
+test_ecmult_multi_batch_size_helper
+test_ecmult_multi_batching
+test_ecmult_multi_pippenger_max_points
+test_fe_mul
+test_fixed_wnaf
+test_fixed_wnaf_small
+test_fixed_wnaf_small_helper
+test_ge
+test_group_decompress
+test_intialized_inf
+test_inverse_field
+test_inverse_scalar
+test_modinv32_uint16
+test_modinv64_uint16
+test_pippenger_bucket_window_inv
+test_point_times_order
+test_rand_bits
+test_rand_int
+test_random_pubkeys
+test_scalar_split
+test_sqrt
+test_wnaf
+uint16_to_signed30
+uint16_to_signed62
+uncounting_illegal_callback_fn
+EcMultMultiData
+ecmult_multi_callback
+ge_equals_ge
+ge_equals_gej
+nonce_function_smallint
+r_from_k
+random_fe
+secp256k1_tests_exhaustive_main
+skip_section
+test_exhaustive_addition
+test_exhaustive_ecmult
+test_exhaustive_ecmult_multi
+test_exhaustive_endomorphism
+test_exhaustive_sign
+test_exhaustive_verify
+default_error_callback_fn
+secp256k1_gen_context_main
+secp_256k1_selftest
+secp_256k1_selftest_sha256

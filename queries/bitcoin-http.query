@@ -1,0 +1,106 @@
+hello! 
+
+I am writing a rust crate called bitcoin-http. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+HTTPEvent
+HTTPPathHandler
+HTTPRequest
+HTTPRequestHandler
+HTTPWorkItem
+RequestMethod
+WorkQueue
+WorkQueueInner
+client_allowed
+drop
+enqueue
+evbuffer
+event_base
+evhttp
+evkeyvalq
+get_header
+get_peer
+get_request_method
+geturi
+http_bind_addresses
+http_reject_request_cb
+http_request_cb
+http_work_queue_run
+httpevent_callback_fn
+init_http_allow_list
+init_http_server
+interrupt
+interrupt_http_server
+invoke
+libevent_log_cb
+read_body
+register_http_handler
+request_method_string
+run
+start_http_server
+stop_http_server
+threadhttp
+trigger
+unregister_http_handler
+update_http_server_logging
+write_header
+write_reply
+HTTPRPCTimer
+HTTPRPCTimerInterface
+event_base
+get_name
+http_req_jsonrpc
+init_rpc_authentication
+interrupt_http_rpc
+interruptrest
+json_error_reply
+multi_user_authorized
+rpc_authorized
+start_http_rpc
+starthttprpc
+startrest
+stop_http_rpc
+stophttprpc
+stoprest
+timeval

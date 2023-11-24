@@ -1,0 +1,137 @@
+hello! 
+
+I am writing a rust crate called bitcoin-sha256. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+add
+and
+ch
+inc
+k
+maj
+or
+read8
+round
+shl
+shr
+sigma0
+sigma1
+transform_8way
+write8
+xor
+transform
+Sha256
+TransformD64Type
+TransformType
+avx_enabled
+default
+finalize
+my_sigma0
+my_sigma1
+reset
+self_test
+sha256_ch
+sha256_initialize
+sha256_maj
+sha256_round
+sha256_shani_transform
+sha256_sigma0
+sha256_sigma1
+sha256_sse4_transform
+sha256_transform
+sha256_transformd64
+sha256auto_detect
+sha256d64
+sha256d64_avx2_transform_8way
+sha256d64_shani_transform_2way
+sha256d64_sse41_transform_4way
+sha256uint256
+transform_d64wrapper
+write
+write_from_iterator
+CHKDF_HMAC_SHA256_L32
+expand32
+HmacSha256
+Rfc6979HmacSha256
+and
+hmac_sha256_finalize
+hmac_sha256_initialize
+hmac_sha256_write
+rfc6979_hmac_sha256_finalize
+rfc6979_hmac_sha256_generate
+rfc6979_hmac_sha256_initialize
+sha256_finalize
+sha256_initialize
+sha256_initialize_tagged
+sha256_transform
+sha256_write
+add
+and
+ch
+inc
+k
+maj
+or
+read4
+round
+shl
+shr
+sigma0
+sigma1
+transform_4way
+write4
+xor
+HmacSha256
+finalize
+write
+load
+quad_round
+save
+shift_messagea
+shift_messageb
+shift_messagec
+shuffle
+transform
+transform_2way
+unshuffle

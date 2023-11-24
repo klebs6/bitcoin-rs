@@ -1,0 +1,102 @@
+hello! 
+
+I am writing a rust crate called bitcoinleveldb-skiplist. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+SkipList
+SkipListIterator
+SkipListNode
+clone
+contains
+equal
+find_greater_or_equal
+find_last
+find_less_than
+get_max_height
+insert
+key
+key_is_after_node
+next
+no_barrier_next
+no_barrier_set_next
+prev
+random_height
+seek
+seek_to_first
+seek_to_last
+set_next
+valid
+ConcurrentTest
+Inner
+Key
+ReaderState
+SkipTest
+State
+TComparator
+TestState
+change
+concurrent_reader
+default
+gen
+get
+hash
+hash_numbers
+invoke
+is_valid_key
+key
+make_key
+read_step
+run_concurrent
+set
+skip_test_concurrent1
+skip_test_concurrent2
+skip_test_concurrent3
+skip_test_concurrent4
+skip_test_concurrent5
+skip_test_concurrent_without_threads
+skip_test_empty
+skip_test_insert_and_lookup
+skiplist_test_main
+wait
+write_step

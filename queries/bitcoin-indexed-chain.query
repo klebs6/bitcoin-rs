@@ -1,0 +1,276 @@
+hello! 
+
+I am writing a rust crate called bitcoin-indexed-chain. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+notify_header_tip
+DestinationEncoder
+decode_ext_key
+decode_ext_pub_key
+decode_secret
+encode_ext_key
+encode_ext_pub_key
+encode_secret
+from
+invoke_with_no_destination
+invoke_with_pkhash
+invoke_with_scripthash
+invoke_with_witness_unknown
+invoke_with_witnessv0_keyhash
+invoke_with_witnessv0_scripthash
+invoke_with_witnessv1_taproot
+is_valid_destination_string
+parse_hash_str
+parse_hexuv
+parse_sighash_string
+sighash_to_str
+value_from_amount
+expected_assumeutxo
+call_function_in_validation_interface_queue
+register_shared_validation_interface
+register_validation_interface
+sync_with_validation_interface_queue
+unregister_all_validation_interfaces
+unregister_shared_validation_interface
+unregister_validation_interface
+ReentrantMutexPlaceholder
+UniqueLock
+fill_block
+Chain
+LocatorType
+Output
+contains
+find_earliest_at_least
+find_fork
+genesis
+get_locator
+height
+index
+make_chain
+next
+next_sync_block
+set_tip
+tip
+add_wallet_setting
+remove_wallet_setting
+NodeContext
+containing
+unload_block_index
+MerkleTx
+broadcast_transaction
+get_transaction
+handle_atmp_error
+unserialize
+VerifyDB
+default
+drop
+verifydb
+BlockFilterIndexDBHashKey
+BlockFilterIndexDBHeightKey
+BlockFilterIndexDBVal
+CoinStatsIndex
+CoinStatsIndexDBHashKey
+CoinStatsIndexDBHeightKey
+CoinStatsIndexDBVal
+DiskTxPos
+TxIndex
+TxIndexDB
+block_filter_index_copy_height_index_to_hash_index
+coin_stats_index_copy_height_index_to_hash_index
+default
+drop
+find_tx
+get_name
+getdb
+init
+look_up_one
+look_up_stats
+lookup_one
+lookup_range
+read_tx_pos
+reverse_block
+rewind
+serialize
+set_null
+unserialize
+write_block
+write_txs
+create_genesis_block
+prune_block_files_manual
+test_block_validity
+ChainState
+ChainStateInner
+RawReentrantMutex
+accept_block
+activate_best_chain
+activate_best_chain_step
+can_flush_to_disk
+check_block_index
+check_fork_warning_conditions
+coins_error_catcher
+coins_tip
+coinsdb
+connect_block
+connect_tip
+disconnect_block
+disconnect_tip
+find_most_work_chain
+flush_state_to_disk
+force_flush_state_to_disk
+get_coins_cache_size_state
+get_coins_cache_size_state_impl
+height
+init_coins_cache
+init_coinsdb
+invalid_block_found
+invalid_chain_found
+invalidate_block
+is_current_for_fee_estimation
+is_initial_block_download
+load_chain_tip
+load_external_block_file
+load_genesis_block
+load_mempool
+maybe_update_mempool_for_reorg
+mempool_mutex
+needs_redownload
+precious_block
+prune_and_flush
+prune_block_index_candidates
+received_block_transactions
+replay_blocks
+reset_block_failure_flags
+reset_coins_views
+resize_coins_caches
+rollforward_block
+to_string
+unload_block_index
+update_tip
+remove_for_reorg
+CompareNodeNetworkTime
+invoke
+make_node_init
+test_lock_point_validity
+ChainImpl
+broadcast_transaction
+chainman
+check_chain_limits
+check_final_tx
+estimate_max_blocks
+estimate_smart_fee
+find_ancestor_by_hash
+find_ancestor_by_height
+find_block
+find_coins
+find_common_ancestor
+find_first_block_with_time_and_height
+find_locator_fork
+get_adjusted_time
+get_block_hash
+get_height
+get_package_limits
+get_rw_setting
+get_setting
+get_settings_list
+get_tip_locator
+get_transaction_ancestry
+guess_verification_progress
+handle_notifications
+handle_rpc
+has_blocks
+has_descendants_in_mempool
+have_block_on_disk
+have_pruned
+init_error
+init_message
+init_warning
+is_in_mempool
+is_initial_block_download
+is_rbf_opt_in
+is_ready_to_broadcast
+is_taproot_active
+mempool_min_fee
+relay_dust_fee
+relay_incremental_fee
+relay_min_fee
+request_mempool_transactions
+rpc_enable_deprecated
+rpc_run_later
+rpc_serialization_flags
+show_progress
+shutdown_requested
+update_rw_setting
+wait_for_notifications_if_tip_changed
+guess_verification_progress
+load_mempool
+MemPoolAccept
+MemPoolAcceptATMPArgs
+MemPoolAcceptWorkspace
+accept_multiple_transactions
+accept_single_transaction
+check_fee_rate
+consensus_script_checks
+finalize
+from
+policy_script_checks
+pre_checks
+NotificationsHandlerImpl
+NotificationsProxy
+RpcHandlerImpl
+block_connected
+block_disconnected
+chain_state_flushed
+disconnect
+drop
+from
+make_gui_init
+make_wallet_init
+transaction_added_to_mempool
+transaction_removed_from_mempool
+updated_block_tip
+maybe_update_heights
+update_tip_log
+contextual_check_block_header
+DisconnectResult
+FlushStateMode

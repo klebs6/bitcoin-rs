@@ -1,0 +1,157 @@
+hello! 
+
+I am writing a rust crate called bitcoin-bench. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+add_tx
+rpc_mempool
+base_58check_encode
+base_58decode
+base_58encode
+assemble_block
+bench_time_deprecated
+bench_time_millis
+bench_time_millis_sys
+bench_time_mock
+bench_locked_pool
+rolling_bloom
+rolling_bloom_reset
+deserialize_and_check_block_test
+deserialize_block_test
+eviction_protection_0networks_250candidates
+eviction_protection_1networks_250candidates
+eviction_protection_2networks_250candidates
+eviction_protection_3networks_050candidates
+eviction_protection_3networks_100candidates
+eviction_protection_3networks_250candidates
+eviction_protection_common
+wallet_balance
+wallet_balance_clean
+wallet_balance_dirty
+wallet_balance_mine
+wallet_balance_watch
+add_tx
+mempool_eviction
+merkle_root
+coins_caching
+bench_bitcoin_main
+parse_asymptote
+PrevectorJob
+check_queue_speed_prevector_job
+bech_32decode
+bech_32encode
+pre_padded
+regular_padded
+addr_man_add
+addr_man_add_then_good
+addr_man_get_addr
+addr_man_select
+verify_nested_if_script
+verify_script_bench
+TestBlockAndIndex
+block_to_json_verbose
+block_to_json_verbose_write
+default
+CoinSet
+add_coin
+add_coin_with_wallet
+bn_bexhaustion
+coin_selection
+make_hard_case
+Available
+add_tx
+complex_mem_pool
+create_ordered_coins
+mempool_check
+NonTrivial
+Trivial
+default
+prevector_clear
+prevector_deserialize
+prevector_destructor
+prevector_resize
+construct_gcs_filter
+match_gcs_filter
+fast_random_1bit
+fast_random_32bit
+mu_hash
+mu_hash_div
+mu_hash_mul
+mu_hash_precompute
+ripemd160
+sha1
+sha256
+sha256_32b
+sha256d64_1024
+sha3_256_1m
+sha512
+sip_hash_32b
+poly1305
+poly1305_1mb
+poly1305_256bytes
+poly1305_64bytes
+trig
+chacha20
+chacha20_1mb
+chacha20_256bytes
+chacha20_64bytes
+chacha20_poly1305_aead
+chacha20_poly1305_aead_1mb_encrypt_decrypt
+chacha20_poly1305_aead_1mb_only_encrypt
+chacha20_poly1305_aead_256bytes_encrypt_decrypt
+chacha20_poly1305_aead_256bytes_only_encrypt
+chacha20_poly1305_aead_64bytes_encrypt_decrypt
+chacha20_poly1305_aead_64bytes_only_encrypt
+hash
+hash_1mb
+hash_256bytes
+hash_64bytes
+Args
+BenchFunction
+BenchRunner
+BenchmarkMap
+NanoBenchResult
+benchmarks
+generate_template_results
+run_all

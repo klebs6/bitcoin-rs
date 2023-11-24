@@ -1,0 +1,152 @@
+hello! 
+
+I am writing a rust crate called bitcoin-connman. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+wake_message_handler
+notify_num_connections_changed
+find_node_with_addr
+find_node_with_addr_name
+find_node_with_ip
+find_node_with_subnet
+ConnmanCachedAddrResponse
+deserialize_filedb
+read_anchors
+start
+start_extra_block_relay_peers
+socket_send_data
+inactivity_check
+should_run_inactivity_checks
+already_connected_to_address
+connect_node
+Connman
+drop
+subroutine_thread_i2p_accept_incoming
+interrupt
+interrupt_socks5
+n_receive_flood_size
+bind_listen_port
+dump_anchors
+join_threads
+stop
+stop_nodes
+poisson_next_send_inbound
+add_whitelist_permission_flags
+add_connection
+already
+is
+socket_events
+get_addresses
+get_addresses_with_requestor
+subroutine_thread_dns_address_seed
+ConnmanOptions
+default
+open_network_connection
+of
+subroutine_thread_open_connections
+add_node
+delete_node
+remove_added_node
+socket_handler
+subroutine_thread_socket_handler
+get_current_block_relay_only_conns
+get_deterministic_randomizer
+get_extra_block_relay_count
+get_extra_full_outbound_count
+get_local_services
+get_max_outbound_time_left_in_cycle
+get_max_outbound_timeframe
+get_network_active
+get_node_count
+get_node_stats
+get_receive_flood_size
+get_total_bytes_recv
+get_total_bytes_sent
+get_use_addrman_outgoing
+process_addr_fetch
+ConnmanTotalBytesRecv
+ConnmanTotalBytesSent
+default
+ConnmanMsgProc
+subroutine_thread_open_added_connections
+wait_until_wake
+generate_select_set
+ConnmanListenSocket
+add_socket_permission_flags
+set_network_active
+calculate_keyed_net_group
+subroutine_thread_message_handler
+ConnmanAddedNodes
+ConnmanForNodeFn
+ConnmanForNodeFnMut
+ConnmanNodeFn
+ConnmanNodeFnMut
+ConnmanNodes
+for_each_node
+for_each_node_mut
+for_node
+for_node_mut
+node_fully_connected
+init
+ConnmanAddrFetches
+add_addr_fetch
+record_bytes_recv
+record_bytes_sent
+push_message
+get_added_node_info
+accept_connection
+dump_peer_addresses
+serialize_filedb
+subroutine_dump_addresses
+bind
+init_binds
+check_incoming_nonce
+close_socket
+disconnect_node_with_id
+disconnect_node_with_netaddr
+disconnect_node_with_str
+disconnect_node_with_subnet
+disconnect_nodes
+attempt_to_evict_connection
+create_node_from_accepted_socket

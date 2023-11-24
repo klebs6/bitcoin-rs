@@ -1,0 +1,95 @@
+hello! 
+
+I am writing a rust crate called bitcoin-net. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+LocalServiceInfo
+poisson_next_send
+NetCleanup
+drop
+complete
+get_message
+prepare_for_transport
+read
+set_version
+add_local
+add_local_from_net_addr
+add_time_data
+convert_seeds
+get_bind_address
+get_listen_port
+get_local
+get_local_address
+getn_score
+is_local
+remove_local
+set_reachable
+sockaddr
+sockaddr_storage
+discover
+ifaddrs
+sockaddr_in
+sockaddr_in6
+ConnectionType
+connection_type_as_string
+default
+encapsulates
+to
+BindFlags
+NodeId
+V1TransportDeserializer
+V1TransportSerializer
+complete
+get_message
+get_message_hash
+prepare_for_transport
+read
+read_data
+read_header
+reset
+set_version
+capture_message
+UrlDecodeFn
+url_decode
+split_host_port

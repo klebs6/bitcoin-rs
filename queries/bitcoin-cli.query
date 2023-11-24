@@ -1,0 +1,103 @@
+hello! 
+
+I am writing a rust crate called bitcoin-cli. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+WinCmdLineArgs
+drop
+get
+app_init_rpc
+cli_main
+format_exception
+print_exception_continue
+parse_get_info_result
+DefaultRequestHandler
+prepare_request
+process_reply
+RuntimeError
+NetInfoRequestHandlerPeer
+cmp_peer
+partial_cmp
+libevent_log_cb
+callrpc
+network_string_to_id
+NetinfoRequestHandler
+Type
+chain_to_string
+connection_type_for_netinfo
+default
+default_help_doc
+details_requested
+is_address_selected
+is_version_selected
+net
+network_string_to_id
+ping_time_to_string
+prepare_request
+process_reply
+command_linerpc
+is_switch_char
+get_wallet_balances
+HTTPReply
+default
+evhttp_request
+http_error_cb
+http_errorstring
+http_request_done
+get_progress_bar
+GenerateToAddressRequestHandler
+prepare_request
+process_reply
+GetinfoRequestHandler
+prepare_request
+process_reply
+parse_error
+parse_result
+AddrinfoRequestHandler
+parse_non_rfcjson_value
+prepare_request
+process_reply
+rpc_convert_named_values
+rpc_convert_values
+connect_and_callrpc

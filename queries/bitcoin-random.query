@@ -1,0 +1,120 @@
+hello! 
+
+I am writing a rust crate called bitcoin-random. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+RNGLevel
+get_random_duration
+rand_failure
+proc_rand
+add_allcpuid
+add_file
+add_path
+add_sockaddr
+add_sysctl
+addcpuid
+ifaddrs
+rand_add_dynamic_env
+rand_add_seed_perfmon
+rand_add_static_env
+rusage
+timespec
+timeval
+utsname
+get_rand
+get_rand_bytes
+get_rand_hash
+get_rand_int
+get_strong_rand_bytes
+FastRandomContext
+FastRandomContextResultType
+default
+fill_bit_buffer
+fill_byte_buffer
+fill_bytes
+from
+invoke
+max
+min
+next_u32
+next_u64
+rand256
+rand32
+rand64
+randbits
+randbool
+randbytes
+random_seed
+randrange
+try_fill_bytes
+seed_hardware_fast
+seed_hardware_slow
+random_sanity_check
+get_dev_urandom
+get_os_rand
+BufType
+RNGInnerState
+RNGState
+RNGStateEvents
+add_event
+default
+mix_extract
+seed_events
+init_hardware_rand
+report_hardware_rand
+rand_add_event
+rand_add_periodic
+random_init
+get_rd_seed
+get_rd_rand
+strengthen
+shuffle
+shuffle_all
+get_performance_counter
+seed_fast
+seed_periodic
+seed_slow
+seed_startup
+seed_strengthen
+seed_timestamp

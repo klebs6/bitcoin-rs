@@ -1,7 +1,5 @@
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/test/transaction_tests.cpp]
 
 type ValType = Vec<u8>;

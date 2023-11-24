@@ -1,0 +1,98 @@
+hello! 
+
+I am writing a rust crate called bitcoin-string. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+has_prefix
+join
+make_unordered_list
+remove_prefix
+to_string
+trim_string
+valid_as_cstring
+format_money
+parse_money
+BilingualStr
+Output
+add
+add_assign
+clear
+empty
+format
+from
+untranslated
+SafeChars
+T
+capitalize
+convert_bits
+decode_base32
+decode_base32_bytes
+decode_base64
+decode_base64_bytes
+encode_base32
+encode_base32_bytes
+encode_base64
+encode_base64_bytes
+hex_digit
+hex_str
+is_digit
+is_hex
+is_hex_number
+is_space
+locale_independent_atoi
+parse_fixed_point
+parse_hex
+parse_int32
+parse_int64
+parse_integral
+parse_uint16
+parse_uint32
+parse_uint64
+parse_uint8
+process_mantissa_digit
+sanitize_string
+timing_resistant_equal
+to_integral
+to_lower
+to_upper

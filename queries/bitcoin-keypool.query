@@ -1,0 +1,55 @@
+hello! 
+
+I am writing a rust crate called bitcoin-keypool. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please indicate that the crate is part of
+a direct translation of the bitcoin codebase
+from c++ to rust. It is currently in the
+process of translation. Please indicate that
+it is possible some function bodies are still
+being translated.
+
+Please do not say the words and phrases: "effort", "partial", "that aims to", or
+"attempt".
+
+Also do not indicate that any part of this
+crate is finished and working properly unless
+you have been specifically directed to do so.
+
+If there are no mathematical ideas associated
+with this crate, please do not say the phrase
+"While there may not be any specific
+mathematical equations or concepts involved in
+the `bitcoin-xxx` crate..." -- or anything
+similar.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and mathematical analysis>
+<END>
+
+Below are listed some tokens from this crate. 
+
+In case there are any mathematical ideas
+identified by this information, please
+describe them alongside the relevant
+mathematical equations in unicode.
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+KeyPool
+serialize
+unserialize

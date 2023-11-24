@@ -1,0 +1,79 @@
+hello! 
+
+I am writing a rust crate called bitcoinsecp256k1-group. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+Ge
+GeStorage
+Gej
+ge_clear
+ge_from_storage
+ge_globalz_set_table_gej
+ge_is_in_correct_subgroup
+ge_is_infinity
+ge_is_valid_var
+ge_mul_lambda
+ge_neg
+ge_set_all_gej_var
+ge_set_gej
+ge_set_gej_var
+ge_set_gej_zinv
+ge_set_infinity
+ge_set_xo_var
+ge_set_xy
+ge_storage_cmov
+ge_to_storage
+gej_add_ge
+gej_add_ge_var
+gej_add_var
+gej_add_zinv_var
+gej_clear
+gej_double
+gej_double_var
+gej_eq_x_var
+gej_is_infinity
+gej_neg
+gej_rescale
+gej_set_ge
+gej_set_infinity

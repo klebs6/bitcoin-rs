@@ -1,0 +1,124 @@
+hello! 
+
+I am writing a rust crate called bitcoin-network. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+BIP155Network
+NetAddr
+Reachability
+cmp
+default
+eq
+from
+get_addr_bytes
+get_bip155network
+get_group
+get_hash
+get_in_6addr
+get_in_addr
+get_linked_ipv4
+get_mappedas
+get_net_class
+get_network
+get_reachability_from
+has_linked_ipv4
+is_addr_v1compatible
+is_bind_any
+is_he_net
+is_internal
+is_ipv4
+is_ipv6
+is_local
+is_reachable
+is_relayable
+is_routable
+is_tor
+is_valid
+iscjdns
+isi2p
+isrfc1918
+isrfc2544
+isrfc3849
+isrfc3927
+isrfc3964
+isrfc4193
+isrfc4380
+isrfc4843
+isrfc4862
+isrfc5737
+isrfc6052
+isrfc6145
+isrfc6598
+isrfc7343
+partial_cmp
+serialize
+serialize_v1array
+serialize_v1stream
+serialize_v2stream
+set_internal
+set_legacy_ipv6
+set_net_from_bip155network
+set_special
+set_tor
+seti2p
+setip
+to
+to_string
+to_stringip
+unserialize
+unserialize_v1array
+unserialize_v1stream
+unserialize_v2stream
+Network
+ZeroSpan
+by
+checksum
+default
+get_ext_network
+netmask_bits
+onion_to_string
+pv_4to_string
+pv_6to_string
+values
+is_reachable

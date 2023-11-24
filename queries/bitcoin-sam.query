@@ -1,0 +1,72 @@
+hello! 
+
+I am writing a rust crate called bitcoin-sam. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+Binary
+CleanupHandlerFn
+Connection
+SAMSession
+SAMSessionInner
+SAMSessionReply
+accept
+check_control_sock
+connect
+create_if_not_created_already
+decode_i2p_base64
+dest_b64to_addr
+dest_bin_to_addr
+dest_generate
+disconnect
+drop
+from
+generate_and_save_private_key
+get
+hello
+listen
+log
+my_destination
+send_request_and_get_reply
+stream_accept
+swap_base64

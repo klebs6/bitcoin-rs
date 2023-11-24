@@ -1,0 +1,114 @@
+hello! 
+
+I am writing a rust crate called bitcoin-compat. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+strnlen
+getcpuid
+be_16toh
+be_32toh
+be_64toh
+htobe16
+htobe32
+htobe64
+htole16
+htole32
+htole64
+le_16toh
+le_32toh
+le_64toh
+Socket
+is_selectable_socket
+ssize_t
+strnlen
+glibcxx_sanity_test
+SeccompPolicyBuilder
+SyscallSandboxAction
+SyscallSandboxPolicy
+allow_address_space_access
+allow_epoll
+allow_event_fd
+allow_file_system
+allow_futex
+allow_general_io
+allow_get_random
+allow_get_simple_id
+allow_get_time
+allow_global_process_environment
+allow_global_system_status
+allow_kernel_internal_api
+allow_network
+allow_network_socket_information
+allow_operation_on_existing_file_descriptor
+allow_pipe
+allow_prctl
+allow_process_start_or_death
+allow_scheduling
+allow_signal_handling
+allow_sleep
+allow_umask
+build_filter
+default
+get_linux_syscall_name
+of
+seccomp_data
+set_syscall_sandbox_policy
+setup_syscall_sandbox
+setup_syscall_sandbox_debug_handler
+sigaction
+syscall_sandbox_debug_signal_handler
+test_disallowed_sandbox_call
+bswap_16
+bswap_32
+bswap_64
+NoechoInst
+drop
+pollfd
+set_stdin_echo
+stdin_ready
+stdin_terminal
+termios
+defined
+f32_is_iec559
+f64_is_iec559

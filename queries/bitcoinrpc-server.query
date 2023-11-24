@@ -1,0 +1,86 @@
+hello! 
+
+I am writing a rust crate called bitcoinrpc-server. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+Actor
+CRPCSignals
+Inner
+RPCCommand
+RPCCommandExecution
+RPCCommandExecutionInfo
+RPCServer
+RPCServerInfo
+RPCTable
+RpcMethodFnType
+append_command
+default
+drop
+execute
+execute_command
+execute_commands
+getrpcinfo
+help
+interruptrpc
+is_deprecated_rpc_enabled
+is_rpc_running
+jsonrpc_exec_batch
+jsonrpc_exec_one
+list_commands
+on_started
+on_stopped
+remove_command
+rpc_interruption_point
+rpc_is_in_warmup
+rpc_run_later
+rpc_serialization_flags
+rpc_set_timer_interface
+rpc_set_timer_interface_if_unset
+rpc_unset_timer_interface
+set_rpc_warmup_finished
+set_rpc_warmup_status
+startrpc
+stop
+stoprpc
+uptime

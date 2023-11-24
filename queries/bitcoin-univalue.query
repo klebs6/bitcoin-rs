@@ -1,0 +1,137 @@
+hello! 
+
+I am writing a rust crate called bitcoin-univalue. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+univalue_test_json_main
+indent_str
+json_escape
+write
+write_array
+write_object
+init_json_escape
+univalue_gen_main
+main
+rtrim
+runtest
+runtest_file
+unescape_unicode_test
+get_array
+get_bool
+get_int
+get_int64
+get_keys
+get_obj
+get_real
+get_str
+get_str_mut
+get_values
+parse_double
+parse_int32
+parse_int64
+parse_prechecks
+JTokenType
+Output
+UniValue
+VType
+check_object
+clear
+default
+empty
+exists
+find_key
+find_value
+find_value_mut
+from
+get_obj_map
+get_type
+get_val_str
+index
+is_array
+is_bool
+is_false
+is_null
+is_num
+is_object
+is_str
+is_true
+json_isspace
+json_token_is_value
+jtokentype
+push_back
+push_backv
+push_kvs
+pushkv
+set_array
+set_bool
+set_float
+set_i32
+set_int
+set_null
+set_num_str
+set_object
+set_str
+size
+ty
+uv_type_name
+valid_num_str
+expect_bits
+get_json_token
+hatoui
+json_isdigit
+jtokentype
+read
+JSONUTF8StringFilter
+append_codepoint
+finalize
+push_back
+push_back_u
+univalue_array
+univalue_constructor
+univalue_object
+univalue_readwrite
+univalue_set
+univalue_test_object_main
+univalue_typecheck
+univalue_test_no_nul_main

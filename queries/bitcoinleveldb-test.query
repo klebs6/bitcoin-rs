@@ -1,0 +1,200 @@
+hello! 
+
+I am writing a rust crate called bitcoinleveldb-test. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+ErrorEnv
+compressible_string
+default
+drop
+random_key
+random_string
+CorruptionTest
+build
+check
+corrupt
+corruption_test_corrupted_descriptor
+corruption_test_missing_descriptor
+corruption_test_recover_write_error
+corruption_test_recovery
+corruption_test_sequence_number_recovery
+corruption_test_table_file
+corruption_test_table_file_index_data
+corruption_test_table_file_repair
+corruption_test_unrelated_keys
+dbcorruption_test_main
+default
+drop
+key
+property
+reopen
+repairdb
+try_reopen
+value
+Issue320
+create_random_string
+generate_random_number
+issue320_test
+issuesissue320_test_main
+Issue178
+issue178_test
+issuesissue178_test_main
+key1
+key2
+Output
+Test
+Tester
+drop
+is
+is_ok
+random_seed
+register_test
+run_all_tests
+shl
+tmp_dir
+check_del
+check_equal
+check_get
+check_iter
+check_put
+cmp_compare
+cmp_destroy
+cmp_name
+dbc_test_main
+filter_create
+filter_destroy
+filter_key_match
+filter_name
+free
+start_phase
+ExpectedVerifResult
+FaultInjectionTest
+FaultInjectionTestEnv
+FileState
+Inner
+ResetMethod
+TestWritableFile
+append
+build
+close
+closedb
+dbfault_injection_test_main
+default
+delete_all_data
+delete_file
+delete_files_created_after_last_dir_sync
+dir_was_synced
+do_test
+drop
+drop_unsynced_data
+drop_unsynced_file_data
+fault_injection_test_no_log_reuse
+fault_injection_test_with_log_reuse
+flush
+get_dir_name
+get_name
+is_file_created_since_last_dir_sync
+is_filesystem_active
+is_fully_synced
+key
+no_write_test_pre_fault
+no_write_test_reopen_with_fault
+opendb
+partial_compact_test_pre_fault
+partial_compact_test_reopen_with_fault
+read_value
+rename_file
+reset_db_state
+reset_state
+reuse_logs
+set_filesystem_active
+sync
+sync_dir
+sync_parent
+truncate
+untrack_file
+value
+verify
+writable_file_closed
+Issue200
+issue200_test
+issuesissue200_test_main
+AutoCompactTest
+auto_compact_test_read_all
+auto_compact_test_read_half
+dbautocompact_test_main
+default
+do_reads
+drop
+key
+size
+RecoveryTest
+can_append
+close
+compact_mem_table
+dbfull
+dbrecovery_test_main
+default
+delete_log_files
+delete_manifest_file
+drop
+env
+file_size
+first_log_file
+get
+get_files
+log_name
+make_log_file
+manifest_file_name
+num_logs
+num_tables
+open
+open_with_status
+put
+recovery_test_log_file_reuse
+recovery_test_manifest_missing
+recovery_test_manifest_reused
+recovery_test_multiple_log_files
+recovery_test_multiple_mem_tables
+recovery_test_no_log_files

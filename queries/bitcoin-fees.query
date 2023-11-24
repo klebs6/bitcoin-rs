@@ -1,0 +1,84 @@
+hello! 
+
+I am writing a rust crate called bitcoin-fees. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+FeeFilterRounder
+round
+FeeRate
+add_assign
+cmp
+default
+eq
+get_fee
+get_fee_perk
+partial_cmp
+to_string
+EstimationResult
+EstimatorBucket
+default
+EncodedDoubleFormatter
+ser
+unser
+FeeCalculation
+FeeReason
+fee_mode_map
+fee_modes
+string_for_fee_reason
+FeeEstimateHorizon
+string_for_fee_estimate_horizon
+TxConfirmStats
+clear_current
+estimate_median_val
+get_max_confirms
+read
+record
+remove_tx
+resize_in_memory_counters
+update_moving_averages
+write
+FeeEstimateMode
+fee_mode_from_string
+invalid_estimate_mode_error_message
+of

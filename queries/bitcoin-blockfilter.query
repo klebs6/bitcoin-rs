@@ -1,0 +1,92 @@
+hello! 
+
+I am writing a rust crate called bitcoin-blockfilter. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+for_each_block_filter_index
+get_block_filter_index
+on
+BlockFilter
+as
+build_params
+compute_header
+default
+from
+get_block_hash
+get_encoded_filter
+get_filter
+get_filter_type
+get_hash
+serialize
+unserialize
+destroy_all_block_filter_indexes
+destroy_block_filter_index
+BlockFilterIndex
+BlockFilterIndexInner
+commit_internal
+get_filter_type
+get_name
+getdb
+init
+lookup_filter
+lookup_filter_hash_range
+lookup_filter_header
+lookup_filter_range
+read_filter_from_disk
+rewind
+with
+write_block
+write_filter_to_disk
+BlockFilterType
+default
+from
+if
+init_block_filter_index
+all_block_filter_types
+basic_filter_elements
+block_filter_type_by_name
+block_filter_type_name
+by
+list_block_filter_types
+names

@@ -1,0 +1,113 @@
+hello! 
+
+I am writing a rust crate called bitcoinrpc-blockchain. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+CoinsViewScanReserver
+CompareBlocksByHeight
+UpdatedBlock
+block_tojson
+blockheader_tojson
+calculate_percentiles_by_weight
+calculate_truncated_median
+cannot
+compute_next_block_and_depth
+create_utxo_snapshot
+drop
+dumptxoutset
+ensure_any_chainman
+ensure_any_fee_estimator
+ensure_any_mem_pool
+ensure_any_node_context
+ensure_chainman
+ensure_fee_estimator
+ensure_mem_pool
+entry_tojson
+find_script_pub_key
+get_block_checked
+get_difficulty
+get_undo_checked
+getbestblockhash
+getblock
+getblockchaininfo
+getblockcount
+getblockfilter
+getblockhash
+getblockheader
+getblockstats
+getchaintips
+getchaintxstats
+getdifficulty
+getmempoolancestors
+getmempooldescendants
+getmempoolentry
+getmempoolinfo
+getrawmempool
+gettxout
+gettxoutsetinfo
+invalidateblock
+invoke
+mempool_entry_description
+mempool_info_tojson
+mempool_tojson
+name
+parse_hash_or_height
+parse_hash_type
+preciousblock
+pruneblockchain
+reconsiderblock
+register_blockchain_rpc_commands
+reserve
+rpc_notify_block_change
+savemempool
+scantxoutset
+set_has_keys
+set_has_keys_base_case
+soft_fork_desc_push_back_with_buried_deployment
+soft_fork_desc_push_back_with_deployment_pos
+syncwithvalidationinterfacequeue
+verifychain
+waitforblock
+waitforblockheight
+with

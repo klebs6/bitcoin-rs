@@ -1,0 +1,148 @@
+#!/usr/bin/env raku
+use File::Find;
+use Data::Dump::Tree;
+
+grammar RustLine {
+
+    rule TOP {
+        .* <line> .*
+    }
+
+    proto rule line { * }
+
+    #rule line:sym<macro> { ^ <name> '!' }
+
+    rule line:sym<decl>   { 
+        <kw_pub>? <kw_tag> <name>
+    }
+
+    token kw_tag { <kw_struct> | <kw_type> | <kw_enum> | <kw_fn> }
+
+    token name {
+        <[A..Z a..z 0..9 _]>+
+    }
+
+    token kw_pub    { 'pub'    } 
+    token kw_struct { 'struct' } 
+    token kw_type   { 'type'   } 
+    token kw_enum   { 'enum'   } 
+    token kw_fn     { 'fn'     } 
+}
+
+class RustLine::Actions {
+
+    method TOP($/) {
+        make $<line>.made
+    }
+
+    #method line:sym<macro>($/) { make ~$<name> }
+
+    method line:sym<decl>($/) {
+        make ~$<name>
+    }
+}
+
+sub extract-defs-from-text($text) {
+
+    my @lines = $text.lines;
+
+    gather for @lines {
+
+        my $match = RustLine.parse($_, actions => RustLine::Actions.new);
+
+        if so $match {
+            take $match.made;
+        }
+    }
+}
+
+sub process-crate($crate) {
+
+    my $outfile = "queries/$crate.query".IO;
+
+    spurt $outfile, qq:to/END/;
+    hello! 
+
+    I am writing a rust crate called $crate. 
+
+    It is one of the subcomponets of the bitcoin
+    system.
+
+    I would like you to help me write a rust crate
+    description for it.
+
+    Please write the description in the following
+    format:
+
+    <short description tag used in the crate header>
+    <double newline>
+    <longer, in depth description and possible mathematical analysis>
+    <END>
+
+    I would like you to include the following
+    `Notice` in some part of your response:
+
+    "This crate is part of a direct translation
+    from C++ to Rust of the bitcoin core. As such,
+    some of the function bodies may still be in
+    the process of translation. Please note that
+    this system will become testable once the
+    translation process is complete"
+
+    Below are listed the tokens from this crate. 
+
+    Please describe any mathematical ideas
+    associated with these tokens alongside the
+    relevant mathematical equations in unicode.
+
+    If there are no mathematical ideas associated
+    with these tokens, say nothing.
+
+    Do not say: "there are no mathematical ideas
+    associated with these tokens".
+
+    thanks!
+
+    please format your response in the Markdown
+    file format.
+
+    here are the tokens:
+    END
+
+    my $cargo-toml = "$crate/Cargo.toml";
+
+    die "Cargo.toml DNE for crate: $crate" if not $cargo-toml.IO.e;
+
+    my @sources = find(dir => "$crate/src/".IO).grep({ ! /lib/ }).grep({ ! /imports/ });
+
+    for @sources -> $source {
+
+        my $text = $source.IO.slurp;
+
+        my @words = extract-defs-from-text($text).sort.unique.grep({ not /arg | new | input | output/ });
+
+        for @words -> $word {
+            spurt $outfile, "$word\n", :append;
+        }
+    }
+
+    say "crate $crate -- done";
+
+}
+
+sub MAIN(Bool :$all = False, Str :$name = "bitcoinwallet-library") {
+
+    my @crates = ".".IO.dir>>.grep({ /bitcoin*/ }).grep({ .so });
+
+    if $all {
+
+        race for @crates -> $crate {
+            process-crate($crate)
+        }
+
+        exit;
+    }
+
+    process-crate($name);
+}
+

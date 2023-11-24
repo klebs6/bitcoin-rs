@@ -1,0 +1,255 @@
+hello! 
+
+I am writing a rust crate called bitcoin-scripting. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+LeafInfo
+NoDestination
+NodeInfo
+PKHash
+ScriptHash
+ScriptID
+ScriptVisitor
+ShortestVectorFirstComparator
+TaprootBuilder
+TaprootSpendData
+TreeNode
+TxDestination
+TxoutType
+ValType
+WitnessUnknown
+WitnessV0KeyHash
+WitnessV0ScriptHash
+WitnessV1Taproot
+add
+add_omitted
+and
+cmp
+combine
+default
+encoded
+eq
+extract_destination
+finalize
+for
+from
+get_multisig_key_count
+get_script_for_destination
+get_script_for_multisig
+get_script_for_raw_pub_key
+get_spend_data
+infer_taproot_tree
+insert
+into
+invoke
+is
+is_complete
+is_pushdata_op
+is_small_integer
+is_valid
+is_valid_destination
+is_valid_multisig_key_count
+match_multisig
+match_pay_to_pubkey
+match_pay_to_pubkey_hash
+merge
+partial_cmp
+script_visit
+solver
+valid_depths
+BitcoinConsensusError
+BitcoinConsensusScriptVerificationFlags
+ECCryptoClosure
+Output
+TxInputStream
+bitcoinconsensus_verify_script
+bitcoinconsensus_verify_script_with_amount
+bitcoinconsensus_version
+get_version
+read
+set_error
+shr
+verify_flags
+verify_script
+format_script
+parse_script
+script_pub_key_to_univ
+script_to_asm_str
+script_to_univ
+ScriptError
+missing
+script_error_string
+BIP32
+SigPair
+SignatureData
+Stacks
+ValType
+contains
+deserialize_hd_keypaths
+from
+merge_signature_data
+push_all
+serialize_hd_keypaths
+serialize_to_vector
+unserialize_from_vector
+OpcodeType
+Output
+Script
+ScriptBase
+ScriptIterator
+ScriptNum
+ScriptNumError
+ScriptWitness
+add
+add_assign
+assign_from
+bitand
+bitand_assign
+clear
+cmp
+decodeop_n
+deref
+deref_mut
+empty
+encodeop_n
+eq
+flush
+from
+get_op
+get_op_name
+get_script_op
+get_sig_op_count
+get_sig_op_count_with_script_sig
+getint
+getvch
+has_valid_ops
+is_null
+is_op_success
+is_pay_to_script_hash
+is_pay_to_witness_script_hash
+is_push_only
+is_push_only_from_begin
+is_unspendable
+is_witness_program
+neg
+opcode
+partial_cmp
+push_int64
+read
+recursive_dynamic_usage
+serialize
+set_null
+set_vch
+shl
+sub
+sub_assign
+to_byte_vector
+to_string
+write
+MissingDataBehavior
+check_ecdsa_signature
+check_lock_time
+check_schnorr_signature
+check_sequence
+handle_missing_data
+OutputType
+GenTxId
+cmp
+eq
+get_hash
+is_wtxid
+partial_cmp
+txid
+wtxid
+SignatureCache
+SignatureCacheMap
+compute_entry_schnorr
+compute_entryecdsa
+default
+get
+init_signature_cache
+set
+setup_bytes
+0x30
+ConditionStack
+ScriptExecutionData
+ScriptVerificationFlags
+SigVersion
+all_true
+cast_to_bool
+check_minimal_push
+check_pub_key_encoding
+check_signature_encoding
+compute_tapleaf_hash
+compute_taproot_merkle_root
+count_witness_sig_ops
+empty
+eval_checksig
+eval_checksig_pre_tapscript
+eval_checksig_tapscript
+eval_script
+eval_script_with_execdata
+execute_witness_script
+find_and_delete
+get_prevoutssha256
+get_sequencessha256
+is_compressed_or_uncompressed_pub_key
+is_compressed_pub_key
+is_defined_hashtype_signature
+is_low_der_signature
+is_valid_signature_encoding
+pop_back
+popstack
+push_back
+set_error
+set_success
+to
+toggle_top
+valtype
+verify_ecdsa_signature
+verify_schnorr_signature
+verify_script_with_checker
+verify_taproot_commitment
+verify_witness_program
+witness_sig_ops

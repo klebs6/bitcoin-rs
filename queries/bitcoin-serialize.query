@@ -1,0 +1,122 @@
+hello! 
+
+I am writing a rust crate called bitcoin-serialize. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+BigEndianFormatter
+CSizeComputer
+CheckVarIntMode
+CompactSizeFormatter
+CustomUintFormatter
+DefaultFormatter
+FooFormatter
+If
+LimitedStringFormatter
+Output
+SerActionSerialize
+SerActionUnserialize
+SizeComputer
+VarIntFormatter
+VarIntMode
+VectorFormatter
+Wrapper
+X
+_serialize_impl
+_serialize_impl_bool
+_serialize_impl_u8
+_unserialize_impl
+_unserialize_impl_u8
+char_cast
+for_read
+get_serialize_size
+get_serialize_size_many
+get_size_of_compact_size
+get_size_of_var_int
+get_version
+impls
+inclusive_range_1_to_8
+map_into_range
+mismatch
+read_compact_size
+read_var_int
+read_write_as_helper
+required
+seek
+ser
+ser_read
+ser_read_with_action_serialize
+ser_read_write_many_with_action_serialize
+ser_read_write_many_with_action_unserialize
+ser_readdata16
+ser_readdata32
+ser_readdata64
+ser_readdata8
+ser_readdata_16be
+ser_readdata_32be
+ser_write_with_action_serialize
+ser_write_with_action_unserialize
+ser_writedata16
+ser_writedata32
+ser_writedata64
+ser_writedata8
+ser_writedata_16be
+ser_writedata_32be
+serialize
+serialize_many
+serialize_many_base
+shl
+size
+that
+to
+too
+unser
+unserialize
+unserialize_many
+unserialize_many_base
+using
+write
+write_compact_size
+write_compact_size_with_size_computer
+write_var_int
+write_var_int_with_size_computer

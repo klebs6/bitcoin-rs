@@ -1,0 +1,83 @@
+hello! 
+
+I am writing a rust crate called bitcoin-tor. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+TorController
+add_onion_cb
+auth_cb
+authchallenge_cb
+connected_cb
+default
+disconnected_cb
+drop
+get_private_key_file
+protocolinfo_cb
+reconnect
+reconnect_cb
+timeval
+parse_tor_reply_mapping
+split_tor_reply_line
+TorControlReply
+clear
+default
+compute_response
+event_base
+in_addr
+interrupt_tor_control
+start_tor_control
+stop_tor_control
+tor_control_thread
+ConnectionCB
+ReplyHandlerCB
+TorControlConnection
+command
+connect
+disconnect
+drop
+evbuffer
+eventcb
+readcb
+sockaddr
+sockaddr_storage

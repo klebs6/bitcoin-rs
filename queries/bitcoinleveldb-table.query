@@ -1,0 +1,214 @@
+hello! 
+
+I am writing a rust crate called bitcoinleveldb-table. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+EmptyIterator
+drop
+key
+next
+prev
+register_cleanup
+seek
+seek_to_first
+seek_to_last
+status
+valid
+value
+BlockContents
+BlockHandle
+decode_from
+encode_to
+offset
+set_offset
+set_size
+size
+VersionLevelFileNumIterator
+key
+next
+prev
+seek
+seek_to_first
+seek_to_last
+status
+valid
+value
+BlockBuilder
+add
+current_size_estimate
+empty
+finish
+reset
+Constructor
+add
+data
+db
+finish
+finish_impl
+BlockConstructor
+KeyConvertingIterator
+ReverseKeyComparator
+StringSink
+StringSource
+TableConstructor
+append
+approximate_offset_of
+close
+compare
+contents
+drop
+find_short_successor
+find_shortest_separator
+finish_impl
+flush
+get_name
+increment
+key
+name
+next
+prev
+read
+reset
+reverse
+seek
+seek_to_first
+seek_to_last
+size
+status
+sync
+valid
+value
+LevelDBIterator
+LevelDBIteratorWrapper
+default
+drop
+iter
+key
+next
+prev
+seek
+seek_to_first
+seek_to_last
+set
+status
+update
+valid
+value
+Block
+BlockIter
+compare
+corruption_error
+decode_entry
+drop
+get_restart_point
+key
+next
+next_entry_offset
+num_restarts
+parse_next_key
+prev
+seek
+seek_to_first
+seek_to_last
+seek_to_restart_point
+size
+status
+valid
+value
+TableBuilder
+TableBuilderRep
+abandon
+add
+change_options
+drop
+file_size
+finish
+flush
+num_entries
+ok
+status
+write_block
+write_raw_block
+Table
+TableRep
+approximate_offset_of
+block_reader
+delete_block
+delete_cached_block
+drop
+internal_get
+open
+read_filter
+read_meta
+release_block
+Footer
+decode_from
+encode_to
+index_handle
+metaindex_handle
+set_index_handle
+set_metaindex_handle
+TableAndFile
+TableCache
+delete_entry
+drop
+evict
+find_table
+get
+unref_entry
+build_table
+LevelDBIteratorCleanupFunction
+LevelDBIteratorCleanupNode
+LevelDBIteratorInner
+is_empty
+next
+prev
+run
+seek
+seek_to_first
+seek_to_last
+status
+valid
+and
+read_block

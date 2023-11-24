@@ -1,0 +1,127 @@
+hello! 
+
+I am writing a rust crate called bitcoin-system. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please indicate that the crate is part of
+a direct translation of the bitcoin codebase
+from c++ to rust. It is currently in the
+process of translation. Please indicate that
+it is possible some function bodies are still
+being translated.
+
+Please do not say the words and phrases: "effort", "partial", "that aims to", or
+"attempt".
+
+Also do not indicate that any part of this
+crate is finished and working properly unless
+you have been specifically directed to do so.
+
+If there are no mathematical ideas associated
+with this crate, please do not say the phrase
+"While there may not be any specific
+mathematical equations or concepts involved in
+the `bitcoin-xxx` crate..." -- or anything
+similar.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and mathematical analysis>
+<END>
+
+Below are listed some tokens from this crate. 
+
+In case there are any mathematical ideas
+identified by this information, please
+describe them alongside the relevant
+mathematical equations in unicode.
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+NonFatalCheckError
+Output
+StdLockGuard
+StdMutex
+StreamSize
+abort_node
+abort_shutdown
+any_ptr
+app_init_util
+byte
+check_tx_scripts_sanity
+copyright_holders
+decode_double
+decode_hex_blk
+decode_hex_block_header
+decode_hex_tx
+decode_tx
+dir_is_writable
+drop
+encode_double
+encode_hex_tx
+error
+format_script
+from
+get_file_size
+get_num_cores
+get_pure_r_value
+get_special_folder_path
+get_startup_time
+get_warnings
+grind
+grind_task
+init_shutdown_state
+insert
+insert_into_set
+lock_directory
+matches
+not
+parse_hash_str
+parse_hexuv
+parse_op_code
+parse_script
+parse_sighash_string
+raise_file_descriptor_limit
+read_binary_file
+release_directory_locks
+rlimit
+run_command
+run_command_parsejson
+schedule_batch_priority
+script_pub_key_to_univ
+script_to_asm_str
+script_to_univ
+set_internal_name
+set_misc_warning
+set_thread_name
+shell_escape
+shutdown_requested
+sighash_to_str
+spanparsing_const
+spanparsing_expr
+spanparsing_func
+spanparsing_split
+start_shutdown
+thread_get_internal_name
+thread_rename
+thread_set_internal_name
+try_create_directories
+tx_to_univ
+unlock_directory
+util_main
+value_from_amount
+vector
+wait_for_shutdown
+write_binary_file

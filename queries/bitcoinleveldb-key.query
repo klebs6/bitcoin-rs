@@ -1,0 +1,97 @@
+hello! 
+
+I am writing a rust crate called bitcoinleveldb-key. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+InternalFilterPolicy
+InternalKey
+InternalKeyComparator
+KVMap
+KVMapConstIterator
+LookupKey
+ParsedInternalKey
+SequenceNumber
+TLLessThan
+ValueType
+and
+append_internal_key
+clear
+compare
+compare_internal_key
+compare_slices
+create_filter
+debug_string
+decode_from
+default
+drop
+encode
+extract_user_key
+find_short_successor
+find_shortest_separator
+internal_key
+internal_key_encoding_length
+invoke
+is
+key
+key_may_match
+memtable_key
+name
+pack_sequence_and_type
+parse_internal_key
+set_from
+user_comparator
+user_key
+value
+FormatTest
+dbdbformat_test_main
+format_test_internal_key_debug_string
+format_test_internal_key_decode_from_empty
+format_test_internal_key_encode_decode
+format_test_internal_key_short_separator
+format_test_internal_key_shortest_successor
+format_test_parsed_internal_key_debug_string
+key
+short_successor
+shorten
+test_key

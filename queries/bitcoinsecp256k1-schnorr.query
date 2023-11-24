@@ -1,0 +1,76 @@
+hello! 
+
+I am writing a rust crate called bitcoinsecp256k1-schnorr. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+NonceFunctionHardened
+SchnorrSigExtraParams
+hardened_nonce_function_smallint
+nonce_function_0
+nonce_function_bip340
+nonce_function_bip340_bitflip
+nonce_function_bip340_sha256_tagged
+nonce_function_bip340_sha256_tagged_aux
+nonce_function_failing
+nonce_function_overflowing
+run_nonce_function_bip340_tests
+run_schnorrsig_tests
+schnorrsig_challenge
+schnorrsig_sha256_tagged
+schnorrsig_sign
+schnorrsig_sign_custom
+schnorrsig_sign_internal
+schnorrsig_verify
+test_exhaustive_schnorrsig
+test_exhaustive_schnorrsig_sign
+test_exhaustive_schnorrsig_verify
+test_schnorrsig_api
+test_schnorrsig_bip_vectors
+test_schnorrsig_bip_vectors_check_signing
+test_schnorrsig_bip_vectors_check_verify
+test_schnorrsig_sha256_tagged
+test_schnorrsig_sign
+test_schnorrsig_sign_verify
+test_schnorrsig_taproot
+test_sha256_eq

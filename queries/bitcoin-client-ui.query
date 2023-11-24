@@ -1,0 +1,64 @@
+hello! 
+
+I am writing a rust crate called bitcoin-client-ui. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+init_error
+init_warning
+ClientUIInterface
+SynchronizationState
+banned_list_changed
+get_synchronization_state
+init_message
+notify_alert_changed
+notify_block_tip
+notify_header_tip
+notify_network_active_changed
+notify_num_connections_changed
+show_progress
+thread_safe_message_box
+thread_safe_question
+UISignals
+MessageBoxFlags
+StandardButton

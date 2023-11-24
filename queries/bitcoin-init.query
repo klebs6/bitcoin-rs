@@ -1,0 +1,124 @@
+hello! 
+
+I am writing a rust crate called bitcoin-init. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+noui_connect
+BitcoinQtInit
+default
+init
+make_chain
+make_echo
+make_gui_init
+make_node
+make_wallet_client
+BitcoindInit
+init
+make_chain
+make_echo
+make_node
+make_wallet_client
+CleanupHandler
+HandlerImpl
+ScopedConnection
+disconnect
+drop
+BitcoinNodeInit
+init
+ipc
+make_chain
+make_echo
+make_node
+make_wallet_client
+BitcoinGuiInit
+init
+ipc
+make_chain
+make_echo
+make_gui_init
+make_node
+make_wallet_client
+make_wallet_init
+EchoImpl
+echo
+make_echo
+Network
+app_init_basic_setup
+app_init_interfaces
+app_init_lock_data_directory
+app_init_main
+app_init_parameter_interaction
+app_init_sanity_checks
+app_init_servers
+block_notify_genesis_wait
+console_ctrl_handler
+create_pid_file
+get_pid_file
+handlesighup
+handlesigterm
+init_logging
+init_parameter_interaction
+interrupt
+ipc
+license_info
+lock_data_directory
+make_chain
+make_echo
+make_node
+make_wallet_client
+on_rpc_started
+on_rpc_stopped
+register_signal_handler
+shutdown
+sigaction
+startup_notify
+log_package_version
+sanity_checks
+set_globals
+set_logging_categories
+set_logging_options
+start_logging
+unset_globals
+setup_environment
+setup_networking

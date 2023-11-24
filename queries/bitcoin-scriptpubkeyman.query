@@ -1,0 +1,233 @@
+hello! 
+
+I am writing a rust crate called bitcoin-scriptpubkeyman. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+extract_pub_key
+get_affected_keys
+get_oldest_key_time_in_pool
+have_keys
+LegacySigningProvider
+get_cscript
+get_key
+get_key_origin
+get_pub_key
+have_cscript
+have_key
+DescriptorScriptPubKeyMan
+DescriptorScriptPubkeyManCryptedKeyMap
+DescriptorScriptPubkeyManInner
+DescriptorScriptPubkeyManKeyMap
+DescriptorScriptPubkeyManPubKeyMap
+DescriptorScriptPubkeyManScriptPubKeyMap
+add_crypted_key
+add_descriptor_key
+add_descriptor_key_withdb
+add_key
+can_get_addresses
+can_provide
+can_update_to_wallet_descriptor
+check_decryption_key
+encrypt
+fillpsbt
+get_descriptor_string
+get_key_pool_size
+get_keys
+get_metadata
+get_oldest_key_pool_time
+get_reserved_destination
+get_script_pub_keys
+get_signing_provider_with_index
+get_signing_provider_with_pubkey
+get_signing_provider_with_script
+get_solving_provider
+get_time_first_key
+get_wallet_descriptor
+getid
+has_wallet_descriptor
+have_private_keys
+is_hd_enabled
+is_mine
+mark_unused_addresses
+of
+return_destination
+set_cache
+setup_descriptor
+setup_descriptor_generation
+sign_message
+sign_transaction
+top_up
+update_wallet_descriptor
+upgrade_descriptor_cache
+write_descriptor
+LegacyScriptPubKeyMan
+LegacyScriptPubkeyManCryptedKeyMap
+LegacyScriptPubkeyManInner
+LegacyScriptPubkeyManWatchKeyMap
+LegacyScriptPubkeyManWatchOnlySet
+add_crypted_key
+add_crypted_key_inner
+add_cscript
+add_cscript_withdb
+add_hd_chain
+add_inactive_hd_chain
+add_key_origin_withdb
+add_key_pub_key
+add_key_pub_key_inner
+add_key_pub_key_withdb
+add_keypool_pubkey_withdb
+add_watch_only
+add_watch_only_in_mem
+add_watch_only_with_create_time
+add_watch_only_withdb
+add_watch_only_withdb_with_create_time
+can_generate_keys
+can_get_addresses
+can_provide
+check_decryption_key
+encrypt
+fillpsbt
+get_all_reserve_keys
+get_hd_chain
+get_key
+get_key_from_pool
+get_key_origin
+get_key_pool_size
+get_keys
+get_metadata
+get_oldest_key_pool_time
+get_pub_key
+get_reserved_destination
+get_solving_provider
+get_time_first_key
+get_watch_pub_key
+getid
+have_key
+have_private_keys
+have_watch_only
+have_watch_only_with_script
+import_priv_keys
+import_pub_keys
+import_script_pub_keys
+import_scripts
+is_hd_enabled
+is_mine
+it
+keep_destination
+keypool_count_external_keys
+learn_all_related_scripts
+learn_related_scripts
+load_crypted_key
+load_cscript
+load_hd_chain
+load_key
+load_key_metadata
+load_key_pool
+load_script_metadata
+load_watch_only
+mark_pre_split_keys
+mark_reserve_keys_as_used
+mark_unused_addresses
+remove_watch_only
+reserve_key_from_key_pool
+return_destination
+rewritedb
+set_hd_seed
+setup_generation
+sign_message
+sign_transaction
+top_up
+top_up_inactive_hd_chain
+update_time_first_key
+upgrade
+upgrade_key_metadata
+ScriptPubKeyMan
+can_get_addresses
+can_provide
+check_decryption_key
+encrypt
+fill_psbt
+get_key_pool_size
+get_metadata
+get_oldest_key_pool_time
+get_reserved_destination
+get_solving_provider
+get_time_first_key
+getid
+have_private_keys
+is_hd_enabled
+is_mine
+keep_destination
+mark_unused_addresses
+return_destination
+rewritedb
+setup_generation
+sign_message
+sign_transaction
+top_up
+upgrade
+wallet_log_printf
+add_active_script_pub_key_man
+add_wallet_descriptor
+connect_script_pub_key_man_notifiers
+deactivate_script_pub_key_man
+get_active_script_pub_key_mans
+get_all_script_pub_key_mans
+get_descriptor_script_pub_key_man
+get_legacy_script_pub_key_man
+get_or_create_legacy_script_pub_key_man
+get_script_pub_key_man
+get_script_pub_key_man_with_id
+get_script_pub_key_man_with_script
+get_script_pub_key_mans
+load_active_script_pub_key_man
+load_descriptor_script_pub_key_man
+setup_descriptor_script_pub_key_mans
+setup_legacy_script_pub_key_man
+IsMineResult
+IsMineSigVersion
+ValType
+is_mine_inner
+permits_uncompressed
+that

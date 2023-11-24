@@ -1,0 +1,137 @@
+hello! 
+
+I am writing a rust crate called bitcoin-coinsview. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+CoinsCacheSizeState
+CoinsMap
+CoinsViewCache
+access_coin
+add_coin
+batch_write
+cursor
+dynamic_memory_usage
+emplace_coin_internaldanger
+fetch_coin
+flush
+from
+get_best_block
+get_cache_size
+get_coin
+have_coin
+have_coin_in_cache
+reallocate_cache
+set_best_block
+spend_coin
+uncache
+access_by_txid
+batch_write
+cursor
+estimate_size
+get_best_block
+get_coin
+get_head_blocks
+have_coin
+add_coins
+LegacyCoins
+default
+unserialize
+CoinsViewErrorCatcher
+add_read_err_callback
+from
+get_coin
+CoinsViewDB
+batch_write
+cursor
+estimate_size
+get_best_block
+get_coin
+get_head_blocks
+have_coin
+resize_cache
+upgrade
+Coin
+clear
+clone
+default
+dynamic_memory_usage
+empty
+eq
+is_coinbase
+is_spent
+serialize
+unserialize
+CoinsViewCursor
+from
+get_best_block
+get_key
+get_value
+get_value_size
+next
+valid
+CoinBitfield
+from_fields
+CoinsViewDBCursor
+get_key
+get_value
+get_value_size
+next
+valid
+CoinsCacheEntry
+CoinsCacheEntryFlags
+default
+from
+CoinEntry
+CoinsViewBacked
+batch_write
+cursor
+estimate_size
+from
+get_best_block
+get_coin
+get_head_blocks
+have_coin
+set_backend
+CoinsViews
+init_cache

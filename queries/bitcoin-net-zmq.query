@@ -1,0 +1,105 @@
+hello! 
+
+I am writing a rust crate called bitcoin-net-zmq. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+ZMQAbstractNotifier
+ZMQNotifierFactory
+create
+default
+drop
+get_address
+get_outbound_message_high_water_mark
+get_type
+notify_block
+notify_block_connect
+notify_block_disconnect
+notify_transaction
+notify_transaction_acceptance
+notify_transaction_removal
+set_address
+set_outbound_message_high_water_mark
+set_type
+ZMQNotificationInterface
+block_connected
+block_disconnected
+create
+default
+drop
+get_active_notifiers
+initialize
+shutdown
+transaction_added_to_mempool
+transaction_removed_from_mempool
+try_for_each_and_remove_failed
+updated_block_tip
+getzmqnotifications
+register_zmqrpc_commands
+zmq_error
+ZMQAbstractPublishNotifier
+ZMQPublishHashBlockNotifier
+ZMQPublishHashTransactionNotifier
+ZMQPublishRawBlockNotifier
+ZMQPublishRawTransactionNotifier
+ZMQPublishSequenceNotifier
+initialize
+is_zmq_addressipv6
+notify_block
+notify_block_connect
+notify_block_disconnect
+notify_transaction
+notify_transaction_acceptance
+notify_transaction_removal
+send_sequence_msg
+send_zmq_message
+shutdown
+zmq_send_multipart
+initialize
+notify_block
+notify_block_connect
+notify_block_disconnect
+notify_transaction
+notify_transaction_acceptance
+notify_transaction_removal
+shutdown

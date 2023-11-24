@@ -1,0 +1,78 @@
+hello! 
+
+I am writing a rust crate called bitcoinleveldb-meta. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+Saver
+SaverState
+after_file
+before_file
+expanded_compaction_byte_size_limit
+find_file
+find_smallest_boundary_file
+get_file_iterator
+max_bytes_for_level
+max_file_size_for_level
+max_grand_parent_overlap_bytes
+save_value
+some_file_overlaps_range
+total_file_size
+AddBoundaryInputsTest
+FindFileTest
+add
+create_file_meta_data
+dbversion_set_test_main
+default
+drop
+find
+find_file_test_empty
+find_file_test_multiple
+find_file_test_multiple_null_boundaries
+find_file_test_overlap_sequence_checks
+find_file_test_overlapping_files
+find_file_test_single
+overlaps
+Tag
+get_internal_key
+get_level

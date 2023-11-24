@@ -1,0 +1,164 @@
+hello! 
+
+I am writing a rust crate called bitcoin-block. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+DiskBlockIndex
+default
+get_block_hash
+to_string
+ImportingNow
+block_file_seq
+calculate_current_usage
+cleanup_block_rev_files
+default
+drop
+find_block_pos
+find_undo_pos
+flush_block_file
+flush_undo_file
+get_block_file_info
+get_block_pos_filename
+is_block_pruned
+open_block_file
+open_undo_file
+save_block_to_disk
+thread_import
+undo_file_seq
+undo_read_from_disk
+undo_write_to_disk
+unlink_pruned_files
+write_block_to_disk
+write_undo_data_for_block
+BlockFileInfo
+add_block
+set_null
+to_string
+allocate_file_range
+BlockLocator
+is_null
+recursive_dynamic_usage
+set_null
+directory_commit
+block_checked
+block_connected
+block_disconnected
+chain_state_flushed
+is_initial_block_download
+updated_block_tip
+BlockAndHeaderTipInfo
+BlockTip
+ConnectTrace
+PerBlockConnectTrace
+block_connected
+default
+get_blocks_connected
+FlatFileSeq
+allocate
+file_name
+flush
+open
+BlockHeader
+decode_hex_block_header
+default
+get_block_time
+get_hash
+is_null
+set_null
+BlockIndexWorkComparator
+invoke
+check_disk_space
+BlockValidationResult
+BlockValidationState
+default
+error
+get_debug_message
+get_reject_reason
+get_result
+invalid
+is_error
+is_invalid
+is_valid
+to_string
+Block
+BlockMap
+decode_hex_blk
+default
+get_block_header
+get_hash
+recursive_dynamic_usage
+set_null
+to_string
+BlockIndex
+BlockIndexRef
+before
+build_skip
+default
+get_ancestor
+get_block_hash
+get_block_header
+get_block_pos
+get_block_proof
+get_block_time
+get_block_time_max
+get_median_time_past
+get_n_status
+get_skip_height
+get_undo_pos
+have_txs_downloaded
+invert_lowest_one
+is_assumed_valid
+is_valid
+last_common_ancestor
+raise_validity
+to_string
+BlockStatus
+FlatFilePos
+default
+eq
+is_null
+set_null
+to_string
+file_commit
+truncate_file

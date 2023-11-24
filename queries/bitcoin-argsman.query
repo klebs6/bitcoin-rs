@@ -1,0 +1,126 @@
+hello! 
+
+I am writing a rust crate called bitcoin-argsman. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+get_data_dir
+get_data_dir_base
+get_data_dir_net
+get_default_data_dir
+get_home_dir
+SectionInfo
+ArgsManagerFlags
+add_command
+ArgsManagerCommand
+interpret_bool
+interpret_option
+FormatParagraphError
+format_paragraph
+get_help_message
+help_message_group
+help_message_opt
+clear_path_cache
+ArgsManager
+add_command
+clear_path_cache
+get_blocks_dir_path
+get_chain_name
+get_command
+get_data_dir
+get_data_dir_base
+get_data_dir_net
+get_help_message
+get_setting
+get_settings_list
+get_settings_path
+get_unrecognized_sections
+help_requested
+init_settings
+parse_parameters
+read_config_files
+read_config_stream
+read_settings_file
+select_config_network
+setup_chain_params_base_options
+setup_help_options
+use_default_section
+write_settings_file
+ArgsManagerInner
+get_blocks_dir_path
+strip_redundant_last_elements_of_path
+get_unrecognized_sections
+parse_parameters
+use_default_section
+ArgDescriptor
+ArgsManagerArg
+BaseChainParams
+base_params
+create_base_chain_params
+data_dir
+rpc_port
+select_base_params
+setup_chain_params_base_options
+get_setting
+get_settings_list
+get_settings_path
+help_requested
+setting_name
+setup_help_options
+abs_path_for_config_val
+check_data_dir_option
+check_valid
+get_config_file
+get_config_options
+read_config_files
+read_config_stream
+get_chain_name
+init_settings
+lock_settings
+read_settings_file
+rename_over
+save_errors
+write_settings_file
+get_command
+OptionsCategory
+select_config_network

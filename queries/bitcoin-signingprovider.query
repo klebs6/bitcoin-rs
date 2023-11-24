@@ -1,0 +1,272 @@
+hello! 
+
+I am writing a rust crate called bitcoin-signingprovider. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+AddressDescriptor
+from
+is_single_type
+is_solvable
+make_scripts
+to_string_extra
+DescriptorCache
+cache_derived_ext_pub_key
+cache_last_hardened_ext_pub_key
+cache_parent_ext_pub_key
+get_cached_derived_ext_pub_key
+get_cached_derived_ext_pub_keys
+get_cached_last_hardened_ext_pub_key
+get_cached_last_hardened_ext_pub_keys
+get_cached_parent_ext_pub_key
+get_cached_parent_ext_pub_keys
+merge_and_diff
+TRDescriptor
+is_single_type
+make_scripts
+to_string_sub_script_helper
+get_cscript
+get_pub_key
+is_solvable
+FillableSigningProvider
+FillableSigningProviderInner
+FillableSigningProviderKeyMap
+FillableSigningProviderScriptMap
+add_key
+add_key_pub_key
+add_script
+get_key
+get_keys
+get_pub_key
+get_script
+get_scripts
+have_key
+have_script
+implicitly_learn_related_key_scripts
+ConstPubkeyProvider
+get_priv_key
+get_pub_key
+get_size
+is_range
+to_normalized_string
+to_private_string
+to_string
+parse
+parse_script
+add_key
+add_key_pub_key
+add_script
+get_key
+get_key_origin
+get_keys
+get_pub_key_with_key_id
+get_script
+get_scripts
+get_taproot_spend_data
+have_key
+have_script
+WSHDescriptor
+from
+is_single_type
+make_scripts
+MutableTransactionSignatureCreator
+checker
+create_schnorr_sig
+create_sig
+TransactionError
+amount_err_msg
+amount_high_warn
+resolve_err_msg
+transaction_error_string
+add_checksum
+check_checksum
+descriptor_checksum
+get_descriptor_checksum
+SigningProvider
+get_key
+get_key_by_xonly
+get_key_for_destination
+get_key_origin
+get_key_origin_by_xonly
+get_pub_key_by_xonly
+get_pub_key_with_key_id
+get_script
+get_taproot_spend_data
+have_key
+have_script
+lookup_helper
+DummySignatureCreator
+checker
+create_schnorr_sig
+create_sig
+PubkeyProvider
+from
+DeriveType
+ExtPubKeyMap
+KeyPath
+expand
+expand_from_cache
+expand_private
+get_priv_key
+get_pub_key
+get_size
+is_range
+is_single_type
+is_solvable
+make_scripts
+to_normalized_string
+to_private_string
+to_string
+to_string_extra
+to_string_subscript_helper
+RawDescriptor
+from
+is_single_type
+is_solvable
+make_scripts
+to_string_extra
+enumeratesigners
+register_signer_rpc_commands
+BIP32PubkeyProvider
+being
+get_derived_ext_key
+get_ext_key
+get_priv_key
+get_pub_key
+get_size
+is_hardened
+is_range
+to_normalized_string
+to_private_string
+to_string
+DescriptorImpl
+DescriptorImplStringType
+expand
+expand_from_cache
+expand_helper
+expand_private
+is_range
+is_solvable
+to_normalized_string
+to_private_string
+to_string
+to_string_extra
+to_string_helper
+to_string_subscript_helper
+WPKHDescriptor
+from
+is_single_type
+make_scripts
+SHDescriptor
+from
+is_single_type
+make_scripts
+PKHDescriptor
+from
+is_single_type
+make_scripts
+poly_mod
+ParseScriptContext
+parse_key_path
+parse_pubkey
+parse_pubkey_inner
+MultisigDescriptor
+is_single_type
+make_scripts
+to_string_extra
+ExternalSignerScriptPubKeyMan
+display_address
+fillpsbt
+get_external_signer
+setup_descriptor
+data_from_transaction
+sign_signature
+sign_signature_with_amount
+sign_transaction
+add_and_get_destination_for_script
+get_all_destinations_for_key
+get_destination_for_key
+HidingSigningProvider
+get_key
+get_key_origin
+get_pub_key
+get_script
+get_taproot_spend_data
+infer_descriptor
+infer_pubkey
+infer_script
+infer_xonly_pubkey
+PKDescriptor
+is_single_type
+make_scripts
+SigningResult
+signing_result_string
+ComboDescriptor
+from
+is_single_type
+make_scripts
+ValType
+checker
+create_schnorr_sig
+create_sig
+create_taproot_script_sig
+produce_signature
+sign_step
+sign_taproot
+sign_taproot_script
+FlatSigningProvider
+get_key
+get_key_origin
+get_pub_key
+get_script
+get_taproot_spend_data
+merge
+OriginPubkeyProvider
+get_priv_key
+get_pub_key
+get_size
+is_range
+origin_string
+to_normalized_string
+to_private_string
+to_string

@@ -1,0 +1,123 @@
+hello! 
+
+I am writing a rust crate called bitcoinsecp256k1-bench. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+BenchEcdhData
+bench_ecdh
+bench_ecdh_setup
+secp256k1_bench_ecdh_main
+BenchSignData
+bench_sign_run
+bench_sign_setup
+secp256k1_bench_sign_main
+BenchVerifyDaya
+bench_verify
+bench_verify_openssl
+secp256k1_bench_verify_main
+BenchData
+bench_ecmult_1
+bench_ecmult_1_teardown
+bench_ecmult_1g
+bench_ecmult_1g_teardown
+bench_ecmult_2g
+bench_ecmult_2g_teardown
+bench_ecmult_const
+bench_ecmult_const_teardown
+bench_ecmult_gen
+bench_ecmult_gen_teardown
+bench_ecmult_multi
+bench_ecmult_multi_callback
+bench_ecmult_multi_setup
+bench_ecmult_multi_teardown
+bench_ecmult_setup
+bench_ecmult_teardown_helper
+generate_scalar
+hash_into_offset
+help
+run_ecmult_bench
+run_ecmult_multi_bench
+secp256k1_bench_ecmult_main
+BenchInv
+bench_context_sign
+bench_context_verify
+bench_ecmult_wnaf
+bench_field_inverse
+bench_field_inverse_var
+bench_field_mul
+bench_field_normalize
+bench_field_normalize_weak
+bench_field_sqr
+bench_field_sqrt
+bench_group_add_affine
+bench_group_add_affine_var
+bench_group_add_var
+bench_group_double_var
+bench_group_to_affine_var
+bench_hmac_sha256
+bench_rfc6979_hmac_sha256
+bench_scalar_add
+bench_scalar_inverse
+bench_scalar_inverse_var
+bench_scalar_mul
+bench_scalar_negate
+bench_scalar_split
+bench_setup
+bench_sha256
+bench_wnaf_const
+secp256k1_bench_internal_main
+BenchSchnorrSigData
+bench_schnorrsig_sign
+bench_schnorrsig_verify
+secp256k1_bench_schnorrsig_main
+BenchRecoverData
+bench_recover
+bench_recover_setup
+secp256k1_bench_recover_main
+get_iters
+gettime_i64
+have_flag
+print_number
+run_benchmark
+timeval

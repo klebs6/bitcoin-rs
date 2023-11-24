@@ -1,0 +1,166 @@
+hello! 
+
+I am writing a rust crate called bitcoin-support. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+Arena
+ArenaChunkToSizeMap
+ArenaSizeToChunkSortedMap
+ArenaSizeToChunkSortedMapIterator
+ArenaStats
+LockedPageArena
+LockedPool
+LockedPoolManager
+LockingFailed_Callback
+PosixLockedPageAllocator
+Stats
+Win32LockedPageAllocator
+address_in_arena
+align_up
+alloc
+allocate_locked
+create_instance
+default
+drop
+free
+free_locked
+get_limit
+instance
+locking_failed
+printchunk
+rlimit
+stats
+walk
+obtain_event
+obtain_event_base
+obtain_evhttp
+obtain_evhttp_connection_base
+obtain_evhttp_request
+type
+SecureAllocator
+SecureString
+allocate
+deallocate
+default
+SerializeData
+ZeroAfterFreeAllocator
+allocate
+deallocate
+NonFatalCheckError
+Output
+StdLockGuard
+StdMutex
+StreamSize
+abort_node
+abort_shutdown
+any_ptr
+app_init_util
+byte
+check_tx_scripts_sanity
+copyright_holders
+decode_double
+decode_hex_blk
+decode_hex_block_header
+decode_hex_tx
+decode_tx
+dir_is_writable
+drop
+encode_double
+encode_hex_tx
+error
+format_script
+from
+get_file_size
+get_num_cores
+get_pure_r_value
+get_special_folder_path
+get_startup_time
+get_warnings
+grind
+grind_task
+init_shutdown_state
+insert
+insert_into_set
+lock_directory
+matches
+not
+parse_hash_str
+parse_hexuv
+parse_op_code
+parse_script
+parse_sighash_string
+raise_file_descriptor_limit
+read_binary_file
+release_directory_locks
+rlimit
+run_command
+run_command_parsejson
+schedule_batch_priority
+script_pub_key_to_univ
+script_to_asm_str
+script_to_univ
+set_internal_name
+set_misc_warning
+set_thread_name
+shell_escape
+shutdown_requested
+sighash_to_str
+spanparsing_const
+spanparsing_expr
+spanparsing_func
+spanparsing_split
+start_shutdown
+thread_get_internal_name
+thread_rename
+thread_set_internal_name
+try_create_directories
+tx_to_univ
+unlock_directory
+util_main
+value_from_amount
+vector
+wait_for_shutdown
+write_binary_file
+memory_cleanse
+get_unique_path

@@ -1,0 +1,82 @@
+hello! 
+
+I am writing a rust crate called bitcoin-banman. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+unban_netaddr
+unban_subnet
+discourage
+is_discouraged
+BanMan
+drop
+get_banned
+notify_ui_on_sweep
+sweep_banned
+translated
+clear_banned
+BanManInner
+ShouldNotifyUi
+clear_banned
+default
+do_get_banned
+do_sweep_banned
+is_netaddr_banned
+is_subnet_banned
+banned_set_is_dirty
+set_banned_set_dirty
+lookup_sub_net
+BanDB
+read
+write
+BanMap
+ban_map_from_json
+ban_map_to_json
+ban_netaddr
+ban_subnet
+BanEntry
+default
+eq
+from
+to_json
+dump_banlist

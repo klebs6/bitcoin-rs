@@ -1,0 +1,147 @@
+hello! 
+
+I am writing a rust crate called bitcoinrpc-wallet. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+DescribeWalletAddressVisitor
+TallyItem
+abandontransaction
+abortrescan
+addmultisigaddress
+address_book_data_tojson
+and
+backupwallet
+bumpfee
+bumpfee_helper
+createwallet
+describe_wallet_address
+dumpprivkey
+dumpwallet
+encryptwallet
+ensure_legacy_script_pub_key_man
+ensure_wallet_context
+ensure_wallet_is_unlocked
+fund_transaction
+fund_tx_doc
+fundrawtransaction
+get_avoid_reuse_flag
+get_received
+get_wallet_for_jsonrpc_request
+get_wallet_name_from_jsonrpc_request
+get_wallet_rpc_commands
+getaddressesbylabel
+getaddressinfo
+getbalance
+getbalances
+getrawchangeaddress
+getreceivedbyaddress
+getreceivedbylabel
+gettransaction
+getunconfirmedbalance
+getwalletinfo
+have_key
+importaddress
+importdescriptors
+importmulti
+importprivkey
+importprunedfunds
+importpubkey
+importwallet
+invoke_with_nodestination
+invoke_with_pkhash
+invoke_with_scripthash
+invoke_with_witnessunknown
+invoke_with_witnessv0_keyhash
+invoke_with_witnessv0_scripthash
+invoke_with_witnessv1_taproot
+keypoolrefill
+label_from_value
+list_received
+list_transactions
+listaddressgroupings
+listdescriptors
+listlabels
+listlockunspent
+listreceivedbyaddress
+listreceivedbylabel
+listsinceblock
+listtransactions
+listunspent
+listwalletdir
+listwallets
+load_wallet_helper
+loadwallet
+lockunspent
+maybe_push_address
+of
+options
+parse_include_watchonly
+parse_recipients
+process_sub_script
+psbtbumpfee
+removeprunedfunds
+rescanblockchain
+restorewallet
+send
+send_money
+sendmany
+sendtoaddress
+set_fee_estimate_mode
+sethdseed
+setlabel
+settxfee
+setwalletflag
+signmessage
+signrawtransactionwithwallet
+to
+transaction_description_string
+unloadwallet
+upgradewallet
+wallet_tx_tojson
+walletcreatefundedpsbt
+walletdisplayaddress
+walletlock
+walletpassphrase
+walletpassphrasechange
+walletprocesspsbt

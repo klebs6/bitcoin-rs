@@ -1,0 +1,213 @@
+hello! 
+
+I am writing a rust crate called bitcoinnode-interface. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+NodeHSocket
+default
+select_node_to_evict
+NodeVSend
+default
+NodeEvictionCandidate
+compare_net_group_keyed
+compare_node_block_relay_only_time
+compare_node_block_time
+compare_node_tx_time
+erase_last_kelements
+reverse_compare_node_min_ping_time
+reverse_compare_node_time_connected
+get_fetch_flags
+NodeAddrLocal
+default
+NodeVRecv
+default
+Net
+protect_eviction_candidates_by_ratio
+NodeBannedListChangedFn
+NodeInitMessageFn
+NodeMessageBoxFn
+NodeNotifyAlertChangedFn
+NodeNotifyBlockTipFn
+NodeNotifyHeaderTipFn
+NodeNotifyNetworkActiveChangedFn
+NodeNotifyNumConnectionsChangedFn
+NodeQuestionFn
+NodeShowProgressFn
+finalize_node
+initialize_node
+process_messages
+send_messages
+add_known_tx
+add_ref
+addr_bind
+addr_name
+app_init_main
+app_shutdown
+ban
+base_initialize
+close_socket_disconnect
+conn_type
+connected_through_network
+context
+copy_stats
+decrement_n_process_queue_size
+disconnect_by_address
+disconnect_by_id
+disconnect_on_stall
+execute_rpc
+expect_services_from_conn
+external_signers
+get_banned
+get_best_block_hash
+get_common_version
+get_dust_relay_fee
+get_header_tip
+get_id
+get_importing
+get_last_block_time
+get_local_nonce
+get_local_services
+get_log_categories
+get_mempool_dynamic_usage
+get_mempool_size
+get_n_process_queue_size
+get_n_time_connected
+get_network_active
+get_node_count
+get_nodes_stats
+get_num_blocks
+get_proxy
+get_ref_count
+get_reindex
+get_total_bytes_recv
+get_total_bytes_sent
+get_transport_serializer
+get_transport_serializer_mut
+get_tx_relay
+get_tx_relay_mut
+get_verification_progress
+get_warnings
+grant_outbound
+handle_banned_list_changed
+handle_init_message
+handle_message_box
+handle_notify_alert_changed
+handle_notify_block_tip
+handle_notify_header_tip
+handle_notify_network_active_changed
+handle_notify_num_connections_changed
+handle_question
+has_permission
+has_tx_relay
+increment_n_process_queue_size
+init_logging
+init_parameter_interaction
+is_addr_fetch_conn
+is_block_only_conn
+is_client
+is_feeler_conn
+is_full_outbound_conn
+is_inbound_conn
+is_limited_node
+is_manual_conn
+is_outbound_or_block_relay_conn
+is_successfully_connected
+list_rpc_commands
+lock_h_socket
+lock_recv_msg
+lock_send_processing
+lock_v_process_msg
+lock_v_send
+map_port
+mark_for_disconnect
+marked_for_disconnect
+min_ping_time
+n_keyed_net_group
+n_last_block_time
+n_last_recv
+n_last_send
+n_last_tx_time
+n_process_queue_size
+n_services
+n_time_connected
+n_version
+pause_recv
+pong_received
+prefer_evict
+push_tx_inventory
+receive_msg_bytes
+release
+release_grant_outbound
+rpc_set_timer_interface_if_unset
+rpc_unset_timer_interface
+send_paused
+set_addr_local
+set_bip152_highbandwidth_from
+set_bip152_highbandwidth_to
+set_clean_sub_ver
+set_common_version
+set_context
+set_is_client
+set_limited_node
+set_n_last_block_time
+set_n_last_tx_time
+set_n_services
+set_n_time_offset
+set_n_version
+set_network_active
+set_pause_recv
+set_pause_send
+set_permission_flags
+set_prefer_evict
+set_successfully_connected
+shutdown_requested
+start_shutdown
+successfully_connected
+unban
+unlock_send_processing
+NodeVProcessMsg
+default
+get_local_addr_for_peer
+is_peer_addr_local_good
+AddedNodeInfo

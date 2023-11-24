@@ -1,0 +1,235 @@
+hello! 
+
+I am writing a rust crate called bitcoin-txmempool. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+BIP9Stats
+Inner
+ThresholdConditionCache
+ThresholdState
+VersionBitsCache
+VersionBitsConditionChecker
+begin_time
+clear
+compute_block_version
+condition
+end_time
+get_state_for
+get_state_since_height_for
+get_state_statistics_for
+mask
+min_activation_height
+period
+state
+state_since_height
+statistics
+threshold
+CoinsViewMemPool
+get_coin
+package_add_transaction
+MempoolAcceptResult
+MempoolAcceptResultType
+PackageMempoolAcceptResult
+failure
+success
+DepthAndScoreComparator
+invoke
+BlockUndo
+TxInUndoFormatter
+ser
+unser
+UpdateAncestorState
+UpdateDescendantState
+UpdateFeeDelta
+UpdateLockPoints
+invoke
+CompareInvMempoolOrder
+compare
+FopenFn
+ScriptCheck
+TxValidationResult
+TxValidationState
+WarningBitsConditionChecker
+abort_node
+alert_notify
+append_warning
+apply_tx_in_undo
+begin_time
+calculate_sequence_locks
+check_block
+check_block_header
+check_final_tx
+check_sequence_locks
+check_transaction
+condition
+contextual_check_block
+default
+do_warning
+dump_mempool
+end_time
+error
+evaluate_sequence_locks
+flush_block_file
+generate_coinbase_commitment
+get_block_script_flags
+get_block_subsidy
+get_block_weight
+get_debug_message
+get_legacy_sig_op_count
+get_p2sh_sig_op_count
+get_reject_reason
+get_result
+get_script_error
+get_transaction_sig_op_cost
+get_transaction_weight
+get_witness_commitment_index
+init_script_execution_cache
+invalid
+invoke
+is_error
+is_final_tx
+is_invalid
+is_valid
+limit_mempool_size
+limit_validation_interface_queue
+period
+sequence_locks
+start_script_check_worker_threads
+stop_script_check_worker_threads
+swap
+threshold
+to_string
+update_coins
+update_uncommitted_block_structures
+MemPoolRemovalReason
+AncestorScore
+DescendantScore
+EntryTime
+IndexByWTxid
+InsertionOrder
+TxIdIndex
+TxIter
+TxMemPool
+TxMemPoolCacheMap
+TxMemPoolIndexedTransactionSet
+TxMemPoolIndexedTransactionSetConstIterator
+TxMemPoolIndexedTransactionSetIterator
+TxMemPoolIndexedTransactionSetNthIndex0ConstIterator
+TxMemPoolInner
+TxMemPoolSetEntries
+TxMemPoolTxIter
+add_transactions_updated
+add_unbroadcast_tx
+add_unchecked
+add_unchecked_with_set_ancestors
+apply_delta
+calculate_ancestors_and_check_limits
+calculate_descendant_maximum
+calculate_descendants
+calculate_mem_pool_ancestors
+check
+check_package_limits
+clear
+clear_impl
+clear_prioritisation
+compare_depth_and_score
+dynamic_memory_usage
+exists
+expire
+get
+get_and_increment_sequence
+get_conflict_tx
+get_info
+get_iter
+get_iter_from_wtxid
+get_iter_set
+get_min_fee
+get_sequence
+get_sorted_depth_and_score
+get_total_fee
+get_total_tx_size
+get_transaction_ancestry
+get_transactions_updated
+get_unbroadcast_txs
+info
+info_all
+is_loaded
+is_spent
+is_unbroadcast_tx
+prioritise_transaction
+query_hashes
+remove_conflicts
+remove_for_block
+remove_recursive
+remove_staged
+remove_unbroadcast_tx
+remove_unchecked
+set_is_loaded
+size
+track_package_removed
+trim_to_size
+update_ancestors_of
+update_child
+update_children_for_removal
+update_entry_for_ancestors
+update_for_descendants
+update_for_remove_from_mempool
+update_parent
+update_transactions_from_block
+visited
+visited_impl
+TxMemPoolInfo
+get_virtual_transaction_size_for_tx
+is_standard_tx
+TxUndo
+tx_to_univ
+entries_and_txids_disjoint
+get_entries_for_conflicts
+is_rbf_opt_in
+pays_more_than_conflicts
+MemPoolEntryTxid
+MemPoolEntryWTxid
+ResultType
+invoke_tx_mempool_entry
+invoke_txn

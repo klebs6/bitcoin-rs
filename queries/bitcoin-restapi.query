@@ -1,0 +1,72 @@
+hello! 
+
+I am writing a rust crate called bitcoin-restapi. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+Coin
+RetFormat
+RfName
+UriPrefix
+available_data_formats_string
+check_warmup
+default
+get_chainman
+get_mem_pool
+get_node_context
+getblockchaininfo
+interruptrest
+parse_data_format
+rest_block
+rest_block_extended
+rest_block_notxdetails
+rest_blockhash_by_height
+rest_chaininfo
+rest_getutxos
+rest_headers
+rest_mempool_contents
+rest_mempool_info
+rest_tx
+resterr
+startrest
+stoprest

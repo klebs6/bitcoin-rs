@@ -1,0 +1,111 @@
+hello! 
+
+I am writing a rust crate called bitcoinleveldb-version. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+BySmallestKey
+FileSet
+LevelState
+VersionSetBuilder
+apply
+drop
+invoke
+maybe_add_file
+save_to
+State
+Version
+VersionGetStats
+add_iterators
+debug_string
+drop
+for_each_overlapping
+get
+num_files
+overlap_in_level
+record_read_sample
+ref_
+unref
+update_stats
+LogReporter
+VersionSet
+VersionSetLevelSummaryStorage
+add_live_files
+append_version
+approximate_offset_of
+compact_range
+current
+drop
+finalize
+get_range
+get_range2
+last_sequence
+level_summary
+log_and_apply
+log_number
+manifest_file_number
+mark_file_number_used
+max_next_level_overlapping_bytes
+needs_compaction
+num_level_bytes
+num_level_files
+pick_compaction
+prev_log_number
+recover
+reuse_file_number
+reuse_manifest
+set_last_sequence
+write_snapshot
+Compaction
+CompactionState
+CompactionStats
+ManualCompaction
+Output
+add
+default
+drop
+edit
+is_base_level_for_key
+is_trivial_move
+level
+should_stop_before

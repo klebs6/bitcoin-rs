@@ -1,0 +1,206 @@
+hello! 
+
+I am writing a rust crate called bitcoin-primitives. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+CheckpointData
+MapCheckpoints
+get_height
+AutoFile
+BitStreamReader
+BitStreamWriter
+BufferedFile
+DataStream
+DeserializeType
+Output
+OverrideStream
+VectorReader
+VectorWriter
+as_mut_slice
+as_slice
+begin
+begin_mut
+by
+clear
+compact
+data
+data_mut
+drop
+empty
+end
+end_mut
+eof
+erase
+erase_range
+fclose
+fill
+find_byte
+flush
+get
+get_pos
+get_type
+get_version
+ignore
+in_avail
+index
+index_mut
+insert_item
+insert_multi
+insert_with_iterator_range
+insert_with_pointer_range
+is_null
+rdbuf
+read
+release
+reserve
+resize
+rewind
+serialize
+set_limit
+set_pos
+set_type
+set_version
+shl
+shr
+size
+str_
+stream
+stream_into
+to
+write
+xor
+BaseBlob
+as_slice
+as_slice_mut
+base_blob_width
+begin
+begin_mut
+byte_len
+cmp
+compare
+data
+data_mut
+default
+deserialize
+end
+end_mut
+eq
+from
+get_hex
+get_u64
+is
+is_null
+one
+partial_cmp
+serialize
+set_hex
+set_hex_from_str
+set_null
+size
+to_string
+u160
+u256
+unserialize
+zero
+ArithU256
+BaseUInt
+Output
+add
+add_assign
+arith_to_uint256
+assign_from_other
+assign_from_u64
+bitand
+bitand_assign
+bitor
+bitor_assign
+bits
+bitxor
+bitxor_assign
+cmp
+compare_to
+default
+div
+div_assign
+eq
+equal_to
+from
+get_compact
+get_hex
+get_low64
+getdouble
+mul
+mul_assign
+neg
+not
+partial_cmp
+postfix_decrement
+postfix_increment
+prefix_decrement
+prefix_increment
+set_compact
+set_hex
+set_hex_with_str
+shl
+shl_assign
+shr
+shr_assign
+size
+sub
+sub_assign
+to_string
+uint_to_arith256
+count_bits
+init
+readbe16
+readbe32
+readbe64
+readle16
+readle32
+readle64
+writebe32
+writebe64
+writele16
+writele32
+writele64

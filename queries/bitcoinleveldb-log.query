@@ -1,0 +1,152 @@
+hello! 
+
+I am writing a rust crate called bitcoinleveldb-log. 
+
+It is one of the subcomponets of the bitcoin
+system.
+
+I would like you to help me write a rust crate
+description for it.
+
+Please write the description in the following
+format:
+
+<short description tag used in the crate header>
+<double newline>
+<longer, in depth description and possible mathematical analysis>
+<END>
+
+I would like you to include the following
+`Notice` in some part of your response:
+
+"This crate is part of a direct translation
+from C++ to Rust of the bitcoin core. As such,
+some of the function bodies may still be in
+the process of translation. Please note that
+this system will become testable once the
+translation process is complete"
+
+Below are listed the tokens from this crate. 
+
+Please describe any mathematical ideas
+associated with these tokens alongside the
+relevant mathematical equations in unicode.
+
+If there are no mathematical ideas associated
+with these tokens, say nothing.
+
+Do not say: "there are no mathematical ideas
+associated with these tokens".
+
+thanks!
+
+please format your response in the Markdown
+file format.
+
+here are the tokens:
+LogRecordType
+LogTest
+ReportCollector
+StringDest
+StringSource
+append
+big_string
+check_initial_offset_record
+check_offset_past_end_returns_no_records
+close
+corruption
+default
+drop
+dropped_bytes
+fix_checksum
+flush
+force_error
+get_name
+increment_byte
+log_test_aligned_eof
+log_test_bad_length
+log_test_bad_length_at_end_is_ignored
+log_test_bad_record_type
+log_test_checksum_mismatch
+log_test_empty
+log_test_error_joins_records
+log_test_fragmentation
+log_test_many_blocks
+log_test_missing_last_is_ignored
+log_test_open_for_append
+log_test_partial_last_is_ignored
+log_test_random_read
+log_test_read_end
+log_test_read_error
+log_test_read_fourth_first_block_trailer
+log_test_read_fourth_last_block
+log_test_read_fourth_middle_block
+log_test_read_fourth_one_off
+log_test_read_fourth_start
+log_test_read_initial_offset_into_block_padding
+log_test_read_past_end
+log_test_read_second_one_off
+log_test_read_second_start
+log_test_read_second_ten_thousand
+log_test_read_start
+log_test_read_third_one_off
+log_test_read_third_start
+log_test_read_write
+log_test_short_trailer
+log_test_skip_into_multi_record
+log_test_truncated_trailing_record_is_ignored
+log_test_unexpected_first_type
+log_test_unexpected_full_type
+log_test_unexpected_last_type
+log_test_unexpected_middle_type
+logtest_main
+match_error
+number_string
+random_skewed_string
+read
+reopen_for_append
+report_message
+set_byte
+shrink_size
+skip
+start_reading_at
+sync
+write
+write_initial_offset_log
+written_bytes
+Logging
+consume_decimal_number_no_digits_test
+consume_decimal_number_overflow_test
+consume_decimal_number_roundtrip_test
+logging_consume_decimal_number_no_digits
+logging_consume_decimal_number_overflow
+logging_consume_decimal_number_roundtrip
+logging_consume_decimal_number_roundtrip_with_padding
+logging_number_to_string
+testlogging_test_main
+append_escaped_string_to
+append_number_to
+consume_decimal_number
+escape_string
+logv
+number_to_string
+LogWriter
+add_record
+and
+emit_physical_record
+init_type_crc
+stored
+PosixLogger
+drop
+logv
+std
+ExtendedRecordTypes
+LogReader
+corruption
+drop
+last_record_offset
+read_physical_record
+read_record
+report_corruption
+report_drop
+skip_to_initial_block
