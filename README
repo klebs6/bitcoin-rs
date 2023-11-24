@@ -12,22 +12,15 @@ ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the C++ upstream.
 
 Once there is a match of ab25ef8c, the next step is to patch until there is a match of the C++ HEAD.
 
-There is a way to distribute the C++ commit patches into the rust workspace crates such that there is a simple patch chain for each crate.
-This is much less complicated than the application of the whole patch chain globally.
-
 The goal is to fully match the C++ core in a modular, high performance rust workspace. 
 
 If this goal resonates with you, the writer is grateful for support accelerating the translation and testing. 
 
-One purpose of the writer in this message is to indicate the translation task is now fully parallelized.  
-Even before the c++ to rust transpiler is finished (see below), we can whack machete this codebase in parallel.
-
-If this starts to happen, I will pause whatever else I am working on to resume cranking this project alongside you, whoever comes along with the machetes.
+The translation task is now fully parallelized.  
 
 Here are some things which are helpful:
 - pull requests completing (and testing) the translation of one or more of these crates.
-- requests to distribute one or more crates in this workspace.  
-The current author will happily provide crates.io ownership of any workspace crate whose translation arrives as a pull request from another developer in the community.
+- requests to distribute one or more crates in this workspace. 
 
 The writer has prototyped a C++ to Rust transpiler which can translate C++ statements into Rust. 
 Once this transpiler is productionized, it will become possible for it to perform most of the heavy lifting involved in translating this codebase automatically.
