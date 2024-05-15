@@ -1,10 +1,18 @@
+# bitcoin-rs
+
+A work-in-progress translation of the C++ Bitcoin Core (https://github.com/bitcoin/bitcoin) into Rust
+
+## Overview
+
 Greetings!
 
-This workspace is a translation of the c++ bitcoin core `https://github.com/bitcoin/bitcoin` into rust.
+This workspace is a translation of the C++ Bitcoin Core (https://github.com/bitcoin/bitcoin) into Rust.
 
-Currently, the *interface* (starting from commit ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd) is fully translated.
+Currently, the *interface* (starting from [commit ab25ef8](https://github.com/bitcoin/bitcoin/commit/ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd)) is fully translated.
 
-Most function bodies still wrap commented c++ statements below a `todo!();`.  As such, the codebase is not yet ready for production use.
+Most function bodies still wrap commented C++ statements below a `todo!();`.  As such, the codebase is not yet ready for production use.
+
+## Translation Overview
 
 The translation task is fully parallelized. Given a topological sort on the dependency order of crates, the remainder may be solved (roughly) with the following algorithm:
 
@@ -28,10 +36,10 @@ for crate in topo_sorted_crates.iter() {
   create_git_commit_for_crate(crate.name())?;
   crate.run_tests()?;
 }
-//now we can patch until we reach the C++ head, etc.
-````
+// now we can patch until we reach the C++ head, etc.
+```
 
-There is a transpiler named `chomper` which can help expedite the general task of c++ to rust translation: `https://github.com/klebs6/chomper`.
+The [Chomper transpiler](https://github.com/klebs6/chomper) is used to help expedite the general task of C++ to Rust translation.
 
 The `translate_function_given_interfaces` step seems best done with AI in the loop, given the fact that the function body logic itself has already been developed.
 
@@ -46,6 +54,6 @@ Here are some things which are helpful:
 
 If there are developers out there who are interested in collaborating in the meantime as the AI scales, support will be provided.
 
-best,
+Best,
 
 -kleb
