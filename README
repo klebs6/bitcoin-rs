@@ -6,7 +6,7 @@ Currently, the *interface* (starting from commit ab25ef8c7f767258d5fe44f53b35ad8
 
 Most function bodies still wrap commented c++ statements below a `todo!();`.  As such, the codebase is not yet ready for production use.
 
-The translation task is fully parallelized. Given a topological sort on the dependency order of crates, the remainder may be solved with the following algorithm:
+The translation task is fully parallelized. Given a topological sort on the dependency order of crates, the remainder may be solved (roughly) with the following algorithm:
 
 ```rust
 
