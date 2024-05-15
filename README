@@ -8,7 +8,7 @@ As such, the codebase is not yet ready for production use.
 Currently, it is ready for experimentation and development collaboration.
 
 After each function body is translated, the codebase will match commit
-ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the C++ upstream.  
+ab25ef8c7f767258d5fe44f53b35ad8bd51ed5cd from the C++ upstream `https://github.com/bitcoin/bitcoin`
 
 Once there is a match of ab25ef8c, the next step is to patch until there is a match of the C++ HEAD.
 
@@ -22,10 +22,12 @@ Here are some things which are helpful:
 - pull requests completing (and testing) the translation of one or more of these crates.
 - requests to distribute one or more crates in this workspace. 
 
-The writer has prototyped a C++ to Rust transpiler which can translate C++ statements into Rust. 
+The writer has prototyped a C++ to Rust transpiler which can translate C++ statements into Rust `https://github.com/klebs6/chomper`
+
 Once this transpiler is productionized, it will become possible for it to perform most of the heavy lifting involved in translating this codebase automatically.
 
 The transpiler needs a performance upgrade in order to become practical for this purpose.
+
 The writer has auxiliary tasks to complete.  In a few months, he will be back to help.
 
 If there are developers out there who are interested in collaborating in the meantime, support will be provided.
