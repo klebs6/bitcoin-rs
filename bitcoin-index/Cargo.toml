@@ -6,6 +6,8 @@ version = "0.5.1"
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
 version = "0.1.16-alpha.0"
@@ -26,9 +28,6 @@ path = "../bitcoin-muhash"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"

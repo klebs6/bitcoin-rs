@@ -84,7 +84,6 @@ my %descriptions = %(
     "bitcoin-poly1305"           => "Poly1305 is a universal hash function suitable for use as a one-time authenticator and, when combined with a cipher, a message authentication code (MAC). It takes a 32-byte one-time key and a message and produces a 16-byte tag, which can be used to authenticate the message.",
     "bitcoin-portmap"            => "tools for port mapping",
     "bitcoin-pow"                => "tools for calculating and checking proof of work",
-    "bitcoin-primitives"         => "tools for working with numbers, blobs, and streams",
     "bitcoin-proxy"              => "tools for working with various proxy types (socks5, etc)",
     "bitcoin-psbt"               => "tools for working with partially signed transactions",
     "bitcoin-qt"                 => "GUI application layer code",

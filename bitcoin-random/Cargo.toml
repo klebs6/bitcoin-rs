@@ -1,6 +1,8 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-chacha]
 path = "../bitcoin-chacha"
 version = "0.1.16-alpha.0"
@@ -16,9 +18,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-log]
 path = "../bitcoin-log"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-sha256]
 path = "../bitcoin-sha256"
 version = "0.1.16-alpha.0"
@@ -31,6 +30,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-time]
 path = "../bitcoin-time"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [package]
 authors = [ "klebs <none>" ]
 description = "random numbers in bitcoin"

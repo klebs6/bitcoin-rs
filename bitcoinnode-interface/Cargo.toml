@@ -37,9 +37,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-proxy]
 path = "../bitcoin-proxy"
 version = "0.1.16-alpha.0"
@@ -64,6 +61,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-sync]
 path = "../bitcoin-sync"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
 version = "0.1.16-alpha.0"

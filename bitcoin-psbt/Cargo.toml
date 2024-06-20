@@ -4,6 +4,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.16-alpha.0"
@@ -18,9 +20,6 @@ path = "../bitcoin-imports"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
-version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
@@ -37,6 +36,10 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u160]
+path = "../bitcoin-u160"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
 version = "0.1.16-alpha.0"

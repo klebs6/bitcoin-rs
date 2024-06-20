@@ -1,7 +1,5 @@
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/wallet/test/wallet_test_fixture.h]
 //-------------------------------------------[.cpp/bitcoin/src/wallet/test/wallet_test_fixture.cpp]
 
@@ -17,7 +15,7 @@ pub struct WalletTestingSetup {
       | *Assert(m_node.args));
       |
       */
-    wallet_client:               Box<interfaces::WalletClient>,
+    wallet_client:               Box<dyn WalletClient>,
 
     wallet:                      Wallet,
     chain_notifications_handler: Box<dyn Handler>,
@@ -25,18 +23,8 @@ pub struct WalletTestingSetup {
 
 impl WalletTestingSetup {
     
-    pub fn new(chain_name: &String) -> Self {
-        let chain_name: &String =
-                 chain_name.unwrap_or(CBaseChainParams_MAIN);
-        todo!();
-        /*
-
-        
-        */
-    }
-    
-    pub fn new(chain_name: &String) -> Self {
-    
+    pub fn new(chain_name: Option<&str>) -> Self {
+        let chain_name = chain_name.unwrap_or(base_chain_params::MAIN);
         todo!();
         /*
 

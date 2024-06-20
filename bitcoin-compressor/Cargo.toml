@@ -10,9 +10,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
 version = "0.1.16-alpha.0"

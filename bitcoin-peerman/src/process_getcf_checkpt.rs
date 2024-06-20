@@ -101,4 +101,3 @@ impl ProcessGetCfCheckPt for PeerManager {
         self.connman.get_mut().push_message(&mut *peer, msg /* move */);
     }
 }
-

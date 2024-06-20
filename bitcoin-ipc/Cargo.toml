@@ -1,14 +1,13 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-index]
 path = "../bitcoin-index"
-version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
 version = "0.1.16-alpha.0"
 [dependencies.lazy_static]
 version = "1.4.0"

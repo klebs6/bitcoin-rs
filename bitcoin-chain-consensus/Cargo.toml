@@ -10,12 +10,11 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-sha256]
 path = "../bitcoin-sha256"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitflags]
 version = "0.1.1"
 [dependencies.lazy_static]

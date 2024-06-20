@@ -1,5 +1,7 @@
 .PHONY: build vendor json
 
+export CARGO_PROFILE_DEV_BUILD_OVERRIDE_DEBUG=true
+
 HACK_BDB   := env CFLAGS="-Wno-error=implicit-function-declaration"
 HACK_LLVM  := env LLVM_CONFIG_PATH="/usr/local/opt/llvm/bin/llvm-config"
 
@@ -77,7 +79,7 @@ gen_doc:
 	RUSTFLAGS=$(RUSTFLAGS) ./u/generate-rustdoc-db
 
 build:
-	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(BUILD)
+	$(HACK_CLANG) RUST_BACKTRACE=full RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(BUILD)
 
 
 build_active:

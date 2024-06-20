@@ -4,6 +4,9 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-addr]
 path = "../bitcoin-addr"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
+version = "0.1.0"
 [dependencies.bitcoin-addrman]
 path = "../bitcoin-addrman"
 version = "0.1.16-alpha.0"
@@ -57,9 +60,6 @@ path = "../bitcoin-netpermissions"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
-version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-proxy]
 path = "../bitcoin-proxy"

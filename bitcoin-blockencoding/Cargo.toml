@@ -1,6 +1,8 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
 version = "0.1.16-alpha.0"
@@ -9,9 +11,6 @@ path = "../bitcoin-derive"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
@@ -25,6 +24,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
 version = "0.1.16-alpha.0"

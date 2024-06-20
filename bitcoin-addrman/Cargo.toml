@@ -7,9 +7,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-string]
-path = "../bitcoin-string"
-version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.16-alpha.0"
@@ -28,9 +27,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
 version = "0.1.16-alpha.0"
@@ -43,9 +39,14 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-service-flags]
 path = "../bitcoin-service-flags"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-string]
+path = "../bitcoin-string"
+version = "0.1.16-alpha.0"
 [dependencies.bitcoin-time]
 path = "../bitcoin-time"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
 version = "0.1.16-alpha.0"

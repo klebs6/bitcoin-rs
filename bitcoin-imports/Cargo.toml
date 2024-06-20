@@ -1,3 +1,5 @@
+[build-dependencies]
+scan-crate-for-typedefs = "0.6.0"
 [dependencies.atomic]
 version = "0.5.1"
 [dependencies.atomic-take]
@@ -37,9 +39,13 @@ version = "0.2.126"
 [dependencies.libc-stdhandle]
 version = "0.1.0"
 [dependencies.libevent]
-version = "0.1.0"
+version = "*"
+git = "https://github.com/klebs6/libevent-rs"
+branch = "patch-1"
 [dependencies.libevent-sys]
-version = "0.2.6"
+version = "*"
+git = "https://github.com/klebs6/libevent-rs"
+branch = "patch-1"
 [dependencies.lock_api]
 version = "0.4.7"
 [dependencies.maplit]

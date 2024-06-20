@@ -4,14 +4,13 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-autofile]
+path = "../bitcoin-autofile"
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"

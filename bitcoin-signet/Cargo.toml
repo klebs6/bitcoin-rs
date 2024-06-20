@@ -10,15 +10,14 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [package]
 authors = [ "klebs <none>" ]
 description = "generate the signet tx corresponding to the given block -- the signed tx commits to everything in the block except 1) it hashes a modified merkle root with the signet signature removed.  2) it skips the nonce"

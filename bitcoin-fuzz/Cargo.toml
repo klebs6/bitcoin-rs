@@ -13,9 +13,13 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-autofile]
+path = "../bitcoin-autofile"
 [dependencies.bitcoin-banman]
 path = "../bitcoin-banman"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
 version = "0.1.16-alpha.0"
@@ -54,9 +58,6 @@ path = "../bitcoin-node"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-peerman]
 path = "../bitcoin-peerman"
-version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
@@ -97,6 +98,10 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-txmempoolentry]
 path = "../bitcoin-txmempoolentry"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u160]
+path = "../bitcoin-u160"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
 version = "0.1.16-alpha.0"
@@ -114,9 +119,13 @@ version = "1.4.0"
 [dependencies.libc]
 version = "0.2.126"
 [dependencies.libevent]
-version = "0.1.0"
+branch = "patch-1"
+git = "https://github.com/klebs6/libevent-rs"
+version = "*"
 [dependencies.libevent-sys]
-version = "0.2.6"
+branch = "patch-1"
+git = "https://github.com/klebs6/libevent-rs"
+version = "*"
 [dependencies.num]
 version = "0.4.0"
 [dependencies.priority-queue]

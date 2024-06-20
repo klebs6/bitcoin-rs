@@ -4,6 +4,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
 version = "0.1.16-alpha.0"
@@ -18,9 +20,6 @@ path = "../bitcoin-indexed-chain"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-sam]
 path = "../bitcoin-sam"

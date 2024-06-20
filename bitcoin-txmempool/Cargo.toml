@@ -49,9 +49,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-packages]
 path = "../bitcoin-packages"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-rbf]
 path = "../bitcoin-rbf"
 version = "0.1.16-alpha.0"
@@ -79,6 +76,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-txmempoolentry]
 path = "../bitcoin-txmempoolentry"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
 version = "0.1.16-alpha.0"

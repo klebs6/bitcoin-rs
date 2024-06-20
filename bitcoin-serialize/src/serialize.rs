@@ -756,7 +756,7 @@ pub fn read_compact_size<Stream>(
   | varint formats (e.g. zigzag encoding).
   |
   */
-#[derive(PartialEq,Eq)]
+#[derive(ConstParamTy,PartialEq,Eq)]
 pub enum VarIntMode { 
     DEFAULT, 
     NONNEGATIVE_SIGNED 

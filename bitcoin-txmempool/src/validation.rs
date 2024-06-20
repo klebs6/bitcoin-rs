@@ -43,7 +43,7 @@ macro_rules! log_event {
   | relay fee for transactions
   |
   */
-pub const DEFAULT_MIN_RELAY_TX_FEE: usize = 1000;
+pub const DEFAULT_MIN_RELAY_TX_FEE: Amount = 1000;
 
 /**
   | Default for -limitancestorcount,

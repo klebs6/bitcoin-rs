@@ -7,9 +7,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [package]
 authors = [ "klebs <none>" ]
 description = "MuHash is a hashing algorithm that supports adding set elements in any order but also deleting in any order.  As a result, it can maintain a running sum for a set of data as a whole, and add/remove when data is added to or removed from it. A downside is that computing an inverse is relatively expensive."

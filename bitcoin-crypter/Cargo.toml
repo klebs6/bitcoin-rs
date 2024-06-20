@@ -10,15 +10,14 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-secp256k1]
 path = "../bitcoin-secp256k1"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [package]
 authors = [ "klebs <none>" ]
 description = "encryption/decryption context with key information"

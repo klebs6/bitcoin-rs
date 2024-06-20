@@ -1232,7 +1232,6 @@ my @tomls = [
     "bitcoin-poly1305/Cargo.toml",
     "bitcoin-portmap/Cargo.toml",
     "bitcoin-pow/Cargo.toml",
-    "bitcoin-primitives/Cargo.toml",
     "bitcoin-proxy/Cargo.toml",
     "bitcoin-psbt/Cargo.toml",
     "bitcoin-qt/Cargo.toml",

@@ -7,9 +7,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-mem]
 path = "../bitcoin-mem"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-ripemd]
 path = "../bitcoin-ripemd"
 version = "0.1.16-alpha.0"
@@ -19,6 +16,10 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-sha256]
 path = "../bitcoin-sha256"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u160]
+path = "../bitcoin-u160"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
 version = "0.1.16-alpha.0"

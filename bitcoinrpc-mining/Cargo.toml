@@ -25,15 +25,14 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
 version = "0.1.16-alpha.0"

@@ -16,9 +16,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-signingprovider]
 path = "../bitcoin-signingprovider"
 version = "0.1.16-alpha.0"
@@ -28,6 +25,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
 version = "0.1.16-alpha.0"

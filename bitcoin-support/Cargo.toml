@@ -10,9 +10,13 @@ version = "0.1.16-alpha.0"
 [dependencies.lazy_static]
 version = "1.4.0"
 [dependencies.libevent]
-version = "0.1.0"
+version = "*"
+git = "https://github.com/klebs6/libevent-rs"
+branch = "patch-1"
 [dependencies.libevent-sys]
-version = "0.2.6"
+version = "*"
+git = "https://github.com/klebs6/libevent-rs"
+branch = "patch-1"
 [dependencies.multimap]
 version = "0.8.3"
 [dependencies.parking_lot]

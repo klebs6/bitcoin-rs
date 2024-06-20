@@ -886,9 +886,9 @@ pub fn is_current_for_anti_fee_sniping<'a>(
   |
   */
 pub fn get_locktime_for_new_transaction<'a>(
-        chain:        &'a mut dyn ChainInterface,
-        block_hash:   &u256,
-        block_height: i32) -> u32 {
+    chain:        &'a mut dyn ChainInterface,
+    block_hash:   &u256,
+    block_height: i32) -> u32 {
     
     todo!();
         /*
@@ -935,16 +935,16 @@ pub fn get_locktime_for_new_transaction<'a>(
 
 #[EXCLUSIVE_LOCKS_REQUIRED(wallet.cs_wallet)]
 pub fn create_transaction_internal(
-        wallet:              &mut Wallet,
-        vec_send:            &Vec<Recipient>,
-        tx:                  &mut TransactionRef,
-        n_fee_ret:           &mut Amount,
-        n_change_pos_in_out: &mut i32,
-        error:               &mut BilingualStr,
-        coin_control:        &CoinControl,
-        fee_calc_out:        &mut FeeCalculation,
-        sign:                bool) -> bool {
-    
+    wallet:              &mut Wallet,
+    vec_send:            &Vec<Recipient>,
+    tx:                  &mut TransactionRef,
+    n_fee_ret:           &mut Amount,
+    n_change_pos_in_out: &mut i32,
+    error:               &mut BilingualStr,
+    coin_control:        &CoinControl,
+    fee_calc_out:        &mut FeeCalculation,
+    sign:                bool) -> bool {
+
     todo!();
         /*
             AssertLockHeld(wallet.cs_wallet);

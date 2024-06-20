@@ -10,9 +10,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
 version = "0.1.16-alpha.0"

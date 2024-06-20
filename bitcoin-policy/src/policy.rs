@@ -28,7 +28,7 @@ pub const DEFAULT_BLOCK_MAX_WEIGHT: usize = MAX_BLOCK_WEIGHT - 4000;
   | in blocks created by mining code *
   |
   */
-pub const DEFAULT_BLOCK_MIN_TX_FEE: usize = 1000;
+pub const DEFAULT_BLOCK_MIN_TX_FEE: Amount = 1000;
 
 /**
   | The maximum weight for transactions
@@ -73,7 +73,7 @@ pub const DEFAULT_MAX_MEMPOOL_SIZE: usize = 300;
   | *
   |
   */
-pub const DEFAULT_INCREMENTAL_RELAY_FEE: usize = 1000;
+pub const DEFAULT_INCREMENTAL_RELAY_FEE: Amount = 1000;
 
 /**
   | Default for -bytespersigop
@@ -134,7 +134,7 @@ pub const MAX_STANDARD_SCRIPTSIG_SIZE: usize = 1650;
   | the new threshold
   |
   */
-pub const DUST_RELAY_TX_FEE: usize = 3000;
+pub const DUST_RELAY_TX_FEE: Amount = 3000;
 
 /**
   | Changing the default transaction version

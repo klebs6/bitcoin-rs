@@ -10,6 +10,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-banman]
 path = "../bitcoin-banman"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
 version = "0.1.16-alpha.0"
@@ -49,9 +51,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-proxy]
 path = "../bitcoin-proxy"
 version = "0.1.16-alpha.0"
@@ -88,6 +87,10 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u160]
+path = "../bitcoin-u160"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
 version = "0.1.16-alpha.0"

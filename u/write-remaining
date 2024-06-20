@@ -46,7 +46,6 @@ bitcoin-log
 bitcoin-net
 bitcoin-peerman
 bitcoin-pow
-bitcoin-primitives
 bitcoin-psbt
 bitcoin-random
 bitcoin-scheduler

@@ -137,8 +137,9 @@ pub fn fetch_and_clear_commitment_section(
 }
 
 pub fn compute_modified_merkle_root(
-        cb:    &MutableTransaction,
-        block: &Block) -> u256 {
+    cb:    &MutableTransaction,
+    block: &Block
+) -> u256 {
     
     todo!();
         /*
@@ -160,12 +161,13 @@ pub fn compute_modified_merkle_root(
   |
   */
 pub fn check_signet_block_solution(
-        block:            &Block,
-        consensus_params: &ChainConsensusParams) -> bool {
+    block:            &Block,
+    consensus_params: &ChainConsensusParams
+) -> bool {
     
     todo!();
         /*
-            if (block.GetHash() == consensusParams.hashGenesisBlock) {
+        if (block.GetHash() == consensusParams.hashGenesisBlock) {
             // genesis block solution is always valid
             return true;
         }
@@ -192,4 +194,3 @@ pub fn check_signet_block_solution(
         return true;
         */
 }
-

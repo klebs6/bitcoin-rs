@@ -4,6 +4,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-bitstream]
+path = "../bitcoin-bitstream"
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
 version = "0.1.16-alpha.0"
@@ -31,9 +33,6 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-muhash]
 path = "../bitcoin-muhash"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
 version = "0.1.16-alpha.0"
@@ -43,6 +42,8 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [package]
 authors = [ "klebs <none>" ]
 description = "coin stats"

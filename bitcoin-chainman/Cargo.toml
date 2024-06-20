@@ -1,3 +1,5 @@
+[dependencies.bitcoin-autofile]
+path = "../bitcoin-autofile"
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
 version = "0.1.16-alpha.0"
@@ -10,15 +12,14 @@ version = "0.1.16-alpha.0"
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
 version = "0.1.16-alpha.0"
-[dependencies.bitcoin-primitives]
-path = "../bitcoin-primitives"
-version = "0.1.16-alpha.0"
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
 version = "0.1.16-alpha.0"
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
 version = "0.1.16-alpha.0"
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
 [dependencies.bitcoinchain-interface]
 path = "../bitcoinchain-interface"
 version = "0.1.16-alpha.0"

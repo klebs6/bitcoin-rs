@@ -4,9 +4,12 @@ pub fn get_time() -> Instant {
     Instant::now()
 }
 
-pub fn max_unix_timestamp() -> i64 {
+#[inline] pub fn max_unix_timestamp() -> i64 {
+
+    let time = unsafe { Time::__from_hms_nanos_unchecked(23, 59, 59, 999_999_999) };
+
     Date::MAX
-        .with_time(Time::__from_hms_nanos_unchecked(23, 59, 59, 999_999_999))
+        .with_time(time)
         .assume_utc()
         .unix_timestamp()
 }

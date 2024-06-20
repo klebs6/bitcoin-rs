@@ -2,6 +2,8 @@
 
 #[macro_use] mod imports; use imports::*;
 
+x!{unlinked}
+
 x!{addressbookpage}
 x!{addresstablemodel}
 x!{askpassphrasedialog}
