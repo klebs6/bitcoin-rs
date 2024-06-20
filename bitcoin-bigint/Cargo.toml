@@ -1,17 +1,17 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.16-alpha.0"
+version = "0.1.17-alpha.0"
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.16-alpha.0"
+version = "0.1.17-alpha.0"
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.16-alpha.0"
+version = "0.1.17-alpha.0"
 
 [package]
 edition = "2021"
 name = "bitcoin-bigint"
-version = "0.1.0"
+version = "0.1.17-alpha.0"
 license = "MIT"
 repository = "https://github.com/klebz/bitcoin-rs"
 authors = [ "klebs <none>" ]
