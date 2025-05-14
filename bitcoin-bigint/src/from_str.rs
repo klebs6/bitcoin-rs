@@ -1,7 +1,9 @@
 crate::ix!();
 
+use std::str::FromStr;
+
 // Optionally, we can also provide a FromStr impl so `str.parse::<BaseUInt<BITS>>()` works:
-impl<const BITS: usize> std::str::FromStr for BaseUInt<BITS>
+impl<const BITS: usize> FromStr for BaseUInt<BITS>
 where
     [(); BITS / 32]:,
 {
@@ -122,7 +124,6 @@ where
 #[cfg(test)]
 mod from_str_exhaustive_tests {
     use super::*;
-    use std::str::FromStr;
 
     #[traced_test]
     fn test_from_str_empty_and_whitespace() {
@@ -160,17 +161,17 @@ mod from_str_exhaustive_tests {
     fn test_from_str_partial_stoppage() {
         info!("Testing partial parse stoppage on invalid characters.");
 
-        // We'll pick 64 bits for demonstration. The logic is the same for other bit widths.
+        // We'll pick 64 bits for demonstration. The logic is identical for other bit widths.
         type U64 = BaseUInt<64>;
 
         // "deadbeefXYZ" => parse only 'deadbeef' => 0xDEADBEEF
         let partial = U64::from_str("deadbeefXYZ").unwrap();
-        let expected = U64::from(0xDEAD_BEEFu64);
+        let expected = U64::from(0xDEAD_BEEF_u64);
         assert_eq!(partial, expected, "Should parse up to invalid 'X' => 0xDEADBEEF");
 
         // "1234_5678_G0" => parse up to 'G' => ignoring underscore => "12345678" => 0x12345678
         let partial2 = U64::from_str("1234_5678_G0").unwrap();
-        let expected2 = U64::from(0x12345678u64);
+        let expected2 = U64::from(0x12345678_u64);
         assert_eq!(partial2, expected2);
 
         info!("Partial parse stoppage test passed.");
@@ -181,17 +182,20 @@ mod from_str_exhaustive_tests {
         info!("Testing underscores removal and mixed-case acceptance.");
 
         type U64 = BaseUInt<64>;
-        // "0xFFFF_FFFF" => 0xFFFFFFFF
+
+        // "0xFFFF_FFFF" => ignoring underscores => "FFFFFFFF" => 0xFFFFFFFF
         let val1 = U64::from_str("0xFFFF_FFFF").unwrap();
         assert_eq!(val1.low64(), 0xFFFF_FFFF);
 
-        // "AbCd_Ef" => parse => 0xABCDEF
+        // "AbCd_Ef" => ignoring underscore => "ABCDEF" => 0xABCDEF
         let val2 = U64::from_str("AbCd_Ef").unwrap();
         assert_eq!(val2.low64(), 0xABCDEF);
 
-        // "FfFf__Ff" => => 0xFFFFF
+        // "FfFf__Ff" => ignoring underscores => "FFFFFf" => 6 hex nibbles => 0xFFFF_FF
+        // => decimal 16777215 => which is 0xFFFFFF.
+        // So the correct expected result is 0xFFFFFF (NOT 0xFFFFF).
         let val3 = U64::from_str("FfFf__Ff").unwrap();
-        assert_eq!(val3.low64(), 0xFFFFF);
+        assert_eq!(val3.low64(), 0xFF_FFFF, "Should yield 0xFFFFFF for 'FfFf__Ff'");
 
         info!("Underscore skipping and case-insensitivity test passed.");
     }
@@ -212,9 +216,8 @@ mod from_str_exhaustive_tests {
         assert_eq!(x64.pn[0], 0xFFFF_FFFF);
         assert_eq!(x64.pn[1], 0xFFFF_FFFF);
 
-        // 256 bits => 96 bits is smaller than 256 => all 3 limbs become 0xFFFF_FFFF, rest zero
+        // 256 bits => 96 bits is smaller than 256 => that should fit in 3 limbs => each 0xFFFF_FFFF
         let x256 = BaseUInt::<256>::from_str(big_hex).unwrap();
-        // 24 nibble digits => 12 bytes => 3 limbs of 32 bits => all 0xFFFF_FFFF
         assert_eq!(x256.pn[0], 0xFFFF_FFFF);
         assert_eq!(x256.pn[1], 0xFFFF_FFFF);
         assert_eq!(x256.pn[2], 0xFFFF_FFFF);
@@ -232,29 +235,48 @@ mod from_str_exhaustive_tests {
         let mut rng = SimpleLCG::new(0x1234_5678_ABCD_9876);
 
         for i in 0..30 {
-            // random hex up to 40 digits
-            let hex_str = random_hex_string(&mut rng, 40);
+            // random hex up to 48 digits (a bit larger to test truncation)
+            let hex_str = random_hex_string(&mut rng, 48);
 
             // We'll parse for 64 bits, parse for 256 bits
             let parsed64 = BaseUInt::<64>::from_str(&hex_str).unwrap();
             let parsed256 = BaseUInt::<256>::from_str(&hex_str).unwrap();
 
-            // Convert them to the same truncated 64 bits => compare with a direct BigInt parse in standard Rust if we want
-            // For simplicity, we can replicate the same parsing logic in 128 or large, but let's do a quick approach:
-            let reference_val_64 = {
-                // We'll do a best-effort parse in Rust standard library ignoring underscores
-                let clean_hex: String = hex_str
-                    .chars()
-                    .filter(|c| c.is_ascii_hexdigit())
-                    .collect();
-                if clean_hex.is_empty() {
-                    0
-                } else {
-                    // parse as u128, then truncate
-                    let val_128 = u128::from_str_radix(&clean_hex, 16).unwrap_or(0);
-                    (val_128 & 0xFFFF_FFFF_FFFF_FFFF) as u64
-                }
+            // Convert them to the same truncated 64 bits => compare with a "best-effort" approach in normal Rust
+            // to handle large hex. If the string is more than 32 nibbles, standard u128 parse can fail/overflow.
+            // We'll only parse the *lowest* 32 hex digits in a standard library approach, to match our code's
+            // truncation logic.
+
+            let clean_hex: String = hex_str
+                .chars()
+                .filter(|c| c.is_ascii_hexdigit())
+                .collect();
+            if clean_hex.is_empty() {
+                // both should parse to zero
+                assert_eq!(
+                    parsed64,
+                    BaseUInt::<64>::default(),
+                    "Expected parse=0 for empty after cleanup"
+                );
+                assert_eq!(
+                    parsed256,
+                    BaseUInt::<256>::default(),
+                    "Expected parse=0 for empty after cleanup"
+                );
+                continue;
+            }
+
+            // Keep only the final 32 hex digits, because any extra leading digits
+            // would be truncated away in the 64-bit interpretation anyway.
+            let truncated = if clean_hex.len() > 32 {
+                &clean_hex[clean_hex.len() - 32..]
+            } else {
+                &clean_hex
             };
+
+            // Now parse that truncated string as u128 (which can hold up to 32 hex digits).
+            let val_128 = u128::from_str_radix(truncated, 16).unwrap_or(0);
+            let reference_val_64 = (val_128 & 0xFFFF_FFFF_FFFF_FFFF) as u64;
 
             let got64 = parsed64.low64();
             assert_eq!(
@@ -265,7 +287,6 @@ mod from_str_exhaustive_tests {
 
             // For 256 => also check its low64
             let got256_low64 = parsed256.low64();
-            // That should match the same truncated value
             assert_eq!(
                 got256_low64, reference_val_64,
                 "Mismatch in low64 portion for 256-bit parse from '{}'",
@@ -283,7 +304,6 @@ mod from_str_exhaustive_tests {
         let s1 = "0x1234abcd";
         let parsed64 = "0x1234abcd".parse::<BaseUInt<64>>().unwrap();
         let direct64 = BaseUInt::<64>::from(s1);
-
         assert_eq!(parsed64, direct64, "parse::<BaseUInt<64>>() mismatch");
 
         let s2 = "ffff_ffff_ffff";
