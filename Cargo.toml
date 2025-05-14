@@ -261,3 +261,8 @@ tinyvec                 = { version = "1.5.1",   features = [ "alloc", "rustc_1_
 
 libevent                = { version = "*", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
 libevent-sys            = { version = "*", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
+
+traced-test               = "*"
+tracing                   = { version = "*", features = ["log"] }
+tracing-setup             = "*"
+tracing-subscriber        = { version = "*", default-features = false, features = ["fmt", "std", "env-filter", "json"] }

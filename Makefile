@@ -18,12 +18,15 @@ CARGO     := env CARGO_MSG_LIMIT=15 \
 #CARGO    := env CARGO_BUILD_JOBS=12 NUM_JOBS=12 cargo 
 
 #CARGO_MSG_LIMIT := 100
-BUILD     := build --verbose
+BUILD := build --verbose
+TEST  := test
 
 #-------------------------------./u/write-remaining
 
 #ACTIVE := bitcoin-aes
 ACTIVE := bitcoin-network
+ACTIVE := bitcoin-u256
+ACTIVE := bitcoin-bigint
 
 #ACTIVE := bitcoin-client-ui
 #ACTIVE := bitcoin-compat
@@ -72,8 +75,11 @@ ACTIVE := bitcoin-network
 
 #-------------------------------DONE
 
-#default: build_active
-default: build
+#DEFAULT := build_active
+#DEFAULT := build
+DEFAULT := test_active
+
+default: $(DEFAULT)
 
 gen_doc:
 	RUSTFLAGS=$(RUSTFLAGS) ./u/generate-rustdoc-db
@@ -81,9 +87,11 @@ gen_doc:
 build:
 	$(HACK_CLANG) RUST_BACKTRACE=full RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(BUILD)
 
-
 build_active:
 	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(BUILD) -p $(ACTIVE) --verbose
+
+test_active:
+	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) -p $(ACTIVE) --verbose
 
 vendor:
 	RUSTFLAGS=$(RUSTFLAGS) $(CARGO) vendor

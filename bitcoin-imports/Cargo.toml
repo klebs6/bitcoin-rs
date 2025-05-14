@@ -4,6 +4,10 @@ scan-crate-for-typedefs.workspace = true
 [dependencies]
 atomic-take.workspace           = true
 atomic.workspace                = true
+traced-test.workspace           = true
+tracing.workspace               = true
+tracing-setup.workspace         = true
+tracing-subscriber.workspace    = true
 atomic_float.workspace          = true
 bitflags.workspace              = true
 bitset.workspace                = true

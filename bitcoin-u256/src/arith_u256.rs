@@ -208,7 +208,7 @@ pub fn arith_to_uint256(a: &ArithU256) -> u256 {
     */
 }
 
-pub fn uint_to_arith256(a: &u256) -> ArithU256 {
+pub const fn uint_to_arith256(a: &u256) -> ArithU256 {
     
     todo!();
     /*
