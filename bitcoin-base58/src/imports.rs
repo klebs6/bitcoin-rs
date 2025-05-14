@@ -1,4 +1,3 @@
-
 pub(crate) use bitcoin_derive::*;
 pub(crate) use bitcoin_hash::*;
 pub(crate) use bitcoin_imports::*;

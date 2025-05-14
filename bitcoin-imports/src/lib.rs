@@ -436,6 +436,7 @@ pub use std::iter::{
     Enumerate,
 };
 
+/*
 pub use qt_core::{
     QSize,
     QModelIndex,
@@ -451,6 +452,7 @@ pub use qt_gui::{
     QColor,
     QIcon,
 };
+*/
 
 pub enum TryBlockResult<R,E> {
     Return(R),

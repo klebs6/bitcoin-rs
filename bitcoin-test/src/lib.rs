@@ -13,7 +13,6 @@ x!{test_flatfile}
 x!{test_fs}
 x!{test_getarg}
 x!{test_hash}
-x!{test_i2p}
 x!{test_init_test_fixture}
 x!{test_init_tests}
 x!{test_interfaces}

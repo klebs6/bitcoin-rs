@@ -874,7 +874,7 @@ pub fn increment_extra_nonce(
     
     todo!();
         /*
-            // Update nExtraNonce
+        // Update nExtraNonce
         static uint256 hashPrevBlock;
         if (hashPrevBlock != pblock->hashPrevBlock)
         {

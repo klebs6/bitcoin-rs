@@ -156,9 +156,17 @@ version = "0.1.17-alpha.0"
 [dependencies.bitcoin-psbt]
 path = "../bitcoin-psbt"
 version = "0.1.17-alpha.0"
-[dependencies.bitcoin-qt]
-path = "../bitcoin-qt"
-version = "0.1.17-alpha.0"
+
+#qt_core doesn't know about latest system qt version so its all fucked. 
+#
+#eventually just migrate to a rust native gui. 
+#
+#aloe will eventually be an option. egui is likely superior for now.
+#
+#[dependencies.bitcoin-qt]
+#path = "../bitcoin-qt"
+#version = "0.1.17-alpha.0"
+
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
 version = "0.1.17-alpha.0"
