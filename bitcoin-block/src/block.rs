@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/block.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/primitives/block.h]

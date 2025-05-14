@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/recent_confirmed_txns.rs ]
 crate::ix!();
 
 pub struct PeerManagerRecentConfirmedTransactions {

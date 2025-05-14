@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/util_setup_common.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/util/setup_common.h]

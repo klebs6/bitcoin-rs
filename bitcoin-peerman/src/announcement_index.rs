@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/announcement_index.rs ]
 crate::ix!();
 
 /*
@@ -539,5 +540,4 @@ pub trait AnnouncementIterator: Deref<Target=Announcement> + Iterator<Item=Annou
     type Tag: AnnouncementIndexTag;
     type Index: AnnouncementIndexIndex;
 }
-
 

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sqlite/src/pragma.rs ]
 crate::ix!();
 
 pub fn read_pragma_integer(
@@ -43,4 +44,3 @@ pub fn set_pragma(
         }
         */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sqlite/src/database.rs ]
 crate::ix!();
 
 /**

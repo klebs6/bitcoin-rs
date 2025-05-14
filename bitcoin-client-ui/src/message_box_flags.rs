@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-client-ui/src/message_box_flags.rs ]
 crate::ix!();
 
 /**

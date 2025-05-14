@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-random/src/random.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/random.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/sigchecker_extractor.rs ]
 crate::ix!();
 
 ///---------------------------
@@ -36,4 +37,3 @@ impl SignatureExtractorChecker {
         */
     }
 }
-

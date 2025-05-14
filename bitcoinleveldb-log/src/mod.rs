@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-log/src/mod.rs ]
 use bitcoin_imports::x;
 
 x!{format}

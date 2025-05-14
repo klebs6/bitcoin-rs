@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_crypto_common.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/crypto_common.cpp]

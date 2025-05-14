@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinrpc-mining/src/mining.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/rpc/mining.h]

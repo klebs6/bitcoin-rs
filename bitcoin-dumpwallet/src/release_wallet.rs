@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-dumpwallet/src/release_wallet.rs ]
 crate::ix!();
 
 /**

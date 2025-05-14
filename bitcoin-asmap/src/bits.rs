@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-asmap/src/bits.rs ]
 /*!
 This function, `decode_bits`, decodes a value from
 a provided iterator of boolean values using the
@@ -76,4 +77,3 @@ where I: Iterator<Item = &'a bool>
         return INVALID; // Reached EOF in exponent
         */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/bytevectorhash.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/bytevectorhash.h]

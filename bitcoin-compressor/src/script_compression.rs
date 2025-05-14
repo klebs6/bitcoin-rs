@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compressor/src/script_compression.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/openuridialog.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/openuridialog.h]

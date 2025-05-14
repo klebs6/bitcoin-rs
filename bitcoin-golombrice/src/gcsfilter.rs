@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-golombrice/src/gcsfilter.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_blockfilter.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/blockfilter.cpp]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/callbacks.rs ]
 crate::ix!();
 
 pub type NodeInitMessageFn = fn(message: &String) -> ();
@@ -40,4 +41,3 @@ pub type NodeNotifyHeaderTipFn = fn(
     tip:                   BlockTip,
     verification_progress: f64
 ) -> ();
-

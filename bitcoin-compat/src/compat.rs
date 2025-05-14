@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/compat.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat.h]

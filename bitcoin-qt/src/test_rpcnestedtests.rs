@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/test_rpcnestedtests.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/test/rpcnestedtests.h]

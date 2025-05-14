@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-connman/src/socket_events.rs ]
 crate::ix!();
 
 impl Connman {

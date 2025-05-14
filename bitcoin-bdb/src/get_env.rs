@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bdb/src/get_env.rs ]
 crate::ix!();
 
 lazy_static!{

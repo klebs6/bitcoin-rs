@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tor/src/connection.rs ]
 crate::ix!();
 
 /****** Low-level TorControlConnection ********/

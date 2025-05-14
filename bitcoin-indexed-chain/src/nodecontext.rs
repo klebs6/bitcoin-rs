@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/nodecontext.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/node/context.h]

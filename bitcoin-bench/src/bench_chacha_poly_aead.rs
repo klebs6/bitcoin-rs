@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_chacha_poly_aead.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/chacha_poly_aead.cpp]

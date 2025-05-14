@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/wallet_txn.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/node/transaction.h]

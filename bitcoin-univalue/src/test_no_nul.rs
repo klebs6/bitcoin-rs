@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-univalue/src/test_no_nul.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/univalue/test/no_nul.cpp]

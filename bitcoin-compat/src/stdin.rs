@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/stdin.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/stdin.h]

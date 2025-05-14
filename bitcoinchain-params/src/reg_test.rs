@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinchain-params/src/reg_test.rs ]
 crate::ix!();
 
 /**

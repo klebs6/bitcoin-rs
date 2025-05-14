@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/make_wallet.rs ]
 crate::ix!();
 
 pub fn make_wallet(

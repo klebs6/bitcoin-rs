@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-time/src/lib.rs ]
 //-------------------------------------------[.cpp/bitcoin/src/util/time.h]
 //-------------------------------------------[.cpp/bitcoin/src/util/time.cpp]
 

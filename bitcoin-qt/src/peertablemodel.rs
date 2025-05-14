@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/peertablemodel.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/peertablemodel.h]

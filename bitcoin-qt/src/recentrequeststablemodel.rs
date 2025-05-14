@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/recentrequeststablemodel.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/recentrequeststablemodel.h]

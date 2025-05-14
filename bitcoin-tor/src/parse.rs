@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tor/src/parse.rs ]
 crate::ix!();
 
 /****** General parsing utilities ********/
@@ -130,4 +131,3 @@ pub fn parse_tor_reply_mapping(s: &String) -> HashMap<String,String> {
         return mapping;
         */
 }
-

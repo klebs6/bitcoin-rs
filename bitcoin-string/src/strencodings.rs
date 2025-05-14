@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-string/src/strencodings.rs ]
 /*!
   | Utilities for converting data from/to
   | strings.

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_ccoins_caching.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/ccoins_caching.cpp]

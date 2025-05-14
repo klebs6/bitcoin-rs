@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tor/src/lifecycle.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/torcontrol.h]
@@ -79,4 +80,3 @@ pub fn default_onion_service_target() -> Service {
         return {onion_service_target, BaseParams().OnionServiceTargetPort()};
         */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/v_send.rs ]
 crate::ix!();
 
 pub struct NodeVSend {
@@ -31,4 +32,3 @@ impl Default for NodeVSend {
         }
     }
 }
-

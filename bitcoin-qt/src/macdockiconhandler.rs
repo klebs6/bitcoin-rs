@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/macdockiconhandler.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/macdockiconhandler.h]

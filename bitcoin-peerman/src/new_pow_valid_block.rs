@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/new_pow_valid_block.rs ]
 crate::ix!();
 
 /**

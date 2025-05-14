@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/editaddressdialog.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/editaddressdialog.h]

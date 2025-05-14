@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_merkleblock.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/merkleblock.cpp]
@@ -40,4 +41,3 @@ crate::ix!();
 
     */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-env/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{lvldb_env}

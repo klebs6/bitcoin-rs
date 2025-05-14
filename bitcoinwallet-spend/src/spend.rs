@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-spend/src/spend.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/spend.h]

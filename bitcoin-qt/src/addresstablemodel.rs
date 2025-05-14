@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/addresstablemodel.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/addresstablemodel.h]

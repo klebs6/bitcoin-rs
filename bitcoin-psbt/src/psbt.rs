@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-psbt/src/psbt.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/psbt.h]

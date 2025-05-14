@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/result.rs ]
 crate::ix!();
 
 /**

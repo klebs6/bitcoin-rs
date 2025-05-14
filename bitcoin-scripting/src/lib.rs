@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/lib.rs ]
 #![feature(allocator_api)]
 
 macro_rules! ternary {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/run_main.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/main.cpp]
@@ -30,4 +31,3 @@ pub fn qt_main(
             return GuiMain(argc, argv);
         */
 }
-

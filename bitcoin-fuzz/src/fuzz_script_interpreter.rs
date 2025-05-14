@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_script_interpreter.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/script_interpreter.cpp]

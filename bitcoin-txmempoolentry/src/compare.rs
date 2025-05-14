@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-txmempoolentry/src/compare.rs ]
 crate::ix!();
 
 /**
@@ -207,4 +208,3 @@ impl CompareIteratorByHash {
         */
     }
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockfilter/src/access.rs ]
 crate::ix!();
 
 /**
@@ -27,5 +28,4 @@ pub fn for_each_block_filter_index(fn_: fn(_0: &mut BlockFilterIndex) -> ())  {
             for (auto& entry : g_filter_indexes) fn(entry.second);
         */
 }
-
 

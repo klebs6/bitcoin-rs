@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-random/src/seed_hardware.rs ]
 crate::ix!();
 
 /**

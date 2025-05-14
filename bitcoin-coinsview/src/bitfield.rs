@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/bitfield.rs ]
 crate::ix!();
 
 #[bitfield]
@@ -29,4 +30,3 @@ impl CoinBitfield {
             .with_n_height(n_height_in as u32)
     }
 }
-

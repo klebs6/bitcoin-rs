@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/sendcoinsrecipient.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/sendcoinsrecipient.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/tests/txindex.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/txindex_tests.cpp]

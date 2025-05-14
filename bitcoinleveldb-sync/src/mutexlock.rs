@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-sync/src/mutexlock.rs ]
 /**
   | Helper class that locks a mutex on construction
   | and unlocks the mutex when the destructor

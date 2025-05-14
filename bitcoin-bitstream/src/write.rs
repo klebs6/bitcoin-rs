@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bitstream/src/write.rs ]
 crate::ix!();
 
 #[inline] pub fn writele16(

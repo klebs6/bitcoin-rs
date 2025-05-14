@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/flatfile_seq.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/flatfile.h]

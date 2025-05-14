@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-random/src/proc_rand.rs ]
 crate::ix!();
 
 pub fn proc_rand(

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-hash/src/hash.rs ]
 /*!
   | Simple hash function used for internal
   | data structures

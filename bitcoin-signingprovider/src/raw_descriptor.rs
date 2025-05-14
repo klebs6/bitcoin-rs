@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/raw_descriptor.rs ]
 crate::ix!();
 
 /**
@@ -77,4 +78,3 @@ impl IsSolvable for RawDescriptor {
         */
     }
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/txout.rs ]
 crate::ix!();
 
 /**

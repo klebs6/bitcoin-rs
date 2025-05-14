@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bdb/src/libdb_hook.rs ]
 //TODO: there is a rust crate called libdb, which
 //looks like it might work... but there are some
 //problems statically linking berkeleydb on osx
@@ -12,4 +13,3 @@ pub mod libdb {
     pub const DB_TXN_WRITE_NOSYNC: i32 = 0;
     pub const DB_FILE_ID_LEN:    usize = 0;
 }
-

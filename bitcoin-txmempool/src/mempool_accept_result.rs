@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-txmempool/src/mempool_accept_result.rs ]
 crate::ix!();
 
 /**
@@ -159,4 +160,3 @@ impl PackageMempoolAcceptResult {
         */
     }
 }
-

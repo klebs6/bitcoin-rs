@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-addrman/src/config.rs ]
 crate::ix!();
 
 pub type AddrManNewBucketList   = [[i32; ADDRMAN_NEW_BUCKET_COUNT];   ADDRMAN_BUCKET_SIZE];

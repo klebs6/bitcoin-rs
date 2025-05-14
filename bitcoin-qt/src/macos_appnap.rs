@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/macos_appnap.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/macos_appnap.h]

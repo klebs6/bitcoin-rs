@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-crypter/src/crypter.rs ]
 /*! 
   | Private key encryption is done based on
   | a CMasterKey, which holds a salt and random

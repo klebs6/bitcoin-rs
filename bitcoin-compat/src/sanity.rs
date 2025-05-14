@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/sanity.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/sanity.h]

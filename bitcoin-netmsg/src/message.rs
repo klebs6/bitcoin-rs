@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-netmsg/src/message.rs ]
 crate::ix!();
 
 /**

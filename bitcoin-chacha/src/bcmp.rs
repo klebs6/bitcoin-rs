@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-chacha/src/bcmp.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/chacha_poly_aead.cpp]
@@ -18,4 +19,3 @@ pub fn timingsafe_bcmp(
         return (ret != 0);
         */
 }
-

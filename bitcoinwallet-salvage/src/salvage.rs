@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-salvage/src/salvage.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/salvage.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/wallet_impl.rs ]
 crate::ix!();
 
 pub struct WalletImpl {

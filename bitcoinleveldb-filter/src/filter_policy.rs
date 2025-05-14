@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-filter/src/filter_policy.rs ]
 /*!
   | A database can be configured with a custom
   | FilterPolicy object.  This object is

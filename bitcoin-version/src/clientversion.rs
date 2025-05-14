@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-version/src/clientversion.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/clientversion.h]

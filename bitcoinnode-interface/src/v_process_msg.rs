@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/v_process_msg.rs ]
 crate::ix!();
 
 pub struct NodeVProcessMsg {

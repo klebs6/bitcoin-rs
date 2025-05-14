@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/provider.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/script/signingprovider.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/gen_txid.rs ]
 crate::ix!();
 
 /**

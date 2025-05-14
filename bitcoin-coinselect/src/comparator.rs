@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinselect/src/comparator.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/sigchecker_deferring.rs ]
 crate::ix!();
 
 ///-----------------------
@@ -63,4 +64,3 @@ impl DeferringSignatureChecker {
         */
     }
 }
-

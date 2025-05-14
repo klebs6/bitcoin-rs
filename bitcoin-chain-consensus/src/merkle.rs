@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-chain-consensus/src/merkle.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/consensus/merkle.h]

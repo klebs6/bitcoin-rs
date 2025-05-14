@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockencoding/src/block_header_and_short_txids.rs ]
 crate::ix!();
 
 ///-----------------------
@@ -102,4 +103,3 @@ impl BlockHeaderAndShortTxIDs {
         & 0xffffffffffff
     }
 }
-

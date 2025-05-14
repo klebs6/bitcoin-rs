@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-connman/src/msg_proc.rs ]
 crate::ix!();
 
 pub struct ConnmanMsgProc {
@@ -9,4 +10,3 @@ pub struct ConnmanMsgProc {
       */
     pub msg_proc_wake: AtomicBool,
 }
-

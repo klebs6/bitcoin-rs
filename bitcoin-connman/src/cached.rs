@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-connman/src/cached.rs ]
 crate::ix!();
 
 /**
@@ -15,4 +16,3 @@ pub struct ConnmanCachedAddrResponse {
     pub addrs_response_cache:   Vec<Address>,
     pub cache_entry_expiration: Option<Instant>, /* microseconds */
 }
-

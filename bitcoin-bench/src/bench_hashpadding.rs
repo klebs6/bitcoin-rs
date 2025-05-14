@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_hashpadding.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/hashpadding.cpp]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-string/src/translation.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/translation.h]

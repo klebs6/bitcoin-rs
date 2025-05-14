@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-base58/tests/base58.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/base58_tests.cpp]

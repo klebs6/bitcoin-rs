@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockencoding/src/block_transactions.rs ]
 crate::ix!();
 
 #[derive(Default)]

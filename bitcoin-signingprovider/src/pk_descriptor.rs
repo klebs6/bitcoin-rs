@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/pk_descriptor.rs ]
 crate::ix!();
 
 /**
@@ -48,4 +49,3 @@ impl IsSingleType for PKDescriptor {
         */
     }
 }
-

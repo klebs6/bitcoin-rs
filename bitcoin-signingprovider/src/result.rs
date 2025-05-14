@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/result.rs ]
 crate::ix!();
 
 pub enum SigningResult {

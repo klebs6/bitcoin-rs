@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/descriptor.rs ]
 crate::ix!();
 
 /**
@@ -370,5 +371,4 @@ pub enum DeriveType {
     UNHARDENED,
     HARDENED,
 }
-
 

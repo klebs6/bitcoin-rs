@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/guess_verification_progress.rs ]
 crate::ix!();
 
 /**
@@ -33,4 +34,3 @@ pub fn guess_verification_progress(
         return std::min<double>(pindex->nChainTx / fTxTotal, 1.0);
         */
 }
-

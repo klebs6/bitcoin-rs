@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/coincontroltreewidget.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/coincontroltreewidget.h]

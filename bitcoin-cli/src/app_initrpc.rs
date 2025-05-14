@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/app_initrpc.rs ]
 crate::ix!();
 
 /**

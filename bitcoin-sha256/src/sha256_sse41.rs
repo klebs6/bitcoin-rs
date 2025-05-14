@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/sha256_sse41.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/sha256_sse41.cpp]

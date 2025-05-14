@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/external.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/external_signer_scriptpubkeyman.h]

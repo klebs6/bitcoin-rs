@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-connman/src/options.rs ]
 crate::ix!();
 
 pub struct ConnmanOptions

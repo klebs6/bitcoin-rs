@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_getarg.rs ]
 crate::ix!();
 
 

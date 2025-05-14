@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/blockstorage.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/node/blockstorage.h]

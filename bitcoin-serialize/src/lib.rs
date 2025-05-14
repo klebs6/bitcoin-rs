@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/lib.rs ]
 #![feature(adt_const_params)]
 #![feature(allocator_api)]
 #![feature(const_generics_defaults)]

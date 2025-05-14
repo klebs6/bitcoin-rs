@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/finalize_node.rs ]
 crate::ix!();
 
 impl FinalizeNode for PeerManager {
@@ -116,4 +117,3 @@ impl FinalizeNode for PeerManager {
         log_print!(LogFlags::NET, "Cleared nodestate for peer=%d\n", nodeid);
     }
 }
-

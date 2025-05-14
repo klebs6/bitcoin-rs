@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-psbt/src/role.rs ]
 crate::ix!();
 
 pub enum PSBTRole {

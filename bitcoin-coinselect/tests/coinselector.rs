@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinselect/tests/coinselector.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/test/coinselector_tests.cpp]

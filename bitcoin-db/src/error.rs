@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-db/src/error.rs ]
 crate::ix!();
 
 pub struct DbWrapperError { }

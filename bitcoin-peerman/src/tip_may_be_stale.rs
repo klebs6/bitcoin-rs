@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/tip_may_be_stale.rs ]
 crate::ix!();
 
 pub trait TipMayBeStale {

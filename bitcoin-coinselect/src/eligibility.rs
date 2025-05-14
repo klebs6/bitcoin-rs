@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinselect/src/eligibility.rs ]
 crate::ix!();
 
 /**

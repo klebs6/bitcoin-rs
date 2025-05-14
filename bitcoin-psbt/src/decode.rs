@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-psbt/src/decode.rs ]
 crate::ix!();
 
 /**

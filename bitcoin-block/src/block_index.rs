@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/block_index.rs ]
 crate::ix!();
 
 pub const BLOCK_INDEX_N_MEDIAN_TIME_SPAN: i32 = 11;

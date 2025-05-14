@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/traits.rs ]
 crate::ix!();
 
 pub trait WalletInitInterface:

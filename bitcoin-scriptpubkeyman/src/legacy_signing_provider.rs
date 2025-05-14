@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scriptpubkeyman/src/legacy_signing_provider.rs ]
 crate::ix!();
 
 /**
@@ -79,4 +80,3 @@ impl LegacySigningProvider {
         */
     }
 }
-

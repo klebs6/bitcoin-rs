@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/update_tip_log.rs ]
 crate::ix!();
 
 #[EXCLUSIVE_LOCKS_REQUIRED(::cs_main)]
@@ -23,5 +24,4 @@ pub fn update_tip_log(
             !warning_messages.empty() ? strprintf(" warning='%s'", warning_messages) : "");
         */
 }
-
 

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/multisig_descriptor.rs ]
 crate::ix!();
 
 /**
@@ -61,4 +62,3 @@ impl IsSingleType for MultisigDescriptor {
         */
     }
 }
-

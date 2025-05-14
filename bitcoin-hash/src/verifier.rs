@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/verifier.rs ]
 crate::ix!();
 
 /**

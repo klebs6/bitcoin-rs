@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/block_connected.rs ]
 crate::ix!();
 
 impl BlockConnected for PeerManager {

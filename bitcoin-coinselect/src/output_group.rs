@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinselect/src/output_group.rs ]
 crate::ix!();
 
 /**
@@ -183,4 +184,3 @@ impl OutputGroup {
         */
     }
 }
-

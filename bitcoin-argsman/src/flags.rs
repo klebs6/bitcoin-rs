@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/flags.rs ]
 crate::ix!();
 
 bitflags!{

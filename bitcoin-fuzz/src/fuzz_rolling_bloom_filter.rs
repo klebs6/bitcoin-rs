@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_rolling_bloom_filter.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/rolling_bloom_filter.cpp]
@@ -36,4 +37,3 @@ crate::ix!();
 
     */
 }
-

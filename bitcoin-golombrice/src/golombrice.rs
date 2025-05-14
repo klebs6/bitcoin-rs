@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-golombrice/src/golombrice.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/golombrice.h]

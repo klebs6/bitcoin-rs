@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-remote/src/error_code.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/rpc/protocol.h]

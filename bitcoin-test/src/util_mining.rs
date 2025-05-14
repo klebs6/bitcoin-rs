@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/util_mining.rs ]
 crate::ix!();
 
 

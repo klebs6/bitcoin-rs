@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinchain-client/src/client.rs ]
 crate::ix!();
 
 /**

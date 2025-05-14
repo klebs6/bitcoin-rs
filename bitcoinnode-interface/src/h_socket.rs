@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/h_socket.rs ]
 crate::ix!();
 
 pub struct NodeHSocket {

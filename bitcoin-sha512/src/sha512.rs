@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha512/src/sha512.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/sha512.h]

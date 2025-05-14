@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinchain-params/src/params.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/chainparams.h]

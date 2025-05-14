@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fees/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{fees}

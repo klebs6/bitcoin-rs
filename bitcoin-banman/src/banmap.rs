@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-banman/src/banmap.rs ]
 crate::ix!();
 
 pub type BanMap = HashMap<SubNet,BanEntry>;

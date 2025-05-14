@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/maybe_compact_walletdb.rs ]
 crate::ix!();
 
 /**

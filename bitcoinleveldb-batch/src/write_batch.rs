@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-batch/src/write_batch.rs ]
 /*!
   | WriteBatch holds a collection of updates to
   | apply atomically to a DB.

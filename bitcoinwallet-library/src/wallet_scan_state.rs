@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/wallet_scan_state.rs ]
 crate::ix!();
 
 #[derive(Default)]

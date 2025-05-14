@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/entry.rs ]
 crate::ix!();
 
 pub struct CoinEntry {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/wpkh_descriptor.rs ]
 crate::ix!();
 
 /**
@@ -57,5 +58,4 @@ impl IsSingleType for WPKHDescriptor {
         */
     }
 }
-
 

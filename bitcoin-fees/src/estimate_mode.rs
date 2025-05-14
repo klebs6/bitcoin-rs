@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fees/src/estimate_mode.rs ]
 crate::ix!();
 
 /**

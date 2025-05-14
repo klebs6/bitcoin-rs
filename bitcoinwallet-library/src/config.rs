@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/config.rs ]
 crate::ix!();
 
 /**
@@ -121,4 +122,3 @@ pub const DUMMY_NESTED_P2WPKH_INPUT_SIZE: usize = 91;
   |
   */
 pub const DEFAULT_ADDRESS_TYPE: OutputType = OutputType::BECH32;
-

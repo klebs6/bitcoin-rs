@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net/src/connection_type.rs ]
 crate::ix!();
 
 /**

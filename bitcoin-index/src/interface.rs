@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-index/src/interface.rs ]
 crate::ix!();
 
 pub trait WriteBlock {
@@ -41,4 +42,3 @@ pub trait Rewind {
             current_tip: *const BlockIndex,
             new_tip:     *const BlockIndex) -> bool;
 }
-

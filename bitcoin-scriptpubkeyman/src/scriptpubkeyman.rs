@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scriptpubkeyman/src/scriptpubkeyman.rs ]
 crate::ix!();
 
 /**

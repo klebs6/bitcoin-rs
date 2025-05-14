@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinchain-params/src/main_params.rs ]
 crate::ix!();
 
 /**

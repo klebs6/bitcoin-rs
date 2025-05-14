@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/chain_impl.rs ]
 crate::ix!();
 
 pub struct ChainImpl {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-remote/src/register.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/rpc/register.h]

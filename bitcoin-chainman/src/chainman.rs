@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-chainman/src/chainman.rs ]
 crate::ix!();
 
 /**
@@ -911,4 +912,3 @@ impl ChainstateManager {
         */
     }
 }
-

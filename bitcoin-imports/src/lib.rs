@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-imports/src/lib.rs ]
 #![feature(test)]
 #![feature(generic_associated_types)]
 #![feature(exact_size_is_empty)]

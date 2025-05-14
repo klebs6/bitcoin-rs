@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockencoding/src/prefilled_transaction.rs ]
 crate::ix!();
 
 /**

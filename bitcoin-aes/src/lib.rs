@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-aes/src/lib.rs ]
 #![feature(test)]
 
 #![allow(soft_unstable)]

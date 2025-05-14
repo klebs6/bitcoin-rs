@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/interface.rs ]
 crate::ix!();
 
 pub trait HaveKey {

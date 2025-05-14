@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-file/src/file.rs ]
 crate::ix!();
 
 pub trait NewSequentialFile {
@@ -349,4 +350,3 @@ impl From<Rc<RefCell<dyn WritableFile>>> for Box<dyn WritableFile> {
   |
   */
 pub trait FileLock { }
-

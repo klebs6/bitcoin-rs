@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/hasher.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/hasher.h]

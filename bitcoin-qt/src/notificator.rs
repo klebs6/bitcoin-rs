@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/notificator.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/notificator.h]

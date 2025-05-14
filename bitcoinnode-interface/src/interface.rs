@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/interface.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/interfaces/node.h]

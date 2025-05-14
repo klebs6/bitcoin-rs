@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-netmsg/src/netmessagemaker.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/netmessagemaker.h]

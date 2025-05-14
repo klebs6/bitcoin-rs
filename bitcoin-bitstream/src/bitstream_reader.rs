@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bitstream/src/bitstream_reader.rs ]
 crate::ix!();
 
 pub struct BitStreamReader<IStream> {

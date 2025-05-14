@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/notify.rs ]
 crate::ix!();
 
 #[LOCKS_EXCLUDED(cs_main)]
@@ -26,5 +27,4 @@ pub fn notify_header_tip(chainstate: &mut ChainState) -> bool {
         return fNotify;
         */
 }
-
 

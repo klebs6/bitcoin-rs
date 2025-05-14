@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinselect/src/select.rs ]
 crate::ix!();
 
 /**

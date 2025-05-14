@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/fetch_flags.rs ]
 crate::ix!();
 
 #[EXCLUSIVE_LOCKS_REQUIRED(cs_main)]

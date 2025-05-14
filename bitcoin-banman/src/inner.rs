@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-banman/src/inner.rs ]
 crate::ix!();
 
 pub struct BanManInner {

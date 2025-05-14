@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/thread.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/thread.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/addr_local.rs ]
 crate::ix!();
 
 pub struct NodeAddrLocal {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/config.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bitcoin-cli.cpp]

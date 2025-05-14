@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/walletview.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/walletview.h]

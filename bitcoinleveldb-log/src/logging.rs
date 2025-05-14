@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-log/src/logging.rs ]
 /*!
   | Must not be included from any .h files
   | to avoid polluting the namespace with

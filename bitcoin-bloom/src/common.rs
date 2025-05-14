@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bloom/src/common.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/common/bloom.h]

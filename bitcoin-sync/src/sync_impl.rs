@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/sync_impl.rs ]
 /*!
    | The Simple Definition:
    |

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_data.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/data.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_chacha20.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/chacha20.cpp]

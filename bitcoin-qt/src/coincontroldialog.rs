@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/coincontroldialog.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/coincontroldialog.h]

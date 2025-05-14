@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/cli_rpc.rs ]
 crate::ix!();
 
 #[inline] pub fn is_switch_char(c: char) -> bool {

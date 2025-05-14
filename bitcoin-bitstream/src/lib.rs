@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bitstream/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{bitstream_reader}

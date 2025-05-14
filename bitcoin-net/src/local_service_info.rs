@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net/src/local_service_info.rs ]
 crate::ix!();
 
 pub const LOCAL_NONE:   usize = 0; // unknown

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-banman/src/db.rs ]
 crate::ix!();
 
 /**

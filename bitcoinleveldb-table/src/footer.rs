@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-table/src/footer.rs ]
 crate::ix!();
 
 /**
@@ -108,4 +109,3 @@ impl Footer {
         */
     }
 }
-

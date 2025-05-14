@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net/src/transport_serializer.rs ]
 crate::ix!();
 
 pub struct V1TransportSerializer {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/logger.rs ]
 crate::ix!();
 
 pub struct Logger {

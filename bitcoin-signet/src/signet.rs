@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signet/src/signet.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/signet.h]

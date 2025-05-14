@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-base58/src/encode_check.rs ]
 crate::ix!();
 
 /**

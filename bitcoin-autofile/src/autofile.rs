@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-autofile/src/autofile.rs ]
 crate::ix!();
 
 /**

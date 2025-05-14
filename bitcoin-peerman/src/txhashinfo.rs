@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/txhashinfo.rs ]
 crate::ix!();
 
 /**

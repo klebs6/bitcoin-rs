@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/block_inv.rs ]
 crate::ix!();
 
 pub struct PeerBlockInv {

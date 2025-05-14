@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/encoding.rs ]
 crate::ix!();
 
 pub fn decode_hex_tx(

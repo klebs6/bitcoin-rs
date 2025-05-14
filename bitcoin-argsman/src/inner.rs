@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/inner.rs ]
 crate::ix!();
 
 #[derive(Default)]

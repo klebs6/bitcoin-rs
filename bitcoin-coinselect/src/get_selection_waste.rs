@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinselect/src/get_selection_waste.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/coinselection.cpp]

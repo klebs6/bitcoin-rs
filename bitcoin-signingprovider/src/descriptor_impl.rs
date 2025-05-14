@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/descriptor_impl.rs ]
 crate::ix!();
 
 /**
@@ -338,4 +339,3 @@ impl ToNormalizedString for DescriptorImpl {
         */
     }
 }
-

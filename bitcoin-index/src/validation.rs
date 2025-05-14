@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-index/src/validation.rs ]
 crate::ix!();
 
 /**

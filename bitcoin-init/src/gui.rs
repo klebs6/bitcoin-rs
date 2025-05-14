@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-init/src/gui.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/init/bitcoin-gui.cpp]

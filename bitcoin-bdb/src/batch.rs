@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bdb/src/batch.rs ]
 crate::ix!();
 
 /* ----------------- BerkeleyBatch  ----------------- */
@@ -363,4 +364,3 @@ impl BerkeleyBatch {
         */
     }
 }
-

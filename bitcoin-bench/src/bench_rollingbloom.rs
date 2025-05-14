@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_rollingbloom.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/rollingbloom.cpp]

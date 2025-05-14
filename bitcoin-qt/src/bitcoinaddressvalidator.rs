@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/bitcoinaddressvalidator.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/bitcoinaddressvalidator.h]

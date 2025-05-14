@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-dns/src/lookup.rs ]
 crate::ix!();
 
 pub type DNSLookupFn = fn(_0: &String, _1: bool) -> Vec<NetAddr>;
@@ -285,4 +286,3 @@ pub fn lookup_numeric(
         return addr;
         */
 }
-

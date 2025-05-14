@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_peer_eviction.rs ]
 /*!
   | Candidate numbers used for the benchmarks:
   |

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinselect/src/coin.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/node/coin.h]

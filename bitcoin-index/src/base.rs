@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-index/src/base.rs ]
 crate::ix!();
 
 /**

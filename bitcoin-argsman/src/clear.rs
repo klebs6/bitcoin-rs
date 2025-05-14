@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/clear.rs ]
 crate::ix!();
 
 impl ArgsManagerInner {

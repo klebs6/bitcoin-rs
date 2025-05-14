@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/added.rs ]
 crate::ix!();
 
 pub struct AddedNodeInfo
@@ -7,4 +8,3 @@ pub struct AddedNodeInfo
     pub connected:        bool,
     pub inbound:          bool,
 }
-

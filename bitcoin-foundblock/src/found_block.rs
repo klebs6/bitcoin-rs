@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-foundblock/src/found_block.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/sign.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/script/sign.h]

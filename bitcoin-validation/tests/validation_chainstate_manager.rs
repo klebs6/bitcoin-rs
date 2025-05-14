@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-validation/tests/validation_chainstate_manager.rs ]
 crate::ix!();
 
 
@@ -330,4 +331,3 @@ pub mod validation_chainstatemanager_tests {
         */
     }
 }
-

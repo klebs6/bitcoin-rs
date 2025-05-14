@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/get_peer_ref.rs ]
 crate::ix!();
 
 pub trait GetPeerRef {

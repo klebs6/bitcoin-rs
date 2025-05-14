@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/maybe_send_fee_filter.rs ]
 crate::ix!();
 
 pub trait MaybeSendFeeFilter {
@@ -143,4 +144,3 @@ impl MaybeSendFeeFilter for PeerManager {
         }
     }
 }
-

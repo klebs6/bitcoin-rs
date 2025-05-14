@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/validation_interface.rs ]
 /**
   | Alternate registration functions that release
   | a shared_ptr after the last notification is

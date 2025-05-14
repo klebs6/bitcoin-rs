@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fees/tests/get_fee.rs ]
 crate::ix!();
 
 #[test] fn get_fee_test() {
@@ -70,5 +71,4 @@ crate::ix!();
 
     */
 }
-
 

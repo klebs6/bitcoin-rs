@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_script_consensus.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/script_bitcoin_consensus.cpp]
@@ -23,4 +24,3 @@ crate::ix!();
 
     */
 }
-

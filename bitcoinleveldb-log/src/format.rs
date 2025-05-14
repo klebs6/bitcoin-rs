@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-log/src/format.rs ]
 /*!
   | Log format information shared by reader and
   | writer.

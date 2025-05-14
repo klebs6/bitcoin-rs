@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-log/src/posix_logger.rs ]
 /*!
   | Logger implementation that can be shared
   | by all environments where enough posix

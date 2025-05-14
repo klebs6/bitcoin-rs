@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-string/src/moneystr.rs ]
 /*!
   | Money parsing/formatting utilities.
   |

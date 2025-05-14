@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-psbt/src/cfg.rs ]
 crate::ix!();
 
 /* ----------------- Global types  ----------------- */

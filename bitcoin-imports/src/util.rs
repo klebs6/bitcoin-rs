@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-imports/src/util.rs ]
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/util.h]
 
 pub struct Callback {
@@ -505,4 +506,3 @@ lazy_static!{
     #endif
         */
 }
-

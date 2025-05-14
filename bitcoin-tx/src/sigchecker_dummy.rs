@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/sigchecker_dummy.rs ]
 crate::ix!();
 
 /**
@@ -43,4 +44,3 @@ impl DummySignatureChecker {
 }
 
 pub const DUMMY_CHECKER: DummySignatureChecker = DummySignatureChecker {};
-

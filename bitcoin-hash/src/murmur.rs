@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/murmur.rs ]
 crate::ix!();
 
 pub fn murmur_hash3(

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinchain-interface/src/traits.rs ]
 crate::ix!();
 
 pub trait ChainHeight {

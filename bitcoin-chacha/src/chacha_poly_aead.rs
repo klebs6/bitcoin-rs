@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-chacha/src/chacha_poly_aead.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/chacha_poly_aead.h]
@@ -378,4 +379,3 @@ impl ChaCha20Poly1305AEAD {
         */
     }
 }
-

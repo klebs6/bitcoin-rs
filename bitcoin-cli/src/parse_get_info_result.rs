@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/parse_get_info_result.rs ]
 crate::ix!();
 
 /**

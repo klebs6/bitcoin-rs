@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/truncate_file.rs ]
 crate::ix!();
 
 #[cfg(WIN32)]

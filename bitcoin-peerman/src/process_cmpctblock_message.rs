@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/process_cmpctblock_message.rs ]
 crate::ix!();
 
 impl PeerManager {
@@ -523,4 +524,3 @@ impl PeerManager {
         }
     }
 }
-

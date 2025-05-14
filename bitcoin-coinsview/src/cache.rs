@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/cache.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/coins.h]

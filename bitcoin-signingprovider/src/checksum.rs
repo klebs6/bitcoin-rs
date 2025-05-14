@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/checksum.rs ]
 /**
   | This section implements a checksum algorithm for
   | descriptors with the following properties:
@@ -203,4 +204,3 @@ pub fn get_descriptor_checksum(descriptor: &String) -> String {
         return ret;
         */
 }
-

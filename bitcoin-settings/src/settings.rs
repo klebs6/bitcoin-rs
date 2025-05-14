@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-settings/src/settings.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/settings.h]
@@ -523,4 +524,3 @@ pub fn only_has_default_section_setting(
         return has_default_section_setting && !has_other_setting;
         */
 }
-

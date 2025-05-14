@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bitstream/src/bitstream_writer.rs ]
 crate::ix!();
 
 pub struct BitStreamWriter<OStream> {

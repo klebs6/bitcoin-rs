@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/category.rs ]
 crate::ix!();
 
 #[repr(u32)]

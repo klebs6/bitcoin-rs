@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_addrman.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/addrman.cpp]

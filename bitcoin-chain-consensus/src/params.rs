@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-chain-consensus/src/params.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/consensus/params.h]

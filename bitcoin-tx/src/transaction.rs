@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/transaction.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/primitives/transaction.h]
@@ -478,4 +479,3 @@ pub type TransactionRef = Amo<Transaction>;
             return std::make_shared<const CTransaction>(std::forward<Tx>(txIn));
         */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-txmempoolentry/src/entry.rs ]
 crate::ix!();
 
 pub struct LockPoints {
@@ -373,4 +374,3 @@ impl TxMemPoolEntry {
             return GetVirtualTransactionSize(weight, sigop_cost, ::nBytesPerSigOp);
         */
 }
-

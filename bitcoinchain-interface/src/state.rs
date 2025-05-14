@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinchain-interface/src/state.rs ]
 crate::ix!();
 
 pub trait ChainStateInterface: 
@@ -18,5 +19,4 @@ pub trait ActivateBestChain {
         state:  &mut BlockValidationState,
         pblock: Amo<Block>) -> bool;
 }
-
 

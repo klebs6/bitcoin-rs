@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockfilter/src/filter_type.rs ]
 crate::ix!();
 
 #[repr(u8)]

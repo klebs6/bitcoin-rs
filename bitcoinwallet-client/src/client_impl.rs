@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-client/src/client_impl.rs ]
 crate::ix!();
 
 ///-----------------------

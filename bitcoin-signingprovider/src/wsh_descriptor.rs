@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/wsh_descriptor.rs ]
 crate::ix!();
 
 /**

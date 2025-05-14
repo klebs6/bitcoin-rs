@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-asmap/src/ty.rs ]
 /*!
 This function, `decode_type`, decodes the
 instruction type from the given iterator
@@ -35,4 +36,3 @@ where I: Iterator<Item = &'a bool> {
     
     Instruction::new(decode_bits(bitpos,endpos,0,&TYPE_BIT_SIZES))
 }
-

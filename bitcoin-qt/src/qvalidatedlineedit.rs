@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/qvalidatedlineedit.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/qvalidatedlineedit.h]

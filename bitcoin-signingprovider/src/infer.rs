@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/infer.rs ]
 crate::ix!();
 
 pub fn infer_pubkey(

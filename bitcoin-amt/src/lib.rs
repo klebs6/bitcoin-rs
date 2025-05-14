@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-amt/src/lib.rs ]
 use bitcoin_derive::*;
 
 #[macro_use] use bitcoin_imports::*;

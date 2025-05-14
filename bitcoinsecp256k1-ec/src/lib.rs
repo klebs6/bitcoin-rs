@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ec/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{ecmult_gen}

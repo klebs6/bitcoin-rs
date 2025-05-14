@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-string/tests/base32.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/base32_tests.cpp]
@@ -32,4 +33,3 @@ crate::ix!();
 
     */
 }
-

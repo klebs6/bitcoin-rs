@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/macnotificationhandler.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/macnotificationhandler.h]

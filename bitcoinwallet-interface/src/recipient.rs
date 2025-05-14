@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-interface/src/recipient.rs ]
 crate::ix!();
 
 pub struct Recipient {

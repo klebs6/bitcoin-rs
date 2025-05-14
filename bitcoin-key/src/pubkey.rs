@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-key/src/pubkey.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/pubkey.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-client-ui/src/ui_signals.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/node/ui_interface.cpp]

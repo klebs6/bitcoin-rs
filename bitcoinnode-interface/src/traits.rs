@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/traits.rs ]
 crate::ix!();
 
 pub trait InitLogging {
@@ -804,4 +805,3 @@ pub trait PushTxInventory {
 
     fn push_tx_inventory(&mut self, hash: &u256);
 }
-

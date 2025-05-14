@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/pubkey_provider.rs ]
 crate::ix!();
 
 /**

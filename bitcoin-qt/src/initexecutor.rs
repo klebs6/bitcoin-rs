@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/initexecutor.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/initexecutor.h]

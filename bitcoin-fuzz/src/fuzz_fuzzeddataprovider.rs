@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_fuzzeddataprovider.rs ]
 /*!
   |===- FuzzedDataProvider.h - Utility header for fuzz targets ---*- C++ -* ===//
   |

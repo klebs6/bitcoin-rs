@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/config.rs ]
 crate::ix!();
 
 lazy_static!{

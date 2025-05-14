@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_http_request.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/http_request.cpp]
@@ -83,4 +84,3 @@ pub fn request_method_string(m: http_request::RequestMethod) -> String {
 
     */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/combo_descriptor.rs ]
 crate::ix!();
 
 /**
@@ -53,4 +54,3 @@ impl IsSingleType for ComboDescriptor {
         */
     }
 }
-

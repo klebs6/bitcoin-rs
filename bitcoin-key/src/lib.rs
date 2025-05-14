@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-key/src/lib.rs ]
 #![feature(allocator_api)]
 
 #[macro_use] mod imports; use imports::*;

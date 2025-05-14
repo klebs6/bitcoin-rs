@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_raii_event.rs ]
 crate::ix!();
 
 

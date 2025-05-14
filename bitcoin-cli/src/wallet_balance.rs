@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/wallet_balance.rs ]
 crate::ix!();
 
 /**

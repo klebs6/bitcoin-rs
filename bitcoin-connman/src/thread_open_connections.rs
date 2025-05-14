@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-connman/src/thread_open_connections.rs ]
 crate::ix!();
 
 pub fn subroutine_thread_open_connections(
@@ -536,4 +537,3 @@ pub fn subroutine_thread_open_connections(
         }
     }
 }
-

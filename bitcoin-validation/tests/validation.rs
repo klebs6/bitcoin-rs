@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-validation/tests/validation.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/validation_tests.cpp]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/destination_encoder.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/key_io.h]
@@ -273,4 +274,3 @@ pub fn sighash_to_str(sighash_type: u8) -> String {
         
         */
 }
-

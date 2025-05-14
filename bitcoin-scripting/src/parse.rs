@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/parse.rs ]
 crate::ix!();
 
 pub fn parse_script(s: &String) -> Script {

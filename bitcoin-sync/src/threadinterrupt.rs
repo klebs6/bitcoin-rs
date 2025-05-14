@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/threadinterrupt.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/threadinterrupt.h]

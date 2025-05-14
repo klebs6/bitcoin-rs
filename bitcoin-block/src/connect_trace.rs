@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/connect_trace.rs ]
 crate::ix!();
 
 pub struct PerBlockConnectTrace {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-stats/src/nodestats.rs ]
 crate::ix!();
 
 #[derive(Default)]
@@ -56,4 +57,3 @@ pub struct NodeStats {
 }
 
 pub type NodesStats = Vec<(NodeStats,bool,NodeStateStats)>;
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_main.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/main.cpp]
@@ -31,4 +32,3 @@ lazy_static!{
     };
     */
 }
-

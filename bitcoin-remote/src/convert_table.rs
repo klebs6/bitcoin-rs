@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-remote/src/convert_table.rs ]
 crate::ix!();
 
 pub struct RPCConvertTable {
@@ -44,5 +45,4 @@ impl RPCConvertTable {
 lazy_static!{
     pub static ref RPC_CVT_TABLE: Mutex<RPCConvertTable> = Mutex::new(RPCConvertTable::new());
 }
-
 

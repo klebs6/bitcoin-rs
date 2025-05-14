@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/progress.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockencoding/src/compression.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/blockencodings.h]

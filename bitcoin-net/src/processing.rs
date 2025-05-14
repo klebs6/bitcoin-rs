@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net/src/processing.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/net_processing.h]
@@ -465,4 +466,3 @@ lazy_static!{
     // GUARDED_BY(cs_most_recent_block)
     pub static ref WITNESSES_PRESENT_IN_MOST_RECENT_COMPACT_BLOCK: AtomicBool = AtomicBool::new(false);
 }
-

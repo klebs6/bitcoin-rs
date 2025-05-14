@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/command.rs ]
 crate::ix!();
 
 #[derive(Default)]

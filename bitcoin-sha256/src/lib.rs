@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{sha256_avx2}

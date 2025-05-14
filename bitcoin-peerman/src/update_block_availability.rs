@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/update_block_availability.rs ]
 crate::ix!();
 
 pub trait UpdateBlockAvailability {

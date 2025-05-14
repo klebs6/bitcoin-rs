@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-scratch/src/scratch.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/scratch.h]

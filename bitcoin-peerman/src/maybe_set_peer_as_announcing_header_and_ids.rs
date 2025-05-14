@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/maybe_set_peer_as_announcing_header_and_ids.rs ]
 crate::ix!();
 
 pub trait MaybeSetPeerAsAnnouncingHeaderAndIds {
@@ -199,4 +200,3 @@ impl MaybeSetPeerAsAnnouncingHeaderAndIds for PeerManager {
         }
     }
 }
-

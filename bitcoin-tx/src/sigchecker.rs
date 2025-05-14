@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/sigchecker.rs ]
 crate::ix!();
 
 ///--------------------

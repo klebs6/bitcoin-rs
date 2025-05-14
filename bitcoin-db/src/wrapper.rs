@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-db/src/wrapper.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/dbwrapper.h]

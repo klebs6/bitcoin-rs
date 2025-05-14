@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scriptpubkeyman/src/descriptor.rs ]
 crate::ix!();
 
 ///-----------------------

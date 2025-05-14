@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-addrman/src/read_from_stream.rs ]
 crate::ix!();
 
 /**
@@ -13,6 +14,5 @@ pub fn read_from_stream(
             DeserializeDB(ssPeers, addr, false);
         */
 }
-
 
 

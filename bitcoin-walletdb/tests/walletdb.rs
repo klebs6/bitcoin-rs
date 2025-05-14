@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-walletdb/tests/walletdb.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/test/walletdb_tests.cpp]
@@ -25,4 +26,3 @@ pub mod walletdb_tests {
         */
     }
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-feature/src/descriptor.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/process_get_filters.rs ]
 crate::ix!();
 
 pub trait ProcessGetFilters {
@@ -87,4 +88,3 @@ impl ProcessGetFilters for PeerManager {
         }
     }
 }
-

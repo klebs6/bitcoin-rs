@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-db/src/logger.rs ]
 crate::ix!();
 
 pub struct BitcoinLevelDBLogger {
@@ -75,4 +76,3 @@ impl leveldb::Logv for BitcoinLevelDBLogger {
         */
     }
 }
-

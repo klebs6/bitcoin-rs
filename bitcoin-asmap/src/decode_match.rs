@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-asmap/src/decode_match.rs ]
 /*!
 This function, `decode_match`, decodes a match value from
 a provided iterator of boolean values. The iterator `bitpos`
@@ -38,4 +39,3 @@ where I: Iterator<Item = &'a bool> {
             return DecodeBits(bitpos, endpos, 2, MATCH_BIT_SIZES);
         */
 }
-

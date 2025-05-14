@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/csvmodelwriter.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/csvmodelwriter.h]

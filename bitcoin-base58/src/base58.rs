@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-base58/src/base58.rs ]
 /*!
   | Why base-58 instead of standard base-64
   | encoding?

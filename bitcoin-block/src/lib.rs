@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{allocate_file_range}

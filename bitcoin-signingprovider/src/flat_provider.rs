@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/flat_provider.rs ]
 crate::ix!();
 
 pub struct FlatSigningProvider {

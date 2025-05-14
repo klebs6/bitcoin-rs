@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockencoding/tests/blockencodings.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/blockencodings_tests.cpp]
@@ -440,4 +441,3 @@ pub mod blockencodings_tests {
         */
     }
 }
-

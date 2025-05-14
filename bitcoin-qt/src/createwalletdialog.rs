@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/createwalletdialog.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/createwalletdialog.h]

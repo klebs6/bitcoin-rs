@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/sighash.rs ]
 crate::ix!();
 
 pub fn signature_hash_schnorr<T>(
@@ -172,4 +173,3 @@ pub fn signature_hash<T>(
         return ss.GetHash();
         */
 }
-

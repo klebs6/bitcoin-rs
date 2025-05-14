@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-vectorstream/src/vector_reader.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/disconnected.rs ]
 crate::ix!();
 
 /**

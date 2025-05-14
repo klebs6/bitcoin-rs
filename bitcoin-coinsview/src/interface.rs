@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/interface.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/optionsdialog.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/optionsdialog.h]

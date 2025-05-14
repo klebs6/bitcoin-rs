@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bdb/src/check_unique.rs ]
 crate::ix!();
 
 /**
@@ -38,4 +39,3 @@ pub fn check_unique_fileid(
         }
         */
 }
-

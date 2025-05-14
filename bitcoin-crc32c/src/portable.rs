@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-crc32c/src/portable.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crc32c/src/crc32c_portable.cc]

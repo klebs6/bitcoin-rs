@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/flatfile_pos.rs ]
 crate::ix!();
 
 pub struct FlatFilePos {
@@ -65,4 +66,3 @@ impl FlatFilePos {
         }
     }
 }
-

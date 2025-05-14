@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/tests/coinstatsindex.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/coinstatsindex_tests.cpp]
@@ -67,4 +68,3 @@ crate::ix!();
 
     */
 }
-

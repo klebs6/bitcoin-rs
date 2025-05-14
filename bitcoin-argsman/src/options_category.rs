@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/options_category.rs ]
 crate::ix!();
 
 #[derive(PartialEq,Eq,PartialOrd,Ord,Hash)]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/addressbookpage.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/addressbookpage.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net/src/poisson_next_send.rs ]
 crate::ix!();
 
 /**
@@ -16,4 +17,3 @@ pub fn poisson_next_send(
         return now + duration_cast<microseconds>(unscaled * average_interval + 0.5us);
         */
 }
-

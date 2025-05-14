@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-psbt/src/signer.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/external_signer.h]
@@ -265,4 +266,3 @@ impl ExternalSigner {
         */
     }
 }
-

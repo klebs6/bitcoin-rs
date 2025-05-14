@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-addrman/src/pimpl.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/addrman_impl.h]

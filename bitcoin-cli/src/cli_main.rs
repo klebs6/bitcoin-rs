@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/cli_main.rs ]
 crate::ix!();
 
 pub fn format_exception(

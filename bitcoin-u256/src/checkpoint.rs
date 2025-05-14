@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-u256/src/checkpoint.rs ]
 crate::ix!();
 
 pub type MapCheckpoints = HashMap<i32,u256>;

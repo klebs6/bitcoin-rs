@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/transactionfilterproxy.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/transactionfilterproxy.h]

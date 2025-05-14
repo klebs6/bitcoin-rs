@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/signature_checker.rs ]
 crate::ix!();
 
 pub trait CheckECDSASignature {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-psbt/src/finalize.rs ]
 crate::ix!();
 
 /**

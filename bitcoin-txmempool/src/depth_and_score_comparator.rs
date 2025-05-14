@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-txmempool/src/depth_and_score_comparator.rs ]
 crate::ix!();
 
 pub struct DepthAndScoreComparator {

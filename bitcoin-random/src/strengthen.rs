@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-random/src/strengthen.rs ]
 crate::ix!();
 
 /**

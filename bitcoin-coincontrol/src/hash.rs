@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coincontrol/src/hash.rs ]
 crate::ix!();
 
 /**
@@ -49,4 +50,3 @@ pub fn finalize_hash(
         stats.hashSerialized = out;
         */
 }
-

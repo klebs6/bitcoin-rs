@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_logging.rs ]
 crate::ix!();
 
 

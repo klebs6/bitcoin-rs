@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/unlinked.rs ]
 pub const NotLinkedConst:        usize = 0;
 pub const QtAscendingOrder:        u32 = NotLinkedConst as u32 ;//TODO
 pub const QtAutoConnection:        u32 = NotLinkedConst as u32 ;//TODO

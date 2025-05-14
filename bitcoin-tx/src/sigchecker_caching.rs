@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/sigchecker_caching.rs ]
 crate::ix!();
 
 pub struct CachingTransactionSignatureChecker {
@@ -56,4 +57,3 @@ impl CachingTransactionSignatureChecker {
         */
     }
 }
-

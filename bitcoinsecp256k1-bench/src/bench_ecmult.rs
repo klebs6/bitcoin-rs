@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-bench/src/bench_ecmult.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/bench_ecmult.c]

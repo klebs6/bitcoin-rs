@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/serialize.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/serialize.h]
@@ -1827,4 +1828,3 @@ pub fn get_serialize_size_many<T>(
         return sc.size();
         */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinrpc-wallet/src/rpcwallet.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/rpcwallet.h]

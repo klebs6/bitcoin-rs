@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/validation.rs ]
 crate::ix!();
 
 #[derive(Default)]
@@ -128,4 +129,3 @@ pub enum BlockValidationResult {
       */
     BLOCK_CHECKPOINT,        
 }
-

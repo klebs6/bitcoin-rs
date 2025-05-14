@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/qrimagewidget.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/qrimagewidget.h]

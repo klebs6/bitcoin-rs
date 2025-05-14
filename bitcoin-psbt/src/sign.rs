@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-psbt/src/sign.rs ]
 crate::ix!();
 
 /**

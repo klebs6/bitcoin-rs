@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-init/src/noui.rs ]
 crate::ix!();
 
 pub fn noui_connect()  {
@@ -9,4 +10,3 @@ pub fn noui_connect()  {
         noui_InitMessageConn = uiInterface.InitMessage_connect(noui_InitMessage);
         */
 }
-

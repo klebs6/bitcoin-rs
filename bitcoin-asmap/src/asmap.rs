@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-asmap/src/asmap.rs ]
 /*!
 This function, `decode_asmap`, reads an ASMAP from
 a provided binary file and returns a vector of boolean
@@ -81,4 +82,3 @@ pub fn decode_asmap(path: Box<Path>) -> Vec<bool> {
         return bits;
         */
 }
-

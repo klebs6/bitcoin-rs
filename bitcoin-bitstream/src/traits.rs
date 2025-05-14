@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bitstream/src/traits.rs ]
 crate::ix!();
 
 pub trait GetType {

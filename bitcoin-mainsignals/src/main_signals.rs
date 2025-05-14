@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-mainsignals/src/main_signals.rs ]
 crate::ix!();
 
 ///--------------------------

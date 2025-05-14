@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-psbt/src/combine.rs ]
 crate::ix!();
 
 /**
@@ -40,5 +41,4 @@ pub fn combine_psb_ts(
         return TransactionError::OK;
         */
 }
-
 

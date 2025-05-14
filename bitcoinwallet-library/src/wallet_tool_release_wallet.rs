@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/wallet_tool_release_wallet.rs ]
 crate::ix!();
 
 /**
@@ -15,5 +16,4 @@ pub fn wallet_tool_release_wallet(wallet: *mut Wallet)  {
         delete wallet;
         */
 }
-
 

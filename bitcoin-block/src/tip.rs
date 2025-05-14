@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/tip.rs ]
 crate::ix!();
 
 /**
@@ -23,4 +24,3 @@ pub struct BlockTip {
     block_time:   i64,
     block_hash:   u256,
 }
-

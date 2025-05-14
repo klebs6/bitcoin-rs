@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockencoding/src/difference_formatter.rs ]
 crate::ix!();
 
 #[derive(Default)]
@@ -32,4 +33,3 @@ impl DifferenceFormatter {
         */
     }
 }
-

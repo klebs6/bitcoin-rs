@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tor/src/controller.rs ]
 crate::ix!();
 
 /****** Bitcoin specific TorController implementation ********/

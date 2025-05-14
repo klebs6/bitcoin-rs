@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-addrman/src/connected.rs ]
 crate::ix!();
 
 impl AddrManInner {

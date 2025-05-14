@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/db.rs ]
 crate::ix!();
 
 pub const DB_COIN:         char = 'C';

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/syscall_sandbox.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/syscall_sandbox.h]
@@ -1146,4 +1147,3 @@ pub fn set_syscall_sandbox_policy(syscall_policy: SyscallSandboxPolicy)  {
     #endif // defined(USE_SYSCALL_SANDBOX)
         */
 }
-

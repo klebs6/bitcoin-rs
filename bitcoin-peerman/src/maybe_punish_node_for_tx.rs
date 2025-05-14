@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/maybe_punish_node_for_tx.rs ]
 crate::ix!();
 
 pub trait MaybePunishNodeForTx {

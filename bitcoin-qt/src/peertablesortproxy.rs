@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/peertablesortproxy.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/peertablesortproxy.h]

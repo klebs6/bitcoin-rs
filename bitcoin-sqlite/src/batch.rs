@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sqlite/src/batch.rs ]
 crate::ix!();
 
 /**

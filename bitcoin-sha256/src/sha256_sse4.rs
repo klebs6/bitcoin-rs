@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/sha256_sse4.rs ]
 /*!
   | This is a translation to GCC extended asm
   | syntax from YASM code by Intel (available at
@@ -1509,4 +1510,3 @@ _SHUF_00BA:              ddq 0xFFFFFFFFFFFFFFFF0b0a090803020100
 ; shuffle xDxC -> DC00
 _SHUF_DC00:              ddq 0x0b0a090803020100FFFFFFFFFFFFFFFF
 */
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/hash.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/hash.h]
@@ -432,4 +433,3 @@ pub fn rfc6979_hmac_sha256_finalize(rng: *mut Rfc6979HmacSha256)  {
         rng->retry = 0;
         */
 }
-

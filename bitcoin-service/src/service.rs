@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-service/src/service.rs ]
 crate::ix!();
 
 /**

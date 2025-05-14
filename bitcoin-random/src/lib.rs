@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-random/src/lib.rs ]
 /*!
   | Overall design of the RNG and entropy sources.
   |

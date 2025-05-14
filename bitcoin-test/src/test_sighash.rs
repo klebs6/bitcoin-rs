@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_sighash.rs ]
 crate::ix!();
 
 

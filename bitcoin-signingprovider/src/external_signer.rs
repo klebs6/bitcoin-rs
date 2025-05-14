@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/external_signer.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/rpc/external_signer.cpp]

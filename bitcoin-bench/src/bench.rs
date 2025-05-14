@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench.rs ]
 /*!
    |  Usage:
    |

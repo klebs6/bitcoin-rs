@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-filter/src/filter_block.rs ]
 /*!
   | A filter block is stored near the end of
   | a Table file.  It contains filters (e.g., bloom

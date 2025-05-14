@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_denialofservice.rs ]
 /*!
   | Unit tests for denial-of-service detection/prevention
   | code

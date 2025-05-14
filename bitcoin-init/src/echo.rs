@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-init/src/echo.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/interfaces/echo.h]
@@ -37,4 +38,3 @@ pub fn make_echo() -> Box<dyn Echo> {
             return std::make_unique<EchoImpl>();
         */
 }
-

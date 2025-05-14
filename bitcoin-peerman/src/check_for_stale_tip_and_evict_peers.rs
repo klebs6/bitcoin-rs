@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/check_for_stale_tip_and_evict_peers.rs ]
 crate::ix!();
 
 impl CheckForStaleTipAndEvictPeers for PeerManager {

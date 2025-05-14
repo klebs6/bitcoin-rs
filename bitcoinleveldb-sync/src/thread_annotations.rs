@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-sync/src/thread_annotations.rs ]
 /*!
   | Use Clang's thread safety analysis annotations
   | when available. In other environments, the

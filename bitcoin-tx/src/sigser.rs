@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/sigser.rs ]
 crate::ix!();
 
 /**
@@ -170,4 +171,3 @@ impl<T> TransactionSignatureSerializer<T> {
         */
     }
 }
-

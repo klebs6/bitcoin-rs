@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-fees/src/feebumper.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/feebumper.h]

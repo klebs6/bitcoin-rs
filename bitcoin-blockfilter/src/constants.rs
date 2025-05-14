@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockfilter/src/constants.rs ]
 crate::ix!();
 
 pub const BASIC_FILTER_P: u8 = 19;

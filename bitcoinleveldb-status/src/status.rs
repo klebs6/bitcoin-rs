@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-status/src/status.rs ]
 /*!
   | A Status encapsulates the result of an
   | operation.  It may indicate success, or it may

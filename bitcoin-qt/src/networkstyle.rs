@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/networkstyle.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/networkstyle.h]

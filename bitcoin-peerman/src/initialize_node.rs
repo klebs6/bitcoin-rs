@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/initialize_node.rs ]
 crate::ix!();
 
 impl InitializeNode for PeerManager {

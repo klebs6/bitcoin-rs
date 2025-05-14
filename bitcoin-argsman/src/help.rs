@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/help.rs ]
 crate::ix!();
 
 pub fn setting_name(arg: &str) -> String {

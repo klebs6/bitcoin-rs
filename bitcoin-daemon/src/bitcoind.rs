@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-daemon/src/bitcoind.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bitcoind.cpp]

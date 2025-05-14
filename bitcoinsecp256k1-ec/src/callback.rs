@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ec/src/callback.rs ]
 crate::ix!();
 
 #[cfg(not(USE_EXTERNAL_DEFAULT_CALLBACKS))]
@@ -65,5 +66,4 @@ lazy_static!{
     };
     */
 }
-
 

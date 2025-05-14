@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/bitcoinamountfield.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/bitcoinamountfield.h]

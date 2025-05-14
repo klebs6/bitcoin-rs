@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/settings.rs ]
 crate::ix!();
 
 pub fn save_errors(

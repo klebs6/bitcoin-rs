@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockencoding/src/read_status.rs ]
 crate::ix!();
 
 #[derive(PartialEq,Eq,Clone,Debug)]
@@ -25,4 +26,3 @@ pub enum ReadStatus
       */
     CheckBlockFailed, 
 }
-

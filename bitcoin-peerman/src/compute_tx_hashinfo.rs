@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/compute_tx_hashinfo.rs ]
 crate::ix!();
 
 /**
@@ -44,5 +45,4 @@ pub fn compute_tx_hash_info(
 
     ret
 }
-
 

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/remove_peer.rs ]
 crate::ix!();
 
 pub trait RemovePeer {

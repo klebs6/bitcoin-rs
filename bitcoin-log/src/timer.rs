@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/timer.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/logging/timer.h]

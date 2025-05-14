@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/bitcoingui.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/bitcoingui.h]

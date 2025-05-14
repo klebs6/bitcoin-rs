@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-siphash/src/siphash.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/siphash.h]

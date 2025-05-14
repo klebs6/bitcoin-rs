@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/askpassphrasedialog.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/askpassphrasedialog.h]

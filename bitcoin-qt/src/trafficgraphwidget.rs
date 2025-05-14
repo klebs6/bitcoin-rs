@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/trafficgraphwidget.rs ]
 crate::ix!();
 
 pub const DESIRED_SAMPLES: usize = 800;

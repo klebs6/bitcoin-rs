@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-banman/src/entry.rs ]
 crate::ix!();
 
 #[derive(Clone)]

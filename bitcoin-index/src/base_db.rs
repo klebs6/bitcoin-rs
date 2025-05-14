@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-index/src/base_db.rs ]
 crate::ix!();
 
 pub trait GetDB {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-addrman/tests/addrman.rs ]
 crate::ix!();
 
 pub trait Serialize {

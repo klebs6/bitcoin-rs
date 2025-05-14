@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scriptpubkeyman/src/traits.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/scriptpubkeyman.cpp]

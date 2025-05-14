@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-service-flags/src/flags.rs ]
 crate::ix!();
 
 /**
@@ -241,4 +242,3 @@ pub fn service_flags_to_str(flags: u64) -> Vec<String> {
         return str_flags;
         */
 }
-

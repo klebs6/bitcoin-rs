@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/tests/bswap.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/bswap_tests.cpp]
@@ -18,4 +19,3 @@ crate::ix!();
 
     */
 }
-

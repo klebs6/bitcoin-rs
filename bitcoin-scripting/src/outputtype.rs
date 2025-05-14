@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/outputtype.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/outputtype.h]

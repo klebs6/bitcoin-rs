@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-crc32c/src/sse42.rs ]
 crate::ix!();
 
 

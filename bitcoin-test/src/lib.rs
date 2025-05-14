@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{db_not_found_error}

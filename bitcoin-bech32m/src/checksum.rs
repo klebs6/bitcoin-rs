@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bech32m/src/checksum.rs ]
 crate::ix!();
 
 /**

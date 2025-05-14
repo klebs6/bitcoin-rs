@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ec/src/nonce.rs ]
 crate::ix!();
 
 /** 
@@ -46,5 +47,4 @@ pub type NonceFunction = fn(
     data:    *mut c_void,
     attempt: u32
 ) -> i32;
-
 

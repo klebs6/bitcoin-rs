@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/index.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/index/base.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinchain-params/src/decode.rs ]
 crate::ix!();
 
 pub fn decode_destination(
@@ -103,4 +104,3 @@ pub fn decode_destination(
         return CNoDestination();
         */
 }
-

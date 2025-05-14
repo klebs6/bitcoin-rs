@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/netinfo_peer.rs ]
 crate::ix!();
 
 //------------------------------

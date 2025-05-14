@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_scriptpubkeyman_tests.rs ]
 crate::ix!();
 
 

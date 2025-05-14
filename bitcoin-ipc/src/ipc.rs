@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-ipc/src/ipc.rs ]
 crate::ix!();
 
 use crate::protocol::Protocol;
@@ -108,4 +109,3 @@ pub fn make_ipc(
             return std::make_unique<ipc::Ipc>(exe_name, process_argv0, init);
         */
 }
-

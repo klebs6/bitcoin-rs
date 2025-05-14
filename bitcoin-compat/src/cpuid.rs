@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/cpuid.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/cpuid.h]

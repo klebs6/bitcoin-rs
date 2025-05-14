@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/assume.rs ]
 crate::ix!();
 
 pub struct AssumeUtxoHash {
@@ -48,4 +49,3 @@ pub struct AssumeUtxoData {
 }
 
 pub type MapAssumeUtxo = HashMap<i32,AssumeUtxoData>;
-

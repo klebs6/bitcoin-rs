@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-dumpwallet/src/dump.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/dump.h]

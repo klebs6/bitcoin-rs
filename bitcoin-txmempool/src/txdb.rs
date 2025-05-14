@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-txmempool/src/txdb.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/txdb.h]
@@ -73,4 +74,3 @@ lazy_static!{
     extern RecursiveMutex cs_main;
     */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockfilter/tests/blockfilter_index.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/blockfilter_index_tests.cpp]
@@ -335,4 +336,3 @@ impl BuildChainTestingSetup {
 
     */
 }
-

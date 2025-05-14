@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blob/src/blob.rs ]
 crate::ix!();
 
 pub const fn base_blob_width<const BITS: usize>() -> usize 

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinselect/src/input_coin.rs ]
 crate::ix!();
 
 /**
@@ -111,5 +112,4 @@ impl InputCoin {
         */
     }
 }
-
 

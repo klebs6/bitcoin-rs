@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-init/src/init.rs ]
 crate::ix!();
 
 pub trait MakeNode {

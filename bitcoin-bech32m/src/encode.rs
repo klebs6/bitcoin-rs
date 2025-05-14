@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bech32m/src/encode.rs ]
 crate::ix!();
 
 /// Concatenate two vectors.

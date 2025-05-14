@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-addrman/src/check.rs ]
 crate::ix!();
 
 impl AddrManInner {

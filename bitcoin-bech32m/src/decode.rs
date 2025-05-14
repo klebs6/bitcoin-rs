@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bech32m/src/decode.rs ]
 crate::ix!();
 
 pub struct DecodeResult {

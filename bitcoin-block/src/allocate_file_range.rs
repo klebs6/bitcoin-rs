@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/allocate_file_range.rs ]
 crate::ix!();
 
 /**
@@ -105,4 +106,3 @@ pub fn allocate_file_range(
         }
     }
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/hiding_provider.rs ]
 crate::ix!();
 
 pub struct HidingSigningProvider {

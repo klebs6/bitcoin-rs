@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinchain-notifications/src/notifications.rs ]
 crate::ix!();
 
 /**
@@ -93,4 +94,3 @@ pub trait TransactionRemovedFromMempool {
         reason:           MemPoolRemovalReason,
         mempool_sequence: u64) {}
 }
-

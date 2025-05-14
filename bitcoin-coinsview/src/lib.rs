@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{access}

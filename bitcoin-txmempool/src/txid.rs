@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-txmempool/src/txid.rs ]
 crate::ix!();
 
 /**

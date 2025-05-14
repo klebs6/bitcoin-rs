@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/txn.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/transactionrecord.h]
@@ -534,5 +535,4 @@ impl TransactionRecord {
         */
     }
 }
-
 

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bech32m/src/bech32.rs ]
 /*!
   | Bech32 and Bech32m are string encoding formats
   | used in newer address types. 

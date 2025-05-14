@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sqlite/src/version.rs ]
 crate::ix!();
 
 pub const WALLET_SCHEMA_VERSION: i32 = 0;

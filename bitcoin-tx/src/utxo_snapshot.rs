@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/utxo_snapshot.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/node/utxo_snapshot.h]
@@ -53,4 +54,3 @@ impl SnapshotMetadata {
         */
     }
 }
-

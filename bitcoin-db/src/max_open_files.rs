@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-db/src/max_open_files.rs ]
 crate::ix!();
 
 pub fn set_max_open_files(options: *mut leveldb::Options)  {
@@ -28,4 +29,3 @@ pub fn set_max_open_files(options: *mut leveldb::Options)  {
                  options->max_open_files, default_open_files);
         */
 }
-

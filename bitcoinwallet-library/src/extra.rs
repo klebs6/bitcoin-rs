@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/extra.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/context.h]

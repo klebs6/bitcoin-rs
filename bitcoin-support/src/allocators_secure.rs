@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-support/src/allocators_secure.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/support/allocators/secure.h]

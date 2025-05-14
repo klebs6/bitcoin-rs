@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/connect_and_callrpc.rs ]
 crate::ix!();
 
 /**

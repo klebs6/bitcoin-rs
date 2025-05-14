@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-ipc/src/capnp_protocol.rs ]
 crate::ix!();
 
 use crate::protocol::Protocol;

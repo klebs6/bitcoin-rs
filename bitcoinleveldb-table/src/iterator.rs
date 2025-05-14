@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-table/src/iterator.rs ]
 /*!
   | An iterator yields a sequence of key/value
   | pairs from a source.  The following class

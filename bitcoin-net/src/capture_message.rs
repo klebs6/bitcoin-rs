@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net/src/capture_message.rs ]
 crate::ix!();
 
 /**
@@ -38,4 +39,3 @@ pub fn capture_message(
         f.write((const char*)data.data(), data.size());
         */
 }
-

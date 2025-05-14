@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/guiconstants.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/guiconstants.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/sign.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fees/tests/ops.rs ]
 crate::ix!();
 
 #[test] fn binary_operator_test() {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/peer_has_header.rs ]
 crate::ix!();
 
 #[EXCLUSIVE_LOCKS_REQUIRED(CS_MAIN)]
@@ -65,5 +66,4 @@ pub fn peer_has_header_with_amo(
         false
     }
 }
-
 

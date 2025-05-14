@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-asmap/src/sanity.rs ]
 /*
 This function, `sanity_check_as_map`, checks if
 the given ASMAP (`asmap`) is well-formed and does

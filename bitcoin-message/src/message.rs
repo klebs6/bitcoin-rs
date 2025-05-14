@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-message/src/message.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/message.h]
@@ -190,4 +191,3 @@ pub fn message_hash(message: &String) -> u256 {
         return hasher.GetHash();
         */
 }
-

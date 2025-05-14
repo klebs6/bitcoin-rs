@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-miner/src/miner.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/miner.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sqlite/src/log.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/sqlite.h]

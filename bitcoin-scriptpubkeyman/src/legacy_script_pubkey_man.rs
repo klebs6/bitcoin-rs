@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scriptpubkeyman/src/legacy_script_pubkey_man.rs ]
 crate::ix!();
 
 ///-------------------
@@ -2084,5 +2085,4 @@ impl LegacyScriptPubKeyMan {
         */
     }
 }
-
 

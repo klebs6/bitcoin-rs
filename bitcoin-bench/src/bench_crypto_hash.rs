@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_crypto_hash.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/crypto_hash.cpp]

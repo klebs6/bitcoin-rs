@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-scalar/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 ///Need to select a scalar format

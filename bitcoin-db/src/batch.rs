@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-db/src/batch.rs ]
 crate::ix!();
 
 /**
@@ -107,4 +108,3 @@ impl DBBatch {
         self.size_estimate
     }
 }
-

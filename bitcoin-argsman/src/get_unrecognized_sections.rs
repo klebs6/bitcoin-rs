@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/get_unrecognized_sections.rs ]
 crate::ix!();
 
 // Section names to be recognized in the config file.

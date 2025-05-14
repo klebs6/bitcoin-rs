@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/mempool_accept.rs ]
 crate::ix!();
 
 pub struct MemPoolAccept {

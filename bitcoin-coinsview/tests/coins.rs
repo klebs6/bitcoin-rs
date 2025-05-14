@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/tests/coins.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/coins_tests.cpp]

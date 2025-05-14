@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fees/src/feerate.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/policy/feerate.h]

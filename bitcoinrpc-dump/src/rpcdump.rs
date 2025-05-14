@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinrpc-dump/src/rpcdump.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/rpcdump.cpp]

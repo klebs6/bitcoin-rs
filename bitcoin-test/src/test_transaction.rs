@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_transaction.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/transaction_tests.cpp]

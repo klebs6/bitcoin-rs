@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-init/src/setup.rs ]
 crate::ix!();
 
 pub fn setup_networking() -> bool {

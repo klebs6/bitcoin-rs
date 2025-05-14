@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/paymentserver.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/paymentserver.h]

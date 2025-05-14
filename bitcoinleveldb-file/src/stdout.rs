@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-file/src/stdout.rs ]
 crate::ix!();
 
 pub struct StdoutPrinter {
@@ -62,4 +63,3 @@ impl GetName for StdoutPrinter {
         */
     }
 }
-

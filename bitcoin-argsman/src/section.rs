@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/section.rs ]
 crate::ix!();
 
 #[derive(Clone)]

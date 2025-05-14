@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/txin.rs ]
 crate::ix!();
 
 /**

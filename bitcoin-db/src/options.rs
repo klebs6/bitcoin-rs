@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-db/src/options.rs ]
 crate::ix!();
 
 pub fn get_options(n_cache_size: usize) -> leveldb::Options {

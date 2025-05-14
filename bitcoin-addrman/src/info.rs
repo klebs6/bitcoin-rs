@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-addrman/src/info.rs ]
 crate::ix!();
 
 /**

@@ -1,4 +1,4 @@
-
+// ---------------- [ File: bitcoin-scriptpubkeyman/src/imports.rs ]
 pub(crate) use bitcoin_amt::*;
 pub(crate) use bitcoin_coinsview::*;
 pub(crate) use bitcoin_crypter::*;

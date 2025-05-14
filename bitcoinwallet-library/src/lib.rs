@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{add_unload}

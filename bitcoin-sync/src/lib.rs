@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{sync_impl}

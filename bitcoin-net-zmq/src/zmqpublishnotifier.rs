@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net-zmq/src/zmqpublishnotifier.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/zmq/zmqpublishnotifier.h]

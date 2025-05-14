@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/tests/compilerbug.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/compilerbug_tests.cpp]
@@ -58,4 +59,3 @@ pub mod compilerbug_tests {
         */
     }
 }
-

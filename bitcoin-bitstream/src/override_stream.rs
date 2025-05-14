@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bitstream/src/override_stream.rs ]
 crate::ix!();
 
 pub struct OverrideStream<Stream> {

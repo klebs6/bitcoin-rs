@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/tr_descriptor.rs ]
 crate::ix!();
 
 /**

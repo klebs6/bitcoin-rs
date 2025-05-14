@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-init/src/handler.rs ]
 crate::ix!();
 
 ///---------------------
@@ -70,4 +71,3 @@ impl CleanupHandler {
         */
     }
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/signverifymessagedialog.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/signverifymessagedialog.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/header.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-ipc/src/context.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/ipc/context.h]

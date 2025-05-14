@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/unload_block_index.rs ]
 crate::ix!();
 
 /**
@@ -31,5 +32,4 @@ pub fn unload_block_index(
         fHavePruned = false;
         */
 }
-
 

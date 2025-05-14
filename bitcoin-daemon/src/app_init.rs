@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-daemon/src/app_init.rs ]
 crate::ix!();
 
 pub fn app_init(
@@ -148,4 +149,3 @@ pub fn app_init(
         return fRet;
         */
 }
-

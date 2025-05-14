@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockfilter/src/init.rs ]
 crate::ix!();
 
 /**
@@ -26,5 +27,4 @@ pub fn init_block_filter_index(
         return result.second;
         */
 }
-
 

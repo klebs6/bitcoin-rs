@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/lib.rs ]
 #![feature(stdin_forwarders)]
 
 #[macro_use] mod imports; use imports::*;

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bdb/src/wallet_database_fileid.rs ]
 crate::ix!();
 
 pub struct WalletDatabaseFileId {
@@ -15,4 +16,3 @@ impl PartialEq<WalletDatabaseFileId> for WalletDatabaseFileId {
 }
 
 impl Eq for WalletDatabaseFileId {}
-

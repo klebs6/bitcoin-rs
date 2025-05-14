@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/qvaluecombobox.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/qvaluecombobox.h]

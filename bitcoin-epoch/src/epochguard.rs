@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-epoch/src/epochguard.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/epochguard.h]

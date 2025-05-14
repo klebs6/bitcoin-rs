@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/args.rs ]
 crate::ix!();
 
 pub mod base_options {

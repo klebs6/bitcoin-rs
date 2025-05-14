@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-key/src/meta.rs ]
 crate::ix!();
 
 pub struct KeyMetadata {

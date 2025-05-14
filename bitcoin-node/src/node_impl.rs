@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-node/src/node_impl.rs ]
 crate::ix!();
 
 pub struct NodeImpl {
@@ -550,4 +551,3 @@ impl NodeImpl {
         */
     }
 }
-

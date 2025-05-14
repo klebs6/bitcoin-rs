@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-index/src/summary.rs ]
 crate::ix!();
 
 pub struct IndexSummary {

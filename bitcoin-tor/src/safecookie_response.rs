@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tor/src/safecookie_response.rs ]
 crate::ix!();
 
 /** 

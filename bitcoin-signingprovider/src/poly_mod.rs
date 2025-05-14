@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/poly_mod.rs ]
 crate::ix!();
 
 /**

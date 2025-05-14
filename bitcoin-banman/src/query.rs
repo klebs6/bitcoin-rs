@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-banman/src/query.rs ]
 crate::ix!();
 
 impl BanMan {

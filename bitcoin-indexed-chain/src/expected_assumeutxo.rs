@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/expected_assumeutxo.rs ]
 crate::ix!();
 
 /**

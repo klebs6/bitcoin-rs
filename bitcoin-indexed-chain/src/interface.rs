@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/interface.rs ]
 crate::ix!();
 
 ///-------------------------
@@ -35,4 +36,3 @@ pub fn remove_wallet_setting<'a>(
         
         */
 }
-

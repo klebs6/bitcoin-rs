@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-random/src/hardware_rand.rs ]
 crate::ix!();
 
 ///--------------------------------------
@@ -58,4 +59,3 @@ pub fn report_hardware_rand()  {
 
 #[cfg(not(have_getcpuid))]
 pub fn report_hardware_rand()  { }
-

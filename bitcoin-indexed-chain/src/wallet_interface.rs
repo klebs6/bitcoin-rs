@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/wallet_interface.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/node/interfaces.cpp]

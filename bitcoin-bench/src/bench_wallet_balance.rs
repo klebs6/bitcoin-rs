@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_wallet_balance.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/wallet_balance.cpp]

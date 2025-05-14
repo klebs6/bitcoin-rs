@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/txmempool.rs ]
 crate::ix!();
 
 #[EXCLUSIVE_LOCKS_REQUIRED(cs, cs_main)]
@@ -46,4 +47,3 @@ pub fn remove_for_reorg(
     RemoveStaged(setAllRemoves, false, MemPoolRemovalReason::REORG);
     */
 }
-

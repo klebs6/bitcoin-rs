@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-golombrice/tests/gcs.rs ]
 crate::ix!();
 
 #[test] fn gcsfilter_test() {
@@ -43,5 +44,4 @@ crate::ix!();
 
     */
 }
-
 

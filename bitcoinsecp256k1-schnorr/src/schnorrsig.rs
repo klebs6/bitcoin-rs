@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-schnorr/src/schnorrsig.rs ]
 /*!
   | This module implements a variant of
   | Schnorr signatures compliant with

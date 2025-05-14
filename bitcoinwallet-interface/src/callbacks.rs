@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-interface/src/callbacks.rs ]
 crate::ix!();
 
 pub type WalletStatusChangedFn          = fn() -> ();
@@ -14,4 +15,3 @@ pub type WalletAddressBookChangedFn = fn(
     purpose: &String,
     status:  ChangeType
 ) -> ();
-

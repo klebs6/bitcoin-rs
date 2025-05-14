@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/error.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/error.h]

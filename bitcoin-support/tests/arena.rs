@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-support/tests/arena.rs ]
 crate::ix!();
 
 #[test] fn arena_tests() {
@@ -118,4 +119,3 @@ crate::ix!();
 
     */
 }
-

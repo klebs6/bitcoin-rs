@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/wallet_show_info.rs ]
 crate::ix!();
 
 pub fn wallet_show_info(wallet_instance: *mut Wallet)  {

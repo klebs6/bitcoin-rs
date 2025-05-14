@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-crc32c/src/sse42_check.rs ]
 /*!
   | X86-specific code checking the availability of
   | SSE4.2 instructions.

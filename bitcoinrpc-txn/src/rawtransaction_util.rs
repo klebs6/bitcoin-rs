@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinrpc-txn/src/rawtransaction_util.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/rpc/rawtransaction_util.h]

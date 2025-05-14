@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-addrman/src/lib.rs ]
 #![feature(core_intrinsics)]
 
 #[macro_use] mod imports; use imports::*;

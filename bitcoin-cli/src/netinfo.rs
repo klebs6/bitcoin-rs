@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/netinfo.rs ]
 crate::ix!();
 
 pub const NETINFO_REQUEST_HANDLER_NETWORKS: &[&'static str] = &["ipv4", "ipv6", "onion", "i2p"];

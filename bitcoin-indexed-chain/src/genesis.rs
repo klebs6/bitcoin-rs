@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/genesis.rs ]
 crate::ix!();
 
 pub fn create_genesis_block_with_output_script(

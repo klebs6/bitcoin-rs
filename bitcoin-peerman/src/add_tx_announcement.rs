@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/add_tx_announcement.rs ]
 crate::ix!();
 
 pub trait AddTxAnnouncement {

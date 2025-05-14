@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_mempool_stress.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/mempool_stress.cpp]

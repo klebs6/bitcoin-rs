@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-cache/src/cache.rs ]
 /*!
   | A Cache is an interface that maps keys to
   | values.  It has internal synchronization and

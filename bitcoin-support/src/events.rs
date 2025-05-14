@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-support/src/events.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/support/events.h]

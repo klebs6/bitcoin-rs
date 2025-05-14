@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_verify_script.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/verify_script.cpp]

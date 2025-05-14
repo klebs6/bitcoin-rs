@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/assumptions.rs ]
 /*!
   | Compile-time verification of assumptions we
   | make.

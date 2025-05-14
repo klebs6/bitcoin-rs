@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockpolicy/src/txstats_info.rs ]
 crate::ix!();
 
 #[derive(PartialEq)]

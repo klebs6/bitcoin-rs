@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/access.rs ]
 crate::ix!();
 
 pub fn get_cscript(

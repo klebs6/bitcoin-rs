@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-checkqueue/src/inner.rs ]
 crate::ix!();
 
 pub struct CheckQueueInner<T> {
@@ -43,5 +44,4 @@ pub struct CheckQueueInner<T> {
 
     request_stop: bool, // default = { false }
 }
-
 

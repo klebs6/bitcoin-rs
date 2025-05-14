@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-db/src/iterator.rs ]
 crate::ix!();
 
 ///------------------------
@@ -127,4 +128,3 @@ impl<'a> DBIterator<'a> {
         (*self.piter).next();
     }
 }
-

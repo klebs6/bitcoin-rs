@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bech32m/tests/bech32m.rs ]
 crate::ix!();
 
 #[test] fn bech_32m_testvectors_valid() {

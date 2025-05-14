@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-remote/src/convert_param.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/rpc/client.h]
@@ -207,4 +208,3 @@ pub const vRPCConvertParams: &[RPCConvertParam] = &[
     RPCConvertParam { method_name: "addpeeraddress"               , param_idx:   2  , param_name:  "tried"                 , } , 
     RPCConvertParam { method_name: "stop"                         , param_idx:   0  , param_name:  "wait"                  , }
 ];
-

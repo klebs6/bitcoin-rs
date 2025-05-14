@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/rpcconsole.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/rpcconsole.h]

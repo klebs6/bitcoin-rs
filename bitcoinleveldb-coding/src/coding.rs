@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-coding/src/coding.rs ]
 /*!
   | Endian-neutral encoding:
   |

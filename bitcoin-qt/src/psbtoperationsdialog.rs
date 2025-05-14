@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/psbtoperationsdialog.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/psbtoperationsdialog.h]

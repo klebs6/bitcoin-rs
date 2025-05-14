@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/spent.rs ]
 crate::ix!();
 
 /**
@@ -33,4 +34,3 @@ pub fn get_spent_scriptssha256(outputs_spent: &Vec<TxOut>) -> u256 {
         return ss.GetSHA256();
         */
 }
-

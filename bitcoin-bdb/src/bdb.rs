@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bdb/src/bdb.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/bdb.h]

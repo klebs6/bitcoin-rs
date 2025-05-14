@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-test/src/issue178_test.rs ]
 /*!
   | Test for issue 178: a manual compaction
   | causes deleted data to reappear.

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-scalar/src/scalar_8x32.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/scalar_8x32.h]

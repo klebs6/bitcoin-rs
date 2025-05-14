@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-arena/src/arena.rs ]
 crate::ix!();
 
 pub const BLOCK_SIZE: i32 = 4096;

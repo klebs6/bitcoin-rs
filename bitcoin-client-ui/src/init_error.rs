@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-client-ui/src/init_error.rs ]
 crate::ix!();
 
 /**

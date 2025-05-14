@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_script_assets_test_minimizer.rs ]
 /*!
   | This fuzz "test" can be used to minimize test
   | cases for script_assets_test in

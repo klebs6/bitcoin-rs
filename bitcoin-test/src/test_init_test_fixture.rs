@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_init_test_fixture.rs ]
 crate::ix!();
 
 

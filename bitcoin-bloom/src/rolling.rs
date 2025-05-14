@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bloom/src/rolling.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/modaloverlay.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/modaloverlay.h]

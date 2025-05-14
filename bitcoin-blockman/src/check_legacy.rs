@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockman/src/check_legacy.rs ]
 crate::ix!();
 
 pub fn check_legacy_txindex(
@@ -21,5 +22,4 @@ pub fn check_legacy_txindex(
         return std::nullopt;
         */
 }
-
 

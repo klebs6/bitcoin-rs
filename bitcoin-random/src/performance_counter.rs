@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-random/src/performance_counter.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_netaddress.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/netaddress.cpp]
@@ -95,4 +96,3 @@ crate::ix!();
 
     */
 }
-

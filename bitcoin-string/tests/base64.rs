@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-string/tests/base64.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/base64_tests.cpp]
@@ -29,4 +30,3 @@ crate::ix!();
 
     */
 }
-

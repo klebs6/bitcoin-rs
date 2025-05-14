@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-base58/src/lib.rs ]
 #![feature(iter_advance_by)]
 
 #[macro_use] mod imports; use imports::*;

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/error_catcher.rs ]
 crate::ix!();
 
 /**

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/comparator.rs ]
 crate::ix!();
 
 pub struct BlockIndexWorkComparator { }

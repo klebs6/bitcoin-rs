@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/update_height.rs ]
 crate::ix!();
 
 pub fn maybe_update_heights(
@@ -33,4 +34,3 @@ pub fn maybe_update_heights(
         }
         */
 }
-

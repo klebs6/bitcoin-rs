@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-secp256k1/src/preallocated.rs ]
 /*!
   | The module provided by this header file
   | is intended for settings in which it

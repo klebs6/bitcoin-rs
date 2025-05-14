@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/file_commit.rs ]
 crate::ix!();
 
 /**
@@ -90,4 +91,3 @@ pub fn file_commit(file: *mut libc::FILE) -> bool {
 
     true
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/block_checked.rs ]
 crate::ix!();
 
 impl BlockChecked for PeerManager {

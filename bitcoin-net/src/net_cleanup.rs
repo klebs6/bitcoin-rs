@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net/src/net_cleanup.rs ]
 crate::ix!();
 
 #[derive(Default)]
@@ -24,4 +25,3 @@ lazy_static!{
     static CNetCleanup instance_of_cnetcleanup;
     */
 }
-

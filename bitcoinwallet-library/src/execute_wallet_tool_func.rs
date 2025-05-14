@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/execute_wallet_tool_func.rs ]
 crate::ix!();
 
 pub fn execute_wallet_tool_func(

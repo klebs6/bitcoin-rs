@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-support/src/getuniquepath.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/getuniquepath.h]

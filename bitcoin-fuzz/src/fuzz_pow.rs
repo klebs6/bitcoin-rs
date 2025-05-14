@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_pow.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/pow.cpp]
@@ -77,4 +78,3 @@ fn pow() {
 
     */
 }
-

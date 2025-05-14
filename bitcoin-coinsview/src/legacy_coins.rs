@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/legacy_coins.rs ]
 crate::ix!();
 
 /**

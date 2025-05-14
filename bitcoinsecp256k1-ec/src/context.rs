@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ec/src/context.rs ]
 /*!
   | Unless explicitly stated all pointer
   | arguments must not be NULL.
@@ -342,4 +343,3 @@ pub fn get_verify_context() -> *const Secp256k1Context {
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/basic-config.h]
 #[cfg(USE_BASIC_CONFIG)] pub const ECMULT_WINDOW_SIZE:   usize = 15;
 #[cfg(USE_BASIC_CONFIG)] pub const ECMULT_GEN_PREC_BITS: usize = 4;
-

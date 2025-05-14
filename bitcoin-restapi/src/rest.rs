@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-restapi/src/rest.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/rest.cpp]
@@ -874,4 +875,3 @@ pub fn stoprest()  {
         }
         */
 }
-

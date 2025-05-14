@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/interpreter.rs ]
 crate::ix!();
 
 pub trait VerifyECDSASignature {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/splashscreen.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/splashscreen.h]

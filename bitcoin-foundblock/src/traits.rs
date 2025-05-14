@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-foundblock/src/traits.rs ]
 crate::ix!();
 
 pub trait FindBlock {

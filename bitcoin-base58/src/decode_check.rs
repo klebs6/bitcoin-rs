@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-base58/src/decode_check.rs ]
 crate::ix!();
 
 pub fn decode_base_58check_raw(

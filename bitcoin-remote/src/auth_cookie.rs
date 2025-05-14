@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-remote/src/auth_cookie.rs ]
 crate::ix!();
 
 /**

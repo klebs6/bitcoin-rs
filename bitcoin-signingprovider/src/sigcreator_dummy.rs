@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/sigcreator_dummy.rs ]
 crate::ix!();
 
 ///-------------------------------

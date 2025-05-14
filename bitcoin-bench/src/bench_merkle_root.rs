@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_merkle_root.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/merkle_root.cpp]

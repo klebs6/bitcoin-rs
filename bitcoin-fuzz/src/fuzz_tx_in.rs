@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_tx_in.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/tx_in.cpp]
@@ -25,4 +26,3 @@ crate::ix!();
 
     */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/glibcxx_sanity.rs ]
 crate::ix!();
 
 

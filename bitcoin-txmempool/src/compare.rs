@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-txmempool/src/compare.rs ]
 crate::ix!();
 
 pub struct CompareInvMempoolOrder {

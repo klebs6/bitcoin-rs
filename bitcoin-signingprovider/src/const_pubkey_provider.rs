@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/const_pubkey_provider.rs ]
 crate::ix!();
 
 /**
@@ -115,4 +116,3 @@ impl ToNormalizedString for ConstPubkeyProvider {
         */
     }
 }
-

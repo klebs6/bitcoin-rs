@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-psbt/src/precomputed.rs ]
 crate::ix!();
 
 /**
@@ -29,4 +30,3 @@ pub fn precompute_psbt_data(psbt: &PartiallySignedTransaction) -> PrecomputedTra
 
     txdata
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fuzz/src/fuzz_flatfile.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/fuzz/flatfile.cpp]
@@ -21,4 +22,3 @@ crate::ix!();
 
     */
 }
-

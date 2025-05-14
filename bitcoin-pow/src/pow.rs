@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-pow/src/pow.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/pow.h]

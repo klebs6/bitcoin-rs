@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-log/src/writer.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/log_writer.h]

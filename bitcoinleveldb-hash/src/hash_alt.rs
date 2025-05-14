@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-hash/src/hash_alt.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/hash_test.cc]

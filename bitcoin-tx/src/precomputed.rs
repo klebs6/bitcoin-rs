@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/precomputed.rs ]
 crate::ix!();
 
 #[derive(Default)]

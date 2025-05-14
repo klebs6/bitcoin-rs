@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/database.rs ]
 crate::ix!();
 
 /**

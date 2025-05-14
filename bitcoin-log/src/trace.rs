@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/trace.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/trace.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-interface/src/interface.rs ]
 crate::ix!();
 
 /**

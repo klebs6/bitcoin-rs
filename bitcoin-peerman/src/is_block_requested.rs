@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/is_block_requested.rs ]
 crate::ix!();
 
 pub trait IsBlockRequested {
@@ -27,4 +28,3 @@ impl IsBlockRequested for PeerManager {
         self.inner.lock().is_block_requested(hash)
     }
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/bantablemodel.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/bantablemodel.h]

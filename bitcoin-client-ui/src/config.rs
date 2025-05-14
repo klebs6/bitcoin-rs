@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-client-ui/src/config.rs ]
 crate::ix!();
 
 //this was typed "Auto"

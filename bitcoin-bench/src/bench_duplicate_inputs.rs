@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_duplicate_inputs.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/duplicate_inputs.cpp]

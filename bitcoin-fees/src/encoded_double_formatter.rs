@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fees/src/encoded_double_formatter.rs ]
 crate::ix!();
 
 pub struct EncodedDoubleFormatter {
@@ -28,4 +29,3 @@ impl EncodedDoubleFormatter {
         */
     }
 }
-

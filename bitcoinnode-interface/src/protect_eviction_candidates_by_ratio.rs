@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/protect_eviction_candidates_by_ratio.rs ]
 crate::ix!();
 
 /**
@@ -109,4 +110,3 @@ pub fn protect_eviction_candidates_by_ratio(eviction_candidates: &mut Vec<NodeEv
         EraseLastKElements(eviction_candidates, ReverseCompareNodeTimeConnected, remaining_to_protect);
         */
 }
-

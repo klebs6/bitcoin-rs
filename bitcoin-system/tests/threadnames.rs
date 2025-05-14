@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-system/tests/threadnames.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/util_threadnames_tests.cpp]
@@ -69,4 +70,3 @@ pub mod util_threadnames_tests {
         */
     }
 }
-

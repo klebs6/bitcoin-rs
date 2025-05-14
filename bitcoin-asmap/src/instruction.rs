@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-asmap/src/instruction.rs ]
 /*!
 This code defines a constant `INVALID`, which represents an
 invalid value in the ASMAP decoding process. The value is
@@ -48,4 +49,3 @@ impl Instruction {
         }
     }
 }
-

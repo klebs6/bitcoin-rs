@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bdb/src/berkeley_env.rs ]
 crate::ix!();
 
 pub struct BerkeleyEnvironment {
@@ -350,5 +351,4 @@ impl BerkeleyEnvironment {
         */
     }
 }
-
 

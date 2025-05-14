@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-checkqueue/tests/checkqueue.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/checkqueue_tests.cpp]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-key/src/privkey.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/key.h]

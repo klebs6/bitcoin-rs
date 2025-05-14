@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-noui/src/noui.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/noui.h]
@@ -159,4 +160,3 @@ pub fn noui_reconnect()  {
         noui_connect();
         */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/bitcoinconsensus.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/script/bitcoinconsensus.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/get_help_message.rs ]
 crate::ix!();
 
 pub const SCREEN_WIDTH: usize = 79;

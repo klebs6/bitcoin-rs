@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/strnlen.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/strnlen.cpp]

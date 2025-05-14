@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-imports/src/stdexcept.rs ]
 #[derive(Debug,Clone)]
 pub enum LogicError {
     InvalidArgument { what: String },

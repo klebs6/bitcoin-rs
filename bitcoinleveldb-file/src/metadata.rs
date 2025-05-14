@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-file/src/metadata.rs ]
 crate::ix!();
 
 pub struct FileMetaData {
@@ -41,4 +42,3 @@ impl Default for FileMetaData {
         */
     }
 }
-

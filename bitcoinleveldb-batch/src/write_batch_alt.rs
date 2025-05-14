@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-batch/src/write_batch_alt.rs ]
 crate::ix!();
 
 ///----------------

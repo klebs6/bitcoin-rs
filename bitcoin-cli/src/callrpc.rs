@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cli/src/callrpc.rs ]
 crate::ix!();
 
 pub fn callrpc(

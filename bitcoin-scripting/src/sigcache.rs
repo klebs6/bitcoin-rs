@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/sigcache.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/script/sigcache.h]

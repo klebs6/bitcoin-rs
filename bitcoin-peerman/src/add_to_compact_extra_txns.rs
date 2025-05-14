@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/add_to_compact_extra_txns.rs ]
 crate::ix!();
 
 pub trait AddtoCompactExtraTransactions {
@@ -43,5 +44,4 @@ impl AddtoCompactExtraTransactions for PeerManager {
         );
     }
 }
-
 

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/net_events.rs ]
 crate::ix!();
 
 /**

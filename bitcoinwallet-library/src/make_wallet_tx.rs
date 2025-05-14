@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-library/src/make_wallet_tx.rs ]
 crate::ix!();
 
 /**

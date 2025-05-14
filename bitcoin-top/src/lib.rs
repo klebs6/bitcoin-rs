@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-top/src/lib.rs ]
 #![feature(test)]
 
 extern crate test;
@@ -48,4 +49,3 @@ pub mod imports;
 
 pub struct RemovePointer<T>   {p: std::marker::PhantomData<T>}
 pub struct RemoveReference<T> {p: std::marker::PhantomData<T>}
-

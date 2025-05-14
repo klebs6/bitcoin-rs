@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tx/src/tx.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bitcoin-tx.cpp]
@@ -956,4 +957,3 @@ pub fn tx_main(
         return ret;
         */
 }
-

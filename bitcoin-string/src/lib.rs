@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-string/src/lib.rs ]
 #![feature(test)]
 extern crate test;
 

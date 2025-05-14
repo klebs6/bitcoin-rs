@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinselect/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{coin}

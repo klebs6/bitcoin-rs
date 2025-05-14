@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/sock.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/sock.h]
@@ -724,4 +725,3 @@ pub fn network_error_string(err: i32) -> String {
         return strprintf("%s (%d)", s, err);
         */
 }
-

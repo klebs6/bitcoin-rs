@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-interface/tests/wallet_interface.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/test/util.h]
@@ -38,4 +39,3 @@ pub fn create_synced_wallet(
         return wallet;
         */
 }
-

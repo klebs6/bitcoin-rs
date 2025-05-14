@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-context/src/context.rs ]
 crate::ix!();
 
 /**

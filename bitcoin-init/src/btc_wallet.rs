@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-init/src/btc_wallet.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/init/bitcoin-wallet.cpp]

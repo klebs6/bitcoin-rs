@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-checkqueue/src/control.rs ]
 crate::ix!();
 
 /**
@@ -61,4 +62,3 @@ impl<T> CheckQueueControl<T> {
         */
     }
 }
-

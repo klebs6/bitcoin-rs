@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/scoped_raw_mutex.rs ]
 crate::ix!();
 
 //TODO: is this correct? does this work?

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/add.rs ]
 crate::ix!();
 
 /**
@@ -54,4 +55,3 @@ pub fn add_coins(
         );
     }
 }
-

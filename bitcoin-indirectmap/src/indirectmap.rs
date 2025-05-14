@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indirectmap/src/indirectmap.rs ]
 crate::ix!();
 
 pub trait HasIndirectMapTypes<'a> {

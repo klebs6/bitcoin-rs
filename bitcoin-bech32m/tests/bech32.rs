@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bech32m/tests/bech32.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/bech32_tests.cpp]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-scripting/src/script_error.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/script/script_error.h]

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/bench_checkblock.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/bench/checkblock.cpp]

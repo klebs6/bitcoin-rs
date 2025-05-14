@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ec/src/ecdsa.rs ]
 crate::ix!();
 
 
@@ -535,4 +536,3 @@ pub fn ecdsa_signature_parse_der_lax(
         return 1;
         */
 }
-

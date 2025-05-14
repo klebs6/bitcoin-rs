@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/directory_commit.rs ]
 crate::ix!();
 
 /**

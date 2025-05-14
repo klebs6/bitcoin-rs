@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/interface.rs ]
 crate::ix!();
 
 pub trait BlockChecked {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/peerman_inner.rs ]
 crate::ix!();
 
 pub struct PeerManagerInner {

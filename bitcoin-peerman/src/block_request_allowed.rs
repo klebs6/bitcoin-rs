@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/block_request_allowed.rs ]
 crate::ix!();
 
 pub trait BlockRequestAllowed {
@@ -50,4 +51,3 @@ impl BlockRequestAllowed for PeerManager {
         && ( proof_equiv_time < STALE_RELAY_AGE_LIMIT)
     }
 }
-

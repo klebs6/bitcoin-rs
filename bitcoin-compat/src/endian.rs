@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/endian.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/endian.h]

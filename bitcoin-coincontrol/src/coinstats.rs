@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coincontrol/src/coinstats.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/coincontrol.h]

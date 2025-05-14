@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-scalar/src/scalar_split_lambda.rs ]
 /*!
   | Find r1 and r2 such that r1+r2*lambda
   | = k, where r1 and r2 or their negations
@@ -161,4 +162,3 @@ pub fn scalar_split_lambda(
     #endif
         */
 }
-

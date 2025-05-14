@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-ipc/src/protocol.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/ipc/protocol.h]

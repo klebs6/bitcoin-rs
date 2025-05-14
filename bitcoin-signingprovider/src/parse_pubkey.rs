@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/parse_pubkey.rs ]
 crate::ix!();
 
 pub enum ParseScriptContext {

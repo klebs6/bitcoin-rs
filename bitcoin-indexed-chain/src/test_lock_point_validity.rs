@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/test_lock_point_validity.rs ]
 crate::ix!();
 
 /**
@@ -29,4 +30,3 @@ pub fn test_lock_point_validity(
         return true;
         */
 }
-

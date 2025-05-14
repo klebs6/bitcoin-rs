@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-init/src/common.rs ]
 /*!
   | @file
   |

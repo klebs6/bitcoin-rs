@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-receive/src/receive.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/receive.h]

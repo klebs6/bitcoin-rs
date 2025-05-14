@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-addrman/src/inner.rs ]
 crate::ix!();
 
 pub struct AddrManInner {

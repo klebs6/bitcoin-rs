@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/block_status.rs ]
 crate::ix!();
 
 bitflags!{

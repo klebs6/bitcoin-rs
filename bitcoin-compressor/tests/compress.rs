@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compressor/tests/compress.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/test/compress_tests.cpp]

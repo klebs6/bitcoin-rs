@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cfg/src/lib.rs ]
 fn setup_secp() {
 
     pub trait TellCargo {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-amt/tests/money_range.rs ]
 crate::ix!();
 
 #[test] fn money_range_test() {

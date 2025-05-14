@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinnode-interface/src/v_recv.rs ]
 crate::ix!();
 
 pub struct NodeVRecv {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-fees/src/units.rs ]
 crate::ix!();
 
 pub const CURRENCY_UNIT: &'static str = "BTC"; // One formatted unit

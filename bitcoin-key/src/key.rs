@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-key/src/key.rs ]
 crate::ix!();
 
 /**
@@ -437,4 +438,3 @@ impl PartialEq<Key> for Key {
 }
 
 impl Eq for Key {}
-

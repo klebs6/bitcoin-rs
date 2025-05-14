@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/lib.rs ]
 #![feature(iter_advance_by)]
 
 #[macro_use] mod imports; use imports::*;

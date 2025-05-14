@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/process_getcf_headers.rs ]
 crate::ix!();
 
 pub trait ProcessGetCfHeaders {
@@ -113,4 +114,3 @@ impl ProcessGetCfHeaders for PeerManager {
         self.connman.get_mut().push_message(&mut *peer, msg /* move */);
     }
 }
-

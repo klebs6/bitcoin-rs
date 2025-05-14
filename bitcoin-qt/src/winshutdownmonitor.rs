@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-qt/src/winshutdownmonitor.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/qt/winshutdownmonitor.h]

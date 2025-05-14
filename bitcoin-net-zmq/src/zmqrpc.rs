@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net-zmq/src/zmqrpc.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/zmq/zmqrpc.h]

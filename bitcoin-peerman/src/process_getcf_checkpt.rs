@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-peerman/src/process_getcf_checkpt.rs ]
 crate::ix!();
     
 pub trait ProcessGetCfCheckPt {

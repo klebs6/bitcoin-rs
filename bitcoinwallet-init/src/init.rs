@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinwallet-init/src/init.rs ]
 crate::ix!();
 
 pub const G_WALLET_INIT_INTERFACE: WalletInit = WalletInit{};

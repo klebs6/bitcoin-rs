@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_sock.rs ]
 crate::ix!();
 
 

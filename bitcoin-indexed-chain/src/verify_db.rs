@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indexed-chain/src/verify_db.rs ]
 crate::ix!();
 
 /**

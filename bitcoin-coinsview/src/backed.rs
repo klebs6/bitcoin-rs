@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-coinsview/src/backed.rs ]
 crate::ix!();
 
 /**
@@ -105,4 +106,3 @@ impl EstimateSize for CoinsViewBacked {
         */
     }
 }
-

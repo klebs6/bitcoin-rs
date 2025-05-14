@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-repair/src/repair.rs ]
 /*!
   | We recover the contents of the descriptor from
   | the other files we find.

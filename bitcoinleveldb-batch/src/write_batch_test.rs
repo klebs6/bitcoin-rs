@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-batch/src/write_batch_test.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/write_batch_test.cc]

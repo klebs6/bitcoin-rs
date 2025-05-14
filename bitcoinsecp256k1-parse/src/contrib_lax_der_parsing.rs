@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-parse/src/contrib_lax_der_parsing.rs ]
 /*!
   | Please do not link this file directly.
   | It is not part of the libsecp256k1 project

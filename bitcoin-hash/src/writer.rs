@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/writer.rs ]
 crate::ix!();
 
 /**

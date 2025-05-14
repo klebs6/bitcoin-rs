@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-net/src/interface.rs ]
 crate::ix!();
 
 pub trait Complete {
@@ -76,4 +77,3 @@ pub trait PrepareForTransport {
             header: &mut Vec<u8>);
 
 }
-

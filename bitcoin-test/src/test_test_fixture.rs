@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-test/src/test_test_fixture.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/wallet/test/wallet_test_fixture.h]

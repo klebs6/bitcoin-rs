@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-netmsg/src/protocol.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/protocol.h]

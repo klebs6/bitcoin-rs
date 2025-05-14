@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bdb/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{batch}

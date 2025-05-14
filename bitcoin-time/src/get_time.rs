@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-time/src/get_time.rs ]
 crate::ix!();
 
 pub fn get_time() -> Instant {

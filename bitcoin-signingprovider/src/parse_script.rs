@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-signingprovider/src/parse_script.rs ]
 crate::ix!();
 
 /**
@@ -243,4 +244,3 @@ pub fn parse(
         return nullptr;
         */
 }
-

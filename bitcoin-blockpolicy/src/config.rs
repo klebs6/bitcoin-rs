@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blockpolicy/src/config.rs ]
 crate::ix!();
     
 /**
@@ -122,4 +123,3 @@ pub const MAX_BUCKET_FEERATE: f64 = 1.0e7;
   |
   */
 pub const FEE_SPACING: f64 = 1.05;
-

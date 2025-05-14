@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-block/src/block_file_info.rs ]
 crate::ix!();
 
 #[derive(Default,Serialize,Deserialize)]

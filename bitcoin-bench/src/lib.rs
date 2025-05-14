@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bench/src/lib.rs ]
 #![allow(soft_unstable)]
 #![feature(test)]
 

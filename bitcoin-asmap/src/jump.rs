@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-asmap/src/jump.rs ]
 /*!
 This function, `decode_jump`, decodes a jump value
 from a provided iterator of boolean values. The
