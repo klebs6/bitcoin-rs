@@ -19,4 +19,3 @@ pub trait ActivateBestChain {
         state:  &mut BlockValidationState,
         pblock: Amo<Block>) -> bool;
 }
-

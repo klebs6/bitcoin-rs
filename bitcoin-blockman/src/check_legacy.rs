@@ -22,4 +22,3 @@ pub fn check_legacy_txindex(
         return std::nullopt;
         */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/div_assign.rs ]
 crate::ix!();
 
 impl<const BITS: usize> DivAssign<&BaseUInt<BITS>> for BaseUInt<BITS>

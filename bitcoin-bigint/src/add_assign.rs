@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/add_assign.rs ]
 crate::ix!();
 
 impl<const BITS: usize> AddAssign<&BaseUInt<BITS>> for BaseUInt<BITS>

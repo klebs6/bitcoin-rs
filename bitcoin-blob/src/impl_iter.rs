@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blob/src/impl_iter.rs ]
 crate::ix!();
 
 impl<const BITS: usize> BaseBlob<BITS>

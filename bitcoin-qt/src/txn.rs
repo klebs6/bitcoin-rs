@@ -535,4 +535,3 @@ impl TransactionRecord {
         */
     }
 }
-

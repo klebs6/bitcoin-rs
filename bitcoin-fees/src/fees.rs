@@ -79,4 +79,3 @@ pub fn fee_modes(delimiter: &String) -> String {
             return Join(FeeModeMap(), delimiter, [&](const std::pair<std::string, FeeEstimateMode>& i) { return i.first; });
         */
 }
-

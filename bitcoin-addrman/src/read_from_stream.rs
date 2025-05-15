@@ -15,4 +15,3 @@ pub fn read_from_stream(
         */
 }
 
-

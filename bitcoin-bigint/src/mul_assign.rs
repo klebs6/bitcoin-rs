@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/mul_assign.rs ]
 crate::ix!();
 
 impl<const BITS: usize> core::ops::MulAssign<&BaseUInt<BITS>> for BaseUInt<BITS> 

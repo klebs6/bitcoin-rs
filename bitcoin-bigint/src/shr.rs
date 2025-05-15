@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/shr.rs ]
 crate::ix!();
 
 /// Similarly for right shifts: read lower 32 bits, clamp, then do the normal shr_assign.

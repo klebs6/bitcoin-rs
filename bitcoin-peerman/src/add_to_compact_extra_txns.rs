@@ -44,4 +44,3 @@ impl AddtoCompactExtraTransactions for PeerManager {
         );
     }
 }
-

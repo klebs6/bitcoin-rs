@@ -27,4 +27,3 @@ pub fn notify_header_tip(chainstate: &mut ChainState) -> bool {
         return fNotify;
         */
 }
-

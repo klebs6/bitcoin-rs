@@ -371,4 +371,3 @@ pub enum DeriveType {
     UNHARDENED,
     HARDENED,
 }
-

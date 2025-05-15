@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blob/src/ord_eq.rs ]
 crate::ix!();
 
 impl<const BITS: usize> PartialEq<BaseBlob<BITS>> for BaseBlob<BITS> 

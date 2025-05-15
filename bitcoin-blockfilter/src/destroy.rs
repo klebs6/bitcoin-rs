@@ -29,4 +29,3 @@ pub fn destroy_all_block_filter_indexes()  {
             g_filter_indexes.clear();
         */
 }
-

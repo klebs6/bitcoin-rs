@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blob/src/hex.rs ]
 crate::ix!();
 
 impl<const BITS: usize> BaseBlob<BITS> 

@@ -32,4 +32,3 @@ pub fn unload_block_index(
         fHavePruned = false;
         */
 }
-

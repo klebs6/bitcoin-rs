@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/bit_and.rs ]
 crate::ix!();
 
 // Bitwise AND (self & &other => new BaseUInt)

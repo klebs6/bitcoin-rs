@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/bit_xor.rs ]
 crate::ix!();
 
 // Bitwise XOR (self ^ &other => new BaseUInt)

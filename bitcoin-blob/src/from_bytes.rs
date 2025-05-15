@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blob/src/from_bytes.rs ]
 crate::ix!();
 
 impl<const BITS: usize> From<u8> for BaseBlob<BITS>

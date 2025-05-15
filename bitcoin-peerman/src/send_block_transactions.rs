@@ -52,4 +52,3 @@ impl SendBlockTransactions for PeerManager {
         );
     }
 }
-

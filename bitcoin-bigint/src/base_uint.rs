@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-bigint/src/biguint.rs ]
+// ---------------- [ File: bitcoin-bigint/src/base_uint.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/arith_u256.h]

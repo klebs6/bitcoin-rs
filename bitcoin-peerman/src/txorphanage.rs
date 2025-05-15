@@ -589,4 +589,3 @@ impl TxOrphanage {
         }
     }
 }
-

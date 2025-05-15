@@ -40,4 +40,3 @@ pub fn setup_bitcoin_tx_args(argsman: &mut ArgsManager)  {
         argsman.AddArg("set=NAME:JSON-STRING", "Set register NAME to given JSON-STRING", ArgsManager::ALLOW_ANY, OptionsCategory::REGISTER_COMMANDS);
         */
 }
-

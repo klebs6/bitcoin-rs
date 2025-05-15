@@ -66,4 +66,3 @@ pub fn peer_has_header_with_amo(
         false
     }
 }
-

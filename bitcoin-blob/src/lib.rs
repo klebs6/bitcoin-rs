@@ -1,6 +1,6 @@
+// ---------------- [ File: bitcoin-blob/src/lib.rs ]
 #![allow(incomplete_features)]
 #![feature(generic_const_exprs)]
-// ---------------- [ File: bitcoin-blob/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{basic}

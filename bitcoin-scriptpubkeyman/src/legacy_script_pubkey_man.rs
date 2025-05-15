@@ -2085,4 +2085,3 @@ impl LegacyScriptPubKeyMan {
         */
     }
 }
-

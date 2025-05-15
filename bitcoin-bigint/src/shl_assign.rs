@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/shl_assign.rs ]
 crate::ix!();
 
 impl<const BITS: usize> core::ops::ShlAssign<u32> for BaseUInt<BITS>

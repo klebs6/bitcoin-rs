@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/get_hex.rs ]
 crate::ix!();
 
 impl<const BITS: usize> BaseUInt<BITS>

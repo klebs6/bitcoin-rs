@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blob/src/simple_rng.rs ]
 crate::ix!();
 
 /// A simple pseudo-random generator to test comparisons, etc.

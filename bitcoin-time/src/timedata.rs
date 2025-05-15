@@ -132,4 +132,3 @@ pub fn get_adjusted_time() -> i64 {
 }
 
 pub const BITCOIN_TIMEDATA_MAX_SAMPLES: usize = 200;
-

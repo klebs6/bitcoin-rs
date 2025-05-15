@@ -27,4 +27,3 @@ pub fn init_block_filter_index(
         return result.second;
         */
 }
-

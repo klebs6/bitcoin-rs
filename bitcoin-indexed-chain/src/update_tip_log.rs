@@ -24,4 +24,3 @@ pub fn update_tip_log(
             !warning_messages.empty() ? strprintf(" warning='%s'", warning_messages) : "");
         */
 }
-

@@ -363,4 +363,3 @@ pub fn sign_taproot_script(
         */
 }
 
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/hex_to_val.rs ]
 crate::ix!();
 
 // A small helper used by From<&str> for nibble decoding

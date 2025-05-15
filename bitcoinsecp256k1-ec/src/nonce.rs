@@ -47,4 +47,3 @@ pub type NonceFunction = fn(
     data:    *mut c_void,
     attempt: u32
 ) -> i32;
-

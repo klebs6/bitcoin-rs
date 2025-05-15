@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/from_u64.rs ]
 crate::ix!();
 
 impl<const BITS: usize> From<u64> for BaseUInt<BITS>

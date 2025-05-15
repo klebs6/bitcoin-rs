@@ -16,4 +16,3 @@ pub fn wallet_tool_release_wallet(wallet: *mut Wallet)  {
         delete wallet;
         */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/simple_lcg.rs ]
 crate::ix!();
 
 // Simple linear congruential generator from earlier

@@ -44,4 +44,3 @@ pub struct CheckQueueInner<T> {
 
     request_stop: bool, // default = { false }
 }
-

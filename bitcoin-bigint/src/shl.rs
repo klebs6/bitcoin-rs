@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/shl.rs ]
 crate::ix!();
 
 /// For reference-based shifts, we clamp the shift to BITS (i.e. if shift > BITS, it's all zero).

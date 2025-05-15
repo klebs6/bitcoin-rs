@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/bit_or.rs ]
 crate::ix!();
 
 impl<const BITS: usize> BitOrAssign<&BaseUInt<BITS>> for BaseUInt<BITS>

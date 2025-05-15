@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blob/src/serialization.rs ]
 crate::ix!();
 
 impl<const BITS: usize> BaseBlob<BITS>
