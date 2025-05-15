@@ -7,6 +7,7 @@ x!{basic}
 x!{blob}
 x!{from_bytes}
 x!{hex}
+x!{impl_iter}
 x!{ord_eq}
-x!{simple_rng}
 x!{serialization}
+x!{simple_rng
