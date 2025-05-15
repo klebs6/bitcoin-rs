@@ -65,7 +65,7 @@ where
     }
 }
 
-impl<const BITS: usize> core::ops::MulAssign<u32> for BaseUInt<BITS> 
+impl<const BITS: usize> core::ops::MulAssign<u32> for BaseUInt<BITS>
 where
     [(); BITS / 32]:,
 {
@@ -77,8 +77,7 @@ where
             self.pn
         );
 
-        // We treat BaseUInt<BITS> as a little-end array of (BITS/32) limbs, each a 32-bit chunk.
-        // This yields mod 2^BITS arithmetic automatically by ignoring the final carry.
+        // Classic "multiply mod 2^BITS" approach:
         let num_limbs = BITS / 32;
         let mut carry = 0u64;
 
@@ -102,7 +101,7 @@ where
             self.pn[i] = new_limb as u32;
         }
 
-        // Carry is discarded for mod 2^BITS
+        // Discard final carry for mod 2^BITS.
         tracing::trace!(
             "Leaving mul_assign<u32>; final self={:X?} (carry=0x{:08X} was dropped).",
             self.pn,
@@ -127,6 +126,8 @@ mod mul_assign_exhaustive_tests {
 
     #[traced_test]
     fn test_mul_assign_u32_64_bits() {
+        use tracing::{debug, error, info, trace};
+
         info!("Testing `MulAssign<u32>` for 64-bit BaseUInt with extra step-by-step logging.");
 
         type U64 = BaseUInt<64>;
@@ -179,22 +180,20 @@ mod mul_assign_exhaustive_tests {
         // We'll do step-by-step debug logging.
         let mut high = U64::default();
         high.pn[1] = 0xFFFF_FFFF;
-        let raw_val_64 = high.low64(); // for reference, though we know lower limb=0
+        let raw_val_64 = high.low64(); // for reference (0xFFFF_FFFF00000000)
         let multi = 5u32;
 
         // decimal perspective:
-        //   top-limb is 0xFFFF_FFFF => meaning (2^32 - 1)
-        //   so the 64-bit value is (2^32 - 1)<<32 => 0xFFFF_FFFF_00000000 in hex
-        // We'll do a big integer multiplication: (val * multi) mod 2^64
-        let big_val = (raw_val_64 as u128)
-            + ((0xFFFF_FFFFu128) << 32) // reconstruct the full 64-bit from the limbs (here raw_val_64=0, so let's do it manually)
-            ; 
+        //   top-limb is 0xFFFF_FFFF => (2^32 - 1)
+        //   so the full 64-bit value is (2^32 - 1)<<32 => 0xFFFF_FFFF_00000000 in hex
+        // We'll do a big integer multiplication: (raw_val_64 * multi) mod 2^64
+        let big_val = raw_val_64 as u128;
         let product_128 = big_val.wrapping_mul(multi as u128);
         let expected_mod_64 = product_128 & 0xFFFF_FFFF_FFFF_FFFF;
 
         trace!(
             "Case3: upper-limb=0xFFFF_FFFF => full 64=0x{:016X}, multiplier=0x{:08X}",
-            ((0xFFFF_FFFFu64 as u128) << 32) as u64, // just for clarity
+            raw_val_64,
             multi
         );
         trace!(

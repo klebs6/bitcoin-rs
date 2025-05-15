@@ -71,82 +71,113 @@ mod test_shr_for_baseuint {
         assert_eq!(result, zero, "Shr by 9999 bits should yield 0");
     }
 
-    /// Verify that shifting a 256-bit BaseUInt right by various edge amounts
-    /// behaves correctly. For 256 bits, we confirm that shifting by >= 256 yields 0,
-    /// and do a few smaller checks too.
     #[traced_test]
     fn test_shr_edge_cases_256() {
+        use tracing::{debug, info, trace, warn};
+
         info!("Beginning edge-case testing for Shr with BITS=256.");
 
-        // We'll set all limbs to 0xFFFF_FFFF for an "all ones" pattern in 256 bits.
+        // We'll set all limbs to 0xFFFF_FFFF for an "all ones" pattern in 256 bits:
         let mut all_ones_256 = BaseUInt::<256>::default();
         for limb in all_ones_256.pn.iter_mut() {
             *limb = 0xFFFF_FFFF;
         }
 
+        // Zero of the same type:
         let zero_256 = BaseUInt::<256>::default();
 
-        // SHIFT = 0 => same value
+        // SHIFT = 0 => unchanged
         let mut shift_val = BaseUInt::<256>::from(0u64);
         let result = all_ones_256.clone() >> &shift_val;
         debug!("Shifting 0 bits => expected=all_ones, got={:?}", result);
-        assert_eq!(result, all_ones_256, "Shr by 0 should yield same value");
+        assert_eq!(result, all_ones_256, "Shr by 0 => same value");
 
-        // SHIFT = 1 => half of 'all_ones_256'
-        // We'll just check that at least the low64 is half and the shift doesn't produce zero.
+        // SHIFT = 1 => entire 256-bit value is shifted by 1.
+        // For an all-ones 256-bit (which is 2^256 - 1), shifting by 1 yields (2^256 - 1) >> 1 = (2^255 - 1).
+        // The low 64 bits are now 0xFFFF_FFFF_FFFF_FFFF (since the top bits fill in as we shift).
         shift_val = BaseUInt::<256>::from(1u64);
         let result = all_ones_256.clone() >> &shift_val;
-        let expect_low64 = all_ones_256.low64() >> 1;
-        debug!("Shifting 1 bit => expected low64=0x{:X}, got=0x{:X}",
-               expect_low64, result.low64());
-        assert_eq!(result.low64(), expect_low64, "Shr by 1 mismatch at low64");
-        assert_ne!(result, zero_256, "Shr by 1 should not be zero");
+        let expected_low64 = 0xFFFF_FFFF_FFFF_FFFFu64; // 18446744073709551615
+        debug!(
+            "Shifting 1 bit => expected low64=0x{:016X}, got=0x{:016X}",
+            expected_low64,
+            result.low64()
+        );
+        assert_eq!(
+            result.low64(),
+            expected_low64,
+            "Shr by 1 mismatch in the low64 bits"
+        );
+        assert_ne!(
+            result, zero_256,
+            "Shr by 1 should not produce zero if all bits were set"
+        );
 
-        // SHIFT = 255 => only 1 bit remains if all_ones_256 was truly full
+        // SHIFT = 255 => we expect just 1 bit left in the entire 256-bit space (the topmost bit remains).
+        // That means the result won't be zero. We'll just confirm it's nonzero.
         shift_val = BaseUInt::<256>::from(255u64);
         let result = all_ones_256.clone() >> &shift_val;
         debug!("Shifting 255 bits => got={:?}", result);
-        // The top bit of an all-ones 256 is effectively 0x1 after 255 shifts, but let's just check != 0.
-        assert_ne!(result, zero_256, "Shr by 255 should not be 0");
+        assert_ne!(result, zero_256, "Shr by 255 should not be zero");
 
-        // SHIFT = 256 => yields zero
+        // SHIFT = 256 => yields zero (all bits out).
         shift_val = BaseUInt::<256>::from(256u64);
         let result = all_ones_256.clone() >> &shift_val;
         debug!("Shifting 256 bits => got={:?}", result);
-        assert_eq!(result, zero_256, "Shr by 256 bits should yield 0");
+        assert_eq!(result, zero_256, "Shr by 256 bits => 0");
 
-        // SHIFT = 9999 => definitely 0
+        // SHIFT = 9999 => definitely 0, since 9999 >= 256
         shift_val = BaseUInt::<256>::from(9999u64);
         let result = all_ones_256.clone() >> &shift_val;
         debug!("Shifting 9999 bits => got={:?}", result);
-        assert_eq!(result, zero_256, "Shr by large number should yield 0");
+        assert_eq!(result, zero_256, "Shr by large shift => 0");
     }
 
-    /// Test random values for BITS=64, shifting by random amounts.
-    /// We compare the result's low64 bits with a plain u64 right shift
-    /// (capped at 64). This is valid since 64 bits can't exceed u64.
     #[traced_test]
     fn test_shr_random_64() {
+        use tracing::{debug, info, trace};
         info!("Beginning random-amount testing of Shr for BITS=64.");
 
         let mut rng = SimpleLCG::new(0xDEAD_BEEF_1234_5678);
 
         for i in 0..1000 {
-            // Generate random input
+            // 1) Generate random 64-bit input
             let val = rng.next_u64();
             let a_64 = BaseUInt::<64>::from(val);
 
-            // Generate random shift in the lower 32 bits
-            let shift = (rng.next_u64() & 0xFFFF_FFFF);
+            // 2) Generate random shift in the lower 32 bits
+            let shift = rng.next_u64() & 0xFFFF_FFFF;
             let shift_val = BaseUInt::<64>::from(shift);
 
+            // Log the raw values
+            trace!(
+                "Iteration i={} => val=0x{:016X}, shift_val=0x{:016X}",
+                i,
+                val,
+                shift
+            );
+
+            // 3) Perform the big-int shift
             let result = a_64 >> &shift_val;
+
+            // 4) Also do a standard (u64 >> shift_bits) reference check
+            //    But in Rust debug mode, shifting by exactly 64 is invalid for a u64.
             let shift_bits = (shift & 0xFFFF_FFFF).min(64) as u32;
 
-            let expected = val >> shift_bits;
-            debug!("Test #{} => val=0x{:X}, shift_bits={}, result.low64()=0x{:X}, expected=0x{:X}",
-                   i, val, shift_bits, result.low64(), expected);
+            // if shift_bits == 64 => expected=0, else => val >> shift_bits
+            let expected = if shift_bits == 64 {
+                0
+            } else {
+                val >> shift_bits
+            };
 
+            debug!(
+                "Test #{i} => val=0x{val:016X}, shift_bits={shift_bits}, result.low64()=0x{:X}, expected=0x{:X}",
+                result.low64(),
+                expected
+            );
+
+            // 5) Compare result’s low64 with our reference
             assert_eq!(
                 result.low64(),
                 expected,
