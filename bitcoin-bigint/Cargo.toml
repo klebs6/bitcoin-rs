@@ -11,7 +11,7 @@ version = "0.1.17-alpha.0"
 [package]
 edition = "2021"
 name = "bitcoin-bigint"
-version = "0.1.18"
+version = "0.1.17-alpha.0"
 license = "MIT"
 repository = "https://github.com/klebz/bitcoin-rs"
 authors = [ "klebs <none>" ]
