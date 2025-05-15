@@ -1,11 +1,6 @@
 // ---------------- [ File: bitcoin-blob/src/blob.rs ]
 crate::ix!();
 
-pub const fn base_blob_width<const BITS: usize>() -> usize 
-{
-    BITS / 8
-}
-
 /**
   | Template base class for fixed-sized
   | opaque blobs.
@@ -28,43 +23,6 @@ where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
 {}
 
 //------------------------------
-impl<const BITS: usize> PartialEq<BaseBlob<BITS>> for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-    fn eq(&self, other: &BaseBlob<BITS>) -> bool {
-        self.compare(other) == 0
-    }
-}
-
-impl<const BITS: usize> Eq for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{}
-
-impl<const BITS: usize> Ord for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-    
-    fn cmp(&self, other: &BaseBlob<BITS>) -> Ordering {
-
-        let x = self.compare(other);
-
-        match x {
-            _ if x < 0  => Ordering::Less,
-            _ if x == 0 => Ordering::Equal,
-            _ if x > 0  => Ordering::Greater,
-            _ => unreachable![],
-        }
-    }
-}
-
-impl<const BITS: usize> PartialOrd<BaseBlob<BITS>> for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-    fn partial_cmp(&self, other: &BaseBlob<BITS>) -> Option<Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
 impl<const BITS: usize> Default for BaseBlob<BITS> 
 where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
 {
@@ -81,38 +39,6 @@ where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
     }
 }
 
-impl<const BITS: usize> From<u8> for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-
-    /**
-      | constructor for constants between
-      | 1 and 255
-      |
-      */
-    fn from(v: u8) -> Self {
-    
-        todo!();
-        /*
-            : m_data{v}
-        */
-    }
-}
-
-impl<const BITS: usize> From<&Vec<u8>> for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-
-    fn from(vch: &Vec<u8>) -> Self {
-    
-        todo!();
-        /*
-           assert(vch.size() == sizeof(m_data));
-           memcpy(m_data, vch.data(), sizeof(m_data));
-        */
-    }
-}
-
 impl<const BITS: usize> BaseBlob<BITS> 
 where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
 {
@@ -120,184 +46,192 @@ where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
     pub const ONE:  Self = Self::one();
 
     pub const fn zero() -> Self {
+        // all bytes = 0
         Self {
-            data: [0; base_blob_width::<BITS>()]
+            data: [0; base_blob_width::<BITS>()],
         }
     }
 
-    pub const fn one()  -> Self { 
+    pub const fn one() -> Self {
+        // all bytes = 0, except the first byte=1
         let mut x = Self {
-            data: [0; base_blob_width::<BITS>()]
+            data: [0; base_blob_width::<BITS>()],
         };
-        x.data[0] += 1;
+        // We can do this in const fn if BITS>0, but it's stable in modern Rust:
+        x.data[0] = 1;
         x
     }
+}
 
-    pub fn is_null(&self) -> bool {
-        
-        todo!();
-        /*
-            for (int i = 0; i < WIDTH; i++)
-                if (m_data[i] != 0)
-                    return false;
-            return true;
-        */
-    }
-    
-    pub fn set_null(&mut self)  {
-        
-        todo!();
-        /*
-            memset(m_data, 0, sizeof(m_data));
-        */
-    }
-    
-    #[inline] pub fn compare(&self, other: &BaseBlob<BITS>) -> i32 {
-        
-        todo!();
-        /*
-            return memcmp(m_data, other.m_data, sizeof(m_data));
-        */
-    }
-    
-    pub fn data(&self) -> *const u8 {
-        
-        self.data.as_ptr()
-    }
-    
-    pub fn data_mut(&mut self) -> *mut u8 {
-        
-        self.data.as_mut_ptr()
-    }
-    
-    pub fn begin_mut(&mut self) -> *mut u8 {
-        
-        &mut self.data[0] as *mut _
-    }
-    
-    pub fn end_mut(&mut self) -> *mut u8 {
-        
-        todo!();
-        /*
-            return &m_data[WIDTH];
-        */
-    }
-    
-    pub fn begin(&self) -> *const u8 {
-        
-        todo!();
-        /*
-            return &m_data[0];
-        */
-    }
-    
-    pub fn end(&self) -> *const u8 {
-        
-        todo!();
-        /*
-            return &m_data[WIDTH];
-        */
-    }
-    
-    pub fn size(&self) -> u32 {
-        
-        todo!();
-        /*
-            return sizeof(m_data);
-        */
-    }
-    
-    pub fn get_u64(&self, pos: i32) -> u64 {
-        
-        todo!();
-        /*
-            const uint8_t* ptr = m_data + pos * 8;
-            return ((uint64_t)ptr[0]) | 
-                   ((uint64_t)ptr[1]) << 8 | 
-                   ((uint64_t)ptr[2]) << 16 | 
-                   ((uint64_t)ptr[3]) << 24 | 
-                   ((uint64_t)ptr[4]) << 32 | 
-                   ((uint64_t)ptr[5]) << 40 | 
-                   ((uint64_t)ptr[6]) << 48 | 
-                   ((uint64_t)ptr[7]) << 56;
-        */
-    }
-    
-    
-    pub fn serialize<Stream>(&self, s: &mut Stream)  {
-    
-        todo!();
-        /*
-            s.write((char*)m_data, sizeof(m_data));
-        */
-    }
-    
-    
-    pub fn unserialize<Stream>(&mut self, s: &mut Stream)  {
-    
-        todo!();
-        /*
-            s.read((char*)m_data, sizeof(m_data));
-        */
+pub const fn base_blob_width<const BITS: usize>() -> usize 
+{
+    BITS / 8
+}
+
+#[cfg(test)]
+mod base_blob_exhaustive_tests {
+    use super::*;
+
+    /// Test the `base_blob_width` const-fn for some example bit-sizes.
+    #[traced_test]
+    fn test_base_blob_width_invariants() {
+        info!("Testing base_blob_width for various BITS.");
+
+        let w64 = base_blob_width::<64>();
+        trace!("width for 64 bits => {}", w64);
+        assert_eq!(w64, 8, "64 bits => 8 bytes");
+
+        let w256 = base_blob_width::<256>();
+        trace!("width for 256 bits => {}", w256);
+        assert_eq!(w256, 32, "256 bits => 32 bytes");
+
+        let w8 = base_blob_width::<8>();
+        trace!("width for 8 bits => {}", w8);
+        assert_eq!(w8, 1, "8 bits => 1 byte");
+
+        let w1 = base_blob_width::<1>();
+        trace!("width for 1 bit => {}", w1);
+        assert_eq!(w1, 0, "1 bit => 0 bytes (integer division)");
+
+        info!("base_blob_width tests concluded successfully.");
     }
 
-    pub fn get_hex(&self) -> String {
-        
-        todo!();
-        /*
-        let mut data_rev: [u8; Self::WIDTH] = unsafe { std::mem::zeroed() };
+    /// Test Default for various bit sizes, ensuring we get arrays of 0.
+    #[traced_test]
+    fn test_base_blob_default() {
+        info!("Testing `Default` impl for BaseBlob<BITS>.");
 
-        for i in 0..Self::WIDTH {
-            data_rev[i] = self.data[Self::WIDTH - 1 - i]
+        let default64 = BaseBlob::<64>::default();
+        for &b in default64.data.iter() {
+            assert_eq!(b, 0, "All bytes should be zero for default 64-bit blob");
         }
 
-        hex_str(data_rev)
-        */
+        let default256 = BaseBlob::<256>::default();
+        for &b in default256.data.iter() {
+            assert_eq!(b, 0, "All bytes should be zero for default 256-bit blob");
+        }
+
+        let default8 = BaseBlob::<8>::default();
+        assert_eq!(default8.data.len(), 1, "8 bits => 1 byte array");
+        assert_eq!(default8.data[0], 0, "All zeros for default 8-bit blob");
+
+        info!("Default creation checks complete.");
     }
-    
-    pub fn set_hex(&mut self, psz: *const u8)  {
-        
-        todo!();
-        /*
-            memset(m_data, 0, sizeof(m_data));
 
-        // skip leading spaces
-        while (IsSpace(*psz))
-            psz++;
+    /// Test Eq, PartialEq, Ord, and PartialOrd using random data for BITS=128 and BITS=256.
+    #[traced_test]
+    fn test_eq_ord_random() {
+        info!("Testing Eq/Ord with random BaseBlob data.");
 
-        // skip 0x
-        if (psz[0] == '0' && ToLower(psz[1]) == 'x')
-            psz += 2;
+        let mut rng = SimpleRng::new(0xDEAD_BEEF);
 
-        // hex string to uint
-        size_t digits = 0;
-        while (::HexDigit(psz[digits]) != -1)
-            digits++;
-        unsigned char* p1 = (unsigned char*)m_data;
-        unsigned char* pend = p1 + WIDTH;
-        while (digits > 0 && p1 < pend) {
-            *p1 = ::HexDigit(psz[--digits]);
-            if (digits > 0) {
-                *p1 |= ((unsigned char)::HexDigit(psz[--digits]) << 4);
-                p1++;
+        // We'll do multiple random comparisons for 128 bits and 256 bits
+        for bits in [128, 256] {
+            info!("Subtest for BITS={}", bits);
+
+            for _i in 0..20 {
+                // Fill random data for two blobs:
+                let width = base_blob_width::<256>(); // always the max we might need
+                let mut buf1 = vec![0u8; width];
+                let mut buf2 = vec![0u8; width];
+
+                rng.fill_bytes(&mut buf1);
+                rng.fill_bytes(&mut buf2);
+
+                // Adjust to the exact length we want
+                let len = base_blob_width_for(bits);
+                let data1 = &buf1[..len];
+                let data2 = &buf2[..len];
+
+                // Make two BaseBlob<BITS> with copies of that data
+                let blob1 = make_blob(bits, data1);
+                let blob2 = make_blob(bits, data2);
+
+                // Compare them
+                let eq_std = data1 == data2;
+                let eq_blob = (blob1 == blob2);
+                assert_eq!(
+                    eq_std, eq_blob,
+                    "Eq mismatch: BITS={}, data1={:X?}, data2={:X?}",
+                    bits, data1, data2
+                );
+
+                // Test ordering
+                let cmp_std = data1.cmp(data2);
+                let cmp_blob = blob1.cmp(&blob2);
+                assert_eq!(
+                    cmp_std, cmp_blob,
+                    "Ordering mismatch: BITS={}, data1={:X?}, data2={:X?}",
+                    bits, data1, data2
+                );
             }
         }
-        */
+
+        info!("Eq and Ord random tests completed successfully.");
     }
-    
-    pub fn set_hex_from_str(&mut self, str_: &str)  {
-        
-        todo!();
-        /*
-            SetHex(str.c_str());
-        */
+
+    /// This test specifically checks that "all ones" vs. "all zeros" ordering, plus
+    /// a few partial checks, is correct for BITS=256.
+    #[traced_test]
+    fn test_base_blob_cmp_extremes_256() {
+        info!("Testing extremes: all-zeros vs. all-ones for BITS=256.");
+
+        let mut zero_blob = BaseBlob::<256>::default();
+        let mut ones_blob = BaseBlob::<256>::default();
+        for b in ones_blob.data.iter_mut() {
+            *b = 0xFF;
+        }
+
+        // zero vs. ones => zero < ones
+        assert!(zero_blob < ones_blob, "All-zero < all-ones for 256 bits");
+        assert!(ones_blob > zero_blob, "All-ones > all-zero for 256 bits");
+        assert_ne!(zero_blob, ones_blob, "Zero != ones, obviously");
+
+        // flip a single byte in zero_blob to 0xFF => now compare
+        zero_blob.data[31] = 0xFF; // the last byte (big-end? little-end? doesn't matter, we just want difference)
+        assert!(zero_blob < ones_blob, "A single trailing 0xFF is still < 32 x 0xFF for BITS=256");
+
+        // make them identical => eq
+        zero_blob.data.copy_from_slice(&ones_blob.data);
+        assert!(zero_blob == ones_blob, "Now identical => eq for 256 bits");
+        info!("Checked extremes for BITS=256 comparisons successfully.");
     }
-    
-    pub fn to_string(&self) -> String {
-        
-        todo!();
-        /*
-            return (GetHex());
-        */
+
+    /// Check that BaseBlob<BITS> is `Send + Sync` in a practical sense by moving it between threads.
+    #[traced_test]
+    fn test_base_blob_send_sync_64() {
+        info!("Testing that BaseBlob<64> can be sent across threads (Send + Sync).");
+
+        let mut some_blob = BaseBlob::<64>::default();
+        // fill it with something
+        some_blob.data.copy_from_slice(&[1,2,3,4,5,6,7,8]);
+
+        // Move it into a closure, spawn a thread, move it back
+        let handle = std::thread::spawn(move || {
+            debug!("Thread: got the blob => data={:X?}", some_blob.data);
+            some_blob
+        });
+
+        let returned = handle.join().expect("Thread panicked?");
+        debug!("test: returned from thread => data={:X?}", returned.data);
+        assert_eq!(&returned.data[..8], &[1,2,3,4,5,6,7,8],
+                   "Should match the data we initially set");
+        info!("Send+Sync test for 64-bit succeeded.");
+    }
+
+    // --------------------------------------------------------------------------------
+    // Helper for eq tests: compute the actual width in bytes for arbitrary bits.
+    fn base_blob_width_for(bits: usize) -> usize {
+        bits / 8
+    }
+
+    // Helper to build a BaseBlob<BITS> from a slice of exactly base_blob_width<BITS>() bytes.
+    fn make_blob<const B: usize>(bits: usize, data: &[u8]) -> BaseBlob<B>
+    where
+        [u8; base_blob_width::<B>()]: ,
+    {
+        let mut blob = BaseBlob::<B>::default();
+        blob.data.copy_from_slice(data);
+        blob
     }
 }

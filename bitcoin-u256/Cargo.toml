@@ -1,26 +1,31 @@
 [build-dependencies.bitcoin-cfg]
-path = "../bitcoin-cfg"
+path    = "../bitcoin-cfg"
 version = "0.1.17-alpha.0"
+
 [dependencies.bitcoin-derive]
-path = "../bitcoin-derive"
+path    = "../bitcoin-derive"
 version = "0.1.17-alpha.0"
+
 [dependencies.bitcoin-imports]
-path = "../bitcoin-imports"
+path    = "../bitcoin-imports"
 version = "0.1.17-alpha.0"
+
 [dependencies.bitcoin-bigint]
-path = "../bitcoin-bigint"
+path    = "../bitcoin-bigint"
 version = "0.1.17-alpha.0"
+
 [dependencies.bitcoin-blob]
-path = "../bitcoin-blob"
+path    = "../bitcoin-blob"
 version = "0.1.17-alpha.0"
+
 [package]
-edition = "2021"
-name = "bitcoin-u256"
-version = "0.1.17-alpha.0"
-license = "MIT"
-repository = "https://github.com/klebz/bitcoin-rs"
-authors = [ "klebs <none>" ]
-description = "a 256-bit opaque blob type and a 256-bit unsigned big integer type for working with Bitcoin data structures."
+edition       = "2021"
+name          = "bitcoin-u256"
+version       = "0.1.17-alpha.0"
+license       = "MIT"
+repository    = "https://github.com/klebz/bitcoin-rs"
+authors       = [ "klebs <none>" ]
+description   = "a 256-bit opaque blob type and a 256-bit unsigned big integer type for working with Bitcoin data structures."
 documentation = "https://docs.rs/bitcoin-u256"
 
 [package.metadata]

@@ -562,7 +562,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-bigint"
-version = "0.1.18"
+version = "0.1.17-alpha.0"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -589,6 +589,9 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "tracing",
+ "tracing-setup",
+ "tracing-subscriber",
 ]
 
 [[package]]
