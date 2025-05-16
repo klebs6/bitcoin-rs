@@ -10,7 +10,7 @@ crate::ix!();
 pub struct BaseBlob<const BITS: usize> 
 where [u8; base_blob_width::<BITS>()]:
 {
-    pub data: [u8; base_blob_width::<BITS>()],
+    pub(crate) data: [u8; base_blob_width::<BITS>()],
 }
 
 //------------------------------
@@ -42,17 +42,14 @@ where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
 impl<const BITS: usize> BaseBlob<BITS> 
 where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
 {
-    pub const ZERO: Self = Self::zero();
-    pub const ONE:  Self = Self::one();
-
-    pub const fn zero() -> Self {
+    pub fn zero() -> Self {
         // all bytes = 0
         Self {
             data: [0; base_blob_width::<BITS>()],
         }
     }
 
-    pub const fn one() -> Self {
+    pub fn one() -> Self {
         // all bytes = 0, except the first byte=1
         let mut x = Self {
             data: [0; base_blob_width::<BITS>()],

@@ -428,6 +428,7 @@ pub use tinyvec::*;
 pub use tinyvec;
 pub use try_catch::*;
 pub use std::pin::Pin;
+pub use std::fmt;
 
 pub use derivative::*;
 pub use std::thread::{

@@ -1,3 +1,4 @@
+/*
 // ---------------- [ File: bitcoin-u256/tests/u256.rs ]
 crate::ix!();
 
@@ -490,3 +491,4 @@ pub mod uint256_tests {
         */
     }
 }
+*/

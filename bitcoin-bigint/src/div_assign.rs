@@ -1,45 +1,90 @@
 // ---------------- [ File: bitcoin-bigint/src/div_assign.rs ]
 crate::ix!();
 
+impl<const BITS: usize> BaseUInt<BITS> 
+where
+    [(); BITS / 32]:
+{
+    pub fn is_null(&self) -> bool {
+        for &limb in &self.pn {
+            if limb != 0 {
+                return false;
+            }
+        }
+        true
+    }
+
+    pub fn set_null(&mut self) {
+        for limb in &mut self.pn {
+            *limb = 0;
+        }
+    }
+}
+
 impl<const BITS: usize> DivAssign<&BaseUInt<BITS>> for BaseUInt<BITS>
 where
     [(); BITS / 32]:,
 {
     /// self /= other, using shift-based long division.
     #[inline]
-    fn div_assign(&mut self, b: &BaseUInt<BITS>) {
-        // Copy `b` so we can shift it
-        let mut div = b.clone();
-        // Copy `self` so we can treat it as the 'numerator'
-        let mut num = self.clone();
-        // We'll store the result (the quotient) in `self` by zeroing it first
-        *self = BaseUInt::<BITS>::default();
+    fn div_assign(&mut self, other: &Self) {
+        // We simply use the "div_assign_big" approach.  
+        self.div_assign_big(other);
+    }
+}
 
-        let num_bits = num.bits();
-        let div_bits = div.bits();
-        if div_bits == 0 {
-            panic!("Division by zero in BaseUInt");
+impl<const BITS: usize> BaseUInt<BITS>
+where
+    [(); BITS / 32]:,
+{
+    fn div_assign_big(&mut self, divisor: &Self) {
+        trace!(
+            "BaseUInt<{}>::div_assign_big => self /= divisor (shift-sub approach).",
+            BITS
+        );
+
+        if divisor.is_null() {
+            panic!("Division by zero in BaseUInt::div_assign_big");
         }
-        if div_bits > num_bits {
-            // quotient is 0
+
+        // If self < divisor => result = 0
+        if *self < *divisor {
+            self.set_null();
             return;
         }
-        // We'll shift `div` so that its highest set bit aligns with num's highest set bit
-        let shift_amount = num_bits - div_bits;
-        div <<= shift_amount;
 
-        // Instead of "while shift as i32 >= 0", we do a downward for loop:
-        for s in (0..=shift_amount).rev() {
-            // If num >= div, subtract div from num, and set the bit s in self
-            if num >= div {
-                num -= &div;
-                let limb_index = (s / 32) as usize;
-                let bit_index = s % 32;
-                self.pn[limb_index] |= 1 << bit_index;
-            }
-            div >>= 1; // shift div down by 1 bit
+        let mut quotient = Self::default();
+        let mut remainder = self.clone();
+
+        // 1) Compute how many bits we need to shift the divisor to align with remainder’s top bit
+        let shift = (remainder.bits() as i32) - (divisor.bits() as i32);
+        if shift < 0 {
+            // remainder < divisor => result=0
+            self.set_null();
+            return;
         }
-        // remainder is in `num`, but we discard it
+
+        // 2) Temporarily left-shift a copy of divisor by `shift` bits
+        let mut shifted_div = divisor.clone();
+        shifted_div <<= shift as u32;
+
+        // 3) From high down to 0, subtract if remainder >= that shifted_div
+        let mut s = shift;
+        while s >= 0 {
+            if remainder >= shifted_div {
+                remainder.sub_assign(&shifted_div);
+                // set the bit s in quotient
+                let limb_index = (s / 32) as usize;
+                let bit_index  = s as u32 % 32;
+                quotient.pn[limb_index] |= 1 << bit_index;
+            }
+            // shift divisor right by 1
+            shifted_div >>= 1;
+            s -= 1;
+        }
+
+        // 4) Copy the quotient result back into self
+        *self = quotient;
     }
 }
 

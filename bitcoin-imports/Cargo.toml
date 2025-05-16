@@ -2,6 +2,8 @@
 scan-crate-for-typedefs.workspace = true
 
 [dependencies]
+bincode.workspace = true
+serde_test.workspace = true
 atomic-take.workspace           = true
 atomic.workspace                = true
 traced-test.workspace           = true

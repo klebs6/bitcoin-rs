@@ -31,6 +31,19 @@ where [(); BITS / 32 ]:
 {
     pub const WIDTH: usize = BITS / 32;
 
+    pub fn get_limb(&self, index: usize) -> u32 {
+        // Return the requested limb for testing. Panics if out of range.
+        self.pn[index]
+    }
+
+    pub fn set_limb(&mut self, index: usize, val: u32) {
+        self.pn[index] = val;
+    }
+
+    pub fn limb_count() -> usize {
+        BITS / 32
+    }
+
     /// Increment by 1 (prefix equivalent). Returns `self` by mutable reference.
     pub fn inc_prefix(&mut self) -> &mut Self {
         let mut i = 0usize;

@@ -1,3 +1,4 @@
+/*
 // ---------------- [ File: bitcoin-u256/tests/arith_u256.rs ]
 crate::ix!();
 
@@ -800,3 +801,4 @@ pub fn almost_equal(d1: f64, d2: f64) -> bool {
 
     */
 }
+*/

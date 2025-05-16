@@ -1,68 +1,38 @@
 // ---------------- [ File: bitcoin-bigint/src/mul_assign.rs ]
 crate::ix!();
 
-impl<const BITS: usize> core::ops::MulAssign<&BaseUInt<BITS>> for BaseUInt<BITS> 
+impl<const BITS: usize> core::ops::MulAssign<&BaseUInt<BITS>> for BaseUInt<BITS>
 where
-    [(); BITS / 32]:,
+    [(); BITS / 32]: 
 {
     fn mul_assign(&mut self, rhs: &BaseUInt<BITS>) {
-        tracing::trace!(
-            "Entering mul_assign<&BaseUInt<{}>>; self={:X?}, rhs={:X?}",
-            BITS,
-            self.pn,
-            rhs.pn
-        );
+        trace!("BaseUInt<{}>::mul_assign<&Self> => self *= rhs", BITS);
+        let limb_count = BITS / 32;
 
-        // Standard "long multiplication" in base-2^32, ignoring overflow beyond BITS bits.
-        let num_limbs = BITS / 32;
+        // Temporary 2*N accumulation in 64-bit cells. 
+        let mut accum = vec![0u64; limb_count * 2];
 
-        // Temporary buffer up to 2*num_limbs (but we'll only store lower `num_limbs`).
-        // For BITS <= 256, 2*num_limbs <= 16, so a fixed [0u64;16] is safe; we only read up to index (num_limbs-1).
-        let mut accum = [0u64; 16];
-
-        for i in 0..num_limbs {
-            let mut carry = 0u64;
+        for i in 0..limb_count {
             let a_i = self.pn[i] as u64;
-
-            for j in 0..num_limbs {
-                // index in accum:
-                let k = i + j;
-                if k >= num_limbs {
-                    // we only keep mod 2^BITS, so skip storing beyond that
-                    break;
-                }
-
-                let sum = accum[k]
+            let mut carry = 0u64;
+            for j in 0..limb_count {
+                let idx = i + j;
+                let sum = accum[idx]
                     .wrapping_add(a_i.wrapping_mul(rhs.pn[j] as u64))
                     .wrapping_add(carry);
-
-                accum[k] = sum & 0xFFFF_FFFF;
+                accum[idx] = sum & 0xFFFF_FFFF;
                 carry = sum >> 32;
-
-                tracing::trace!(
-                    "  i={}, j={}, k={}, a_i=0x{:X}, b_j=0x{:X}, sum=0x{:X}, accum[k]=0x{:X}, carry=0x{:X}",
-                    i,
-                    j,
-                    k,
-                    a_i,
-                    rhs.pn[j],
-                    sum,
-                    accum[k],
-                    carry
-                );
+            }
+            // If there's still carry, place it in accum[i+limb_count], though we only keep low limb_count in final.
+            if (i + limb_count) < accum.len() {
+                accum[i + limb_count] = accum[i + limb_count].wrapping_add(carry);
             }
         }
 
-        // Now copy the low `num_limbs` results back into self
-        for i in 0..num_limbs {
+        // Now copy the low `limb_count` accum cells back into self.
+        for i in 0..limb_count {
             self.pn[i] = accum[i] as u32;
         }
-
-        tracing::trace!(
-            "Leaving mul_assign<&BaseUInt<{}>>; final self={:X?}",
-            BITS,
-            self.pn
-        );
     }
 }
 

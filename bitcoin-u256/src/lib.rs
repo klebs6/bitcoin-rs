@@ -3,4 +3,8 @@
 
 x!{arith_u256}
 x!{checkpoint}
+x!{convert}
+x!{compact}
 x!{u256_int}
+x!{u256_serde}
+x!{conversion}

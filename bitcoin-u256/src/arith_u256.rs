@@ -2,222 +2,294 @@
 crate::ix!();
 
 /**
-  | 256-bit unsigned big integer.
+  | 256-bit unsigned big integer wrapper around BaseUInt<256>.
   |
   */
-#[derive(Default,Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
+#[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ArithU256 {
-    base: BaseUInt<256>,
+    pub(crate) base: BaseUInt<256>,
+}
+
+impl fmt::Display for ArithU256 {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // for example, display as hex
+        // or do something else if you prefer
+        let hex = self.base.get_hex();
+        write!(f, "{}", hex)
+    }
+}
+
+impl ShlAssign<u32> for ArithU256 {
+    fn shl_assign(&mut self, shift: u32) {
+        // just delegate to the underlying base
+        self.base <<= shift;
+    }
+}
+
+impl ShrAssign<u32> for ArithU256 {
+    fn shr_assign(&mut self, shift: u32) {
+        self.base >>= shift;
+    }
 }
 
 unsafe impl Send for ArithU256 {}
 unsafe impl Sync for ArithU256 {}
 
 impl From<&BaseUInt<256>> for ArithU256 {
-
     fn from(b: &BaseUInt<256>) -> Self {
-    
-        todo!();
-        /*
-            : BaseUInt<_256>(b)
-        */
+        trace!("ArithU256::from<&BaseUInt<256>> => copying base data");
+        Self { base: b.clone() }
     }
 }
 
 impl From<u64> for ArithU256 {
-    
     fn from(b: u64) -> Self {
-    
-        todo!();
-        /*
-            : BaseUInt<_256>(b)
-        */
+        trace!("ArithU256::from<u64> => b=0x{:X}", b);
+        Self {
+            base: BaseUInt::<256>::from(b),
+        }
     }
 }
 
 impl From<&str> for ArithU256 {
-    
     fn from(str_: &str) -> Self {
-    
-        todo!();
-        /*
-            : BaseUInt<_256>(str)
-        */
+        trace!("ArithU256::from<&str> => '{}'", str_);
+        Self {
+            base: BaseUInt::<256>::from(str_),
+        }
     }
 }
 
-impl MulAssign<u32> for ArithU256 
-{
-    #[inline] fn mul_assign(&mut self, b32: u32) {
-        self.base.mul_assign(b32)
+impl MulAssign<u32> for ArithU256 {
+    #[inline]
+    fn mul_assign(&mut self, b32: u32) {
+        trace!("ArithU256::mul_assign<u32> => b32={}", b32);
+        self.base *= b32;
     }
 }
 
-impl MulAssign<i64> for ArithU256 
-{
-    #[inline] fn mul_assign(&mut self, b64: i64) {
+impl MulAssign<i64> for ArithU256 {
+    #[inline]
+    fn mul_assign(&mut self, b64: i64) {
+        trace!("ArithU256::mul_assign<i64> => b64={}", b64);
 
-        let u: u32 = b64.try_into().unwrap();
-
-        self.base.mul_assign(u)
+        // We assume b64 is >= 0; if negative => panic from try_into().
+        let as_u32: u32 = b64.try_into().expect("Cannot multiply by a negative i64 in ArithU256");
+        self.base *= as_u32;
     }
 }
 
-impl MulAssign<&ArithU256> for ArithU256 
-{
-    
-    #[inline] fn mul_assign(&mut self, b: &ArithU256) {
-        self.base.mul_assign(&b.base)
+impl MulAssign<&ArithU256> for ArithU256 {
+    #[inline]
+    fn mul_assign(&mut self, b: &ArithU256) {
+        trace!("ArithU256::mul_assign<&ArithU256>");
+        self.base *= &b.base;
     }
 }
 
-impl DivAssign<u32> for ArithU256 
-{
-    #[inline] fn div_assign(&mut self, b32: u32) {
-        self.div_assign(b32)
+impl DivAssign<u32> for ArithU256 {
+    #[inline]
+    fn div_assign(&mut self, b32: u32) {
+        trace!("ArithU256::div_assign<u32> => b32={}", b32);
+        // Convert b32 to a BaseUInt<256>, then div_assign
+        let tmp = BaseUInt::<256>::from(b32 as u64);
+        self.base /= &tmp;
     }
 }
 
-impl DivAssign<i64> for ArithU256 
-{
-    #[inline] fn div_assign(&mut self, b64: i64) {
+impl DivAssign<i64> for ArithU256 {
+    #[inline]
+    fn div_assign(&mut self, b64: i64) {
+        trace!("ArithU256::div_assign<i64> => b64={}", b64);
 
-        let u: u32 = b64.try_into().unwrap();
-
-        self.div_assign(u)
+        // We assume b64 >= 0; negative => panic.
+        let as_u32: u32 = b64.try_into().expect("Cannot divide by a negative i64 in ArithU256");
+        let tmp = BaseUInt::<256>::from(as_u32 as u64);
+        self.base /= &tmp;
     }
 }
 
-impl DivAssign<&ArithU256> for ArithU256 
-{
-    #[inline] fn div_assign(&mut self, b: &ArithU256) {
-        self.base.div_assign(&b.base)
+impl DivAssign<&ArithU256> for ArithU256 {
+    #[inline]
+    fn div_assign(&mut self, b: &ArithU256) {
+        trace!("ArithU256::div_assign<&ArithU256>");
+        self.base /= &b.base;
     }
 }
 
 //-------------------------------------------[.cpp/bitcoin/src/arith_u256.cpp]
 
-impl ArithU256 {
-    
-    /**
-      | This implementation directly uses
-      | shifts instead of going through an intermediate
-      | MPI representation.
-      |
-      | The "compact" format is a representation
-      | of a whole number N using an unsigned
-      | 32bit number similar to a floating point
-      | format.
-      | 
-      | The most significant 8 bits are the unsigned
-      | exponent of base 256.
-      | 
-      | This exponent can be thought of as "number
-      | of bytes of N".
-      | 
-      | The lower 23 bits are the mantissa.
-      | 
-      | Bit number 24 (0x800000) represents
-      | the sign of N.
-      | 
-      | N = (-1^sign) * mantissa * 256^(exponent-3)
-      | 
-      | Satoshi's original implementation
-      | used BN_bn2mpi() and BN_mpi2bn().
-      | 
-      | MPI uses the most significant bit of
-      | the first byte as sign.
-      | 
-      | Thus 0x1234560000 is compact (0x05123456)
-      | 
-      | And 0xc0de000000 is compact (0x0600c0de)
-      | 
-      | Bitcoin only uses this "compact" format
-      | for encoding difficulty targets, which
-      | are unsigned 256bit quantities. Thus,
-      | all the complexities of the sign bit
-      | and using base 256 are probably an implementation
-      | accident.
-      |
-      */
-    pub fn set_compact(&mut self, 
-        n_compact:   u32,
-        pf_negative: *mut bool,
-        pf_overflow: *mut bool) -> &mut ArithU256 {
-        
-        todo!();
-        /*
-            int nSize = nCompact >> 24;
-        uint32_t nWord = nCompact & 0x007fffff;
-        if (nSize <= 3) {
-            nWord >>= 8 * (3 - nSize);
-            *this = nWord;
-        } else {
-            *this = nWord;
-            *this <<= 8 * (nSize - 3);
+// ------------------------------------------------------
+// Exhaustive test suite for `ArithU256`:
+#[cfg(test)]
+mod arith_u256_exhaustive_tests {
+    use super::*;
+    use std::panic::{catch_unwind, AssertUnwindSafe};
+
+    /// We’ll also re-use a small RNG for reproducible tests
+    #[derive(Debug)]
+    struct SimpleTestRng(u64);
+    impl SimpleTestRng {
+        fn new(seed: u64) -> Self {
+            Self(seed)
         }
-        if (pfNegative)
-            *pfNegative = nWord != 0 && (nCompact & 0x00800000) != 0;
-        if (pfOverflow)
-            *pfOverflow = nWord != 0 && ((nSize > 34) ||
-                                         (nWord > 0xff && nSize > 33) ||
-                                         (nWord > 0xffff && nSize > 32));
-        return *this;
-        */
-    }
-    
-    pub fn get_compact(&self, negative: Option<bool>) -> u32 {
-        let negative: bool = negative.unwrap_or(false);
-        
-        todo!();
-        /*
-            int nSize = (bits() + 7) / 8;
-        uint32_t nCompact = 0;
-        if (nSize <= 3) {
-            nCompact = GetLow64() << 8 * (3 - nSize);
-        } else {
-            ArithU256 bn = *this >> 8 * (nSize - 3);
-            nCompact = bn.GetLow64();
+        fn next_u64(&mut self) -> u64 {
+            self.0 = self.0
+                .wrapping_mul(6364136223846793005)
+                .wrapping_add(1);
+            self.0
         }
-        // The 0x00800000 bit denotes the sign.
-        // Thus, if it is already set, divide the mantissa by 256 and increase the exponent.
-        if (nCompact & 0x00800000) {
-            nCompact >>= 8;
-            nSize++;
+    }
+
+    /// 1) Test `From<&BaseUInt<256>>`, `From<u64>`, `From<&str>`
+    #[traced_test]
+    fn test_from_conversions() {
+        info!("Testing ArithU256::from conversions...");
+
+        // from BaseUInt<256>
+        let mut base = BaseUInt::<256>::default();
+        base.set_limb(0, 0x1234_5678);
+        base.set_limb(1, 0xFFFF_FFFF);
+        let a1 = ArithU256::from(&base);
+        assert_eq!(a1.base, base, "ArithU256::from(&BaseUInt<256>) => mismatch");
+
+        // from u64
+        let a2 = ArithU256::from(0xABCD_1234_5678_0000u64);
+        assert_eq!(a2.base.get_limb(0), 0x5678_0000);
+        assert_eq!(a2.base.get_limb(1), 0xABCD_1234u32);
+        for i in 2..8 {
+            assert_eq!(a2.base.get_limb(i), 0, "limb {} => must be zero", i);
         }
-        assert((nCompact & ~0x007fffff) == 0);
-        assert(nSize < 256);
-        nCompact |= nSize << 24;
-        nCompact |= (fNegative && (nCompact & 0x007fffff) ? 0x00800000 : 0);
-        return nCompact;
-        */
-    }
-}
 
-pub fn arith_to_uint256(a: &ArithU256) -> u256 {
-    
-    todo!();
-    /*
-    let mut b = u256::default();
+        // from &str
+        let a3 = ArithU256::from("0x1234abcd");
+        // We'll parse that => 0x1234ABCD in hex => that is 305441741 decimal => stored in the low limbs
+        assert_eq!(a3.base.get_limb(0), 0x1234_ABCD);
+        for i in 1..8 {
+            assert_eq!(a3.base.get_limb(i), 0, "limb {} => must be zero in short parse", i);
+        }
 
-    for x in 0..a.WIDTH {
-        writele32(b.as_ptr().offset(x * 4), a.pn[x]);
+        info!("from() conversions done.");
     }
 
-    b
-    */
-}
+    /// 2) Test `MulAssign<u32|i64|&ArithU256>`  
+    #[traced_test]
+    fn test_mul_assign() {
+        info!("Testing ArithU256 MulAssign with u32, i64, &ArithU256...");
 
-pub const fn uint_to_arith256(a: &u256) -> ArithU256 {
-    
-    todo!();
-    /*
-    let mut b = ArithU256::default();
+        // a) mul_assign<u32>
+        let mut x = ArithU256::from(0x1_00000000u64); // => low64=0x00000000_00000001 for 64-bit
+        x *= 2u32;
+        // Now we expect => 2<<32 => that is limb[1]=2
+        assert_eq!(x.base.get_limb(0), 0);
+        assert_eq!(x.base.get_limb(1), 2);
 
-    for x in 0..b.WIDTH {
-        b.base.pn[x] = readle32(a.as_ptr().offset(x * 4));
+        // b) mul_assign<i64> => same but with i64
+        let mut y = ArithU256::from(1u64);
+        y *= 5i64; 
+        // => 5
+        assert_eq!(y.base.get_limb(0), 5);
+
+        // c) mul_assign<&ArithU256>
+        let mut a = ArithU256::from(0xABCDu64);
+        let b = ArithU256::from(100u64);
+        a *= &b;
+        // => 0xABCD * 100 decimal => 43981 * 100 => 4398100 decimal => 0x00431EAC
+        assert_eq!(a.base.get_limb(0), 0x431EAC, "0xABCD * 100 => mismatch in low32");
+        for i in 1..8 {
+            assert_eq!(a.base.get_limb(i), 0);
+        }
+
+        // Negative i64 => expect panic
+        let mut z = ArithU256::from(123u64);
+        let caught_neg = catch_unwind(AssertUnwindSafe(|| {
+            z *= -3i64; // must panic
+        }));
+        assert!(caught_neg.is_err(), "mul_assign negative i64 => should panic");
+
+        info!("MulAssign tests concluded.");
     }
 
-    b
-    */
+    /// 3) Test `DivAssign<u32|i64|&ArithU256>`  
+    #[traced_test]
+    fn test_div_assign() {
+        info!("Testing ArithU256 DivAssign with u32, i64, &ArithU256...");
+
+        // a) div_assign<u32>
+        let mut x = ArithU256::from(0x1234_5678u64);
+        x /= 0x1234u32; // => 0x5678
+        assert_eq!(
+            x.base.get_limb(0), 0x5678,
+            "Div: 0x12345678 / 0x1234 => mismatch in low32"
+        );
+
+        // b) div_assign<i64>
+        let mut y = ArithU256::from(1000u64);
+        y /= 10i64; 
+        assert_eq!(y.base.get_limb(0), 100);
+
+        // negative => panic
+        let mut z = ArithU256::from(12345u64);
+        let caught_neg = catch_unwind(AssertUnwindSafe(|| {
+            z /= -5i64;
+        }));
+        assert!(caught_neg.is_err(), "div_assign negative i64 => should panic");
+
+        // c) div_assign<&ArithU256>
+        let mut a = ArithU256::from(12345u64);
+        let b = ArithU256::from(5u64);
+        a /= &b; 
+        assert_eq!(a.base.get_limb(0), 2469, "12345 / 5 => 2469 decimal in the low limb");
+
+        // division by zero => currently the base code panics. Let's confirm.
+        let mut zero_div = ArithU256::from(999u64);
+        let zero_base = ArithU256::from(0u64);
+        let caught_zd = catch_unwind(AssertUnwindSafe(|| {
+            zero_div /= &zero_base; // => panic
+        }));
+        assert!(caught_zd.is_err(), "divide by zero => must panic for ArithU256");
+
+        info!("DivAssign tests concluded.");
+    }
+
+    /// 4) Random smoke tests for larger usage
+    #[traced_test]
+    fn test_random_arith_u256() {
+        info!("Random usage checks for ArithU256 (mul/div).");
+        let mut rng = SimpleTestRng::new(0xDEAD_BEEF);
+
+        // We'll do 10 random tests. We'll keep them small enough that we won't overflow too easily.
+        for i in 0..10 {
+            let a64 = (rng.next_u64() & 0xFFFF) as u64; // short range
+            let b32 = (rng.next_u64() & 0xFFF) as u32;  // smaller range
+            let c_i64 = ((rng.next_u64() & 0x7FF) as i64).max(1); // positive i64
+
+            let mut a_val = ArithU256::from(a64);
+            let b_val = ArithU256::from(b32 as u64);
+
+            // do some combos
+            a_val *= &b_val; 
+            // => a64 * b32
+            let got_low = a_val.base.get_limb(0) as u64
+                | ((a_val.base.get_limb(1) as u64) << 32);
+            let expected = a64.wrapping_mul(b32 as u64) & 0xFFFF_FFFF_FFFF_FFFF;
+            assert_eq!(got_low, expected, "random i={} => low64 mismatch after mul", i);
+
+            // also do a multiply by c_i64
+            a_val *= c_i64;
+            let got_low_2 = a_val.base.low64();
+            let expected_2 = expected.wrapping_mul(c_i64 as u64);
+            assert_eq!(got_low_2, expected_2 & 0xFFFF_FFFF_FFFF_FFFF, 
+                       "random i={} => low64 mismatch after mul i64", i);
+
+            // divide by some safe value
+            let divr = (rng.next_u64() & 0x1FF).max(1) as u32;
+            a_val /= divr;
+            let final_low = a_val.base.low64();
+            let expected_3 = (expected_2 / (divr as u64)) & 0xFFFF_FFFF_FFFF_FFFF;
+            assert_eq!(final_low, expected_3, "random i={} => final mismatch after div", i);
+        }
+
+        info!("Random tests for ArithU256 done.");
+    }
 }
