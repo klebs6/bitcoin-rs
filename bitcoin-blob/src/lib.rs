@@ -10,4 +10,5 @@ x!{hex}
 x!{impl_iter}
 x!{ord_eq}
 x!{serialization}
-x!{simple_rng
+x!{simple_rng}
+x!{mock}

@@ -63,11 +63,6 @@ where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
     }
 }
 
-pub const fn base_blob_width<const BITS: usize>() -> usize 
-{
-    BITS / 8
-}
-
 #[cfg(test)]
 mod base_blob_exhaustive_tests {
     use super::*;
@@ -118,52 +113,83 @@ mod base_blob_exhaustive_tests {
         info!("Default creation checks complete.");
     }
 
-    /// Test Eq, PartialEq, Ord, and PartialOrd using random data for BITS=128 and BITS=256.
     #[traced_test]
     fn test_eq_ord_random() {
+        use super::*;
+        use core::cmp::Ordering;
+        use tracing::{debug, error, info, trace};
         info!("Testing Eq/Ord with random BaseBlob data.");
 
         let mut rng = SimpleRng::new(0xDEAD_BEEF);
 
-        // We'll do multiple random comparisons for 128 bits and 256 bits
+        // We'll do multiple random comparisons for 128 bits and 256 bits.
+        // Because Rust can't infer the const generic from a runtime variable,
+        // we match on bits to pick the correct BaseBlob<B> type.
         for bits in [128, 256] {
             info!("Subtest for BITS={}", bits);
 
+            // We'll run 20 trials for each size
             for _i in 0..20 {
-                // Fill random data for two blobs:
-                let width = base_blob_width::<256>(); // always the max we might need
-                let mut buf1 = vec![0u8; width];
-                let mut buf2 = vec![0u8; width];
+                // First, fill random buffers large enough for 256 bits (32 bytes).
+                // Then we’ll just slice off the exact length for 128 or 256 below.
+                let mut buf1 = vec![0u8; 32];
+                let mut buf2 = vec![0u8; 32];
 
                 rng.fill_bytes(&mut buf1);
                 rng.fill_bytes(&mut buf2);
 
-                // Adjust to the exact length we want
-                let len = base_blob_width_for(bits);
-                let data1 = &buf1[..len];
-                let data2 = &buf2[..len];
+                // For 128 bits => 16 bytes, for 256 bits => 32 bytes
+                let width = bits / 8; 
+                let data1 = &buf1[..width];
+                let data2 = &buf2[..width];
 
-                // Make two BaseBlob<BITS> with copies of that data
-                let blob1 = make_blob(bits, data1);
-                let blob2 = make_blob(bits, data2);
+                // Now we pick the type at compile time via match:
+                match bits {
+                    128 => {
+                        let blob1: BaseBlob<128> = make_blob::<128>(data1);
+                        let blob2: BaseBlob<128> = make_blob::<128>(data2);
 
-                // Compare them
-                let eq_std = data1 == data2;
-                let eq_blob = (blob1 == blob2);
-                assert_eq!(
-                    eq_std, eq_blob,
-                    "Eq mismatch: BITS={}, data1={:X?}, data2={:X?}",
-                    bits, data1, data2
-                );
+                        // Compare them
+                        let eq_std = (data1 == data2);
+                        let eq_blob = (blob1 == blob2);
+                        assert_eq!(
+                            eq_std, eq_blob,
+                            "Eq mismatch: BITS={}, data1={:X?}, data2={:X?}",
+                            bits, data1, data2
+                        );
 
-                // Test ordering
-                let cmp_std = data1.cmp(data2);
-                let cmp_blob = blob1.cmp(&blob2);
-                assert_eq!(
-                    cmp_std, cmp_blob,
-                    "Ordering mismatch: BITS={}, data1={:X?}, data2={:X?}",
-                    bits, data1, data2
-                );
+                        let cmp_std = data1.cmp(data2);
+                        let cmp_blob = blob1.cmp(&blob2);
+                        assert_eq!(
+                            cmp_std, cmp_blob,
+                            "Ordering mismatch: BITS={}, data1={:X?}, data2={:X?}",
+                            bits, data1, data2
+                        );
+                    }
+                    256 => {
+                        let blob1: BaseBlob<256> = make_blob::<256>(data1);
+                        let blob2: BaseBlob<256> = make_blob::<256>(data2);
+
+                        let eq_std = (data1 == data2);
+                        let eq_blob = (blob1 == blob2);
+                        assert_eq!(
+                            eq_std, eq_blob,
+                            "Eq mismatch: BITS={}, data1={:X?}, data2={:X?}",
+                            bits, data1, data2
+                        );
+
+                        let cmp_std = data1.cmp(data2);
+                        let cmp_blob = blob1.cmp(&blob2);
+                        assert_eq!(
+                            cmp_std, cmp_blob,
+                            "Ordering mismatch: BITS={}, data1={:X?}, data2={:X?}",
+                            bits, data1, data2
+                        );
+                    }
+                    _ => {
+                        panic!("Unsupported bits={}", bits);
+                    }
+                }
             }
         }
 
@@ -217,21 +243,5 @@ mod base_blob_exhaustive_tests {
         assert_eq!(&returned.data[..8], &[1,2,3,4,5,6,7,8],
                    "Should match the data we initially set");
         info!("Send+Sync test for 64-bit succeeded.");
-    }
-
-    // --------------------------------------------------------------------------------
-    // Helper for eq tests: compute the actual width in bytes for arbitrary bits.
-    fn base_blob_width_for(bits: usize) -> usize {
-        bits / 8
-    }
-
-    // Helper to build a BaseBlob<BITS> from a slice of exactly base_blob_width<BITS>() bytes.
-    fn make_blob<const B: usize>(bits: usize, data: &[u8]) -> BaseBlob<B>
-    where
-        [u8; base_blob_width::<B>()]: ,
-    {
-        let mut blob = BaseBlob::<B>::default();
-        blob.data.copy_from_slice(data);
-        blob
     }
 }
