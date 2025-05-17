@@ -5,83 +5,30 @@ impl<const BITS: usize> BaseUInt<BITS>
 where
     [(); BITS / 32]:,
 {
-    /// Returns this number as a big-endian hex string with no leading zeros (except that a
-    /// value of zero is printed as `"0"`).  
-    ///
-    /// ### Method
-    /// 1. Collect all limbs into a contiguous little-endian byte buffer (lowest limb first).  
-    /// 2. Reverse that buffer to get big-endian order (highest significant byte first).  
-    /// 3. Convert the entire buffer into hex **nibble-by-nibble**, skipping leading zero nibbles
-    ///    until we find a nonzero nibble (or confirm the entire number is zero).  
-    /// 4. Return the resulting lowercase hex string.
-    ///
-    /// This ensures that a single byte of `0x01` becomes `"1"` instead of `"01"`, etc.
-    #[tracing::instrument(
-        level = "trace",
-        name = "get_hex",
-        skip_all,
-        fields(
-            BITS = BITS,
-            self_val = ?self
-        )
-    )]
+    /// Return this number as a big-endian hex string with *exactly* `BITS/4` hex digits
+    /// (two hex digits per byte). Leading zeros are always preserved.
     pub fn get_hex(&self) -> String {
-        debug!("Generating big-endian hex string from BaseUInt<{BITS}> = {:?}", self);
-
-        // (A) Gather all bytes in little-endian order
+        // 1) Gather bytes in little-endian (limb[0] is low 32 bits)
         let limb_count = BITS / 32;
-        let total_bytes = BITS / 8;
+        let total_bytes = BITS / 8; // e.g. 256 => 32 bytes
         let mut le_bytes = Vec::with_capacity(total_bytes);
 
         for i in 0..limb_count {
             let limb = self.pn[i];
             let limb_bytes = limb.to_le_bytes();
-            debug!("pn[{i}] = 0x{limb:08X} => limb_bytes (LE) = {limb_bytes:02X?}");
             le_bytes.extend_from_slice(&limb_bytes);
         }
 
-        // (B) Reverse to get big-endian
+        // 2) Reverse to get big-endian
         le_bytes.reverse();
-        debug!("Reversed => big-endian bytes = {:02X?}", le_bytes);
 
-        // (C) Now convert the big-endian bytes nibble by nibble:
-        //     Each byte has two hex nibbles (hi, lo). We'll skip leading zero nibbles.
-        let mut result = String::new();
-        let mut found_nonzero_nibble = false;
-
+        // 3) Convert to hex: always push 2 hex digits per byte
+        use std::fmt::Write;
+        let mut result = String::with_capacity(total_bytes * 2);
         for &byte in &le_bytes {
-            let hi = (byte >> 4) & 0xF;
-            let lo = byte & 0xF;
-
-            // High nibble
-            if !found_nonzero_nibble {
-                if hi != 0 {
-                    found_nonzero_nibble = true;
-                    result.push(core::char::from_digit(hi as u32, 16).unwrap());
-                }
-            } else {
-                // Already found a nonzero nibble => always push
-                result.push(core::char::from_digit(hi as u32, 16).unwrap());
-            }
-
-            // Low nibble
-            if !found_nonzero_nibble {
-                if lo != 0 {
-                    found_nonzero_nibble = true;
-                    result.push(core::char::from_digit(lo as u32, 16).unwrap());
-                }
-            } else {
-                result.push(core::char::from_digit(lo as u32, 16).unwrap());
-            }
+            write!(result, "{:02x}", byte).unwrap();
         }
 
-        // (D) If we never found any nonzero nibble => the entire number is zero
-        if result.is_empty() {
-            debug!("All limbs are zero => returning '0'.");
-            return "0".to_string();
-        }
-
-        debug!("Final hex string => '{}'", result);
         result
     }
 }
@@ -104,19 +51,19 @@ mod base_uint_get_hex_exhaustive_tests {
 
         // 1) 0 => "0"
         let x0 = U32::default();
-        assert_eq!(x0.get_hex(), "0", "Zero should yield '0'");
+        assert_eq!(x0.get_hex(), "00000000", "Zero should yield '0'");
 
         // 2) A small nonzero => 0x0000_0001 => "1"
         let mut x1 = U32::default();
         x1.pn[0] = 1;
         debug!("x1 = {:?}", x1);
-        assert_eq!(x1.get_hex(), "1", "Single nibble leading zero trim check");
+        assert_eq!(x1.get_hex(), "00000001", "Single nibble leading zero trim check");
 
         // 3) e.g. 0x0000_1234 => => "1234"
         let mut x2 = U32::default();
         x2.pn[0] = 0x0000_1234;
         debug!("x2 = {:?}", x2);
-        assert_eq!(x2.get_hex(), "1234");
+        assert_eq!(x2.get_hex(), "00001234");
 
         // 4) full => 0xFFFF_FFFF => "ffffffff" => all nibble usage
         let mut x3 = U32::default();
@@ -134,18 +81,19 @@ mod base_uint_get_hex_exhaustive_tests {
 
         // 1) zero => "0"
         let z = U64B::default();
-        assert_eq!(z.get_hex(), "0");
+
+        assert_eq!(z.get_hex(), "0000000000000000");
 
         // 2) partial => e.g. 0x0000_0000_0000_1234 => "1234"
         let mut x = U64B::default();
         x.pn[0] = 0x0000_1234;
-        assert_eq!(x.get_hex(), "1234");
+        assert_eq!(x.get_hex(), "0000000000001234");
 
         // 3) partial upper => 0x0000_0001_0000_0000 => => "100000000"
         // i.e. a single nibble of "1" in the top limb => 9 hex digits in total
         let mut y = U64B::default();
         y.pn[1] = 0x0000_0001;
-        assert_eq!(y.get_hex(), "100000000", "One nibble in upper 32 bits => 9 hex digits");
+        assert_eq!(y.get_hex(), "0000000100000000" , "One nibble in upper 32 bits => 9 hex digits");
 
         // 4) full => e.g. 0xABCD_EF12_3456_7890 => => "abcdef1234567890"
         let mut w = U64B::default();
@@ -164,24 +112,23 @@ mod base_uint_get_hex_exhaustive_tests {
 
         // 1) zero => "0"
         let a = U256::default();
-        assert_eq!(a.get_hex(), "0", "Zero in 256 bits => '0'");
+        assert_eq!(a.get_hex(), "0000000000000000000000000000000000000000000000000000000000000000", "Zero in 256 bits => '0'");
 
         // 2) partial in low limb => e.g. 0x00000000_00000000_00000000_1234ABCD => => "1234abcd"
         let mut b = U256::default();
         b.pn[0] = 0x1234_ABCD;
-        assert_eq!(b.get_hex(), "1234abcd");
+        assert_eq!(b.get_hex(), "000000000000000000000000000000000000000000000000000000001234abcd");
 
         // 3) partial in high limb => e.g. top limb => 0x0000_FFFF => => some hex with 8 digits from that limb
         let mut c = U256::default();
         c.pn[7] = 0x0000_FFFF; // highest 32 bits
         let hex_c = c.get_hex();
         debug!("c.get_hex() => '{}'", hex_c);
-        // That's 0xFFFF << (7*32 bits). But we don't literally show all zeros in between.
-        // We just show the big-endian nibble for that limb => 'ffff' plus 56 zero bits => "ffff000000000000..."
-        // Actually, to check thoroughly, we might parse it back. But let's do a simpler assertion: must start with 'ffff' and not be all zeros.
+
+        // 0xFFFF << (7*32 bits).
         assert!(
-            hex_c.starts_with("ffff"),
-            "Should start with 'ffff' for top-limb partial set. got={}",
+            hex_c.starts_with("0000ffff"),
+            "Should start with '0000ffff' for top-limb partial set. got={}",
             hex_c
         );
 

@@ -10,6 +10,33 @@ pub struct ArithU256 {
     pub(crate) base: BaseUInt<256>,
 }
 
+impl ArithU256 {
+
+    pub fn low64(&self) -> u64 {
+        self.base.low64()
+    }
+
+    pub fn get_limb(&self, index: usize) -> u32 {
+        self.base.get_limb(index)
+    }
+
+    /// Provides a hex string of the underlying 256 bits, same big-endian style as `to_string()`.
+    pub fn get_hex(&self) -> String {
+        self.base.get_hex()
+    }
+
+    /// Returns the size in bytes (which should be 32 for a 256-bit number).
+    pub fn size_in_bytes(&self) -> usize {
+        self.base.size_in_bytes()
+    }
+
+    /// Interprets this 256-bit number as a floating-point, summing each 32-bit limb in powers of 2^32.
+    /// **Caution**: will lose precision beyond ~53 bits, as `f64` only has 52 mantissa bits.
+    pub fn getdouble(&self) -> f64 {
+        self.base.getdouble()
+    }
+}
+
 impl fmt::Display for ArithU256 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         // for example, display as hex
@@ -172,82 +199,164 @@ mod arith_u256_exhaustive_tests {
         info!("from() conversions done.");
     }
 
-    /// 2) Test `MulAssign<u32|i64|&ArithU256>`  
     #[traced_test]
     fn test_mul_assign() {
-        info!("Testing ArithU256 MulAssign with u32, i64, &ArithU256...");
+        info!("BEGIN test_mul_assign => verifying ArithU256 mul_assign<u32>, mul_assign<i64>, and mul_assign<&ArithU256> operations...");
 
         // a) mul_assign<u32>
-        let mut x = ArithU256::from(0x1_00000000u64); // => low64=0x00000000_00000001 for 64-bit
+        info!("(a) Testing ArithU256::mul_assign<u32> => x *= 2u32");
+        let mut x = ArithU256::from(0x1_00000000u64);
+        trace!("  x (before) = 0x{:016X} (low64), limbs=[{:08X}, {:08X}, ...]", x.base.low64(), x.base.get_limb(0), x.base.get_limb(1));
         x *= 2u32;
+        trace!("  x (after)  = 0x{:016X} (low64), limbs=[{:08X}, {:08X}, ...]", x.base.low64(), x.base.get_limb(0), x.base.get_limb(1));
         // Now we expect => 2<<32 => that is limb[1]=2
-        assert_eq!(x.base.get_limb(0), 0);
-        assert_eq!(x.base.get_limb(1), 2);
+        assert_eq!(x.base.get_limb(0), 0, "Expected limb[0] = 0 after mul by 2");
+        assert_eq!(x.base.get_limb(1), 2, "Expected limb[1] = 2 after mul by 2");
 
-        // b) mul_assign<i64> => same but with i64
+        // b) mul_assign<i64>
+        info!("(b) Testing ArithU256::mul_assign<i64> => y *= 5i64");
         let mut y = ArithU256::from(1u64);
+        trace!("  y (before) = 0x{:016X} (low64)", y.base.low64());
         y *= 5i64; 
+        trace!("  y (after)  = 0x{:016X} (low64)", y.base.low64());
         // => 5
-        assert_eq!(y.base.get_limb(0), 5);
+        assert_eq!(y.base.get_limb(0), 5, "Expected y to be 5 after mul by 5 i64");
+        for i in 1..8 {
+            assert_eq!(y.base.get_limb(i), 0, "Higher limbs must remain zero");
+        }
 
         // c) mul_assign<&ArithU256>
+        info!("(c) Testing ArithU256::mul_assign<&ArithU256> => a *= b");
         let mut a = ArithU256::from(0xABCDu64);
         let b = ArithU256::from(100u64);
+        trace!("  a (before) = 0x{:016X}, b=0x{:016X}", a.base.low64(), b.base.low64());
         a *= &b;
-        // => 0xABCD * 100 decimal => 43981 * 100 => 4398100 decimal => 0x00431EAC
-        assert_eq!(a.base.get_limb(0), 0x431EAC, "0xABCD * 100 => mismatch in low32");
+        trace!("  a (after)  = 0x{:016X}, limbs=[{:08X}, {:08X}, ...]", a.base.low64(), a.base.get_limb(0), a.base.get_limb(1));
+        // => 0xABCD * 100 decimal => 43981 * 100 => 4398100 => 0x00431C14
+        let got_low = a.base.get_limb(0);
+        let expect_low = 0x431C14; 
+        assert_eq!(got_low, expect_low, "0xABCD * 100 => mismatch in low32");
         for i in 1..8 {
-            assert_eq!(a.base.get_limb(i), 0);
+            assert_eq!(a.base.get_limb(i), 0, "Higher limbs must be zero for this small product");
         }
 
         // Negative i64 => expect panic
+        info!("(d) Testing negative i64 => multiply must panic");
         let mut z = ArithU256::from(123u64);
-        let caught_neg = catch_unwind(AssertUnwindSafe(|| {
+        let caught_neg = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             z *= -3i64; // must panic
         }));
+        trace!("  negative i64 multiply => caught_neg={:?}", caught_neg.is_err());
         assert!(caught_neg.is_err(), "mul_assign negative i64 => should panic");
 
-        info!("MulAssign tests concluded.");
+        info!("MulAssign tests concluded successfully.");
     }
 
-    /// 3) Test `DivAssign<u32|i64|&ArithU256>`  
     #[traced_test]
     fn test_div_assign() {
         info!("Testing ArithU256 DivAssign with u32, i64, &ArithU256...");
 
-        // a) div_assign<u32>
-        let mut x = ArithU256::from(0x1234_5678u64);
-        x /= 0x1234u32; // => 0x5678
-        assert_eq!(
-            x.base.get_limb(0), 0x5678,
-            "Div: 0x12345678 / 0x1234 => mismatch in low32"
-        );
+        // (a) div_assign<u32>
+        {
+            let mut x = ArithU256::from(0x1234_5678u64);
+            let divisor = 0x1234u32;
 
-        // b) div_assign<i64>
-        let mut y = ArithU256::from(1000u64);
-        y /= 10i64; 
-        assert_eq!(y.base.get_limb(0), 100);
+            trace!(
+                "(a) Before: x=0x{:08X}, divisor=0x{:04X}, expecting ~65540 in low-limb",
+                x.base.low64(),
+                divisor
+            );
 
-        // negative => panic
-        let mut z = ArithU256::from(12345u64);
-        let caught_neg = catch_unwind(AssertUnwindSafe(|| {
-            z /= -5i64;
-        }));
-        assert!(caught_neg.is_err(), "div_assign negative i64 => should panic");
+            x /= divisor; // This eventually yields 65540 for the low limb.
 
-        // c) div_assign<&ArithU256>
-        let mut a = ArithU256::from(12345u64);
-        let b = ArithU256::from(5u64);
-        a /= &b; 
-        assert_eq!(a.base.get_limb(0), 2469, "12345 / 5 => 2469 decimal in the low limb");
+            let got = x.base.get_limb(0);
+            trace!(
+                "(a) After: x.low64()=0x{:08X}, got limb[0]=0x{:X} ({})",
+                x.base.low64(),
+                got,
+                got
+            );
 
-        // division by zero => currently the base code panics. Let's confirm.
-        let mut zero_div = ArithU256::from(999u64);
-        let zero_base = ArithU256::from(0u64);
-        let caught_zd = catch_unwind(AssertUnwindSafe(|| {
-            zero_div /= &zero_base; // => panic
-        }));
-        assert!(caught_zd.is_err(), "divide by zero => must panic for ArithU256");
+            // OLD line was: assert_eq!(got, 0x5678);  // now we fix it:
+            assert_eq!(
+                got, 
+                0x10004, // decimal 65540
+                "Div: 0x12345678 / 0x1234 => mismatch in low32"
+            );
+        }
+
+        // (b) div_assign<i64>
+        {
+            let mut y = ArithU256::from(1000u64);
+            let divisor_i64 = 10i64;
+
+            trace!(
+                "(b) Before: y=0x{:08X}, divisor_i64={}, expecting result=100 decimal in low-limb",
+                y.base.low64(),
+                divisor_i64
+            );
+
+            y /= divisor_i64;
+
+            let got = y.base.get_limb(0);
+            trace!(
+                "(b) After: y.low64()=0x{:08X}, got limb[0]={}, expected=100 decimal",
+                y.base.low64(),
+                got
+            );
+
+            assert_eq!(got, 100);
+        }
+
+        // (b2) negative => panic check
+        {
+            let mut z = ArithU256::from(12345u64);
+            let caught_neg = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                // Tracing around the call
+                trace!("(b2) about to do z /= -5i64 => should panic");
+                z /= -5i64;
+            }));
+            assert!(caught_neg.is_err(), "div_assign negative i64 => should panic");
+        }
+
+        // (c) div_assign<&ArithU256>
+        {
+            let mut a = ArithU256::from(12345u64);
+            let b = ArithU256::from(5u64);
+
+            trace!(
+                "(c) Before: a=0x{:08X}, b=0x{:08X}, expecting a=2469 decimal in low-limb afterward",
+                a.base.low64(),
+                b.base.low64(),
+            );
+
+            a /= &b;
+
+            let got = a.base.get_limb(0);
+            trace!(
+                "(c) After: a=0x{:08X}, limb[0]={}, expected=2469",
+                a.base.low64(),
+                got
+            );
+
+            assert_eq!(got, 2469, "12345 / 5 => 2469 decimal in the low limb");
+        }
+
+        // division by zero => confirm panic
+        {
+            let mut zero_div = ArithU256::from(999u64);
+            let zero_base = ArithU256::from(0u64);
+
+            trace!(
+                "About to divide 0x{:08X} by 0 => expecting panic",
+                zero_div.base.low64()
+            );
+
+            let caught_zd = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                zero_div /= &zero_base; // => panic
+            }));
+            assert!(caught_zd.is_err(), "divide by zero => must panic for ArithU256");
+        }
 
         info!("DivAssign tests concluded.");
     }

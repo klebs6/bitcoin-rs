@@ -42,6 +42,12 @@ where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
 impl<const BITS: usize> BaseBlob<BITS> 
 where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
 {
+    /// A pure `const fn` constructor copying in `arr`.
+    /// For BITS=256 => `arr` is 32 bytes, for BITS=160 => 20 bytes, etc.
+    pub const fn from_bytes(arr: [u8; base_blob_width::<BITS>()]) -> Self {
+        Self { data: arr }
+    }
+
     pub fn zero() -> Self {
         // all bytes = 0
         Self {

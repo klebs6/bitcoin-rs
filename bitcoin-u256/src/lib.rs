@@ -8,3 +8,4 @@ x!{compact}
 x!{u256_int}
 x!{u256_serde}
 x!{conversion}
+x!{delegates}

@@ -268,3 +268,4 @@ tracing-setup             = "*"
 tracing-subscriber        = { version = "*", default-features = false, features = ["fmt", "std", "env-filter", "json"] }
 bincode = { version = "*", features = ["serde"] }
 serde_test = "*"
+once_cell = "*"

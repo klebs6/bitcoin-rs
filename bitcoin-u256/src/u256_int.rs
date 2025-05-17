@@ -7,11 +7,20 @@ crate::ix!();
 /// It is an opaque blob of 256 bits and has no integer operations.
 /// Use `arith_uint256` if those are required.
 #[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[allow(non_camel_case_types)]
 pub struct u256 {
     pub(crate) blob: BaseBlob<256>,
 }
 
 impl u256 {
+
+    /// Construct a `u256` from a 32-byte array **at compile time**.
+    pub const fn from_bytes_32(arr: [u8; 32]) -> Self {
+        Self {
+            blob: BaseBlob::<256>::from_bytes(arr),
+        }
+    }
+
     pub fn zero() -> Self {
         trace!("u256::zero => returning default (all 0s)");
         let mut out = Self::default();

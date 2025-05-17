@@ -40,7 +40,7 @@ where [(); BITS / 32 ]:
         self.pn[index] = val;
     }
 
-    pub fn limb_count() -> usize {
+    pub fn limb_count(&self) -> usize {
         BITS / 32
     }
 
@@ -1163,16 +1163,16 @@ mod base_uint_tests {
 
         debug!("zero={:?}",zero);
 
-        assert_eq!(zero.get_hex(), "0");
+        assert_eq!(zero.get_hex(), "0000000000000000");
 
         let one = BaseUInt::<64>::from(1u64);
         debug!("one={:?}",one);
 
-        assert_eq!(one.get_hex(), "1");
+        assert_eq!(one.get_hex(), "0000000000000001");
 
         let ffff = BaseUInt::<64>::from(0xFFFFu64);
         debug!("ffff={:?}",ffff);
-        assert_eq!(ffff.get_hex(), "ffff");
+        assert_eq!(ffff.get_hex(), "000000000000ffff");
 
         // partial upper limb
         let mut x = BaseUInt::<64>::default();
@@ -1199,7 +1199,8 @@ mod base_uint_tests {
         // call set_hex
         x.set_hex(test_str.as_ptr());
         debug!("x={:?}",x);
-        assert_eq!(x.get_hex(), "1234abcd");
+
+        assert_eq!(x.get_hex(), "000000001234abcd");
 
         // set_hex(null)
         x.set_hex(std::ptr::null());
@@ -1216,11 +1217,12 @@ mod base_uint_tests {
         let mut x = BaseUInt::<64>::default();
         x.set_hex_with_str("0xabcdef123456");
         // parse => "0xabcdef123456" => hex => "abcdef123456"
-        assert_eq!(x.get_hex(), "abcdef123456");
+
+        assert_eq!(x.get_hex(), "0000abcdef123456");
 
         // no prefix
         x.set_hex_with_str("beef");
-        assert_eq!(x.get_hex(), "beef");
+        assert_eq!(x.get_hex(), "000000000000beef");
 
         info!("set_hex_with_str tests done");
     }
@@ -1231,7 +1233,8 @@ mod base_uint_tests {
 
         let x = BaseUInt::<64>::from(0x1234_5678u64);
         // => hex => "12345678"
-        assert_eq!(x.to_string(), "12345678");
+
+        assert_eq!(x.to_string(), "0000000012345678");
 
         info!("to_string() tested OK.");
     }

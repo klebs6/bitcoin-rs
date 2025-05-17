@@ -3,13 +3,19 @@ crate::ix!();
 
 impl<const BITS: usize> core::ops::MulAssign<&BaseUInt<BITS>> for BaseUInt<BITS>
 where
-    [(); BITS / 32]: 
+    [(); BITS / 32]:,
 {
     fn mul_assign(&mut self, rhs: &BaseUInt<BITS>) {
-        trace!("BaseUInt<{}>::mul_assign<&Self> => self *= rhs", BITS);
         let limb_count = BITS / 32;
+        trace!(
+            "BaseUInt<{}>::mul_assign => self *= rhs; initial self={:08X?}, rhs={:08X?}",
+            BITS,
+            self.pn,
+            rhs.pn
+        );
 
-        // Temporary 2*N accumulation in 64-bit cells. 
+        // We'll accumulate into a 2*limb_count array of 64-bit partials:
+        // then copy the low `limb_count` portion back into `self`.
         let mut accum = vec![0u64; limb_count * 2];
 
         for i in 0..limb_count {
@@ -17,22 +23,54 @@ where
             let mut carry = 0u64;
             for j in 0..limb_count {
                 let idx = i + j;
-                let sum = accum[idx]
-                    .wrapping_add(a_i.wrapping_mul(rhs.pn[j] as u64))
-                    .wrapping_add(carry);
+                let old_val = accum[idx];
+                let mul_val = a_i.wrapping_mul(rhs.pn[j] as u64);
+                let sum = old_val.wrapping_add(mul_val).wrapping_add(carry);
+
+                // Set accum[idx], update carry
                 accum[idx] = sum & 0xFFFF_FFFF;
-                carry = sum >> 32;
+                carry      = sum >> 32;
+
+                trace!(
+                    "  i={}, j={}, accum[{}]: old=0x{:08X}, a_i=0x{:X}, b_j=0x{:X}, mul=0x{:X}, sum=0x{:X}, new=0x{:08X}, carry=0x{:X}",
+                    i, j, idx, 
+                    (old_val & 0xFFFF_FFFF), 
+                    a_i, rhs.pn[j], 
+                    mul_val, sum, accum[idx], carry
+                );
             }
-            // If there's still carry, place it in accum[i+limb_count], though we only keep low limb_count in final.
-            if (i + limb_count) < accum.len() {
-                accum[i + limb_count] = accum[i + limb_count].wrapping_add(carry);
+
+            // If there's still carry, add it into accum[i+limb_count]
+            let extra_idx = i + limb_count;
+            if extra_idx < accum.len() {
+                let old_val = accum[extra_idx];
+                let sum     = old_val.wrapping_add(carry);
+                accum[extra_idx] = sum & 0xFFFF_FFFF;
+                let leftover = sum >> 32;
+                trace!(
+                    "  carry-out => accum[{}] old=0x{:08X}, sum=0x{:X}, new=0x{:08X}, leftover=0x{:X}",
+                    extra_idx,
+                    (old_val & 0xFFFF_FFFF),
+                    sum,
+                    accum[extra_idx],
+                    leftover
+                );
+                // leftover is lost in mod 2^BITS
             }
         }
 
-        // Now copy the low `limb_count` accum cells back into self.
+        trace!("After i/j loops => accum= [");
+        for (i, val) in accum.iter().enumerate() {
+            trace!("    i={}: 0x{:X}", i, val);
+        }
+        trace!("]");
+
+        // Now copy the low limbs back
         for i in 0..limb_count {
             self.pn[i] = accum[i] as u32;
         }
+
+        trace!("Leaving mul_assign => final self={:08X?}", self.pn);
     }
 }
 
@@ -81,6 +119,33 @@ where
     }
 }
 
+impl<const BITS: usize> MulAssign<u64> for BaseUInt<BITS>
+where
+    [(); BITS / 32]: // ensures BITS is multiple of 32
+{
+    fn mul_assign(&mut self, rhs: u64) {
+        // We'll do a standard 64-bit multiply approach
+        // similar to your existing `MulAssign<u32>` code,
+        // but extended for 64 bits.
+
+        let limb_count = BITS / 32;
+        let mut carry = 0u64;
+
+        for i in 0..limb_count {
+            // Get the current limb as u64, multiply by rhs, add carry
+            let product = (self.pn[i] as u64)
+                .wrapping_mul(rhs)
+                .wrapping_add(carry);
+
+            // Write low 32 bits back to limb
+            self.pn[i] = product as u32;
+
+            // High 32 bits become new carry
+            carry = product >> 32;
+        }
+        // Any final carry is discarded mod 2^BITS
+    }
+}
 #[cfg(test)]
 mod mul_assign_exhaustive_tests {
     use super::*;

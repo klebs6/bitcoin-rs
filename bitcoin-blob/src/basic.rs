@@ -6,6 +6,16 @@ where
     [u8; (BITS % 8) + usize::MAX]: ,
     [(); base_blob_width::<BITS>()]:
 {
+    /// Returns a borrowed slice of all the bytes for read-only access.
+    pub fn as_slice(&self) -> &[u8] {
+        &self.data
+    }
+
+    /// Returns a borrowed slice of all the bytes for mutable access.
+    pub fn as_mut_slice(&mut self) -> &mut [u8] {
+        &mut self.data
+    }
+
     pub fn is_null(&self) -> bool {
         trace!(
             "Checking is_null() on BaseBlob<{}>; data={:X?}",

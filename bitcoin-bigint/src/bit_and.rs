@@ -28,6 +28,27 @@ where
     }
 }
 
+impl<const BITS: usize> core::ops::BitAndAssign<u64> for BaseUInt<BITS>
+where
+    [(); BITS / 32]:,
+{
+    fn bitand_assign(&mut self, b: u64) {
+        // Lower 32 bits of b are ANDed with self.pn[0]
+        self.pn[0] &= (b & 0xffff_ffff) as u32;
+
+        // Next 32 bits of b with self.pn[1], if we have a second limb
+        if BITS / 32 > 1 {
+            self.pn[1] &= ((b >> 32) & 0xffff_ffff) as u32;
+        }
+
+        // Any higher limbs must be ANDed with 0 => effectively become 0
+        for i in 2..(BITS / 32) {
+            self.pn[i] = 0;
+        }
+    }
+}
+
+
 #[cfg(test)]
 mod bitwise_and_exhaustive_tests {
     use super::*;
@@ -258,5 +279,156 @@ mod bitwise_and_exhaustive_tests {
         assert_eq!(c.low64(), exp);
 
         info!("Bitwise AND operator test (64-bit) passed.");
+    }
+
+    /// A trivial LCG for reproducible pseudo-random tests.
+    struct SimpleRng(u64);
+
+    impl SimpleRng {
+        fn new(seed: u64) -> Self {
+            Self(seed)
+        }
+        fn next_u64(&mut self) -> u64 {
+            // linear congruential generator step
+            self.0 = self.0
+                .wrapping_mul(6364136223846793005)
+                .wrapping_add(1);
+            self.0
+        }
+    }
+
+    /// A small helper to get a pretty hex string from a `BaseUInt<BITS>`.
+    fn base_uint_hex<const BITS: usize>(val: &BaseUInt<BITS>) -> String
+    where
+        [(); BITS / 32]:,
+    {
+        val.get_hex()
+    }
+
+    /// Check that `BaseUInt<BITS>::bitand_assign(u64)` behaves as expected in basic edge cases.
+    #[test]
+    fn test_bitand_assign_u64_basics() {
+        // 1) 0 & <any> => 0
+        {
+            let mut x = BaseUInt::<64>::default(); // x=0
+            x &= 0xFFFF_FFFF_FFFF_FFFFu64; // all ones
+            assert_eq!(x.pn[0], 0, "0 & allones => 0, lower-limb");
+            assert_eq!(x.pn[1], 0, "0 & allones => 0, upper-limb");
+        }
+
+        // 2) all-ones & <some mask> => partial
+        {
+            // all-ones in 64 bits => 0xFFFF_FFFF_FFFF_FFFF
+            let mut x = BaseUInt::<64>::default();
+            x.pn[0] = 0xFFFF_FFFF;
+            x.pn[1] = 0xFFFF_FFFF;
+
+            // choose a mask
+            let mask = 0x0000_FFFF_1234_5678u64;
+            x &= mask;
+
+            // let's do the AND in normal 64-bit rust
+            let expected = 0xFFFF_FFFF_FFFF_FFFFu64 & mask;
+
+            // check each limb
+            let low32 = (expected & 0xFFFF_FFFF) as u32;
+            let high32 = ((expected >> 32) & 0xFFFF_FFFF) as u32;
+            assert_eq!(x.pn[0], low32);
+            assert_eq!(x.pn[1], high32);
+        }
+
+        // 3) partial usage in bigger BITS, e.g. 256 bits: (the extra limbs must be zeroed)
+        {
+            let mut x = BaseUInt::<256>::default();
+            // Fill first 3 limbs with random data
+            x.pn[0] = 0xDEAD_BEEF;
+            x.pn[1] = 0xAAAA_5555;
+            x.pn[2] = 0xFF00_FF00;
+            x.pn[3] = 0x1234_5678; // etc
+
+            x &= 0xFFFF_FFFF_0000_1111u64;
+            // This zeroes out limbs[2..], so x.pn[2..] => 0
+            // low limb => 0x0000_1111 & 0xDEAD_BEEF => 0x0000_0???
+            // second limb => 0xFFFF_FFFF & 0xAAAA_5555 => same => 0xAAAA_5555
+            // actually wait, 64 bits => lower 32 => pn[0], next 32 => pn[1], the rest => 0
+            // let's do a direct check:
+
+            let expected64 = (0xFFFF_FFFF_0000_1111u64) & (
+                (x.pn[0] as u64)
+                | ((x.pn[1] as u64) << 32)
+            );
+            let ex_low = (expected64 & 0xFFFF_FFFF) as u32;
+            let ex_high = ((expected64 >> 32) & 0xFFFF_FFFF) as u32;
+
+            // Now x must match those two limbs, plus zeros above
+            assert_eq!(x.pn[0], ex_low);
+            assert_eq!(x.pn[1], ex_high);
+            for i in 2..8 {
+                assert_eq!(x.pn[i], 0);
+            }
+        }
+    }
+
+    /// Random test for `BaseUInt<BITS>::bitand_assign(u64)`.
+    /// We ensure it matches the “mod 2^BITS”  operation
+    /// on each limb for up to 64 bits.
+    #[test]
+    fn test_bitand_assign_u64_random() {
+        let mut rng = SimpleRng::new(0xDEAD_BEEF_1234_5678);
+
+        // We'll do, say, 100 random checks for 64-bit size:
+        for _ in 0..100 {
+            let random_a = rng.next_u64(); 
+            let random_mask = rng.next_u64();
+
+            let mut x = BaseUInt::<64>::from(random_a);
+            // The “expected” is just random_a & random_mask in normal Rust:
+            let expected_64 = random_a & random_mask;
+
+            x &= random_mask; // calls the new bitand_assign(u64)
+            
+            // Now check each limb
+            let low32 = (expected_64 & 0xffff_ffff) as u32;
+            let high32 = ((expected_64 >> 32) & 0xffff_ffff) as u32;
+            assert_eq!(x.pn[0], low32);
+            assert_eq!(x.pn[1], high32);
+        }
+
+        // We can do the same for 256 bits, or 128, etc.
+        // Let's do 20 random checks for 256 bits:
+        for _ in 0..20 {
+            let mut big = BaseUInt::<256>::default();
+            // fill 8 limbs with random
+            for i in 0..8 {
+                big.pn[i] = rng.next_u64() as u32;
+            }
+
+            let mask64 = rng.next_u64();
+
+            // Let's do it manually: the lower 64 bits of `big` get &'ed with mask64,
+            // the rest become zero. We'll do that logic in a local "expected" copy:
+            let mut expected = big.clone();
+
+            // interpret the lower 64 bits from pn[0..2]
+            let orig_low64 = (expected.pn[0] as u64)
+                | ((expected.pn[1] as u64) << 32);
+            let new_low64 = orig_low64 & mask64;
+            expected.pn[0] = (new_low64 & 0xffff_ffff) as u32;
+            expected.pn[1] = ((new_low64 >> 32) & 0xffff_ffff) as u32;
+            // higher limbs => 0
+            for i in 2..8 {
+                expected.pn[i] = 0;
+            }
+
+            // Now do the actual operation
+            let mut actual = big.clone();
+            actual &= mask64;
+
+            // Compare
+            assert_eq!(base_uint_hex(&actual), base_uint_hex(&expected),
+                       "bitand_assign<u64> mismatch in 256-bit random test.\n  big was {},\n  mask64=0x{:016X}",
+                       base_uint_hex(&big),
+                       mask64);
+        }
     }
 }
