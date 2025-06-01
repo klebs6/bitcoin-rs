@@ -1,250 +1,216 @@
 // ---------------- [ File: bitcoin-blob/src/blob.rs ]
 crate::ix!();
 
-/**
-  | Template base class for fixed-sized
-  | opaque blobs.
-  |
-  */
-#[derive(Clone,Debug,Hash)]
-pub struct BaseBlob<const BITS: usize> 
-where [u8; base_blob_width::<BITS>()]:
-{
-    pub(crate) data: [u8; base_blob_width::<BITS>()],
-}
-
-//------------------------------
-unsafe impl<const BITS: usize> Send for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{}
-
-unsafe impl<const BITS: usize> Sync for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{}
-
-//------------------------------
-impl<const BITS: usize> Default for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-
-    /**
-      | construct 0 value by default
-      |
-      */
-    fn default() -> Self {
-    
-        Self {
-            data: [0; base_blob_width::<BITS>()],
+#[macro_export]
+macro_rules! define_base_blob_struct {
+    (
+        $blob_ty:ident,
+        $bits:expr,
+        $bytes:expr
+    ) => {
+        /**
+          | Template base class for fixed-sized
+          | opaque blobs (concretized via macro).
+          |
+        */
+        #[derive(Clone,Debug,Hash)]
+        pub struct $blob_ty {
+            pub(crate) data: [u8; $bytes],
         }
-    }
-}
 
-impl<const BITS: usize> BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-    /// A pure `const fn` constructor copying in `arr`.
-    /// For BITS=256 => `arr` is 32 bytes, for BITS=160 => 20 bytes, etc.
-    pub const fn from_bytes(arr: [u8; base_blob_width::<BITS>()]) -> Self {
-        Self { data: arr }
-    }
+        // Safety as in the original code
+        unsafe impl Send for $blob_ty {}
+        unsafe impl Sync for $blob_ty {}
 
-    pub fn zero() -> Self {
-        // all bytes = 0
-        Self {
-            data: [0; base_blob_width::<BITS>()],
+        impl Default for $blob_ty {
+            fn default() -> Self {
+                Self {
+                    data: [0; $bytes],
+                }
+            }
         }
-    }
 
-    pub fn one() -> Self {
-        // all bytes = 0, except the first byte=1
-        let mut x = Self {
-            data: [0; base_blob_width::<BITS>()],
-        };
-        // We can do this in const fn if BITS>0, but it's stable in modern Rust:
-        x.data[0] = 1;
-        x
+        impl $blob_ty {
+            /// A pure `const fn` constructor copying in `arr`.
+            pub const fn from_bytes(arr: [u8; $bytes]) -> Self {
+                Self { data: arr }
+            }
+
+            pub fn zero() -> Self {
+                Self {
+                    data: [0; $bytes],
+                }
+            }
+
+            pub fn one() -> Self {
+                let mut x = Self {
+                    data: [0; $bytes],
+                };
+                if $bytes > 0 {
+                    x.data[0] = 1;
+                }
+                x
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod base_blob_exhaustive_tests {
     use super::*;
+    use crate::simple_rng::SimpleRng;
+    use tracing::{info, debug, trace};
 
-    /// Test the `base_blob_width` const-fn for some example bit-sizes.
+    /// Test that we get correct `.size()` for each concrete BaseBlob type.
     #[traced_test]
     fn test_base_blob_width_invariants() {
-        info!("Testing base_blob_width for various BITS.");
+        info!("Testing known widths for each base blob type...");
 
-        let w64 = base_blob_width::<64>();
-        trace!("width for 64 bits => {}", w64);
-        assert_eq!(w64, 8, "64 bits => 8 bytes");
+        // 64 bits => 8 bytes
+        assert_eq!(BaseBlob64::default().size(), 8, "BaseBlob64 => 8 bytes");
 
-        let w256 = base_blob_width::<256>();
-        trace!("width for 256 bits => {}", w256);
-        assert_eq!(w256, 32, "256 bits => 32 bytes");
+        // 256 bits => 32 bytes
+        assert_eq!(BaseBlob256::default().size(), 32, "BaseBlob256 => 32 bytes");
 
-        let w8 = base_blob_width::<8>();
-        trace!("width for 8 bits => {}", w8);
-        assert_eq!(w8, 1, "8 bits => 1 byte");
+        // 8 bits => 1 byte
+        assert_eq!(BaseBlob8::default().size(), 1, "BaseBlob8 => 1 byte");
 
-        let w1 = base_blob_width::<1>();
-        trace!("width for 1 bit => {}", w1);
-        assert_eq!(w1, 0, "1 bit => 0 bytes (integer division)");
+        // 128 bits => 16 bytes
+        assert_eq!(BaseBlob128::default().size(), 16, "BaseBlob128 => 16 bytes");
 
-        info!("base_blob_width tests concluded successfully.");
+        // 160 bits => 20 bytes
+        assert_eq!(BaseBlob160::default().size(), 20, "BaseBlob160 => 20 bytes");
+
+        info!("Done checking widths for each base blob type.");
     }
 
-    /// Test Default for various bit sizes, ensuring we get arrays of 0.
+    /// Test the `Default` impl on a few base-blob widths to ensure zeroed arrays.
     #[traced_test]
     fn test_base_blob_default() {
-        info!("Testing `Default` impl for BaseBlob<BITS>.");
+        info!("Testing `Default` for various BaseBlob types.");
 
-        let default64 = BaseBlob::<64>::default();
+        // 64-bit => 8 bytes
+        let default64 = BaseBlob64::default();
         for &b in default64.data.iter() {
-            assert_eq!(b, 0, "All bytes should be zero for default 64-bit blob");
+            assert_eq!(b, 0, "All bytes should be zero for BaseBlob64 default");
         }
 
-        let default256 = BaseBlob::<256>::default();
+        // 256-bit => 32 bytes
+        let default256 = BaseBlob256::default();
         for &b in default256.data.iter() {
-            assert_eq!(b, 0, "All bytes should be zero for default 256-bit blob");
+            assert_eq!(b, 0, "All bytes should be zero for BaseBlob256 default");
         }
 
-        let default8 = BaseBlob::<8>::default();
-        assert_eq!(default8.data.len(), 1, "8 bits => 1 byte array");
+        // 8-bit => 1 byte
+        let default8 = BaseBlob8::default();
+        assert_eq!(default8.data.len(), 1, "BaseBlob8 => data[] length=1");
         assert_eq!(default8.data[0], 0, "All zeros for default 8-bit blob");
+
+        // 128-bit => 16 bytes
+        let default128 = BaseBlob128::default();
+        for &b in default128.data.iter() {
+            assert_eq!(b, 0, "All zeros for default 128-bit blob");
+        }
+
+        // 160-bit => 20 bytes
+        let default160 = BaseBlob160::default();
+        for &b in default160.data.iter() {
+            assert_eq!(b, 0, "All zeros for default 160-bit blob");
+        }
 
         info!("Default creation checks complete.");
     }
 
+    /// Check random comparisons for BaseBlob128 and BaseBlob256
     #[traced_test]
     fn test_eq_ord_random() {
-        use super::*;
-        use core::cmp::Ordering;
-        use tracing::{debug, error, info, trace};
-        info!("Testing Eq/Ord with random BaseBlob data.");
-
+        info!("Testing random Eq/Ord checks for BaseBlob128 and BaseBlob256.");
         let mut rng = SimpleRng::new(0xDEAD_BEEF);
 
-        // We'll do multiple random comparisons for 128 bits and 256 bits.
-        // Because Rust can't infer the const generic from a runtime variable,
-        // we match on bits to pick the correct BaseBlob<B> type.
-        for bits in [128, 256] {
-            info!("Subtest for BITS={}", bits);
+        // Test 128-bit random comparisons
+        for _ in 0..20 {
+            let mut buf1 = [0u8; 16];
+            let mut buf2 = [0u8; 16];
+            rng.fill_bytes(&mut buf1);
+            rng.fill_bytes(&mut buf2);
 
-            // We'll run 20 trials for each size
-            for _i in 0..20 {
-                // First, fill random buffers large enough for 256 bits (32 bytes).
-                // Then we’ll just slice off the exact length for 128 or 256 below.
-                let mut buf1 = vec![0u8; 32];
-                let mut buf2 = vec![0u8; 32];
+            let mut blob1 = BaseBlob128::default();
+            blob1.data.copy_from_slice(&buf1);
+            let mut blob2 = BaseBlob128::default();
+            blob2.data.copy_from_slice(&buf2);
 
-                rng.fill_bytes(&mut buf1);
-                rng.fill_bytes(&mut buf2);
+            let eq_std = (buf1 == buf2);
+            let eq_blob = (blob1 == blob2);
+            assert_eq!(eq_std, eq_blob, "Eq mismatch in 128-bit random test");
 
-                // For 128 bits => 16 bytes, for 256 bits => 32 bytes
-                let width = bits / 8; 
-                let data1 = &buf1[..width];
-                let data2 = &buf2[..width];
-
-                // Now we pick the type at compile time via match:
-                match bits {
-                    128 => {
-                        let blob1: BaseBlob<128> = make_blob::<128>(data1);
-                        let blob2: BaseBlob<128> = make_blob::<128>(data2);
-
-                        // Compare them
-                        let eq_std = (data1 == data2);
-                        let eq_blob = (blob1 == blob2);
-                        assert_eq!(
-                            eq_std, eq_blob,
-                            "Eq mismatch: BITS={}, data1={:X?}, data2={:X?}",
-                            bits, data1, data2
-                        );
-
-                        let cmp_std = data1.cmp(data2);
-                        let cmp_blob = blob1.cmp(&blob2);
-                        assert_eq!(
-                            cmp_std, cmp_blob,
-                            "Ordering mismatch: BITS={}, data1={:X?}, data2={:X?}",
-                            bits, data1, data2
-                        );
-                    }
-                    256 => {
-                        let blob1: BaseBlob<256> = make_blob::<256>(data1);
-                        let blob2: BaseBlob<256> = make_blob::<256>(data2);
-
-                        let eq_std = (data1 == data2);
-                        let eq_blob = (blob1 == blob2);
-                        assert_eq!(
-                            eq_std, eq_blob,
-                            "Eq mismatch: BITS={}, data1={:X?}, data2={:X?}",
-                            bits, data1, data2
-                        );
-
-                        let cmp_std = data1.cmp(data2);
-                        let cmp_blob = blob1.cmp(&blob2);
-                        assert_eq!(
-                            cmp_std, cmp_blob,
-                            "Ordering mismatch: BITS={}, data1={:X?}, data2={:X?}",
-                            bits, data1, data2
-                        );
-                    }
-                    _ => {
-                        panic!("Unsupported bits={}", bits);
-                    }
-                }
-            }
+            let cmp_std = buf1.cmp(&buf2);
+            let cmp_blob = blob1.cmp(&blob2);
+            assert_eq!(cmp_std, cmp_blob, "Ord mismatch in 128-bit random test");
         }
 
-        info!("Eq and Ord random tests completed successfully.");
+        // Test 256-bit random comparisons
+        for _ in 0..20 {
+            let mut buf1 = [0u8; 32];
+            let mut buf2 = [0u8; 32];
+            rng.fill_bytes(&mut buf1);
+            rng.fill_bytes(&mut buf2);
+
+            let mut blob1 = BaseBlob256::default();
+            blob1.data.copy_from_slice(&buf1);
+            let mut blob2 = BaseBlob256::default();
+            blob2.data.copy_from_slice(&buf2);
+
+            let eq_std = (buf1 == buf2);
+            let eq_blob = (blob1 == blob2);
+            assert_eq!(eq_std, eq_blob, "Eq mismatch in 256-bit random test");
+
+            let cmp_std = buf1.cmp(&buf2);
+            let cmp_blob = blob1.cmp(&blob2);
+            assert_eq!(cmp_std, cmp_blob, "Ord mismatch in 256-bit random test");
+        }
+
+        info!("Random eq/ord tests completed for 128-bit & 256-bit.");
     }
 
-    /// This test specifically checks that "all ones" vs. "all zeros" ordering, plus
-    /// a few partial checks, is correct for BITS=256.
+    /// Check extremes for 256 bits (zero vs. all-ones).
     #[traced_test]
     fn test_base_blob_cmp_extremes_256() {
-        info!("Testing extremes: all-zeros vs. all-ones for BITS=256.");
+        info!("Testing extremes: all-zeros vs. all-ones for BaseBlob256.");
 
-        let mut zero_blob = BaseBlob::<256>::default();
-        let mut ones_blob = BaseBlob::<256>::default();
+        let mut zero_blob = BaseBlob256::default();
+        let mut ones_blob = BaseBlob256::default();
         for b in ones_blob.data.iter_mut() {
             *b = 0xFF;
         }
 
-        // zero vs. ones => zero < ones
-        assert!(zero_blob < ones_blob, "All-zero < all-ones for 256 bits");
-        assert!(ones_blob > zero_blob, "All-ones > all-zero for 256 bits");
-        assert_ne!(zero_blob, ones_blob, "Zero != ones, obviously");
+        assert!(zero_blob < ones_blob, "All-zero < all-ones in 256 bits");
+        assert!(ones_blob > zero_blob, "All-ones > all-zero in 256 bits");
+        assert_ne!(zero_blob, ones_blob, "Zero != ones obviously.");
 
-        // flip a single byte in zero_blob to 0xFF => now compare
-        zero_blob.data[31] = 0xFF; // the last byte (big-end? little-end? doesn't matter, we just want difference)
-        assert!(zero_blob < ones_blob, "A single trailing 0xFF is still < 32 x 0xFF for BITS=256");
-
-        // make them identical => eq
+        // Make them identical => eq
         zero_blob.data.copy_from_slice(&ones_blob.data);
-        assert!(zero_blob == ones_blob, "Now identical => eq for 256 bits");
-        info!("Checked extremes for BITS=256 comparisons successfully.");
+        assert_eq!(zero_blob, ones_blob, "Now identical => eq for 256 bits");
+        info!("Checked extremes for BaseBlob256 comparisons successfully.");
     }
 
-    /// Check that BaseBlob<BITS> is `Send + Sync` in a practical sense by moving it between threads.
+    /// Check that `BaseBlob64` is Send+Sync by sending it to another thread
     #[traced_test]
     fn test_base_blob_send_sync_64() {
-        info!("Testing that BaseBlob<64> can be sent across threads (Send + Sync).");
+        info!("Testing that BaseBlob64 can be sent across threads (Send + Sync).");
 
-        let mut some_blob = BaseBlob::<64>::default();
-        // fill it with something
+        let mut some_blob = BaseBlob64::default();
         some_blob.data.copy_from_slice(&[1,2,3,4,5,6,7,8]);
 
-        // Move it into a closure, spawn a thread, move it back
+        // Move it into a closure, spawn, then get it back
         let handle = std::thread::spawn(move || {
             debug!("Thread: got the blob => data={:X?}", some_blob.data);
             some_blob
         });
 
         let returned = handle.join().expect("Thread panicked?");
-        debug!("test: returned from thread => data={:X?}", returned.data);
+        debug!("test: returned => data={:X?}", returned.data);
         assert_eq!(&returned.data[..8], &[1,2,3,4,5,6,7,8],
-                   "Should match the data we initially set");
-        info!("Send+Sync test for 64-bit succeeded.");
+            "Should match the data we initially set");
+        info!("Send+Sync test for BaseBlob64 succeeded.");
     }
 }

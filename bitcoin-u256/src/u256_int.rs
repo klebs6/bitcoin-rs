@@ -9,7 +9,7 @@ crate::ix!();
 #[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[allow(non_camel_case_types)]
 pub struct u256 {
-    pub(crate) blob: BaseBlob<256>,
+    pub(crate) blob: BaseBlob256,
 }
 
 impl u256 {
@@ -17,7 +17,7 @@ impl u256 {
     /// Construct a `u256` from a 32-byte array **at compile time**.
     pub const fn from_bytes_32(arr: [u8; 32]) -> Self {
         Self {
-            blob: BaseBlob::<256>::from_bytes(arr),
+            blob: BaseBlob256::from_bytes(arr),
         }
     }
 

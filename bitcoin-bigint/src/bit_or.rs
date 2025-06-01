@@ -1,47 +1,37 @@
 // ---------------- [ File: bitcoin-bigint/src/bit_or.rs ]
 crate::ix!();
 
-impl<const BITS: usize> BitOrAssign<&BaseUInt<BITS>> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    /// Bitwise OR assignment: `self |= other`
-    #[inline]
-    fn bitor_assign(&mut self, b: &BaseUInt<BITS>) {
-        for i in 0..(BITS / 32) {
-            self.pn[i] |= b.pn[i];
+#[macro_export]
+macro_rules! define_baseuint_bitor {
+    ($uint_type:ident, $bits:expr, $limbs:expr) => {
+
+        impl core::ops::BitOrAssign<&$uint_type> for $uint_type {
+            #[inline]
+            fn bitor_assign(&mut self, b: &$uint_type) {
+                for i in 0..$limbs {
+                    self.pn[i] |= b.pn[i];
+                }
+            }
         }
-    }
-}
 
-impl<const BITS: usize> BitOrAssign<u64> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    /// Bitwise OR assignment with a 64-bit integer: `self |= some_u64`
-    /// The low limb gets bits [31:0], next limb [63:32].
-    #[inline]
-    fn bitor_assign(&mut self, b: u64) {
-        // limb 0 gets the lower 32 bits of `b`
-        self.pn[0] |= (b & 0xffff_ffff) as u32;
-        // limb 1 gets the higher 32 bits of `b`
-        if BITS / 32 > 1 {
-            self.pn[1] |= ((b >> 32) & 0xffff_ffff) as u32;
+        impl core::ops::BitOrAssign<u64> for $uint_type {
+            #[inline]
+            fn bitor_assign(&mut self, b: u64) {
+                self.pn[0] |= (b & 0xffff_ffff) as u32;
+                if $limbs > 1 {
+                    self.pn[1] |= ((b >> 32) & 0xffff_ffff) as u32;
+                }
+            }
         }
-    }
-}
 
-// Bitwise OR (self | &other => new BaseUInt)
-impl<const BITS: usize> BitOr<&BaseUInt<BITS>> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    type Output = BaseUInt<BITS>;
-
-    fn bitor(self, other: &BaseUInt<BITS>) -> Self::Output {
-        let mut ret = self.clone();
-        ret |= other;
-        ret
+        impl core::ops::BitOr<&$uint_type> for $uint_type {
+            type Output = $uint_type;
+            fn bitor(self, other: &$uint_type) -> Self::Output {
+                let mut ret = self.clone();
+                ret |= other;
+                ret
+            }
+        }
     }
 }
 
@@ -59,7 +49,7 @@ mod base_uint_bitor_exhaustive_tests {
     fn test_bitor_32_bits_edge_cases() {
         info!("Testing bitwise OR (`|=`) for 32-bit BaseUInt edge cases.");
 
-        type U32 = BaseUInt<32>;
+        type U32 = BaseUInt32;
         // We only have 1 limb: pn[0].
 
         // 1) 0 OR 0 => 0
@@ -99,7 +89,7 @@ mod base_uint_bitor_exhaustive_tests {
     fn test_bitor_64_bits_edge_cases() {
         info!("Testing bitwise OR for 64-bit BaseUInt edge cases.");
 
-        type U64B = BaseUInt<64>;
+        type U64B = BaseUInt64;
 
         // 1) 0 OR 0 => 0
         let mut x = U64B::default();
@@ -146,7 +136,7 @@ mod base_uint_bitor_exhaustive_tests {
     fn test_bitor_256_bits_edge_cases() {
         info!("Testing bitwise OR for 256-bit BaseUInt edge cases.");
 
-        type U256 = BaseUInt<256>;
+        type U256 = BaseUInt256;
 
         // 1) 0 OR 0 => 0
         let mut x = U256::default();
@@ -204,8 +194,8 @@ mod base_uint_bitor_exhaustive_tests {
             let b_val = rng.next_u64();
             let expected64 = a_val | b_val;
 
-            // build BaseUInt<64> from a_val
-            let mut a_bu = BaseUInt::<64>::default();
+            // build BaseUInt64 from a_val
+            let mut a_bu = BaseUInt64::default();
             a_bu.pn[0] = (a_val & 0xFFFF_FFFF) as u32;
             a_bu.pn[1] = ((a_val >> 32) & 0xFFFF_FFFF) as u32;
             // do OR with b_val
@@ -232,7 +222,7 @@ mod base_uint_bitor_exhaustive_tests {
             let r2 = a2 | b2;
             let r3 = a3 | b3;
 
-            let mut a_bu = BaseUInt::<256>::default();
+            let mut a_bu = BaseUInt256::default();
             a_bu.pn[0] = (a0 & 0xFFFF_FFFF) as u32;
             a_bu.pn[1] = ((a0 >> 32) & 0xFFFF_FFFF) as u32;
             a_bu.pn[2] = (a1 & 0xFFFF_FFFF) as u32;
@@ -242,7 +232,7 @@ mod base_uint_bitor_exhaustive_tests {
             a_bu.pn[6] = (a3 & 0xFFFF_FFFF) as u32;
             a_bu.pn[7] = ((a3 >> 32) & 0xFFFF_FFFF) as u32;
 
-            let mut b_bu = BaseUInt::<256>::default();
+            let mut b_bu = BaseUInt256::default();
             b_bu.pn[0] = (b0 & 0xFFFF_FFFF) as u32;
             b_bu.pn[1] = ((b0 >> 32) & 0xFFFF_FFFF) as u32;
             b_bu.pn[2] = (b1 & 0xFFFF_FFFF) as u32;
@@ -276,12 +266,12 @@ mod base_uint_bitor_exhaustive_tests {
 
         // 1) 64 bits => x=0xFFFF_0000, y=0x1234_5678 => z=(x|y)=0xFFFF_5678
         let x = {
-            let mut tmp = BaseUInt::<64>::default();
+            let mut tmp = BaseUInt64::default();
             tmp.pn[0] = 0xFFFF_0000;
             tmp
         };
         let y = {
-            let mut tmp = BaseUInt::<64>::default();
+            let mut tmp = BaseUInt64::default();
             tmp.pn[0] = 0x1234_5678;
             tmp
         };
@@ -291,9 +281,9 @@ mod base_uint_bitor_exhaustive_tests {
 
         // 2) 32 bits => x=0xA5A5_A5A5, y=0x0F0F_0F0F => => z => 0xAFAF_AFAF
         {
-            let mut x32 = BaseUInt::<32>::default();
+            let mut x32 = BaseUInt32::default();
             x32.pn[0] = 0xA5A5_A5A5;
-            let mut y32 = BaseUInt::<32>::default();
+            let mut y32 = BaseUInt32::default();
             y32.pn[0] = 0x0F0F_0F0F;
             let z32 = x32 | &y32;
             assert_eq!(z32.pn[0], 0xAFAF_AFAF);

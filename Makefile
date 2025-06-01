@@ -27,6 +27,7 @@ TEST  := test
 ACTIVE := bitcoin-network
 ACTIVE := bitcoin-u256
 #ACTIVE := bitcoin-blob
+#ACTIVE := bitcoin-log
 #ACTIVE := bitcoin-bigint
 
 #ACTIVE := bitcoin-client-ui

@@ -1,19 +1,20 @@
 // ---------------- [ File: bitcoin-bigint/src/from_u64.rs ]
 crate::ix!();
 
-impl<const BITS: usize> From<u64> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    /// Creates a BaseUInt from a 64-bit value, putting the low 32 bits in pn[0],
-    /// the high 32 bits in pn[1], and 0 in the rest.
-    fn from(value: u64) -> Self {
-        let mut ret = Self::default();
-        ret.pn[0] = (value & 0xffff_ffff) as u32;
-        if BITS / 32 > 1 {
-            ret.pn[1] = ((value >> 32) & 0xffff_ffff) as u32;
+#[macro_export]
+macro_rules! define_baseuint_from_u64 {
+
+    ($uint_type:ident, $bits:expr, $limbs:expr) => {
+        impl From<u64> for $uint_type {
+            fn from(value: u64) -> Self {
+                let mut ret = Self::default();
+                ret.pn[0] = (value & 0xffff_ffff) as u32;
+                if $limbs > 1 {
+                    ret.pn[1] = ((value >> 32) & 0xffff_ffff) as u32;
+                }
+                ret
+            }
         }
-        ret
     }
 }
 
@@ -25,9 +26,9 @@ mod base_uint_from_u64_exhaustive_tests {
     /// We'll check 32-bit, 64-bit, and 256-bit variants, plus random coverage.
     #[traced_test]
     fn test_from_u64_32_bits_edge_cases() {
-        info!("Testing From<u64> for BaseUInt<32> edge cases.");
+        info!("Testing From<u64> for BaseUInt32 edge cases.");
 
-        type U32 = BaseUInt<32>; // single 32-bit limb
+        type U32 = BaseUInt32; // single 32-bit limb
 
         // 1) 0 => should store 0 in pn[0]
         let x = U32::from(0u64);
@@ -55,9 +56,9 @@ mod base_uint_from_u64_exhaustive_tests {
 
     #[traced_test]
     fn test_from_u64_64_bits_edge_cases() {
-        info!("Testing From<u64> for BaseUInt<64> edge cases.");
+        info!("Testing From<u64> for BaseUInt64 edge cases.");
 
-        type U64B = BaseUInt<64>;
+        type U64B = BaseUInt64;
 
         // 1) 0 => => [0, 0]
         let x = U64B::from(0u64);
@@ -85,9 +86,9 @@ mod base_uint_from_u64_exhaustive_tests {
 
     #[traced_test]
     fn test_from_u64_256_bits_edge_cases() {
-        info!("Testing From<u64> for BaseUInt<256> edge cases.");
+        info!("Testing From<u64> for BaseUInt256 edge cases.");
 
-        type U256 = BaseUInt<256>;
+        type U256 = BaseUInt256;
 
         // 1) 0 => all limbs 0
         let x = U256::from(0u64);
@@ -127,7 +128,7 @@ mod base_uint_from_u64_exhaustive_tests {
 
         let mut rng = SimpleLCG::new(0xDEAD_BEEF_CAFE_BABE);
 
-        // We'll do 50 random 64-bit values, parse them into BaseUInt<32>, <64>, <256>, then check:
+        // We'll do 50 random 64-bit values, parse them into BaseUInt32, <64>, <256>, then check:
         //  - For 32 bits, only the low 32 bits match
         //  - For 64 bits, the entire value is matched
         //  - For 256 bits, entire value matched plus the rest of limbs=0
@@ -136,18 +137,18 @@ mod base_uint_from_u64_exhaustive_tests {
             let val = rng.next_u64();
 
             // For 32 bits => only low 32 bits matter
-            let x32 = BaseUInt::<32>::from(val);
+            let x32 = BaseUInt32::from(val);
             let x32_low = x32.pn[0];
             let expected_32 = (val & 0xFFFF_FFFF) as u32;
             assert_eq!(x32_low, expected_32, "32-bit truncated from 0x{:016X}", val);
 
             // For 64 bits => should store entire val
-            let x64 = BaseUInt::<64>::from(val);
+            let x64 = BaseUInt64::from(val);
             let re64 = ((x64.pn[1] as u64) << 32) | (x64.pn[0] as u64);
             assert_eq!(re64, val, "64-bit exact parse mismatch for 0x{:016X}", val);
 
             // For 256 bits => store the entire val in the first two limbs, rest = 0
-            let x256 = BaseUInt::<256>::from(val);
+            let x256 = BaseUInt256::from(val);
             let re256_low = ((x256.pn[1] as u64) << 32) | (x256.pn[0] as u64);
             assert_eq!(re256_low, val, "256-bit parse mismatch for 0x{:016X}", val);
             for i in 2..8 {

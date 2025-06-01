@@ -1,90 +1,75 @@
 // ---------------- [ File: bitcoin-bigint/src/div_assign.rs ]
 crate::ix!();
 
-impl<const BITS: usize> BaseUInt<BITS> 
-where
-    [(); BITS / 32]:
-{
-    pub fn is_null(&self) -> bool {
-        for &limb in &self.pn {
-            if limb != 0 {
-                return false;
+#[macro_export]
+macro_rules! define_baseuint_divassign {
+
+    ($uint_type:ident, $bits:expr, $limbs:expr) => {
+
+        impl $uint_type {
+            pub fn is_null(&self) -> bool {
+                for &limb in &self.pn {
+                    if limb != 0 {
+                        return false;
+                    }
+                }
+                true
+            }
+
+            pub fn set_null(&mut self) {
+                for limb in &mut self.pn {
+                    *limb = 0;
+                }
+            }
+
+            fn div_assign_big(&mut self, divisor: &Self) {
+                trace!(
+                    "{}::div_assign_big => self /= divisor (shift-sub approach). BITS={}",
+                    stringify!($uint_type),
+                    $bits
+                );
+
+                if divisor.is_null() {
+                    panic!("Division by zero in BaseUInt::div_assign_big");
+                }
+
+                if *self < *divisor {
+                    self.set_null();
+                    return;
+                }
+
+                let mut quotient = Self::default();
+                let mut remainder = self.clone();
+
+                let shift = (remainder.bits() as i32) - (divisor.bits() as i32);
+                if shift < 0 {
+                    self.set_null();
+                    return;
+                }
+                let mut shifted_div = divisor.clone();
+                shifted_div <<= shift as u32;
+                let mut s = shift;
+                while s >= 0 {
+                    if remainder >= shifted_div {
+                        remainder.sub_assign(&shifted_div);
+                        let limb_index = (s / 32) as usize;
+                        let bit_index = s as u32 % 32;
+                        quotient.pn[limb_index] |= 1 << bit_index;
+                    }
+                    shifted_div >>= 1;
+                    s -= 1;
+                }
+
+                *self = quotient;
             }
         }
-        true
-    }
 
-    pub fn set_null(&mut self) {
-        for limb in &mut self.pn {
-            *limb = 0;
-        }
-    }
-}
-
-impl<const BITS: usize> DivAssign<&BaseUInt<BITS>> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    /// self /= other, using shift-based long division.
-    #[inline]
-    fn div_assign(&mut self, other: &Self) {
-        // We simply use the "div_assign_big" approach.  
-        self.div_assign_big(other);
-    }
-}
-
-impl<const BITS: usize> BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    fn div_assign_big(&mut self, divisor: &Self) {
-        trace!(
-            "BaseUInt<{}>::div_assign_big => self /= divisor (shift-sub approach).",
-            BITS
-        );
-
-        if divisor.is_null() {
-            panic!("Division by zero in BaseUInt::div_assign_big");
-        }
-
-        // If self < divisor => result = 0
-        if *self < *divisor {
-            self.set_null();
-            return;
-        }
-
-        let mut quotient = Self::default();
-        let mut remainder = self.clone();
-
-        // 1) Compute how many bits we need to shift the divisor to align with remainder’s top bit
-        let shift = (remainder.bits() as i32) - (divisor.bits() as i32);
-        if shift < 0 {
-            // remainder < divisor => result=0
-            self.set_null();
-            return;
-        }
-
-        // 2) Temporarily left-shift a copy of divisor by `shift` bits
-        let mut shifted_div = divisor.clone();
-        shifted_div <<= shift as u32;
-
-        // 3) From high down to 0, subtract if remainder >= that shifted_div
-        let mut s = shift;
-        while s >= 0 {
-            if remainder >= shifted_div {
-                remainder.sub_assign(&shifted_div);
-                // set the bit s in quotient
-                let limb_index = (s / 32) as usize;
-                let bit_index  = s as u32 % 32;
-                quotient.pn[limb_index] |= 1 << bit_index;
+        impl core::ops::DivAssign<&$uint_type> for $uint_type {
+            #[inline]
+            fn div_assign(&mut self, other: &Self) {
+                self.div_assign_big(other);
             }
-            // shift divisor right by 1
-            shifted_div >>= 1;
-            s -= 1;
         }
-
-        // 4) Copy the quotient result back into self
-        *self = quotient;
     }
 }
 
@@ -96,7 +81,7 @@ mod div_assign_exhaustive_tests {
     fn test_div_assign_basic_64_bits() {
         info!("Testing basic division (div_assign) in 64-bit BaseUInt with direct checks.");
 
-        type U64 = BaseUInt<64>;
+        type U64 = BaseUInt64;
 
         // 1) Zero / anything_nonzero => zero
         let mut x = U64::default(); // 0
@@ -143,7 +128,7 @@ mod div_assign_exhaustive_tests {
         // We just pick a 64-bit seed that won't overflow:
         let mut rng = SimpleLCG::new(0x1357_9BDF_0246_8ABC);
 
-        type U64 = BaseUInt<64>;
+        type U64 = BaseUInt64;
 
         for i in 0..25 {
             // We'll create two random 64-bit values, A and B, ensuring B != 0.
@@ -182,7 +167,7 @@ mod div_assign_exhaustive_tests {
     fn test_div_assign_256_bits_edge_cases() {
         info!("Testing div_assign with 256-bit BaseUInt for certain edge cases.");
 
-        type U256 = BaseUInt<256>;
+        type U256 = BaseUInt256;
 
         // 1) Zero / any_nonzero => zero
         let mut z = U256::default();
@@ -229,7 +214,7 @@ mod div_assign_exhaustive_tests {
     fn test_div_assign_256_bits_random() {
         info!("Testing random 256-bit div_assign, comparing partial results to truncated 2^256 logic.");
 
-        type U256 = BaseUInt<256>;
+        type U256 = BaseUInt256;
         let mut rng = SimpleLCG::new(0xAABB_CCdd_0011_2233);
 
         for i in 0..30 {

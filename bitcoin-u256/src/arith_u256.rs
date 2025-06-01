@@ -2,12 +2,12 @@
 crate::ix!();
 
 /**
-  | 256-bit unsigned big integer wrapper around BaseUInt<256>.
+  | 256-bit unsigned big integer wrapper around BaseUInt256.
   |
   */
 #[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ArithU256 {
-    pub(crate) base: BaseUInt<256>,
+    pub(crate) base: BaseUInt256,
 }
 
 impl ArithU256 {
@@ -62,9 +62,9 @@ impl ShrAssign<u32> for ArithU256 {
 unsafe impl Send for ArithU256 {}
 unsafe impl Sync for ArithU256 {}
 
-impl From<&BaseUInt<256>> for ArithU256 {
-    fn from(b: &BaseUInt<256>) -> Self {
-        trace!("ArithU256::from<&BaseUInt<256>> => copying base data");
+impl From<&BaseUInt256> for ArithU256 {
+    fn from(b: &BaseUInt256) -> Self {
+        trace!("ArithU256::from<&BaseUInt256> => copying base data");
         Self { base: b.clone() }
     }
 }
@@ -73,7 +73,7 @@ impl From<u64> for ArithU256 {
     fn from(b: u64) -> Self {
         trace!("ArithU256::from<u64> => b=0x{:X}", b);
         Self {
-            base: BaseUInt::<256>::from(b),
+            base: BaseUInt256::from(b),
         }
     }
 }
@@ -82,7 +82,7 @@ impl From<&str> for ArithU256 {
     fn from(str_: &str) -> Self {
         trace!("ArithU256::from<&str> => '{}'", str_);
         Self {
-            base: BaseUInt::<256>::from(str_),
+            base: BaseUInt256::from(str_),
         }
     }
 }
@@ -118,8 +118,8 @@ impl DivAssign<u32> for ArithU256 {
     #[inline]
     fn div_assign(&mut self, b32: u32) {
         trace!("ArithU256::div_assign<u32> => b32={}", b32);
-        // Convert b32 to a BaseUInt<256>, then div_assign
-        let tmp = BaseUInt::<256>::from(b32 as u64);
+        // Convert b32 to a BaseUInt256, then div_assign
+        let tmp = BaseUInt256::from(b32 as u64);
         self.base /= &tmp;
     }
 }
@@ -131,7 +131,7 @@ impl DivAssign<i64> for ArithU256 {
 
         // We assume b64 >= 0; negative => panic.
         let as_u32: u32 = b64.try_into().expect("Cannot divide by a negative i64 in ArithU256");
-        let tmp = BaseUInt::<256>::from(as_u32 as u64);
+        let tmp = BaseUInt256::from(as_u32 as u64);
         self.base /= &tmp;
     }
 }
@@ -168,17 +168,17 @@ mod arith_u256_exhaustive_tests {
         }
     }
 
-    /// 1) Test `From<&BaseUInt<256>>`, `From<u64>`, `From<&str>`
+    /// 1) Test `From<&BaseUInt256>`, `From<u64>`, `From<&str>`
     #[traced_test]
     fn test_from_conversions() {
         info!("Testing ArithU256::from conversions...");
 
-        // from BaseUInt<256>
-        let mut base = BaseUInt::<256>::default();
+        // from BaseUInt256
+        let mut base = BaseUInt256::default();
         base.set_limb(0, 0x1234_5678);
         base.set_limb(1, 0xFFFF_FFFF);
         let a1 = ArithU256::from(&base);
-        assert_eq!(a1.base, base, "ArithU256::from(&BaseUInt<256>) => mismatch");
+        assert_eq!(a1.base, base, "ArithU256::from(&BaseUInt256) => mismatch");
 
         // from u64
         let a2 = ArithU256::from(0xABCD_1234_5678_0000u64);

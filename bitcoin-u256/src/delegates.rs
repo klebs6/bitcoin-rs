@@ -6,7 +6,7 @@ impl Not for ArithU256 {
     fn not(self) -> ArithU256 {
         // bitwise NOT => ~self
         let mut ret = self.clone();
-        // We rely on `BaseUInt<256>`'s `Not` (which returns a new `BaseUInt`).
+        // We rely on `BaseUInt256`'s `Not` (which returns a new `BaseUInt`).
         // But we want to do it in-place, so:
         ret.base = !ret.base;
         ret
@@ -20,7 +20,7 @@ impl BitXor for ArithU256 {
     type Output = ArithU256;
 
     fn bitxor(mut self, rhs: ArithU256) -> ArithU256 {
-        // We have `impl BitXorAssign<&BaseUInt<256>> for BaseUInt<256>`,
+        // We have `impl BitXorAssign<&BaseUInt256> for BaseUInt256`,
         // so let's call `self.base ^= &rhs.base`:
         self.base ^= &rhs.base;
         self
@@ -35,7 +35,7 @@ impl BitXorAssign for ArithU256 {
 
 impl BitXorAssign<u64> for ArithU256 {
     fn bitxor_assign(&mut self, rhs: u64) {
-        // Self::base is a BaseUInt<256>, which holds 8 limbs of 32 bits each
+        // Self::base is a BaseUInt256, which holds 8 limbs of 32 bits each
         // We want to XOR the lower 32 bits with self.base.pn[0] and the upper 32 bits with self.base.pn[1].
         // Everything else remains unchanged.
         let lower_32 = (rhs & 0xFFFF_FFFF) as u32;
@@ -142,7 +142,7 @@ impl Add<&ArithU256> for ArithU256 {
     type Output = ArithU256;
 
     fn add(mut self, rhs: &ArithU256) -> ArithU256 {
-        self.base += &rhs.base; // uses BaseUInt<256>::AddAssign<&BaseUInt<256>>
+        self.base += &rhs.base; // uses BaseUInt256::AddAssign<&BaseUInt256>
         self
     }
 }
@@ -157,7 +157,7 @@ impl AddAssign<&ArithU256> for ArithU256 {
 }
 impl AddAssign<u64> for ArithU256 {
     fn add_assign(&mut self, rhs: u64) {
-        self.base += rhs; // BaseUInt<256> has AddAssign<u64>
+        self.base += rhs; // BaseUInt256 has AddAssign<u64>
     }
 }
 

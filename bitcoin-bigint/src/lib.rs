@@ -26,3 +26,6 @@ x!{shr_assign}
 x!{sub_assign}
 x!{dump_bits}
 x!{simple_lcg}
+x!{impls}
+x!{from_limbs}
+x!{round_trip_hex}

@@ -11,4 +11,5 @@ x!{impl_iter}
 x!{ord_eq}
 x!{serialization}
 x!{simple_rng}
-x!{mock}
+x!{base_blob}
+x!{nibble_from_hexchar}

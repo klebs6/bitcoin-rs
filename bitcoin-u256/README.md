@@ -33,7 +33,7 @@ The `ArithU256` type represents a 256-bit unsigned big integer that supports ari
 ```rust
 #[derive(Default,Debug,Clone,PartialEq,Eq,PartialOrd,Ord)]
 pub struct ArithU256 {
-    base: BaseUInt<256>,
+    base: BaseUInt256,
 }
 
 impl ArithU256 {

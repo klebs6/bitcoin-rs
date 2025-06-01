@@ -1,120 +1,188 @@
 // ---------------- [ File: bitcoin-bigint/src/shl.rs ]
 crate::ix!();
 
-/// For reference-based shifts, we clamp the shift to BITS (i.e. if shift > BITS, it's all zero).
-impl<const BITS: usize> core::ops::Shl<&BaseUInt<BITS>> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    type Output = BaseUInt<BITS>;
+// ---------------------------------------------------------------------------
+// 7) Macro for Shl / ShlAssign and Shr / ShrAssign
+// ---------------------------------------------------------------------------
+#[macro_export]
+macro_rules! define_base_uint_shl_shr {
+    ($name:ident, $bits:expr, $limbs:expr) => {
 
-    fn shl(self, rhs: &BaseUInt<BITS>) -> Self::Output {
-        // We'll interpret only the lower 32 bits of rhs for the shift amount, then clamp to BITS
-        let shift_raw = rhs.pn[0];
-        let shift_bits = shift_raw.min(BITS as u32);
+        // Shl<&$name>
+        impl core::ops::Shl<&$name> for $name {
+            type Output = $name;
+            fn shl(self, rhs: &Self) -> Self::Output {
+                let shift_raw = rhs.pn[0];
+                let shift_bits = shift_raw.min($bits as u32);
+                let mut ret = self.clone();
+                ret <<= shift_bits;
+                ret
+            }
+        }
 
-        let mut ret = self.clone();
-        ret <<= shift_bits;
-        ret
+        // ShlAssign<u32>
+        impl core::ops::ShlAssign<u32> for $name {
+            fn shl_assign(&mut self, shift: u32) {
+                trace!("ShlAssign<u32>: self <<= {}, BITS={}", shift, $bits);
+                if shift as usize >= $bits {
+                    for limb in self.pn.iter_mut() {
+                        *limb = 0;
+                    }
+                    return;
+                }
+                if shift == 0 {
+                    return;
+                }
+
+                let limb_shift = (shift / 32) as usize;
+                let bit_shift  = shift % 32;
+                let old = self.clone();
+
+                // zero out self
+                for limb in self.pn.iter_mut() {
+                    *limb = 0;
+                }
+
+                for i in 0..$limbs {
+                    let val = old.pn[i];
+                    if val == 0 {
+                        continue;
+                    }
+                    let new_i = i + limb_shift;
+                    if new_i < $limbs {
+                        self.pn[new_i] |= val << bit_shift;
+                    }
+                    if bit_shift != 0 && (new_i + 1) < $limbs {
+                        self.pn[new_i + 1] |= val >> (32 - bit_shift);
+                    }
+                }
+
+                debug!("ShlAssign complete => self={:?}", self);
+            }
+        }
+
+        // Shr<&$name>
+        impl core::ops::Shr<&$name> for $name {
+            type Output = $name;
+            fn shr(self, rhs: &Self) -> Self::Output {
+                let shift_raw = rhs.pn[0];
+                let shift_bits = shift_raw.min($bits as u32);
+                let mut ret = self.clone();
+                ret >>= shift_bits;
+                ret
+            }
+        }
+
+        // ShrAssign<u32>
+        impl core::ops::ShrAssign<u32> for $name {
+            fn shr_assign(&mut self, shift: u32) {
+                tracing::trace!(
+                    "Entering shr_assign<u32>: BITS={}, shift={}, initial self={:X?}",
+                    $bits,
+                    shift,
+                    self.pn
+                );
+                let num_limbs = $limbs;
+
+                if shift as usize >= $bits {
+                    for limb in self.pn.iter_mut() {
+                        *limb = 0;
+                    }
+                    tracing::trace!(
+                        "Leaving shr_assign<u32>; shift >= {}, self=0 => {:X?}",
+                        $bits,
+                        self.pn
+                    );
+                    return;
+                }
+
+                let limb_shift = (shift / 32) as usize;
+                let bit_shift = shift % 32;
+
+                if limb_shift > 0 {
+                    for i in 0..(num_limbs - limb_shift) {
+                        self.pn[i] = self.pn[i + limb_shift];
+                    }
+                    for i in (num_limbs - limb_shift)..num_limbs {
+                        self.pn[i] = 0;
+                    }
+                    tracing::debug!(
+                        "After shifting whole limbs => limb_shift={}, partial self={:X?}",
+                        limb_shift,
+                        self.pn
+                    );
+                }
+
+                if bit_shift > 0 {
+                    let mut prev = 0u32;
+                    for i in (0..num_limbs).rev() {
+                        let current = self.pn[i];
+                        self.pn[i] = (current >> bit_shift) | (prev << (32 - bit_shift));
+                        prev = current;
+                    }
+                    tracing::debug!(
+                        "After shifting bits => bit_shift={}, final self={:X?}",
+                        bit_shift,
+                        self.pn
+                    );
+                }
+
+                tracing::trace!("Leaving shr_assign<u32>; final self={:X?}", self.pn);
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod test_ref_based_shl_ops {
     use super::*;
+    use crate::simple_lcg::{SimpleLCG, random_u256};
+    use tracing::{info, debug};
 
-    /// We test the `Shl<&BaseUInt<BITS>> for BaseUInt<BITS>` impl exhaustively for 64-bit width
-    /// because that's the simplest to cross-check exactly against native u64 shifting.
-    /// We also do random tests to ensure coverage beyond typical edge cases.
     #[traced_test]
     fn test_shl_for_64bit_exhaustive() {
-        trace!("Beginning exhaustive test of Shl<&BaseUInt<BITS>> on BaseUInt<64>.");
+        trace!("Beginning exhaustive test of Shl<&BaseUInt<BITS>> on BaseUInt64.");
 
-        // We'll check all shift values from 0 up to some range above 64 to ensure clamping works.
-        // For each shift, we'll test a handful of known input values.
         let shift_values: [u32; 10] = [0, 1, 31, 32, 33, 63, 64, 65, 100, 999];
         let inputs: [u64; 6] = [
-            0x0000_0000_0000_0000,
-            0x0000_0000_0000_0001,
-            0xFFFF_FFFF_FFFF_FFFF,
+            0, 1, 0xFFFF_FFFF_FFFF_FFFF,
             0x1234_5678_9ABC_DEF0,
             0x0FFF_0000_0000_FFFF,
             0x8000_0000_0000_0001,
         ];
 
         for &inp in &inputs {
-            let bu_inp = BaseUInt::<64>::from(inp);
-            debug!("Testing input=0x{:016X} => BaseUInt<64>={:?}", inp, bu_inp);
-
+            let bu_inp = BaseUInt64::from(inp);
             for &sh in &shift_values {
-                info!("Shifting by {} bits.", sh);
-                let bu_sh = BaseUInt::<64>::from(sh as u64);
-
-                // Our big-int-based result
+                let bu_sh = BaseUInt64::from(sh as u64);
                 let result_bu = bu_inp.clone() << &bu_sh;
-
-                // The "expected" shift in a native sense: treat as 64-bit truncated shift:
-                //  - If shift >= 64 => result is 0
-                //  - Otherwise => (inp << shift) truncated to 64 bits
                 let expected = if sh >= 64 {
                     0
                 } else {
-                    // do the shift in a bigger type then truncate
                     ((inp as u128) << sh) as u64
                 };
-
                 let result_u64 = result_bu.low64();
-                debug!(
-                    "Shifted result => BaseUInt<64>={:?} => low64=0x{:016X}, expected=0x{:016X}",
-                    result_bu, result_u64, expected
-                );
-                if result_u64 != expected {
-                    error!("Mismatch: got 0x{:016X}, expected 0x{:016X}!", result_u64, expected);
-                }
-                assert_eq!(result_u64, expected, "Shl<&BaseUInt<64>> mismatch for input=0x{:016X}, shift={}", inp, sh);
+                assert_eq!(result_u64, expected, "Shl<&BaseUInt64> mismatch for input=0x{:X}, shift={}", inp, sh);
             }
         }
-        info!("Completed exhaustive test of Shl<&BaseUInt<BITS>> for 64-bit base type.");
+        info!("Completed exhaustive test of Shl<&BaseUInt64>.");
     }
 
-    /// We also do some random tests for `Shl<&BaseUInt<BITS>>` using a larger type (BaseUInt<256>)
-    /// to ensure coverage beyond just 64-bit. We won't do an exhaustive approach for 256 bits,
-    /// but we'll do random trials with a simple reference check for correctness.
     #[traced_test]
     fn test_shl_for_256bit_random() {
-        trace!("Beginning random test of Shl<&BaseUInt<BITS>> on BaseUInt<256>.");
+        trace!("Beginning random test of Shl<&BaseUInt<BITS>> on BaseUInt256.");
         let mut rng = SimpleLCG::new(0xDEAD_BEEF_1234_5678);
 
         for _trial in 0..50 {
-            // Random 256-bit value
             let bu_val = random_u256(&mut rng);
-            let val_u64 = bu_val.low64(); // just for logging
-
-            // Random shift in [0..320] range
+            let val_u64 = bu_val.low64();
             let shift = (rng.next_u64() % 320) as u32;
-            let bu_shift = BaseUInt::<256>::from(shift as u64);
-
-            debug!(
-                "Random trial => val.low64=0x{:016X}, shift={}, performing big-int Shl.",
-                val_u64, shift
-            );
-
+            let bu_shift = BaseUInt256::from(shift as u64);
             let result_bu = bu_val.clone() << &bu_shift;
             let result_is_zero = result_bu.pn.iter().all(|&limb| limb == 0);
-            // Our reference logic: any shift >= 256 => result should be zero for BaseUInt<256>.
             let expect_zero = shift >= 256;
-
-            if expect_zero && !result_is_zero {
-                error!(
-                    "MISMATCH => shift={} >= 256 => expected all zero but got: {:?}",
-                    shift, result_bu
-                );
-            }
-            assert_eq!(
-                expect_zero, result_is_zero,
-                "For shift >= 256, entire result should be zero!"
-            );
+            assert_eq!(expect_zero, result_is_zero, "For shift >= 256, entire result should be zero!");
         }
-        info!("Completed random test of Shl<&BaseUInt<BITS>> for 256-bit base type.");
+        info!("Completed random test of Shl<&BaseUInt256>.");
     }
 }

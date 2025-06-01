@@ -1,207 +1,208 @@
 // ---------------- [ File: bitcoin-blob/src/ord_eq.rs ]
 crate::ix!();
 
-impl<const BITS: usize> PartialEq<BaseBlob<BITS>> for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-    fn eq(&self, other: &BaseBlob<BITS>) -> bool {
-        self.compare(other) == 0
-    }
-}
+#[macro_export]
+macro_rules! define_base_blob_ord_eq {
+    (
+        $blob_ty:ident,
+        $bits:expr,
+        $bytes:expr
+    ) => {
 
-impl<const BITS: usize> Eq for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{}
-
-impl<const BITS: usize> Ord for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-    fn cmp(&self, other: &BaseBlob<BITS>) -> Ordering {
-
-        let x = self.compare(other);
-
-        match x {
-            _ if x < 0  => Ordering::Less,
-            _ if x == 0 => Ordering::Equal,
-            _ if x > 0  => Ordering::Greater,
-            _ => unreachable![],
+        impl PartialEq<$blob_ty> for $blob_ty {
+            fn eq(&self, other: &$blob_ty) -> bool {
+                self.compare(other) == 0
+            }
         }
-    }
-}
+        impl Eq for $blob_ty {}
 
-impl<const BITS: usize> PartialOrd<BaseBlob<BITS>> for BaseBlob<BITS> 
-where [u8; (BITS % 8) + usize::MAX]: , [(); base_blob_width::<BITS>()]:
-{
-    fn partial_cmp(&self, other: &BaseBlob<BITS>) -> Option<Ordering> {
-        Some(self.cmp(other))
+        impl Ord for $blob_ty {
+            fn cmp(&self, other: &$blob_ty) -> Ordering {
+                let x = self.compare(other);
+                match x {
+                    _ if x < 0  => Ordering::Less,
+                    _ if x == 0 => Ordering::Equal,
+                    _ if x > 0  => Ordering::Greater,
+                    _ => unreachable!(),
+                }
+            }
+        }
+
+        impl PartialOrd<$blob_ty> for $blob_ty {
+            fn partial_cmp(&self, other: &$blob_ty) -> Option<Ordering> {
+                Some(self.cmp(other))
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod eq_ord_exhaustive_tests {
     use super::*;
-
-    /// We'll perform an exhaustive set of checks for:
-    ///
-    /// - `PartialEq` and `Eq`
-    /// - `Ord` and `PartialOrd`
-    ///
-    /// We confirm that:
-    ///   1) Zero vs. ones vs. a "mid" pattern yields the expected ordering.
-    ///   2) Self-comparison => equality (reflexive).
-    ///   3) A random set of pairs each match their slice-comparison order.
-    ///
-    /// We do this for B=8, B=64, and B=256 to cover small, typical, and large sizes.
+    use tracing::{info, trace, debug};
 
     #[traced_test]
     fn test_eq_ord_extremes() {
         info!("Testing extreme values (all-zeros, all-ones, partial) for B=8,64,256...");
-        test_eq_ord_extremes_gen::<8>();
-        test_eq_ord_extremes_gen::<64>();
-        test_eq_ord_extremes_gen::<256>();
+        test_eq_ord_extremes_8();
+        test_eq_ord_extremes_64();
+        test_eq_ord_extremes_256();
         info!("extremes test concluded successfully.");
     }
 
-    /// For a given B, we test:
-    ///   - zero_blob < mid_blob < ones_blob
-    ///   - zero_blob == zero_blob
-    ///   - ones_blob == ones_blob
-    ///   - mid_blob == mid_blob
-    fn test_eq_ord_extremes_gen<const B: usize>()
-    where
-        [(); base_blob_width::<B>()]:,
-        [u8; (B % 8) + usize::MAX]:,
-    {
-        let width = base_blob_width::<B>();
-
-        // 1) zero
-        let zero_blob = BaseBlob::<B>::default();
-
-        // 2) ones
-        let mut ones_blob = BaseBlob::<B>::default();
+    fn test_eq_ord_extremes_8() {
+        // zero
+        let zero_blob = BaseBlob8::default();
+        // ones
+        let mut ones_blob = BaseBlob8::default();
         for b in ones_blob.data.iter_mut() {
             *b = 0xFF;
         }
+        // mid => 0x7F
+        let mut mid_blob = BaseBlob8::default();
+        mid_blob.data[0] = 0x7F;
 
-        // 3) mid: for one byte (B=8), let's pick 0x7F. Otherwise, half 0x00, half 0xFF.
-        let mut mid_blob = BaseBlob::<B>::default();
-        if width == 1 {
-            mid_blob.data[0] = 0x7F;
-        } else {
-            let half = width / 2;
-            for b in mid_blob.data[half..].iter_mut() {
-                *b = 0xFF;
-            }
-        }
-
-        // Check order
-        assert!(zero_blob < mid_blob, "B={}: zero < mid", B);
-        assert!(mid_blob < ones_blob, "B={}: mid < ones", B);
-        assert!(zero_blob < ones_blob, "B={}: zero < ones", B);
+        assert!(zero_blob < mid_blob, "B=8: zero < mid");
+        assert!(mid_blob < ones_blob, "B=8: mid < ones");
+        assert!(zero_blob < ones_blob, "B=8: zero < ones");
 
         // reflexivity
-        assert_eq!(zero_blob, zero_blob, "B={}: zero == zero", B);
-        assert_eq!(mid_blob, mid_blob, "B={}: mid == mid", B);
-        assert_eq!(ones_blob, ones_blob, "B={}: ones == ones", B);
+        assert_eq!(zero_blob, zero_blob, "B=8: zero == zero");
+        assert_eq!(mid_blob, mid_blob, "B=8: mid == mid");
+        assert_eq!(ones_blob, ones_blob, "B=8: ones == ones");
+    }
+
+    fn test_eq_ord_extremes_64() {
+        // zero
+        let zero_blob = BaseBlob64::default();
+        // ones
+        let mut ones_blob = BaseBlob64::default();
+        for b in ones_blob.data.iter_mut() {
+            *b = 0xFF;
+        }
+        // "mid": half 0, half 0xFF => but it's only 8 bytes, so let's do the top 4 = 0, bottom 4=0xFF
+        let mut mid_blob = BaseBlob64::default();
+        let half = 8 / 2;
+        for b in mid_blob.data[half..].iter_mut() {
+            *b = 0xFF;
+        }
+
+        assert!(zero_blob < mid_blob, "B=64: zero < mid");
+        assert!(mid_blob < ones_blob, "B=64: mid < ones");
+        assert!(zero_blob < ones_blob, "B=64: zero < ones");
+
+        // reflexivity
+        assert_eq!(zero_blob, zero_blob, "B=64: zero == zero");
+        assert_eq!(mid_blob, mid_blob, "B=64: mid == mid");
+        assert_eq!(ones_blob, ones_blob, "B=64: ones == ones");
+    }
+
+    fn test_eq_ord_extremes_256() {
+        // zero
+        let zero_blob = BaseBlob256::default();
+        // ones
+        let mut ones_blob = BaseBlob256::default();
+        for b in ones_blob.data.iter_mut() {
+            *b = 0xFF;
+        }
+        // mid => half 0, half 0xFF (16 zero, 16 FF)
+        let mut mid_blob = BaseBlob256::default();
+        let half = 32 / 2;
+        for b in mid_blob.data[half..].iter_mut() {
+            *b = 0xFF;
+        }
+
+        assert!(zero_blob < mid_blob, "B=256: zero < mid");
+        assert!(mid_blob < ones_blob, "B=256: mid < ones");
+        assert!(zero_blob < ones_blob, "B=256: zero < ones");
+
+        // reflexivity
+        assert_eq!(zero_blob, zero_blob, "B=256: zero == zero");
+        assert_eq!(mid_blob, mid_blob, "B=256: mid == mid");
+        assert_eq!(ones_blob, ones_blob, "B=256: ones == ones");
     }
 
     #[traced_test]
     fn test_eq_ord_random() {
         info!("Testing random pairs for B=8, B=64, B=256...");
-        test_eq_ord_random_gen::<8>();
-        test_eq_ord_random_gen::<64>();
-        test_eq_ord_random_gen::<256>();
+        test_eq_ord_random_8();
+        test_eq_ord_random_64();
+        test_eq_ord_random_256();
         info!("random eq/ord test concluded successfully.");
     }
 
-    /// We'll generate random data for two blobs, compare them bytewise to see which is smaller,
-    /// then confirm the BaseBlob<B>::cmp => matches that.
-    fn test_eq_ord_random_gen<const B: usize>()
-    where
-        [(); base_blob_width::<B>()]:,
-        [u8; (B % 8) + usize::MAX]:,
-    {
-        let mut rng = SimpleRng::new(0xABCDEF0123456789);
-
-        // We'll do 20 random pairs
-        for i in 0..20 {
-            // build random data
-            let width = base_blob_width::<B>();
-            let mut buf1 = vec![0u8; width];
-            let mut buf2 = vec![0u8; width];
+    fn test_eq_ord_random_8() {
+        let mut rng = crate::simple_rng::SimpleRng::new(0xABCDEF0123456789);
+        for _i in 0..20 {
+            let mut buf1 = [0u8; 1];
+            let mut buf2 = [0u8; 1];
             rng.fill_bytes(&mut buf1);
             rng.fill_bytes(&mut buf2);
+            let blob1 = BaseBlob8 { data: buf1 };
+            let blob2 = BaseBlob8 { data: buf2 };
 
-            // create BaseBlob<B>
-            let blob1 = make_blob::<B>(&buf1);
-            let blob2 = make_blob::<B>(&buf2);
-
-            // do a direct slice comparison
             let cmp_slices = buf1.cmp(&buf2);
             let blob_eq = (blob1 == blob2);
             let blob_cmp = blob1.cmp(&blob2);
-
-            // check eq vs. eq_slices
             let slices_eq = (cmp_slices == core::cmp::Ordering::Equal);
             assert_eq!(
                 blob_eq, slices_eq,
-                "B={}, i={} => mismatch in equality: \n buf1={:X?}\n buf2={:X?}",
-                B, i, buf1, buf2
+                "B=8 => mismatch in equality"
             );
-
-            // check the ordering
             assert_eq!(
                 blob_cmp, cmp_slices,
-                "B={}, i={} => mismatch in ordering: \n buf1={:X?}\n buf2={:X?}",
-                B, i, buf1, buf2
+                "B=8 => mismatch in ordering"
             );
+        }
+    }
 
-            // partial_cmp should match
-            let blob_pcmp = blob1.partial_cmp(&blob2).unwrap();
+    fn test_eq_ord_random_64() {
+        let mut rng = crate::simple_rng::SimpleRng::new(0xABCDEF0123456789);
+        for _i in 0..20 {
+            let mut buf1 = [0u8; 8];
+            let mut buf2 = [0u8; 8];
+            rng.fill_bytes(&mut buf1);
+            rng.fill_bytes(&mut buf2);
+            let blob1 = BaseBlob64 { data: buf1 };
+            let blob2 = BaseBlob64 { data: buf2 };
+
+            let cmp_slices = buf1.cmp(&buf2);
+            let blob_eq = (blob1 == blob2);
+            let blob_cmp = blob1.cmp(&blob2);
+            let slices_eq = (cmp_slices == core::cmp::Ordering::Equal);
             assert_eq!(
-                blob_pcmp, blob_cmp,
-                "B={}, i={} => partial_cmp mismatch with cmp",
-                B, i
+                blob_eq, slices_eq,
+                "B=64 => mismatch in equality"
+            );
+            assert_eq!(
+                blob_cmp, cmp_slices,
+                "B=64 => mismatch in ordering"
             );
         }
     }
 
-    // A simple helper to build a BaseBlob<B> from a slice
-    fn make_blob<const B: usize>(src: &[u8]) -> BaseBlob<B>
-    where
-        [(); base_blob_width::<B>()]:,
-        [u8; (B % 8) + usize::MAX]:,
-    {
-        assert_eq!(
-            src.len(),
-            base_blob_width::<B>(),
-            "Source length must match base_blob_width<{}>",
-            B
-        );
-        let mut blob = BaseBlob::<B>::default();
-        blob.data.copy_from_slice(src);
-        blob
-    }
+    fn test_eq_ord_random_256() {
+        let mut rng = crate::simple_rng::SimpleRng::new(0xABCDEF0123456789);
+        for _i in 0..20 {
+            let mut buf1 = [0u8; 32];
+            let mut buf2 = [0u8; 32];
+            rng.fill_bytes(&mut buf1);
+            rng.fill_bytes(&mut buf2);
+            let blob1 = BaseBlob256 { data: buf1 };
+            let blob2 = BaseBlob256 { data: buf2 };
 
-    // A simple random generator from earlier code
-    struct SimpleRng(u64);
-    impl SimpleRng {
-        fn new(seed: u64) -> Self {
-            Self(seed)
-        }
-        fn next_u64(&mut self) -> u64 {
-            self.0 = self
-                .0
-                .wrapping_mul(6364136223846793005)
-                .wrapping_add(1);
-            self.0
-        }
-        fn fill_bytes(&mut self, buf: &mut [u8]) {
-            for chunk in buf.chunks_mut(8) {
-                let rnd = self.next_u64().to_le_bytes();
-                let n = chunk.len();
-                chunk.copy_from_slice(&rnd[..n]);
-            }
+            let cmp_slices = buf1.cmp(&buf2);
+            let blob_eq = (blob1 == blob2);
+            let blob_cmp = blob1.cmp(&blob2);
+            let slices_eq = (cmp_slices == core::cmp::Ordering::Equal);
+            assert_eq!(
+                blob_eq, slices_eq,
+                "B=256 => mismatch in equality"
+            );
+            assert_eq!(
+                blob_cmp, cmp_slices,
+                "B=256 => mismatch in ordering"
+            );
         }
     }
 }

@@ -1,43 +1,36 @@
 // ---------------- [ File: bitcoin-bigint/src/bit_xor.rs ]
 crate::ix!();
 
-// Bitwise XOR (self ^ &other => new BaseUInt)
-impl<const BITS: usize> BitXor<&BaseUInt<BITS>> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    type Output = BaseUInt<BITS>;
+#[macro_export]
+macro_rules! define_baseuint_bitxor {
+    ($uint_type:ident, $bits:expr, $limbs:expr) => {
 
-    fn bitxor(self, other: &BaseUInt<BITS>) -> Self::Output {
-        let mut ret = self.clone();
-        ret ^= other;
-        ret
-    }
-}
-
-impl<const BITS: usize> BitXorAssign<&BaseUInt<BITS>> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    /// Bitwise XOR assignment: `self ^= other`
-    #[inline]
-    fn bitxor_assign(&mut self, b: &BaseUInt<BITS>) {
-        for i in 0..(BITS / 32) {
-            self.pn[i] ^= b.pn[i];
+        impl core::ops::BitXor<&$uint_type> for $uint_type {
+            type Output = $uint_type;
+            fn bitxor(self, other: &$uint_type) -> Self::Output {
+                let mut ret = self.clone();
+                ret ^= other;
+                ret
+            }
         }
-    }
-}
 
-impl<const BITS: usize> BitXorAssign<u64> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    /// Bitwise XOR assignment with u64: `self ^= u64`
-    #[inline]
-    fn bitxor_assign(&mut self, b: u64) {
-        self.pn[0] ^= (b & 0xffff_ffff) as u32;
-        if BITS / 32 > 1 {
-            self.pn[1] ^= ((b >> 32) & 0xffff_ffff) as u32;
+        impl core::ops::BitXorAssign<&$uint_type> for $uint_type {
+            #[inline]
+            fn bitxor_assign(&mut self, b: &$uint_type) {
+                for i in 0..$limbs {
+                    self.pn[i] ^= b.pn[i];
+                }
+            }
+        }
+
+        impl core::ops::BitXorAssign<u64> for $uint_type {
+            #[inline]
+            fn bitxor_assign(&mut self, b: u64) {
+                self.pn[0] ^= (b & 0xffff_ffff) as u32;
+                if $limbs > 1 {
+                    self.pn[1] ^= ((b >> 32) & 0xffff_ffff) as u32;
+                }
+            }
         }
     }
 }
@@ -56,7 +49,7 @@ mod base_uint_bitxor_exhaustive_tests {
     fn test_bitxor_32_bits_edge_cases() {
         info!("Testing bitwise XOR (`^=`) for 32-bit BaseUInt edge cases.");
 
-        type U32 = BaseUInt<32>;
+        type U32 = BaseUInt32;
 
         // 1) 0 ^ 0 => 0
         let mut x = U32::default();
@@ -99,7 +92,7 @@ mod base_uint_bitxor_exhaustive_tests {
     fn test_bitxor_64_bits_edge_cases() {
         info!("Testing bitwise XOR for 64-bit BaseUInt edge cases.");
 
-        type U64B = BaseUInt<64>;
+        type U64B = BaseUInt64;
 
         // 1) 0 ^ 0 => 0
         let mut x = U64B::default();
@@ -136,7 +129,7 @@ mod base_uint_bitxor_exhaustive_tests {
     fn test_bitxor_256_bits_edge_cases() {
         info!("Testing bitwise XOR for 256-bit BaseUInt edge cases.");
 
-        type U256 = BaseUInt<256>;
+        type U256 = BaseUInt256;
 
         // 1) 0 ^ 0 => 0
         let mut x = U256::default();
@@ -178,7 +171,7 @@ mod base_uint_bitxor_exhaustive_tests {
             let b_val = rng.next_u64();
             let expected64 = a_val ^ b_val;
 
-            let mut a_bu = BaseUInt::<64>::default();
+            let mut a_bu = BaseUInt64::default();
             a_bu.pn[0] = (a_val & 0xFFFF_FFFF) as u32;
             a_bu.pn[1] = ((a_val >> 32) & 0xFFFF_FFFF) as u32;
             // XOR with b_val
@@ -206,7 +199,7 @@ mod base_uint_bitxor_exhaustive_tests {
             let r2 = a2 ^ b2;
             let r3 = a3 ^ b3;
 
-            let mut a_bu = BaseUInt::<256>::default();
+            let mut a_bu = BaseUInt256::default();
             a_bu.pn[0] = (a0 & 0xFFFF_FFFF) as u32;
             a_bu.pn[1] = ((a0 >> 32) & 0xFFFF_FFFF) as u32;
             a_bu.pn[2] = (a1 & 0xFFFF_FFFF) as u32;
@@ -217,7 +210,7 @@ mod base_uint_bitxor_exhaustive_tests {
             a_bu.pn[7] = ((a3 >> 32) & 0xFFFF_FFFF) as u32;
 
             // XOR with b as baseuint
-            let mut b_bu = BaseUInt::<256>::default();
+            let mut b_bu = BaseUInt256::default();
             b_bu.pn[0] = (b0 & 0xFFFF_FFFF) as u32;
             b_bu.pn[1] = ((b0 >> 32) & 0xFFFF_FFFF) as u32;
             b_bu.pn[2] = (b1 & 0xFFFF_FFFF) as u32;
@@ -250,9 +243,9 @@ mod base_uint_bitxor_exhaustive_tests {
         info!("Testing `self ^ &other => new BaseUInt` with some small examples.");
 
         // 1) 64 bits => x=0xFFFF_0000, y=0x1234_5678 => z = x^y
-        let mut x = BaseUInt::<64>::default();
+        let mut x = BaseUInt64::default();
         x.pn[0] = 0xFFFF_0000;
-        let mut y = BaseUInt::<64>::default();
+        let mut y = BaseUInt64::default();
         y.pn[0] = 0x1234_5678;
         let z = x ^ &y;
         let expect = 0xFFFF_0000 ^ 0x1234_5678;
@@ -261,9 +254,9 @@ mod base_uint_bitxor_exhaustive_tests {
 
         // 2) 32 bits => x=0xAAAA_AAAA, y=0x5555_0000 => z= x^y => ?
         {
-            let mut x32 = BaseUInt::<32>::default();
+            let mut x32 = BaseUInt32::default();
             x32.pn[0] = 0xAAAA_AAAA;
-            let mut y32 = BaseUInt::<32>::default();
+            let mut y32 = BaseUInt32::default();
             y32.pn[0] = 0x5555_0000;
             let z32 = x32 ^ &y32;
             let expected32 = 0xAAAA_AAAA ^ 0x5555_0000;

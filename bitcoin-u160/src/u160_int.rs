@@ -11,7 +11,7 @@ crate::ix!();
 */
 #[derive(Clone, Default, PartialEq, Eq, Hash)]
 pub struct u160 {
-    blob: BaseBlob<160>,
+    blob: BaseBlob160,
 }
 
 impl From<&str> for u160 {
@@ -39,7 +39,7 @@ impl From<&Vec<u8>> for u160 {
         }
 
         // Build a default BaseBlob<160> and copy the bytes
-        let mut inner = BaseBlob::<160>::default();
+        let mut inner = BaseBlob160::default();
         // Use the public `as_mut_slice()` method instead of direct `data` field
         inner.as_mut_slice()[..required_len].copy_from_slice(&vch[..required_len]);
 
@@ -49,7 +49,7 @@ impl From<&Vec<u8>> for u160 {
 
 // Allow read-only dereferencing of `u160` to `BaseBlob<160>`
 impl Deref for u160 {
-    type Target = BaseBlob<160>;
+    type Target = BaseBlob160;
 
     fn deref(&self) -> &Self::Target {
         &self.blob
@@ -67,7 +67,7 @@ impl u160 {
     /// Construct a `u160` from a 20-byte array **at compile time**.
     pub const fn from_bytes_20(arr: [u8; 20]) -> Self {
         Self {
-            blob: BaseBlob::<160>::from_bytes(arr),
+            blob: BaseBlob160::from_bytes(arr),
         }
     }
 }

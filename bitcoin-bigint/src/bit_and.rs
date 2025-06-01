@@ -1,53 +1,42 @@
 // ---------------- [ File: bitcoin-bigint/src/bit_and.rs ]
 crate::ix!();
 
-// Bitwise AND (self & &other => new BaseUInt)
-impl<const BITS: usize> BitAnd<&BaseUInt<BITS>> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    type Output = BaseUInt<BITS>;
+#[macro_export]
+macro_rules! define_baseuint_bitand {
 
-    fn bitand(self, other: &BaseUInt<BITS>) -> Self::Output {
-        let mut ret = self.clone();
-        ret &= other;
-        ret
-    }
-}
+    ($uint_type:ident, $bits:expr, $limbs:expr) => {
 
-impl<const BITS: usize> BitAndAssign<&BaseUInt<BITS>> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    /// Bitwise AND assignment: `self &= other`
-    #[inline]
-    fn bitand_assign(&mut self, b: &BaseUInt<BITS>) {
-        for i in 0..(BITS / 32) {
-            self.pn[i] &= b.pn[i];
+        impl core::ops::BitAnd<&$uint_type> for $uint_type {
+            type Output = $uint_type;
+            fn bitand(self, other: &$uint_type) -> Self::Output {
+                let mut ret = self.clone();
+                ret &= other;
+                ret
+            }
+        }
+
+        impl core::ops::BitAndAssign<&$uint_type> for $uint_type {
+            #[inline]
+            fn bitand_assign(&mut self, b: &$uint_type) {
+                for i in 0..$limbs {
+                    self.pn[i] &= b.pn[i];
+                }
+            }
+        }
+
+        impl core::ops::BitAndAssign<u64> for $uint_type {
+            fn bitand_assign(&mut self, b: u64) {
+                self.pn[0] &= (b & 0xffff_ffff) as u32;
+                if $limbs > 1 {
+                    self.pn[1] &= ((b >> 32) & 0xffff_ffff) as u32;
+                }
+                for i in 2..$limbs {
+                    self.pn[i] = 0;
+                }
+            }
         }
     }
 }
-
-impl<const BITS: usize> core::ops::BitAndAssign<u64> for BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    fn bitand_assign(&mut self, b: u64) {
-        // Lower 32 bits of b are ANDed with self.pn[0]
-        self.pn[0] &= (b & 0xffff_ffff) as u32;
-
-        // Next 32 bits of b with self.pn[1], if we have a second limb
-        if BITS / 32 > 1 {
-            self.pn[1] &= ((b >> 32) & 0xffff_ffff) as u32;
-        }
-
-        // Any higher limbs must be ANDed with 0 => effectively become 0
-        for i in 2..(BITS / 32) {
-            self.pn[i] = 0;
-        }
-    }
-}
-
 
 #[cfg(test)]
 mod bitwise_and_exhaustive_tests {
@@ -55,53 +44,11 @@ mod bitwise_and_exhaustive_tests {
     use tracing::{debug, error, info, trace};
     use std::cmp::Ordering;
 
-    /// A very simple pseudo-random generator for repeatable tests.
-    /// We'll use something like an LCG for demonstration.
-    struct SimpleLCG {
-        state: u64,
-    }
-
-    impl SimpleLCG {
-        fn new(seed: u64) -> Self {
-            Self { state: seed }
-        }
-
-        fn next_u64(&mut self) -> u64 {
-            // standard LCG step
-            self.state = self
-                .state
-                .wrapping_mul(6364136223846793005)
-                .wrapping_add(1);
-            self.state
-        }
-    }
-
-    /// Helper to create a `BaseUInt<BITS>` from an array of 32-bit limbs (LE order).
-    fn from_limbs<const BITS: usize>(limbs: &[u32]) -> BaseUInt<BITS>
-    where
-        [(); BITS / 32]:,
-    {
-        let mut x = BaseUInt::<BITS>::default();
-        let count = BITS / 32;
-        for (i, &val) in limbs.iter().take(count).enumerate() {
-            x.pn[i] = val;
-        }
-        x
-    }
-
-    /// Helper to view the limbs of a `BaseUInt<BITS>` as a Vec<u32>.
-    fn to_limbs<const BITS: usize>(v: &BaseUInt<BITS>) -> Vec<u32>
-    where
-        [(); BITS / 32]:,
-    {
-        v.pn.to_vec()
-    }
-
     #[traced_test]
     fn test_bitand_assign_basic_64() {
         info!("Verifying basic AND assignment (self &= other) with 64-bit BaseUInt.");
 
-        type U64 = BaseUInt<64>;
+        type U64 = BaseUInt64;
 
         // 1) Zero AND anything => zero
         let mut x = U64::default(); // 0
@@ -138,7 +85,7 @@ mod bitwise_and_exhaustive_tests {
     #[traced_test]
     fn test_bitand_assign_random_64() {
         info!("Testing random AND assignment for 64-bit BaseUInt.");
-        type U64 = BaseUInt<64>;
+        type U64 = BaseUInt64;
 
         let mut rng = SimpleLCG::new(0xBEEF_0000_DEAD_0000);
 
@@ -163,7 +110,7 @@ mod bitwise_and_exhaustive_tests {
     fn test_bitand_assign_256_exhaustive_edges() {
         info!("Testing bitwise AND assignment for a few edge cases in 256-bit BaseUInt.");
 
-        type U256 = BaseUInt<256>;
+        type U256 = BaseUInt256;
 
         // 1) All zero with all zero => zero
         let mut z1 = U256::default();
@@ -220,7 +167,7 @@ mod bitwise_and_exhaustive_tests {
     fn test_bitand_operator_256_random() {
         info!("Random test of bitwise AND operator for 256-bit BaseUInt.");
 
-        type U256 = BaseUInt<256>;
+        type U256 = BaseUInt256;
         let mut rng = SimpleLCG::new(0x1234_5678_DEAD_BEEF);
 
         for i in 0..10 {
@@ -230,13 +177,13 @@ mod bitwise_and_exhaustive_tests {
                 limbs_a[j] = rng.next_u64() as u32;
                 limbs_b[j] = rng.next_u64() as u32;
             }
-            let a = from_limbs::<256>(&limbs_a);
-            let b = from_limbs::<256>(&limbs_b);
+            let a = from_limbs_256(&limbs_a);
+            let b = from_limbs_256(&limbs_b);
 
             trace!("Test iteration {} => a={:?}, b={:?}", i, a, b);
 
             let c = a.clone() & &b;
-            let c_limbs = to_limbs(&c);
+            let c_limbs = to_limbs_256(&c);
 
             for (idx, &val_c) in c_limbs.iter().enumerate() {
                 let expected = limbs_a[idx] & limbs_b[idx];
@@ -251,7 +198,7 @@ mod bitwise_and_exhaustive_tests {
     fn test_bitand_operator_64() {
         info!("Testing the bitand operator (self & &other) in 64-bit BaseUInt.");
 
-        type U64 = BaseUInt<64>;
+        type U64 = BaseUInt64;
 
         // 1) Simple demonstration
         let x = U64::from(0xDEAD_BEEF_1234_5678u64);
@@ -297,20 +244,12 @@ mod bitwise_and_exhaustive_tests {
         }
     }
 
-    /// A small helper to get a pretty hex string from a `BaseUInt<BITS>`.
-    fn base_uint_hex<const BITS: usize>(val: &BaseUInt<BITS>) -> String
-    where
-        [(); BITS / 32]:,
-    {
-        val.get_hex()
-    }
-
     /// Check that `BaseUInt<BITS>::bitand_assign(u64)` behaves as expected in basic edge cases.
     #[test]
     fn test_bitand_assign_u64_basics() {
         // 1) 0 & <any> => 0
         {
-            let mut x = BaseUInt::<64>::default(); // x=0
+            let mut x = BaseUInt64::default(); // x=0
             x &= 0xFFFF_FFFF_FFFF_FFFFu64; // all ones
             assert_eq!(x.pn[0], 0, "0 & allones => 0, lower-limb");
             assert_eq!(x.pn[1], 0, "0 & allones => 0, upper-limb");
@@ -319,7 +258,7 @@ mod bitwise_and_exhaustive_tests {
         // 2) all-ones & <some mask> => partial
         {
             // all-ones in 64 bits => 0xFFFF_FFFF_FFFF_FFFF
-            let mut x = BaseUInt::<64>::default();
+            let mut x = BaseUInt64::default();
             x.pn[0] = 0xFFFF_FFFF;
             x.pn[1] = 0xFFFF_FFFF;
 
@@ -339,7 +278,7 @@ mod bitwise_and_exhaustive_tests {
 
         // 3) partial usage in bigger BITS, e.g. 256 bits: (the extra limbs must be zeroed)
         {
-            let mut x = BaseUInt::<256>::default();
+            let mut x = BaseUInt256::default();
             // Fill first 3 limbs with random data
             x.pn[0] = 0xDEAD_BEEF;
             x.pn[1] = 0xAAAA_5555;
@@ -381,7 +320,7 @@ mod bitwise_and_exhaustive_tests {
             let random_a = rng.next_u64(); 
             let random_mask = rng.next_u64();
 
-            let mut x = BaseUInt::<64>::from(random_a);
+            let mut x = BaseUInt64::from(random_a);
             // The “expected” is just random_a & random_mask in normal Rust:
             let expected_64 = random_a & random_mask;
 
@@ -397,7 +336,7 @@ mod bitwise_and_exhaustive_tests {
         // We can do the same for 256 bits, or 128, etc.
         // Let's do 20 random checks for 256 bits:
         for _ in 0..20 {
-            let mut big = BaseUInt::<256>::default();
+            let mut big = BaseUInt256::default();
             // fill 8 limbs with random
             for i in 0..8 {
                 big.pn[i] = rng.next_u64() as u32;
@@ -425,9 +364,9 @@ mod bitwise_and_exhaustive_tests {
             actual &= mask64;
 
             // Compare
-            assert_eq!(base_uint_hex(&actual), base_uint_hex(&expected),
+            assert_eq!(actual.get_hex(), expected.get_hex(),
                        "bitand_assign<u64> mismatch in 256-bit random test.\n  big was {},\n  mask64=0x{:016X}",
-                       base_uint_hex(&big),
+                       big.get_hex(),
                        mask64);
         }
     }

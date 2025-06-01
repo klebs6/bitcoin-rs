@@ -1,35 +1,40 @@
 // ---------------- [ File: bitcoin-bigint/src/get_hex.rs ]
 crate::ix!();
 
-impl<const BITS: usize> BaseUInt<BITS>
-where
-    [(); BITS / 32]:,
-{
-    /// Return this number as a big-endian hex string with *exactly* `BITS/4` hex digits
-    /// (two hex digits per byte). Leading zeros are always preserved.
-    pub fn get_hex(&self) -> String {
-        // 1) Gather bytes in little-endian (limb[0] is low 32 bits)
-        let limb_count = BITS / 32;
-        let total_bytes = BITS / 8; // e.g. 256 => 32 bytes
-        let mut le_bytes = Vec::with_capacity(total_bytes);
+#[macro_export]
+macro_rules! define_baseuint_get_hex {
 
-        for i in 0..limb_count {
-            let limb = self.pn[i];
-            let limb_bytes = limb.to_le_bytes();
-            le_bytes.extend_from_slice(&limb_bytes);
+    ($name:ident, $bits:expr, $limbs:expr) => {
+
+        impl $name {
+
+            /// Return this number as a big-endian hex string with *exactly* `BITS/4` hex digits
+            /// (two hex digits per byte). Leading zeros are always preserved.
+            pub fn get_hex(&self) -> String {
+                // 1) Gather bytes in little-endian (limb[0] is low 32 bits)
+                let limb_count = $limbs;
+                let total_bytes = $bits / 8; // e.g. 256 => 32 bytes
+                let mut le_bytes = Vec::with_capacity(total_bytes);
+
+                for i in 0..limb_count {
+                    let limb = self.pn[i];
+                    let limb_bytes = limb.to_le_bytes();
+                    le_bytes.extend_from_slice(&limb_bytes);
+                }
+
+                // 2) Reverse to get big-endian
+                le_bytes.reverse();
+
+                // 3) Convert to hex: always push 2 hex digits per byte
+                use std::fmt::Write;
+                let mut result = String::with_capacity(total_bytes * 2);
+                for &byte in &le_bytes {
+                    write!(result, "{:02x}", byte).unwrap();
+                }
+
+                result
+            }
         }
-
-        // 2) Reverse to get big-endian
-        le_bytes.reverse();
-
-        // 3) Convert to hex: always push 2 hex digits per byte
-        use std::fmt::Write;
-        let mut result = String::with_capacity(total_bytes * 2);
-        for &byte in &le_bytes {
-            write!(result, "{:02x}", byte).unwrap();
-        }
-
-        result
     }
 }
 
@@ -47,7 +52,7 @@ mod base_uint_get_hex_exhaustive_tests {
     fn test_get_hex_32_bits_edge_cases() {
         info!("Testing get_hex() on 32-bit BaseUInt edge cases.");
 
-        type U32 = BaseUInt<32>;
+        type U32 = BaseUInt32;
 
         // 1) 0 => "0"
         let x0 = U32::default();
@@ -77,7 +82,7 @@ mod base_uint_get_hex_exhaustive_tests {
     fn test_get_hex_64_bits_edge_cases() {
         info!("Testing get_hex() on 64-bit BaseUInt edge cases.");
 
-        type U64B = BaseUInt<64>;
+        type U64B = BaseUInt64;
 
         // 1) zero => "0"
         let z = U64B::default();
@@ -108,7 +113,7 @@ mod base_uint_get_hex_exhaustive_tests {
     fn test_get_hex_256_bits_edge_cases() {
         info!("Testing get_hex() on 256-bit BaseUInt edge cases.");
 
-        type U256 = BaseUInt<256>;
+        type U256 = BaseUInt256;
 
         // 1) zero => "0"
         let a = U256::default();
@@ -156,25 +161,12 @@ mod base_uint_get_hex_exhaustive_tests {
 
         let mut rng = SimpleLCG::new(0x9999_8888_7777_6666);
 
-        // We'll define a small helper that re-parses the hex into a new BaseUInt, then compare.
-        fn round_trip_hex<const B: usize>(val: &BaseUInt<B>) -> BaseUInt<B>
-        where
-            [(); B / 32]:,
-        {
-            let hex_string = val.get_hex();
-            debug!("Round-trip: got hex='{}' from val={:?}", hex_string, val);
-
-            // parse back: `BaseUInt::<B>::from(hex_string.as_str())`
-            let re_parsed = BaseUInt::<B>::from(hex_string.as_str());
-            re_parsed
-        }
-
         // 32 bits
         for _ in 0..30 {
             let random32 = rng.next_u64() & 0xFFFF_FFFF; // only 32 bits
-            let mut x32 = BaseUInt::<32>::default();
+            let mut x32 = BaseUInt32::default();
             x32.pn[0] = random32 as u32;
-            let rt = round_trip_hex(&x32);
+            let rt = round_trip_hex_32(&x32);
             // compare limbs
             assert_eq!(rt.pn[0], x32.pn[0], "32-bit random round trip mismatch");
         }
@@ -182,10 +174,10 @@ mod base_uint_get_hex_exhaustive_tests {
         // 64 bits
         for _ in 0..30 {
             let random64 = rng.next_u64();
-            let mut x64 = BaseUInt::<64>::default();
+            let mut x64 = BaseUInt64::default();
             x64.pn[0] = (random64 & 0xFFFF_FFFF) as u32;
             x64.pn[1] = ((random64 >> 32) & 0xFFFF_FFFF) as u32;
-            let rt = round_trip_hex(&x64);
+            let rt = round_trip_hex_64(&x64);
             assert_eq!(rt.pn, x64.pn, "64-bit random round trip mismatch");
         }
 
@@ -196,7 +188,7 @@ mod base_uint_get_hex_exhaustive_tests {
             let a1 = rng.next_u64();
             let a2 = rng.next_u64();
             let a3 = rng.next_u64();
-            let mut x256 = BaseUInt::<256>::default();
+            let mut x256 = BaseUInt256::default();
             x256.pn[0] = (a0 & 0xFFFF_FFFF) as u32;
             x256.pn[1] = ((a0 >> 32) & 0xFFFF_FFFF) as u32;
             x256.pn[2] = (a1 & 0xFFFF_FFFF) as u32;
@@ -206,7 +198,7 @@ mod base_uint_get_hex_exhaustive_tests {
             x256.pn[6] = (a3 & 0xFFFF_FFFF) as u32;
             x256.pn[7] = ((a3 >> 32) & 0xFFFF_FFFF) as u32;
 
-            let rt = round_trip_hex(&x256);
+            let rt = round_trip_hex_256(&x256);
             assert_eq!(rt.pn, x256.pn, "256-bit random round trip mismatch");
         }
 
