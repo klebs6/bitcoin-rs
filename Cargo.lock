@@ -2531,6 +2531,10 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+ "tracing-subscriber",
 ]
 
 [[package]]
