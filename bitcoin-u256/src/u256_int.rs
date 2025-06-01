@@ -14,6 +14,23 @@ pub struct u256 {
 
 impl u256 {
 
+    delegate! {
+        to self.blob {
+            pub fn as_slice(&self) -> &[u8];
+            pub fn as_slice_mut(&mut self) -> &mut [u8];
+            pub fn get_hex(&self) -> String;
+            pub fn set_hex_from_str(&mut self, s: &str);
+        }
+    }
+
+    /// Return the lowest 64 bits in little-endian order.
+    pub fn low64(&self) -> u64 {
+        let slice = self.as_slice();
+        let mut arr = [0u8; 8];
+        arr.copy_from_slice(&slice[..8]); 
+        u64::from_le_bytes(arr)
+    }
+
     /// Construct a `u256` from a 32-byte array **at compile time**.
     pub const fn from_bytes_32(arr: [u8; 32]) -> Self {
         Self {
@@ -38,18 +55,6 @@ impl u256 {
 
     pub fn byte_len(&self) -> usize {
         32
-    }
-
-    pub fn as_slice<'a>(&'a self) -> &'a [u8] {
-        let data: *const u8 = self.blob.data();
-        let size: usize = self.blob.size() as usize; // = 32
-        unsafe { std::slice::from_raw_parts(data, size) }
-    }
-
-    pub fn as_slice_mut<'a>(&'a mut self) -> &'a mut [u8] {
-        let data: *mut u8 = self.blob.data_mut();
-        let size: usize = self.blob.size() as usize; // = 32
-        unsafe { std::slice::from_raw_parts_mut(data, size) }
     }
 
     pub fn is_null(&self) -> bool {

@@ -40,6 +40,15 @@ impl From<&String> for u256 {
     }
 }
 
+impl From<&str> for u256 {
+    #[inline]
+    fn from(str_: &str) -> Self {
+        let mut out = u256::default();
+        out.blob.set_hex_from_str(str_);
+        out
+    }
+}
+
 #[cfg(test)]
 mod u256_from_exhaustive_tests {
     use super::*;

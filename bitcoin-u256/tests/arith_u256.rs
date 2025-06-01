@@ -449,7 +449,7 @@ fn test_unary_operators() {
     }
 }
 
-#[traced_test]
+#[test]
 fn test_bitwise_operators() {
     use std::fmt::Write as FmtWrite; // for building debug strings
 
@@ -676,7 +676,7 @@ fn test_bitwise_operators() {
     info!("test_bitwise_operators completed successfully.");
 }
 
-#[traced_test]
+#[test]
 fn test_comparison() {
     info!("Testing ArithU256 comparisons (<, <=, >=, >, etc.)...");
 
@@ -733,7 +733,7 @@ fn test_comparison() {
     info!("test_comparison => all checks passed.");
 }
 
-#[traced_test]
+#[test]
 fn test_plus_minus() {
     info!("Testing ArithU256 addition and subtraction...");
 
@@ -874,7 +874,7 @@ fn test_plus_minus() {
     info!("test_plus_minus => all checks passed.");
 }
 
-#[traced_test]
+#[test]
 fn test_multiply() {
     info!("Testing ArithU256 multiplication...");
 
@@ -975,7 +975,7 @@ fn test_multiply() {
     info!("test_multiply => all checks passed.");
 }
 
-#[traced_test]
+#[test]
 fn test_divide() {
     info!("Testing ArithU256 division...");
 
@@ -1078,7 +1078,7 @@ fn test_divide() {
     info!("test_divide => all checks passed.");
 }
 
-#[traced_test]
+#[test]
 fn test_almost_equal_helper() {
     info!("Testing `almost_equal(d1, d2)` helper function (f64), with more robust tolerance and better debug logs...");
 
@@ -1131,7 +1131,7 @@ fn test_almost_equal_helper() {
     info!("test_almost_equal_helper => done.");
 }
 
-#[traced_test]
+#[test]
 fn test_methods() {
     info!("Testing ArithU256 core methods: get_hex(), to_string(), set_hex, size_in_bytes(), low64(), getdouble(), etc.");
 
@@ -1256,7 +1256,7 @@ fn test_methods() {
     info!("test_methods => all checks done successfully.");
 }
 
-#[traced_test]
+#[test]
 fn test_bignum_set_compact() {
     info!("Testing bignum_set_compact => verifying SetCompact() & GetCompact() results...");
 
@@ -1411,7 +1411,7 @@ fn test_bignum_set_compact() {
     info!("test_bignum_set_compact => all checks passed successfully.");
 }
 
-#[traced_test]
+#[test]
 fn test_getmaxcoverage() {
     info!("Testing extra coverage with double NOT, comparisons, and more bitwise ops.");
 

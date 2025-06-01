@@ -144,6 +144,13 @@ impl DivAssign<&ArithU256> for ArithU256 {
     }
 }
 
+impl SubAssign<&ArithU256> for ArithU256 {
+    fn sub_assign(&mut self, rhs: &ArithU256) {
+        // We do: self = self + (-rhs)
+        *self += &(-rhs.clone());
+    }
+}
+
 //-------------------------------------------[.cpp/bitcoin/src/arith_u256.cpp]
 
 // ------------------------------------------------------

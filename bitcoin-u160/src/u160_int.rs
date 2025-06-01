@@ -9,13 +9,25 @@ crate::ix!();
    This type is called u160 for historical reasons only. 
    It is an opaque blob of 160 bits and has no integer operations.
 */
-#[derive(Clone, Default, PartialEq, Eq, Hash)]
+#[derive(Debug,Clone, Default, PartialOrd,Ord,PartialEq, Eq, Hash)]
 pub struct u160 {
     blob: BaseBlob160,
 }
 
 impl From<&str> for u160 {
     fn from(x: &str) -> Self {
+        // If your `BaseBlob` has a `set_hex()` method that takes a *const u8,
+        // you can just call `self.set_hex(...)`. Because we `DerefMut` to
+        // `BaseBlob<160>`, the code can do `rv.set_hex(...)`.
+        let mut rv = Self::default();
+        // This deref call is effectively `(&mut rv.blob).set_hex(...)`
+        rv.set_hex(x.as_ptr());
+        rv
+    }
+}
+
+impl From<&String> for u160 {
+    fn from(x: &String) -> Self {
         // If your `BaseBlob` has a `set_hex()` method that takes a *const u8,
         // you can just call `self.set_hex(...)`. Because we `DerefMut` to
         // `BaseBlob<160>`, the code can do `rv.set_hex(...)`.
@@ -64,6 +76,18 @@ impl DerefMut for u160 {
 }
 
 impl u160 {
+
+    delegate! {
+        to self.blob {
+            pub fn as_slice(&self) -> &[u8];
+            pub fn as_slice_mut(&mut self) -> &mut [u8];
+            pub fn get_hex(&self) -> String;
+            pub fn set_hex_from_str(&mut self, s: &str);
+        }
+    }
+
+    /// 20 bytes for 160-bit
+    pub fn byte_len(&self) -> usize { 20 }
     /// Construct a `u160` from a 20-byte array **at compile time**.
     pub const fn from_bytes_20(arr: [u8; 20]) -> Self {
         Self {

@@ -16,6 +16,10 @@ macro_rules! define_base_blob_basic {
                 &self.data
             }
 
+            pub fn as_slice_mut(&mut self) -> &mut [u8] {
+                &mut self.data
+            }
+
             /// Returns a borrowed slice of all the bytes for mutable access.
             pub fn as_mut_slice(&mut self) -> &mut [u8] {
                 &mut self.data
