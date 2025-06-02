@@ -3130,6 +3130,11 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinleveldb-slice",
+ "derive_builder",
+ "getset",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
 ]
 
 [[package]]
