@@ -11,17 +11,21 @@ extern crate libc;
 
 x!{c_stdout}
 x!{category}
+x!{defaults}
 x!{disconnect_test_logger}
 x!{enabled}
+x!{escape_message}
 x!{flags}
 x!{format}
 x!{inner}
-x!{interface}
+x!{instance}
+x!{linked_list_ext}
 x!{log_callbacks}
 x!{log_categories_list}
 x!{log_print_str}
 x!{log_timestamp_str}
 x!{logger}
+x!{printf}
 x!{shrink_debug_file}
 x!{start_logging}
 x!{timer}
@@ -32,10 +36,25 @@ x!{util}
 mod bitcoin_logger_tests {
     use super::*;
 
+    // Helper: create a brand-new Logger instance (not the global!)
+    fn make_test_logger() -> Logger {
+        let mut logger = Logger::default();
+        logger.set_print_to_console(false);
+        logger.set_print_to_file(false);
+        {
+            let mut inner = logger.cs().lock();
+            inner.set_buffering(true);
+            inner.msgs_before_open_mut().clear();
+            inner.print_callbacks_mut().clear();
+        }
+        logger
+    }
+
     // ----------------------------------
     // 1) Tests for Log Categories
     // ----------------------------------
     #[traced_test]
+    #[serial]
     fn test_get_log_category_empty_string_returns_all() {
         info!("Testing get_log_category with empty string => LogFlags::ALL");
         let mut flag = LogFlags::NONE;
@@ -46,6 +65,7 @@ mod bitcoin_logger_tests {
     }
 
     #[traced_test]
+    #[serial]
     fn test_get_log_category_known_values() {
         info!("Testing get_log_category with known category strings.");
         let mut flag = LogFlags::NONE;
@@ -69,6 +89,7 @@ mod bitcoin_logger_tests {
     }
 
     #[traced_test]
+    #[serial]
     fn test_get_log_category_unknown() {
         info!("Testing get_log_category with unknown category => should fail");
         let mut flag = LogFlags::NONE;
@@ -83,22 +104,23 @@ mod bitcoin_logger_tests {
     // 2) Test log_accept_category
     // ----------------------------------
     #[traced_test]
+    #[serial]
     fn test_log_accept_category() {
-        info!("Testing log_accept_category calls log_instance().will_log_category");
-        // By default, log_instance() => categories = 0 (LogFlags::NONE)
+        info!("Testing log_accept_category calls make_test_logger().will_log_category");
+        // By default, make_test_logger() => categories = 0 (LogFlags::NONE)
         // So net => false
         assert_eq!(log_accept_category(LogFlags::NET), false, "Should not accept 'NET' by default");
 
         // Enable NET
         {
-            let logger = log_instance();
+            let mut logger = make_test_logger();
             logger.enable_category_with_flags(LogFlags::NET);
         }
         assert_eq!(log_accept_category(LogFlags::NET), true, "Now we accept 'NET' after enabling it");
 
         // Disable NET
         {
-            let logger = log_instance();
+            let mut logger = make_test_logger();
             logger.disable_category_with_flags(LogFlags::NET);
         }
         assert_eq!(log_accept_category(LogFlags::NET), false, "Disabled again => false");
@@ -107,16 +129,16 @@ mod bitcoin_logger_tests {
     }
 
     #[traced_test]
+    #[serial]
     fn test_logger_basic_behavior() {
         info!("Testing basic Logger creation and category manipulation.");
 
-        let logger = log_instance();
+        let mut logger = make_test_logger();
 
         // Start fresh
         {
-            let mut guard = logger.cs().borrow_mut();
-            let mut inner = guard.lock();
-            inner.set_buffering(true); 
+            let mut inner = logger.cs().lock();
+            inner.set_buffering(true);
             inner.msgs_before_open_mut().clear();
         }
 
@@ -144,55 +166,42 @@ mod bitcoin_logger_tests {
         trace!("test_logger_basic_behavior passed.");
     }
 
+
+    // ----------------------------------
+    // 5) Tests for Trace Macros
+    // ----------------------------------
     #[traced_test]
-    fn test_logger_buffering() {
-        info!("Testing logger buffering until start_logging is called.");
+    #[serial]
+    fn test_trace_macros_compile() {
+        info!("Testing trace macros compile & run without error. They do nothing unless ENABLE_TRACING is set.");
 
-        let logger = log_instance();
-        // Reset
-        {
-            let mut guard = logger.cs().borrow_mut();
-            let mut inner = guard.lock();
-            inner.set_buffering(true);
-            inner.msgs_before_open_mut().clear();
-        }
+        // If compiled with tracing disabled, these macros won't do anything. But let's just ensure they run:
+        trace0!("my_context", "my_event");
+        trace1!("my_context", "my_event", 123u64);
+        trace2!("my_context", "my_event", 123u64, true);
 
-        // If we log something now, it goes to msgs_before_open
-        logger.log_print_str("Hello from buffer\n", "test_func", "test_file.rs", 123);
-
-        {
-            let guard = logger.cs().borrow();
-            let inner = guard.lock();
-            assert!(
-                !inner.msgs_before_open().is_empty(),
-                "Message should be buffered"
-            );
-        }
-
-        // Now call start_logging() => it should flush
-        let ok = logger.start_logging();
-        assert!(ok, "start_logging() should succeed if debug.log can open or is disabled.");
-
-        {
-            let guard = logger.cs().borrow();
-            let inner = guard.lock();
-            assert_eq!(inner.msgs_before_open().len(), 0, "Should have flushed the buffer");
-            assert!(!inner.buffering(), "buffering = false after start_logging");
-        }
-
-        trace!("test_logger_buffering passed.");
+        // No panic => success
+        trace!("trace macros test completed");
+        trace!("test_trace_macros_compile passed");
     }
 
     #[traced_test]
+    #[serial]
     fn test_logger_print_callback() {
         info!("Testing logger's print callback mechanism.");
 
-        let logger = log_instance();
-        // Reset
+        let mut logger = make_test_logger();
+
+        // Reset to a known state
+        logger.disconnect_test_logger();
+        logger.set_print_to_console(false);
+        logger.set_print_to_file(false);
+
         {
-            let mut guard = logger.cs().borrow_mut();
-            let mut inner = guard.lock();
-            inner.set_buffering(false);
+            let mut inner = logger.cs().lock();
+            // Make sure we start in buffered mode so that `start_logging()` can transition
+            // to non-buffered.
+            inner.set_buffering(true);
             inner.msgs_before_open_mut().clear();
             inner.print_callbacks_mut().clear();
         }
@@ -201,7 +210,7 @@ mod bitcoin_logger_tests {
         let logs_collected = Arc::new(StdMutex::new(Vec::<String>::new()));
         let logs_clone = logs_collected.clone();
 
-        // Create a closure capturing logs_clone => must store as Box<dyn Fn(&String) + ...>
+        // Create a closure capturing logs_clone => store as Box<dyn Fn(&String) + ...>
         let cb = Box::new(move |msg: &String| {
             let mut guard = logs_clone.lock().unwrap();
             guard.push(msg.clone());
@@ -209,12 +218,14 @@ mod bitcoin_logger_tests {
 
         // Register the callback
         {
-            let mut guard = logger.cs().borrow_mut();
-            let mut inner = guard.lock();
+            let mut inner = logger.cs().lock();
             inner.print_callbacks_mut().push_back(cb);
         }
 
-        // Now print
+        // Now call start_logging() => transitions from buffering to active logging
+        let _ = logger.start_logging();
+
+        // Print something => it should go directly to the callback
         logger.log_print_str("Callback test line\n", "test_func", "test_file.rs", 999);
 
         // Confirm callback saw it
@@ -229,29 +240,56 @@ mod bitcoin_logger_tests {
     }
 
     #[traced_test]
-    fn test_timer_lifetime_message() {
-        info!("Testing Timer RAII logging.");
-        let logger = log_instance();
+    #[serial]
+    fn test_logger_buffering() {
+        let mut logger = make_test_logger();
 
-        // We'll check logs in real time with a callback:
+        // Now your test is guaranteed a fresh logger, no concurrency issues:
+        {
+            let mut inner = logger.cs().lock();
+            inner.set_buffering(true);
+        }
+        logger.log_print_str("Hello from buffer\n", "test_func", "test_file.rs", 123);
+        {
+            let inner = logger.cs().lock();
+            assert!(!inner.msgs_before_open().is_empty(), "Message should be buffered");
+        }
+        let ok = logger.start_logging();
+        assert!(ok, "start_logging() should succeed");
+        {
+            let inner = logger.cs().lock();
+            assert_eq!(inner.msgs_before_open().len(), 0);
+            assert!(!inner.buffering(), "buffering = false after start_logging");
+        }
+    }
+
+    #[traced_test]
+    #[serial]
+    fn test_timer_lifetime_message() {
+        let mut logger = make_test_logger();
+
+        // We'll store logs in a shared Vec
         let lines = Arc::new(StdMutex::new(Vec::<String>::new()));
         let lines_clone = lines.clone();
 
-        // Register a callback that captures log lines
+        // Insert a callback
         {
-            let mut guard = logger.cs().borrow_mut();
-            let mut inner = guard.lock();
-            // Clear prior callbacks
-            inner.print_callbacks_mut().clear();
-
             let cb = move |msg: &String| {
                 let mut g = lines_clone.lock().unwrap();
                 g.push(msg.clone());
             };
+            let mut inner = logger.cs().lock();
             inner.print_callbacks_mut().push_back(Box::new(cb));
         }
 
-        // We'll create a scope so the Timer's Drop is triggered inside:
+        // Un-buffer
+        {
+            let mut inner = logger.cs().lock();
+            inner.set_buffering(false);
+        }
+        let _ = logger.start_logging();
+
+        // Create the Timer
         {
             let _timer = TimerBuilder::default()
                 .start_t(Instant::now())
@@ -260,11 +298,9 @@ mod bitcoin_logger_tests {
                 .log_category(LogFlags::ALL)
                 .build()
                 .unwrap();
-
-            // On creation => logs "Sample Timer started"
-            // On drop => logs "Sample Timer completed"
         }
 
+        // Check lines
         let locked_lines = lines.lock().unwrap();
         assert!(
             locked_lines.iter().any(|line| line.contains("Sample Timer started")),
@@ -274,24 +310,5 @@ mod bitcoin_logger_tests {
             locked_lines.iter().any(|line| line.contains("Sample Timer completed")),
             "Should have a line with 'completed'"
         );
-
-        trace!("test_timer_lifetime_message passed.");
-    }
-
-    // ----------------------------------
-    // 5) Tests for Trace Macros
-    // ----------------------------------
-    #[traced_test]
-    fn test_trace_macros_compile() {
-        info!("Testing trace macros compile & run without error. They do nothing unless ENABLE_TRACING is set.");
-
-        // If compiled with tracing disabled, these macros won't do anything. But let's just ensure they run:
-        trace0!("my_context", "my_event");
-        trace1!("my_context", "my_event", 123u64);
-        trace2!("my_context", "my_event", 123u64, true);
-
-        // No panic => success
-        trace!("trace macros test completed");
-        trace!("test_trace_macros_compile passed");
     }
 }

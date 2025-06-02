@@ -32,3 +32,8 @@ getset.workspace = true
 tracing.workspace = true
 tracing-setup.workspace = true
 traced-test.workspace = true
+serial_test.workspace = true
+
+[profile.test]
+test-threads = 1
+

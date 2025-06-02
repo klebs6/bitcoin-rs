@@ -1511,6 +1511,7 @@ dependencies = [
  "getset",
  "lazy_static",
  "libc",
+ "serial_test",
  "static_assertions",
  "traced-test",
  "tracing",
@@ -2692,6 +2693,11 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "derive_builder",
+ "getset",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
 ]
 
 [[package]]

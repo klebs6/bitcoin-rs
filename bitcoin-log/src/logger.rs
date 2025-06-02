@@ -1,59 +1,52 @@
 // ---------------- [ File: bitcoin-log/src/logger.rs ]
 crate::ix!();
 
-#[derive(Getters)]
-#[getset(get="pub")]
+/// 1) Updated Logger struct to allow setting `print_to_console` / `print_to_file`
+///    (and the other booleans) via getset, and remove the need for `unwrap()` after
+///    parking_lot's `.lock()`. Everything else in Logger remains unchanged.
+#[derive(Getters, Setters)]
+#[getset(get = "pub", set = "pub")]
 pub struct Logger {
+    cs: Mutex<LoggerInner>,
 
-    /**
-      | Can not use Mutex from sync.h because
-      | in debug mode it would cause a deadlock
-      | when a potential deadlock was detected
-      |
-      | TODO: does this still happen with the rust Mutex?
-      */
-    cs:                  RefCell<Mutex<LoggerInner>>,
+    started_new_line:    AtomicBool,
+    categories:          AtomicU32,
 
-    /**
-      | m_started_new_line is a state variable
-      | that will suppress printing of the timestamp
-      | when multiple calls are made that don't
-      | end in a newline.
-      |
-      */
-    started_new_line:    AtomicBool, // default = { true }
+    #[set = "pub"]
+    print_to_console:    bool,
 
-    /**
-      | Log categories bitfield.
-      |
-      */
-    categories:          AtomicU32, // default = { 0 }
+    #[set = "pub"]
+    print_to_file:       bool,
 
-    print_to_console:    bool, // default = false
-    print_to_file:       bool, // default = false
-    log_timestamps:      bool, // default = DEFAULT_LOGTIMESTAMPS
-    log_time_micros:     bool, // default = DEFAULT_LOGTIMEMICROS
-    log_threadnames:     bool, // default = DEFAULT_LOGTHREADNAMES
-    log_sourcelocations: bool, // default = DEFAULT_LOGSOURCELOCATIONS
+    #[set = "pub"]
+    log_timestamps:      bool,
+
+    #[set = "pub"]
+    log_time_micros:     bool,
+
+    #[set = "pub"]
+    log_threadnames:     bool,
+
+    #[set = "pub"]
+    log_sourcelocations: bool,
+
     file_path:           Box<Path>,
-    reopen_file:         AtomicBool, // default = { false }
-
+    reopen_file:         AtomicBool,
 }
 
 impl Default for Logger {
-
     fn default() -> Self {
+        let inner = LoggerInner {
+            fileout: std::ptr::null_mut(),
+            msgs_before_open: LinkedList::new(),
+            buffering: true,
+            print_callbacks: LinkedList::new(),
+        };
+
         Logger {
-            cs: RefCell::new(Mutex::new(LoggerInner {
-                fileout: std::ptr::null_mut(),
-                msgs_before_open: LinkedList::new(),
-                buffering: true,
-                print_callbacks: LinkedList::new(),
-            })),
+            cs: Mutex::new(inner),
             started_new_line: AtomicBool::new(true),
             categories: AtomicU32::new(0),
-
-            // Adjust these booleans or the path if you prefer different defaults
             print_to_console: false,
             print_to_file: false,
             log_timestamps: DEFAULT_LOGTIMESTAMPS,

@@ -1,28 +1,5 @@
 crate::ix!();
 
-// ---------------------------------------
-// The following helper functions replicate
-// what the C++ code references but doesn't show
-// in your snippet. We define them locally so the
-// translation compiles as a single AST item.
-// ---------------------------------------
-
-/// A minimal imitation of the C++ `LogEscapeMessage`.
-/// Replaces any control chars < 32 (except '\n') and 127 with `\x??`.
-pub fn log_escape_message(s: &str) -> String {
-    trace!("log_escape_message => escaping control characters in the string of length={}", s.len());
-    let mut ret = String::with_capacity(s.len());
-    for ch in s.chars() {
-        let code = ch as u32;
-        if (code >= 32 && code != 127) || ch == '\n' {
-            ret.push(ch);
-        } else {
-            ret.push_str(&format!("\\x{:02X}", code));
-        }
-    }
-    ret
-}
-
 /// Emulate the C++ function `RemovePrefix(source_file, "./")`.
 pub fn remove_prefix(s: &str, prefix: &str) -> String {
     if s.starts_with(prefix) {
@@ -55,15 +32,4 @@ pub unsafe fn file_write_str(msg: &str, fp: *mut libc::FILE) {
         msg.len(),
         fp
     );
-}
-
-/// A convenience extension: `is_empty()` on LinkedList
-pub trait LinkedListExt<T> {
-    fn is_empty(&self) -> bool;
-}
-
-impl<T> LinkedListExt<T> for LinkedList<T> {
-    fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
 }

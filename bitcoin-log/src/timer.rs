@@ -42,104 +42,90 @@ pub struct Timer {
 
 impl Drop for Timer {
     fn drop(&mut self) {
-        todo!();
-        /*
-            this->Log(strprintf("%s completed", m_title));
-        */
+        // Was logging internal details via `trace!`; removed to prevent re-entrancy.
+        self.log(&format!("{} completed", self.title()));
     }
 }
 
 impl Timer {
-
-    /**
-      | If log_category is left as the default,
-      | end_msg will log unconditionally (instead
-      | of being filtered by category).
-      |
-      */
-    pub fn new(
-        prefix:       &str,
-        end_msg:      &str,
-        log_category: Option<LogFlags>) -> Self {
-
-        let log_category: LogFlags =
-                 log_category.unwrap_or(LogFlags::ALL);
-
-        todo!();
-        /*
-
-
-            :
-                m_prefix(std::move(prefix)),
-                m_title(std::move(end_msg)),
-                m_log_category(log_category)
-
-            this->Log(strprintf("%s started", m_title));
-            m_start_t = GetTime<std::chrono::microseconds>();
-        */
+    pub fn new(prefix: &str, end_msg: &str, log_category: Option<LogFlags>) -> Self {
+        let final_cat = log_category.unwrap_or(LogFlags::ALL);
+        let mut timer = Self {
+            start_t: Instant::now(),
+            prefix: prefix.to_string(),
+            title: end_msg.to_string(),
+            log_category: final_cat,
+        };
+        timer.log(&format!("{} started", timer.title()));
+        timer
     }
-    
-    pub fn log(&mut self, msg: &str)  {
-        
-        todo!();
-        /*
-            const std::string full_msg = this->LogMsg(msg);
 
-            if (m_log_category == LogFlags::ALL) {
-                LogPrintf("%s\n", full_msg);
-            } else {
-                LogPrint(m_log_category, "%s\n", full_msg);
-            }
-        */
+    pub fn log(&mut self, msg: &str) {
+        // Removed `trace!` calls to avoid re-entrant logging.
+        let full_msg = self.log_msg::<()>(msg);
+        let cat = *self.log_category();
+        // If log_category is ALL or is enabled, proceed:
+        let will_log = cat == LogFlags::ALL || log_instance().will_log_category(cat);
+        if will_log {
+            let with_newline = format!("{}\n", full_msg);
+            log_instance().log_print_str(
+                &with_newline,
+                "Timer::log",
+                file!(),
+                line!() as i32
+            );
+        }
     }
-    
+
     pub fn log_msg<TimeType>(&mut self, msg: &str) -> String {
-        
-        todo!();
-        /*
-            const auto end_time = GetTime<std::chrono::microseconds>() - m_start_t;
-            if (m_start_t.count() <= 0) {
-                return strprintf("%s: %s", m_prefix, msg);
-            }
+        // Removed `trace!` calls to avoid re-entrant logging.
+        let elapsed = self.start_t().elapsed();
+        let micros = (elapsed.as_seconds_f32() as u128 * 1_000_000)
+            + (elapsed.subsec_nanoseconds() as u128 / 1_000);
 
-            if constexpr (std::is_same<TimeType, std::chrono::microseconds>::value) {
-                return strprintf("%s: %s (%iμs)", m_prefix, msg, end_time.count());
-            } else if constexpr (std::is_same<TimeType, std::chrono::milliseconds>::value) {
-                return strprintf("%s: %s (%.2fms)", m_prefix, msg, end_time.count() * 0.001);
-            } else if constexpr (std::is_same<TimeType, std::chrono::seconds>::value) {
-                return strprintf("%s: %s (%.2fs)", m_prefix, msg, end_time.count() * 0.000001);
-            } else {
-                const_assert(ALWAYS_FALSE<TimeType>, "Error: unexpected time type");
-            }
-        */
+        if micros == 0 {
+            format!("{}: {}", self.prefix(), msg)
+        } else {
+            format!("{}: {} ({}μs)", self.prefix(), msg, micros)
+        }
     }
 }
 
-#[macro_export] macro_rules! log_time_micros_with_category {
-    ($end_msg:expr, 
-     $log_category:ident) => {
-        /*
-        
-            Timer<std::chrono::microseconds> PASTE2(logging_timer, __COUNTER__)(__func__, end_msg, log_category)
-        */
-    }
+#[macro_export]
+macro_rules! log_time_micros_with_category {
+    ($end_msg:expr, $log_category:expr) => {
+        // In C++: Timer<std::chrono::microseconds> ...
+        // In Rust, we currently use microseconds internally in Timer::log_msg, so just call Timer::new:
+        let _logging_timer_micros = $crate::Timer::new(
+            module_path!(),
+            $end_msg,
+            Some($log_category),
+        );
+    };
 }
 
-#[macro_export] macro_rules! log_time_millis_with_category {
-    ($end_msg:expr, 
-     $log_category:ident) => {
-        /*
-        
-            Timer<std::chrono::milliseconds> PASTE2(logging_timer, __COUNTER__)(__func__, end_msg, log_category)
-        */
-    }
+#[macro_export]
+macro_rules! log_time_millis_with_category {
+    ($end_msg:expr, $log_category:expr) => {
+        // In C++: Timer<std::chrono::milliseconds> ...
+        // We use the same Timer in Rust (which logs in microseconds).
+        let _logging_timer_millis = $crate::Timer::new(
+            module_path!(),
+            $end_msg,
+            Some($log_category),
+        );
+    };
 }
 
-#[macro_export] macro_rules! log_time_seconds {
+#[macro_export]
+macro_rules! log_time_seconds {
     ($end_msg:expr) => {
-        /*
-        
-            Timer<std::chrono::seconds> PASTE2(logging_timer, __COUNTER__)(__func__, end_msg)
-        */
-    }
+        // In C++: Timer<std::chrono::seconds> ...
+        // Same Timer in Rust, but we won't specify a category => defaults to LogFlags::ALL or None.
+        let _logging_timer_seconds = $crate::Timer::new(
+            module_path!(),
+            $end_msg,
+            None,
+        );
+    };
 }
