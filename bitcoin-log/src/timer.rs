@@ -8,6 +8,9 @@ crate::ix!();
   | information to logs.
   |
   */
+#[derive(Getters,MutGetters,Setters,Builder)]
+#[builder(setter(into))]
+#[getset(get="pub",set="pub")]
 pub struct Timer {
 
     start_t:      Instant,

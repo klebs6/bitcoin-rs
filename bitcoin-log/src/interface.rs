@@ -107,27 +107,25 @@ macro_rules! log_print {
 //-------------------------------------------[.cpp/bitcoin/src/logging.cpp]
 
 pub fn log_instance() -> &'static mut Logger {
-    
-    todo!();
-        /*
-            /**
-     * NOTE: the logger instances is leaked on exit. This is ugly, but will be
-     * cleaned up by the OS/libc. Defining a logger as a global object doesn't work
-     * since the order of destruction of static/global objects is undefined.
-     * Consider if the logger gets destroyed, and then some later destructor calls
-     * LogPrintf, maybe indirectly, and you get a core dump at shutdown trying to
-     * access the logger. When the shutdown sequence is fully audited and tested,
-     * explicit destruction of these objects can be implemented by changing this
-     * from a raw pointer to a std::unique_ptr.
-     * Since the ~Logger() destructor is never called, the Logger class and all
-     * its subclasses must have implicitly-defined destructors.
-     *
-     * This method of initialization was originally introduced in
-     * ee3374234c60aba2cc4c5cd5cac1c0aefc2d817c.
+    /**
+     * We create a single global Logger instance
+     * that is leaked on exit. This imitates the C++ code's
+     * approach of "static global pointer, never freed."
      */
-        static Logger* g_logger{new Logger()};
-        return *g_logger;
-        */
+    use std::sync::Once;
+
+    static mut LOGGER_PTR: *mut Logger = std::ptr::null_mut();
+    static INIT: Once = Once::new();
+
+    unsafe {
+        INIT.call_once(|| {
+            // Construct a default logger
+            let logger = Logger::default();
+            // Leak it by turning it into a raw pointer
+            LOGGER_PTR = Box::into_raw(Box::new(logger));
+        });
+        &mut *LOGGER_PTR
+    }
 }
 
 pub fn file_write_str(

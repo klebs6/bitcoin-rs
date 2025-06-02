@@ -25,11 +25,7 @@ TEST  := test
 
 #ACTIVE := bitcoin-aes
 ACTIVE := bitcoin-network
-ACTIVE := bitcoin-u256
-ACTIVE := bitcoin-u160
-#ACTIVE := bitcoin-blob
-#ACTIVE := bitcoin-log
-#ACTIVE := bitcoin-bigint
+ACTIVE := bitcoin-log
 
 #ACTIVE := bitcoin-client-ui
 #ACTIVE := bitcoin-compat
@@ -50,7 +46,6 @@ ACTIVE := bitcoin-u160
 #ACTIVE := bitcoin-init
 #ACTIVE := bitcoin-ipc
 #ACTIVE := bitcoin-leveldb
-#ACTIVE := bitcoin-log
 #ACTIVE := bitcoin-merkle
 #ACTIVE := bitcoin-miner
 #ACTIVE := bitcoin-net

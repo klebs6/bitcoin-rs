@@ -380,6 +380,7 @@ pub use std::mem::*;
 pub use delegate::*;
 pub use std::marker::*;
 pub use atomic_float::{AtomicF32,AtomicF64};
+pub use chrono;
 
 pub use comparator::collections::binary_heap::BinaryHeap as MaxHeap;
 pub use comparator::Comparator;
@@ -421,6 +422,8 @@ pub use std::sync::{
     //Mutex,
 };
 
+pub use getset::{Setters,Getters,MutGetters};
+pub use std::sync::Mutex as StdMutex;
 pub use std::sync;
 pub use test::Bencher;
 pub use time_point::*;

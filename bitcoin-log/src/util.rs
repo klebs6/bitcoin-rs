@@ -1,0 +1,69 @@
+crate::ix!();
+
+// ---------------------------------------
+// The following helper functions replicate
+// what the C++ code references but doesn't show
+// in your snippet. We define them locally so the
+// translation compiles as a single AST item.
+// ---------------------------------------
+
+/// A minimal imitation of the C++ `LogEscapeMessage`.
+/// Replaces any control chars < 32 (except '\n') and 127 with `\x??`.
+pub fn log_escape_message(s: &str) -> String {
+    trace!("log_escape_message => escaping control characters in the string of length={}", s.len());
+    let mut ret = String::with_capacity(s.len());
+    for ch in s.chars() {
+        let code = ch as u32;
+        if (code >= 32 && code != 127) || ch == '\n' {
+            ret.push(ch);
+        } else {
+            ret.push_str(&format!("\\x{:02X}", code));
+        }
+    }
+    ret
+}
+
+/// Emulate the C++ function `RemovePrefix(source_file, "./")`.
+pub fn remove_prefix(s: &str, prefix: &str) -> String {
+    if s.starts_with(prefix) {
+        s[prefix.len()..].to_string()
+    } else {
+        s.to_string()
+    }
+}
+
+/// A minimal imitation of `GetTimeMicros()` in the C++ code,
+/// returning the current Unix time in microseconds.
+pub fn get_time_micros() -> i64 {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_else(|_| std::time::Duration::from_secs(0));
+    now.as_micros() as i64
+}
+
+/// A helper to do the same as the C++ FileWriteStr:
+/// writes the entire string to the given `FILE*`.
+pub unsafe fn file_write_str(msg: &str, fp: *mut libc::FILE) {
+    if fp.is_null() {
+        error!("file_write_str => fp is null => skipping");
+        return;
+    }
+    libc::fwrite(
+        msg.as_ptr() as *const libc::c_void,
+        1,
+        msg.len(),
+        fp
+    );
+}
+
+/// A convenience extension: `is_empty()` on LinkedList
+pub trait LinkedListExt<T> {
+    fn is_empty(&self) -> bool;
+}
+
+impl<T> LinkedListExt<T> for LinkedList<T> {
+    fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+}
