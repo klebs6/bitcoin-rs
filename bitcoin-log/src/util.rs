@@ -19,11 +19,10 @@ pub fn get_time_micros() -> i64 {
     now.as_micros() as i64
 }
 
-/// A helper to do the same as the C++ FileWriteStr:
-/// writes the entire string to the given `FILE*`.
+#[inline]
 pub unsafe fn file_write_str(msg: &str, fp: *mut libc::FILE) {
+    // Removed the `error!()` call to avoid re‐entrant logging deadlock if `fp` is null.
     if fp.is_null() {
-        error!("file_write_str => fp is null => skipping");
         return;
     }
     libc::fwrite(

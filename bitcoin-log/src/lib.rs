@@ -100,30 +100,42 @@ mod bitcoin_logger_tests {
         trace!("test_get_log_category_unknown passed.");
     }
 
-    // ----------------------------------
-    // 2) Test log_accept_category
-    // ----------------------------------
     #[traced_test]
     #[serial]
     fn test_log_accept_category() {
-        info!("Testing log_accept_category calls make_test_logger().will_log_category");
-        // By default, make_test_logger() => categories = 0 (LogFlags::NONE)
-        // So net => false
-        assert_eq!(log_accept_category(LogFlags::NET), false, "Should not accept 'NET' by default");
+        info!("Testing log_accept_category calls the global log_instance().will_log_category.");
 
-        // Enable NET
+        // First, ensure the global logger has no categories set:
+        log_instance().categories().store(0, std::sync::atomic::Ordering::Relaxed);
+
+        // Confirm 'NET' is initially disabled:
+        assert_eq!(
+            log_accept_category(LogFlags::NET),
+            false,
+            "Should not accept 'NET' by default"
+        );
+
+        // Enable NET on the *global logger*:
         {
-            let mut logger = make_test_logger();
+            let logger = log_instance();
             logger.enable_category_with_flags(LogFlags::NET);
         }
-        assert_eq!(log_accept_category(LogFlags::NET), true, "Now we accept 'NET' after enabling it");
+        assert_eq!(
+            log_accept_category(LogFlags::NET),
+            true,
+            "Now we accept 'NET' after enabling it"
+        );
 
-        // Disable NET
+        // Disable NET on the *global logger*:
         {
-            let mut logger = make_test_logger();
+            let logger = log_instance();
             logger.disable_category_with_flags(LogFlags::NET);
         }
-        assert_eq!(log_accept_category(LogFlags::NET), false, "Disabled again => false");
+        assert_eq!(
+            log_accept_category(LogFlags::NET),
+            false,
+            "Disabled again => no longer accept 'NET'"
+        );
 
         trace!("test_log_accept_category passed.");
     }
@@ -266,9 +278,9 @@ mod bitcoin_logger_tests {
     #[traced_test]
     #[serial]
     fn test_timer_lifetime_message() {
-        let mut logger = make_test_logger();
+        info!("Testing timer_lifetime_message with a fresh logger.");
 
-        // We'll store logs in a shared Vec
+        let mut logger = make_test_logger();
         let lines = Arc::new(StdMutex::new(Vec::<String>::new()));
         let lines_clone = lines.clone();
 
@@ -282,11 +294,8 @@ mod bitcoin_logger_tests {
             inner.print_callbacks_mut().push_back(Box::new(cb));
         }
 
-        // Un-buffer
-        {
-            let mut inner = logger.cs().lock();
-            inner.set_buffering(false);
-        }
+        // We **no longer** set buffering=false here. We keep the default (buffering=true) so that
+        // start_logging() can properly transition from buffered => unbuffered.
         let _ = logger.start_logging();
 
         // Create the Timer
@@ -300,7 +309,7 @@ mod bitcoin_logger_tests {
                 .unwrap();
         }
 
-        // Check lines
+        // Verify we see both a 'started' and 'completed' line in the logs
         let locked_lines = lines.lock().unwrap();
         assert!(
             locked_lines.iter().any(|line| line.contains("Sample Timer started")),

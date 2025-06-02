@@ -3105,6 +3105,11 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "derive_builder",
+ "getset",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
 ]
 
 [[package]]
