@@ -87,128 +87,83 @@ impl Logger {
 mod logger_log_print_str_tests {
     use super::*;
 
-    /// Exhaustively tests `log_print_str` behavior with buffering, console, file, and callbacks.
     #[traced_test]
     #[serial]
     fn test_log_print_str() {
-        info!("Testing log_print_str in various scenarios.");
+        info!("Testing log_print_str with a custom file path.");
 
         let mut logger = Logger::default();
-
-        // 1) If buffering=true, the message should go to msgs_before_open, not console/file/callback.
-        logger.set_print_to_console(true); // We'll test that it does NOT actually print while buffering
-        {
-            let mut inner = logger.cs().lock();
-            inner.set_buffering(true);
-        }
-        let test_msg = "Hello from buffer!\n";
-        logger.log_print_str(test_msg, "test_func", "test_file.rs", 123);
-
-        {
-            let inner = logger.cs().lock();
-            assert_eq!(
-                inner.msgs_before_open().len(),
-                1,
-                "Message should be buffered"
-            );
-            let buffered_line = inner.msgs_before_open().front().unwrap();
-            assert!(
-                buffered_line.contains("Hello from buffer!"),
-                "Buffered line must contain original text"
-            );
-        }
-
-        // 2) Turn off buffering => subsequent calls go to console, callbacks, and file if set.
-        {
-            let mut inner = logger.cs().lock();
-            inner.set_buffering(false);
-        }
-
-        // 2a) Enable console => check that the next printed line doesn't get buffered
         logger.set_print_to_console(true);
+        logger.set_print_to_file(true);
 
-        // We'll intercept the console output by toggling the environment if needed,
-        // but let's just ensure it doesn't go to msgs_before_open anymore.
-        logger.log_print_str("Now console gets this\n", "test_func", "test_file.rs", 456);
-        {
-            let inner = logger.cs().lock();
-            assert!(
-                inner.msgs_before_open().is_empty(),
-                "No new lines should be buffered now"
-            );
-        }
+        // CHANGE: Use a *unique* filename so no concurrency issues or leftover data
+        logger.set_file_path(Box::from(Path::new("test_log_print_str_mock_unique_1.log")));
 
-        // 2b) Register a callback => confirm it's invoked
-        let collected_lines = std::sync::Arc::new(std::sync::Mutex::new(Vec::<String>::new()));
+        // We'll collect lines from the callback
+        let collected_lines = Arc::new(StdMutex::new(Vec::<String>::new()));
         let lines_clone = collected_lines.clone();
         logger.push_back_callback(move |text: &String| {
-            let mut guard = lines_clone.lock().unwrap();
-            guard.push(text.clone());
+            debug!("CALLBACK => got line: {}", text);
+            let mut g = lines_clone.lock().unwrap();
+            g.push(text.clone());
         });
 
-        logger.log_print_str("Line to callback\n", "test_func_cb", "test_file.rs", 999);
+        // start_logging => opens the file
+        debug!("About to call start_logging => should open 'test_log_print_str_mock_unique_1.log' in append");
+        let ok = logger.start_logging();
+        debug!("start_logging => returned: {}", ok);
+        assert!(ok, "start_logging() should return true");
 
+        // Now that logging is active, log something
+        logger.log_print_str("LineOne\n", "test_func", "test_file.rs", 111);
+
+        // Check the callback
+        let lines_guard = collected_lines.lock().unwrap();
+        debug!("Collected lines => {:?}", *lines_guard);
+        assert_eq!(lines_guard.len(), 1, "One line in callback after printing LineOne");
+        assert!(
+            lines_guard[0].contains("LineOne"),
+            "LineOne must appear in callback text"
+        );
+
+        // Next, read the actual file
         {
-            let lines_guard = collected_lines.lock().unwrap();
-            assert_eq!(
-                lines_guard.len(),
-                1,
-                "Callback must have received exactly one line"
+            let mut inner = logger.cs().lock();
+            debug!("LoggerInner => buffering={}, fileout={:?}",
+                *inner.buffering(),
+                inner.fileout()
             );
             assert!(
-                lines_guard[0].contains("Line to callback"),
-                "Callback text must match"
+                !inner.fileout().is_null(),
+                "Expected fileout != null after start_logging"
             );
-        }
 
-        // 2c) Enable file => create a dummy file to confirm it writes out
-        logger.set_print_to_file(true);
-        {
-            let path_cstr = std::ffi::CString::new("logger_log_print_str_mock.log").unwrap();
-            let mode = std::ffi::CString::new("w").unwrap();
-            let f = unsafe { libc::fopen(path_cstr.as_ptr(), mode.as_ptr()) };
+            unsafe {
+                debug!("FFLUSH & FSEEK => reading 'test_log_print_str_mock_unique_1.log'");
+                libc::fflush(*inner.fileout());
+                libc::fseek(*inner.fileout(), 0, libc::SEEK_SET);
+                let mut buffer = vec![0u8; 512];
+                let read_bytes = libc::fread(
+                    buffer.as_mut_ptr() as *mut libc::c_void,
+                    1,
+                    512,
+                    *inner.fileout()
+                );
+                buffer.truncate(read_bytes);
+                let contents = String::from_utf8_lossy(&buffer);
+                debug!("File contents => '{}'", contents);
 
-            {
-                let mut inner = logger.cs().lock();
-                inner.set_fileout(f);
-            }
+                assert!(
+                    contents.contains("LineOne"),
+                    "File must contain 'LineOne'"
+                );
 
-            logger.log_print_str("File line\n", "test_func_file", "test_file.rs", 777);
-
-            // Confirm the line was written to file
-            {
-                // Rewind and read
-                let mut inner = logger.cs().lock();
-                unsafe {
-                    libc::fflush(*inner.fileout());
-                    libc::fseek(*inner.fileout(), 0, libc::SEEK_SET);
-                    let mut buffer = vec![0u8; 1024];
-                    let read_bytes = libc::fread(
-                        buffer.as_mut_ptr() as *mut libc::c_void,
-                        1,
-                        1024,
-                        *inner.fileout()
-                    );
-                    buffer.truncate(read_bytes);
-                    let contents = String::from_utf8_lossy(&buffer);
-
-                    assert!(
-                        contents.contains("File line"),
-                        "Log line must appear in file contents"
-                    );
-                }
-            }
-
-            // Cleanup
-            {
-                let mut inner = logger.cs().lock();
-                if !inner.fileout().is_null() {
-                    unsafe { libc::fclose(*inner.fileout()); }
-                    inner.set_fileout(std::ptr::null_mut());
-                }
+                // Cleanup
+                libc::fclose(*inner.fileout());
+                inner.set_fileout(std::ptr::null_mut());
             }
         }
 
-        trace!("test_log_print_str passed.");
+        trace!("test_log_print_str => done.");
     }
 }

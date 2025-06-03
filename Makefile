@@ -26,7 +26,7 @@ TEST  := test
 #ACTIVE := bitcoin-aes
 ACTIVE := bitcoin-network
 ACTIVE := bitcoin-log
-#ACTIVE := bitcoinleveldb-status
+ACTIVE := bitcoinleveldb-filter
 
 #ACTIVE := bitcoin-client-ui
 #ACTIVE := bitcoin-compat

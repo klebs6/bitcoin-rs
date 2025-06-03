@@ -10,10 +10,14 @@ impl Logger {
     /// Returns a string with the log categories in alphabetical order
     pub fn log_categories_string(&self) -> String {
         let list = self.log_categories_list();
+
+        // ***Only keep those categories that are active.***
         let mut names: Vec<String> = list
             .into_iter()
+            .filter(|c| *c.active())
             .map(|c| c.category().to_string())
             .collect();
+
         names.sort_unstable();
         names.join(", ")
     }

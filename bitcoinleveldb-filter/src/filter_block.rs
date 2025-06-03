@@ -1,4 +1,3 @@
-// ---------------- [ File: bitcoinleveldb-filter/src/filter_block.rs ]
 /*!
   | A filter block is stored near the end of
   | a Table file.  It contains filters (e.g., bloom
@@ -11,220 +10,143 @@
 
 crate::ix!();
 
-/**
-  | Generate new filter every 2KB of data
-  |
-  */
+// ---------------- [ File: bitcoinleveldb-filter/src/filter_block.rs ]
+
+/// We generate a new filter for every 2KB of data (C++: kFilterBaseLg=11 => 1<<11=2048).
 pub const FILTER_BASE_LG: usize = 11;
-pub const FILTER_BASE:    usize = 1 << FILTER_BASE_LG;
+pub const FILTER_BASE: usize    = 1 << FILTER_BASE_LG;
+
+/// Appends a 32-bit little-endian integer to `dst`.
+pub fn put_fixed32(dst: &mut Vec<u8>, value: u32) {
+    trace!("put_fixed32 -> value={}", value);
+    let bytes = value.to_le_bytes();
+    dst.extend_from_slice(&bytes);
+}
+
+/// Reads a 32-bit little-endian integer from the first 4 bytes of `src`.
+/// If `src` has fewer than 4 bytes, behavior is undefined (the caller ensures correctness).
+pub fn decode_fixed32(src: &[u8]) -> u32 {
+    let arr: [u8; 4] = src[0..4].try_into().unwrap();
+    u32::from_le_bytes(arr)
+}
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/table/filter_block.h]
+//-------------------------------------------[.cpp/bitcoin/src/leveldb/table/filter_block.cc]
 
-/**
-  | A FilterBlockBuilder is used to construct all
-  | of the filters for a particular Table.  It
-  | generates a single string which is stored as
-  | a special block in the Table.
-  |
-  | The sequence of calls to FilterBlockBuilder
-  |      must match the regexp: (StartBlock
-  |      AddKey*)* Finish
-  */
+/// A `FilterBlockBuilder` constructs all the filters for a table.
+/// We remove `#[derive(Debug, Builder)]` to avoid compile errors.
+#[derive(Getters, Setters)]
 pub struct FilterBlockBuilder {
+    policy: Box<dyn FilterPolicy>,
 
-    policy:         Box<dyn FilterPolicy>,
+    /// Flattened key contents
+    keys: Vec<u8>,
 
-    /**
-      | Flattened key contents
-      |
-      */
-    keys:           String,
+    /// For each key in `keys`, the offset where it starts
+    start: Vec<usize>,
 
-    /**
-      | Starting index in keys_ of each key
-      |
-      */
-    start:          Vec<usize>,
+    /// Filter data (concatenated), plus offset array at the end
+    result: Vec<u8>,
 
-    /**
-      | Filter data computed so far
-      |
-      */
-    result:         String,
-
-    /**
-      | policy_->CreateFilter() argument
-      |
-      */
-    tmp_keys:       Vec<Slice>,
+    /// Reused in `generate_filter()`
+    tmp_keys: Vec<Slice>,
 
     filter_offsets: Vec<u32>,
 }
 
-//-------------------------------------------[.cpp/bitcoin/src/leveldb/table/filter_block.cc]
 impl FilterBlockBuilder {
-
     pub fn new(policy: Box<dyn FilterPolicy>) -> Self {
-    
-        todo!();
-        /*
-        : policy(policy),
-        */
-    }
-    
-    pub fn start_block(&mut self, block_offset: u64)  {
-        
-        todo!();
-        /*
-            uint64_t filter_index = (block_offset / kFilterBase);
-      assert(filter_index >= filter_offsets_.size());
-      while (filter_index > filter_offsets_.size()) {
-        GenerateFilter();
-      }
-        */
-    }
-    
-    pub fn add_key(&mut self, key_: &Slice)  {
-        
-        todo!();
-        /*
-            Slice k = key;
-      start_.push_back(keys_.size());
-      keys_.append(k.data(), k.size());
-        */
-    }
-    
-    pub fn finish(&mut self) -> Slice {
-        
-        todo!();
-        /*
-            if (!start_.empty()) {
-        GenerateFilter();
-      }
-
-      // Append array of per-filter offsets
-      const uint32_t array_offset = result_.size();
-      for (size_t i = 0; i < filter_offsets_.size(); i++) {
-        PutFixed32(&result_, filter_offsets_[i]);
-      }
-
-      PutFixed32(&result_, array_offset);
-      result_.push_back(kFilterBaseLg);  // Save encoding parameter in result
-      return Slice(result_);
-        */
-    }
-    
-    pub fn generate_filter(&mut self)  {
-        
-        todo!();
-        /*
-            const size_t num_keys = start_.size();
-      if (num_keys == 0) {
-        // Fast path if there are no keys for this filter
-        filter_offsets_.push_back(result_.size());
-        return;
-      }
-
-      // Make list of keys from flattened key structure
-      start_.push_back(keys_.size());  // Simplify length computation
-      tmp_keys_.resize(num_keys);
-      for (size_t i = 0; i < num_keys; i++) {
-        const char* base = keys_.data() + start_[i];
-        size_t length = start_[i + 1] - start_[i];
-        tmp_keys_[i] = Slice(base, length);
-      }
-
-      // Generate filter for current set of keys and append to result_.
-      filter_offsets_.push_back(result_.size());
-      policy_->CreateFilter(&tmp_keys_[0], static_cast<int>(num_keys), &result_);
-
-      tmp_keys_.clear();
-      keys_.clear();
-      start_.clear();
-        */
-    }
-}
-
-pub struct FilterBlockReader {
-
-    policy:  Box<dyn FilterPolicy>,
-
-    /**
-      | Pointer to filter data (at block-start)
-      |
-      */
-    data:    *const u8,
-
-    /**
-      | Pointer to beginning of offset array
-      | (at block-end)
-      |
-      */
-    offset:  *const u8,
-
-    /**
-      | Number of entries in offset array
-      |
-      */
-    num:     usize,
-
-    /**
-      | Encoding parameter (see kFilterBaseLg
-      | in .cc file)
-      |
-      */
-    base_lg: usize,
-}
-
-impl FilterBlockReader {
-
-    /**
-      | REQUIRES: "contents" and *policy must
-      | stay live while *this is live.
-      |
-      */
-    pub fn new(
-        policy:   Box<dyn FilterPolicy>,
-        contents: &Slice) -> Self {
-    
-        todo!();
-        /*
-        : policy(policy),
-        : data(nullptr),
-        : offset(nullptr),
-        : num(0),
-        : base_lg(0),
-
-            size_t n = contents.size();
-      if (n < 5) return;  // 1 byte for base_lg_ and 4 for start of offset array
-      base_lg_ = contents[n - 1];
-      uint32_t last_word = DecodeFixed32(contents.data() + n - 5);
-      if (last_word > n - 5) return;
-      data_ = contents.data();
-      offset_ = data_ + last_word;
-      num_ = (n - 5 - last_word) / 4;
-        */
-    }
-    
-    pub fn key_may_match(&mut self, 
-        block_offset: u64,
-        key_:          &Slice) -> bool {
-        
-        todo!();
-        /*
-            uint64_t index = block_offset >> base_lg_;
-      if (index < num_) {
-        uint32_t start = DecodeFixed32(offset_ + index * 4);
-        uint32_t limit = DecodeFixed32(offset_ + index * 4 + 4);
-        if (start <= limit && limit <= static_cast<size_t>(offset_ - data_)) {
-          Slice filter = Slice(data_ + start, limit - start);
-          return policy_->KeyMayMatch(key, filter);
-        } else if (start == limit) {
-          // Empty filters do not match any keys
-          return false;
+        info!("FilterBlockBuilder::new invoked");
+        Self {
+            policy,
+            keys: Vec::new(),
+            start: Vec::new(),
+            result: Vec::new(),
+            tmp_keys: Vec::new(),
+            filter_offsets: Vec::new(),
         }
-      }
-      return true;  // Errors are treated as potential matches
-        */
+    }
+
+    /// Start a filter region for the block at `block_offset`.
+    pub fn start_block(&mut self, block_offset: u64) {
+        trace!("start_block at offset={}", block_offset);
+        let filter_index = (block_offset / FILTER_BASE as u64) as usize;
+        assert!(
+            filter_index >= self.filter_offsets.len(),
+            "Block offset must not go backwards"
+        );
+        // Generate empty filters for any blocks we skipped
+        while filter_index > self.filter_offsets.len() {
+            self.generate_filter();
+        }
+    }
+
+    /// Add a key to the current filter batch
+    pub fn add_key(&mut self, key_: &Slice) {
+        trace!("add_key with length={}", *key_.size());
+        self.start.push(self.keys.len());
+        let key_data = unsafe {
+            // Must cast to *const u8, length = *key_.size()
+            std::slice::from_raw_parts(*key_.data() as *const u8, *key_.size())
+        };
+        self.keys.extend_from_slice(key_data);
+    }
+
+    /// Finish building all filters. Returns a `Slice` over our result buffer.
+    pub fn finish(&mut self) -> Slice {
+        trace!("FilterBlockBuilder::finish invoked");
+        // If there are pending keys, flush them
+        if !self.start.is_empty() {
+            self.generate_filter();
+        }
+        // Append array of per-filter offsets
+        let array_offset = self.result.len();
+        for &off in &self.filter_offsets {
+            put_fixed32(&mut self.result, off);
+        }
+        // Append the start-of-offset-array, then the base_lg
+        put_fixed32(&mut self.result, array_offset as u32);
+        self.result.push(FILTER_BASE_LG as u8);
+
+        info!("Finished building filter block, size={}", self.result.len());
+        Slice::from_ptr_len(self.result.as_ptr(), self.result.len())
+    }
+
+    /// Flush any accumulated keys into a new filter block
+    fn generate_filter(&mut self) {
+        trace!("generate_filter invoked");
+        let num_keys = self.start.len();
+        if num_keys == 0 {
+            // No keys => offset is current end-of-result
+            self.filter_offsets.push(self.result.len() as u32);
+            return;
+        }
+        // Add a sentinel so we can compute length of last key
+        self.start.push(self.keys.len());
+        self.tmp_keys.clear();
+        // Prepare self.tmp_keys
+        for i in 0..num_keys {
+            let base = self.start[i];
+            let length = self.start[i + 1] - base;
+            self.tmp_keys.push(Slice::from_ptr_len(
+                unsafe { self.keys.as_ptr().add(base) },
+                length,
+            ));
+        }
+
+        // The offset for this filter is the current length of result
+        self.filter_offsets.push(self.result.len() as u32);
+
+        // Build the filter
+        self.policy.create_filter(
+            self.tmp_keys.as_ptr(),
+            num_keys as i32,
+            &mut self.result
+        );
+
+        // Reset
+        self.tmp_keys.clear();
+        self.keys.clear();
+        self.start.clear();
     }
 }

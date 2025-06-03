@@ -4,48 +4,55 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/no_destructor.h]
 
 /**
-  | Wraps an instance whose destructor is never
-  | called.
-  |
+  | Wraps an instance whose destructor is never called.
+  | 
   | This is intended for use with function-level
-  | static variables.
+  | static variables or any scenario where you do
+  | not want to run the instance's destructor.
+  |
+  | In C++, this was done using aligned storage
+  | and placement-new, ignoring destruction. In
+  | Rust, we use `MaybeUninit` and never drop it.
+  | Access it via `get()` to retrieve a raw pointer
+  | to the stored instance.
   */
+#[derive(Debug)]
 pub struct NoDestructor<InstanceType> {
-    __remove_me__: std::marker::PhantomData<InstanceType>,
-
-    /*
-    lazy_static!{
-        /*
-        typename std::aligned_storage<sizeof(InstanceType),
-                                        alignof(InstanceType)>::type instance_storage_;
-        */
-    }
-*/
+    /// We store the instance in a MaybeUninit,
+    /// ensuring we never call its destructor.
+    instance_storage: MaybeUninit<InstanceType>,
 }
 
 impl<InstanceType> NoDestructor<InstanceType> {
-
-    pub fn new<Ts>(constructor_args: Ts) -> Self {
-    
-        todo!();
-        /*
-
-
-            const_assert(sizeof(instance_storage_) >= sizeof(InstanceType),
-                      "instance_storage_ is not large enough to hold the instance");
-        const_assert(
-            alignof(decltype(instance_storage_)) >= alignof(InstanceType),
-            "instance_storage_ does not meet the instance's alignment requirement");
-        new (&instance_storage_)
-            InstanceType(std::forward<ConstructorArgTypes>(constructor_args)...);
-        */
+    /**
+      | Create a `NoDestructor` by fully constructing
+      | the `instance` first, then storing it in
+      | `instance_storage`.  The destructor for
+      | this instance will never be run.
+      |
+      */
+    pub fn new(instance: InstanceType) -> Self {
+        info!("NoDestructor::new invoked");
+        let storage = MaybeUninit::new(instance);
+        Self {
+            instance_storage: storage,
+        }
     }
-    
-    pub fn get(&mut self) -> *mut InstanceType {
-        
-        todo!();
-        /*
-            return reinterpret_cast<InstanceType*>(&instance_storage_);
-        */
+
+    /**
+      | Return a mutable pointer to the stored instance.
+      | 
+      | The caller must be careful if they dereference
+      | this pointer, as we do not manage any lifetime
+      | or aliasing constraints beyond basic Rust
+      | memory safety.
+      */
+    pub fn get(&self) -> *mut InstanceType {
+        trace!("NoDestructor::get returning pointer to the stored instance");
+        // We cast `*const InstanceType` -> `*mut InstanceType`
+        // to replicate the mutable pointer from C++.
+        self.instance_storage.as_ptr() as *mut InstanceType
     }
 }
+
+

@@ -7,8 +7,7 @@ crate::ix!();
 #[derive(Getters, Setters)]
 #[getset(get = "pub", set = "pub")]
 pub struct Logger {
-    cs: Mutex<LoggerInner>,
-
+    cs:                  Mutex<LoggerInner>,
     started_new_line:    AtomicBool,
     categories:          AtomicU32,
 
@@ -30,7 +29,9 @@ pub struct Logger {
     #[set = "pub"]
     log_sourcelocations: bool,
 
+    #[set = "pub"]
     file_path:           Box<Path>,
+
     reopen_file:         AtomicBool,
 }
 

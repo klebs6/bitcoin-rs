@@ -1236,6 +1236,7 @@ dependencies = [
  "crossbeam",
  "delegate 0.7.0",
  "derivative",
+ "derive_builder",
  "errno 0.2.8",
  "float-ord",
  "fs2",
@@ -2780,6 +2781,9 @@ dependencies = [
  "bitcoin-imports",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-util",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
 ]
 
 [[package]]
@@ -2893,6 +2897,11 @@ dependencies = [
  "bitcoin-imports",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-util",
+ "derive_builder",
+ "getset",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
 ]
 
 [[package]]
@@ -3195,6 +3204,11 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinleveldb-status",
+ "derive_builder",
+ "getset",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
 ]
 
 [[package]]

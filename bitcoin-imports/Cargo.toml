@@ -11,6 +11,7 @@ atomic.workspace                = true
 traced-test.workspace           = true
 tracing.workspace               = true
 getset.workspace                = true
+derive_builder.workspace        = true
 tracing-setup.workspace         = true
 tracing-subscriber.workspace    = true
 atomic_float.workspace          = true

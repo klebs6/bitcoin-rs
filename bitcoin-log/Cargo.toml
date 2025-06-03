@@ -26,14 +26,13 @@ cpp-authors = [ "Wladimir J. van der Laan <laanwj@gmail.com>", "MarcoFalke <falk
 usdt.workspace = true
 
 [dependencies]
-usdt.workspace = true
+usdt.workspace           = true
 derive_builder.workspace = true
-getset.workspace = true
-tracing.workspace = true
-tracing-setup.workspace = true
-traced-test.workspace = true
-serial_test.workspace = true
+getset.workspace         = true
+tracing.workspace        = true
+tracing-setup.workspace  = true
+traced-test.workspace    = true
+serial_test.workspace    = true
 
 [profile.test]
 test-threads = 1
-

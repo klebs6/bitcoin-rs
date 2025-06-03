@@ -278,27 +278,37 @@ mod bitcoin_logger_tests {
     #[traced_test]
     #[serial]
     fn test_timer_lifetime_message() {
-        info!("Testing timer_lifetime_message with a fresh logger.");
+        info!("Testing timer_lifetime_message with the global logger.");
 
-        let mut logger = make_test_logger();
+        // 1) Reset the global logger
+        let global_logger = log_instance();
+        trace!("Calling disconnect_test_logger() => resetting global_logger");
+        global_logger.disconnect_test_logger();
+        global_logger.set_print_to_console(false);
+        global_logger.set_print_to_file(false);
+
+        // 2) Insert a callback
         let lines = Arc::new(StdMutex::new(Vec::<String>::new()));
-        let lines_clone = lines.clone();
-
-        // Insert a callback
         {
+            let lines_clone = lines.clone();
             let cb = move |msg: &String| {
-                let mut g = lines_clone.lock().unwrap();
-                g.push(msg.clone());
+                debug!("GLOBAL_LOGGER CALLBACK => Received line: {}", msg);
+                let mut guard = lines_clone.lock().unwrap();
+                guard.push(msg.clone());
             };
-            let mut inner = logger.cs().lock();
+            let mut inner = global_logger.cs().lock();
+            trace!("Installing callback, ensuring buffering=true for now");
             inner.print_callbacks_mut().push_back(Box::new(cb));
+            inner.set_buffering(true);
         }
 
-        // We **no longer** set buffering=false here. We keep the default (buffering=true) so that
-        // start_logging() can properly transition from buffered => unbuffered.
-        let _ = logger.start_logging();
+        // 3) start_logging => no longer buffered
+        trace!("Calling start_logging() => transitioning from buffered to active");
+        let ok = global_logger.start_logging();
+        debug!("start_logging => returned: {}", ok);
 
-        // Create the Timer
+        // 4) Create the Timer => calls new => logs "<title> started"
+        trace!("Constructing Timer => it will log 'Sample Timer started'");
         {
             let _timer = TimerBuilder::default()
                 .start_t(Instant::now())
@@ -307,17 +317,22 @@ mod bitcoin_logger_tests {
                 .log_category(LogFlags::ALL)
                 .build()
                 .unwrap();
+            trace!("Timer created => Will drop at scope end => logs 'Sample Timer completed'");
         }
 
-        // Verify we see both a 'started' and 'completed' line in the logs
-        let locked_lines = lines.lock().unwrap();
+        // 5) Confirm we see both “Sample Timer started” & “... completed”
+        let lines_guard = lines.lock().unwrap();
+        debug!("LINES COLLECTED => {:?}", *lines_guard);
+
         assert!(
-            locked_lines.iter().any(|line| line.contains("Sample Timer started")),
-            "Should have a line with 'started'"
+            lines_guard.iter().any(|line| line.contains("Sample Timer started")),
+            "Should have a line with 'Sample Timer started'"
         );
         assert!(
-            locked_lines.iter().any(|line| line.contains("Sample Timer completed")),
-            "Should have a line with 'completed'"
+            lines_guard.iter().any(|line| line.contains("Sample Timer completed")),
+            "Should have a line with 'Sample Timer completed'"
         );
+
+        trace!("test_timer_lifetime_message passed.");
     }
 }

@@ -3,197 +3,185 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/include/leveldb/comparator.h]
 
-pub trait Compare {
-
-    /**
-      | Three-way comparison.  Returns value:
-      |
-      |   < 0 iff "a" < "b",
-      |
-      |   == 0 iff "a" == "b",
-      |
-      |   > 0 iff "a" > "b"
-      */
-    fn compare(&self, 
-            a: &Slice,
-            b: &Slice) -> i32;
-}
-
-/*
-  | Advanced functions: these are used
-  | to reduce the space requirements for
-  | internal data structures like index
-  | blocks.
-  |
-  */
-pub trait FindShortestSeparator {
-
-    /**
-      | If *start < limit, changes *start to a short
-      | string in [start,limit).
-      |
-      | Simple comparator implementations may return
-      | with *start unchanged, i.e., an
-      | implementation of this method that does
-      | nothing is correct.
-      */
-    fn find_shortest_separator(&self, 
-            start: *mut String,
-            limit: &Slice);
-}
-
-pub trait FindShortSuccessor {
-
-    /**
-      | Changes *key to a short string >= *key.
-      |
-      | Simple comparator implementations may return
-      | with *key unchanged,
-      |
-      | i.e., an implementation of this method that
-      | does nothing is correct.
-      */
-    fn find_short_successor(&self, key_: *mut String);
-}
-
-/**
-  | A Comparator object provides a total order
-  | across slices that are used as keys in an
-  | sstable or a database.  A Comparator
-  | implementation must be thread-safe since
-  | leveldb may invoke its methods concurrently
-  | from multiple threads.
-  */
-pub trait SliceComparator: 
-    Compare 
-
-    /*
-      | The name of the comparator. Used to check
-      | for comparator mismatches (i.e., a
-      | DB created with one comparator is accessed
-      | using a different comparator.
-      | 
-      | The client of this package should switch
-      | to a new name whenever the comparator
-      | implementation changes in a way that
-      | will cause the relative ordering of
-      | any two keys to change.
-      | 
-      | Names starting with "leveldb." are
-      | reserved and should not be used by any
-      | clients of this package.
-      |
-      */
-    + Name 
-    + FindShortestSeparator 
-    + FindShortSuccessor 
-{
-    /**
-      | Return a builtin comparator that uses
-      | lexicographic byte-wise ordering.  The result
-      | remains the property of this module and must
-      | not be deleted.
-      */
-    fn bytewise_comparator(&mut self) -> *const dyn SliceComparator {
-        
-        todo!();
-        /*
-        
-        */
-    }
-}
-
-///-------------------------------
-#[derive(Default)]
+/// A bytewise comparator that sorts slices by
+/// lexicographic ordering (the default for
+/// LevelDB).
+#[derive(Debug)]
 pub struct BytewiseComparatorImpl {
+    // No fields needed; logic is purely functional.
+}
 
+impl Default for BytewiseComparatorImpl {
+    fn default() -> Self {
+        info!("Creating BytewiseComparatorImpl by default");
+        Self {}
+    }
 }
 
 impl SliceComparator for BytewiseComparatorImpl {
-
-}
-    
-impl FindShortestSeparator for BytewiseComparatorImpl {
-
-    fn find_shortest_separator(&self, 
-        start: *mut String,
-        limit: &Slice)  {
-        
-        todo!();
-        /*
-            // Find length of common prefix
-        size_t min_length = std::min(start->size(), limit.size());
-        size_t diff_index = 0;
-        while ((diff_index < min_length) &&
-               ((*start)[diff_index] == limit[diff_index])) {
-          diff_index++;
-        }
-
-        if (diff_index >= min_length) {
-          // Do not shorten if one string is a prefix of the other
-        } else {
-          uint8_t diff_byte = static_cast<uint8_t>((*start)[diff_index]);
-          if (diff_byte < static_cast<uint8_t>(0xff) &&
-              diff_byte + 1 < static_cast<uint8_t>(limit[diff_index])) {
-            (*start)[diff_index]++;
-            start->resize(diff_index + 1);
-            assert(Compare(*start, limit) < 0);
-          }
-        }
-        */
+    fn bytewise_comparator(&self) -> *const dyn SliceComparator {
+        trace!("Returning global bytewise_comparator pointer");
+        bytewise_comparator()
     }
 }
-    
+
+impl FindShortestSeparator for BytewiseComparatorImpl {
+    fn find_shortest_separator(&self, start: &mut Vec<u8>, limit: &[u8]) {
+        trace!(
+            "BytewiseComparatorImpl::find_shortest_separator called with start={:?}, limit={:?}",
+            start,
+            limit
+        );
+
+        // 1. Find length of common prefix
+        let min_length = std::cmp::min(start.len(), limit.len());
+        let mut diff_index = 0;
+        while diff_index < min_length {
+            if start[diff_index] != limit[diff_index] {
+                break;
+            }
+            diff_index += 1;
+        }
+
+        if diff_index < min_length {
+            let diff_byte = start[diff_index];
+            let limit_byte = limit[diff_index];
+
+            // 2. If we can increment diff_byte without crossing limit_byte,
+            //    do so and truncate.
+            if diff_byte < 0xFF && (diff_byte + 1) < limit_byte {
+                start[diff_index] = diff_byte + 1;
+                // Truncate after diff_index + 1
+                start.truncate(diff_index + 1);
+                debug!("Shortened separator -> {:?}", start);
+            }
+        }
+        // else they share the entire prefix up to min_length or
+        // one is a prefix of the other, so do nothing
+    }
+}
+
 impl FindShortSuccessor for BytewiseComparatorImpl {
 
-    fn find_short_successor(&self, key_: *mut String)  {
-        
-        todo!();
-        /*
-            // Find first character that can be incremented
-        size_t n = key->size();
-        for (size_t i = 0; i < n; i++) {
-          const uint8_t byte = (*key)[i];
-          if (byte != static_cast<uint8_t>(0xff)) {
-            (*key)[i] = byte + 1;
-            key->resize(i + 1);
-            return;
-          }
+    fn find_short_successor(&self, key: &mut Vec<u8>) {
+        trace!(
+            "BytewiseComparatorImpl::find_short_successor called with key={:?}",
+            key
+        );
+
+        // 1. Find first character that can be incremented
+        for i in 0..key.len() {
+            if key[i] != 0xFF {
+                key[i] = key[i] + 1; // increment it
+                key.truncate(i + 1); // truncate the rest
+                debug!("Short successor -> {:?}", key);
+                return;
+            }
         }
-        // *key is a run of 0xffs.  Leave it alone.
-        */
+        // If entire key is 0xFF, do nothing
+        trace!("Key is a run of 0xFF bytes; leaving unchanged");
     }
 }
 
+// -------------------------------------
+// Name trait implementation
+// -------------------------------------
 impl Name for BytewiseComparatorImpl {
-    
     fn name(&self) -> *const u8 {
-        
-        todo!();
-        /*
-            return "leveldb.BytewiseComparator";
-        */
+        info!("Returning the name of BytewiseComparatorImpl");
+        static NAME: &str = "leveldb.BytewiseComparator";
+        NAME.as_ptr()
     }
 }
-    
+
+// -------------------------------------
+// Compare trait implementation
+// -------------------------------------
 impl Compare for BytewiseComparatorImpl {
-
-    fn compare(&self, 
-        a: &Slice,
-        b: &Slice) -> i32 {
-        
-        todo!();
-        /*
-            return a.compare(b);
-        */
+    fn compare(&self, a: &Slice, b: &Slice) -> i32 {
+        trace!("BytewiseComparatorImpl::compare invoked");
+        let cmp = a.compare(b);
+        trace!("compare result: {}", cmp);
+        cmp
     }
 }
 
+/// Return a pointer to a global, bytewise comparator.
+/// This replicates the C++ pattern of `static NoDestructor<BytewiseComparatorImpl>`.
 pub fn bytewise_comparator() -> *const dyn SliceComparator {
 
-    todo!();
-    /*
-    static NoDestructor<BytewiseComparatorImpl> singleton;
-    return singleton.get();
-    */
+    static BYTEWISE_COMPARATOR: OnceLock<BytewiseComparatorImpl> = OnceLock::new();
+
+    trace!("bytewise_comparator() invoked");
+    let reference = BYTEWISE_COMPARATOR.get_or_init(|| {
+        info!("Initializing BytewiseComparatorImpl singleton");
+        BytewiseComparatorImpl::default()
+    });
+    // We cast &BytewiseComparatorImpl -> *const dyn SliceComparator
+    reference as *const BytewiseComparatorImpl as *const dyn SliceComparator
+}
+
+#[cfg(test)]
+mod test_comparator {
+    use super::*;
+
+    #[traced_test]
+    fn test_compare_basic() {
+        let cmp = BytewiseComparatorImpl::default();
+        let s1 = Slice::from_ptr_len(b"abc".as_ptr(), 3);
+        let s2 = Slice::from_ptr_len(b"abd".as_ptr(), 3);
+        let s3 = Slice::from_ptr_len(b"abc".as_ptr(), 3);
+
+        assert!(cmp.compare(&s1, &s2) < 0, "abc < abd");
+        assert!(cmp.compare(&s2, &s1) > 0, "abd > abc");
+        assert_eq!(cmp.compare(&s1, &s3), 0, "abc == abc");
+    }
+
+    #[traced_test]
+    fn test_find_shortest_separator() {
+        let cmp = BytewiseComparatorImpl::default();
+        let limit = b"abcxyz".to_vec();
+
+        // If prefix matches entirely, do nothing
+        let mut start1 = b"abc".to_vec();
+        cmp.find_shortest_separator(&mut start1, &limit);
+        assert_eq!(start1, b"abc");
+
+        // Diverge at index=2
+        let mut start2 = b"abaxxx".to_vec(); // 'a' < 'c'
+        cmp.find_shortest_separator(&mut start2, &limit);
+        // Expect "abb" => 'a'(0x61), 'b'(0x62), second char is 'a'(0x61) < 'c'(0x63),
+        // so 0x61 + 1=0x62 => 'b'
+        // => [0x61, 0x62, 0x62] -> "abb"
+        assert_eq!(start2, b"abb");
+    }
+
+    #[traced_test]
+    fn test_find_short_successor() {
+        let cmp = BytewiseComparatorImpl::default();
+        
+        // Key #1: "abz" => first non-0xFF is 'a' -> 'b' (0x61 -> 0x62), 
+        // truncate after i=0 => "b".
+        let mut key1 = b"abz".to_vec();
+        cmp.find_short_successor(&mut key1);
+        assert_eq!(key1, b"b", "Expect the official LevelDB left-to-right behavior");
+
+        // Key #2: entire key is 0xFF => do nothing
+        let mut key2 = vec![0xFF, 0xFF, 0xFF];
+        cmp.find_short_successor(&mut key2);
+        assert_eq!(key2, vec![0xFF, 0xFF, 0xFF]);
+
+        // Key #3: [ 'a', 0xFF, ... ] => first is 'a', not 0xFF => increment to 'b', truncate => "b"
+        let mut key3 = vec![b'a', 0xFF, b'x', b'y', b'z'];
+        cmp.find_short_successor(&mut key3);
+        assert_eq!(key3, b"b", "Same logic as above");
+    }
+
+    #[traced_test]
+    fn test_bytewise_comparator_singleton() {
+        let ptr1 = bytewise_comparator();
+        assert!(!ptr1.is_null());
+        let ptr2 = bytewise_comparator();
+        assert_eq!(ptr1, ptr2, "Singleton pointer must not change");
+    }
 }
