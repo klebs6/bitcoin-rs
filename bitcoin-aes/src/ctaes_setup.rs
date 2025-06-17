@@ -18,7 +18,7 @@ crate::ix!();
   |
   */
 pub fn aes_setup(
-        rounds:    *mut AES_state,
+        rounds:    *mut AESState,
         key:       *const u8,
         nkeywords: i32,
         nrounds:   i32)  {
@@ -28,11 +28,11 @@ pub fn aes_setup(
             int i;
 
         /* The one-byte round constant */
-        AES_state rcon = {{1,0,0,0,0,0,0,0}};
+        AESState rcon = {{1,0,0,0,0,0,0,0}};
         /* The number of the word being generated, modulo nkeywords */
         int pos = 0;
         /* The column representing the word currently being processed */
-        AES_state column;
+        AESState column;
 
         for (i = 0; i < nrounds + 1; i++) {
             int b;

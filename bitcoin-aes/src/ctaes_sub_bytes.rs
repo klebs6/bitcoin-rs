@@ -14,7 +14,7 @@ crate::ix!();
 /// Joan Boyar and Rene Peralta, A depth-16
 /// circuit for the AES S-box. https://eprint.iacr.org/2011/332.pdf
 ///
-pub(crate) fn sub_bytes(state: &mut AesState, inverse: bool) {
+pub(crate) fn sub_bytes(state: &mut AESState, inverse: bool) {
     trace!(inverse, "sub_bytes – entry");
 
     /* ---------------------------------------------------------------------
@@ -259,7 +259,7 @@ mod aes_sbox_exhaustive_tests {
     fn random_roundtrip_identity() {
         let mut rng = thread_rng();
         for _ in 0..10_000 {
-            let original = AesState::random(&mut rng);
+            let original = AESState::random(&mut rng);
             let mut state = original.clone();
             sub_bytes(&mut state, false);
             sub_bytes(&mut state, true);
@@ -313,8 +313,8 @@ mod aes_sbox_exhaustive_tests {
 
     /* ------------------------- helper: pack / unpack -------------------- */
 
-    /// Convert 16 bytes into a bit‑sliced `AesState`.
-    fn pack_bytes(bytes: &[u8; 16]) -> AesState {
+    /// Convert 16 bytes into a bit‑sliced `AESState`.
+    fn pack_bytes(bytes: &[u8; 16]) -> AESState {
         let mut slice = [0u16; 8];
         for bit in 0..8 {
             let mut word = 0u16;
@@ -325,11 +325,11 @@ mod aes_sbox_exhaustive_tests {
             }
             slice[bit] = word;
         }
-        AesState::from_slice(slice)
+        AESState::from_slice(slice)
     }
 
-    /// Convert a bit‑sliced `AesState` back to its 16 bytes.
-    fn unpack_state(state: &AesState) -> [u8; 16] {
+    /// Convert a bit‑sliced `AESState` back to its 16 bytes.
+    fn unpack_state(state: &AESState) -> [u8; 16] {
         let mut bytes = [0u8; 16];
         for lane in 0..16 {
             let mut value = 0u8;

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-mem/src/for_amo.rs ]
 crate::ix!();
 
 // -----------------------------------------------------------------------------
@@ -172,6 +173,48 @@ mod memory_usage_tests {
     #[traced_test]
     fn hashmap_incremental() {
         let mut m: Arc<HashMap<u32, u32>> = Arc::new(HashMap::new());
+        let before = m.dynamic_usage();
+        let inc    = m.incremental_dynamic_usage();
+        m.insert(1, 2);
+        assert_eq!(m.dynamic_usage() - before, inc);
+    }
+
+    // ── Amo<T> tests ──────────────────────────────────────────────────
+    #[traced_test]
+    fn amo_none_recursive_equals_own() {
+        let amo: Amo<u8> = Amo::default();
+        assert_eq!(
+            recursive_dynamic_usage::recursive_dynamic_usage(&amo),
+            amo.dynamic_usage()
+        );
+    }
+
+    #[traced_test]
+    fn amo_with_inner_vec_zero_capacity() {
+        let amo: Amo<Vec<u32>> = Amo::default();
+        {
+            let mut g = amo.getopt_mut();
+            *g = Some(Vec::new()); // zero‑capacity Vec
+        }
+        assert_eq!(
+            recursive_dynamic_usage::recursive_dynamic_usage(&amo),
+            amo.dynamic_usage()
+        );
+    }
+
+    // ── HashSet / HashMap incremental growth ─────────────────────────
+    #[traced_test]
+    fn hashset_incremental_growth() {
+        let mut s: HashSet<u32> = HashSet::new();
+        let before = s.dynamic_usage();
+        let inc    = s.incremental_dynamic_usage();
+        s.insert(1);
+        assert_eq!(s.dynamic_usage() - before, inc);
+    }
+
+    #[traced_test]
+    fn hashmap_incremental_growth() {
+        let mut m: HashMap<u32, u32> = HashMap::new();
         let before = m.dynamic_usage();
         let inc    = m.incremental_dynamic_usage();
         m.insert(1, 2);

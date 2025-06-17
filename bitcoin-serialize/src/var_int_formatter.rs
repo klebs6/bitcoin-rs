@@ -16,6 +16,7 @@ impl<const Mode: VarIntMode> VarIntFormatter<Mode> {
     where
         Stream: Write,
         I: Into<u128> + Copy + From<u8> + TryInto<u128>,
+        (): ModeConstraint<Mode, I>,
     {
         write_var_int::<Stream, I, Mode>(s, v);
     }
@@ -26,7 +27,16 @@ impl<const Mode: VarIntMode> VarIntFormatter<Mode> {
         Stream: Read,
         I: TryFrom<u128> + Copy + Default + std::fmt::Debug,
         <I as TryFrom<u128>>::Error: std::fmt::Debug,
+        (): ModeConstraint<Mode, I>,
     {
         *v = read_var_int::<Stream, I, Mode>(s);
     }
 }
+
+impl<const Mode: VarIntMode> Default for VarIntFormatter<Mode> {
+    #[inline]
+    fn default() -> Self {
+        Self {}
+    }
+}
+

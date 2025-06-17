@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-mem/src/stl_data_structures.rs ]
 crate::ix!();
 
 // STL data structures

@@ -17,7 +17,7 @@ crate::ix!();
   | varint formats (e.g. zigzag encoding).
   |
   */
-#[derive(ConstParamTy,PartialEq,Eq)]
+#[derive(Clone,Debug,ConstParamTy,PartialEq,Eq)]
 pub enum VarIntMode { 
     Default, 
     NonNegativeSigned 

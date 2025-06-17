@@ -33,4 +33,3 @@ pub fn load_addrman(
         return std::nullopt;
         */
 }
-

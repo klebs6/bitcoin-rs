@@ -1,6 +1,8 @@
 // ---------------- [ File: bitcoin-serialize/src/size_computer.rs ]
 crate::ix!();
 
+use std::io::{Result as IoResult, Write};
+
 /// Count‑only stream used by `GetSerializeSize`.
 ///
 /// ::GetSerializeSize implementations
@@ -65,3 +67,4 @@ where
         self
     }
 }
+

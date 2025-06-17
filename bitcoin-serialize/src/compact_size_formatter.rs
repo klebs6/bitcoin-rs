@@ -38,3 +38,10 @@ impl<const RangeCheck: bool> CompactSizeFormatter<RangeCheck> {
         */
     }
 }
+
+impl<const RangeCheck: bool> Default for CompactSizeFormatter<RangeCheck> {
+    #[inline]
+    fn default() -> Self {
+        Self {}
+    }
+}

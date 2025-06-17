@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/check_var_int_mode.rs ]
 crate::ix!();
 
 pub struct CheckVarIntMode<const Mode: VarIntMode> {
@@ -6,7 +7,7 @@ pub struct CheckVarIntMode<const Mode: VarIntMode> {
 
 use num_traits::{Signed, Unsigned};
 
-trait ModeConstraint<const M: VarIntMode, I> {}
+pub trait ModeConstraint<const M: VarIntMode, I> {}
 impl<I: Unsigned> ModeConstraint<{ VarIntMode::Default },           I> for () {}
 impl<I: Signed>   ModeConstraint<{ VarIntMode::NonNegativeSigned }, I> for () {}
 
@@ -20,4 +21,3 @@ impl<const Mode: VarIntMode> CheckVarIntMode<Mode> {
         Self {}
     }
 }
-

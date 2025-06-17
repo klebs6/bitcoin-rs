@@ -54,4 +54,3 @@ impl<InstanceType> NoDestructor<InstanceType> {
         self.instance_storage.as_ptr() as *mut InstanceType
     }
 }
-

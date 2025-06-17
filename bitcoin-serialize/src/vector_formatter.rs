@@ -1,30 +1,24 @@
 // ---------------- [ File: bitcoin-serialize/src/vector_formatter.rs ]
 crate::ix!();
 
-/**
-  | Formatter to serialize/deserialize
-  | vector elements using another formatter
-  | 
-  | Example:
-  | 
-  | -----------
-  | @code
-  | 
-  | struct X {
-  |   std::vector<uint64_t> v;
-  |   SERIALIZE_METHODS(X, obj) { READWRITE(Using<VectorFormatter<VarInt>>(obj.v)); }
-  | };
-  |
-  | will define a struct that contains a
-  | vector of uint64_t, which is serialized
-  | as a vector of VarInt-encoded integers.
-  | 
-  | V is not required to be an std::vector
-  | type. It works for any class that exposes
-  | a value_type, size, reserve, emplace_back,
-  | back, and const iterators.
-  |
-  */
+/// Formatter to serialize/deserialize vector elements using another formatter
+/// 
+/// Example:
+/// 
+/// -----------
+/// @code
+/// 
+/// struct X {
+///   std::vector<uint64_t> v;
+///   SERIALIZE_METHODS(X, obj) { READWRITE(Using<VectorFormatter<VarInt>>(obj.v)); }
+/// };
+/// 
+/// will define a struct that contains a vector of uint64_t, which is serialized as a vector of
+/// VarInt-encoded integers.
+/// 
+/// V is not required to be an std::vector type. It works for any class that exposes a value_type,
+/// size, reserve, emplace_back, back, and const iterators.
+/// 
 pub struct VectorFormatter<'a,T> {
     item: &'a mut T,
 }

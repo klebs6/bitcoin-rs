@@ -117,17 +117,6 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for &[u8] {
-
-    #[inline] fn unserialize(&mut self, s: &mut Stream)  {
-
-        todo!();
-            /*
-                s.read(CharCast(span.data()), span.size());
-            */
-    }
-}
-
 impl<Stream> Unserialize<Stream> for bool
 where
     Stream: Read,
@@ -137,6 +126,17 @@ where
         let v = ser_readdata8(s) != 0;
         trace!(value = v, "unserialize bool");
         *self = v;
+    }
+}
+
+impl<Stream> Unserialize<Stream> for &[u8] {
+
+    #[inline] fn unserialize(&mut self, s: &mut Stream)  {
+
+        todo!();
+            /*
+                s.read(CharCast(span.data()), span.size());
+            */
     }
 }
 

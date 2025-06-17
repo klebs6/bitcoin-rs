@@ -451,6 +451,8 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "derive_builder",
+ "tracing",
 ]
 
 [[package]]

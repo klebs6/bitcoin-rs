@@ -181,33 +181,26 @@ where
   |
   */
 
-/**
-  | Cause serialization/deserialization
-  | of an object to be done using a specified
-  | formatter class.
-  | 
-  | To use this, you need a class Formatter
-  | that has public functions Ser(stream,
-  | const object&) for serialization,
-  | and Unser(stream, object&) for deserialization.
-  | Serialization routines (inside
-  | 
-  | READWRITE, or directly with << and >>
-  | operators), can then use Using<Formatter>(object).
-  | 
-  | This works by constructing a Wrapper<Formatter,
-  | T>-wrapped version of object, where
-  | T is const during serialization, and
-  | non-const during deserialization,
-  | which maintains const correctness.
-  |
-  */
-#[inline] pub fn using<'a, Formatter, T>(t: T) -> Wrapper<'a, &'a mut T> {
-
-    todo!();
-        /*
-            return Wrapper<Formatter, T&>(t);
-        */
+/// Construct a `Wrapper` that forces (de)serialisation of `t` to go
+/// through the given `Formatter`.
+///
+/// This mirrors Bitcoin Core’s `Using<Formatter>(obj)` helper.
+///
+/// Cause serialization/deserialization of an object to be done using a specified formatter class.
+/// 
+/// To use this, you need a class Formatter that has public functions Ser(stream, const object&)
+/// for serialization, and Unser(stream, object&) for deserialization. Serialization routines
+/// (inside
+/// 
+/// READWRITE, or directly with << and >> operators), can then use Using<Formatter>(object).
+/// 
+/// This works by constructing a Wrapper<Formatter, T>-wrapped version of object, where T is const
+/// during serialization, and non-const during deserialization, which maintains const correctness.
+///
+/// 
+#[inline]
+pub fn using<'a, Formatter, T>(t: &'a mut T) -> Wrapper<'a, Formatter, &'a mut T> {
+    Wrapper::new(t)
 }
 
 /**

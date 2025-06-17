@@ -130,7 +130,7 @@ impl Arena {
         ptr
     }
 
-    /// Free a previously allocated block.  Passing a null pointer is a no‑op.
+    /// Free a previously allocated block. Passing a null pointer is a no‑op.
     /// Invalid or double‑free triggers a panic.
     pub fn free(&mut self, ptr: *mut c_void) {
         if ptr.is_null() {
@@ -139,8 +139,9 @@ impl Arena {
         }
         assert!(self.address_in_arena(ptr), "pointer outside arena");
 
-        let offset = (ptr as usize) - (self.base as usize);
-        let mut size = self
+        // `offset` must remain accurate after left‑side coalescing, so it is mutable.
+        let mut offset = (ptr as usize) - (self.base as usize);
+        let mut size   = self
             .used_chunks
             .remove(&offset)
             .expect("Arena: invalid or double free");
@@ -149,7 +150,8 @@ impl Arena {
         if let Some((&prev_off, &prev_sz)) = self.free_by_offset.range(..offset).next_back() {
             if prev_off + prev_sz == offset {
                 self.remove_free(prev_off, prev_sz);
-                size += prev_sz;
+                offset = prev_off;           // <-- keep chunk start correct
+                size   += prev_sz;
                 trace!("Arena::free coalesced left @0x{:x}", prev_off);
             }
         }

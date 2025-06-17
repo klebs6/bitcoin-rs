@@ -13,4 +13,3 @@ pub fn set_mock_time(mock_time_in: std::time::Instant) {       // CHANGED
     MOCK_TIME.store(secs, atomic::Ordering::Relaxed);                   // CHANGED
     info!(mock_seconds = secs, "set_mock_time");
 }
-

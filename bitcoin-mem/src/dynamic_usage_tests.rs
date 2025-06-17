@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-mem/src/dynamic_usage_tests.rs ]
 crate::ix!();
 
 #[cfg(test)]
@@ -309,7 +310,9 @@ mod memory_usage_tests {
         let mut s: HashSet<u32> = HashSet::new();
         let before = s.dynamic_usage();
         let inc    = s.incremental_dynamic_usage();
+
         s.insert(1);
+
         assert_eq!(s.dynamic_usage() - before, inc);
     }
 
@@ -318,7 +321,9 @@ mod memory_usage_tests {
         let mut m: HashMap<u32, u32> = HashMap::new();
         let before = m.dynamic_usage();
         let inc    = m.incremental_dynamic_usage();
+
         m.insert(1, 2);
+
         assert_eq!(m.dynamic_usage() - before, inc);
     }
 }

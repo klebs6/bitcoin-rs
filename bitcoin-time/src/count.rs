@@ -42,7 +42,6 @@ pub fn count_seconds_double(t: SecondsDouble) -> f64 {
     secs
 }
 
-// ---------------- [ File: bitcoin-time/src/count.rs ]
 
 pub use std::time::Duration as StdDuration;       // NEW
 

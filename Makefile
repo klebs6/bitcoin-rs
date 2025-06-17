@@ -30,6 +30,7 @@ ACTIVE := bitcoin-amt
 ACTIVE := bitcoin-locked-page-allocator
 ACTIVE := bitcoin-time
 ACTIVE := bitcoin-support
+ACTIVE := bitcoin-arena
 #-------------------------------[done-above]
 
 #ACTIVE := bitcoin-aes
@@ -43,9 +44,9 @@ ACTIVE := bitcoin-locked-pool
 ACTIVE := bitcoin-bech32m
 ACTIVE := bitcoin-base58
 ACTIVE := bitcoin-hash
-ACTIVE := bitcoin-serialize
 ACTIVE := bitcoin-mem
-ACTIVE := bitcoin-arena
+ACTIVE := bitcoin-serialize
+ACTIVE := bitcoin-aes
 #ACTIVE := bitcoinleveldb-filter
 
 #ACTIVE := bitcoin-client-ui

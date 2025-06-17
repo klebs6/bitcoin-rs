@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-mem/src/incremental_dynamic_usage.rs ]
 crate::ix!();
 
 pub trait IncrementalDynamicUsage {
@@ -30,3 +31,18 @@ impl<X, Y, Z> IncrementalDynamicUsage for HashMap<X, Y, Z> {
         inc
     }
 }
+
+impl<T> IncrementalDynamicUsage for Arc<T>
+where
+    T: IncrementalDynamicUsage,
+{
+    /// Forward the request to the inner value.  
+    /// An `Arc` itself never reallocates on `clone`, so the
+    /// incremental cost is the same as that of the wrapped
+    /// structure.
+    #[inline]
+    fn incremental_dynamic_usage(&self) -> usize {
+        T::incremental_dynamic_usage(&**self)
+    }
+}
+

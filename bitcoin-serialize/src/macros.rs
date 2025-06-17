@@ -138,4 +138,3 @@ macro_rules! serialize_methods {
         */
     }
 }
-

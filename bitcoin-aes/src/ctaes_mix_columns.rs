@@ -7,8 +7,8 @@ impl AESState {
     /// * `inv == false` → forward transform  
     /// * `inv == true`  → inverse transform
     #[inline(always)]
-    fn mix_columns(&mut self, inv: bool) {
-        trace!(inv, "mix_columns – input = {:?}", self.slice);
+    pub fn mix_columns(&mut self, inv: bool) {
+        trace!(inv, "mix_columns – input = {:?}", self.slice());
 
         /* The MixColumns transform treats the bytes of the columns of the state as
          * coefficients of a 3rd degree polynomial over GF(2^8) and multiplies them
@@ -31,7 +31,7 @@ impl AESState {
          * variables and (x^3 + x^2 + x)*s into the s?_123 variables.
          */
 
-        let [s0, s1, s2, s3, s4, s5, s6, s7] = self.slice;
+        let [s0, s1, s2, s3, s4, s5, s6, s7] = self.slice();
 
         macro_rules! rot {
             ($v:expr, $n:expr) => {
