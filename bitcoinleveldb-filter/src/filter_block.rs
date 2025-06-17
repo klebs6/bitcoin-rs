@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-filter/src/filter_block.rs ]
 /*!
   | A filter block is stored near the end of
   | a Table file.  It contains filters (e.g., bloom
@@ -10,7 +11,6 @@
 
 crate::ix!();
 
-// ---------------- [ File: bitcoinleveldb-filter/src/filter_block.rs ]
 
 /// We generate a new filter for every 2KB of data (C++: kFilterBaseLg=11 => 1<<11=2048).
 pub const FILTER_BASE_LG: usize = 11;

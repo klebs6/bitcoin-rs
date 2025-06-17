@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/c_stdout.rs ]
 crate::ix!();
 
 #[cfg(target_os = "macos")]

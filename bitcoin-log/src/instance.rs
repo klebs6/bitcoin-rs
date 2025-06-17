@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/instance.rs ]
 crate::ix!();
 
 pub fn log_instance() -> &'static mut Logger {

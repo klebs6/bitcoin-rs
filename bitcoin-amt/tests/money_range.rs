@@ -46,4 +46,3 @@ fn money_range_accepts_and_rejects_expected_values() {
         "money_range should reject values greater than MAX_MONEY"
     );
 }
-

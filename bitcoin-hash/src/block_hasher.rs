@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/block_hasher.rs ]
 crate::ix!();
 
 pub struct BlockHasher { }

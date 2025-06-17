@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/flags.rs ]
 crate::ix!();
 
 #[repr(u32)]

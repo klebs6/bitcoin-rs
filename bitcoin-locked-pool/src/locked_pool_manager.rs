@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-pool/src/locked_pool_manager.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/support/lockedpool.h]

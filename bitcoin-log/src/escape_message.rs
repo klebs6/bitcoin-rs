@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-log/src/interface.rs ]
+// ---------------- [ File: bitcoin-log/src/escape_message.rs ]
 //-------------------------------------------[.cpp/bitcoin/src/logging.cpp]
 crate::ix!();
 

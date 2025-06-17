@@ -1,7 +1,7 @@
+// ---------------- [ File: bitcoin-arena/tests/arena.rs ]
 use bitcoin_arena::*;
 use bitcoin_imports::*;
 
-// ---------------- [ File: bitcoin-support/tests/arena.rs ]
 
 // Helper to apply a closure and return the original value.
 trait Tap: Sized {

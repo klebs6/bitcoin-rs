@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/linked_list_ext.rs ]
 crate::ix!();
 
 /// A convenience extension: `is_empty()` on LinkedList

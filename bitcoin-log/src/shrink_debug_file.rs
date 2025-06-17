@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/shrink_debug_file.rs ]
 crate::ix!();
 
 impl Logger {

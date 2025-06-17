@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/get_serialize_size.rs ]
 crate::ix!();
 
 pub fn get_serialize_size<T>(

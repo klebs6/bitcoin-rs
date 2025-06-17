@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blob/src/nibble_from_hexchar.rs ]
 crate::ix!();
 
 /// Helper: convert a single hex char to nibble

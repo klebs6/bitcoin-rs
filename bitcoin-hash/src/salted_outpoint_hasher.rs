@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/salted_outpoint_hasher.rs ]
 crate::ix!();
 
 #[derive(Clone)]

@@ -1,4 +1,3 @@
-
 // ---------------- [ File: bitcoinleveldb-slice/src/slice.rs ]
 crate::ix!();
 
@@ -270,4 +269,3 @@ mod test_slice_interface {
         assert_eq!(slice.to_string(), "Hello");
     }
 }
-

@@ -34,4 +34,3 @@ pub fn load_addrman(
         */
 }
 
-

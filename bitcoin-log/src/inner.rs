@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/inner.rs ]
 crate::ix!();
 
 #[derive(MutGetters, Getters, Setters)]

@@ -1,7 +1,7 @@
+// ---------------- [ File: bitcoin-support/src/lib.rs ]
 #![feature(allocator_api)]
 #![feature(slice_ptr_get)]
 
-// ---------------- [ File: bitcoin-support/src/lib.rs ]
 
 #[macro_use] mod imports; use imports::*;
 

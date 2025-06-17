@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/salted_txid_hasher.rs ]
 crate::ix!();
 
 pub struct SaltedTxidHasher {

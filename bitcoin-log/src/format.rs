@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/format.rs ]
 crate::ix!();
 
 pub fn format_iso8601_datetime(secs: i64) -> String {

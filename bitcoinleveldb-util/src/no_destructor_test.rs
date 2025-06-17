@@ -68,4 +68,3 @@ fn no_destructor_test_static_instance() {
     }
     info!("Completed no_destructor_test_static_instance");
 }
-

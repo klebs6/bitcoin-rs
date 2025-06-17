@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-arena/src/bitcoin_arena.rs ]
 crate::ix!();
 
 pub type ArenaSizeToChunkSortedMap         = MultiMap<usize,*mut u8>;

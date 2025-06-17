@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/macros.rs ]
 crate::ix!();
 
 #[macro_export] macro_rules! varint_mode {
@@ -137,5 +138,4 @@ macro_rules! serialize_methods {
         */
     }
 }
-
 

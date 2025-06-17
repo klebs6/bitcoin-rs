@@ -1,6 +1,6 @@
+// ---------------- [ File: bitcoin-locked-pool/tests/locked_pool.rs ]
 use bitcoin_support::*;
 
-// ---------------- [ File: bitcoin-support/tests/locked_pool.rs ]
 
 #[test] fn lockedpool_tests_mock() {
     todo!();

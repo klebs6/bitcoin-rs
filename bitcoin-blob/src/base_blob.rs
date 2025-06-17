@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-blob/src/base_blob.rs ]
 crate::ix!();
 
 #[macro_export]

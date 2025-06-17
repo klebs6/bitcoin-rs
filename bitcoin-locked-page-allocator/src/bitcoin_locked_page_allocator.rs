@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-page-allocator/src/bitcoin_locked_page_allocator.rs ]
 crate::ix!();
 
 /**

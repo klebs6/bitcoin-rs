@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bigint/src/round_trip_hex.rs ]
 crate::ix!();
 
 pub fn round_trip_hex_32(val: &BaseUInt32) -> BaseUInt32 {

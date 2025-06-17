@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/signature_cache_hasher.rs ]
 crate::ix!();
 
 /**

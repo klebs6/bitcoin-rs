@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-filter/src/filter_block_reader.rs ]
 crate::ix!();
 
 /// A `FilterBlockReader` parses the filter block stored in `contents` and

@@ -1,7 +1,7 @@
+// ---------------- [ File: bitcoin-bech32m/tests/bech32m.rs ]
 use bitcoin_bech32m::*;
 use bitcoin_imports::*;
 
-// ---------------- [ File: bitcoin-bech32m/tests/bech32m.rs ]
 
 #[traced_test]
 fn bech32m_testvectors_valid() {

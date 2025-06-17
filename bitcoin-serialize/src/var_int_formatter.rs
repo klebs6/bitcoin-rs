@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/var_int_formatter.rs ]
 crate::ix!();
 
 /**

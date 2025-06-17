@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-u256/src/convert.rs ]
 crate::ix!();
 
 /// Convert from `ArithU256` to the opaque `u256` by writing each 32-bit limb

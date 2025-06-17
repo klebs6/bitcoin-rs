@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-u256/src/compact.rs ]
 crate::ix!();
 
 impl ArithU256 {

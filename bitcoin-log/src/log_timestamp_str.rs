@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/log_timestamp_str.rs ]
 crate::ix!();
 
 impl Logger {

@@ -1,7 +1,7 @@
+// ---------------- [ File: bitcoin-bech32m/tests/bech32.rs ]
 use bitcoin_bech32m::*;
 use bitcoin_imports::*;
 
-// ---------------- [ File: bitcoin-bech32m/tests/bech32.rs ]
 
 //-------------------------------------------[.cpp/bitcoin/src/test/bech32_tests.cpp]
 // ----------------------------------------------------------------

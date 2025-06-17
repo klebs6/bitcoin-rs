@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/log_print_str.rs ]
 crate::ix!();
 
 impl Logger {

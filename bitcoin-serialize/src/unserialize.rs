@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/unserialize.rs ]
 crate::ix!();
 
 /// Replace the previous definition (which took `&self`) with a

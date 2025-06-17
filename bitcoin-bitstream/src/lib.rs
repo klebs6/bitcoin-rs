@@ -1,6 +1,6 @@
+// ---------------- [ File: bitcoin-bitstream/src/lib.rs ]
 #![feature(allocator_api)]
 
-// ---------------- [ File: bitcoin-bitstream/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{bitstream_reader}

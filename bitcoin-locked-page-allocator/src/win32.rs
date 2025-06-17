@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-page-allocator/src/win32.rs ]
 crate::ix!();
 
 /* --- Implementation: Win32LockedPageAllocator  --- */

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-hash/src/filter_header_hasher.rs ]
 crate::ix!();
 
 pub struct FilterHeaderHasher { }

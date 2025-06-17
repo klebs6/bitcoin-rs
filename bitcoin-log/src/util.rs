@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/util.rs ]
 crate::ix!();
 
 /// Emulate the C++ function `RemovePrefix(source_file, "./")`.

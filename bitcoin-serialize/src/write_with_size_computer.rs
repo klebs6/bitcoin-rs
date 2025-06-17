@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/write_with_size_computer.rs ]
 crate::ix!();
 
 #[inline] pub fn write_var_int_with_size_computer<I>(

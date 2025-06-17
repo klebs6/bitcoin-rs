@@ -1,8 +1,8 @@
+// ---------------- [ File: bitcoin-locked-page-allocator/tests/locked_page_allocator.rs ]
 use bitcoin_support::*;
 use bitcoin_imports::*;
 use bitcoin_locked_page_allocator::*;
 
-// ---------------- [ File: bitcoin-support/tests/locked_page_allocator.rs ]
 
 /**
   | Mock LockedPageAllocator for testing

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/log_callbacks.rs ]
 crate::ix!();
 
 impl Logger {
@@ -71,4 +72,3 @@ mod logger_push_back_delete_callback_tests {
         trace!("test_push_back_and_delete_callback passed.");
     }
 }
-

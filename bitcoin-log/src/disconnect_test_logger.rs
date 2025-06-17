@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/disconnect_test_logger.rs ]
 crate::ix!();
 
 impl Logger {

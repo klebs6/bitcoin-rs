@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-log/src/printf.rs ]
 crate::ix!();
 
 /// Be conservative when using LogPrintf/error or other things which unconditionally log to

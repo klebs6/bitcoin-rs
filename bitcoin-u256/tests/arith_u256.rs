@@ -1,7 +1,7 @@
+// ---------------- [ File: bitcoin-u256/tests/arith_u256.rs ]
 use bitcoin_u256::*;
 use bitcoin_imports::*;
 
-// ---------------- [ File: bitcoin-u256/tests/arith_u256.rs ]
 
 //-------------------------------------------[.cpp/bitcoin/src/test/arith_uint256_tests.cpp]
 

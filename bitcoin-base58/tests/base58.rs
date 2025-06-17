@@ -1,5 +1,4 @@
 // ---------------- [ File: bitcoin-base58/tests/base58.rs ]
-
 use bitcoin_base58::*;
 use bitcoin_imports::*;
 

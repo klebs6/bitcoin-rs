@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-pool/src/bitcoin_locked_pool.rs ]
 crate::ix!();
 
 /**

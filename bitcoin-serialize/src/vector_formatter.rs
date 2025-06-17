@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/vector_formatter.rs ]
 crate::ix!();
 
 /**
