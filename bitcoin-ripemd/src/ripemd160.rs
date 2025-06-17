@@ -29,6 +29,9 @@ impl Default for Ripemd160 {
 }
 
 impl Ripemd160 {
+
+    pub fn new() -> Self { Self::default() }
+
     pub fn write(&mut self, 
         data: *const u8,
         len:  usize) -> &mut Ripemd160 {
@@ -85,6 +88,16 @@ impl Ripemd160 {
         ripemd160::Initialize(s);
         return *this;
         */
+    }
+
+    /// Feed an arbitrary byte‑slice into the running RIPEMD‑160
+    /// computation (thin convenience wrapper around `write`).
+    #[inline]
+    pub fn update(&mut self, data: &[u8]) -> &mut Self {
+        // SAFETY: pointer/length pair is exactly what the low‑level
+        // API expects, and both remain valid for the duration of
+        // this call.
+        self.write(data.as_ptr(), data.len())
     }
 }
 

@@ -23,19 +23,18 @@ crate::ix!();
   | efficient caching + updating on modification.
   |
   */
-#[inline] pub fn malloc_usage(alloc: usize) -> usize {
-    
-    todo!();
-        /*
-        // Measured on libc6 2.19 on Linux.
-        if (alloc == 0) {
-            return 0;
-        } else if (sizeof(c_void*) == 8) {
-            return ((alloc + 31) >> 4) << 4;
-        } else if (sizeof(c_void*) == 4) {
-            return ((alloc + 15) >> 3) << 3;
-        } else {
-            assert(0);
-        }
-        */
+#[inline]
+pub fn malloc_usage(alloc: usize) -> usize {
+    if alloc == 0 {
+        trace!("malloc_usage(0) -> 0");
+        return 0;
+    }
+    let ptr_sz = core::mem::size_of::<*const ()>();
+    let result = match ptr_sz {
+        8 => ((alloc + 31) >> 4) << 4, // 16‑byte buckets on 64‑bit
+        4 => ((alloc + 15) >> 3) << 3, // 8‑byte buckets on 32‑bit
+        _ => panic!("Unsupported pointer size: {}", ptr_sz),
+    };
+    trace!("malloc_usage({}) -> {} (ptr_sz={})", alloc, result, ptr_sz);
+    result
 }

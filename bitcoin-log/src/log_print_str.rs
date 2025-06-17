@@ -22,7 +22,7 @@ impl Logger {
         }
 
         if *self.log_threadnames() && started_line {
-            let thread_name = "main"; // placeholder
+            let thread_name = "main"; // or whatever your thread naming logic is
             let prefix = format!("[{}] ", thread_name);
             escaped.insert_str(0, &prefix);
         }
@@ -32,52 +32,75 @@ impl Logger {
         self.started_new_line()
             .store(ends_newline, std::sync::atomic::Ordering::Relaxed);
 
-        let mut inner = self.cs().lock();
+        // We'll gather callback pointers here, then call them outside the lock to avoid deadlocks.
+        let mut callbacks_ptrs: Vec<*const (dyn Fn(&String) + Send + Sync + 'static)> = Vec::new();
 
-        if *inner.buffering() {
-            inner.msgs_before_open_mut().push_back(final_msg);
-            return;
-        }
+        let do_console = *self.print_to_console();
+        let do_file    = *self.print_to_file();
 
-        if *self.print_to_console() {
-            unsafe {
-                libc::fwrite(
-                    final_msg.as_ptr() as *const libc::c_void,
-                    1,
-                    final_msg.len(),
-                    c_stdout()
-                );
-                libc::fflush(c_stdout());
-            }
-        }
+        {
+            let mut inner = self.cs().lock();
 
-        for cb in inner.print_callbacks().iter() {
-            cb(&final_msg);
-        }
-
-        if *self.print_to_file() {
-            if inner.fileout().is_null() {
+            // If still buffering, just queue the string and return immediately.
+            if *inner.buffering() {
+                inner.msgs_before_open_mut().push_back(final_msg.clone());
                 return;
             }
-            let was_reopen = self
-                .reopen_file()
-                .swap(false, std::sync::atomic::Ordering::Relaxed);
-            if was_reopen {
+
+            // Write to console first.
+            if do_console {
                 unsafe {
-                    let c_path = std::ffi::CString::new(
-                        self.file_path().as_os_str().to_string_lossy().as_bytes()
-                    ).expect("Invalid CString for file path");
-                    let mode = std::ffi::CString::new("a").unwrap();
-                    let new_file = libc::fopen(c_path.as_ptr(), mode.as_ptr());
-                    if !new_file.is_null() {
-                        libc::setbuf(new_file, std::ptr::null_mut());
-                        libc::fclose(*inner.fileout());
-                        inner.set_fileout(new_file);
+                    libc::fwrite(
+                        final_msg.as_ptr() as *const libc::c_void,
+                        1,
+                        final_msg.len(),
+                        c_stdout()
+                    );
+                    libc::fflush(c_stdout());
+                }
+            }
+
+            // Gather all callbacks, but don’t call them yet.
+            for cb in inner.print_callbacks().iter() {
+                callbacks_ptrs.push(&**cb as *const _);
+            }
+
+            // Possibly reopen file if needed, then write to file.
+            if do_file {
+                let out = inner.fileout();
+                if !out.is_null() {
+                    let was_reopen = self
+                        .reopen_file()
+                        .swap(false, std::sync::atomic::Ordering::Relaxed);
+                    if was_reopen {
+                        unsafe {
+                            let c_path = std::ffi::CString::new(
+                                self.file_path().as_os_str().to_string_lossy().as_bytes()
+                            ).expect("Invalid CString for file path");
+                            // Use "a+" so we can read from it in tests if needed.
+                            let mode = std::ffi::CString::new("a+").unwrap();
+                            let new_file = libc::fopen(c_path.as_ptr(), mode.as_ptr());
+                            if !new_file.is_null() {
+                                libc::setbuf(new_file, std::ptr::null_mut());
+                                libc::fclose(*out);
+                                inner.set_fileout(new_file);
+                            }
+                        }
+                    }
+                    unsafe {
+                        file_write_str(&final_msg, *inner.fileout());
                     }
                 }
             }
-            unsafe {
-                file_write_str(&final_msg, *inner.fileout());
+        } // lock is dropped here, so callbacks won't cause re‐entrant deadlock.
+
+        // Now invoke the callbacks outside the lock. If a callback logs again, it can safely reacquire.
+        for &cb_ptr in &callbacks_ptrs {
+            if !cb_ptr.is_null() {
+                unsafe {
+                    let cb_ref = &*cb_ptr;
+                    cb_ref(&final_msg);
+                }
             }
         }
     }

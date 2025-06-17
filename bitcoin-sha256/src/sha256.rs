@@ -486,6 +486,8 @@ impl Default for Sha256 {
 
 impl Sha256 {
 
+    pub fn new() -> Self { Self::default() }
+
     pub fn write_from_iterator(&mut self, 
         data: Box<dyn Iterator<Item=u8>>,
         len:  usize) 

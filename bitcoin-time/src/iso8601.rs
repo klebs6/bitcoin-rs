@@ -1,59 +1,41 @@
 // ---------------- [ File: bitcoin-time/src/iso8601.rs ]
 crate::ix!();
 
-/**
-  | ISO 8601 formatting is preferred. Use
-  | the FormatISO8601{DateTime,Date}
-  | helper functions if possible.
-  |
-  */
+use chrono::format::parse;
+
+/// Format an epoch value (`n_time`) as ISO‑8601 `YYYY‑MM‑DDTHH:MM:SSZ`.
 pub fn format_iso8601date_time(n_time: i64) -> String {
-    
-    todo!();
-        /*
-            struct tm ts;
-        time_t time_val = nTime;
-    #ifdef HAVE_GMTIME_R
-        if (gmtime_r(&time_val, &ts) == nullptr) {
-    #else
-        if (gmtime_s(&ts, &time_val) != 0) {
-    #endif
-            return {};
-        }
-        return strprintf("%04i-%02i-%02iT%02i:%02i:%02iZ", ts.tm_year + 1900, ts.tm_mon + 1, ts.tm_mday, ts.tm_hour, ts.tm_min, ts.tm_sec);
-        */
+    let fmt = parse("[year]-[month]-[day]T[hour]:[minute]:[second]Z").unwrap();
+    let out = OffsetDateTime::from_unix_timestamp(n_time)
+        .map(|dt| dt.format(&fmt).unwrap_or_default())
+        .unwrap_or_default();
+    trace!(epoch = n_time, iso = %out, "format_iso8601date_time");
+    out
 }
 
+/// Format an epoch value (`n_time`) as ISO‑8601 `YYYY‑MM‑DD`.
 pub fn format_iso8601date(n_time: i64) -> String {
-    
-    todo!();
-        /*
-            struct tm ts;
-        time_t time_val = nTime;
-    #ifdef HAVE_GMTIME_R
-        if (gmtime_r(&time_val, &ts) == nullptr) {
-    #else
-        if (gmtime_s(&ts, &time_val) != 0) {
-    #endif
-            return {};
-        }
-        return strprintf("%04i-%02i-%02i", ts.tm_year + 1900, ts.tm_mon + 1, ts.tm_mday);
-        */
+    let fmt = parse("[year]-[month]-[day]").unwrap();
+    let out = OffsetDateTime::from_unix_timestamp(n_time)
+        .map(|dt| dt.format(&fmt).unwrap_or_default())
+        .unwrap_or_default();
+    trace!(epoch = n_time, iso = %out, "format_iso8601date");
+    out
 }
 
-pub fn parse_iso8601date_time(str_: &String) -> i64 {
-    
-    todo!();
-        /*
-            static const boost::posix_time::ptime epoch = boost::posix_time::from_time_t(0);
-        static const std::locale loc(std::locale::classic(),
-            new boost::posix_time::time_input_facet("%Y-%m-%dT%H:%M:%SZ"));
-        std::istringstream iss(str);
-        iss.imbue(loc);
-        boost::posix_time::ptime ptime(boost::date_time::not_a_date_time);
-        iss >> ptime;
-        if (ptime.is_not_a_date_time() || epoch > ptime)
-            return 0;
-        return (ptime - epoch).total_seconds();
-        */
+/// Parse an ISO‑8601 `YYYY‑MM‑DDTHH:MM:SSZ` string into epoch seconds.
+/// Returns `0` on failure.
+pub fn parse_iso8601date_time(s: &str) -> i64 {
+    let fmt = parse("[year]-[month]-[day]T[hour]:[minute]:[second]Z").unwrap();
+    match OffsetDateTime::parse(s, &fmt) {
+        Ok(dt) => {
+            let ts = dt.unix_timestamp();
+            trace!(iso = s, epoch = ts, "parse_iso8601date_time");
+            ts
+        }
+        Err(e) => {
+            warn!(iso = s, error = %e, "parse_iso8601date_time_failed");
+            0
+        }
+    }
 }

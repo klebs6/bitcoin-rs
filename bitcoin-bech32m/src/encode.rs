@@ -14,7 +14,7 @@ crate::ix!();
     v1
 }
 
-#[derive(PartialEq,Eq)]
+#[derive(Debug,PartialEq,Eq)]
 pub enum Encoding {
 
     /**

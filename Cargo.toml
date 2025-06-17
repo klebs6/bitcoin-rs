@@ -203,7 +203,7 @@ members = [
     "bitcoin-autofile", 
     "bitcoin-bufferedfile", 
     "bitcoin-vectorstream" 
-]
+, "bitcoin-locked-pool", "bitcoin-locked-page-allocator", "bitcoin-arena"]
 
 [workspace.dependencies]
 #qmetaobject            = "0.2.7"

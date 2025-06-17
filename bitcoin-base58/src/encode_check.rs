@@ -13,7 +13,7 @@ pub fn encode_base_58check(input: &[u8]) -> String {
 
     let hash: u256 = hash1(&vch);
 
-    for byte in &hash.blob.data[0..4] {
+    for byte in &hash.blob().data()[0..4] {
         vch.push(*byte);
     }
 

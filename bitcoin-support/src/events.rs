@@ -1,90 +1,171 @@
 // ---------------- [ File: bitcoin-support/src/events.rs ]
 crate::ix!();
 
-//-------------------------------------------[.cpp/bitcoin/src/support/events.h]
+/// Platform‑independent alias for a socket descriptor in libevent.
+pub type EvutilSocket = i32;
 
-macro_rules! make_raii {
-    ($type:ident) => {
-        /*
-        
-        /* deleter */
-        struct type##_deleter {
-            c_void operator()(struct type* ob) {
-                type##_free(ob);
+/* --------------------------------------------------------------------------
+   Declare opaque RAII types **without** colliding with `tracing::Event`.
+---------------------------------------------------------------------------*/
+macro_rules! declare_event_type {
+    ($name:ident, $counter:ident) => {
+        static $counter: AtomicUsize = AtomicUsize::new(0);
+
+        #[derive(Debug)]
+        pub struct $name {
+            id: usize,
+        }
+
+        impl $name {
+            fn new() -> Self {
+                let id = $counter.fetch_add(1, atomic::Ordering::SeqCst) + 1;
+                info!(target: "events", ty = stringify!($name), %id, "created");
+                Self { id }
             }
-        };
-        /* unique ptr typedef */
-        typedef std::unique_ptr<struct type, type##_deleter> raii_##type
-        */
+
+            #[cfg(test)]
+            pub fn live() -> usize {
+                $counter.load(atomic::Ordering::SeqCst)
+            }
+        }
+
+        impl Default for $name {
+            fn default() -> Self { Self::new() }
+        }
+
+        impl Drop for $name {
+            fn drop(&mut self) {
+                info!(target: "events", ty = stringify!($name), id = self.id, "dropped");
+                unsafe {
+                    memory_cleanse(self as *mut _ as *mut c_void, core::mem::size_of::<Self>());
+                }
+                $counter.fetch_sub(1, atomic::Ordering::SeqCst);
+            }
+        }
+    };
+}
+
+// Create all required opaque handles.
+declare_event_type!(EventBase,        EVENT_BASE_COUNT);
+declare_event_type!(LibEvent,         EVENT_COUNT);          // was `Event`
+declare_event_type!(EvHttp,           EVHTTP_COUNT);
+declare_event_type!(EvHttpRequest,    EVHTTP_REQ_COUNT);
+declare_event_type!(EvHttpConnection, EVHTTP_CONN_COUNT);
+
+/* --------------------------------------------------------------------------
+   Factory helpers – safe Rust stand‑ins for the original C++ RAII creators.
+---------------------------------------------------------------------------*/
+
+#[instrument(level = "trace")]
+pub fn obtain_event_base() -> Box<EventBase> {
+    Box::new(EventBase::default())
+}
+
+/// Callback signatures keep C ABI parity but are dummies for now.
+pub type EventCallback = unsafe extern "C" fn(*mut LibEvent, *mut c_void);
+
+#[instrument(level = "trace", skip(_cb, _arg))]
+pub fn obtain_event(
+    _base:   *mut EventBase,
+    _s:      EvutilSocket,
+    _events: i16,
+    _cb:     Option<EventCallback>,
+    _arg:    *mut c_void,
+) -> Box<LibEvent> {
+    Box::new(LibEvent::default())
+}
+
+#[instrument(level = "trace", skip(_base))]
+pub fn obtain_evhttp(_base: *mut EventBase) -> Box<EvHttp> {
+    Box::new(EvHttp::default())
+}
+
+pub type EvHttpRequestCallback = unsafe extern "C" fn(*mut EvHttpRequest, *mut c_void);
+
+#[instrument(level = "trace", skip(_cb, _arg))]
+pub fn obtain_evhttp_request(
+    _cb:  Option<EvHttpRequestCallback>,
+    _arg: *mut c_void,
+) -> Box<EvHttpRequest> {
+    Box::new(EvHttpRequest::default())
+}
+
+#[instrument(level = "trace", skip(_base, _host))]
+pub fn obtain_evhttp_connection_base(
+    _base: *mut EventBase,
+    _host: &str,
+    _port: u16,
+) -> Box<EvHttpConnection> {
+    trace!("creating connection to {}:{}", _host, _port);
+    Box::new(EvHttpConnection::default())
+}
+
+/* --------------------------------------------------------------------------
+                                   Tests
+---------------------------------------------------------------------------*/
+#[cfg(test)]
+mod bitcoin_support_tests {
+    use super::*;
+    use parking_lot::Mutex;
+
+    /// Prevent concurrent execution of these tests so the global
+    /// live‑object counters remain deterministic.
+    lazy_static! {
+        static ref TEST_LOCK: Mutex<()> = Mutex::new(());
     }
-}
 
-make_raii!{ event_base }
-make_raii!{ event }
-make_raii!{ evhttp }
-make_raii!{ evhttp_request }
-make_raii!{ evhttp_connection }
+    #[traced_test]
+    fn test_event_base_lifecycle() {
+        let _guard = TEST_LOCK.lock();
 
-/// TODO: remove the generic.
-///
-/// just here to placate the compiler
-///
-#[inline] pub fn obtain_event_base<event_base>() -> Box<event_base> {
-    
-    todo!();
-        /*
-            auto result = raii_event_base(event_base_new());
-        if (!result.get())
-            throw std::runtime_error("cannot create event_base");
-        return result;
-        */
-}
+        let start = EventBase::live();
+        {
+            let _eb = obtain_event_base();
+            assert_eq!(EventBase::live(), start + 1);
+        }
+        assert_eq!(EventBase::live(), start);
+    }
 
-/// TODO: remove the generic.
-///
-/// just here to placate the compiler
-///
-#[inline] pub fn obtain_event<event_base,event_callback_fn>(
-        _base:   *mut event_base,
-        _s:      EvutilSocket,
-        _events: i16,
-        _cb:     event_callback_fn,
-        _arg:    *mut c_void) -> Box<event> {
-    
-    todo!();
-        /*
-            return raii_event(event_new(base, s, events, cb, arg));
-        */
-}
+    #[traced_test]
+    fn test_event_lifecycle() {
+        let _guard = TEST_LOCK.lock();
 
-#[inline] pub fn obtain_evhttp<event_base, evhttp>(_base: *mut event_base) -> Box<evhttp> {
-    
-    todo!();
-        /*
-            return raii_evhttp(evhttp_new(base));
-        */
-}
+        let base = obtain_event_base();
+        let base_ptr = Box::into_raw(base);
+        let start = LibEvent::live();
 
-#[inline] pub fn obtain_evhttp_request<evhttp_request>(
-        _cb:  fn(_0: *mut evhttp_request, _1: *mut c_void) -> (),
-        _arg: *mut c_void) -> Box<evhttp_request> {
-    
-    todo!();
-        /*
-            return raii_evhttp_request(evhttp_request_new(cb, arg));
-        */
-}
+        {
+            let _ev = obtain_event(base_ptr, 0, 0, None, core::ptr::null_mut());
+            assert_eq!(LibEvent::live(), start + 1);
+        }
+        assert_eq!(LibEvent::live(), start);
 
-#[inline] pub fn obtain_evhttp_connection_base<event_base,evhttp_connection>(
-        _base: *mut event_base,
-        _host: &str,
-        _port: u16) -> Box<evhttp_connection> {
-    
-    todo!();
-        /*
-            auto result = raii_evhttp_connection(evhttp_connection_base_new(base, nullptr, host.c_str(), port));
-        if (!result.get())
-            throw std::runtime_error("create connection failed");
-        return result;
-        */
+        // Safety: reclaim ownership so the EventBase drops.
+        unsafe { drop(Box::from_raw(base_ptr)); }
+    }
+
+    #[traced_test]
+    fn test_evhttp_family_lifecycle() {
+        let _guard = TEST_LOCK.lock();
+
+        let eb   = obtain_event_base();
+        let base = &*eb as *const EventBase as *mut EventBase;
+
+        let http0 = EvHttp::live();
+        let req0  = EvHttpRequest::live();
+        let conn0 = EvHttpConnection::live();
+
+        {
+            let _http = obtain_evhttp(base);
+            let _req  = obtain_evhttp_request(None, core::ptr::null_mut());
+            let _conn = obtain_evhttp_connection_base(base, "localhost", 80);
+
+            assert_eq!(EvHttp::live(),           http0 + 1);
+            assert_eq!(EvHttpRequest::live(),    req0  + 1);
+            assert_eq!(EvHttpConnection::live(), conn0 + 1);
+        }
+        assert_eq!(EvHttp::live(),           http0);
+        assert_eq!(EvHttpRequest::live(),    req0);
+        assert_eq!(EvHttpConnection::live(), conn0);
+    }
 }

@@ -60,7 +60,7 @@ macro_rules! define_base_blob_basic {
                 }
             }
 
-            pub fn data(&self) -> *const u8 {
+            pub fn data_ptr(&self) -> *const u8 {
                 trace!(
                     "Returning const pointer to BaseBlob<{}>.data()",
                     $bits
@@ -68,7 +68,7 @@ macro_rules! define_base_blob_basic {
                 self.data.as_ptr()
             }
 
-            pub fn data_mut(&mut self) -> *mut u8 {
+            pub fn data_ptr_mut(&mut self) -> *mut u8 {
                 trace!(
                     "Returning mut pointer to BaseBlob<{}>.data_mut()",
                     $bits

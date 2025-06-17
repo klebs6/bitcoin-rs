@@ -68,27 +68,22 @@ pub fn verify_checksum(
   |
   */
 pub fn create_checksum(
-        encoding: Encoding,
-        hrp:      &String,
-        values:   &Vec<u8>) -> Vec<u8> {
-    
-    let mut enc: Vec::<u8> = cat(expand_hrp(hrp),values);
+    encoding: Encoding,
+    hrp:      &String,
+    values:   &Vec<u8>,
+) -> Vec<u8> {
+    // Build the input vector ⟨ HRP | values ⟩ ∥ ⟨ 0×00;6 ⟩
+    let mut enc: Vec<u8> = cat(expand_hrp(hrp), values);
+    enc.resize(enc.len() + 6, 0);
 
-    // Append 6 zeroes
-    enc.resize(enc.len() + 6, 0); 
+    // Compute the polymod remainder and XOR with the
+    // encoding‑specific constant (BIP‑173 / BIP‑350).
+    let rem: u32 = poly_mod(&enc) ^ encoding_constant(encoding);
 
-    // Determine what to XOR into those 6 zeroes.
-    let mod_: u32 = poly_mod(&enc) ^ encoding_constant(encoding);
-
-    let mut ret: Vec::<u8> = Vec::<u8>::with_capacity(6);
-
+    // Extract the six 5‑bit groups (big‑endian) that form the checksum.
+    let mut ret: Vec<u8> = Vec::with_capacity(6);
     for i in 0..6 {
-
-        // Convert the 5-bit groups in mod to
-        // checksum values.
-        //
-        ret[i] = ((mod_ >> (5 * (5 - i))) & 31).try_into().unwrap();
+        ret.push(((rem >> (5 * (5 - i))) & 31) as u8);
     }
-
     ret
 }

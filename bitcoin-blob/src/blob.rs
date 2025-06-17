@@ -13,9 +13,10 @@ macro_rules! define_base_blob_struct {
           | opaque blobs (concretized via macro).
           |
         */
-        #[derive(Clone,Debug,Hash)]
+        #[derive(Getters,Clone,Debug,Hash)]
+        #[getset(get="pub")]
         pub struct $blob_ty {
-            pub(crate) data: [u8; $bytes],
+            data: [u8; $bytes],
         }
 
         // Safety as in the original code

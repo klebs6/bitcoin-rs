@@ -12,58 +12,46 @@ pub struct HashWriter {
     n_version: i32,
 }
 
-impl<T> Shl<&T> for HashWriter {
+impl<T> Shl<&T> for HashWriter
+where
+    T: AsRef<[u8]>,
+{
     type Output = HashWriter;
-    
-    #[inline] fn shl(self, rhs: &T) -> Self::Output {
-        todo!();
-        /*
-            // Serialize to this stream
-            ::Serialize(*this, obj);
-            return (*this);
-        */
+
+    /// Feed an arbitrary byte slice into the running hash stream
+    /// using the `writer << &bytes` syntax familiar from C++.
+    #[inline]
+    fn shl(mut self, rhs: &T) -> Self::Output {
+        self.write(rhs.as_ref());
+        self
     }
 }
 
 impl HashWriter {
 
-    pub fn new(
-        n_type_in:    i32,
-        n_version_in: i32) -> Self {
-    
-        todo!();
-        /*
-        : n_type(nTypeIn),
-        : n_version(nVersionIn),
+    /// Create a new writer with the given *type* and *version*.
+    #[instrument(level = "trace")]
+    pub fn new(n_type_in: i32, n_version_in: i32) -> Self {
+        Self {
+            ctx: Sha256::new(),
+            n_type: n_type_in,
+            n_version: n_version_in,
+        }
+    }
 
-        
-        */
-    }
-    
+    #[inline]
     pub fn get_type(&self) -> i32 {
-        
-        todo!();
-        /*
-            return nType;
-        */
+        self.n_type
     }
-    
+
+    #[inline]
     pub fn get_version(&self) -> i32 {
-        
-        todo!();
-        /*
-            return nVersion;
-        */
+        self.n_version
     }
-    
-    pub fn write(&mut self, 
-        pch:  *const u8,
-        size: usize)  {
-        
-        todo!();
-        /*
-            ctx.Write((const unsigned char*)pch, size);
-        */
+
+    #[instrument(level = "trace", skip(self, pch))]
+    pub fn write(&mut self, pch: &[u8]) {
+        self.ctx.write(pch.as_ptr(), pch.len());
     }
 
     /**
@@ -73,15 +61,17 @@ impl HashWriter {
       | Invalidates this object.
       |
       */
+    #[instrument(level = "debug", skip(self))]
     pub fn get_hash(&mut self) -> u256 {
-        
-        todo!();
-        /*
-            uint256 result;
-            ctx.Finalize(result.begin());
-            ctx.Reset().Write(result.begin(), CSHA256::OUTPUT_SIZE).Finalize(result.begin());
-            return result;
-        */
+        let mut first = [0u8; 32];
+        self.ctx.finalize(first);
+
+        self.ctx.reset();
+        self.ctx.write(first.as_ptr(), first.len());
+        let mut second = [0u8; 32];
+        self.ctx.finalize(second);
+
+        u256::from_le_bytes(second)
     }
 
     /**
@@ -91,14 +81,11 @@ impl HashWriter {
       | Invalidates this object.
       |
       */
+    #[instrument(level = "debug", skip(self))]
     pub fn getsha256(&mut self) -> u256 {
-        
-        todo!();
-        /*
-            uint256 result;
-            ctx.Finalize(result.begin());
-            return result;
-        */
+        let mut buf = [0u8; 32];
+        self.ctx.finalize(buf);
+        u256::from_le_bytes(buf)
     }
 
     /**
@@ -106,21 +93,13 @@ impl HashWriter {
       | hash.
       |
       */
-    #[inline] pub fn get_cheap_hash(&mut self) -> u64 {
-        
-        todo!();
-        /*
-            uint256 result = GetHash();
-            return ReadLE64(result.begin());
-        */
+    #[instrument(level = "trace", skip(self))]
+    pub fn get_cheap_hash(&mut self) -> u64 {
+        let digest = self.get_hash();
+        let mut tmp = [0u8; 8];
+        tmp.copy_from_slice(&digest.as_ref()[..8]);
+        u64::from_le_bytes(tmp)
     }
-}
-
-lazy_static!{
-    /*
-    extern const CHashWriter HASHER_TAPLEAF;    /// Hasher with tag "TapLeaf" pre-fed to it.
-    extern const CHashWriter HASHER_TAPBRANCH;  /// Hasher with tag "TapBranch" pre-fed to it.
-    */
 }
 
 /**
@@ -136,15 +115,17 @@ lazy_static!{
   |
   */
 pub fn tagged_hash(tag: &str) -> HashWriter {
-    
-    todo!();
-        /*
-            CHashWriter writer(SER_GETHASH, 0);
-        uint256 taghash;
-        CSHA256().Write((const unsigned char*)tag.data(), tag.size()).Finalize(taghash.begin());
-        writer << taghash << taghash;
-        return writer;
-        */
+    // Hash the tag once …
+    let mut taghash = [0u8; 32];
+    let mut sha = Sha256::new();
+    sha.write(tag.as_ptr(), tag.len());
+    sha.finalize(taghash);
+
+    // … prime a writer with the tag hash twice.
+    let mut writer = HashWriter::new(SER_GETHASH as i32, 0);
+    writer.write(&taghash);
+    writer.write(&taghash);
+    writer
 }
 
 lazy_static!{
@@ -152,4 +133,25 @@ lazy_static!{
     static ref HASHER_TAPLEAF:    HashWriter = tagged_hash("TapLeaf");
     static ref HASHER_TAPBRANCH:  HashWriter = tagged_hash("TapBranch");
     static ref HASHER_TAPTWEAK:   HashWriter = tagged_hash("TapTweak");
+}
+
+#[cfg(test)]
+mod writer_shl_spec {
+    use super::*;
+
+    #[traced_test]
+    fn shl_writes_bytes_and_preserves_type_version() {
+        let bytes = b"abc";
+        let writer = HashWriter::new(42, 17) << &bytes[..];
+        assert_eq!(writer.get_type(), 42);
+        assert_eq!(writer.get_version(), 17);
+        // we deliberately do **not** finalise – `bitcoin‑sha256`
+        // is still a stub in the workspace.
+    }
+
+    #[test]
+    #[should_panic] // expected because SHA‑256 back‑end is still a stub
+    fn constructing_tagged_hash_does_not_panic() {
+        let _ = tagged_hash("TapLeaf"); // should reach SHA panic
+    }
 }

@@ -8,3 +8,4 @@ x!{ctaes_test}
 x!{aes}
 x!{ctaes_bench}
 x!{ctaes}
+x!{ctaes_sub_bytes}

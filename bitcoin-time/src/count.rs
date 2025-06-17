@@ -1,59 +1,44 @@
 // ---------------- [ File: bitcoin-time/src/count.rs ]
 crate::ix!();
 
-/*
-/**
-  | Helper to count the seconds of a duration.
-  | 
-  | All durations should be using std::chrono
-  | and calling this should generally be
-  | avoided in code. Though, it is still
-  | preferred to an inline t.count() to
-  | protect against a reliance on the exact
-  | type of t.
-  | 
-  | This helper is used to convert durations
-  | before passing them over an interface
-  | that doesn't support std::chrono (e.g.
-  | RPC, debug log, or the GUI)
-  |
-  */
+/// Helper to count the seconds of a duration.
+/// 
+/// All durations should be using std::chrono and calling this should generally be avoided in
+/// code. Though, it is still preferred to an inline t.count() to protect against a reliance on the
+/// exact type of t.
+/// 
+/// This helper is used to convert durations before passing them over an interface that doesn't
+/// support std::chrono (e.g. RPC, debug log, or the GUI)
+/// 
+#[inline]
 pub fn count_seconds(t: Seconds) -> i64 {
-    
-    todo!();
-        /*
-            return t.count();
-        */
+    let secs = t.as_secs() as i64;
+    trace!(seconds = secs, "count_seconds");
+    secs
 }
 
+/// Helper to count the milliseconds of a duration.
+#[inline]
 pub fn count_milliseconds(t: Milliseconds) -> i64 {
-    
-    todo!();
-        /*
-            return t.count();
-        */
+    let ms = t.as_millis() as i64;
+    trace!(milliseconds = ms, "count_milliseconds");
+    ms
 }
 
+/// Helper to count the microseconds of a duration.
+#[inline]
 pub fn count_microseconds(t: Microseconds) -> i64 {
-    
-    todo!();
-        /*
-            return t.count();
-        */
+    let µs = t.as_micros() as i64;
+    trace!(microseconds = µs, "count_microseconds");
+    µs
 }
 
 pub type SecondsDouble = Seconds<u64>;
 
-/**
-  | Helper to count the seconds in any duration
-  | type
-  |
-  */
-#[inline] pub fn count_seconds_double(t: SecondsDouble) -> f64 {
-    
-    todo!();
-        /*
-            return t.count();
-        */
+/// Helper to count the seconds in any duration type, returning `f64`.
+#[inline]
+pub fn count_seconds_double(t: SecondsDouble) -> f64 {
+    let secs = t.as_secs_f64();
+    trace!(seconds = secs, "count_seconds_double");
+    secs
 }
-*/

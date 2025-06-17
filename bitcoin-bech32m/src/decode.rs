@@ -1,6 +1,8 @@
 // ---------------- [ File: bitcoin-bech32m/src/decode.rs ]
 crate::ix!();
 
+#[derive(Debug,Getters)]
+#[getset(get="pub")]
 pub struct DecodeResult {
 
     /**
@@ -54,71 +56,68 @@ impl DecodeResult {
   | Decode a Bech32 or Bech32m string.
   |
   */
-pub fn decode(str_: &String) -> DecodeResult {
-    
-    let mut lower: bool = false;
-    let mut upper: bool = false;
+pub fn decode(input: &str) -> DecodeResult {
+    // ----------------------------------------------------------------
+    //  1. ASCII‑range and case‑uniformity validation
+    // ----------------------------------------------------------------
+    let mut saw_lower = false;
+    let mut saw_upper = false;
 
-    for i in 0..str_.len() {
-
-        let c: char = str_.chars().nth(i).unwrap();
-
-        if c >= 'a' && c <= 'z' {
-            lower = true;
-
-        } else if c >= 'A' && c <= 'Z' {
-            upper = true;
-
-        } else if c < char::from(33) || c > char::from(126) {
-            return DecodeResult::default();
+    for ch in input.chars() {
+        match ch {
+            'a'..='z' => saw_lower = true,
+            'A'..='Z' => saw_upper = true,
+            '\x21'..='\x7e' => (),
+            _ => return DecodeResult::default(),
         }
     }
+    if saw_lower && saw_upper {
+        return DecodeResult::default(); // mixed case not allowed
+    }
 
-    if lower && upper {
+    // ----------------------------------------------------------------
+    //  2. Locate the separator '1' and perform length checks
+    // ----------------------------------------------------------------
+    let sep = match input.rfind('1') {
+        Some(pos) => pos,
+        None => return DecodeResult::default(),
+    };
+    if input.len() > 90 || sep == 0 || sep + 7 > input.len() {
         return DecodeResult::default();
     }
 
-    let pos: Option<usize> = str_.rfind('1');
-
-    if str_.len() > 90 
-    || pos == None
-    || pos == Some(0) 
-    || pos.unwrap() + 7 > str_.len() 
-    {
-        return DecodeResult::default();
-    }
-
-    let pos: usize = pos.unwrap();
-
-    let mut values: Vec::<u8> 
-    = Vec::<u8>::with_capacity(str_.len() - 1 - pos);
-
-    for i in 0..str_.len() - 1 - pos {
-
-        let c:   u8 = str_.chars().nth(i + pos + 1).unwrap().try_into().unwrap();
-        let rev: i8 = CHARSET_REV[c as usize];
-
-        if rev == -1 {
+    // ----------------------------------------------------------------
+    //  3. Parse data section into 5‑bit values
+    // ----------------------------------------------------------------
+    let mut values: Vec<u8> = Vec::with_capacity(input.len() - sep - 1);
+    for ch in input.chars().skip(sep + 1) {
+        let idx = ch as u32;
+        if idx > 0x7f {
             return DecodeResult::default();
         }
-
-        values[i] = rev.try_into().unwrap();
+        let v = CHARSET_REV[idx as usize];
+        if v == -1 {
+            return DecodeResult::default();
+        }
+        values.push(v as u8);
     }
 
-    let mut hrp = String::default();
-
-    for i in 0..pos {
-        hrp += &String::from(str_.chars().nth(i).unwrap().to_ascii_lowercase());
+    // ----------------------------------------------------------------
+    //  4. Normalize HRP to lower‑case
+    // ----------------------------------------------------------------
+    let mut hrp = String::with_capacity(sep);
+    for ch in input.chars().take(sep) {
+        hrp.push(ch.to_ascii_lowercase());
     }
 
-    let result: Encoding = verify_checksum(&hrp,&values);
-
-    if result == Encoding::INVALID {
+    // ----------------------------------------------------------------
+    //  5. Verify checksum and return result
+    // ----------------------------------------------------------------
+    let enc = verify_checksum(&hrp, &values);
+    if enc == Encoding::INVALID {
         return DecodeResult::default();
     }
 
-    todo!();
-    /*
-        return {result, std::move(hrp), data(values.begin(), values.end() - 6)};
-    */
+    let data = values[..values.len() - 6].to_vec();
+    DecodeResult::new(enc, hrp, data)
 }

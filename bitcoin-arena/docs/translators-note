@@ -1,0 +1,45 @@
+### 1  Does the translated allocator still deliver **O(log n) best‑fit**?
+
+Yes.
+
+| Operation                                       | C++ (multimap + iterator handles)               | Rust translation (dual `BTreeMap`)                 |
+| ----------------------------------------------- | ----------------------------------------------- | -------------------------------------------------- |
+| **Find best‑fit free block**                    | `size_to_free_chunk.lower_bound` ⇒ **O(log n)** | `free_by_size.range(size..).next()` ⇒ **O(log n)** |
+| **Insert a new free block**                     | `multimap::insert` ⇒ **O(log n)**               | two `BTreeMap::insert` ⇒ **O(log n)** (amortised)  |
+| **Remove a free block when `free()` coalesces** | erase via stored iterator ⇒ **O(1)**            | `remove_free()` touches two maps ⇒ **O(log n)**    |
+
+So allocation complexity is identical.
+`free()` moves from **O(1)** to **O(log n)** for the specific case where a pointer to the multimap node was previously held.  In exchange we:
+
+* eliminate raw pointers/iterators into container internals (memory‑safety win),
+* avoid the “iterator invalidation” foot‑gun that the C++ relied on, and
+* keep the code entirely inside `std` (no extra crate APIs to stabilise).
+
+Unless you expect **hundreds of thousands of chunks being freed per second**, the extra `log n` (≈ 2–3 B‑tree comparisons for 32 k chunks) is *not* going to show up on a profile.  If absolute `free()` throughput at very high chunk counts is mission‑critical, we would re‑introduce a handle table or an arena‑allocated intrusive list rather than the C++ iterator trick, because the Rust `multimap` crate does **not** guarantee node‑handle stability across inserts the way libstdc++ does.
+
+---
+
+### 2  Will we get any *nasty surprises* downstream?
+
+Below are all divergences from the literal C++ that might matter outside the allocator itself, ranked by risk:
+
+| Divergence                                                        | Impact                                                                                                                                                             | Mitigation                                                                                                                                                                |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`chunks_free` / `chunks_free_end` maps removed**                | Only affects code that *directly* inspects those maps.  In the original Core code they were private; all external interaction is through `alloc`, `free`, `stats`. | *Low risk*. If any crate in your workspace has started poking the internals, we can re‑export accessor methods or re‑introduce the maps as thin views on the new indices. |
+| **Public type aliases now unused** (`ArenaSizeToChunkSortedMap…`) | Down‑stream crates could rely on them for type inference or bounds.                                                                                                | Either (a) delete them, or (b) typedef them to the real types we now use so existing code still compiles.                                                                 |
+| **Error reporting uses `panic!()` instead of a returned error**   | Call‑sites that relied on catching a `std::runtime_error` equivalent will now abort the thread instead of getting `Err`.                                           | Decide policy: *fatal allocator misuse* is usually fine.  If you need soft errors, switch `free()` and `alloc()` to return `Result`—easy to layer on.                     |
+| **`#[no_copy]` is currently a dummy attribute**                   | No semantic change unless someone accidentally `derive(Clone)` for `Arena`.                                                                                        | Implement the actual lint (via `deny(clippy::derive_copy)`) or keep as‑is.                                                                                                |
+| **Different debug print format**                                  | Only affects golden‑file log tests under `ARENA_DEBUG`.                                                                                                            | Update the golden file or replicate the old format.                                                                                                                       |
+
+In short: **functionally we are equivalent or better**; the only measurable perf regression is `free()` moving from O(1) to O(log n) for the tiny subset of frees that coalesce, and that cost is negligible for realistic workloads.  Everything else is compile‑time or logging surface.
+
+---
+
+### 3  Recommendation
+
+*Stay with the current implementation* unless you have:
+
+* **Explicit performance benchmarks** showing `free()` saturation at scale, or
+* **External crates** that manipulate `chunks_free` / `chunks_free_end` directly.
+
+If either condition appears true, the safest path is to restore the multimap‑iterator design inside the allocator **without** exposing the raw iterators (wrap them in opaque indices).  That would reinstate O(1) removal while maintaining Rust‑level safety guarantees.

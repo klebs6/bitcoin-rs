@@ -23,10 +23,30 @@ TEST  := test
 
 #-------------------------------./u/write-remaining
 
+ACTIVE := bitcoin-log
+ACTIVE := bitcoin-support
+ACTIVE := bitcoin-bitstream
+ACTIVE := bitcoin-u256
+ACTIVE := bitcoin-amt
+ACTIVE := bitcoin-locked-page-allocator
+#-------------------------------[done-above]
+
 #ACTIVE := bitcoin-aes
 ACTIVE := bitcoin-network
-ACTIVE := bitcoin-log
-ACTIVE := bitcoinleveldb-filter
+ACTIVE := bitcoin-tx
+ACTIVE := bitcoin-key
+ACTIVE := bitcoin-scripting
+ACTIVE := bitcoin-univalue
+
+ACTIVE := bitcoin-locked-pool
+ACTIVE := bitcoin-bech32m
+ACTIVE := bitcoin-base58
+ACTIVE := bitcoin-arena
+ACTIVE := bitcoin-time
+ACTIVE := bitcoin-hash
+ACTIVE := bitcoin-mem
+ACTIVE := bitcoin-serialize
+#ACTIVE := bitcoinleveldb-filter
 
 #ACTIVE := bitcoin-client-ui
 #ACTIVE := bitcoin-compat
@@ -58,7 +78,6 @@ ACTIVE := bitcoinleveldb-filter
 #ACTIVE := bitcoin-scheduler
 #ACTIVE := bitcoin-script
 #ACTIVE := bitcoin-secp256k1
-#ACTIVE := bitcoin-serialize
 #ACTIVE := bitcoin-service-flags
 #ACTIVE := bitcoin-settings
 #ACTIVE := bitcoin-signer

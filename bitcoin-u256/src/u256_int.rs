@@ -6,10 +6,32 @@ crate::ix!();
 /// This type is called `uint256` for historical reasons only. 
 /// It is an opaque blob of 256 bits and has no integer operations.
 /// Use `arith_uint256` if those are required.
-#[derive(Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Getters,Default, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[getset(get="pub")]
 #[allow(non_camel_case_types)]
 pub struct u256 {
     pub(crate) blob: BaseBlob256,
+}
+
+impl AsRef<[u8]> for u256 {
+    #[inline]
+    fn as_ref(&self) -> &[u8] {
+        self.as_slice()
+    }
+}
+
+impl AsMut<[u8]> for u256 {
+    #[inline]
+    fn as_mut(&mut self) -> &mut [u8] {
+        self.as_slice_mut()
+    }
+}
+
+impl core::fmt::Display for u256 {
+    #[inline]
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::fmt::Write::write_str(f, &self.to_string())
+    }
 }
 
 impl u256 {
@@ -67,6 +89,18 @@ impl u256 {
 
     pub fn to_string(&self) -> String {
         self.blob.get_hex()
+    }
+
+    /// Construct a `u256` from a **little‑endian** 32‑byte array.
+    ///
+    /// Bitcoin Core stores hashes in little‑endian when they are interpreted as
+    /// integers, while `BaseBlob` keeps its internal bytes in big‑endian.  We
+    /// therefore reverse the incoming buffer before delegating to the existing
+    /// `from_bytes_32` constructor.
+    #[inline]
+    pub fn from_le_bytes(mut le: [u8; 32]) -> Self {
+        le.reverse();
+        Self::from_bytes_32(le)
     }
 }
 

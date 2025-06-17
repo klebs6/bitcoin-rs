@@ -25,5 +25,6 @@ cpp-authors = [ "Wladimir J. van der Laan <laanwj@gmail.com>", "MarcoFalke <falk
 
 [dependencies]
 tracing.workspace            = true
+getset.workspace             = true
 tracing-setup.workspace      = true
 tracing-subscriber.workspace = true

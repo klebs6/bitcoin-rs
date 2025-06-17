@@ -1,63 +1,77 @@
 // ---------------- [ File: bitcoin-hash/src/verifier.rs ]
 crate::ix!();
 
-/**
-  | Reads data from an underlying stream,
-  | while hashing the read data.
-  |
-  */
-pub struct HashVerifier<Source> {
-    base: HashWriter,
-    source: *mut Source,
+/// Reads data from an underlying stream,
+/// while hashing the read data.
+///
+/// Stream wrapper that feeds every byte read
+/// into an internal `HashWriter`.
+pub struct HashVerifier<S> {
+    base:   HashWriter,
+    source: S,
 }
 
-impl<Source,T> Shr<T> for HashVerifier<Source> {
+impl<S> HashVerifier<S>
+where
+    S: Debug + Read,
+{
+    #[instrument(level = "trace")]
+    pub fn new(source: S) -> Self {
+        Self {
+            base: HashWriter::new(SER_GETHASH as i32, 0),
+            source,
+        }
+    }
 
-    type Output = HashVerifier<Source>;
-    
-    #[inline] fn shr(self, rhs: T) -> Self::Output {
-        todo!();
-        /*
-            // Unserialize from this stream
-            ::Unserialize(*this, obj);
-            return (*this);
-        */
+    #[instrument(level = "trace", skip(self, buf))]
+    pub fn read(&mut self, buf: &mut [u8]) -> std::io::Result<()> {
+        self.source.read_exact(buf)?;
+        self.base.write(buf);
+        Ok(())
+    }
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn ignore(&mut self, mut n: usize) -> std::io::Result<()> {
+        let mut tmp = [0u8; 1024];
+        while n != 0 {
+            let now = n.min(tmp.len());
+            self.read(&mut tmp[..now])?;
+            n -= now;
+        }
+        Ok(())
     }
 }
 
-impl<Source> HashVerifier<Source> {
-    
-    pub fn new(source: *mut Source) -> Self {
-    
-        todo!();
-        /*
+impl<Src, T> Shr<&mut T> for HashVerifier<Src>
+where
+    Src: Read + Debug,
+    T: AsMut<[u8]>,
+{
+    type Output = HashVerifier<Src>;
 
+    /// Read exactly `obj.as_mut().len()` bytes from the wrapped
+    /// stream, hash them, and store them in `obj`.
+    #[inline]
+    fn shr(mut self, rhs: &mut T) -> Self::Output {
+        let buf = rhs.as_mut();
+        // Ignore I/O errors – propagate via panic just like C++’s
+        // stream exceptions.
+        self.read(buf).expect("HashVerifier::read failed");
+        self
+    }
+}
 
-            : HashWriter(source_->GetType(), source_->GetVersion()), source(source_)
-        */
-    }
-    
-    pub fn read(&mut self, 
-        pch:    *mut u8,
-        n_size: usize)  {
-        
-        todo!();
-        /*
-            source->read(pch, nSize);
-            this->write(pch, nSize);
-        */
-    }
-    
-    pub fn ignore(&mut self, n_size: usize)  {
-        
-        todo!();
-        /*
-            char data[1024];
-            while (nSize > 0) {
-                size_t now = std::min<size_t>(nSize, 1024);
-                read(data, now);
-                nSize -= now;
-            }
-        */
+#[cfg(test)]
+mod verifier_shr_spec {
+    use super::*;
+    use std::io::Cursor;
+
+    #[traced_test]
+    fn shr_reads_exactly_into_buffer() {
+        let src = Cursor::new(b"xyz");
+        let mut verifier = HashVerifier::new(src);
+        let mut buf = [0u8; 3];
+        let _ = verifier >> &mut buf;
+        assert_eq!(&buf, b"xyz");
     }
 }

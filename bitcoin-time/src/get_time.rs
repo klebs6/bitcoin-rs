@@ -1,6 +1,8 @@
 // ---------------- [ File: bitcoin-time/src/get_time.rs ]
 crate::ix!();
 
+use std::time::{UNIX_EPOCH,SystemTime};
+
 pub fn get_time() -> Instant {
     Instant::now()
 }
@@ -19,79 +21,60 @@ pub fn get_datetime() -> OffsetDateTime {
     OffsetDateTime::now_utc()
 }
 
-/**
-  | Return system time (or mocked time,
-  | if set)
-  |
-  */
-pub fn get_time_since_epoch<T>() -> T {
-
-    todo!();
-        /*
-            const seconds mocktime{nMockTime.load(std::memory_order_relaxed)};
-
-        return duration_cast<T>(
-            mocktime.count() ?
-                mocktime :
-                microseconds{GetTimeMicros()});
-        */
+/// Return system time (or mocked time, if set) expressed as an arbitrary
+/// `Duration`‐convertible representation.
+pub fn get_time_since_epoch<T>() -> T
+where
+    T: From<Duration>,
+{
+    let mock = mock_time::MOCK_TIME.load(atomic::Ordering::Relaxed);
+    let d = if mock != 0 {
+        Duration::from_secs(mock as u64)
+    } else {
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("time went backwards")
+    };
+    trace!(?d, "get_time_since_epoch");
+    T::from(d)
 }
 
-pub fn get_system_time_since_epoch<T>() -> T {
-
-    todo!();
-        /*
-            const auto now = duration_cast<T>(system_clock::now().time_since_epoch());
-        assert(now.count() > 0);
-        return now;
-        */
+/// Return *real* system time expressed as an arbitrary `Duration`‐convertible
+/// representation (never mockable).
+pub fn get_system_time_since_epoch<T>() -> T
+where
+    T: From<Duration>,
+{
+    let d = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("time went backwards");
+    debug_assert!(d > Duration::ZERO, "system clock before Unix epoch");
+    trace!(?d, "get_system_time_since_epoch");
+    T::from(d)
 }
 
-/**
-  | For testing
-  |
-  */
+/// For testing – return the currently‑configured mock time, or `Duration::ZERO`.
 pub fn get_mock_time_since_epoch() -> Duration {
-    
-    todo!();
-        /*
-            return seconds(nMockTime.load(std::memory_order_relaxed));
-        */
+    let secs = mock_time::MOCK_TIME.load(atomic::Ordering::Relaxed);
+    trace!(mock_seconds = secs, "get_mock_time_since_epoch");
+    if secs == 0 {
+        Duration::ZERO
+    } else {
+        Duration::from_secs(secs as u64)
+    }
 }
 
-/**
-  | Returns the system time (not mockable)
-  |
-  */
+/// Returns **physical** milliseconds since the Unix epoch (not mockable).
 pub fn get_time_millis_since_epoch() -> i64 {
-    
-    todo!();
-        /*
-            return int64_t{GetSystemTime<milliseconds>().count()};
-        */
+    get_system_time_since_epoch::<Duration>().as_millis() as i64
 }
 
-/**
-  | Returns the system time (not mockable)
-  |
-  */
+/// Returns **physical** microseconds since the Unix epoch (not mockable).
 pub fn get_time_micros_since_epoch() -> i64 {
-    
-    todo!();
-        /*
-            return int64_t{GetSystemTime<microseconds>().count()};
-        */
+    get_system_time_since_epoch::<Duration>().as_micros() as i64
 }
 
-/**
-  | Returns the system time (not mockable)
-  |
-  | Like GetTime(), but not mockable
-  */
+/// Returns **physical** seconds since the Unix epoch (not mockable).
 pub fn get_time_seconds_since_epoch() -> i64 {
-    
-    todo!();
-        /*
-            return int64_t{GetSystemTime<seconds>().count()};
-        */
+    get_system_time_since_epoch::<Duration>().as_secs() as i64
 }

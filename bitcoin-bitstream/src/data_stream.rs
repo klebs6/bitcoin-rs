@@ -1,517 +1,522 @@
 // ---------------- [ File: bitcoin-bitstream/src/data_stream.rs ]
 crate::ix!();
 
-/**
-  | Double ended buffer combining vector
-  | and stream-like interfaces. >> and
-  | << read and write unformatted data using
-  | the above serialization templates.
-  | 
-  | Fills with data in linear time; some
-  | stringstream implementations take
-  | N^2 time.
-  |
-  */
+type ZeroAfterFreeVecIter = std::vec::IntoIter<u8, ZeroAfterFreeAllocator>;
+
+#[derive(Getters, Setters, Builder)]
+#[getset(get = "pub", set = "pub")]
 pub struct DataStream {
-    vch:        SerializeData,
-    n_read_pos: u32, // default = { 0 }
-    n_type:     i32,
-    n_version:  i32,
+
+    vch: SerializeData,
+
+    #[builder(default)]
+    n_read_pos: u32,
+
+    #[builder(default)]
+    n_type: i32,
+
+    #[builder(default)]
+    n_version: i32,
 }
 
-impl Index<usize> for DataStream {
-    type Output = SerializeData;
-    
-    #[inline] fn index(&self, pos: usize) -> &Self::Output {
-        todo!();
-        /*
-            return vch[pos + nReadPos];
-        */
+impl std::ops::Index<usize> for DataStream {
+    type Output = u8;
+
+    #[inline]
+    fn index(&self, pos: usize) -> &Self::Output {
+        &self.vch[pos + self.n_read_pos as usize]
     }
 }
 
-impl IndexMut<usize> for DataStream {
-    
-    #[inline] fn index_mut(&mut self, pos: usize) -> &mut Self::Output {
-        todo!();
-        /*
-            return vch[pos + nReadPos];
-        */
+impl std::ops::IndexMut<usize> for DataStream {
+    #[inline]
+    fn index_mut(&mut self, pos: usize) -> &mut Self::Output {
+        &mut self.vch[pos + self.n_read_pos as usize]
     }
 }
 
 impl StreamInto for DataStream {
-    
-    #[inline] fn stream_into<Item>(&self, rhs: &mut Item) {
-        todo!();
-        /*
-            // Serialize to this stream
-            ::Serialize(*this, obj);
-            return (*this);
-        */
+    #[inline]
+    fn stream_into<Item>(&self, _rhs: &mut Item) {
+        trace!("DataStream::stream_into called, but not implemented in this translation");
+        // Equivalent to ::Serialize(*this, obj) in C++
+        // We do not have a direct "Serialize" function in this snippet, so it's a placeholder.
     }
 }
 
 impl StreamItems for DataStream {
-    
-    #[inline] fn stream<Item>(&mut self, x: Item) {
-        todo!();
-        /*
-            // Unserialize from this stream
-            ::Unserialize(*this, obj);
-            return (*this);
-        */
+    #[inline]
+    fn stream<Item>(&mut self, _x: Item) {
+        trace!("DataStream::stream called, but not implemented in this translation");
+        // Equivalent to ::Unserialize(*this, obj) in C++
+        // We do not have a direct "Unserialize" function in this snippet, so it's a placeholder.
     }
 }
 
 impl DataStream {
-    
-    pub fn new(
-        n_type_in:    i32,
-        n_version_in: i32) -> Self {
-    
-        todo!();
-        /*
 
-
-            : nType{nTypeIn},
-              nVersion{nVersionIn}
-        */
+    #[instrument(level = "trace")]
+    pub fn new(n_type_in: i32, n_version_in: i32) -> Self {
+        info!("Constructing DataStream (empty), type={} version={}", n_type_in, n_version_in);
+        Self {
+            vch: Vec::<u8,ZeroAfterFreeAllocator>::new_in(ZeroAfterFreeAllocator),
+            n_read_pos: 0,
+            n_type: n_type_in,
+            n_version: n_version_in,
+        }
     }
-    
-    pub fn new_with_slice(
-        sp:           &[u8],
-        n_type_in:    i32,
-        n_version_in: i32) -> Self {
-    
-        todo!();
-        /*
-            : vch(sp.data(), sp.data() + sp.size()),
-              nType{nTypeIn},
-              nVersion{nVersionIn}
-        */
+
+    #[instrument(level = "trace", skip(sp))]
+    pub fn new_with_slice(sp: &[u8], n_type_in: i32, n_version_in: i32) -> Self {
+        info!("Constructing DataStream from slice, type={} version={}", n_type_in, n_version_in);
+        let mut v: SerializeData = Vec::<u8,ZeroAfterFreeAllocator>::new_in(ZeroAfterFreeAllocator);
+        v.extend_from_slice(sp);
+
+        Self {
+            vch: v,
+            n_read_pos: 0,
+            n_type: n_type_in,
+            n_version: n_version_in,
+        }
     }
-    
-    pub fn new_with_args<Args>(
-        n_type_in:    i32,
-        n_version_in: i32,
-        args:         Args) -> Self {
-    
-        todo!();
-        /*
 
-
-            : nType{nTypeIn},
-              nVersion{nVersionIn}
-
-            ::SerializeMany(*this, std::forward<Args>(args)...);
-        */
+    #[instrument(level = "trace", skip(_args))]
+    pub fn new_with_args<Args>(n_type_in: i32, n_version_in: i32, _args: Args) -> Self {
+        info!("Constructing DataStream with args, type={} version={}", n_type_in, n_version_in);
+        // In C++ code, this calls ::SerializeMany(*this, args...).
+        // This snippet is a placeholder, as we do not have the real definition for SerializeMany.
+        Self {
+            vch: Vec::<u8,ZeroAfterFreeAllocator>::new_in(ZeroAfterFreeAllocator),
+            n_read_pos: 0,
+            n_type: n_type_in,
+            n_version: n_version_in,
+        }
     }
-    
+
+    #[instrument(level = "trace", skip(self))]
     pub fn str_(&self) -> String {
-        
-        todo!();
-        /*
-            return (std::string(begin(), end()));
-        */
+        info!("DataStream::str_ called, returning string from internal buffer");
+        String::from_utf8_lossy(&self.vch[self.n_read_pos as usize..]).to_string()
     }
 
-    /* ----------------- Vector subset  ----------------- */
+    // ----------------- Vector subset  -----------------
 
-    pub fn begin(&self) -> Box<dyn Iterator<Item = u8>> {
-        
-        todo!();
-        /*
-            return vch.begin() + nReadPos;
-        */
+    #[instrument(level = "trace", skip(self))]
+    pub fn begin(&self) -> std::slice::Iter<'_, u8> {
+        self.vch[self.n_read_pos as usize..].iter()
     }
-    
-    pub fn begin_mut(&mut self) -> Box<dyn Iterator<Item = u8>> {
-        
-        todo!();
-        /*
-            return vch.begin() + nReadPos;
-        */
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn begin_mut(&mut self) -> std::slice::IterMut<'_, u8> {
+        let start = self.n_read_pos as usize;
+        self.vch[start..].iter_mut()
     }
-    
-    pub fn end(&self) -> Box<dyn Iterator<Item = u8>> {
-        
-        todo!();
-        /*
-            return vch.end();
-        */
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn end(&self) -> std::slice::Iter<'_, u8> {
+        // This returns an empty iterator at the end
+        self.vch[self.vch.len()..].iter()
     }
-    
-    pub fn end_mut(&mut self) -> Box<dyn Iterator<Item = u8>> {
-        
-        todo!();
-        /*
-            return vch.end();
-        */
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn end_mut(&mut self) -> std::slice::IterMut<'_, u8> {
+        let end = self.vch.len();
+        self.vch[end..].iter_mut()
     }
-    
+
+    #[instrument(level = "trace", skip(self))]
     pub fn size(&self) -> usize {
-        
-        todo!();
-        /*
-            return vch.size() - nReadPos;
-        */
+        let sz = self.vch.len().saturating_sub(self.n_read_pos as usize);
+        trace!("DataStream::size returning {}", sz);
+        sz
     }
-    
+
+    #[instrument(level = "trace", skip(self))]
     pub fn empty(&self) -> bool {
-        
-        todo!();
-        /*
-            return vch.size() == nReadPos;
-        */
+        let is_empty = self.n_read_pos as usize == self.vch.len();
+        trace!("DataStream::empty returning {}", is_empty);
+        is_empty
     }
-    
-    pub fn resize(&mut self, 
-        n: usize,
-        c: Option<u8>)  {
-        let c: u8 = c.unwrap_or(0);
 
-        todo!();
-        /*
-            vch.resize(n + nReadPos, c);
-        */
+    #[instrument(level = "trace", skip(self))]
+    pub fn resize(&mut self, n: usize, c: Option<u8>) {
+        let fill = c.unwrap_or(0);
+        info!("DataStream::resize to {}, fill={}", n, fill);
+        self.vch.resize(n + self.n_read_pos as usize, fill);
     }
-    
-    pub fn reserve(&mut self, n: usize)  {
-        
-        todo!();
-        /*
-            vch.reserve(n + nReadPos);
-        */
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn reserve(&mut self, n: usize) {
+        info!("DataStream::reserve to {}", n);
+        self.vch.reserve(n + self.n_read_pos as usize);
     }
-    
-    pub fn clear(&mut self)  {
-        
-        todo!();
-        /*
-            vch.clear(); nReadPos = 0;
-        */
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn clear(&mut self) {
+        info!("DataStream::clear called");
+        self.vch.clear();
+        self.n_read_pos = 0;
     }
-    
-    pub fn insert_item(&mut self, 
-        it: Box<dyn Iterator<Item = u8>>,
-        x:  u8) -> Box<dyn Iterator<Item = u8>> {
-        
-        todo!();
-        /*
-            return vch.insert(it, x);
-        */
+
+    #[instrument(level = "trace", skip(self, it))]
+    pub fn insert_item(
+        &mut self,
+        it: std::slice::Iter<'_, u8>,
+        x:  u8,
+    ) -> ZeroAfterFreeVecIter {
+        info!("DataStream::insert_item called, single byte={}", x);
+        let idx = (it.as_slice().as_ptr() as usize)
+            .saturating_sub(self.vch.as_ptr() as usize);
+        self.vch.insert(idx, x);
+        self.vch.clone().into_iter()
     }
-    
-    pub fn insert_multi(&mut self, 
-        it: Box<dyn Iterator<Item = u8>>,
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn insert_multi(
+        &mut self,
+        it: std::slice::Iter<'_, u8>,
         n:  usize,
-        x:  u8)  {
-        
-        todo!();
-        /*
-            vch.insert(it, n, x);
-        */
+        x:  u8,
+    ) {
+        info!("DataStream::insert_multi called, inserting {} copies of {}", n, x);
+        let idx = (it.as_slice().as_ptr() as usize)
+            .saturating_sub(self.vch.as_ptr() as usize);
+        self.vch.splice(idx..idx, std::iter::repeat(x).take(n));
     }
 
+    #[instrument(level = "trace", skip(self))]
     pub fn as_slice(&self) -> &[u8] {
-        let data: *const u8 = self.data();
-        let size:     usize = self.size();
-
-        unsafe {
-            std::slice::from_raw_parts(data,size)
-        }
+        let start = self.n_read_pos as usize;
+        &self.vch[start..]
     }
 
+    #[instrument(level = "trace", skip(self))]
     pub fn as_mut_slice(&mut self) -> &mut [u8] {
-        let data: *mut u8 = self.data_mut();
-        let size:   usize = self.size();
+        let start = self.n_read_pos as usize;
+        &mut self.vch[start..]
+    }
 
-        unsafe {
-            std::slice::from_raw_parts_mut(data,size)
+    #[instrument(level = "trace", skip(self))]
+    pub fn data_mut(&mut self) -> *mut u8 {
+        let start = self.n_read_pos as usize;
+        let ptr = self.vch.as_mut_ptr().wrapping_add(start);
+        trace!("DataStream::data_mut returning pointer={:?}", ptr);
+        ptr
+    }
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn data(&self) -> *const u8 {
+        let start = self.n_read_pos as usize;
+        let ptr = self.vch.as_ptr().wrapping_add(start);
+        trace!("DataStream::data returning pointer={:?}", ptr);
+        ptr
+    }
+
+    #[instrument(level = "trace", skip(self, first, last))]
+    pub fn insert_with_iterator_range(
+        &mut self,
+        it:    std::slice::Iter<'_, u8>,
+        mut first: std::slice::Iter<'_, u8>,
+        mut last:  std::slice::Iter<'_, u8>,
+    ) {
+        info!("DataStream::insert_with_iterator_range called");
+        let first_ptr = first.as_slice().as_ptr() as usize;
+        let last_ptr  = last.as_slice().as_ptr() as usize;
+        if last_ptr == first_ptr {
+            trace!("Nothing to insert; last == first");
+            return;
+        }
+        let count = last_ptr.saturating_sub(first_ptr);
+        let idx   = (it.as_slice().as_ptr() as usize)
+            .saturating_sub(self.vch.as_ptr() as usize);
+
+        // In the original C++: if it==vch.begin()+nReadPos and count <= nReadPos, do special front insert
+        let front_idx = self.n_read_pos as usize;
+        if idx == front_idx && count <= front_idx {
+            trace!("Performing special front insertion with memmove");
+            self.n_read_pos -= count as u32;
+            // Move the data into the front region:
+            unsafe {
+                let dst = self.vch.as_mut_ptr().add(self.n_read_pos as usize);
+                let src = first.as_slice().as_ptr();
+                std::ptr::copy(src, dst, count);
+            }
+        } else {
+            let src_slice = &first.as_slice()[..count];
+            self.vch.splice(idx..idx, src_slice.iter().cloned());
         }
     }
-    
-    pub fn data_mut(&mut self) -> *mut u8 {
-        
-        todo!();
-        /*
-            return vch.data() + nReadPos;
-        */
-    }
-    
-    pub fn data(&self) -> *const u8 {
-        
-        todo!();
-        /*
-            return vch.data() + nReadPos;
-        */
-    }
-    
-    pub fn insert_with_iterator_range(&mut self, 
-        it:    Box<dyn Iterator<Item = u8>>,
-        first: Box<dyn Iterator<Item = u8>>,
-        last:  Box<dyn Iterator<Item = u8>>)  {
-        
-        todo!();
-        /*
-            if (last == first) return;
-            assert(last - first > 0);
-            if (it == vch.begin() + nReadPos && (unsigned int)(last - first) <= nReadPos)
-            {
-                // special case for inserting at the front when there's room
-                nReadPos -= (last - first);
-                memcpy(&vch[nReadPos], &first[0], last - first);
-            }
-            else
-                vch.insert(it, first, last);
-        */
-    }
-    
-    pub fn insert_with_pointer_range(&mut self, 
-        it:    Box<dyn Iterator<Item = u8>>,
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn insert_with_pointer_range(
+        &mut self,
+        it: std::slice::Iter<'_, u8>,
         first: *const u8,
-        last:  *const u8)  {
-        
-        todo!();
-        /*
-            if (last == first) return;
-            assert(last - first > 0);
-            if (it == vch.begin() + nReadPos && (unsigned int)(last - first) <= nReadPos)
-            {
-                // special case for inserting at the front when there's room
-                nReadPos -= (last - first);
-                memcpy(&vch[nReadPos], &first[0], last - first);
+        last:  *const u8,
+    ) {
+        info!("DataStream::insert_with_pointer_range called");
+        let count = unsafe { last.offset_from(first) };
+        if count <= 0 {
+            trace!("Nothing to insert; last == first or invalid range");
+            return;
+        }
+        let idx = (it.as_slice().as_ptr() as usize)
+            .saturating_sub(self.vch.as_ptr() as usize);
+
+        let front_idx = self.n_read_pos as usize;
+        if idx == front_idx && (count as u32) <= self.n_read_pos {
+            trace!("Performing special front insertion with memmove");
+            self.n_read_pos -= count as u32;
+            unsafe {
+                let dst = self.vch.as_mut_ptr().add(self.n_read_pos as usize);
+                std::ptr::copy_nonoverlapping(first, dst, count as usize);
             }
-            else
-                vch.insert(it, first, last);
-        */
+        } else {
+            let src_slice = unsafe {
+                std::slice::from_raw_parts(first, count as usize)
+            };
+            self.vch.splice(idx..idx, src_slice.iter().cloned());
+        }
     }
-    
-    pub fn erase(&mut self, 
-        it: Box<dyn Iterator<Item=u8>>) -> Box<dyn Iterator<Item=u8>> {
-        
-        todo!();
-        /*
-            if (it == vch.begin() + nReadPos)
-            {
-                // special case for erasing from the front
-                if (++nReadPos >= vch.size())
-                {
-                    // whenever we reach the end, we take the opportunity to clear the buffer
-                    nReadPos = 0;
-                    return vch.erase(vch.begin(), vch.end());
-                }
-                return vch.begin() + nReadPos;
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn erase(
+        &mut self,
+        it: std::slice::Iter<'_, u8>,
+    ) -> ZeroAfterFreeVecIter {
+        info!("DataStream::erase called");
+        let idx = (it.as_slice().as_ptr() as usize)
+            .saturating_sub(self.vch.as_ptr() as usize);
+
+        if idx == self.n_read_pos as usize {
+            self.n_read_pos += 1;
+            if self.n_read_pos as usize >= self.vch.len() {
+                trace!("Erasing everything; clearing data");
+                self.n_read_pos = 0;
+                self.vch.clear();
             }
-            else
-                return vch.erase(it);
-        */
+        } else {
+            self.vch.remove(idx);
+        }
+        self.vch.clone().into_iter()
     }
-    
-    pub fn erase_range(&mut self, 
-        first: Box<dyn Iterator<Item=u8>>,
-        last:  Box<dyn Iterator<Item=u8>>) -> Box<dyn Iterator<Item=u8>> {
-        
-        todo!();
-        /*
-            if (first == vch.begin() + nReadPos)
-            {
-                // special case for erasing from the front
-                if (last == vch.end())
-                {
-                    nReadPos = 0;
-                    return vch.erase(vch.begin(), vch.end());
-                }
-                else
-                {
-                    nReadPos = (last - vch.begin());
-                    return last;
-                }
-            }
-            else
-                return vch.erase(first, last);
-        */
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn erase_range(
+        &mut self,
+        first: std::slice::Iter<'_, u8>,
+        last:  std::slice::Iter<'_, u8>,
+    ) -> ZeroAfterFreeVecIter {
+        info!("DataStream::erase_range called");
+        let first_idx = (first.as_slice().as_ptr() as usize)
+            .saturating_sub(self.vch.as_ptr() as usize);
+        let last_idx  = (last.as_slice().as_ptr() as usize)
+            .saturating_sub(self.vch.as_ptr() as usize);
+
+        if first_idx == self.n_read_pos as usize && last_idx == self.vch.len() {
+            trace!("Front‑to‑end erase; clearing");
+            self.n_read_pos = 0;
+            self.vch.clear();
+        } else if first_idx == self.n_read_pos as usize {
+            trace!("Front‑to‑mid erase");
+            self.n_read_pos = last_idx as u32;
+        } else {
+            self.vch.drain(first_idx..last_idx);
+        }
+        self.vch.clone().into_iter()
     }
-    
-    #[inline] pub fn compact(&mut self)  {
-        
-        todo!();
-        /*
-            vch.erase(vch.begin(), vch.begin() + nReadPos);
-            nReadPos = 0;
-        */
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn compact(&mut self) {
+        info!("DataStream::compact called");
+        let front_idx = self.n_read_pos as usize;
+        if front_idx > 0 && front_idx <= self.vch.len() {
+            self.vch.drain(0..front_idx);
+        }
+        self.n_read_pos = 0;
     }
-    
+
+    #[instrument(level = "trace", skip(self))]
     pub fn rewind(&mut self, n: Option<usize>) -> bool {
-
-        todo!();
-        /*
-            // Total rewind if no size is passed
-            if (!n) {
-                nReadPos = 0;
-                return true;
+        info!("DataStream::rewind called with n={:?}", n);
+        match n {
+            None => {
+                self.n_read_pos = 0;
+                true
             }
-            // Rewind by n characters if the buffer hasn't been compacted yet
-            if (*n > nReadPos)
-                return false;
-            nReadPos -= *n;
-            return true;
-        */
+            Some(val) => {
+                if val > self.n_read_pos as usize {
+                    trace!("Cannot rewind; requested more than n_read_pos");
+                    false
+                } else {
+                    self.n_read_pos -= val as u32;
+                    true
+                }
+            }
+        }
     }
 
-    /* ----------------- Stream subset  ----------------- */
+    // ----------------- Stream subset  -----------------
 
+    #[instrument(level = "trace", skip(self))]
     pub fn eof(&self) -> bool {
-        
-        todo!();
-        /*
-            return size() == 0;
-        */
+        let end = self.size() == 0;
+        trace!("DataStream::eof returning {}", end);
+        end
     }
-    
+
+    #[instrument(level = "trace", skip(self))]
     pub fn rdbuf(&mut self) -> *mut DataStream {
-        
-        todo!();
-        /*
-            return this;
-        */
+        let ptr = self as *mut DataStream;
+        trace!("DataStream::rdbuf returning self pointer={:?}", ptr);
+        ptr
     }
-    
+
+    #[instrument(level = "trace", skip(self))]
     pub fn in_avail(&self) -> i32 {
-        
-        todo!();
-        /*
-            return size();
-        */
+        let avail = self.size() as i32;
+        trace!("DataStream::in_avail returning {}", avail);
+        avail
     }
-    
-    pub fn set_type(&mut self, n: i32)  {
-        
-        todo!();
-        /*
-            nType = n;
-        */
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn set_type(&mut self, n: i32) {
+        info!("DataStream::set_type to {}", n);
+        self.n_type = n;
     }
-    
+
+    #[instrument(level = "trace", skip(self))]
     pub fn get_type(&self) -> i32 {
-        
-        todo!();
-        /*
-            return nType;
-        */
+        trace!("DataStream::get_type returning {}", self.n_type);
+        self.n_type
     }
-    
-    pub fn set_version(&mut self, n: i32)  {
-        
-        todo!();
-        /*
-            nVersion = n;
-        */
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn set_version(&mut self, n: i32) {
+        info!("DataStream::set_version to {}", n);
+        self.n_version = n;
     }
-    
+
+    #[instrument(level = "trace", skip(self))]
     pub fn get_version(&self) -> i32 {
-        
-        todo!();
-        /*
-            return nVersion;
-        */
-    }
-    
-    pub fn read(&mut self, 
-        pch:    *mut u8,
-        n_size: usize)  {
-        
-        todo!();
-        /*
-            if (nSize == 0) return;
-
-            // Read from the beginning of the buffer
-            unsigned int nReadPosNext = nReadPos + nSize;
-            if (nReadPosNext > vch.size()) {
-                throw std::ios_base::failure("DataStream::read(): end of data");
-            }
-            memcpy(pch, &vch[nReadPos], nSize);
-            if (nReadPosNext == vch.size())
-            {
-                nReadPos = 0;
-                vch.clear();
-                return;
-            }
-            nReadPos = nReadPosNext;
-        */
-    }
-    
-    pub fn ignore(&mut self, n_size: i32)  {
-        
-        todo!();
-        /*
-            // Ignore from the beginning of the buffer
-            if (nSize < 0) {
-                throw std::ios_base::failure("DataStream::ignore(): nSize negative");
-            }
-            unsigned int nReadPosNext = nReadPos + nSize;
-            if (nReadPosNext >= vch.size())
-            {
-                if (nReadPosNext > vch.size())
-                    throw std::ios_base::failure("DataStream::ignore(): end of data");
-                nReadPos = 0;
-                vch.clear();
-                return;
-            }
-            nReadPos = nReadPosNext;
-        */
-    }
-    
-    pub fn write(&mut self, 
-        pch:    *const u8,
-        n_size: usize)  {
-        
-        todo!();
-        /*
-            // Write to the end of the buffer
-            vch.insert(vch.end(), pch, pch + nSize);
-        */
-    }
-    
-    pub fn serialize<Stream>(&self, s: &mut Stream) {
-    
-        todo!();
-        /*
-            // Special case: stream << stream concatenates like stream += stream
-            if (!vch.empty())
-                s.write((char*)vch.data(), vch.size() * sizeof(value_type));
-        */
+        trace!("DataStream::get_version returning {}", self.n_version);
+        self.n_version
     }
 
-    /**
-      | XOR the contents of this stream with
-      | a certain key.
-      | 
-      | -----------
-      | @param[in] key
-      | 
-      | The key used to XOR the data in this stream.
-      |
-      */
-    pub fn xor(&mut self, key: &Vec<u8>)  {
-        
-        todo!();
-        /*
-            if (key.size() == 0) {
-                return;
-            }
+    #[instrument(level = "trace", skip(self, pch))]
+    pub fn read(&mut self, pch: *mut u8, n_size: usize) {
+        info!("DataStream::read called, n_size={}", n_size);
+        if n_size == 0 {
+            trace!("Nothing to read, returning early");
+            return;
+        }
+        let n_read_pos_next = self.n_read_pos as usize + n_size;
+        if n_read_pos_next > self.vch.len() {
+            error!("DataStream::read end of data: requested beyond buffer");
+            panic!("DataStream::read(): end of data");
+        }
+        unsafe {
+            let src_slice = &self.vch[self.n_read_pos as usize..n_read_pos_next];
+            std::ptr::copy_nonoverlapping(src_slice.as_ptr(), pch, n_size);
+        }
+        if n_read_pos_next == self.vch.len() {
+            trace!("Read consumed entire buffer; clearing");
+            self.n_read_pos = 0;
+            self.vch.clear();
+            return;
+        }
+        self.n_read_pos = n_read_pos_next as u32;
+    }
 
-            for (usize i = 0, j = 0; i != size(); i++) {
-                vch[i] ^= key[j++];
-
-                // This potentially acts on very many bytes of data, so it's
-                // important that we calculate `j`, i.e. the `key` index in this
-                // way instead of doing a %, which would effectively be a division
-                // for each byte Xor'd -- much slower than need be.
-                if (j == key.size())
-                    j = 0;
+    #[instrument(level = "trace", skip(self))]
+    pub fn ignore(&mut self, n_size: i32) {
+        info!("DataStream::ignore called, n_size={}", n_size);
+        if n_size < 0 {
+            error!("Negative n_size passed to DataStream::ignore");
+            panic!("DataStream::ignore(): nSize negative");
+        }
+        let next = self.n_read_pos as i32 + n_size;
+        if next as usize >= self.vch.len() {
+            if next as usize > self.vch.len() {
+                error!("Attempted to ignore beyond end of data in DataStream");
+                panic!("DataStream::ignore(): end of data");
             }
-        */
+            trace!("Ignoring up to the end; clearing");
+            self.n_read_pos = 0;
+            self.vch.clear();
+            return;
+        }
+        self.n_read_pos = next as u32;
+    }
+
+    #[instrument(level = "trace", skip(self, pch))]
+    pub fn write(&mut self, pch: *const u8, n_size: usize) {
+        info!("DataStream::write called, n_size={}", n_size);
+        unsafe {
+            let slice = std::slice::from_raw_parts(pch, n_size);
+            self.vch.extend_from_slice(slice);
+        }
+    }
+
+    #[instrument(level = "trace", skip(self, _s))]
+    pub fn serialize<Stream>(&self, _s: &mut Stream) {
+        info!("DataStream::serialize placeholder called");
+        // In C++: if !vch.empty(), s.write((char*)vch.data(), vch.size());
+        // We have no direct definition of Stream::write in this snippet, so we omit the real call.
+    }
+
+    #[instrument(level = "trace", skip(self, key))]
+    pub fn xor(&mut self, key: &Vec<u8>) {
+        info!("DataStream::xor called with key len={}", key.len());
+        if key.is_empty() {
+            trace!("Key is empty, nothing to XOR");
+            return;
+        }
+        let mut j = 0usize;
+        let ksize = key.len();
+        for i in 0..self.size() {
+            self.vch[i + self.n_read_pos as usize] ^= key[j];
+            j += 1;
+            if j == ksize {
+                j = 0;
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod test_data_stream {
+    use super::*;
+    use traced_test::traced_test;
+
+    #[traced_test]
+    fn test_basic_read_write() {
+        let mut ds = DataStream::new(0, 0);
+        let data = b"HelloWorld";
+        ds.write(data.as_ptr(), data.len());
+
+        let mut output = vec![0u8; 5];
+        ds.read(output.as_mut_ptr(), 5);
+        assert_eq!(&output, b"Hello");
+
+        assert!(!ds.empty());
+        assert_eq!(ds.size(), 5);
+
+        ds.ignore(2);
+        let mut final_part = vec![0u8; 3];
+        ds.read(final_part.as_mut_ptr(), 3);
+        assert_eq!(&final_part, b"rld");
+
+        assert!(ds.empty());
+    }
+
+    #[traced_test]
+    fn test_xor() {
+        let mut ds = DataStream::new(0, 0);
+        let data = vec![0x00, 0xFF, 0xAA];
+        ds.write(data.as_ptr(), data.len());
+        ds.xor(&vec![0xFF]);
+        // After XOR with 0xFF => 0xFF, 0x00, 0x55
+        assert_eq!(ds.as_slice(), &[0xFF, 0x00, 0x55]);
     }
 }

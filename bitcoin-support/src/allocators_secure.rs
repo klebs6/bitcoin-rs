@@ -15,13 +15,15 @@ pub struct SecureAllocator {
 }
 
 impl SecureAllocator {
-
+    /// Construct a fresh, stateless `SecureAllocator`.
+    ///
+    /// The `_a` parameter mirrors C++’s copy‑constructor but is ignored
+    /// because this allocator carries **no** runtime state.
+    #[inline]
+    #[must_use]
     pub fn new(_a: &SecureAllocator) -> Self {
-    
-        todo!();
-        /*
-        : base(a),
-        */
+        trace!(target: "secure_alloc", "instantiated SecureAllocator");
+        Self::default()
     }
 }
 
@@ -31,46 +33,63 @@ lazy_static!{
 
 unsafe impl Allocator for SecureAllocator {
 
-    fn allocate(&self, _layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
+    /// Allocate memory and **immediately** `mlock(2)` it so the pages can’t
+    /// be swapped out.  Failure to lock is logged but doesn’t abort the
+    /// allocation, keeping the API infallible from the caller’s viewpoint.
+    #[instrument(level = "trace", skip(self, layout))]
+    fn allocate(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
+        let ptr = std::alloc::Global.allocate(layout)?;
 
-        todo!();
-
-        /*
-        fn allocate(&mut self, 
-            n:    usize,
-            hint: *const c_void) -> *mut T {
-            let hint: *const c_void = hint.unwrap_or(0);
-
-            todo!();
-            /*
-                T* allocation = static_cast<T*>(LockedPoolManager::Instance().alloc(sizeof(T) * n));
-                if (!allocation) {
-                    throw std::bad_alloc();
-                }
-                return allocation;
-            */
+        #[cfg(target_family = "unix")]
+        unsafe {
+            if libc::mlock(ptr.as_non_null_ptr().as_ptr().cast::<c_void>(), layout.size()) != 0 {
+                warn!(
+                    target: "secure_alloc",
+                    "mlock failed: {}",
+                    std::io::Error::last_os_error()
+                );
+            }
         }
-        */
+
+        Ok(ptr)
     }
 
-    unsafe fn deallocate(&self, _ptr: NonNull<u8>, _layout: Layout) {
+    /// Allocate **zero‑initialised** memory and lock it in RAM.
+    #[instrument(level = "trace", skip(self, layout))]
+    fn allocate_zeroed(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
+        let ptr = std::alloc::Global.allocate_zeroed(layout)?;
 
-        todo!();
-
-        /*
-        pub fn deallocate(&mut self, 
-            p: *mut T,
-            n: usize)  {
-            
-            todo!();
-            /*
-                if (p != nullptr) {
-                    memory_cleanse(p, sizeof(T) * n);
-                }
-                LockedPoolManager::Instance().free(p);
-            */
+        #[cfg(target_family = "unix")]
+        unsafe {
+            if libc::mlock(ptr.as_non_null_ptr().as_ptr().cast::<c_void>(), layout.size()) != 0 {
+                warn!(
+                    target: "secure_alloc",
+                    "mlock (zeroed) failed: {}",
+                    std::io::Error::last_os_error()
+                );
+            }
         }
-        */
+
+        Ok(ptr)
+    }
+
+    /// Securely wipe, unlock, and release the memory.
+    #[instrument(level = "trace", skip(self, ptr, layout))]
+    unsafe fn deallocate(&self, ptr: NonNull<u8>, layout: Layout) {
+        crate::memory_cleanse(ptr.as_ptr().cast::<c_void>(), layout.size());
+
+        #[cfg(target_family = "unix")]
+        {
+            if libc::munlock(ptr.as_ptr().cast::<c_void>(), layout.size()) != 0 {
+                warn!(
+                    target: "secure_alloc",
+                    "munlock failed: {}",
+                    std::io::Error::last_os_error()
+                );
+            }
+        }
+
+        std::alloc::Global.deallocate(ptr, layout);
     }
 }
 

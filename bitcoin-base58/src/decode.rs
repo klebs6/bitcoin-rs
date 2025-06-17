@@ -26,10 +26,12 @@ pub fn decode_base58(
 }
 
 pub unsafe fn decode_base58_raw(
-        mut psz:     *const u8,
-        vch:         &mut Vec<u8>,
-        max_ret_len: i32) -> bool {
-    
+    mut psz:     *const u8,
+    vch:         &mut Vec<u8>,
+    max_ret_len: i32
+
+) -> bool {
+
     // Skip leading spaces.
     while *psz != 0 && nom::character::is_space(*psz ){
         psz = psz.add(1);
