@@ -8,8 +8,9 @@ lazy_static! {
 }
 
 /// For testing – set mock time (in *seconds* since the Unix epoch).
-pub fn set_mock_time(mock_time_in: Instant) {
+pub fn set_mock_time(mock_time_in: std::time::Instant) {       // CHANGED
     let secs = mock_time_in.elapsed().as_secs() as i64;
-    MOCK_TIME.store(secs, atomic::Ordering::Relaxed);
+    MOCK_TIME.store(secs, atomic::Ordering::Relaxed);                   // CHANGED
     info!(mock_seconds = secs, "set_mock_time");
 }
+

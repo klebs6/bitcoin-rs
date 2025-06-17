@@ -7,30 +7,36 @@ pub struct LimitedStringFormatter<'a, const Limit: usize> {
 }
 
 impl<'a, const Limit: usize> LimitedStringFormatter<'a, Limit> {
-    
-    pub fn unser<Stream>(&mut self, 
-        s: &mut Stream,
-        v: &mut String)  {
-    
-        todo!();
-        /*
-            size_t size = ReadCompactSize(s);
-            if (size > Limit) {
-                throw std::ios_base::failure("String length limit exceeded");
+    pub fn unser<Stream>(&mut self, s: &mut Stream, v: &mut String)
+    where
+        Stream: Read,
+    {
+        let size = read_compact_size(s, Some(true)) as usize;
+        if size > Limit {
+            panic!("String length limit exceeded ({} > {})", size, Limit);
+        }
+        v.clear();
+        v.reserve(size);
+        if size != 0 {
+            // SAFETY: we allocated exactly `size` bytes, read will fill them.
+            unsafe {
+                v.as_mut_vec().set_len(size);
             }
-            v.resize(size);
-            if (size != 0) s.read((char*)v.data(), size);
-        */
+            s.read_exact(unsafe { v.as_mut_vec() })
+                .expect("I/O error while reading limited string");
+        }
+        trace!(len = size, "LimitedStringFormatter::unser");
     }
-    
-    
-    pub fn ser<Stream>(&mut self, 
-        s: &mut Stream,
-        v: &String)  {
-    
-        todo!();
-        /*
-            s << v;
-        */
+
+    pub fn ser<Stream>(&mut self, s: &mut Stream, v: &String)
+    where
+        Stream: Write,
+    {
+        write_compact_size(s, v.len() as u64);
+        if !v.is_empty() {
+            s.write_all(v.as_bytes())
+                .expect("I/O error while writing limited string");
+        }
+        trace!(len = v.len(), "LimitedStringFormatter::ser");
     }
 }

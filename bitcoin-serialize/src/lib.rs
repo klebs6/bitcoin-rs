@@ -43,6 +43,7 @@ x!{size_computer}
 x!{unserialize}
 x!{var_int_formatter}
 x!{var_int_mode}
+x!{check_var_int_mode}
 x!{vector_formatter}
 x!{wrapper}
 x!{write_with_size_computer}

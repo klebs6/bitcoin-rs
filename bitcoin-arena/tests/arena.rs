@@ -13,7 +13,6 @@ trait Tap: Sized {
 
 impl<T> Tap for *mut T {}
 
-/// Comprehensive stress‑test ported from the original C++ suite.
 #[traced_test]
 fn arena_full_coverage() {
     // ------------------------------------------------------------
@@ -28,31 +27,33 @@ fn arena_full_coverage() {
     let chunk = arena.alloc(1_000);
     assert!(!chunk.is_null());
     arena.free(chunk);
-    assert_eq!(arena.stats().used(), 0);
-    assert_eq!(arena.stats().free(), synth_size);
+    assert_eq!(*arena.stats().used(), 0);
+    assert_eq!(*arena.stats().free(), synth_size);
 
-    // Double‑free panic
-    assert!(std::panic::catch_unwind(|| arena.free(chunk)).is_err());
+    // Double‑free panic (wrap closure in `AssertUnwindSafe` so it implements `UnwindSafe`)
+    assert!(
+        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| arena.free(chunk))).is_err()
+    );
 
     // Three allocations, phased frees
     let a0 = arena.alloc(128);
     let a1 = arena.alloc(256);
     let a2 = arena.alloc(512);
-    assert_eq!(arena.stats().used(), 896);
+    assert_eq!(*arena.stats().used(), 896);
     arena.free(a0);
     arena.free(a1);
     let a3 = arena.alloc(128);
     arena.free(a2);
     arena.free(a3);
-    assert_eq!(arena.stats().used(), 0);
+    assert_eq!(*arena.stats().used(), 0);
 
     // Sweep allocations (1 KiB blocks)
     let mut addr: Vec<*mut c_void> = (0..1_024).map(|_| arena.alloc(1_024)).collect();
-    assert_eq!(arena.stats().free(), 0);
+    assert_eq!(*arena.stats().free(), 0);
     assert!(arena.alloc(1_024).is_null());
     for p in &addr { arena.free(*p); }
     addr.clear();
-    assert_eq!(arena.stats().free(), synth_size);
+    assert_eq!(*arena.stats().free(), synth_size);
 
     // Reverse‑order frees
     addr = (0..1_024).map(|_| arena.alloc(1_024)).collect();
@@ -68,16 +69,17 @@ fn arena_full_coverage() {
     addr.clear();
 
     // Pseudo‑random stress (LFSR)
-    addr.resize(2_048, null_mut());
+    addr.resize(2_048, std::ptr::null_mut());
     let mut s: u32 = 0x1234_5678;
     for _ in 0..5_000 {
         let idx = (s & ((addr.len() - 1) as u32)) as usize;
         if s & 0x8000_0000 != 0 {
             arena.free(addr[idx]);
-            addr[idx] = null_mut();
+            addr[idx] = std::ptr::null_mut();
         } else if addr[idx].is_null() {
-            arena.alloc(((s >> 16) & 2_047) as usize)
-                 .tap(|p| addr[idx] = *p);
+            arena
+                .alloc(((s >> 16) & 2_047) as usize)
+                .tap(|p| addr[idx] = *p);
         }
         let lsb = s & 1;
         s >>= 1;
@@ -86,6 +88,6 @@ fn arena_full_coverage() {
     for p in &addr { arena.free(*p); }
 
     debug!("final stats: {:?}", arena.stats());
-    assert_eq!(arena.stats().used(), 0);
-    assert_eq!(arena.stats().free(), synth_size);
+    assert_eq!(*arena.stats().used(), 0);
+    assert_eq!(*arena.stats().free(), synth_size);
 }

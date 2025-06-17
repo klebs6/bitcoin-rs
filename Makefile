@@ -24,11 +24,12 @@ TEST  := test
 #-------------------------------./u/write-remaining
 
 ACTIVE := bitcoin-log
-ACTIVE := bitcoin-support
 ACTIVE := bitcoin-bitstream
 ACTIVE := bitcoin-u256
 ACTIVE := bitcoin-amt
 ACTIVE := bitcoin-locked-page-allocator
+ACTIVE := bitcoin-time
+ACTIVE := bitcoin-support
 #-------------------------------[done-above]
 
 #ACTIVE := bitcoin-aes
@@ -41,11 +42,10 @@ ACTIVE := bitcoin-univalue
 ACTIVE := bitcoin-locked-pool
 ACTIVE := bitcoin-bech32m
 ACTIVE := bitcoin-base58
-ACTIVE := bitcoin-arena
-ACTIVE := bitcoin-time
 ACTIVE := bitcoin-hash
-ACTIVE := bitcoin-mem
 ACTIVE := bitcoin-serialize
+ACTIVE := bitcoin-mem
+ACTIVE := bitcoin-arena
 #ACTIVE := bitcoinleveldb-filter
 
 #ACTIVE := bitcoin-client-ui

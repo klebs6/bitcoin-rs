@@ -11,25 +11,22 @@ pub struct VarIntFormatter<const Mode: VarIntMode> {
 }
 
 impl<const Mode: VarIntMode> VarIntFormatter<Mode> {
-    
-    pub fn ser<Stream, I>(&mut self, 
-        s: &mut Stream,
-        v: I)  {
-    
-        todo!();
-        /*
-            WriteVarInt<Stream,Mode,typename std::remove_cv<I>::type>(s, v);
-        */
+    #[inline]
+    pub fn ser<Stream, I>(&mut self, s: &mut Stream, v: I)
+    where
+        Stream: Write,
+        I: Into<u128> + Copy + From<u8> + TryInto<u128>,
+    {
+        write_var_int::<Stream, I, Mode>(s, v);
     }
-    
-    
-    pub fn unser<Stream, I>(&mut self, 
-        s: &mut Stream,
-        v: &mut I)  {
-    
-        todo!();
-        /*
-            v = ReadVarInt<Stream,Mode,typename std::remove_cv<I>::type>(s);
-        */
+
+    #[inline]
+    pub fn unser<Stream, I>(&mut self, s: &mut Stream, v: &mut I)
+    where
+        Stream: Read,
+        I: TryFrom<u128> + Copy + Default + std::fmt::Debug,
+        <I as TryFrom<u128>>::Error: std::fmt::Debug,
+    {
+        *v = read_var_int::<Stream, I, Mode>(s);
     }
 }

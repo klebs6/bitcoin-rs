@@ -33,7 +33,6 @@ pub fn count_microseconds(t: Microseconds) -> i64 {
     µs
 }
 
-pub type SecondsDouble = Seconds<u64>;
 
 /// Helper to count the seconds in any duration type, returning `f64`.
 #[inline]
@@ -42,3 +41,14 @@ pub fn count_seconds_double(t: SecondsDouble) -> f64 {
     trace!(seconds = secs, "count_seconds_double");
     secs
 }
+
+// ---------------- [ File: bitcoin-time/src/count.rs ]
+
+pub use std::time::Duration as StdDuration;       // NEW
+
+/// Rust equivalents of the C++ `std::chrono` typedefs.             // NEW
+pub type Milliseconds  = StdDuration;                              // NEW
+pub type Microseconds  = StdDuration;                              // NEW
+pub type Seconds       = StdDuration;                              // NEW
+pub type SecondsDouble = StdDuration;                              // NEW
+//pub type SecondsDouble = Seconds<u64>;

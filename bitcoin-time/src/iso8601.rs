@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoin-time/src/iso8601.rs ]
 crate::ix!();
 
-use chrono::format::parse;
+use time::format_description::parse;      // CHANGED
 
 /// Format an epoch value (`n_time`) as ISO‑8601 `YYYY‑MM‑DDTHH:MM:SSZ`.
 pub fn format_iso8601date_time(n_time: i64) -> String {

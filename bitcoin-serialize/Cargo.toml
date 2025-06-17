@@ -1,3 +1,6 @@
+[dependencies]
+num-traits.workspace = true
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.17-alpha.0"

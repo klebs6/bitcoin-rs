@@ -24,13 +24,25 @@ impl<X: RecursiveDynamicUsage + DynamicUsage> RecursiveDynamicUsage for Arc<X> {
     }
 }
 
-impl<X> RecursiveDynamicUsage for Amo<X> {
-
+impl<T: RecursiveDynamicUsage> RecursiveDynamicUsage for Option<T> {
     fn recursive_dynamic_usage(&self) -> usize {
-
-        todo!();
-            /*
-                return p ? memusage::DynamicUsage(p) + RecursiveDynamicUsage(*p) : 0;
-            */
+        match self {
+            Some(inner) => {
+                let usage = recursive_dynamic_usage(inner);
+                trace!(
+                    "RecursiveDynamicUsage<Option<{}>> some={}",
+                    core::any::type_name::<T>(),
+                    usage
+                );
+                usage
+            }
+            None => {
+                trace!(
+                    "RecursiveDynamicUsage<Option<{}>> none=0",
+                    core::any::type_name::<T>()
+                );
+                0
+            }
+        }
     }
 }

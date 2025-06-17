@@ -2115,6 +2115,7 @@ dependencies = [
  "hashbrown 0.12.3",
  "lazy_static",
  "maplit",
+ "num-traits 0.1.43",
  "static_assertions",
 ]
 
@@ -2387,6 +2388,7 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "time 0.3.41",
 ]
 
 [[package]]

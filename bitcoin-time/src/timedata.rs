@@ -80,7 +80,7 @@ where
 /// 
 /// Return the current P2P time offset (seconds).
 pub fn get_time_offset() -> i64 {
-    let off = *TIME_OFFSET.lock().expect("TIME_OFFSET lock");
+    let off = *TIME_OFFSET.lock();
     trace!(offset_seconds = off, "get_time_offset");
     off
 }
