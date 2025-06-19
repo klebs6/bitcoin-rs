@@ -161,3 +161,45 @@ pub fn ser_read_write_many_with_action_unserialize<Stream, T>(
     trace!("ser_read_write_many_with_action_unserialize");
     args.unserialize_many(s);
 }
+
+#[cfg(test)]
+mod many_tests {
+    use super::*;
+    use std::io::Cursor;
+
+    /// End‑to‑end round‑trip for `ser_read_write_many_with_action_*`.
+    #[traced_test]
+    fn roundtrip_two_element_tuple() {
+        let original = (0xAAu8, 0xBBCCu16);
+
+        let mut buf = Cursor::new(Vec::<u8>::new());
+        ser_read_write_many_with_action_serialize(
+            &mut buf,
+            crate::action::SerActionSerialize {},
+            &original,
+        );
+
+        buf.set_position(0);
+        let mut decoded = (0u8, 0u16);
+        ser_read_write_many_with_action_unserialize(
+            &mut buf,
+            crate::action::SerActionUnserialize {},
+            &mut decoded,
+        );
+
+        assert_eq!(decoded, original);
+    }
+
+    /// Verify that `get_serialize_size_many` matches the actual encoded
+    /// size for a triple.
+    #[traced_test]
+    fn size_many_matches_bytes_written() {
+        let triple = (1u8, 2u16, false);
+        let mut buf = Cursor::new(Vec::<u8>::new());
+        triple.serialize_many(&mut buf);
+        let actual_len = buf.get_ref().len();
+
+        let computed_len = crate::get_serialize_size_many(0, &triple);
+        assert_eq!(actual_len, computed_len);
+    }
+}

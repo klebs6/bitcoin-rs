@@ -1,21 +1,39 @@
+// ---------------- [ File: bitcoin-chacha/src/compute_poly1305_tag.rs ]
 crate::ix!();
 
 use generic_array::{typenum::U16, GenericArray};
 use poly1305::Key;
 
-/// Compute a Poly1305 tag for arbitrary‑length `msg`.
+/// Compute a Poly1305 tag for an arbitrary‑length message.
 ///
-/// The RustCrypto `Poly1305` implementation already handles
-/// chunking, padding, and the implicit `2¹²⁸` “high‑bit” required by
-/// the algorithm, so we can simply stream the whole message.
+/// The algorithm processes each 16‑byte block **as‑is**; for the
+/// final partial block (if any) we zero‑pad to 16 bytes and append a
+/// single `1` byte as specified in RFC 8439 §2.5.
 pub fn compute_poly1305_tag(
     key: &[u8; POLY1305_KEYLEN],
     msg: &[u8],
 ) -> GenericArray<u8, U16> {
-    let key   = Key::from_slice(key);
+    let key = Key::from_slice(key);
     let mut mac = Poly1305::new(key);
-    mac.update(msg);          // feed entire message directly
-    mac.finalize()            // returns 16‑byte tag
+
+    // --- full 16‑byte blocks -------------------------------------------
+    for chunk in msg.chunks_exact(16) {
+        // each call to `update` expects a slice of `Block`s
+        let block = GenericArray::<u8, U16>::clone_from_slice(chunk);
+        mac.update(core::slice::from_ref(&block));
+    }
+
+    // --- trailing partial block (≤15 bytes) -----------------------------
+    let rem = msg.len() % 16;
+    if rem != 0 {
+        let mut last = [0u8; 16];
+        last[..rem].copy_from_slice(&msg[msg.len() - rem..]);
+        last[rem] = 1; // Poly1305 padding bit
+        let block = GenericArray::<u8, U16>::from(last);
+        mac.update(core::slice::from_ref(&block));
+    }
+
+    mac.finalize()
 }
 
 #[cfg(test)]

@@ -184,7 +184,11 @@ mod cbc_decrypt_validation {
             data.len() as i32,
             cipher.as_mut_ptr(),
         );
-        assert_eq!(written, 32);
+        let expected_len =
+            ((data.len() + AES_BLOCKSIZE) / AES_BLOCKSIZE) * AES_BLOCKSIZE;
+        assert_eq!(written as usize, expected_len,
+            "ciphertext length with PKCS‑7 padding");
+
         // decrypt
         let mut plain = vec![0u8; 48];
         let mut dec = aes256cbc_decrypt::AES256CBCDecrypt::new(key, iv, true);
@@ -193,6 +197,7 @@ mod cbc_decrypt_validation {
             written,
             plain.as_mut_ptr(),
         );
+        assert_eq!(read as usize, data.len(), "plaintext length");
         assert_eq!(&plain[..read as usize], data);
     }
 }

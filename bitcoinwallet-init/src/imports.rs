@@ -6,4 +6,3 @@ pub(crate) use bitcoin_indexed_chain::*;
 pub(crate) use bitcoin_scheduler::*;
 pub(crate) use bitcoinwallet_context::*;
 pub(crate) use bitcoinwallet_library::*;
-

@@ -137,75 +137,74 @@ impl Read for VectorReader {
 #[cfg(test)]
 mod vector_reader_exhaustive_suite {
     use super::*;
-    use std::{panic, ptr, sync::Arc};
+    use std::io::{Read, ErrorKind};
+    use std::{panic, sync::Arc};
 
+    /// Cursor advances correctly after a partial read.
     #[traced_test]
     fn vector_reader_roundtrip_position_advances() {
         let bytes = Arc::new(vec![0xAAu8, 0xBB, 0xCC, 0xDD]);
-        let mut rdr = VectorReader::new(0, 0, bytes.clone(), 1);
+        let mut rdr = VectorReader::new(0, 0, bytes, 1);
 
         let mut buf = [0u8; 2];
-        rdr.read(buf.as_mut_ptr(), 2);
+        rdr.read_exact(&mut buf).unwrap();
 
         assert_eq!(buf, [0xBB, 0xCC]);
         assert_eq!(rdr.size(), 1);
         assert!(!rdr.empty());
     }
 
-
-    /// Verify constructor rejects an initial position that
-    /// exceeds the backing buffer’s length.
+    /// Constructor must reject an initial position that is out of bounds.
     #[traced_test]
     fn constructor_rejects_out_of_bounds_pos() {
         let data = Arc::new(vec![0x00u8; 4]);
         let result = panic::catch_unwind(|| {
-            VectorReader::new(0, 0, data.clone(), 5);
+            VectorReader::new(0, 0, data, 5);
         });
         assert!(result.is_err(), "expected panic for pos > len");
     }
 
-    /// Reading `0` bytes must not advance the cursor.
+    /// Reading an empty slice must be a no‑op.
     #[traced_test]
     fn read_zero_bytes_is_noop() {
         let data = Arc::new(vec![1u8, 2, 3]);
         let mut rdr = VectorReader::new(0, 0, data, 0);
 
         let remaining_before = rdr.size();
-        rdr.read(ptr::null_mut(), 0);
+        let n_read = rdr.read(&mut []).unwrap();
         let remaining_after = rdr.size();
 
+        assert_eq!(n_read, 0);
         assert_eq!(remaining_before, remaining_after);
         assert!(!rdr.empty());
     }
 
-    /// Reading exactly the remaining bytes should leave the reader empty.
+    /// Reading exactly the remaining bytes empties the reader.
     #[traced_test]
     fn read_exact_consumes_buffer() {
         let data = Arc::new(vec![10u8, 20, 30]);
         let mut rdr = VectorReader::new(0, 0, data, 0);
 
         let mut dst = [0u8; 3];
-        rdr.read(dst.as_mut_ptr(), dst.len());
+        rdr.read_exact(&mut dst).unwrap();
 
         assert_eq!(dst, [10, 20, 30]);
         assert_eq!(rdr.size(), 0);
         assert!(rdr.empty());
     }
 
-    /// Attempting to read past the end of the buffer must panic.
+    /// Attempting to read past the end must yield an `UnexpectedEof` error.
     #[traced_test]
-    fn read_past_end_panics() {
+    fn read_past_end_returns_error() {
         let data = Arc::new(vec![0xAAu8; 2]);
         let mut rdr = VectorReader::new(0, 0, data, 1);
 
         let mut dst = [0u8; 2];
-        let result = panic::catch_unwind(panic::AssertUnwindSafe(|| {
-            rdr.read(dst.as_mut_ptr(), 2);
-        }));
-        assert!(result.is_err(), "expected panic when reading past end");
+        let err = rdr.read_exact(&mut dst).unwrap_err();
+        assert_eq!(err.kind(), ErrorKind::UnexpectedEof);
     }
 
-    /// Verify that size/empty advance correctly after partial reads.
+    /// `size()` and `empty()` must track progress after partial reads.
     #[traced_test]
     fn size_and_empty_track_progress() {
         let data = Arc::new((0u8..10).collect::<Vec<_>>());
@@ -213,12 +212,12 @@ mod vector_reader_exhaustive_suite {
 
         let half = rdr.size() / 2;
         let mut buf = vec![0u8; half];
-        rdr.read(buf.as_mut_ptr(), half);
+        rdr.read_exact(&mut buf).unwrap();
 
         assert_eq!(rdr.size(), half);
         assert!(!rdr.empty());
 
-        rdr.read(buf.as_mut_ptr(), half);
+        rdr.read_exact(&mut buf).unwrap();
         assert_eq!(rdr.size(), 0);
         assert!(rdr.empty());
     }

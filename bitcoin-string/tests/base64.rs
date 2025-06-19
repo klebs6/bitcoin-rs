@@ -1,5 +1,6 @@
 // ---------------- [ File: bitcoin-string/tests/base64.rs ]
-crate::ix!();
+use bitcoin_imports::*;
+use bitcoin_string::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/test/base64_tests.cpp]
 

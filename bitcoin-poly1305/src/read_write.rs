@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-poly1305/src/read_write.rs ]
 crate::ix!();
 
 /// 32‑bit × 32‑bit → 64‑bit multiply (matches the C `((uint64_t)(a) * (b))`).

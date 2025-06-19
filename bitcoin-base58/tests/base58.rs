@@ -80,106 +80,97 @@ const ENCODE_DECODE_VECTORS: &[(&str, &str)] = &[
     ("00000000000000000000", "1111111111"),
 ];
 
-#[cfg(test)]
-#[fixture(BasicTestingSetup)]
-pub mod base58_tests {
-    use super::*;
-    use crate::{
-        decode_base58, decode_base_58check, encode_base58, encode_base_58check,
-    };
-    use tracing_test::traced_test;
-
-    /// Ensure **encoding** matches the official vectors.
-    #[traced_test]
-    fn base58_encode_reference_vectors() {
-        for (idx, (hex, expected)) in ENCODE_DECODE_VECTORS.iter().enumerate() {
-            let encoded = encode_base58(&parse_hex(hex));
-            info!(idx, ?hex, ?expected, ?encoded, "encode vector");
-            assert_eq!(
-                encoded, *expected,
-                "vector #{idx} failed: got {encoded}, expected {expected}"
-            );
-        }
-    }
-
-    /// Verify **decoding** (including edge‑cases and whitespace handling).
-    #[traced_test]
-    fn base58_decode_reference_vectors_and_edge_cases() {
-        // Reference vectors
-        for (idx, (hex, b58)) in ENCODE_DECODE_VECTORS.iter().enumerate() {
-            let mut out = Vec::new();
-            assert!(
-                decode_base58(b58, &mut out, 256),
-                "vector #{idx} (‘{b58}’) failed to decode"
-            );
-            assert_eq!(
-                out,
-                parse_hex(hex),
-                "vector #{idx} produced incorrect payload"
-            );
-        }
-
-        // Basic invalid strings
-        let mut v = Vec::new();
-        assert!(!decode_base58("invalid", &mut v, 100));
-        assert!(!decode_base58("invalid\0", &mut v, 100));
-        assert!(!decode_base58("\0invalid", &mut v, 100));
-
-        // Forbidden characters
-        assert!(decode_base58("good", &mut v, 100));
-        assert!(!decode_base58("bad0IOl", &mut v, 100));
-        assert!(!decode_base58("goodbad0IOl", &mut v, 100));
-        assert!(!decode_base58("good\0bad0IOl", &mut v, 100));
-
-        // Whitespace handling (note: \x0B = VT, \x0C = FF)
-        assert!(!decode_base58(" \t\n\x0B\x0C\r skip \r\x0C\x0B\n\t a", &mut v, 3));
-        assert!( decode_base58(" \t\n\x0B\x0C\r skip \r\x0C\x0B\n\t ", &mut v, 3));
-        assert_eq!(v, parse_hex("971a55"));
-
-        // Base‑58‑check vectors
-        v.clear();
-        assert!(decode_base_58check("3vQB7B6MrGQZaxCuFg4oh", &mut v, 100));
-        assert!(!decode_base_58check("3vQB7B6MrGQZaxCuFg4oi", &mut v, 100));
-        assert!(!decode_base_58check("3vQB7B6MrGQZaxCuFg4oh0IOl", &mut v, 100));
-        assert!(!decode_base_58check(
-            concat!("3vQB7B6MrGQZaxCuFg4oh", "\0", "0IOl"),
-            &mut v,
-            100
-        ));
-    }
-
-    /// Randomised round‑trip tests (mirrors Bitcoin Core logic).
-    #[traced_test]
-    fn base58_random_encode_decode_roundtrip() {
-        let mut rng = InsecureRand::new(0x20_25_11_05_15);
-        for n in 0..1_000 {
-            let len = 1 + (rng.next_u32() & 0xFF) as usize;
-            let zeroes = if rng.bool() { rng.range(len + 1) } else { 0 };
-
-            let mut data = vec![0u8; zeroes];
-            for _ in zeroes..len {
-                data.push(rng.next_u32() as u8);
-            }
-
-            trace!(n, len, zeroes, "generated random payload");
-            let encoded = encode_base_58check(&data);
-
-            // Too‑small max length → must fail
-            let mut decoded = Vec::new();
-            let too_small = rng.range(len);
-            assert!(
-                !decode_base_58check(&encoded, &mut decoded, too_small as i32),
-                "case {n}: unexpectedly succeeded with max_len={too_small}"
-            );
-
-            // Adequate max length → succeed and round‑trip
-            decoded.clear();
-            let ok_limit = len + rng.range(257 - len);
-            assert!(
-                decode_base_58check(&encoded, &mut decoded, ok_limit as i32),
-                "case {n}: failed with max_len={ok_limit}"
-            );
-            assert_eq!(decoded, data, "case {n}: round‑trip mismatch");
-        }
+/// Ensure **encoding** matches the official vectors.
+#[traced_test]
+fn base58_encode_reference_vectors() {
+    for (idx, (hex, expected)) in ENCODE_DECODE_VECTORS.iter().enumerate() {
+        let encoded = encode_base58(&parse_hex(hex));
+        info!(idx, ?hex, ?expected, ?encoded, "encode vector");
+        assert_eq!(
+            encoded, *expected,
+            "vector #{idx} failed: got {encoded}, expected {expected}"
+        );
     }
 }
+
+/// Verify **decoding** (including edge‑cases and whitespace handling).
+#[traced_test]
+fn base58_decode_reference_vectors_and_edge_cases() {
+    // Reference vectors
+    for (idx, (hex, b58)) in ENCODE_DECODE_VECTORS.iter().enumerate() {
+        let mut out = Vec::new();
+        assert!(
+            decode_base58(b58, &mut out, 256),
+            "vector #{idx} (‘{b58}’) failed to decode"
+        );
+        assert_eq!(
+            out,
+            parse_hex(hex),
+            "vector #{idx} produced incorrect payload"
+        );
+    }
+
+    // Basic invalid strings
+    let mut v = Vec::new();
+    assert!(!decode_base58("invalid", &mut v, 100));
+    assert!(!decode_base58("invalid\0", &mut v, 100));
+    assert!(!decode_base58("\0invalid", &mut v, 100));
+
+    // Forbidden characters
+    assert!(decode_base58("good", &mut v, 100));
+    assert!(!decode_base58("bad0IOl", &mut v, 100));
+    assert!(!decode_base58("goodbad0IOl", &mut v, 100));
+    assert!(!decode_base58("good\0bad0IOl", &mut v, 100));
+
+    // Whitespace handling (note: \x0B = VT, \x0C = FF)
+    assert!(!decode_base58(" \t\n\x0B\x0C\r skip \r\x0C\x0B\n\t a", &mut v, 3));
+    assert!( decode_base58(" \t\n\x0B\x0C\r skip \r\x0C\x0B\n\t ", &mut v, 3));
+    assert_eq!(v, parse_hex("971a55"));
+
+    // Base‑58‑check vectors
+    v.clear();
+    assert!(decode_base_58check("3vQB7B6MrGQZaxCuFg4oh", &mut v, 100));
+    assert!(!decode_base_58check("3vQB7B6MrGQZaxCuFg4oi", &mut v, 100));
+    assert!(!decode_base_58check("3vQB7B6MrGQZaxCuFg4oh0IOl", &mut v, 100));
+    assert!(!decode_base_58check(
+        concat!("3vQB7B6MrGQZaxCuFg4oh", "\0", "0IOl"),
+        &mut v,
+        100
+    ));
+}
+
+/// Randomised round‑trip tests (mirrors Bitcoin Core logic).
+#[traced_test]
+fn base58_random_encode_decode_roundtrip() {
+    let mut rng = InsecureRand::new(0x20_25_11_05_15);
+    for n in 0..1_000 {
+        let len = 1 + (rng.next_u32() & 0xFF) as usize;
+        let zeroes = if rng.bool() { rng.range(len + 1) } else { 0 };
+
+        let mut data = vec![0u8; zeroes];
+        for _ in zeroes..len {
+            data.push(rng.next_u32() as u8);
+        }
+
+        trace!(n, len, zeroes, "generated random payload");
+        let encoded = encode_base_58check(&data);
+
+        // Too‑small max length → must fail
+        let mut decoded = Vec::new();
+        let too_small = rng.range(len);
+        assert!(
+            !decode_base_58check(&encoded, &mut decoded, too_small as i32),
+            "case {n}: unexpectedly succeeded with max_len={too_small}"
+        );
+
+        // Adequate max length → succeed and round‑trip
+        decoded.clear();
+        let ok_limit = len + rng.range(257 - len);
+        assert!(
+            decode_base_58check(&encoded, &mut decoded, ok_limit as i32),
+            "case {n}: failed with max_len={ok_limit}"
+        );
+        assert_eq!(decoded, data, "case {n}: round‑trip mismatch");
+    }
+}
+

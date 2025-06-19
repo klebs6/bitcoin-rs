@@ -120,7 +120,7 @@ mod hash160_spec {
 
     #[traced_test]
     fn hash160_matches_manual_chain() {
-        let data = b"Bitcoin hash160";
+        let data = b"Bitcoin hash160";
         let via_helper = hash160(&data[..]);
 
         /* manual reference computation */

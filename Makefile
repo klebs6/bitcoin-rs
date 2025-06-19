@@ -35,6 +35,7 @@ ACTIVE := bitcoin-mem
 ACTIVE := bitcoin-sha1
 ACTIVE := bitcoin-bufferedfile
 ACTIVE := bitcoin-autofile
+ACTIVE := bitcoin-bech32m
 #-------------------------------[done-above]
 
 #ACTIVE := bitcoin-aes
@@ -45,18 +46,19 @@ ACTIVE := bitcoin-scripting
 ACTIVE := bitcoin-univalue
 
 ACTIVE := bitcoin-locked-pool
-ACTIVE := bitcoin-bech32m
-ACTIVE := bitcoin-base58
 ACTIVE := bitcoin-hash
 ACTIVE := bitcoin-sha256
 ACTIVE := bitcoin-ripemd
 ACTIVE := bitcoin-rbf
-ACTIVE := bitcoin-serialize
-ACTIVE := bitcoin-aes
+
+ACTIVE := bitcoin-poly1305
 ACTIVE := bitcoin-muhash
 ACTIVE := bitcoin-chacha
+ACTIVE := bitcoin-aes
+ACTIVE := bitcoin-serialize
 ACTIVE := bitcoin-vectorstream
-ACTIVE := bitcoin-poly1305
+ACTIVE := bitcoin-base58
+ACTIVE := bitcoin-string
 #ACTIVE := bitcoinleveldb-filter
 
 #ACTIVE := bitcoin-client-ui
