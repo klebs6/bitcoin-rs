@@ -1,52 +1,164 @@
 // ---------------- [ File: bitcoin-serialize/src/many.rs ]
 crate::ix!();
 
-pub fn serialize_many_base<Stream>(s: &mut Stream)  { }
+/// Base case – nothing to serialise.
+#[inline]
+pub fn serialize_many_base<Stream>(_s: &mut Stream) {}
 
-pub fn serialize_many<Stream, Arg, Args>(
-        s:    &mut Stream,
-        arg:  &Arg,
-        args: &Args)  {
-
-    todo!();
-        /*
-            ::Serialize(s, arg);
-        ::SerializeMany(s, args...);
-        */
+/// Serialise the first argument, then recurse.  This emulates the C++
+/// variadic template `SerializeMany`.
+pub fn serialize_many<Stream, A, Rest>(
+    s: &mut Stream,
+    arg: &A,
+    rest: &Rest,
+) where
+    Stream: Write,
+    A: crate::serialize::Serialize<Stream>,
+    Rest: SerializeMany<Stream>,
+{
+    arg.serialize(s);
+    rest.serialize_many(s);
 }
 
-#[inline] pub fn unserialize_many_base<Stream>(s: &mut Stream)  { }
-
-#[inline] pub fn unserialize_many<Stream, Arg, Args>(
-        s:    &mut Stream,
-        arg:  Arg,
-        args: Args)  {
-
-    todo!();
-        /*
-            ::Unserialize(s, arg);
-        ::UnserializeMany(s, args...);
-        */
+/// Trait to provide a blanket implementation for tuples up to a
+/// reasonable arity (here 4 – extend if needed).
+pub trait SerializeMany<Stream> {
+    fn serialize_many(&self, s: &mut Stream);
 }
 
-#[inline] pub fn ser_read_write_many_with_action_serialize<Stream, Args>(
-        s:          &mut Stream,
-        ser_action: SerActionSerialize,
-        args:       &Args)  {
+/* ---- tuple impls ((), (T,), (T,U), …) ---- */
 
-    todo!();
-        /*
-            ::SerializeMany(s, args...);
-        */
+impl<Stream> SerializeMany<Stream> for () {
+    #[inline] fn serialize_many(&self, _s: &mut Stream) {}
 }
 
-#[inline] pub fn ser_read_write_many_with_action_unserialize<Stream, Args>(
-        s:          &mut Stream,
-        ser_action: SerActionUnserialize,
-        args:       Args)  {
-
-    todo!();
-        /*
-            ::UnserializeMany(s, args...);
-        */
+impl<Stream, A> SerializeMany<Stream> for (A,)
+where
+    Stream: Write,
+    A: crate::serialize::Serialize<Stream>,
+{
+    fn serialize_many(&self, s: &mut Stream) {
+        self.0.serialize(s);
+    }
 }
+
+impl<Stream, A, B> SerializeMany<Stream> for (A, B)
+where
+    Stream: Write,
+    A: crate::serialize::Serialize<Stream>,
+    B: crate::serialize::Serialize<Stream>,
+{
+    fn serialize_many(&self, s: &mut Stream) {
+        self.0.serialize(s);
+        self.1.serialize(s);
+    }
+}
+
+impl<Stream, A, B, C> SerializeMany<Stream> for (A, B, C)
+where
+    Stream: Write,
+    A: crate::serialize::Serialize<Stream>,
+    B: crate::serialize::Serialize<Stream>,
+    C: crate::serialize::Serialize<Stream>,
+{
+    fn serialize_many(&self, s: &mut Stream) {
+        self.0.serialize(s);
+        self.1.serialize(s);
+        self.2.serialize(s);
+    }
+}
+
+/// Base case for unserialisation.
+#[inline]
+pub fn unserialize_many_base<Stream>(_s: &mut Stream) {}
+
+/// Unserialise the first argument, then recurse.
+#[inline]
+pub fn unserialize_many<Stream, A, Rest>(
+    s: &mut Stream,
+    arg: &mut A,
+    rest: &mut Rest,
+) where
+    Stream: Read,
+    A: crate::unserialize::Unserialize<Stream>,
+    Rest: UnserializeMany<Stream>,
+{
+    arg.unserialize(s);
+    rest.unserialize_many(s);
+}
+
+/// Mirror of `SerializeMany` for reading.
+pub trait UnserializeMany<Stream> {
+    fn unserialize_many(&mut self, s: &mut Stream);
+}
+
+/* ---- tuple impls ---- */
+
+impl<Stream> UnserializeMany<Stream> for () {
+    #[inline] fn unserialize_many(&mut self, _s: &mut Stream) {}
+}
+
+impl<Stream, A> UnserializeMany<Stream> for (A,)
+where
+    Stream: Read,
+    A: crate::unserialize::Unserialize<Stream>,
+{
+    fn unserialize_many(&mut self, s: &mut Stream) {
+        self.0.unserialize(s);
+    }
+}
+
+impl<Stream, A, B> UnserializeMany<Stream> for (A, B)
+where
+    Stream: Read,
+    A: crate::unserialize::Unserialize<Stream>,
+    B: crate::unserialize::Unserialize<Stream>,
+{
+    fn unserialize_many(&mut self, s: &mut Stream) {
+        self.0.unserialize(s);
+        self.1.unserialize(s);
+    }
+}
+
+impl<Stream, A, B, C> UnserializeMany<Stream> for (A, B, C)
+where
+    Stream: Read,
+    A: crate::unserialize::Unserialize<Stream>,
+    B: crate::unserialize::Unserialize<Stream>,
+    C: crate::unserialize::Unserialize<Stream>,
+{
+    fn unserialize_many(&mut self, s: &mut Stream) {
+        self.0.unserialize(s);
+        self.1.unserialize(s);
+        self.2.unserialize(s);
+    }
+}
+
+/* -------- convenience wrappers matching Bitcoin Core helpers -------- */
+
+#[inline]
+pub fn ser_read_write_many_with_action_serialize<Stream, T>(
+    s: &mut Stream,
+    _act: SerActionSerialize,
+    args: &T,
+) where
+    Stream: Write,
+    T: SerializeMany<Stream>,
+{
+    trace!("ser_read_write_many_with_action_serialize");
+    args.serialize_many(s);
+}
+
+#[inline]
+pub fn ser_read_write_many_with_action_unserialize<Stream, T>(
+    s: &mut Stream,
+    _act: SerActionUnserialize,
+    args: &mut T,
+) where
+    Stream: Read,
+    T: UnserializeMany<Stream>,
+{
+    trace!("ser_read_write_many_with_action_unserialize");
+    args.unserialize_many(s);
+}
+

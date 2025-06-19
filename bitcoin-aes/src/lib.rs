@@ -26,7 +26,8 @@ x!{ctaes_sub_bytes}
 x!{ctaes_test}
 x!{get_one_column}
 x!{get_time_double}
-x!{key_setup}
+x!{key_setup_transform}
+x!{key_setup_column_mix}
 x!{load_bytes}
 x!{multx}
 x!{print_number}

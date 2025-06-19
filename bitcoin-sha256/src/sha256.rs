@@ -18,6 +18,31 @@ pub struct Sha256 {
     bytes: u64,
 }
 
+impl Sha256 {
+
+    /// Initialize SHA‑256 state words to the IV defined in FIPS 180‑4.
+    pub fn initialize(&mut self) {
+        // Safety: caller guarantees `s` points to at least eight `u32`s.
+        unsafe {
+            const IV: [u32; 8] = [
+                0x6a09e667,
+                0xbb67ae85,
+                0x3c6ef372,
+                0xa54ff53a,
+                0x510e527f,
+                0x9b05688c,
+                0x1f83d9ab,
+                0x5be0cd19,
+            ];
+            for (i, &val) in IV.iter().enumerate() {
+                *self.s.add(i) = val;
+            }
+        }
+        trace!(target: "sha256", "sha256 state initialised");
+
+    }
+}
+
 pub const SHA256_OUTPUT_SIZE: usize = 32;
 
 #[inline] pub fn sha256_ch(

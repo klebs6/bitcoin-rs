@@ -1,3 +1,9 @@
+/*!
+   | Based on the public domain implementation by
+   | Andrew Moon poly1305-donna-unrolled.c from
+   | https://github.com/floodyberry/poly1305-donna
+  */
+
 // ---------------- [ File: bitcoin-poly1305/src/poly1305.rs ]
 crate::ix!();
 
@@ -8,18 +14,24 @@ pub const POLY1305_TAGLEN: usize = 16;
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/poly1305.cpp]
 
-/**
-   | Based on the public domain implementation by
-   | Andrew Moon poly1305-donna-unrolled.c from
-   | https://github.com/floodyberry/poly1305-donna
-  */
+/// 32‑bit × 32‑bit → 64‑bit multiply (matches the C `((uint64_t)(a) * (b))`).
+#[macro_export]
+macro_rules! mul32x32_64 {
+    ($a:expr, $b:expr) => {
+        (($a as u64) * ($b as u64))
+    };
+}
 
-macro_rules! mul_32x32_64 {
-    ($a:ident, $b:ident) => {
-        /*
-                ((uint64_t)(a) * (b))
-        */
-    }
+#[inline(always)]
+fn read_le32(input: &[u8]) -> u32 {
+    debug_assert!(input.len() >= 4);
+    u32::from_le_bytes(input[0..4].try_into().expect("slice length == 4"))
+}
+
+#[inline(always)]
+fn write_le32(out: &mut [u8], v: u64) {
+    debug_assert!(out.len() >= 4);
+    out[0..4].copy_from_slice(&(v as u32).to_le_bytes());
 }
 
 pub fn poly1305_auth(

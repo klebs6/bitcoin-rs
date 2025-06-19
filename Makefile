@@ -31,6 +31,8 @@ ACTIVE := bitcoin-locked-page-allocator
 ACTIVE := bitcoin-time
 ACTIVE := bitcoin-support
 ACTIVE := bitcoin-arena
+ACTIVE := bitcoin-mem
+ACTIVE := bitcoin-sha1
 #-------------------------------[done-above]
 
 #ACTIVE := bitcoin-aes
@@ -44,9 +46,17 @@ ACTIVE := bitcoin-locked-pool
 ACTIVE := bitcoin-bech32m
 ACTIVE := bitcoin-base58
 ACTIVE := bitcoin-hash
-ACTIVE := bitcoin-mem
-ACTIVE := bitcoin-serialize
+ACTIVE := bitcoin-sha256
+ACTIVE := bitcoin-ripemd
+ACTIVE := bitcoin-rbf
+ACTIVE := bitcoin-poly1305
+ACTIVE := bitcoin-autofile
+ACTIVE := bitcoin-vectorstream
+ACTIVE := bitcoin-bufferedfile
+ACTIVE := bitcoin-chacha
+ACTIVE := bitcoin-muhash
 ACTIVE := bitcoin-aes
+ACTIVE := bitcoin-serialize
 #ACTIVE := bitcoinleveldb-filter
 
 #ACTIVE := bitcoin-client-ui

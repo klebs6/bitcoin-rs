@@ -1,5 +1,6 @@
 [dependencies]
 num-traits.workspace = true
+tracing.workspace = true
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

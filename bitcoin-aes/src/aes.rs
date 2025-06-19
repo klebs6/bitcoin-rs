@@ -44,3 +44,17 @@ pub trait Encrypt {
         ciphertext: [u8; 16],
         plaintext:  [u8; 16]);
 }
+
+#[cfg(test)]
+mod aes_constants_validation {
+    use super::*;
+
+    /// Ensure public constants match the AES specification.
+    #[traced_test]
+    fn constants_match_fips_197() {
+        debug!(target: "test", AES_BLOCKSIZE, AES256_KEYSIZE);
+        assert_eq!(AES_BLOCKSIZE, 16, "AES block size must be 128 bits (16 bytes)");
+        assert_eq!(AES256_KEYSIZE, 32, "AES‑256 key size must be 256 bits (32 bytes)");
+    }
+}
+

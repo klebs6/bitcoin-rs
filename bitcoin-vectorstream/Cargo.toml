@@ -1,3 +1,8 @@
+[dependencies]
+tracing.workspace = true
+derive_builder.workspace = true
+bitcoin-serialize = { path = "../bitcoin-serialize" }
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.17-alpha.0"

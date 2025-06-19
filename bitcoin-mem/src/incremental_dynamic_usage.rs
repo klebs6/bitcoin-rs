@@ -1,48 +1,38 @@
 // ---------------- [ File: bitcoin-mem/src/incremental_dynamic_usage.rs ]
 crate::ix!();
 
+/// Trait for computing the additional heap allocation that **one more**
+/// element would cause inside a container (mirrors the C++ memusage logic).
 pub trait IncrementalDynamicUsage {
     fn incremental_dynamic_usage(&self) -> usize;
 }
 
-impl<X, Y> IncrementalDynamicUsage for HashSet<X, Y> {
+impl<K, S> IncrementalDynamicUsage for HashSet<K, S>
+where
+    S: BuildHasher,
+{
     #[inline]
     fn incremental_dynamic_usage(&self) -> usize {
-        let inc = malloc_usage(core::mem::size_of::<StlTreeNode<X>>());
-        trace!(
-            "IncrementalDynamicUsage<HashSet<{}>> inc_bytes={}",
-            core::any::type_name::<X>(),
-            inc
-        );
-        inc
+        malloc_usage(core::mem::size_of::<StlTreeNode<K>>())
     }
 }
 
-impl<X, Y, Z> IncrementalDynamicUsage for HashMap<X, Y, Z> {
+impl<K, V, S> IncrementalDynamicUsage for HashMap<K, V, S>
+where
+    S: BuildHasher,
+{
     #[inline]
     fn incremental_dynamic_usage(&self) -> usize {
-        let inc = malloc_usage(core::mem::size_of::<StlTreeNode<(X, Y)>>());
-        trace!(
-            "IncrementalDynamicUsage<HashMap<{}, {}>> inc_bytes={}",
-            core::any::type_name::<X>(),
-            core::any::type_name::<Y>(),
-            inc
-        );
-        inc
+        malloc_usage(core::mem::size_of::<StlTreeNode<(K, V)>>())
     }
 }
 
 impl<T> IncrementalDynamicUsage for Arc<T>
 where
-    T: IncrementalDynamicUsage,
+    T: IncrementalDynamicUsage + ?Sized,
 {
-    /// Forward the request to the inner value.  
-    /// An `Arc` itself never reallocates on `clone`, so the
-    /// incremental cost is the same as that of the wrapped
-    /// structure.
     #[inline]
     fn incremental_dynamic_usage(&self) -> usize {
-        T::incremental_dynamic_usage(&**self)
+        (**self).incremental_dynamic_usage()
     }
 }
-

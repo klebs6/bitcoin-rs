@@ -60,3 +60,18 @@ impl AES256CBCDecrypt {
         )
     }
 }
+
+#[cfg(test)]
+mod aes256cbc_decrypt_validation {
+    use super::*;
+
+    /// The *default* value of [`AES256CBCDecrypt`] must be a clean slate
+    /// (zero IV, padding `false`) so that callers cannot inherit stale data.
+    #[traced_test]
+    fn default_is_zeroised_and_unpadded() {
+        let cbc = AES256CBCDecrypt::default();
+        debug!(?cbc.iv, pad = cbc.pad);
+        assert_eq!(cbc.iv, [0u8; AES_BLOCKSIZE], "IV must start as all‑zeros");
+        assert!(!cbc.pad, "padding flag must default to false");
+    }
+}

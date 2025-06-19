@@ -1,3 +1,11 @@
+[dev-dependencies]
+sha1.workspace = true
+hex.workspace = true
+
+[dependencies]
+derive_builder.workspace = true
+tracing.workspace = true
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.17-alpha.0"

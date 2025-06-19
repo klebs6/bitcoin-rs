@@ -2,6 +2,7 @@
 #[macro_use] mod imports; use imports::*;
 
 x!{dynamic_usage}
+x!{dynamic_usage_std}
 x!{dynamic_usage_tests}
 x!{for_amo}
 x!{impl_recursive_dynamic_usage_for_primitive}

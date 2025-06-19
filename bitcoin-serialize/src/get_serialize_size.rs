@@ -8,14 +8,17 @@ where T: crate::serialize::Serialize<crate::size_computer::SizeComputer>
     (SizeComputer::new(n_version) << t).size()
 }
 
-pub fn get_serialize_size_many<T>(
-        n_version: i32,
-        t:         &T) -> usize {
-
-    todo!();
-        /*
-            CSizeComputer sc(nVersion);
-        SerializeMany(sc, t...);
-        return sc.size();
-        */
+/// Compute the combined serialised size of an arbitrary tuple of values.
+///
+/// ```ignore
+/// let sz = get_serialize_size_many(0, &(header, tx_count, &txs[..]));
+/// ```
+pub fn get_serialize_size_many<Args>(n_version: i32, args: &Args) -> usize
+where
+    Args: SerializeMany<SizeComputer>,
+{
+    let mut sc = SizeComputer::new(n_version);
+    args.serialize_many(&mut sc);
+    sc.size()
 }
+

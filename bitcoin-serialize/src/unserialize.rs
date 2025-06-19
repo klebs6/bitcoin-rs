@@ -129,194 +129,189 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for &[u8] {
+impl<Stream> Unserialize<Stream> for &[u8]
+where
+    Stream: Read,
+{
+    /// Read **exactly** `self.len()` bytes from `s` into the existing slice.
+    ///
+    /// This mirrors the “const‑cast” logic of Bitcoin Core’s
+    /// `Span<unsigned char>` deserialiser: we temporarily treat the slice’s
+    /// data as mutable, even though the reference itself is `&[u8]`.
+    /// The caller is responsible for guaranteeing that the backing memory
+    /// is writable (e.g. it was originally borrowed as `&mut [u8]` and only
+    /// viewed through an immutable lens here).
+    #[inline]
+    fn unserialize(&mut self, s: &mut Stream) {
+        let len = self.len();
+        trace!(len, "unserialize &[u8]");
 
-    #[inline] fn unserialize(&mut self, s: &mut Stream)  {
+        // SAFETY:
+        //  * `ptr` was obtained from a valid slice and is properly aligned.
+        //  * It lives as long as `*self`.
+        //  * We will not read or write out‑of‑bounds.
+        //  * The caller upholds the aliasing contract (no concurrent mutable
+        //    borrows of the same memory).
+        let ptr = self.as_ptr() as *mut u8;
+        let dst: &mut [u8] = unsafe { std::slice::from_raw_parts_mut(ptr, len) };
 
-        todo!();
-            /*
-                s.read(CharCast(span.data()), span.size());
-            */
+        s.read_exact(dst)
+            .expect("I/O error while reading raw byte span");
     }
 }
 
-impl<Stream> Unserialize<Stream> for String {
-
-    fn unserialize(&mut self, is: &mut Stream)  {
-
-        todo!();
-            /*
-                unsigned int nSize = ReadCompactSize(is);
-            str.resize(nSize);
-            if (nSize != 0)
-                is.read((char*)str.data(), nSize * sizeof(C));
-            */
+impl<Stream> Unserialize<Stream> for String
+where
+    Stream: Read,
+{
+    fn unserialize(&mut self, is: &mut Stream) {
+        let n_size = crate::read_compact_size(is, Some(true)) as usize;
+        trace!(len = n_size, "unserialize String");
+        self.clear();
+        self.reserve(n_size);
+        if n_size != 0 {
+            unsafe { self.as_mut_vec().set_len(n_size) };
+            is.read_exact(unsafe { self.as_mut_vec() })
+                .expect("I/O error while reading String");
+        }
     }
 }
 
-/* impls conflict with concrete type
- * impls
-impl<Stream,T> Unserialize<Stream>  for T {
-    #[inline] fn unserialize(&self, is: &mut Stream)  {
-        todo!();
-            /*
-                a.Unserialize(is);
-            */
-    }
-}
-*/
+impl<Stream, T: Default, const N: usize> Unserialize<Stream> for PreVector<T, N>
+where
+    Stream: Read,
+    T: Clone + crate::unserialize::Unserialize<Stream>,
+{
+    fn unserialize(&mut self, is: &mut Stream) {
+        self.clear();
+        let total = crate::read_compact_size(is, Some(true)) as usize;
+        trace!(expected = total, "unserialize PreVector");
 
-impl<Stream, T: Default, const N: usize> Unserialize<Stream> for PreVector<T,N> {
+        let mut read_elems = 0usize;
 
-    #[inline] fn unserialize(&mut self, is: &mut Stream)  {
+        while read_elems < total {
 
-        todo!();
-            /*
-            #[inline] fn _unserialize_impl_u8<Stream>(
-                    is: &mut Stream,
-                    v:  &mut PreVector<T,N>,
-                    _2: &u8)  {
+            let elems_per_block =
+                1 + (crate::constants::MAX_VECTOR_ALLOCATE as usize - 1)
+                    / std::mem::size_of::<T>();
 
-                todo!();
-                    /*
-                        // Limit size per read so bogus size value won't cause out of memory
-                    v.clear();
-                    unsigned int nSize = ReadCompactSize(is);
-                    unsigned int i = 0;
-                    while (i < nSize)
-                    {
-                        unsigned int blk = std::min(nSize - i, (unsigned int)(1 + 4999999 / sizeof(T)));
-                        v.resize_uninitialized(i + blk);
-                        is.read((char*)&v[i], blk * sizeof(T));
-                        i += blk;
-                    }
-                    */
+            let blk = std::cmp::min(total - read_elems, elems_per_block);
+
+            self.resize(read_elems + blk, T::default()); // safe resize
+
+            for i in read_elems..read_elems + blk {
+                crate::unserialize::Unserialize::unserialize(&mut self[i], is);
             }
 
-            #[inline] fn _unserialize_impl<Stream,V>(
-                    is: &mut Stream,
-                    v:  &mut PreVector<T,N>,
-                    _2: &V)  {
+            read_elems += blk;
+        }
+    }
+}
 
-                todo!();
-                    /*
-                        Unserialize(is, Using<VectorFormatter<DefaultFormatter>>(v));
-                    */
+impl<Stream, T, A> Unserialize<Stream> for Vec<T, A>
+where
+    Stream: Read,
+    T: Default,
+    A: std::alloc::Allocator + Clone,
+    T: crate::unserialize::Unserialize<Stream>,
+{
+    fn unserialize(&mut self, is: &mut Stream) {
+        self.clear();
+        let total = crate::read_compact_size(is, Some(true)) as usize;
+        trace!(expected = total, "unserialize Vec");
+
+        let mut read_elems = 0usize;
+        while read_elems < total {
+            let elems_per_block =
+                1 + (crate::constants::MAX_VECTOR_ALLOCATE as usize - 1)
+                    / std::mem::size_of::<T>();
+            let blk = std::cmp::min(total - read_elems, elems_per_block);
+
+            self.reserve(blk);
+            for _ in 0..blk {
+                let mut elem = T::default();
+                crate::unserialize::Unserialize::unserialize(&mut elem, is);
+                self.push(elem);
             }
-
-                Unserialize_impl(is, v, T());
-            */
+            read_elems += blk;
+        }
     }
 }
 
-impl<Stream,T,A: Allocator> Unserialize<Stream> for Vec<T,A> {
-
-    #[inline] fn unserialize(&mut self, is: &mut Stream)  {
-
-        todo!();
-            /*
-            fn _unserialize_impl_u8<Stream>(
-                    is: &mut Stream,
-                    v:  &mut Vec<T,A>,
-                    _2: &u8)  {
-
-                todo!();
-                    /*
-                        // Limit size per read so bogus size value won't cause out of memory
-                    v.clear();
-                    unsigned int nSize = ReadCompactSize(is);
-                    unsigned int i = 0;
-                    while (i < nSize)
-                    {
-                        unsigned int blk = std::min(nSize - i, (unsigned int)(1 + 4999999 / sizeof(T)));
-                        v.resize(i + blk);
-                        is.read((char*)&v[i], blk * sizeof(T));
-                        i += blk;
-                    }
-                    */
-            }
-
-            fn _unserialize_impl<Stream,V>(
-                    is: &mut Stream,
-                    v:  &mut Vec<T,A>,
-                    _2: &V)  {
-
-                todo!();
-                    /*
-                        Unserialize(is, Using<VectorFormatter<DefaultFormatter>>(v));
-                    */
-            }
-
-                Unserialize_impl(is, v, T());
-            */
+impl<Stream, K, V> Unserialize<Stream> for (K, V)
+where
+    Stream: Read,
+    K: crate::unserialize::Unserialize<Stream> + Default,
+    V: crate::unserialize::Unserialize<Stream> + Default,
+{
+    fn unserialize(&mut self, is: &mut Stream) {
+        self.0.unserialize(is);
+        self.1.unserialize(is);
+        trace!("unserialize (K,V) tuple");
     }
 }
 
-impl<Stream,K,T> Unserialize<Stream> for (K,T) {
+impl<Stream, K, V, S> Unserialize<Stream> for HashMap<K, V, S>
+where
+    Stream: Read,
+    K: crate::unserialize::Unserialize<Stream> + Eq + std::hash::Hash + Default,
+    V: crate::unserialize::Unserialize<Stream> + Default,
+    S: std::hash::BuildHasher + Default,
+{
+    fn unserialize(&mut self, is: &mut Stream) {
+        self.clear();
+        let total = crate::read_compact_size(is, Some(true)) as usize;
+        trace!(expected = total, "unserialize HashMap");
 
-    fn unserialize(&mut self, is:   &mut Stream)  {
-
-        todo!();
-            /*
-                Unserialize(is, item.first);
-            Unserialize(is, item.second);
-            */
+        for _ in 0..total {
+            let mut k = K::default();
+            k.unserialize(is);
+            let mut v = V::default();
+            v.unserialize(is);
+            self.insert(k, v);
+        }
     }
 }
 
-impl<Stream,K,V> Unserialize<Stream> for HashMap<K,V> {
-    fn unserialize(&mut self, is: &mut Stream)  {
+impl<Stream, K, S> Unserialize<Stream> for HashSet<K, S>
+where
+    Stream: Read,
+    K: crate::unserialize::Unserialize<Stream> + Eq + std::hash::Hash + Default,
+    S: std::hash::BuildHasher + Default,
+{
+    fn unserialize(&mut self, is: &mut Stream) {
+        self.clear();
+        let total = crate::read_compact_size(is, Some(true)) as usize;
+        trace!(expected = total, "unserialize HashSet");
 
-        todo!();
-            /*
-                m.clear();
-            unsigned int nSize = ReadCompactSize(is);
-            typename std::map<K, V, Pred, A>::iterator mi = m.begin();
-            for (unsigned int i = 0; i < nSize; i++)
-            {
-                std::pair<K, V> item;
-                Unserialize(is, item);
-                mi = m.insert(mi, item);
-            }
-            */
+        for _ in 0..total {
+            let mut key = K::default();
+            key.unserialize(is);
+            self.insert(key);
+        }
     }
 }
 
-impl<Stream,K> Unserialize<Stream> for HashSet<K> {
-    fn unserialize(&mut self, is: &mut Stream)  {
-
-        todo!();
-            /*
-                m.clear();
-            unsigned int nSize = ReadCompactSize(is);
-            typename std::set<K, Pred, A>::iterator it = m.begin();
-            for (unsigned int i = 0; i < nSize; i++)
-            {
-                K key;
-                Unserialize(is, key);
-                it = m.insert(it, key);
-            }
-            */
+impl<Stream, T> Unserialize<Stream> for Box<T>
+where
+    Stream: Read,
+    T: Default + crate::unserialize::Unserialize<Stream>,
+{
+    fn unserialize(&mut self, is: &mut Stream) {
+        let mut tmp = T::default();
+        crate::unserialize::Unserialize::unserialize(&mut tmp, is);
+        *self = Box::new(tmp);
     }
 }
 
-impl<Stream,T> Unserialize<Stream> for Box<T> {
-    fn unserialize(&mut self, is: &mut Stream)  {
-
-        todo!();
-            /*
-                p.reset(new T(deserialize, is));
-            */
-    }
-}
-
-impl<Stream,T> Unserialize<Stream> for Arc<T> {
-
-    fn unserialize(&mut self, is: &mut Stream)  {
-
-        todo!();
-            /*
-                p = std::make_shared<const T>(deserialize, is);
-            */
+impl<Stream, T> Unserialize<Stream> for std::sync::Arc<T>
+where
+    Stream: Read,
+    T: Default + crate::unserialize::Unserialize<Stream>,
+{
+    fn unserialize(&mut self, is: &mut Stream) {
+        let mut tmp = T::default();
+        crate::unserialize::Unserialize::unserialize(&mut tmp, is);
+        *self = std::sync::Arc::new(tmp);
     }
 }

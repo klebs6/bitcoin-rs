@@ -16,80 +16,6 @@ pub struct Rfc6979HmacSha256 {
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/hash_impl.h]
 
-macro_rules! ch {
-    ($x:ident, 
-     $y:ident, 
-     $z:ident) => {
-        /*
-                ((z) ^ ((x) & ((y) ^ (z))))
-        */
-    }
-}
-
-macro_rules! maj {
-    ($x:ident, 
-     $y:ident, 
-     $z:ident) => {
-        /*
-                (((x) & (y)) | ((z) & ((x) | (y))))
-        */
-    }
-}
-
-macro_rules! sigma0 {
-    ($x:ident) => {
-        /*
-                (((x) >> 2 | (x) << 30) ^ ((x) >> 13 | (x) << 19) ^ ((x) >> 22 | (x) << 10))
-        */
-    }
-}
-
-macro_rules! sigma1 {
-    ($x:ident) => {
-        /*
-                (((x) >> 6 | (x) << 26) ^ ((x) >> 11 | (x) << 21) ^ ((x) >> 25 | (x) << 7))
-        */
-    }
-}
-
-macro_rules! sigma0 {
-    ($x:ident) => {
-        /*
-                (((x) >> 7 | (x) << 25) ^ ((x) >> 18 | (x) << 14) ^ ((x) >> 3))
-        */
-    }
-}
-
-macro_rules! sigma1 {
-    ($x:ident) => {
-        /*
-                (((x) >> 17 | (x) << 15) ^ ((x) >> 19 | (x) << 13) ^ ((x) >> 10))
-        */
-    }
-}
-
-macro_rules! round {
-    ($a:ident, 
-     $b:ident, 
-     $c:ident, 
-     $d:ident, 
-     $e:ident, 
-     $f:ident, 
-     $g:ident, 
-     $h:ident, 
-     $k:ident, 
-     $w:ident) => {
-        /*
-                do { 
-            uint32_t t1 = (h) + Sigma1(e) + Ch((e), (f), (g)) + (k) + (w); 
-            uint32_t t2 = Sigma0(a) + Maj((a), (b), (c)); 
-            (d) += t1; 
-            (h) = t1 + t2; 
-        } while(0)
-        */
-    }
-}
-
 #[cfg(BIG_ENDIAN)]
 macro_rules! be32 {
     ($x:ident) => {
@@ -106,22 +32,6 @@ macro_rules! be32 {
                 ((((p) & 0xFF) << 24) | (((p) & 0xFF00) << 8) | (((p) & 0xFF0000) >> 8) | (((p) & 0xFF000000) >> 24))
         */
     }
-}
-
-pub fn sha256_initialize(hash: *mut Sha256)  {
-    
-    todo!();
-        /*
-            hash->s[0] = 0x6a09e667ul;
-        hash->s[1] = 0xbb67ae85ul;
-        hash->s[2] = 0x3c6ef372ul;
-        hash->s[3] = 0xa54ff53aul;
-        hash->s[4] = 0x510e527ful;
-        hash->s[5] = 0x9b05688cul;
-        hash->s[6] = 0x1f83d9abul;
-        hash->s[7] = 0x5be0cd19ul;
-        hash->bytes = 0;
-        */
 }
 
 /**

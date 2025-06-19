@@ -9,33 +9,10 @@ crate::ix!();
 pub struct CompactSizeFormatter<const RangeCheck: bool> { }
 
 impl<const RangeCheck: bool> CompactSizeFormatter<RangeCheck> {
-    
-    pub fn unser<Stream, I>(&mut self, 
-        s: &mut Stream,
-        v: &mut I)  {
-    
-        todo!();
-        /*
-            uint64_t n = ReadCompactSize<Stream>(s, RangeCheck);
-            if (n < std::numeric_limits<I>::min() || n > std::numeric_limits<I>::max()) {
-                throw std::ios_base::failure("CompactSize exceeds limit of type");
-            }
-            v = n;
-        */
-    }
-    
-    
-    pub fn ser<Stream, I>(&mut self, 
-        s: &mut Stream,
-        v: I)  {
-    
-        todo!();
-        /*
-            const_assert(std::is_unsigned<I>::value, "CompactSize only supported for unsigned integers");
-            const_assert(std::numeric_limits<I>::max() <= std::numeric_limits<uint64_t>::max(), "CompactSize only supports 64-bit integers and below");
-
-            WriteCompactSize<Stream>(s, v);
-        */
+    /// Counterpart to `compactsize!` macro.
+    #[inline]
+    pub fn new<'a, T>(item: &'a mut T) -> crate::wrapper::Wrapper<'a, Self, T> {
+        crate::wrapper::Wrapper::new(item)
     }
 }
 
@@ -43,5 +20,20 @@ impl<const RangeCheck: bool> Default for CompactSizeFormatter<RangeCheck> {
     #[inline]
     fn default() -> Self {
         Self {}
+    }
+}
+
+impl<const RangeCheck: bool, I> ValueFormatter<I> for CompactSizeFormatter<RangeCheck>
+where
+    I: Into<u64> + TryFrom<u64> + Copy + std::fmt::Debug,
+    <I as TryFrom<u64>>::Error: std::fmt::Debug,
+{
+    fn ser<S: Write>(&mut self, s: &mut S, v: &I) {
+        write_compact_size(s, (*v).into());
+    }
+
+    fn unser<S: Read>(&mut self, s: &mut S, v: &mut I) {
+        let n = read_compact_size(s, Some(RangeCheck));
+        *v = I::try_from(n).expect("CompactSize exceeds type range");
     }
 }

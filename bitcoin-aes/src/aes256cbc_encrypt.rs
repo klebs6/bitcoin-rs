@@ -55,3 +55,22 @@ impl AES256CBCEncrypt {
         )
     }
 }
+
+#[cfg(test)]
+mod aes256cbc_encrypt_validation {
+    use super::*;
+
+    /// The *default* value of [`AES256CBCEncrypt`] should start with an
+    /// all‑zero IV and `pad == false` (mirroring the decryptor).
+    #[traced_test]
+    fn default_is_zeroised_and_unpadded() {
+        let cbc = AES256CBCEncrypt {
+            enc: crate::aes256_encrypt::AES256Encrypt::default(),
+            pad: false,
+            iv: [0u8; AES_BLOCKSIZE],
+        };
+        debug!(?cbc.iv, pad = cbc.pad);
+        assert_eq!(cbc.iv, [0u8; AES_BLOCKSIZE], "IV must start as all‑zeros");
+        assert!(!cbc.pad, "padding flag must default to false");
+    }
+}

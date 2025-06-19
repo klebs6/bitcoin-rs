@@ -21,47 +21,41 @@ impl AESState {
          * (found in OpenSSL's bsaes-x86_64.pl, attributed to Jussi Kivilinna)
          *
          * In the bitsliced representation, a multiplication of every column by x
-         * mod x^4 + 1 is simply a right rotation.
-         */
-
-        /* Shared for both directions is a multiplication by a(x), which can be
-         * rewritten as (x^3 + x^2 + x) + {02}*(x^3 + {01}).
-         *
-         * First compute s into the s? variables, (x^3 + {01}) * s into the s?_01
-         * variables and (x^3 + x^2 + x)*s into the s?_123 variables.
+         * mod x^4 + 1 is simply a right rotation by 4 bits (one nibble).
          */
 
         let [s0, s1, s2, s3, s4, s5, s6, s7] = self.slice();
 
+        /// Rotate the 16‑bit word right by *n* nibbles (= 4 × *n* bits).
         macro_rules! rot {
             ($v:expr, $n:expr) => {
-                $v.rotate_right($n)
+                $v.rotate_right(($n * 4) as u32)
             };
         }
 
         // (x³ + x² + x) and (x³ + 1) partial products
-        let s0_01 = s0 ^ rot!(s0, 1);
+        let s0_01  =  s0 ^ rot!(s0, 1);
         let s0_123 = rot!(s0_01, 1) ^ rot!(s0, 3);
 
-        let s1_01 = s1 ^ rot!(s1, 1);
+        let s1_01  =  s1 ^ rot!(s1, 1);
         let s1_123 = rot!(s1_01, 1) ^ rot!(s1, 3);
 
-        let s2_01 = s2 ^ rot!(s2, 1);
+        let s2_01  =  s2 ^ rot!(s2, 1);
         let s2_123 = rot!(s2_01, 1) ^ rot!(s2, 3);
 
-        let s3_01 = s3 ^ rot!(s3, 1);
+        let s3_01  =  s3 ^ rot!(s3, 1);
         let s3_123 = rot!(s3_01, 1) ^ rot!(s3, 3);
 
-        let s4_01 = s4 ^ rot!(s4, 1);
+        let s4_01  =  s4 ^ rot!(s4, 1);
         let s4_123 = rot!(s4_01, 1) ^ rot!(s4, 3);
 
-        let s5_01 = s5 ^ rot!(s5, 1);
+        let s5_01  =  s5 ^ rot!(s5, 1);
         let s5_123 = rot!(s5_01, 1) ^ rot!(s5, 3);
 
-        let s6_01 = s6 ^ rot!(s6, 1);
+        let s6_01  =  s6 ^ rot!(s6, 1);
         let s6_123 = rot!(s6_01, 1) ^ rot!(s6, 3);
 
-        let s7_01 = s7 ^ rot!(s7, 1);
+        let s7_01  =  s7 ^ rot!(s7, 1);
         let s7_123 = rot!(s7_01, 1) ^ rot!(s7, 3);
 
         // s = (x³+x²+x)s + {02}(x³+1)s
@@ -81,9 +75,9 @@ impl AESState {
              *
              * First compute (x^2 + {01}) * s into the t?_02 variables: */
 
+            /* multiply further by {04}(x²+1)+1 */
             trace!("mix_columns – after forward step = {:?}", self.slice);
 
-            // multiply by {04}(x²+1)+1
             let t0_02 = self.slice[0] ^ rot!(self.slice[0], 2);
             let t1_02 = self.slice[1] ^ rot!(self.slice[1], 2);
             let t2_02 = self.slice[2] ^ rot!(self.slice[2], 2);

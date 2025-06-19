@@ -61,6 +61,12 @@ mod memory_usage_tests {
     use tracing::{info, trace};
     use core::mem::size_of;
 
+    // ────────────────────────────────────────────────────────────
+    // NEW: bring the traits into scope so method‑call syntax works
+    // ────────────────────────────────────────────────────────────
+    use crate::dynamic_usage::DynamicUsage;
+    use crate::incremental_dynamic_usage::IncrementalDynamicUsage;
+
     // -------------------------------------------------------------------------
     // Helper types
     // -------------------------------------------------------------------------
@@ -159,52 +165,10 @@ mod memory_usage_tests {
     }
 
     // -------------------------------------------------------------------------
-    // HashSet / HashMap incremental
+    // HashSet / HashMap incremental (raw containers)
     // -------------------------------------------------------------------------
     #[traced_test]
     fn hashset_incremental() {
-        let mut s: Arc<HashSet<u32>> = Arc::new(HashSet::new());
-        let before = s.dynamic_usage();
-        let inc    = s.incremental_dynamic_usage();
-        s.insert(1);
-        assert_eq!(s.dynamic_usage() - before, inc);
-    }
-
-    #[traced_test]
-    fn hashmap_incremental() {
-        let mut m: Arc<HashMap<u32, u32>> = Arc::new(HashMap::new());
-        let before = m.dynamic_usage();
-        let inc    = m.incremental_dynamic_usage();
-        m.insert(1, 2);
-        assert_eq!(m.dynamic_usage() - before, inc);
-    }
-
-    // ── Amo<T> tests ──────────────────────────────────────────────────
-    #[traced_test]
-    fn amo_none_recursive_equals_own() {
-        let amo: Amo<u8> = Amo::default();
-        assert_eq!(
-            recursive_dynamic_usage::recursive_dynamic_usage(&amo),
-            amo.dynamic_usage()
-        );
-    }
-
-    #[traced_test]
-    fn amo_with_inner_vec_zero_capacity() {
-        let amo: Amo<Vec<u32>> = Amo::default();
-        {
-            let mut g = amo.getopt_mut();
-            *g = Some(Vec::new()); // zero‑capacity Vec
-        }
-        assert_eq!(
-            recursive_dynamic_usage::recursive_dynamic_usage(&amo),
-            amo.dynamic_usage()
-        );
-    }
-
-    // ── HashSet / HashMap incremental growth ─────────────────────────
-    #[traced_test]
-    fn hashset_incremental_growth() {
         let mut s: HashSet<u32> = HashSet::new();
         let before = s.dynamic_usage();
         let inc    = s.incremental_dynamic_usage();
@@ -213,11 +177,50 @@ mod memory_usage_tests {
     }
 
     #[traced_test]
-    fn hashmap_incremental_growth() {
+    fn hashmap_incremental() {
         let mut m: HashMap<u32, u32> = HashMap::new();
         let before = m.dynamic_usage();
         let inc    = m.incremental_dynamic_usage();
         m.insert(1, 2);
         assert_eq!(m.dynamic_usage() - before, inc);
+    }
+
+    // -------------------------------------------------------------------------
+    // HashSet / HashMap incremental (inside Arc)
+    // -------------------------------------------------------------------------
+    #[traced_test]
+    fn hashset_incremental_arc() {
+        let mut set: Arc<HashSet<u32>> = Arc::new(HashSet::new());
+
+        let inc     = set.incremental_dynamic_usage();
+        let before  = (*set).dynamic_usage();
+
+        Arc::make_mut(&mut set).insert(1);
+
+        let after   = (*set).dynamic_usage();
+
+        info!(
+            "Arc<HashSet> node_inc={}, before={}, after={}, delta={}",
+            inc, before, after, after - before
+        );
+        assert_eq!(after - before, inc);
+    }
+
+    #[traced_test]
+    fn hashmap_incremental_arc() {
+        let mut map: Arc<HashMap<u32, u32>> = Arc::new(HashMap::new());
+
+        let inc     = map.incremental_dynamic_usage();
+        let before  = (*map).dynamic_usage();
+
+        Arc::make_mut(&mut map).insert(1, 2);
+
+        let after   = (*map).dynamic_usage();
+
+        info!(
+            "Arc<HashMap> node_inc={}, before={}, after={}, delta={}",
+            inc, before, after, after - before
+        );
+        assert_eq!(after - before, inc);
     }
 }

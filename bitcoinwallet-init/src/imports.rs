@@ -8,4 +8,3 @@ pub(crate) use bitcoinwallet_context::*;
 pub(crate) use bitcoinwallet_library::*;
 
 
-

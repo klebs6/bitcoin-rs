@@ -18,4 +18,3 @@ where
     trace!(bytes = sz, "write_var_int_with_size_computer");
     s.seek(sz as usize);
 }
-

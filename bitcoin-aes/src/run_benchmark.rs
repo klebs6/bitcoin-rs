@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-aes/src/run_benchmark.rs ]
 crate::ix!();
 
 pub type BenchHook = fn(_0: *mut c_void);
@@ -53,14 +54,11 @@ pub fn run_benchmark(
         sum += total;
     }
 
-    todo!();
-        /*
-        printf("%s: min ", name);
-        print_number(min * 1000000000.0 / iter);
-        printf("ns / avg ");
-        print_number((sum / count) * 1000000000.0 / iter);
-        printf("ns / max ");
-        print_number(max * 1000000000.0 / iter);
-        printf("ns\n");
-        */
+    println!("{}: min ", name);
+    print_number(min * 1000000000.0 / iter as f64);
+    println!("ns / avg ");
+    print_number((sum / count as f64) * 1000000000.0 / iter as f64);
+    println!("ns / max ");
+    print_number(max * 1000000000.0 / iter as f64);
+    println!("ns\n");
 }

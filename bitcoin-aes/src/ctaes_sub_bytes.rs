@@ -35,7 +35,12 @@ pub(crate) fn sub_bytes(state: &mut AESState, inverse: bool) {
         mut T8,  mut T9,  mut T10, mut T11, mut T12, mut T13, mut T14,
         mut T15, mut T16, mut T17, mut T18, mut T19, mut T20, mut T21,
         mut T22, mut T23, mut T24, mut T25, mut T26, mut T27, mut D
-    ) = (0u16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    ) = (
+        0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+        0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+        0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16,
+        0u16, 0u16, 0u16, 0u16, 0u16, 0u16, 0u16   // ← 28 zeros
+    );
 
     if inverse {
         /* ---- undo linear post‑processing (EXACT copy of ePrint 2011/332) -- */

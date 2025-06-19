@@ -63,14 +63,17 @@ impl<T: Default, const N: usize> DynamicUsage for PreVector<T, N> {
     }
 }
 
-impl<X, Y> DynamicUsage for HashSet<X, Y> {
+impl<T, S> DynamicUsage for HashSet<T, S>
+where
+    S: BuildHasher,
+{
     #[inline]
     fn dynamic_usage(&self) -> usize {
-        let node_sz = core::mem::size_of::<StlTreeNode<X>>();
-        let bytes = self.len() * node_sz;
+        let node_sz = core::mem::size_of::<StlTreeNode<T>>();
+        let bytes   = self.len() * node_sz;
         trace!(
             "DynamicUsage<HashSet<{}>> len={} node_sz={} bytes={}",
-            core::any::type_name::<X>(),
+            core::any::type_name::<T>(),
             self.len(),
             node_sz,
             bytes
@@ -79,15 +82,20 @@ impl<X, Y> DynamicUsage for HashSet<X, Y> {
     }
 }
 
-impl<X, Y, Z> DynamicUsage for HashMap<X, Y, Z> {
+// ---- HashMap<K, V, S> -------------------------------------------------------
+
+impl<K, V, S> DynamicUsage for HashMap<K, V, S>
+where
+    S: BuildHasher,
+{
     #[inline]
     fn dynamic_usage(&self) -> usize {
-        let node_sz = core::mem::size_of::<StlTreeNode<(X, Y)>>();
-        let bytes = self.len() * node_sz;
+        let node_sz = core::mem::size_of::<StlTreeNode<(K, V)>>();
+        let bytes   = self.len() * node_sz;
         trace!(
             "DynamicUsage<HashMap<{}, {}>> len={} node_sz={} bytes={}",
-            core::any::type_name::<X>(),
-            core::any::type_name::<Y>(),
+            core::any::type_name::<K>(),
+            core::any::type_name::<V>(),
             self.len(),
             node_sz,
             bytes

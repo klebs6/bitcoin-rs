@@ -1,6 +1,7 @@
 // ---------------- [ File: bitcoin-muhash/src/num3072.rs ]
 crate::ix!();
 
+#[derive(Debug,Clone,Serialize,Deserialize)]
 pub struct Num3072 {
     limbs: [Limb; num_3072::LIMBS],
 }
@@ -40,40 +41,24 @@ pub mod num_3072 {
 }
 
 impl Default for Num3072 {
-    
     fn default() -> Self {
-        todo!();
-        /*
-            this->SetToOne(); }{
-        */
+        let mut n = Num3072 { limbs: [0; num_3072::LIMBS] };
+        n.set_to_one();
+        n
     }
-}
-
-lazy_static!{
-    /*
-    SERIALIZE_METHODS(Num3072, obj)
-        {
-            for (auto& limb : obj.limbs) {
-                READWRITE(limb);
-            }
-        }
-    */
 }
 
 /**
   | in_out = in_out^(2^sq) * mul
   |
   */
-#[inline] pub fn square_n_mul(
-        in_out: &mut Num3072,
-        sq:     i32,
-        mul:    &Num3072)  {
-    
-    todo!();
-        /*
-            for (int j = 0; j < sq; ++j) in_out.Square();
-        in_out.Multiply(mul);
-        */
+#[inline]
+pub fn square_n_mul(in_out: &mut Num3072, sq: i32, mul: &Num3072) {
+    trace!("square_n_mul");
+    for _ in 0..sq {
+        in_out.square();
+    }
+    in_out.multiply(mul);
 }
 
 impl Num3072 {
@@ -84,205 +69,347 @@ impl Num3072 {
       |
       */
     pub fn is_overflow(&self) -> bool {
-        
-        todo!();
-        /*
-            if (this->limbs[0] <= std::numeric_limits<limb_t>::max() - MAX_PRIME_DIFF) return false;
-        for (int i = 1; i < LIMBS; ++i) {
-            if (this->limbs[i] != std::numeric_limits<limb_t>::max()) return false;
+        trace!("Num3072::is_overflow");
+        if self.limbs[0] <= Limb::MAX - MAX_PRIME_DIFF {
+            return false;
         }
-        return true;
-        */
+        for limb in &self.limbs[1..] {
+            if *limb != Limb::MAX {
+                return false;
+            }
+        }
+        true
     }
     
-    pub fn full_reduce(&mut self)  {
-        
-        todo!();
-        /*
-            limb_t c0 = MAX_PRIME_DIFF;
-        limb_t c1 = 0;
-        for (int i = 0; i < LIMBS; ++i) {
-            addnextract2(c0, c1, this->limbs[i], this->limbs[i]);
+    pub fn full_reduce(&mut self) {
+        trace!("Num3072::full_reduce");
+        let mut c0: Limb = MAX_PRIME_DIFF;
+        let mut c1: Limb = 0;
+        for limb in &mut self.limbs {
+            addnextract2(&mut c0, &mut c1, limb, limb);
         }
-        */
     }
     
+    // For fast exponentiation a sliding window exponentiation with repunit precomputation is
+    // utilized. 
+    //
+    // See "Fast Point Decompression for Standard Elliptic Curves" (Brumley, Järvinen, 2008).
+    //
     pub fn get_inverse(&self) -> Num3072 {
-        
-        todo!();
-        /*
-            // For fast exponentiation a sliding window exponentiation with repunit
-        // precomputation is utilized. See "Fast Point Decompression for Standard
-        // Elliptic Curves" (Brumley, Järvinen, 2008).
 
-        Num3072 p[12]; // p[i] = a^(2^(2^i)-1)
-        Num3072 out;
+        // p[i] = a^(2^(2^i)-1)
 
-        p[0] = *this;
+        trace!("Num3072::get_inverse");
+        // Sliding‑window exponentiation with rep‑unit pre‑computation.
+        let mut p = [Num3072::default(); 12];
+        p[0] = *self;
 
-        for (int i = 0; i < 11; ++i) {
+        for i in 0..11 {
             p[i + 1] = p[i];
-            for (int j = 0; j < (1 << i); ++j) p[i + 1].Square();
-            p[i + 1].Multiply(p[i]);
+            for _ in 0..(1 << i) {
+                p[i + 1].square();
+            }
+            p[i + 1].multiply(&p[i]);
         }
 
-        out = p[11];
-
-        square_n_mul(out, 512, p[9]);
-        square_n_mul(out, 256, p[8]);
-        square_n_mul(out, 128, p[7]);
-        square_n_mul(out, 64, p[6]);
-        square_n_mul(out, 32, p[5]);
-        square_n_mul(out, 8, p[3]);
-        square_n_mul(out, 2, p[1]);
-        square_n_mul(out, 1, p[0]);
-        square_n_mul(out, 5, p[2]);
-        square_n_mul(out, 3, p[0]);
-        square_n_mul(out, 2, p[0]);
-        square_n_mul(out, 4, p[0]);
-        square_n_mul(out, 4, p[1]);
-        square_n_mul(out, 3, p[0]);
-
-        return out;
-        */
+        let mut out = p[11];
+        square_n_mul(&mut out, 512,  &p[9]);
+        square_n_mul(&mut out, 256,  &p[8]);
+        square_n_mul(&mut out, 128,  &p[7]);
+        square_n_mul(&mut out, 64,   &p[6]);
+        square_n_mul(&mut out, 32,   &p[5]);
+        square_n_mul(&mut out, 8,    &p[3]);
+        square_n_mul(&mut out, 2,    &p[1]);
+        square_n_mul(&mut out, 1,    &p[0]);
+        square_n_mul(&mut out, 5,    &p[2]);
+        square_n_mul(&mut out, 3,    &p[0]);
+        square_n_mul(&mut out, 2,    &p[0]);
+        square_n_mul(&mut out, 4,    &p[0]);
+        square_n_mul(&mut out, 4,    &p[1]);
+        square_n_mul(&mut out, 3,    &p[0]);
+        out
     }
     
-    pub fn multiply(&mut self, a: &Num3072)  {
-        
-        todo!();
-        /*
-            limb_t c0 = 0, c1 = 0, c2 = 0;
-        Num3072 tmp;
+    pub fn multiply(&mut self, a: &Num3072) {
+        trace!("Num3072::multiply");
+        let mut c0: Limb = 0;
+        let mut c1: Limb = 0;
+        let mut c2: Limb = 0;
+        let mut tmp = Num3072::default();
 
-        /* Compute limbs 0..N-2 of this*a into tmp, including one reduction. */
-        for (int j = 0; j < LIMBS - 1; ++j) {
-            limb_t d0 = 0, d1 = 0, d2 = 0;
-            mul(d0, d1, this->limbs[1 + j], a.limbs[LIMBS + j - (1 + j)]);
-            for (int i = 2 + j; i < LIMBS; ++i) muladd3(d0, d1, d2, this->limbs[i], a.limbs[LIMBS + j - i]);
-            mulnadd3(c0, c1, c2, d0, d1, d2, MAX_PRIME_DIFF);
-            for (int i = 0; i < j + 1; ++i) muladd3(c0, c1, c2, this->limbs[i], a.limbs[j - i]);
-            extract3(c0, c1, c2, tmp.limbs[j]);
+        // limbs 0 .. N‑2 with one reduction
+        for j in 0..num_3072::LIMBS - 1 {
+            let mut d0: Limb = 0;
+            let mut d1: Limb = 0;
+            let mut d2: Limb = 0;
+
+            mul(
+                &mut d0,
+                &mut d1,
+                &self.limbs[1 + j],
+                &a.limbs[num_3072::LIMBS - 1],
+            );
+            for i in (2 + j)..num_3072::LIMBS {
+                muladd3(
+                    &mut d0,
+                    &mut d1,
+                    &mut d2,
+                    &self.limbs[i],
+                    &a.limbs[num_3072::LIMBS + j - i],
+                );
+            }
+            mulnadd3(
+                &mut c0,
+                &mut c1,
+                &mut c2,
+                &mut d0,
+                &mut d1,
+                &mut d2,
+                MAX_PRIME_DIFF,
+            );
+            for i in 0..=j {
+                muladd3(
+                    &mut c0,
+                    &mut c1,
+                    &mut c2,
+                    &self.limbs[i],
+                    &a.limbs[j - i],
+                );
+            }
+            extract3(&mut c0, &mut c1, &mut c2, &mut tmp.limbs[j]);
         }
 
         /* Compute limb N-1 of a*b into tmp. */
-        assert(c2 == 0);
-        for (int i = 0; i < LIMBS; ++i) muladd3(c0, c1, c2, this->limbs[i], a.limbs[LIMBS - 1 - i]);
-        extract3(c0, c1, c2, tmp.limbs[LIMBS - 1]);
-
-        /* Perform a second reduction. */
-        muln2(c0, c1, MAX_PRIME_DIFF);
-        for (int j = 0; j < LIMBS; ++j) {
-            addnextract2(c0, c1, tmp.limbs[j], this->limbs[j]);
+        debug_assert_eq!(c2, 0);
+        for i in 0..num_3072::LIMBS {
+            muladd3(
+                &mut c0,
+                &mut c1,
+                &mut c2,
+                &self.limbs[i],
+                &a.limbs[num_3072::LIMBS - 1 - i],
+            );
         }
+        extract3(
+            &mut c0,
+            &mut c1,
+            &mut c2,
+            &mut tmp.limbs[num_3072::LIMBS - 1],
+        );
 
-        assert(c1 == 0);
-        assert(c0 == 0 || c0 == 1);
+        // second reduction
+        muln2(&mut c0, &mut c1, MAX_PRIME_DIFF);
+        for j in 0..num_3072::LIMBS {
+            addnextract2(&mut c0, &mut c1, &tmp.limbs[j], &mut self.limbs[j]);
+        }
+        debug_assert!(c1 == 0 && (c0 == 0 || c0 == 1));
 
-        /* Perform up to two more reductions if the internal state has already
-         * overflown the MAX of Num3072 or if it is larger than the modulus or
-         * if both are the case.
-         * */
-        if (this->IsOverflow()) this->FullReduce();
-        if (c0) this->FullReduce();
-        */
+        /* Perform up to two more reductions if the internal state has already overflown the MAX of Num3072 or if it is larger than the modulus or if both are the case. */
+
+        if self.is_overflow() {
+            self.full_reduce();
+        }
+        if c0 == 1 {
+            self.full_reduce();
+        }
     }
     
-    pub fn square(&mut self)  {
-        
-        todo!();
-        /*
-            limb_t c0 = 0, c1 = 0, c2 = 0;
-        Num3072 tmp;
+    pub fn square(&mut self) {
+
+        trace!("Num3072::square");
+        let mut c0: Limb = 0;
+        let mut c1: Limb = 0;
+        let mut c2: Limb = 0;
+        let mut tmp = Num3072::default();
 
         /* Compute limbs 0..N-2 of this*this into tmp, including one reduction. */
-        for (int j = 0; j < LIMBS - 1; ++j) {
-            limb_t d0 = 0, d1 = 0, d2 = 0;
-            for (int i = 0; i < (LIMBS - 1 - j) / 2; ++i) muldbladd3(d0, d1, d2, this->limbs[i + j + 1], this->limbs[LIMBS - 1 - i]);
-            if ((j + 1) & 1) muladd3(d0, d1, d2, this->limbs[(LIMBS - 1 - j) / 2 + j + 1], this->limbs[LIMBS - 1 - (LIMBS - 1 - j) / 2]);
-            mulnadd3(c0, c1, c2, d0, d1, d2, MAX_PRIME_DIFF);
-            for (int i = 0; i < (j + 1) / 2; ++i) muldbladd3(c0, c1, c2, this->limbs[i], this->limbs[j - i]);
-            if ((j + 1) & 1) muladd3(c0, c1, c2, this->limbs[(j + 1) / 2], this->limbs[j - (j + 1) / 2]);
-            extract3(c0, c1, c2, tmp.limbs[j]);
+        for j in 0..num_3072::LIMBS - 1 {
+            let mut d0: Limb = 0;
+            let mut d1: Limb = 0;
+            let mut d2: Limb = 0;
+
+            for i in 0..((num_3072::LIMBS - 1 - j) / 2) {
+                muldbladd3(
+                    &mut d0,
+                    &mut d1,
+                    &mut d2,
+                    &self.limbs[i + j + 1],
+                    &self.limbs[num_3072::LIMBS - 1 - i],
+                );
+            }
+            if ((j + 1) & 1) != 0 {
+                muladd3(
+                    &mut d0,
+                    &mut d1,
+                    &mut d2,
+                    &self.limbs[(num_3072::LIMBS - 1 - j) / 2 + j + 1],
+                    &self.limbs[num_3072::LIMBS
+                    - 1
+                    - (num_3072::LIMBS - 1 - j) / 2],
+                );
+            }
+            mulnadd3(
+                &mut c0,
+                &mut c1,
+                &mut c2,
+                &mut d0,
+                &mut d1,
+                &mut d2,
+                MAX_PRIME_DIFF,
+            );
+            for i in 0..((j + 1) / 2) {
+                muldbladd3(
+                    &mut c0,
+                    &mut c1,
+                    &mut c2,
+                    &self.limbs[i],
+                    &self.limbs[j - i],
+                );
+            }
+            if ((j + 1) & 1) != 0 {
+                muladd3(
+                    &mut c0,
+                    &mut c1,
+                    &mut c2,
+                    &self.limbs[(j + 1) / 2],
+                    &self.limbs[j - (j + 1) / 2],
+                );
+            }
+            extract3(&mut c0, &mut c1, &mut c2, &mut tmp.limbs[j]);
         }
 
-        assert(c2 == 0);
-        for (int i = 0; i < LIMBS / 2; ++i) muldbladd3(c0, c1, c2, this->limbs[i], this->limbs[LIMBS - 1 - i]);
-        extract3(c0, c1, c2, tmp.limbs[LIMBS - 1]);
+        debug_assert_eq!(c2, 0);
+        for i in 0..(num_3072::LIMBS / 2) {
+            muldbladd3(
+                &mut c0,
+                &mut c1,
+                &mut c2,
+                &self.limbs[i],
+                &self.limbs[num_3072::LIMBS - 1 - i],
+            );
+        }
+        extract3(
+            &mut c0,
+            &mut c1,
+            &mut c2,
+            &mut tmp.limbs[num_3072::LIMBS - 1],
+        );
 
-        /* Perform a second reduction. */
-        muln2(c0, c1, MAX_PRIME_DIFF);
-        for (int j = 0; j < LIMBS; ++j) {
-            addnextract2(c0, c1, tmp.limbs[j], this->limbs[j]);
+        // second reduction
+        muln2(&mut c0, &mut c1, MAX_PRIME_DIFF);
+        for j in 0..num_3072::LIMBS {
+            addnextract2(&mut c0, &mut c1, &tmp.limbs[j], &mut self.limbs[j]);
+        }
+        debug_assert!(c1 == 0 && (c0 == 0 || c0 == 1));
+
+        /* Perform up to two more reductions if the internal state has already overflown the MAX of Num3072 or if it is larger than the modulus or if both are the case. */
+        if self.is_overflow() {
+            self.full_reduce();
+        }
+        if c0 == 1 {
+            self.full_reduce();
+        }
+    }
+   
+    pub fn set_to_one(&mut self) {
+        trace!("Num3072::set_to_one");
+        self.limbs[0] = 1;
+        for limb in &mut self.limbs[1..] {
+            *limb = 0;
+        }
+    }
+
+    pub fn divide(&mut self, a: &Num3072) {
+        trace!("Num3072::divide");
+        if self.is_overflow() {
+            self.full_reduce();
         }
 
-        assert(c1 == 0);
-        assert(c0 == 0 || c0 == 1);
-
-        /* Perform up to two more reductions if the internal state has already
-         * overflown the MAX of Num3072 or if it is larger than the modulus or
-         * if both are the case.
-         * */
-        if (this->IsOverflow()) this->FullReduce();
-        if (c0) this->FullReduce();
-        */
-    }
-    
-    pub fn set_to_one(&mut self)  {
-        
-        todo!();
-        /*
-            this->limbs[0] = 1;
-        for (int i = 1; i < LIMBS; ++i) this->limbs[i] = 0;
-        */
-    }
-    
-    pub fn divide(&mut self, a: &Num3072)  {
-        
-        todo!();
-        /*
-            if (this->IsOverflow()) this->FullReduce();
-
-        Num3072 inv{};
-        if (a.IsOverflow()) {
-            Num3072 b = a;
-            b.FullReduce();
-            inv = b.GetInverse();
+        let inv = if a.is_overflow() {
+            let mut b = *a;
+            b.full_reduce();
+            b.get_inverse()
         } else {
-            inv = a.GetInverse();
-        }
+            a.get_inverse()
+        };
 
-        this->Multiply(inv);
-        if (this->IsOverflow()) this->FullReduce();
-        */
+        self.multiply(&inv);
+        if self.is_overflow() {
+            self.full_reduce();
+        }
     }
     
     pub fn new(data: &[u8; num_3072::BYTE_SIZE]) -> Self {
-    
-        todo!();
-        /*
-
-
-            for (int i = 0; i < LIMBS; ++i) {
-            if (sizeof(limb_t) == 4) {
-                this->limbs[i] = ReadLE32(data + 4 * i);
-            } else if (sizeof(limb_t) == 8) {
-                this->limbs[i] = ReadLE64(data + 8 * i);
+        trace!("Num3072::new");
+        let mut res = Num3072 {
+            limbs: [0; num_3072::LIMBS],
+        };
+        if core::mem::size_of::<Limb>() == 4 {
+            for (i, limb) in res.limbs.iter_mut().enumerate() {
+                *limb = u32::from_le_bytes(data[4 * i..4 * i + 4].try_into().unwrap()) as Limb;
+            }
+        } else {
+            for (i, limb) in res.limbs.iter_mut().enumerate() {
+                *limb =
+                    u64::from_le_bytes(data[8 * i..8 * i + 8].try_into().unwrap()) as Limb;
             }
         }
-        */
+        res
     }
-    
-    pub fn to_bytes(&mut self, out: &mut [u8; num_3072::BYTE_SIZE])  {
-        
-        todo!();
-        /*
-            for (int i = 0; i < LIMBS; ++i) {
-            if (sizeof(limb_t) == 4) {
-                WriteLE32(out + i * 4, this->limbs[i]);
-            } else if (sizeof(limb_t) == 8) {
-                WriteLE64(out + i * 8, this->limbs[i]);
+  
+    pub fn to_bytes(&self, out: &mut [u8; num_3072::BYTE_SIZE]) {
+        trace!("Num3072::to_bytes");
+        if core::mem::size_of::<Limb>() == 4 {
+            for (i, limb) in self.limbs.iter().enumerate() {
+                out[4 * i..4 * i + 4].copy_from_slice(&(*limb as u32).to_le_bytes());
+            }
+        } else {
+            for (i, limb) in self.limbs.iter().enumerate() {
+                out[8 * i..8 * i + 8].copy_from_slice(&(*limb as u64).to_le_bytes());
             }
         }
-        */
+    }
+}
+
+#[cfg(test)]
+mod num3072_property_validation {
+    use super::*;
+    use rand::{RngCore, SeedableRng};
+    use rand_chacha::ChaCha20Rng;
+
+    /// set_to_one followed by multiply then divide by the same element
+    /// must return to the original value.
+    #[traced_test]
+    fn multiply_then_divide_is_identity() -> Result<(), Box<dyn std::error::Error>> {
+        let mut rng = ChaCha20Rng::from_seed([3u8; 32]);
+
+        for round in 0..512 {
+            let mut raw = [0u8; num_3072::BYTE_SIZE];
+            rng.fill_bytes(&mut raw);
+            let mut x = Num3072::new(&raw);
+
+            let mut raw_y = [0u8; num_3072::BYTE_SIZE];
+            rng.fill_bytes(&mut raw_y);
+            let y = Num3072::new(&raw_y);
+
+            let original = x.limbs;
+
+            x.multiply(&y);
+            x.divide(&y);
+
+            assert_eq!(x.limbs, original, "Round {round} failed");
+        }
+        info!("multiply_then_divide_is_identity completed 512 rounds");
+        Ok(())
+    }
+
+    /// Verify that FullReduce actually produces a non‑overflowing value.
+    #[traced_test]
+    fn full_reduce_removes_overflow() -> Result<(), Box<dyn std::error::Error>> {
+        let mut n = Num3072 { limbs: [Limb::MAX; num_3072::LIMBS] };
+        assert!(n.is_overflow());
+        n.full_reduce();
+        assert!(!n.is_overflow());
+        Ok(())
     }
 }

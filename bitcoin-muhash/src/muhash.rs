@@ -51,37 +51,26 @@ crate::ix!();
   | and https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2017-May/014337.html.
   |
   */
-#[derive(Default)]
+#[derive(Serialize,Deserialize,Default)]
 pub struct MuHash3072 {
 
     numerator:   Num3072,
     denominator: Num3072,
 }
 
-lazy_static!{
-    /*
-    SERIALIZE_METHODS(MuHash3072, obj)
-        {
-            READWRITE(obj.m_numerator);
-            READWRITE(obj.m_denominator);
-        }
-    */
-}
-
 impl MuHash3072 {
 
-    pub fn to_num3072(&mut self, in_: &[u8]) -> Num3072 {
-        
-        todo!();
-        /*
-            unsigned char tmp[num_3072::BYTE_SIZE];
+    pub fn to_num3072(in_: &[u8]) -> Num3072 {
+        trace!("MuHash3072::to_num3072");
+        let hash = Sha256::digest(in_);
+        let key = hash.as_slice();
+        let nonce = [0u8; 8];            // Bitcoin uses an all‑zero 64‑bit nonce
+        let mut stream = [0u8; num_3072::BYTE_SIZE];
 
-        uint256 hashed_in = (CHashWriter(SER_DISK, 0) << in).GetSHA256();
-        ChaCha20(hashed_in.data(), hashed_in.size()).Keystream(tmp, Num3072::BYTE_SIZE);
-        Num3072 out{tmp};
-
-        return out;
-        */
+        // ChaCha20Legacy == 20‑round, 8‑byte nonce variant
+        let mut cipher = ChaCha20Legacy::new_from_slices(key, &nonce).unwrap();
+        cipher.apply_keystream(&mut stream);
+        Num3072::new(&stream)
     }
     
     /**
@@ -90,11 +79,11 @@ impl MuHash3072 {
       |
       */
     pub fn new(in_: &[u8]) -> Self {
-    
-        todo!();
-        /*
-            m_numerator = ToNum3072(in);
-        */
+        trace!("MuHash3072::new");
+        MuHash3072 {
+            numerator:   Self::to_num3072(in_),
+            denominator: Num3072::default(),
+        }
     }
     
     /**
@@ -102,18 +91,19 @@ impl MuHash3072 {
       | change this object's value.
       |
       */
-    pub fn finalize(&mut self, out: &mut u256)  {
-        
-        todo!();
-        /*
-            m_numerator.Divide(m_denominator);
-        m_denominator.SetToOne();  // Needed to keep the MuHash object valid
+    pub fn finalize(&mut self, out: &mut u256) {
 
-        unsigned char data[Num3072::BYTE_SIZE];
-        m_numerator.ToBytes(data);
+        trace!("MuHash3072::finalize");
 
-        out = (CHashWriter(SER_DISK, 0) << data).GetSHA256();
-        */
+        self.numerator.divide(&self.denominator);
+
+        // Needed to keep the MuHash object valid
+        self.denominator.set_to_one();
+
+        let mut data = [0u8; num_3072::BYTE_SIZE];
+        self.numerator.to_bytes(&mut data);
+        let digest = Sha256::digest(&data);
+        *out = u256::from_le_bytes(digest.as_slice().try_into().unwrap());
     }
     
     /**
@@ -121,13 +111,10 @@ impl MuHash3072 {
       | set.
       |
       */
-    pub fn insert(&mut self, in_: &[u8]) -> &mut MuHash3072 {
-        
-        todo!();
-        /*
-            m_numerator.Multiply(ToNum3072(in));
-        return *this;
-        */
+    pub fn insert(&mut self, in_: &[u8]) -> &mut Self {
+        trace!("MuHash3072::insert");
+        self.numerator.multiply(&Self::to_num3072(in_));
+        self
     }
     
     /**
@@ -135,12 +122,67 @@ impl MuHash3072 {
       | set.
       |
       */
-    pub fn remove(&mut self, in_: &[u8]) -> &mut MuHash3072 {
-        
-        todo!();
-        /*
-            m_denominator.Multiply(ToNum3072(in));
-        return *this;
-        */
+    pub fn remove(&mut self, in_: &[u8]) -> &mut Self {
+        trace!("MuHash3072::remove");
+        self.denominator.multiply(&Self::to_num3072(in_));
+        self
+    }
+}
+
+#[cfg(test)]
+mod set_semantics_validation {
+    use super::*;
+    use rand::{RngCore, SeedableRng};
+    use rand_chacha::ChaCha20Rng;
+    use bitcoin_u256::u256;
+    use tracing::info;
+
+    /// Order‑independence: inserting (A,B) equals inserting (B,A).
+    #[traced_test]
+    fn insertion_is_commutative() -> Result<(), Box<dyn std::error::Error>> {
+        let mut rng = ChaCha20Rng::from_seed([4u8; 32]);
+
+        for round in 0..1_024 {
+            let mut a = vec![0u8; (rng.next_u32() % 80 + 1) as usize];
+            rng.fill_bytes(&mut a);
+            let mut b = vec![0u8; (rng.next_u32() % 80 + 1) as usize];
+            rng.fill_bytes(&mut b);
+
+            // A then B
+            let mut h_ab = MuHash3072::new(&a);
+            h_ab.insert(&b);
+            let mut out_ab = u256::default();
+            h_ab.finalize(&mut out_ab);
+
+            // B then A
+            let mut h_ba = MuHash3072::new(&b);
+            h_ba.insert(&a);
+            let mut out_ba = u256::default();
+            h_ba.finalize(&mut out_ba);
+
+            assert_eq!(out_ab, out_ba, "Round {round} failed");
+        }
+        info!("insertion_is_commutative passed 1 024 rounds");
+        Ok(())
+    }
+
+    /// Inserting then removing an element is a no‑op on the final hash.
+    #[traced_test]
+    fn insert_then_remove_noop() -> Result<(), Box<dyn std::error::Error>> {
+        let payload = b"stateless‑validation‑vector";
+
+        let mut h1 = MuHash3072::new(payload);
+        let mut out_ref = u256::default();
+        h1.finalize(&mut out_ref);
+
+        // Insert + remove same payload
+        let mut h2 = MuHash3072::new(payload);
+        h2.insert(b"ephemeral");
+        h2.remove(b"ephemeral");
+        let mut out_test = u256::default();
+        h2.finalize(&mut out_test);
+
+        assert_eq!(out_ref, out_test);
+        Ok(())
     }
 }

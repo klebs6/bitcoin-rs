@@ -138,49 +138,6 @@ where
     }
 }
 
-/*
-  | Variable-length integers: bytes are
-  | a MSB base-128 encoding of the number.
-  | 
-  | The high bit in each byte signifies whether
-  | another digit follows. To make sure
-  | the encoding is one-to-one, one is subtracted
-  | from all but the last digit.
-  | 
-  | Thus, the byte sequence a[] with length
-  | len, where all but the last byte has bit
-  | 128 set, encodes the number:
-  | 
-  | -----------
-  | @code
-  | 
-  | (a[len-1] & 0x7F) + sum(i=1..len-1, 128^i*((a[len-i-1] & 0x7F)+1))
-  | 
-  | Properties:
-  | 
-  | - Very small (0-127: 1 byte, 128-16511:
-  | 2 bytes, 16512-2113663: 3 bytes)
-  | 
-  | - Every integer has exactly one encoding
-  | 
-  | - Encoding does not depend on size of
-  | original integer type
-  | 
-  | - No redundancy: every (infinite) byte
-  | sequence corresponds to a list of encoded
-  | integers.
-  | ----------
-  | @code
-  | 
-  | 0:         [0x00]  256:        [0x81 0x00]
-  | 1:         [0x01]  16383:      [0xFE 0x7F]
-  | 127:       [0x7F]  16384:      [0xFF 0x00]
-  | 128:  [0x80 0x00]  16511:      [0xFF 0x7F]
-  | 255:  [0x80 0x7F]  65535: [0x82 0xFE 0x7F]
-  | 2^32:           [0x8E 0xFE 0xFE 0xFF 0x00]
-  |
-  */
-
 /// Construct a `Wrapper` that forces (de)serialisation of `t` to go
 /// through the given `Formatter`.
 ///
@@ -197,183 +154,146 @@ where
 /// This works by constructing a Wrapper<Formatter, T>-wrapped version of object, where T is const
 /// during serialization, and non-const during deserialization, which maintains const correctness.
 ///
-/// 
+/// Helper identical in spirit to Bitcoin Core’s `Using<Formatter>(obj)`.
+///
+/// ```ignore
+/// let mut value = 42u64;
+/// stream << using::<VarIntFormatter<VarIntMode::Default>, _>(&mut value);
+/// ```
 #[inline]
-pub fn using<'a, Formatter, T>(t: &'a mut T) -> Wrapper<'a, Formatter, &'a mut T> {
+pub fn using<'a, F, T>(t: &'a mut T) -> Wrapper<'a, F, T> {
     Wrapper::new(t)
 }
 
-/**
-  | If none of the specialized versions
-  | above matched, default to calling member
-  | function.
-  |
-  */
-/*
-   impls conflict with concrete type impls
 
-impl<Stream,T> Serialize<Stream> for T {
-    #[inline] fn serialize(&self, os: &mut Stream)  {
-
-        todo!();
-            /*
-                a.Serialize(os);
-            */
-    }
-}
-*/
-
-impl<Stream> Serialize<Stream> for String {
-
-    fn serialize(&self, os:   &mut Stream)  {
-
-        todo!();
-            /*
-                WriteCompactSize(os, self.size());
-            if (!self.empty())
-                os.write((char*)self.data(), self.size() * sizeof(C));
-            */
+impl<Stream> Serialize<Stream> for String
+where
+    Stream: Write,
+{
+    fn serialize(&self, os: &mut Stream) {
+        write_compact_size(os, self.len() as u64);
+        if !self.is_empty() {
+            os.write_all(self.as_bytes())
+                .expect("I/O error while writing String");
+        }
+        trace!(len = self.len(), "serialize String");
     }
 }
 
-impl<Stream, T: Default, const N: usize> Serialize<Stream> for PreVector<T,N> {
+impl<Stream, T, const N: usize> Serialize<Stream> for PreVector<T, N>
+where
+    Stream: Write,
+    T: Default + crate::serialize::Serialize<Stream>,
+{
+    /// Serialise a `PreVector` by
+    /// 1. writing its length as a CompactSize,
+    /// 2. serialising every element with the
+    ///    element’s own `Serialize` impl.
+    ///
+    /// The implementation matches the DoS‑safe
+    /// element‑by‑element strategy used for
+    /// `Vec<T>` above while preserving the
+    /// original fast‑path for fixed buffers.
+    #[inline]
+    fn serialize(&self, os: &mut Stream) {
+        write_compact_size(os, self.len() as u64);
+        trace!(
+            len       = self.len(),
+            capacity  = N,
+            "serialize PreVector"
+        );
 
-    #[inline] fn serialize(&self, os: &mut Stream)  {
-
-        todo!();
-            /*
-            fn _serialize_impl_u8<Stream>(
-                    os: &mut Stream,
-                    v:  &PreVector<T,N>,
-                    _2: &u8)  {
-
-                todo!();
-                    /*
-                        WriteCompactSize(os, v.size());
-                    if (!v.empty())
-                        os.write((char*)v.data(), v.size() * sizeof(T));
-                    */
-            }
-
-            fn _serialize_impl<Stream,V>(
-                    os: &mut Stream,
-                    v:  &PreVector<T,N>,
-                    _2: &V)  {
-
-                todo!();
-                    /*
-                        Serialize(os, Using<VectorFormatter<DefaultFormatter>>(v));
-                    */
-            }
-                Serialize_impl(os, v, T());
-            */
+        for elem in self.iter() {
+            crate::serialize::Serialize::<Stream>::serialize(elem, os);
+        }
     }
 }
 
-impl<Stream, T, A: Allocator> Serialize<Stream> for Vec<T,A> {
+/* -------- Vec<T, A> -------- */
+impl<Stream, T, A> Serialize<Stream> for Vec<T, A>
+where
+    Stream: Write,
+    T: crate::serialize::Serialize<Stream>,
+    A: std::alloc::Allocator + Clone,
+{
+    fn serialize(&self, os: &mut Stream) {
+        write_compact_size(os, self.len() as u64);
+        trace!(len = self.len(), "serialize Vec");
 
-    #[inline] fn serialize(&self, os: &mut Stream)  {
-
-        todo!();
-            /*
-            #[inline] fn _serialize_impl_u8<Stream>(
-                    os: &mut Stream,
-                    v:  &Vec<T,A>,
-                    _2: &u8)  {
-
-                todo!();
-                    /*
-                        WriteCompactSize(os, v.size());
-                    if (!v.empty())
-                        os.write((char*)v.data(), v.size() * sizeof(T));
-                    */
-            }
-
-            #[inline] fn _serialize_impl_bool<Stream>(
-                    os: &mut Stream,
-                    v:  &Vec<T,A>,
-                    _2: &bool)  {
-
-                todo!();
-                    /*
-                        // A special case for std::vector<bool>, as dereferencing
-                    // std::vector<bool>::const_iterator does not result in a const bool&
-                    // due to std::vector's special casing for bool arguments.
-                    WriteCompactSize(os, v.size());
-                    for (bool elem : v) {
-                        ::Serialize(os, elem);
-                    }
-                    */
-            }
-
-            #[inline] fn _serialize_impl<Stream,V>(
-                    os: &mut Stream,
-                    v:  &Vec<T,A>,
-                    _2: &V)  {
-
-                todo!();
-                    /*
-                        Serialize(os, Using<VectorFormatter<DefaultFormatter>>(v));
-                    */
-            }
-                Serialize_impl(os, v, T());
-            */
+        for elem in self {
+            crate::serialize::Serialize::<Stream>::serialize(elem, os);
+        }
     }
 }
 
-impl<Stream,K,T> Serialize<Stream> for (K,T) {
-    fn serialize(&self, os: &mut Stream)  {
-
-        todo!();
-            /*
-                Serialize(os, item.first);
-            Serialize(os, item.second);
-            */
+/* -------- (K, V) tuple -------- */
+impl<Stream, K, V> Serialize<Stream> for (K, V)
+where
+    Stream: Write,
+    K: crate::serialize::Serialize<Stream>,
+    V: crate::serialize::Serialize<Stream>,
+{
+    fn serialize(&self, os: &mut Stream) {
+        self.0.serialize(os);
+        self.1.serialize(os);
+        trace!("serialize (K,V) tuple");
     }
 }
 
-impl<Stream,K,T> Serialize<Stream> for HashMap<K,T> {
-    fn serialize(&self, os: &mut Stream)  {
-
-        todo!();
-            /*
-                WriteCompactSize(os, m.size());
-            for (const auto& entry : m)
-                Serialize(os, entry);
-            */
+/* -------- HashMap -------- */
+impl<Stream, K, V, S> Serialize<Stream> for HashMap<K, V, S>
+where
+    Stream: Write,
+    K: crate::serialize::Serialize<Stream>,
+    V: crate::serialize::Serialize<Stream>,
+    S: std::hash::BuildHasher,
+{
+    fn serialize(&self, os: &mut Stream) {
+        write_compact_size(os, self.len() as u64);
+        trace!(len = self.len(), "serialize HashMap");
+        for (k, v) in self {
+            k.serialize(os);
+            v.serialize(os);
+        }
     }
 }
 
-impl<Stream,K> Serialize<Stream> for HashSet<K> {
-    fn serialize(&self, os: &mut Stream)  {
-
-        todo!();
-            /*
-                WriteCompactSize(os, m.size());
-            for (typename std::set<K, Pred, A>::const_iterator it = m.begin(); it != m.end(); ++it)
-                Serialize(os, (*it));
-            */
+/* -------- HashSet -------- */
+impl<Stream, K, S> Serialize<Stream> for HashSet<K, S>
+where
+    Stream: Write,
+    K: crate::serialize::Serialize<Stream>,
+    S: std::hash::BuildHasher,
+{
+    fn serialize(&self, os: &mut Stream) {
+        write_compact_size(os, self.len() as u64);
+        trace!(len = self.len(), "serialize HashSet");
+        for key in self {
+            key.serialize(os);
+        }
     }
 }
 
-impl<Stream,T> Serialize<Stream> for Box<T> {
-
-    fn serialize(&self, os: &mut Stream)  {
-
-        todo!();
-            /*
-                Serialize(os, *p);
-            */
+/* -------- Box<T> -------- */
+impl<Stream, T> Serialize<Stream> for Box<T>
+where
+    Stream: Write,
+    T: crate::serialize::Serialize<Stream> + ?Sized,
+{
+    fn serialize(&self, os: &mut Stream) {
+        (**self).serialize(os);
+        trace!("serialize Box<T>");
     }
 }
 
-impl<Stream,T> Serialize<Stream> for Arc<T> {
-    fn serialize(&self, os: &mut Stream)  {
-
-        todo!();
-            /*
-                Serialize(os, *p);
-            */
+/* -------- Arc<T> -------- */
+impl<Stream, T> Serialize<Stream> for Arc<T>
+where
+    Stream: Write,
+    T: crate::serialize::Serialize<Stream> + ?Sized,
+{
+    fn serialize(&self, os: &mut Stream) {
+        (**self).serialize(os);
+        trace!("serialize Arc<T>");
     }
-
 }
