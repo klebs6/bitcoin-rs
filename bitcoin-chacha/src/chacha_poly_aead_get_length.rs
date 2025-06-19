@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-chacha/src/chacha_poly_aead_get_length.rs ]
 crate::ix!();
 
 impl ChaCha20Poly1305AEAD {

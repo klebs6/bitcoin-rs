@@ -57,4 +57,3 @@ mod aes_constants_validation {
         assert_eq!(AES256_KEYSIZE, 32, "AES‑256 key size must be 256 bits (32 bytes)");
     }
 }
-

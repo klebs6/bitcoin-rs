@@ -59,4 +59,3 @@ where
         trace!(actual = v.len(), "VectorFormatter::unser → done");
     }
 }
-

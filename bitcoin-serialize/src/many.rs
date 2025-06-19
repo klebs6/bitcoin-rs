@@ -161,4 +161,3 @@ pub fn ser_read_write_many_with_action_unserialize<Stream, T>(
     trace!("ser_read_write_many_with_action_unserialize");
     args.unserialize_many(s);
 }
-

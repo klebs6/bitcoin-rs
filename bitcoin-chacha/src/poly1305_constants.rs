@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-chacha/src/poly1305_constants.rs ]
 crate::ix!();
 
 pub const CHACHA20_POLY1305_AEAD_KEY_LEN: usize = 32;

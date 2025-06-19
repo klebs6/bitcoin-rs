@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-bufferedfile/src/buffered_file_stream.rs ]
 crate::ix!();
 
 /// Types that can be streamed *into* by `BufferedFile` using the `>>` operator.

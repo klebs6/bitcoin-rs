@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-chacha/src/chacha20_set_key.rs ]
 crate::ix!();
 
 impl ChaCha20 {

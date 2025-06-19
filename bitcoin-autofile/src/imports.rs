@@ -7,4 +7,3 @@ pub(crate) use bitcoin_serialize::{
     serialize   as btc_serialize,
     unserialize as btc_unserialize,
 };
-

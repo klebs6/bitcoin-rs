@@ -21,4 +21,3 @@ pub fn timingsafe_bcmp(b1: *const u8, b2: *const u8, n: usize) -> i32 {
     }
     (diff != 0) as i32
 }
-

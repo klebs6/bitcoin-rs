@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-aes/src/key_setup_transform.rs ]
 crate::ix!();
 
 /// Rotate the rows in s one position upwards, and xor in r

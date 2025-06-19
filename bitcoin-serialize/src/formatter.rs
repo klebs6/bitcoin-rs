@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-serialize/src/formatter.rs ]
 crate::ix!();
 
 /// **Common interface implemented by every formatter.**

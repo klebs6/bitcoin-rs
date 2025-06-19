@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-aes/src/key_setup.rs ]
+// ---------------- [ File: bitcoin-aes/src/key_setup_column_mix.rs ]
 crate::ix!();
 
 /// Key‑schedule column mix (`column_c1(r) |= (column_0(s) ^= column_c2(a))`)

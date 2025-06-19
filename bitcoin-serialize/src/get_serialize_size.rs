@@ -21,4 +21,3 @@ where
     args.serialize_many(&mut sc);
     sc.size()
 }
-

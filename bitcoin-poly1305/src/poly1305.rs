@@ -1,10 +1,10 @@
+// ---------------- [ File: bitcoin-poly1305/src/poly1305.rs ]
 /*!
    | Based on the public domain implementation by
    | Andrew Moon poly1305-donna-unrolled.c from
    | https://github.com/floodyberry/poly1305-donna
   */
 
-// ---------------- [ File: bitcoin-poly1305/src/poly1305.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/poly1305.h]
