@@ -11,12 +11,8 @@ pub struct AES256Decrypt {
 }
 
 impl Decrypt for AES256Decrypt {
-
-    fn decrypt(&self, 
-        mut plaintext: [u8; 16],
-        ciphertext:    [u8; 16])  {
-        
-        aes256_decrypt(&self.ctx, 1, plaintext.as_mut_ptr(), ciphertext.as_ptr());
+    fn decrypt(&self, out: &mut [u8; 16], cipher: &[u8; 16]) {
+        unsafe { aes256_decrypt(&self.ctx, 1, out.as_mut_ptr(), cipher.as_ptr()); }
     }
 }
 

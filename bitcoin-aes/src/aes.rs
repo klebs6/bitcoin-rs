@@ -32,17 +32,15 @@ pub const AES256_KEYSIZE: usize = 32;
 //-------------------------------------------[.cpp/bitcoin/src/crypto/aes.cpp]
 
 pub trait Decrypt {
-
-    fn decrypt(&self, 
-        plaintext:  [u8; 16],
-        ciphertext: [u8; 16]);
+    fn decrypt(&self,
+        out:    &mut [u8; 16],
+        cipher: &[u8; 16]);
 }
 
 pub trait Encrypt {
-
-    fn encrypt(&self, 
-        ciphertext: [u8; 16],
-        plaintext:  [u8; 16]);
+    fn encrypt(&self,
+        out:   &mut [u8; 16],
+        plain: &[u8; 16]);
 }
 
 #[cfg(test)]

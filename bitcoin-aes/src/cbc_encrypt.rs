@@ -33,12 +33,13 @@ pub fn cbc_encrypt<T: Encrypt>(
         }
 
         unsafe {
+
             enc.encrypt(
                 core::slice::from_raw_parts_mut(out.add(written as usize), AES_BLOCKSIZE)
-                    .try_into()
-                    .unwrap(),
-                mixed,
+                .try_into().unwrap(),      // &mut [u8;16]
+                &mixed                         // &[u8;16]
             );
+
             // ciphertext becomes next IV
             mixed.copy_from_slice(core::slice::from_raw_parts(
                 out.add(written as usize),
@@ -64,9 +65,8 @@ pub fn cbc_encrypt<T: Encrypt>(
         unsafe {
             enc.encrypt(
                 core::slice::from_raw_parts_mut(out.add(written as usize), AES_BLOCKSIZE)
-                    .try_into()
-                    .unwrap(),
-                mixed,
+                .try_into().unwrap(),      // &mut [u8;16]
+                &mixed                         // &[u8;16]
             );
         }
 

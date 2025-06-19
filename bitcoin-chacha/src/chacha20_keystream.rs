@@ -73,3 +73,21 @@ impl ChaCha20 {
         self.input_mut()[13] = state[13];
     }
 }
+
+#[cfg(test)]
+mod keystream_exhaustive_small_block {
+    use super::*;
+
+    #[traced_test]
+    fn generates_partial_block() {
+        let mut c = ChaCha20::new([0u8; 32].as_ptr(), 32);
+        c.setiv(0);
+        let mut buf = [0u8; 7]; // less than 64
+        c.keystream(buf.as_mut_ptr(), buf.len());
+
+        // second call should continue (not repeat) stream
+        let mut next7 = [0u8; 7];
+        c.keystream(next7.as_mut_ptr(), next7.len());
+        assert_ne!(buf, next7, "stream must advance across calls");
+    }
+}

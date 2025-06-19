@@ -2,6 +2,7 @@
 crate::ix!();
 
 impl ChaCha20Poly1305AEAD {
+
     /**
       | decrypt the 3‑byte AAD length field
       | into `len24_out`
@@ -15,8 +16,6 @@ impl ChaCha20Poly1305AEAD {
     ) -> bool {
         trace!(seqnr_aad, aad_pos, "ChaCha20Poly1305AEAD::get_length");
 
-        // enforce valid aad position to avoid accessing outside of the 64byte keystream cache
-        // (there is space for 21 times 3 bytes)
         assert!(
             aad_pos >= 0
                 && (aad_pos as usize)
@@ -24,31 +23,26 @@ impl ChaCha20Poly1305AEAD {
         );
 
         if *self.cached_aad_seqnr() != seqnr_aad {
-
-            // we need to calculate the 64 keystream bytes since we reached a new aad sequence number
             *self.cached_aad_seqnr_mut() = seqnr_aad;
 
-            // use LE for the nonce
-            self.chacha_header_mut().setiv(seqnr_aad);
+            // obtain raw pointer before borrowing header
+            let buf_ptr = self.aad_keystream_buffer_mut().as_mut_ptr();
 
-            // block counter 0
-            self.chacha_header_mut().seek(0);
-
-            // write keystream to the cache
-            self.chacha_header_mut().keystream(
-                self.aad_keystream_buffer_mut().as_mut_ptr(),
-                CHACHA20_ROUND_OUTPUT,
-            );
+            {
+                let hdr = self.chacha_header_mut();
+                hdr.setiv(seqnr_aad);
+                hdr.seek(0);
+                hdr.keystream(buf_ptr, CHACHA20_ROUND_OUTPUT);
+            }
         }
 
-        // decrypt the ciphertext length by XORing the right position of the 64byte keystream cache with the ciphertext
         unsafe {
             let c = core::slice::from_raw_parts(
                 ciphertext,
                 CHACHA20_POLY1305_AEAD_AAD_LEN,
             );
-            let out = 
-                   (c[0] ^ self.aad_keystream_buffer()[aad_pos as usize + 0]) as u32
+
+            let out = (c[0] ^ self.aad_keystream_buffer()[aad_pos as usize + 0]) as u32
                 | ((c[1] ^ self.aad_keystream_buffer()[aad_pos as usize + 1]) as u32) << 8
                 | ((c[2] ^ self.aad_keystream_buffer()[aad_pos as usize + 2]) as u32) << 16;
 
@@ -56,5 +50,29 @@ impl ChaCha20Poly1305AEAD {
         }
 
         true
+    }
+}
+
+#[cfg(test)]
+mod poly1305_tag_exhaustive_tests {
+    use super::*;
+
+    // RFC 8439 Poly1305 test vector
+    const KEY: [u8; POLY1305_KEYLEN] = [
+        0x85,0xd6,0xbe,0x78,0x57,0x55,0x6d,0x33,
+        0x7f,0x44,0x52,0xfe,0x42,0xd5,0x06,0xa8,
+        0x01,0x03,0x80,0x8f,0x25,0x0f,0x72,0x0a,
+        0xdd,0x4e,0xaa,0x1f,0xff,0xe3,0x0b,0xfc,
+    ];
+    const MSG: [u8; 34] = *b"Cryptographic Forum Research Group";
+    const TAG: [u8; POLY1305_TAGLEN] = [
+        0xa8,0x06,0x1d,0xc1,0x30,0x51,0x36,0xc6,
+        0xc2,0x2b,0x8b,0xaf,0x0c,0x01,0x27,0xa9,
+    ];
+
+    #[traced_test]
+    fn poly1305_matches_reference() {
+        let t = compute_poly1305_tag(&KEY, &MSG);
+        assert_eq!(t.as_slice(), &TAG, "Poly1305 tag must match RFC 8439");
     }
 }

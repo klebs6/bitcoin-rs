@@ -190,3 +190,64 @@ impl ChaCha20Poly1305AEAD {
         }
     }
 }
+
+#[cfg(test)]
+mod chacha_poly_aead_exhaustive_tests {
+    use super::*;
+
+    const K1: [u8; CHACHA20_POLY1305_AEAD_KEY_LEN] = [0u8; CHACHA20_POLY1305_AEAD_KEY_LEN];
+    const K2: [u8; CHACHA20_POLY1305_AEAD_KEY_LEN] = [1u8; CHACHA20_POLY1305_AEAD_KEY_LEN];
+
+    #[traced_test]
+    fn encrypt_then_decrypt_roundtrip() {
+        let payload: [u8; 10] = [1,2,3,4,5,6,7,8,9,10];
+        let mut src  = Vec::<u8>::new();
+        src.extend_from_slice(&[payload.len() as u8, 0, 0]); // 3‑byte length
+        src.extend_from_slice(&payload);
+
+        // ENCRYPT ----------------------------------------------------------
+        let mut enc_out = vec![0u8; src.len() + POLY1305_TAGLEN];
+        let mut aead    = ChaCha20Poly1305AEAD::new(
+            K1.as_ptr(), K1.len(), K2.as_ptr(), K2.len(),
+        );
+
+        let ok = aead.crypt(
+            0,       /* seqnr_payload */
+            0,       /* seqnr_aad     */
+            0,       /* aad position  */
+            enc_out.as_mut_ptr(),
+            enc_out.len(),
+            src.as_ptr(),
+            src.len(),
+            true,    /* encrypt       */
+        );
+        assert!(ok, "encryption must succeed");
+
+        // DECRYPT ----------------------------------------------------------
+        let mut dec_out = vec![0u8; enc_out.len() - POLY1305_TAGLEN];
+        let mut aead2   = ChaCha20Poly1305AEAD::new(
+            K1.as_ptr(), K1.len(), K2.as_ptr(), K2.len(),
+        );
+        let ok2 = aead2.crypt(
+            0, 0, 0,
+            dec_out.as_mut_ptr(),
+            dec_out.len(),
+            enc_out.as_ptr(),
+            enc_out.len(),
+            false, /* decrypt */
+        );
+        assert!(ok2, "decryption must succeed");
+        assert_eq!(&dec_out, &src, "payload must round‑trip exactly");
+
+        // length helper ----------------------------------------------------
+        let mut len24: u32 = 0;
+        let ok3 = aead2.get_length(
+            &mut len24 as *mut u32,
+            0, /* seqnr_aad */
+            0, /* aad_pos   */
+            enc_out.as_ptr(),
+        );
+        assert!(ok3, "get_length must succeed");
+        assert_eq!(len24 as usize, payload.len());
+    }
+}

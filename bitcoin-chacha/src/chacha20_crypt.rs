@@ -32,3 +32,39 @@ impl ChaCha20 {
         }
     }
 }
+
+#[cfg(test)]
+mod crypt_exhaustive_small_sizes {
+    use super::*;
+
+    #[traced_test]
+    fn crypt_zero_bytes_is_noop() {
+        let mut c = ChaCha20::new([0u8; 32].as_ptr(), 32);
+        c.setiv(77);
+        let mut out = [123u8; 0];
+        c.crypt(out.as_ptr(), out.as_mut_ptr(), 0);
+        // nothing to assert, merely exercise branch
+    }
+
+    #[traced_test]
+    fn encrypt_vs_keystream_xor() {
+        let msg = b"hello world!";
+        let mut cipher = ChaCha20::new([1u8; 32].as_ptr(), 32);
+        cipher.setiv(9);
+
+        let mut out = [0u8; 12];
+        cipher.crypt(msg.as_ptr(), out.as_mut_ptr(), msg.len());
+
+        // produce keystream separately and XOR
+        let mut ks = [0u8; 12];
+        let mut ks_gen = ChaCha20::new([1u8; 32].as_ptr(), 32);
+        ks_gen.setiv(9);
+        ks_gen.keystream(ks.as_mut_ptr(), ks.len());
+
+        let mut manual = [0u8; 12];
+        for i in 0..12 {
+            manual[i] = msg[i] ^ ks[i];
+        }
+        assert_eq!(manual, out, "crypt == keystream XOR msg");
+    }
+}

@@ -38,3 +38,40 @@ impl ChaCha20 {
         self.input_mut()[15] = 0;
     }
 }
+
+#[cfg(test)]
+mod chacha20_set_key_exhaustive_tests {
+    use super::*;
+
+    #[traced_test]
+    fn sets_correct_constants_256bit() {
+        let key = [0xAAu8; 32];
+        let c = ChaCha20::new(key.as_ptr(), key.len());
+        assert_eq!(
+            c.input()[0..4],
+            [
+                read_le32(&SIGMA_BYTES[0..]),
+                read_le32(&SIGMA_BYTES[4..]),
+                read_le32(&SIGMA_BYTES[8..]),
+                read_le32(&SIGMA_BYTES[12..])
+            ],
+            "σ constants must be loaded for 256‑bit key"
+        );
+    }
+
+    #[traced_test]
+    fn sets_correct_constants_128bit() {
+        let key = [0xBBu8; 16];
+        let c = ChaCha20::new(key.as_ptr(), key.len());
+        assert_eq!(
+            c.input()[0..4],
+            [
+                read_le32(&TAU_BYTES[0..]),
+                read_le32(&TAU_BYTES[4..]),
+                read_le32(&TAU_BYTES[8..]),
+                read_le32(&TAU_BYTES[12..])
+            ],
+            "τ constants must be loaded for 128‑bit key"
+        );
+    }
+}

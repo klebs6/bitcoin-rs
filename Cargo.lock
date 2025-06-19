@@ -316,6 +316,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "23b62fc65de8e4e7f52534fb52b0f3ed04746ae267519eef2a83941e8085068b"
 
 [[package]]
+name = "async-trait"
+version = "0.1.88"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e539d3fca749fcee5236ab05e93a52867dd549cc157c8cb7f99595f3cedffdb5"
+dependencies = [
+ "proc-macro2",
+ "quote 1.0.40",
+ "syn 2.0.101",
+]
+
+[[package]]
 name = "atomic"
 version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -779,6 +790,7 @@ dependencies = [
  "bitcoin-imports",
  "bitcoin-support",
  "derive_builder",
+ "generic-array",
  "getset",
  "poly1305",
  "tracing",
@@ -1646,10 +1658,16 @@ name = "bitcoin-muhash"
 version = "0.1.17-alpha.0"
 dependencies = [
  "bitcoin-cfg",
+ "bitcoin-chacha",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoin-sha256",
  "bitcoin-u256",
+ "rand_chacha 0.9.0",
  "serde",
+ "sha256",
+ "traced-test",
+ "tracing",
 ]
 
 [[package]]
@@ -1896,6 +1914,8 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "hex-literal",
+ "tracing",
 ]
 
 [[package]]
@@ -4680,6 +4700,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
+name = "hex-literal"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bcaaec4551594c969335c98c903c1397853d4198408ea609190f420500f6be71"
+
+[[package]]
 name = "home"
 version = "0.5.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6263,6 +6289,19 @@ dependencies = [
  "cfg-if",
  "cpufeatures",
  "digest",
+]
+
+[[package]]
+name = "sha256"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f880fc8562bdeb709793f00eb42a2ad0e672c4f883bbe59122b926eca935c8f6"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "hex",
+ "sha2",
+ "tokio",
 ]
 
 [[package]]

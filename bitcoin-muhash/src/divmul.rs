@@ -6,8 +6,8 @@ impl core::ops::MulAssign<&MuHash3072> for MuHash3072 {
     #[inline]
     fn mul_assign(&mut self, rhs: &MuHash3072) {
         trace!("MuHash3072::mul_assign");
-        self.numerator.multiply(&rhs.numerator);
-        self.denominator.multiply(&rhs.denominator);
+        self.numerator_mut().multiply(rhs.numerator());
+        self.denominator_mut().multiply(rhs.denominator());
     }
 }
 
@@ -16,8 +16,8 @@ impl core::ops::DivAssign<&MuHash3072> for MuHash3072 {
     #[inline]
     fn div_assign(&mut self, rhs: &MuHash3072) {
         trace!("MuHash3072::div_assign");
-        self.numerator.multiply(&rhs.denominator);
-        self.denominator.multiply(&rhs.numerator);
+        self.numerator_mut().multiply(rhs.denominator());
+        self.denominator_mut().multiply(rhs.numerator());
     }
 }
 

@@ -42,19 +42,11 @@ impl AES256Encrypt {
 }
 
 impl Encrypt for AES256Encrypt {
-
-    fn encrypt(&self, 
-        ciphertext: [u8; 16],
-        plaintext:  [u8; 16])  {
-
-        aes256_encrypt(
-            &self.ctx as *const _, 
-            1, 
-            ciphertext.as_ptr() as *mut u8, 
-            plaintext.as_ptr() as *mut u8
-        );
+    fn encrypt(&self, out: &mut [u8; 16], plain: &[u8; 16]) {
+        unsafe { aes256_encrypt(&self.ctx, 1, out.as_mut_ptr(), plain.as_ptr()); }
     }
 }
+
 
 #[cfg(test)]
 mod aes256_encrypt_validation {

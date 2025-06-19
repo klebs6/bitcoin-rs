@@ -104,7 +104,7 @@ macro_rules! formatter_methods {
 }
 
 /**
-  | Implement the Serialize and Unserialize
+  | Implement the BtcSerialize and BtcUnserialize
   | methods by delegating to a single templated
   | static method that takes the to-be-(de)serialized
   | object as a parameter.
@@ -123,15 +123,15 @@ macro_rules! serialize_methods {
         /*
         
             template<typename Stream>                                                       
-            c_void Serialize(Stream& s) const                                                 
+            c_void BtcSerialize(Stream& s) const                                                 
             {                                                                               
-                const_assert(std::is_same<const cls&, decltype(*this)>::value, "Serialize type mismatch"); 
+                const_assert(std::is_same<const cls&, decltype(*this)>::value, "BtcSerialize type mismatch"); 
                 Ser(s, *this);                                                              
             }                                                                               
             template<typename Stream>                                                       
-            c_void Unserialize(Stream& s)                                                     
+            c_void BtcUnserialize(Stream& s)                                                     
             {                                                                               
-                const_assert(std::is_same<cls&, decltype(*this)>::value, "Unserialize type mismatch"); 
+                const_assert(std::is_same<cls&, decltype(*this)>::value, "BtcUnserialize type mismatch"); 
                 Unser(s, *this);                                                            
             }                                                                               
             FORMATTER_METHODS(cls, obj)

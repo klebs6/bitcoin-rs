@@ -25,15 +25,14 @@ pub struct VectorReader {
 
 impl<T> Shr<&mut T> for VectorReader
 where
-    T: ?Sized,
+    T: bitcoin_serialize::BtcUnserialize<VectorReader> + ?Sized,
 {
     type Output = VectorReader;
 
-    /// Deserialize `rhs` from this stream.
     #[inline]
     fn shr(mut self, rhs: &mut T) -> Self::Output {
         trace!("VectorReader >> {:?}", std::any::type_name::<T>());
-        Serialize::unserialize(&mut self, rhs);
+        rhs.unserialize(&mut self); // trait call
         self
     }
 }
@@ -83,32 +82,23 @@ impl VectorReader {
         Self { ty, version, data, pos }
     }
 
-    /// (other params same as above)
-    /// 
-    /// -----------
-    /// @param[in] args
-    /// 
-    /// A list of items to deserialize starting
-    /// at pos.
-    /// 
-    ////
-    /// Create a new `VectorReader` and immediately
-    /// deserialize a sequence of objects.
+    /// Create a new `VectorReader` and immediately deserialize a sequence of
+    /// objects supplied in `args`.
     pub fn new_with_args<Args>(
         ty:      i32,
         version: i32,
         data:    Arc<Vec<u8>>,
         pos:     usize,
-        args:    Args,
+        mut args: Args,
     ) -> Self
     where
-        Args: SerializeMany,
+        Args: bitcoin_serialize::UnserializeMany<VectorReader>,
     {
         let mut reader = Self::new(ty, version, data, pos);
-        SerializeMany::unserialize_many(&mut reader, args);
+        args.unserialize_many(&mut reader);
         reader
     }
-    
+   
     /// Remaining unread bytes.
     pub fn size(&self) -> usize {
         self.data.len() - self.pos
@@ -118,39 +108,29 @@ impl VectorReader {
     pub fn empty(&self) -> bool {
         self.pos == self.data.len()
     }
-    
-    /// Read `n` bytes into `dst`.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the read would go past the end of the buffer.
-    pub fn read(&mut self, dst: *mut u8, n: usize) {
-        if n == 0 {
-            return;
+}
+
+impl Read for VectorReader {
+    #[inline]
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        if buf.is_empty() {
+            return Ok(0);
         }
-
-        let next_pos = self.pos + n;
-        if next_pos > self.data.len() {
-            error!(
-                next_pos,
-                len = self.data.len(),
-                "VectorReader::read(): end of data"
-            );
-            panic!("VectorReader::read(): end of data");
+        let available = self.size();
+        if available == 0 {
+            return Ok(0);
         }
-
-        trace!(bytes = n, from = self.pos, to = next_pos, "VectorReader::read");
-
-        // SAFETY: bounds checked above and the regions do not overlap.
+        let to_copy = std::cmp::min(buf.len(), available);
+        // SAFETY: bounds checked above; regions do not overlap
         unsafe {
             std::ptr::copy_nonoverlapping(
                 self.data.as_ptr().add(self.pos),
-                dst,
-                n,
+                buf.as_mut_ptr(),
+                to_copy,
             );
         }
-
-        self.pos = next_pos;
+        self.pos += to_copy;
+        Ok(to_copy)
     }
 }
 

@@ -95,3 +95,94 @@ pub fn read_compact_size<Stream: Read>(is: &mut Stream, range_check: Option<bool
     trace!(n_size_ret, "read_compact_size");
     n_size_ret
 }
+
+#[cfg(test)]
+mod compact_size_tests {
+    use super::*;
+    use std::io::Cursor;
+
+    /// Values that are *permitted* when `range_check = true`.
+    const SAMPLES_WITHIN_MAX: &[u64] = &[
+        0,
+        1,
+        252,
+        253,
+        254,
+        255,
+        32_768,
+        65_536,
+        crate::constants::MAX_SIZE, // 0x02_00_00_00
+    ];
+
+    /// Values that exceed `MAX_SIZE` and require `range_check = false`.
+    const SAMPLES_ABOVE_MAX: &[u64] = &[
+        crate::constants::MAX_SIZE + 1,
+        (1_u64 << 33),
+        (1_u64 << 40),
+    ];
+
+    /* -------- helpers -------- */
+
+    fn roundtrip(value: u64, range_check: bool) {
+        let mut buf = Cursor::new(Vec::<u8>::new());
+        write_compact_size(&mut buf, value);
+
+        buf.set_position(0);
+        let decoded = read_compact_size(&mut buf, Some(range_check));
+        assert_eq!(decoded, value, "value {value:#x} failed round‑trip");
+        assert_eq!(buf.position() as usize, buf.get_ref().len());
+    }
+
+    /* -------- tests -------- */
+
+    #[traced_test]
+    fn get_size_matches_spec() {
+        assert_eq!(get_size_of_compact_size(0),                    1);
+        assert_eq!(get_size_of_compact_size(252),                  1);
+        assert_eq!(get_size_of_compact_size(253),                  3);
+        assert_eq!(get_size_of_compact_size(u16::MAX as u64),      3);
+        assert_eq!(get_size_of_compact_size(u16::MAX as u64 + 1),  5);
+        assert_eq!(get_size_of_compact_size(u32::MAX as u64),      5);
+        assert_eq!(get_size_of_compact_size(u32::MAX as u64 + 1),  9);
+    }
+
+    /// Round‑trip **all** values ≤ `MAX_SIZE` with range‑checking **on**.
+    #[traced_test]
+    fn roundtrip_within_max() {
+        for &n in SAMPLES_WITHIN_MAX {
+            roundtrip(n, true);
+        }
+    }
+
+    /// Round‑trip values *above* `MAX_SIZE` with the caller opting‑out of
+    /// the safety check.
+    #[traced_test]
+    fn roundtrip_above_max_without_check() {
+        for &n in SAMPLES_ABOVE_MAX {
+            roundtrip(n, false);
+        }
+    }
+
+    /// Ensure that enabling the range‑check for an excessive value
+    /// triggers a panic.
+    #[test]
+    #[should_panic] // exact message is implementation detail
+    fn reject_excessive_size_when_range_checked() {
+        let val = crate::constants::MAX_SIZE + 1;
+        let mut buf = Cursor::new(Vec::<u8>::new());
+        write_compact_size(&mut buf, val);
+
+        buf.set_position(0);
+        let _ = read_compact_size(&mut buf, Some(true));
+    }
+
+    /// Encoding 252 using the 0xFD prefix is non‑canonical and must be
+    /// rejected.
+    #[test]
+    #[should_panic]
+    fn reject_non_canonical_encoding() {
+        let bad = [0xFD, 0xFC, 0x00]; // canonical form would be single‑byte 0xFC
+        let mut cur = Cursor::new(bad.as_slice());
+        let _ = read_compact_size(&mut cur, Some(true));
+    }
+}

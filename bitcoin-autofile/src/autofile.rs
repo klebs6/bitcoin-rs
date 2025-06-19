@@ -27,7 +27,7 @@ pub struct AutoFile {
 
 impl<'a, T> std::ops::Shl<&'a T> for AutoFile
 where
-    T: btc_serialize::Serialize<AutoFile>,
+    T: BtcSerialize<AutoFile>,
 {
     type Output = AutoFile;
 
@@ -38,7 +38,7 @@ where
         }
 
         // Delegate to the project’s custom serialiser (bit‑exact with C++).
-        btc_serialize::Serialize::<AutoFile>::serialize(rhs, &mut self);
+        BtcSerialize::<AutoFile>::serialize(rhs, &mut self);
 
         self
     }
@@ -46,7 +46,7 @@ where
 
 impl<'a, T> std::ops::Shr<&'a mut T> for AutoFile
 where
-    T: btc_unserialize::Unserialize<AutoFile>,
+    T: BtcUnserialize<AutoFile>,
 {
     type Output = AutoFile;
 
@@ -57,7 +57,7 @@ where
         }
 
         // Delegate to the project’s custom deserialiser (bit‑exact with C++).
-        btc_unserialize::Unserialize::<AutoFile>::unserialize(rhs, &mut self);
+        BtcUnserialize::<AutoFile>::unserialize(rhs, &mut self);
 
         self
     }
@@ -241,6 +241,165 @@ impl Drop for AutoFile {
             trace!(target: "autofile", "Dropping AutoFile, automatically closing {:?}", self.file);
             unsafe { libc::fclose(self.file) };
             self.file = std::ptr::null_mut();
+        }
+    }
+}
+
+#[cfg(test)]
+mod autofile_validation {
+    use super::*;
+
+    /* -------- initialise tracing once for all tests -------- */
+
+    /* ------------------------------------------------------------------
+       helper: create a fresh AutoFile backed by libc::tmpfile()
+    ------------------------------------------------------------------ */
+    unsafe fn fresh_autofile() -> AutoFile {
+        let file = libc::tmpfile();
+        assert!(
+            !file.is_null(),
+            "libc::tmpfile() returned a nullptr, cannot run tests"
+        );
+        AutoFile::new(file, 0, 0)
+    }
+
+    /* ---------------------------------------------------
+       sanity: creation yields a non‑null handle
+    --------------------------------------------------- */
+    #[traced_test]
+    fn creation_is_not_null() {
+        unsafe {
+            let af = fresh_autofile();
+            assert!(!af.is_null(), "new AutoFile incorrectly reports null");
+        }
+    }
+
+    /* ---------------------------------------------------
+       ¬ raw pointer I/O helpers round‑trip correctly
+    --------------------------------------------------- */
+    #[traced_test]
+    fn raw_write_and_read_roundtrip() {
+        unsafe {
+            let mut af = fresh_autofile();
+
+            const PAYLOAD: &[u8] = b"bitcoin-autofile";
+            af.write_ptr(PAYLOAD.as_ptr(), PAYLOAD.len());
+
+            libc::rewind(af.get());
+
+            let mut buf = [0u8; PAYLOAD.len()];
+            af.read_ptr(buf.as_mut_ptr(), buf.len());
+
+            assert_eq!(
+                &buf[..],
+                PAYLOAD,
+                "bytes read differ from bytes written (raw_ptr helpers)"
+            );
+        }
+    }
+
+    /* ---------------------------------------------------
+       ¬ operator << / >> round‑trips u32 exactly
+    --------------------------------------------------- */
+    #[traced_test]
+    fn operator_shl_shr_roundtrip_u32() {
+        unsafe {
+            let mut af = fresh_autofile();
+
+            let original: u32 = 0xDEADBEEF;
+            af = af << &original;       /* write */
+
+            libc::rewind(af.get());
+
+            let mut decoded: u32 = 0;
+            af = af >> &mut decoded;    /* read */
+
+            assert_eq!(original, decoded, "operator << / >> round‑trip mismatch");
+        }
+    }
+
+    /* ---------------------------------------------------
+       ¬ ignore() correctly skips bytes
+    --------------------------------------------------- */
+    #[traced_test]
+    fn ignore_skips_expected_bytes() {
+        unsafe {
+            let mut af = fresh_autofile();
+
+            const DATA: &[u8] = b"abcdef";
+            af.write_ptr(DATA.as_ptr(), DATA.len());
+
+            libc::rewind(af.get());
+
+            af.ignore(2); /* skip “ab” */
+            let mut remaining = [0u8; 4];
+            af.read_ptr(remaining.as_mut_ptr(), remaining.len());
+
+            assert_eq!(
+                &remaining[..],
+                &DATA[2..],
+                "ignore() did not skip the requested number of bytes"
+            );
+        }
+    }
+
+    /* ---------------------------------------------------
+       ¬ fclose() is idempotent and nullifies the handle
+    --------------------------------------------------- */
+    #[traced_test]
+    fn fclose_is_idempotent() {
+        unsafe {
+            let mut af = fresh_autofile();
+
+            af.fclose();
+            assert!(af.is_null(), "fclose() did not nullify internal pointer");
+
+            /* a second call must be a no‑op, not a crash */
+            af.fclose();
+            assert!(af.is_null(), "pointer resurrected after second fclose()");
+        }
+    }
+
+    /* ---------------------------------------------------
+       ¬ release() transfers ownership and inertifies AutoFile
+    --------------------------------------------------- */
+    #[traced_test]
+    fn release_transfers_and_inertifies() {
+        unsafe {
+            let mut af = fresh_autofile();
+
+            let raw = af.release();
+            assert!(af.is_null(), "release() left AutoFile with live pointer");
+
+            /* clean‑up manual ownership – avoid FD leak */
+            assert_eq!(
+                0,
+                libc::fclose(raw),
+                "fclose() on released pointer reported error"
+            );
+        }
+    }
+
+    /* ---------------------------------------------------
+       ¬ std::io::Write / Read trait impls behave correctly
+    --------------------------------------------------- */
+    #[traced_test]
+    fn stdio_write_read_traits_roundtrip() {
+        unsafe {
+            let mut af = fresh_autofile();
+
+            const MSG: &[u8] = b"trait-based-I/O";
+            let n = af.write(MSG).expect("Write trait failed");
+            assert_eq!(n, MSG.len(), "partial write via std::io::Write");
+
+            af.flush().expect("flush failed");
+
+            libc::rewind(af.get());
+
+            let mut buf = vec![0u8; MSG.len()];
+            let m = af.read(&mut buf).expect("Read trait failed");
+            assert_eq!(m, MSG.len(), "partial read via std::io::Read");
+            assert_eq!(&buf[..], MSG, "trait I/O round‑trip mismatch");
         }
     }
 }

@@ -20,9 +20,9 @@ impl<'a, F, T> Wrapper<'a, F, T> {
     }
 }
 
-/* -------- integration with Serialize / Unserialize -------- */
+/* -------- integration with Serialize / BtcUnserialize -------- */
 
-impl<'a, F, T, S> crate::serialize::Serialize<S> for Wrapper<'a, F, T>
+impl<'a, F, T, S> BtcSerialize<S> for Wrapper<'a, F, T>
 where
     S: Write,
     F: ValueFormatter<T>,
@@ -38,7 +38,7 @@ where
     }
 }
 
-impl<'a, F, T, S> crate::unserialize::Unserialize<S> for Wrapper<'a, F, T>
+impl<'a, F, T, S> BtcUnserialize<S> for Wrapper<'a, F, T>
 where
     S: Read,
     F: ValueFormatter<T>,

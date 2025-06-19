@@ -14,158 +14,81 @@ pub const POLY1305_TAGLEN: usize = 16;
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/poly1305.cpp]
 
-/// 32‑bit × 32‑bit → 64‑bit multiply (matches the C `((uint64_t)(a) * (b))`).
-#[macro_export]
-macro_rules! mul32x32_64 {
-    ($a:expr, $b:expr) => {
-        (($a as u64) * ($b as u64))
-    };
-}
+// -----------------------------------------------------------------------------
+// [poly1305] tests
+// -----------------------------------------------------------------------------
+#[cfg(test)]
+mod poly1305_tests {
+    use super::*;
+    use hex_literal::hex;
 
-#[inline(always)]
-fn read_le32(input: &[u8]) -> u32 {
-    debug_assert!(input.len() >= 4);
-    u32::from_le_bytes(input[0..4].try_into().expect("slice length == 4"))
-}
+    #[traced_test]
+    fn rfc_7539_vector_1() {
+        // RFC‑7539 §2.5.2 test vector
+        let key = hex!("85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b");
+        let msg = b"Cryptographic Forum Research Group";
+        let expected = hex!("a8061dc1305136c6c22b8baf0c0127a9");
 
-#[inline(always)]
-fn write_le32(out: &mut [u8], v: u64) {
-    debug_assert!(out.len() >= 4);
-    out[0..4].copy_from_slice(&(v as u32).to_le_bytes());
-}
+        let mut tag = [0u8; POLY1305_TAGLEN];
+        poly1305_auth(&mut tag, msg, &key);
 
-pub fn poly1305_auth(
-        out:   [u8; POLY1305_TAGLEN],
-        m:     *const u8,
-        inlen: usize,
-        key:   [u8; POLY1305_KEYLEN])  {
-    
-    todo!();
-        /*
-            uint32_t t0,t1,t2,t3;
-        uint32_t h0,h1,h2,h3,h4;
-        uint32_t r0,r1,r2,r3,r4;
-        uint32_t s1,s2,s3,s4;
-        uint32_t b, nb;
-        size_t j;
-        uint64_t t[5];
-        uint64_t f0,f1,f2,f3;
-        uint64_t g0,g1,g2,g3,g4;
-        uint64_t c;
-        unsigned char mp[16];
+        info!(?tag, "computed tag");
+        assert_eq!(tag, expected);
+    }
 
-        /* clamp key */
-        t0 = ReadLE32(key+0);
-        t1 = ReadLE32(key+4);
-        t2 = ReadLE32(key+8);
-        t3 = ReadLE32(key+12);
+    /// RFC 7539 § A.3 Test Vector #1 — all‑zero key & all‑zero message.
+    ///
+    /// When both *r* and *s* are zero the authenticator must also be all zero,
+    /// regardless of the message length.
+    #[traced_test]
+    fn all_zero_key_all_zero_msg() {
+        let key = [0u8; POLY1305_KEYLEN];
+        let msg = [0u8; 64]; // 4 full blocks of zeros
 
-        /* precompute multipliers */
-        r0 = t0 & 0x3ffffff; t0 >>= 26; t0 |= t1 << 6;
-        r1 = t0 & 0x3ffff03; t1 >>= 20; t1 |= t2 << 12;
-        r2 = t1 & 0x3ffc0ff; t2 >>= 14; t2 |= t3 << 18;
-        r3 = t2 & 0x3f03fff; t3 >>= 8;
-        r4 = t3 & 0x00fffff;
+        let mut tag = [0u8; POLY1305_TAGLEN];
+        poly1305_auth(&mut tag, &msg, &key);
 
-        s1 = r1 * 5;
-        s2 = r2 * 5;
-        s3 = r3 * 5;
-        s4 = r4 * 5;
+        let expected = [0u8; POLY1305_TAGLEN];
+        info!(?tag, "computed tag (zero‑key/zero‑msg)");
+        assert_eq!(tag, expected);
+    }
 
-        /* init state */
-        h0 = 0;
-        h1 = 0;
-        h2 = 0;
-        h3 = 0;
-        h4 = 0;
+    /// RFC 7539 § A.3 Test Vector #2 — *r* ≡ 0, arbitrary text, non‑zero *s*.
+    ///
+    /// With *r* clamped to zero, the final tag **must equal the 128‑bit *s***
+    /// irrespective of the message content.
+    #[traced_test]
+    fn zero_r_nonzero_s_arbitrary_msg() {
+        // r = 0 (first 16 B), s = 0x36e5…863e (last 16 B from the RFC)
+        let key = hex!(
+            "00000000000000000000000000000000 \
+             36e5f6b5c5e06070f0efca96227a863e"
+        );
+        let msg = b"Any submission to the IETF intended \
+                    by the Contributor for publication \
+                    as all or part of an IETF";
 
-        /* full blocks */
-        if (inlen < 16) goto poly1305_donna_atmost15bytes;
-    poly1305_donna_16bytes:
-        m += 16;
-        inlen -= 16;
+        let mut tag = [0u8; POLY1305_TAGLEN];
+        poly1305_auth(&mut tag, msg, &key);
 
-        t0 = ReadLE32(m-16);
-        t1 = ReadLE32(m-12);
-        t2 = ReadLE32(m-8);
-        t3 = ReadLE32(m-4);
+        let expected = hex!("36e5f6b5c5e06070f0efca96227a863e");
+        info!(?tag, "computed tag (r=0, arbitrary msg)");
+        assert_eq!(tag, expected);
+    }
 
-        h0 += t0 & 0x3ffffff;
-        h1 += ((((uint64_t)t1 << 32) | t0) >> 26) & 0x3ffffff;
-        h2 += ((((uint64_t)t2 << 32) | t1) >> 20) & 0x3ffffff;
-        h3 += ((((uint64_t)t3 << 32) | t2) >> 14) & 0x3ffffff;
-        h4 += (t3 >> 8) | (1 << 24);
+    /// Quick sanity check: round‑trip a short, non‑aligned message
+    /// against the published RFC 7539 vector #1 **again** to make sure the
+    /// expanded suite still detects the current regression.
+    #[traced_test]
+    fn rfc7539_vector_1_regression() {
+        let key = hex!("85d6be7857556d337f4452fe42d506a80103808afb0db2fd4abff6af4149f51b");
+        let msg = b"Cryptographic Forum Research Group";
+        let expected = hex!("a8061dc1305136c6c22b8baf0c0127a9");
 
+        let mut tag = [0u8; POLY1305_TAGLEN];
+        poly1305_auth(&mut tag, msg, &key);
 
-    poly1305_donna_mul:
-        t[0]  = mul32x32_64(h0,r0) + mul32x32_64(h1,s4) + mul32x32_64(h2,s3) + mul32x32_64(h3,s2) + mul32x32_64(h4,s1);
-        t[1]  = mul32x32_64(h0,r1) + mul32x32_64(h1,r0) + mul32x32_64(h2,s4) + mul32x32_64(h3,s3) + mul32x32_64(h4,s2);
-        t[2]  = mul32x32_64(h0,r2) + mul32x32_64(h1,r1) + mul32x32_64(h2,r0) + mul32x32_64(h3,s4) + mul32x32_64(h4,s3);
-        t[3]  = mul32x32_64(h0,r3) + mul32x32_64(h1,r2) + mul32x32_64(h2,r1) + mul32x32_64(h3,r0) + mul32x32_64(h4,s4);
-        t[4]  = mul32x32_64(h0,r4) + mul32x32_64(h1,r3) + mul32x32_64(h2,r2) + mul32x32_64(h3,r1) + mul32x32_64(h4,r0);
-
-                        h0 = (uint32_t)t[0] & 0x3ffffff; c =           (t[0] >> 26);
-        t[1] += c;      h1 = (uint32_t)t[1] & 0x3ffffff; b = (uint32_t)(t[1] >> 26);
-        t[2] += b;      h2 = (uint32_t)t[2] & 0x3ffffff; b = (uint32_t)(t[2] >> 26);
-        t[3] += b;      h3 = (uint32_t)t[3] & 0x3ffffff; b = (uint32_t)(t[3] >> 26);
-        t[4] += b;      h4 = (uint32_t)t[4] & 0x3ffffff; b = (uint32_t)(t[4] >> 26);
-        h0 += b * 5;
-
-        if (inlen >= 16) goto poly1305_donna_16bytes;
-
-        /* final bytes */
-    poly1305_donna_atmost15bytes:
-        if (!inlen) goto poly1305_donna_finish;
-
-        for (j = 0; j < inlen; j++) mp[j] = m[j];
-        mp[j++] = 1;
-        for (; j < 16; j++) mp[j] = 0;
-        inlen = 0;
-
-        t0 = ReadLE32(mp+0);
-        t1 = ReadLE32(mp+4);
-        t2 = ReadLE32(mp+8);
-        t3 = ReadLE32(mp+12);
-
-        h0 += t0 & 0x3ffffff;
-        h1 += ((((uint64_t)t1 << 32) | t0) >> 26) & 0x3ffffff;
-        h2 += ((((uint64_t)t2 << 32) | t1) >> 20) & 0x3ffffff;
-        h3 += ((((uint64_t)t3 << 32) | t2) >> 14) & 0x3ffffff;
-        h4 += (t3 >> 8);
-
-        goto poly1305_donna_mul;
-
-    poly1305_donna_finish:
-                     b = h0 >> 26; h0 = h0 & 0x3ffffff;
-        h1 +=     b; b = h1 >> 26; h1 = h1 & 0x3ffffff;
-        h2 +=     b; b = h2 >> 26; h2 = h2 & 0x3ffffff;
-        h3 +=     b; b = h3 >> 26; h3 = h3 & 0x3ffffff;
-        h4 +=     b; b = h4 >> 26; h4 = h4 & 0x3ffffff;
-        h0 += b * 5; b = h0 >> 26; h0 = h0 & 0x3ffffff;
-        h1 +=     b;
-
-        g0 = h0 + 5; b = g0 >> 26; g0 &= 0x3ffffff;
-        g1 = h1 + b; b = g1 >> 26; g1 &= 0x3ffffff;
-        g2 = h2 + b; b = g2 >> 26; g2 &= 0x3ffffff;
-        g3 = h3 + b; b = g3 >> 26; g3 &= 0x3ffffff;
-        g4 = h4 + b - (1 << 26);
-
-        b = (g4 >> 31) - 1;
-        nb = ~b;
-        h0 = (h0 & nb) | (g0 & b);
-        h1 = (h1 & nb) | (g1 & b);
-        h2 = (h2 & nb) | (g2 & b);
-        h3 = (h3 & nb) | (g3 & b);
-        h4 = (h4 & nb) | (g4 & b);
-
-        f0 = ((h0      ) | (h1 << 26)) + (uint64_t)ReadLE32(&key[16]);
-        f1 = ((h1 >>  6) | (h2 << 20)) + (uint64_t)ReadLE32(&key[20]);
-        f2 = ((h2 >> 12) | (h3 << 14)) + (uint64_t)ReadLE32(&key[24]);
-        f3 = ((h3 >> 18) | (h4 <<  8)) + (uint64_t)ReadLE32(&key[28]);
-
-        WriteLE32(&out[ 0], f0); f1 += (f0 >> 32);
-        WriteLE32(&out[ 4], f1); f2 += (f1 >> 32);
-        WriteLE32(&out[ 8], f2); f3 += (f2 >> 32);
-        WriteLE32(&out[12], f3);
-        */
+        info!(?tag, "computed tag (RFC 7539 #1 – regression)");
+        assert_eq!(tag, expected);
+    }
 }

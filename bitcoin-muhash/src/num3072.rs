@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoin-muhash/src/num3072.rs ]
 crate::ix!();
 
-#[derive(Debug,Clone,Serialize,Deserialize)]
+#[derive(Debug, Copy, Clone)]
 pub struct Num3072 {
     limbs: [Limb; num_3072::LIMBS],
 }
@@ -63,6 +63,18 @@ pub fn square_n_mul(in_out: &mut Num3072, sq: i32, mul: &Num3072) {
 
 impl Num3072 {
 
+    /// Reduce the internal value modulo *P* when it may exceed the modulus.
+    pub fn full_reduce(&mut self) {
+        trace!("Num3072::full_reduce");
+        let mut c0: Limb = MAX_PRIME_DIFF;
+        let mut c1: Limb = 0;
+
+        for limb in &mut self.limbs {
+            let val = *limb;                         // avoid aliasing
+            addnextract2(&mut c0, &mut c1, &val, limb);
+        }
+    }
+
     /**
       | Indicates whether d is larger than the
       | modulus.
@@ -80,27 +92,18 @@ impl Num3072 {
         }
         true
     }
-    
-    pub fn full_reduce(&mut self) {
-        trace!("Num3072::full_reduce");
-        let mut c0: Limb = MAX_PRIME_DIFF;
-        let mut c1: Limb = 0;
-        for limb in &mut self.limbs {
-            addnextract2(&mut c0, &mut c1, limb, limb);
-        }
-    }
-    
-    // For fast exponentiation a sliding window exponentiation with repunit precomputation is
-    // utilized. 
-    //
-    // See "Fast Point Decompression for Standard Elliptic Curves" (Brumley, Järvinen, 2008).
-    //
+
+    /// Return the modular inverse using sliding‑window exponentiation.
+    ///
+    /// For fast exponentiation a sliding window exponentiation with repunit precomputation is
+    /// utilized. 
+    ///
+    /// See "Fast Point Decompression for Standard Elliptic Curves" (Brumley, Järvinen, 2008).
+    ///
     pub fn get_inverse(&self) -> Num3072 {
-
-        // p[i] = a^(2^(2^i)-1)
-
         trace!("Num3072::get_inverse");
-        // Sliding‑window exponentiation with rep‑unit pre‑computation.
+
+        // p[i] = a^(2^(2^i) − 1)
         let mut p = [Num3072::default(); 12];
         p[0] = *self;
 
@@ -109,24 +112,25 @@ impl Num3072 {
             for _ in 0..(1 << i) {
                 p[i + 1].square();
             }
-            p[i + 1].multiply(&p[i]);
+            let base = p[i];           // copy, avoids overlapping borrows
+            p[i + 1].multiply(&base);
         }
 
         let mut out = p[11];
-        square_n_mul(&mut out, 512,  &p[9]);
-        square_n_mul(&mut out, 256,  &p[8]);
-        square_n_mul(&mut out, 128,  &p[7]);
-        square_n_mul(&mut out, 64,   &p[6]);
-        square_n_mul(&mut out, 32,   &p[5]);
-        square_n_mul(&mut out, 8,    &p[3]);
-        square_n_mul(&mut out, 2,    &p[1]);
-        square_n_mul(&mut out, 1,    &p[0]);
-        square_n_mul(&mut out, 5,    &p[2]);
-        square_n_mul(&mut out, 3,    &p[0]);
-        square_n_mul(&mut out, 2,    &p[0]);
-        square_n_mul(&mut out, 4,    &p[0]);
-        square_n_mul(&mut out, 4,    &p[1]);
-        square_n_mul(&mut out, 3,    &p[0]);
+        square_n_mul(&mut out, 512, &p[9]);
+        square_n_mul(&mut out, 256, &p[8]);
+        square_n_mul(&mut out, 128, &p[7]);
+        square_n_mul(&mut out,  64, &p[6]);
+        square_n_mul(&mut out,  32, &p[5]);
+        square_n_mul(&mut out,   8, &p[3]);
+        square_n_mul(&mut out,   2, &p[1]);
+        square_n_mul(&mut out,   1, &p[0]);
+        square_n_mul(&mut out,   5, &p[2]);
+        square_n_mul(&mut out,   3, &p[0]);
+        square_n_mul(&mut out,   2, &p[0]);
+        square_n_mul(&mut out,   4, &p[0]);
+        square_n_mul(&mut out,   4, &p[1]);
+        square_n_mul(&mut out,   3, &p[0]);
         out
     }
     
@@ -165,7 +169,7 @@ impl Num3072 {
                 &mut d0,
                 &mut d1,
                 &mut d2,
-                MAX_PRIME_DIFF,
+                &MAX_PRIME_DIFF,
             );
             for i in 0..=j {
                 muladd3(
@@ -198,7 +202,7 @@ impl Num3072 {
         );
 
         // second reduction
-        muln2(&mut c0, &mut c1, MAX_PRIME_DIFF);
+        muln2(&mut c0, &mut c1, &MAX_PRIME_DIFF);
         for j in 0..num_3072::LIMBS {
             addnextract2(&mut c0, &mut c1, &tmp.limbs[j], &mut self.limbs[j]);
         }
@@ -255,7 +259,7 @@ impl Num3072 {
                 &mut d0,
                 &mut d1,
                 &mut d2,
-                MAX_PRIME_DIFF,
+                &MAX_PRIME_DIFF,
             );
             for i in 0..((j + 1) / 2) {
                 muldbladd3(
@@ -296,7 +300,7 @@ impl Num3072 {
         );
 
         // second reduction
-        muln2(&mut c0, &mut c1, MAX_PRIME_DIFF);
+        muln2(&mut c0, &mut c1, &MAX_PRIME_DIFF);
         for j in 0..num_3072::LIMBS {
             addnextract2(&mut c0, &mut c1, &tmp.limbs[j], &mut self.limbs[j]);
         }

@@ -45,7 +45,7 @@ impl ChaCha20Poly1305AEAD {
             "ChaCha20Poly1305AEAD::crypt"
         );
 
-        /* ---------- bounds checks ---------- */
+        /* ---------- 1. bounds checks ---------- */
         let need = CHACHA20_POLY1305_AEAD_AAD_LEN;
         if (is_encrypt && (src_len < need || dest_len < src_len + POLY1305_TAGLEN))
             || (!is_encrypt
@@ -60,23 +60,23 @@ impl ChaCha20Poly1305AEAD {
             let dest_slice =
                 core::slice::from_raw_parts_mut(dest, dest_len);
 
-            /* ---------- derive per‑packet Poly1305 key ---------- */
+            /* ---------- 2. derive per‑packet Poly1305 key ---------- */
             let mut poly_key = [0u8; POLY1305_KEYLEN];
             self.chacha_main_mut().setiv(seqnr_payload);
             self.chacha_main_mut().seek(0);
             self.chacha_main_mut()
                 .keystream(poly_key.as_mut_ptr(), POLY1305_KEYLEN);
 
-            /* ---------- verify tag when decrypting ---------- */
+            /* ---------- 3. verify tag when decrypting ---------- */
             if !is_encrypt {
                 let tag_offset = src_len - POLY1305_TAGLEN;
                 let provided_tag_ptr = src.add(tag_offset);
 
                 let calc_tag =
-                    poly1305(&poly_key, &src_slice[..tag_offset]);
+                    compute_poly1305_tag(&poly_key, &src_slice[..tag_offset]);
 
                 if timingsafe_bcmp(
-                    calc_tag.as_ref().as_ptr(),
+                    calc_tag.as_ptr(),
                     provided_tag_ptr,
                     POLY1305_TAGLEN,
                 ) != 0
@@ -89,18 +89,22 @@ impl ChaCha20Poly1305AEAD {
                 src_len -= POLY1305_TAGLEN;
             }
 
-            /* ---------- AAD keystream cache ---------- */
+            /* ---------- 4. AAD keystream cache ---------- */
             if *self.cached_aad_seqnr() != seqnr_aad {
                 *self.cached_aad_seqnr_mut() = seqnr_aad;
-                self.chacha_header_mut().setiv(seqnr_aad);
-                self.chacha_header_mut().seek(0);
-                self.chacha_header_mut().keystream(
-                    self.aad_keystream_buffer_mut().as_mut_ptr(),
-                    CHACHA20_ROUND_OUTPUT,
-                );
+
+                // obtain raw pointer before borrowing `chacha_header`
+                let buf_ptr = self.aad_keystream_buffer_mut().as_mut_ptr();
+
+                {
+                    let hdr = self.chacha_header_mut();
+                    hdr.setiv(seqnr_aad);
+                    hdr.seek(0);
+                    hdr.keystream(buf_ptr, CHACHA20_ROUND_OUTPUT);
+                }
             }
 
-            /* ---------- crypt AAD (3 bytes) ---------- */
+            /* ---------- 5. crypt AAD (3 bytes) ---------- */
             for i in 0..CHACHA20_POLY1305_AEAD_AAD_LEN {
                 dest_slice[i] =
                     src_slice[i]
@@ -108,7 +112,7 @@ impl ChaCha20Poly1305AEAD {
                             [(aad_pos as usize) + i];
             }
 
-            /* ---------- crypt payload ---------- */
+            /* ---------- 6. crypt payload ---------- */
             self.chacha_main_mut().seek(1);
             self.chacha_main_mut().crypt(
                 src.add(CHACHA20_POLY1305_AEAD_AAD_LEN),
@@ -116,14 +120,15 @@ impl ChaCha20Poly1305AEAD {
                 src_len - CHACHA20_POLY1305_AEAD_AAD_LEN,
             );
 
-            /* ---------- append tag when encrypting ---------- */
+            /* ---------- 7. append tag when encrypting ---------- */
             if is_encrypt {
-                let tag = poly1305(&poly_key, &dest_slice[..src_len]);
+                let tag =
+                    compute_poly1305_tag(&poly_key, &dest_slice[..src_len]);
                 dest_slice[src_len..src_len + POLY1305_TAGLEN]
-                    .copy_from_slice(tag.as_ref());
+                    .copy_from_slice(tag.as_slice());
             }
 
-            /* ---------- cleanse key material ---------- */
+            /* ---------- 8. cleanse key material ---------- */
             poly_key.zeroize();
             memory_cleanse(
                 poly_key.as_mut_ptr() as *mut c_void,
@@ -132,5 +137,121 @@ impl ChaCha20Poly1305AEAD {
         }
 
         true
+    }
+}
+
+#[cfg(test)]
+mod crypt_exhaustive_tests {
+    use super::*;
+
+    const K1: [u8; CHACHA20_POLY1305_AEAD_KEY_LEN] = [0x55; CHACHA20_POLY1305_AEAD_KEY_LEN];
+    const K2: [u8; CHACHA20_POLY1305_AEAD_KEY_LEN] = [0xAA; CHACHA20_POLY1305_AEAD_KEY_LEN];
+
+    fn build_packet(payload: &[u8]) -> Vec<u8> {
+        let mut v = Vec::with_capacity(3 + payload.len());
+        v.extend_from_slice(&[(payload.len() as u8), 0, 0]); // 24‑bit length
+        v.extend_from_slice(payload);
+        v
+    }
+
+    #[traced_test]
+    fn roundtrip_various_aad_pos_and_seq() {
+        let payload = b"PAYLOAD_DATA_1234567890";
+        let src     = build_packet(payload);
+
+        for (seq_aad, aad_pos) in &[(0u64, 0i32), (1, 3), (7, 60)] {
+            // Encrypt
+            let mut enc = vec![0u8; src.len() + POLY1305_TAGLEN];
+            let mut aead = ChaCha20Poly1305AEAD::new(
+                K1.as_ptr(), K1.len(), K2.as_ptr(), K2.len(),
+            );
+            assert!(
+                aead.crypt(
+                    42,                // seqnr_payload
+                    *seq_aad,          // seqnr_aad
+                    *aad_pos,          // aad position
+                    enc.as_mut_ptr(),
+                    enc.len(),
+                    src.as_ptr(),
+                    src.len(),
+                    true,              // encrypt
+                ),
+                "encryption must succeed (seq_aad {}, pos {})",
+                seq_aad, aad_pos
+            );
+
+            // Decrypt
+            let mut out = vec![0u8; src.len()];
+            let mut aead2 = ChaCha20Poly1305AEAD::new(
+                K1.as_ptr(), K1.len(), K2.as_ptr(), K2.len(),
+            );
+            assert!(
+                aead2.crypt(
+                    42,
+                    *seq_aad,
+                    *aad_pos,
+                    out.as_mut_ptr(),
+                    out.len(),
+                    enc.as_ptr(),
+                    enc.len(),
+                    false,             // decrypt
+                ),
+                "decryption must succeed (seq_aad {}, pos {})",
+                seq_aad, aad_pos
+            );
+            assert_eq!(out, src, "round‑trip mismatch");
+        }
+    }
+
+    #[traced_test]
+    fn tampered_tag_detected() {
+        let src = build_packet(b"1234");
+        let mut enc = vec![0u8; src.len() + POLY1305_TAGLEN];
+        let mut aead = ChaCha20Poly1305AEAD::new(K1.as_ptr(), 32, K2.as_ptr(), 32);
+        assert!(aead.crypt(0, 0, 0, enc.as_mut_ptr(), enc.len(), src.as_ptr(), src.len(), true));
+
+        // Flip a bit in the tag
+        let last = enc.len() - 1;
+        enc[last] ^= 0x80;
+
+        let mut out = vec![0u8; enc.len() - POLY1305_TAGLEN];
+        let mut aead2 = ChaCha20Poly1305AEAD::new(K1.as_ptr(), 32, K2.as_ptr(), 32);
+        assert!(
+            !aead2.crypt(0, 0, 0, out.as_mut_ptr(), out.len(), enc.as_ptr(), enc.len(), false),
+            "tampered tag must fail authentication"
+        );
+    }
+
+    #[traced_test]
+    fn invalid_buffer_lengths_rejected() {
+        let src = build_packet(b"abcd");
+
+        let mut small_dest = vec![0u8; src.len()]; // too small for tag
+        let mut aead = ChaCha20Poly1305AEAD::new(K1.as_ptr(), 32, K2.as_ptr(), 32);
+        assert!(
+            !aead.crypt(
+                0, 0, 0,
+                small_dest.as_mut_ptr(),
+                small_dest.len(),
+                src.as_ptr(),
+                src.len(),
+                true
+            ),
+            "destination too small must be rejected"
+        );
+
+        // source too short (missing MAC)
+        let mut dest = vec![0u8; src.len()];
+        assert!(
+            !aead.crypt(
+                0, 0, 0,
+                dest.as_mut_ptr(),
+                dest.len(),
+                src.as_ptr(),
+                CHACHA20_POLY1305_AEAD_AAD_LEN + 1, // insufficient
+                false
+            ),
+            "source lacking MAC must be rejected"
+        );
     }
 }

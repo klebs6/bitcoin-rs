@@ -51,25 +51,38 @@ crate::ix!();
   | and https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2017-May/014337.html.
   |
   */
-#[derive(Serialize,Deserialize,Default)]
+#[derive(MutGetters, Getters, Default)]
+#[getset(get = "pub", get_mut = "pub")]
 pub struct MuHash3072 {
-
     numerator:   Num3072,
     denominator: Num3072,
 }
 
 impl MuHash3072 {
 
+    /// Convert arbitrary input bytes into a uniformly‑random `Num3072`.
     pub fn to_num3072(in_: &[u8]) -> Num3072 {
         trace!("MuHash3072::to_num3072");
-        let hash = Sha256::digest(in_);
-        let key = hash.as_slice();
-        let nonce = [0u8; 8];            // Bitcoin uses an all‑zero 64‑bit nonce
+
+        // (1) SHA‑256 of the input ------------------------------------------------
+        use sha2::{Digest, Sha256 as Sha2_256};
+        let hash = Sha2_256::digest(in_);
+
+        // (2) ChaCha20 keystream using that hash as key ---------------------------
+        use bitcoin_chacha::ChaCha20;
+        let key_ptr = hash.as_ptr();
+        let key_len = hash.len();
+
+        // All‑zero 64‑bit nonce, exactly like the C++ reference.
+        let nonce: u64 = 0;
         let mut stream = [0u8; num_3072::BYTE_SIZE];
 
-        // ChaCha20Legacy == 20‑round, 8‑byte nonce variant
-        let mut cipher = ChaCha20Legacy::new_from_slices(key, &nonce).unwrap();
-        cipher.apply_keystream(&mut stream);
+        let mut cipher = ChaCha20::new(key_ptr, key_len);
+        cipher.setiv(nonce);
+        cipher.seek(0);
+        cipher.keystream(stream.as_mut_ptr(), num_3072::BYTE_SIZE);
+
+        // (3) Interpret the keystream as a 3072‑bit integer -----------------------
         Num3072::new(&stream)
     }
     
@@ -86,26 +99,22 @@ impl MuHash3072 {
         }
     }
     
-    /**
-      | Finalize into a 32-byte hash. Does not
-      | change this object's value.
-      |
-      */
+    /// Combine numerator and denominator and return a 32‑byte MuHash digest.
     pub fn finalize(&mut self, out: &mut u256) {
-
         trace!("MuHash3072::finalize");
 
-        self.numerator.divide(&self.denominator);
+        use sha2::{Digest, Sha256 as Sha2_256};
 
-        // Needed to keep the MuHash object valid
-        self.denominator.set_to_one();
+        self.numerator.divide(&self.denominator);
+        self.denominator.set_to_one(); // keep object valid
 
         let mut data = [0u8; num_3072::BYTE_SIZE];
         self.numerator.to_bytes(&mut data);
-        let digest = Sha256::digest(&data);
+
+        let digest = Sha2_256::digest(&data);
         *out = u256::from_le_bytes(digest.as_slice().try_into().unwrap());
     }
-    
+
     /**
       | Insert a single piece of data into the
       | set.
@@ -169,7 +178,7 @@ mod set_semantics_validation {
     /// Inserting then removing an element is a no‑op on the final hash.
     #[traced_test]
     fn insert_then_remove_noop() -> Result<(), Box<dyn std::error::Error>> {
-        let payload = b"stateless‑validation‑vector";
+        let payload = b"stateless-validation-vector";
 
         let mut h1 = MuHash3072::new(payload);
         let mut out_ref = u256::default();

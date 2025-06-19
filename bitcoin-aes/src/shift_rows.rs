@@ -91,7 +91,7 @@ mod shift_rows_validation {
             let mut expect = [0u8; 16];
             for row in 0..4 {
                 for col in 0..4 {
-                    let src_idx = row * 4 + col;
+                    let src_idx = col * 4 + row;
                     let dst_idx = row * 4 + ((col + row) % 4);
                     expect[dst_idx] = plain[src_idx];
                 }

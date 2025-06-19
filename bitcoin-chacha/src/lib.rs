@@ -12,3 +12,4 @@ x!{chacha_poly_aead_get_length}
 x!{poly1305_constants}
 x!{quarterround}
 x!{read_write}
+x!{compute_poly1305_tag}

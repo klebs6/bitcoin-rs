@@ -26,17 +26,29 @@ pub struct VectorWriter {
 
 impl<T> Shl<&T> for VectorWriter
 where
-    T: ?Sized,
+    T: bitcoin_serialize::BtcSerialize<VectorWriter> + ?Sized,
 {
     type Output = VectorWriter;
 
-    /// Serialize `rhs` into this stream.
     #[inline]
     fn shl(mut self, rhs: &T) -> Self::Output {
         trace!("VectorWriter << {:?}", std::any::type_name::<T>());
-        Serialize::serialize(&mut self, rhs); // provided by `bitcoin_imports`
+        rhs.serialize(&mut self); // trait call
         self
     }
+}
+
+impl Write for VectorWriter {
+
+    #[inline]
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        // call inherent pointer‑based writer
+        VectorWriter::write(self, buf.as_ptr(), buf.len());
+        Ok(buf.len())
+    }
+
+    #[inline]
+    fn flush(&mut self) -> std::io::Result<()> { Ok(()) }
 }
 
 impl VectorWriter {
@@ -86,17 +98,8 @@ impl VectorWriter {
         Self { n_type, n_version, vch_data, n_pos }
     }
 
-    /// Create a new `VectorWriter` and immediately
-    /// serialize a sequence of objects.
-    ///
-    /// (other params same as above)
-    /// 
-    /// -----------
-    /// @param[in] args
-    /// 
-    /// A list of items to serialize starting
-    /// at nPosIn.
-    /// 
+    /// Create a new `VectorWriter` and immediately serialize a sequence of
+    /// objects supplied in `args`.
     pub fn new_with_args<Args>(
         n_type:    i32,
         n_version: i32,
@@ -105,13 +108,13 @@ impl VectorWriter {
         args:      Args,
     ) -> Self
     where
-        Args: SerializeMany,
+        Args: bitcoin_serialize::SerializeMany<VectorWriter>,
     {
         let mut writer = Self::new(n_type, n_version, vch_data, n_pos);
-        SerializeMany::serialize_many(&mut writer, args);
+        args.serialize_many(&mut writer);
         writer
     }
-    
+
     /// Write `n_size` bytes from `pch` into the stream.
     pub fn write(&mut self, pch: *const u8, n_size: usize) {
         trace!(bytes = n_size, pos_before = self.n_pos, "VectorWriter::write");
@@ -255,10 +258,10 @@ mod vector_writer_exhaustive_suite {
         // Force an inconsistent state for the invariant test
         wtr.n_pos = 10; // SAFETY: test‑only mutation via `&mut`
 
-        let result = panic::catch_unwind(|| {
+        let result = panic::catch_unwind(AssertUnwindSafe(|| {
             let b = [1u8];
             wtr.write(b.as_ptr(), 1);
-        });
+        }));
         assert!(result.is_err(), "expected panic on invariant violation");
     }
 }

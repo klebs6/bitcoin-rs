@@ -58,12 +58,12 @@ impl Write for SizeComputer {
 
 impl<'a, T> std::ops::Shl<&'a T> for SizeComputer
 where
-    T: crate::serialize::Serialize<SizeComputer>,
+    T: BtcSerialize<SizeComputer>,
 {
     type Output = SizeComputer;
     #[inline]
     fn shl(mut self, rhs: &'a T) -> Self::Output {
-        crate::serialize::Serialize::<SizeComputer>::serialize(rhs, &mut self);
+        BtcSerialize::<SizeComputer>::serialize(rhs, &mut self);
         self
     }
 }

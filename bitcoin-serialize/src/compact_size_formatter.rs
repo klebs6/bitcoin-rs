@@ -37,3 +37,59 @@ where
         *v = I::try_from(n).expect("CompactSize exceeds type range");
     }
 }
+
+
+#[cfg(test)]
+mod compact_size_formatter_tests {
+    use super::*;
+    use std::io::Cursor;
+
+    type FmtChecked  = CompactSizeFormatter<true>;
+    type FmtUnchecked = CompactSizeFormatter<false>;
+
+    const BIG_VALUE: u64 = crate::constants::MAX_SIZE + 42;
+
+    #[traced_test]
+    fn roundtrip_in_range() {
+        let value = 123_456_u64;
+        let mut cur = Cursor::new(Vec::<u8>::new());
+        let mut fmt = FmtChecked::default();
+
+        fmt.ser(&mut cur, &value);
+        cur.set_position(0);
+
+        let mut decoded = 0u64;
+        fmt.unser(&mut cur, &mut decoded);
+        assert_eq!(decoded, value);
+    }
+
+    /// Unchecked formatter must allow values above `MAX_SIZE`.
+    #[traced_test]
+    fn allow_large_without_range_check() {
+        let mut cur = Cursor::new(Vec::<u8>::new());
+        let mut fmt = FmtUnchecked::default();
+
+        fmt.ser(&mut cur, &BIG_VALUE);
+        cur.set_position(0);
+
+        let mut decoded = 0u64;
+        fmt.unser(&mut cur, &mut decoded);
+        assert_eq!(decoded, BIG_VALUE);
+    }
+
+    /// Checked formatter must panic when the encoded integer exceeds
+    /// `MAX_SIZE`.  We do **not** assert on the panic message because it
+    /// is not part of the public contract.
+    #[test]
+    #[should_panic] 
+    fn range_check_panics_on_oversize() {
+        let mut cur = Cursor::new(Vec::<u8>::new());
+        let mut fmt = FmtChecked::default();
+
+        fmt.ser(&mut cur, &BIG_VALUE);
+        cur.set_position(0);
+
+        let mut _decoded = 0u64;
+        fmt.unser(&mut cur, &mut _decoded);
+    }
+}

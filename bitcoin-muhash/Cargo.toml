@@ -1,5 +1,11 @@
 [dependencies]
-serde.workspace = true
+serde.workspace       = true
+sha256.workspace      = true
+tracing.workspace     = true
+rand_chacha.workspace = true
+traced-test.workspace = true
+bitcoin-sha256        = { path = "../bitcoin-sha256" }
+bitcoin-chacha        = { path = "../bitcoin-chacha" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

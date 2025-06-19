@@ -13,7 +13,7 @@ pub fn serialize_many<Stream, A, Rest>(
     rest: &Rest,
 ) where
     Stream: Write,
-    A: crate::serialize::Serialize<Stream>,
+    A: BtcSerialize<Stream>,
     Rest: SerializeMany<Stream>,
 {
     arg.serialize(s);
@@ -35,7 +35,7 @@ impl<Stream> SerializeMany<Stream> for () {
 impl<Stream, A> SerializeMany<Stream> for (A,)
 where
     Stream: Write,
-    A: crate::serialize::Serialize<Stream>,
+    A: BtcSerialize<Stream>,
 {
     fn serialize_many(&self, s: &mut Stream) {
         self.0.serialize(s);
@@ -45,8 +45,8 @@ where
 impl<Stream, A, B> SerializeMany<Stream> for (A, B)
 where
     Stream: Write,
-    A: crate::serialize::Serialize<Stream>,
-    B: crate::serialize::Serialize<Stream>,
+    A: BtcSerialize<Stream>,
+    B: BtcSerialize<Stream>,
 {
     fn serialize_many(&self, s: &mut Stream) {
         self.0.serialize(s);
@@ -57,9 +57,9 @@ where
 impl<Stream, A, B, C> SerializeMany<Stream> for (A, B, C)
 where
     Stream: Write,
-    A: crate::serialize::Serialize<Stream>,
-    B: crate::serialize::Serialize<Stream>,
-    C: crate::serialize::Serialize<Stream>,
+    A: BtcSerialize<Stream>,
+    B: BtcSerialize<Stream>,
+    C: BtcSerialize<Stream>,
 {
     fn serialize_many(&self, s: &mut Stream) {
         self.0.serialize(s);
@@ -80,7 +80,7 @@ pub fn unserialize_many<Stream, A, Rest>(
     rest: &mut Rest,
 ) where
     Stream: Read,
-    A: crate::unserialize::Unserialize<Stream>,
+    A: BtcUnserialize<Stream>,
     Rest: UnserializeMany<Stream>,
 {
     arg.unserialize(s);
@@ -101,7 +101,7 @@ impl<Stream> UnserializeMany<Stream> for () {
 impl<Stream, A> UnserializeMany<Stream> for (A,)
 where
     Stream: Read,
-    A: crate::unserialize::Unserialize<Stream>,
+    A: BtcUnserialize<Stream>,
 {
     fn unserialize_many(&mut self, s: &mut Stream) {
         self.0.unserialize(s);
@@ -111,8 +111,8 @@ where
 impl<Stream, A, B> UnserializeMany<Stream> for (A, B)
 where
     Stream: Read,
-    A: crate::unserialize::Unserialize<Stream>,
-    B: crate::unserialize::Unserialize<Stream>,
+    A: BtcUnserialize<Stream>,
+    B: BtcUnserialize<Stream>,
 {
     fn unserialize_many(&mut self, s: &mut Stream) {
         self.0.unserialize(s);
@@ -123,9 +123,9 @@ where
 impl<Stream, A, B, C> UnserializeMany<Stream> for (A, B, C)
 where
     Stream: Read,
-    A: crate::unserialize::Unserialize<Stream>,
-    B: crate::unserialize::Unserialize<Stream>,
-    C: crate::unserialize::Unserialize<Stream>,
+    A: BtcUnserialize<Stream>,
+    B: BtcUnserialize<Stream>,
+    C: BtcUnserialize<Stream>,
 {
     fn unserialize_many(&mut self, s: &mut Stream) {
         self.0.unserialize(s);

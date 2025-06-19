@@ -35,7 +35,7 @@ impl Sha256 {
                 0x5be0cd19,
             ];
             for (i, &val) in IV.iter().enumerate() {
-                *self.s.add(i) = val;
+                self.s[i] = val;
             }
         }
         trace!(target: "sha256", "sha256 state initialised");

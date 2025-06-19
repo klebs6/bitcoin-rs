@@ -10,11 +10,11 @@ crate::ix!();
   | and .write(char*, size_t)
   |
   */
-pub trait Serialize<Stream> {
+pub trait BtcSerialize<Stream> {
     fn serialize(&self, s: &mut Stream);
 }
 
-impl<Stream> Serialize<Stream> for i8
+impl<Stream> BtcSerialize<Stream> for i8
 where
     Stream: Write,
 {
@@ -25,7 +25,7 @@ where
     }
 }
 
-impl<Stream> Serialize<Stream> for u8
+impl<Stream> BtcSerialize<Stream> for u8
 where
     Stream: Write,
 {
@@ -36,7 +36,7 @@ where
     }
 }
 
-impl<Stream> Serialize<Stream> for i16
+impl<Stream> BtcSerialize<Stream> for i16
 where
     Stream: Write,
 {
@@ -47,7 +47,7 @@ where
     }
 }
 
-impl<Stream> Serialize<Stream> for u16
+impl<Stream> BtcSerialize<Stream> for u16
 where
     Stream: Write,
 {
@@ -59,7 +59,7 @@ where
 }
 
 
-impl<Stream> Serialize<Stream> for i32
+impl<Stream> BtcSerialize<Stream> for i32
 where
     Stream: Write,
 {
@@ -70,7 +70,7 @@ where
     }
 }
 
-impl<Stream> Serialize<Stream> for u32
+impl<Stream> BtcSerialize<Stream> for u32
 where
     Stream: Write,
 {
@@ -81,7 +81,7 @@ where
     }
 }
 
-impl<Stream> Serialize<Stream> for i64
+impl<Stream> BtcSerialize<Stream> for i64
 where
     Stream: Write,
 {
@@ -92,7 +92,7 @@ where
     }
 }
 
-impl<Stream> Serialize<Stream> for u64
+impl<Stream> BtcSerialize<Stream> for u64
 where
     Stream: Write,
 {
@@ -103,7 +103,7 @@ where
     }
 }
 
-impl<Stream, const N: usize> Serialize<Stream> for [u8; N]
+impl<Stream, const N: usize> BtcSerialize<Stream> for [u8; N]
 where
     Stream: Write,
 {
@@ -115,7 +115,7 @@ where
     }
 }
 
-impl<'a, Stream> Serialize<Stream> for &'a [u8]
+impl<'a, Stream> BtcSerialize<Stream> for &'a [u8]
 where
     Stream: Write,
 {
@@ -127,7 +127,7 @@ where
     }
 }
 
-impl<Stream> Serialize<Stream> for bool
+impl<Stream> BtcSerialize<Stream> for bool
 where
     Stream: Write,
 {
@@ -166,7 +166,7 @@ pub fn using<'a, F, T>(t: &'a mut T) -> Wrapper<'a, F, T> {
 }
 
 
-impl<Stream> Serialize<Stream> for String
+impl<Stream> BtcSerialize<Stream> for String
 where
     Stream: Write,
 {
@@ -180,15 +180,15 @@ where
     }
 }
 
-impl<Stream, T, const N: usize> Serialize<Stream> for PreVector<T, N>
+impl<Stream, T, const N: usize> BtcSerialize<Stream> for PreVector<T, N>
 where
     Stream: Write,
-    T: Default + crate::serialize::Serialize<Stream>,
+    T: Default + BtcSerialize<Stream>,
 {
     /// Serialise a `PreVector` by
     /// 1. writing its length as a CompactSize,
     /// 2. serialising every element with the
-    ///    element’s own `Serialize` impl.
+    ///    element’s own `BtcSerialize` impl.
     ///
     /// The implementation matches the DoS‑safe
     /// element‑by‑element strategy used for
@@ -204,16 +204,16 @@ where
         );
 
         for elem in self.iter() {
-            crate::serialize::Serialize::<Stream>::serialize(elem, os);
+            BtcSerialize::<Stream>::serialize(elem, os);
         }
     }
 }
 
 /* -------- Vec<T, A> -------- */
-impl<Stream, T, A> Serialize<Stream> for Vec<T, A>
+impl<Stream, T, A> BtcSerialize<Stream> for Vec<T, A>
 where
     Stream: Write,
-    T: crate::serialize::Serialize<Stream>,
+    T: BtcSerialize<Stream>,
     A: std::alloc::Allocator + Clone,
 {
     fn serialize(&self, os: &mut Stream) {
@@ -221,17 +221,17 @@ where
         trace!(len = self.len(), "serialize Vec");
 
         for elem in self {
-            crate::serialize::Serialize::<Stream>::serialize(elem, os);
+            BtcSerialize::<Stream>::serialize(elem, os);
         }
     }
 }
 
 /* -------- (K, V) tuple -------- */
-impl<Stream, K, V> Serialize<Stream> for (K, V)
+impl<Stream, K, V> BtcSerialize<Stream> for (K, V)
 where
     Stream: Write,
-    K: crate::serialize::Serialize<Stream>,
-    V: crate::serialize::Serialize<Stream>,
+    K: BtcSerialize<Stream>,
+    V: BtcSerialize<Stream>,
 {
     fn serialize(&self, os: &mut Stream) {
         self.0.serialize(os);
@@ -241,11 +241,11 @@ where
 }
 
 /* -------- HashMap -------- */
-impl<Stream, K, V, S> Serialize<Stream> for HashMap<K, V, S>
+impl<Stream, K, V, S> BtcSerialize<Stream> for HashMap<K, V, S>
 where
     Stream: Write,
-    K: crate::serialize::Serialize<Stream>,
-    V: crate::serialize::Serialize<Stream>,
+    K: BtcSerialize<Stream>,
+    V: BtcSerialize<Stream>,
     S: std::hash::BuildHasher,
 {
     fn serialize(&self, os: &mut Stream) {
@@ -259,10 +259,10 @@ where
 }
 
 /* -------- HashSet -------- */
-impl<Stream, K, S> Serialize<Stream> for HashSet<K, S>
+impl<Stream, K, S> BtcSerialize<Stream> for HashSet<K, S>
 where
     Stream: Write,
-    K: crate::serialize::Serialize<Stream>,
+    K: BtcSerialize<Stream>,
     S: std::hash::BuildHasher,
 {
     fn serialize(&self, os: &mut Stream) {
@@ -275,10 +275,10 @@ where
 }
 
 /* -------- Box<T> -------- */
-impl<Stream, T> Serialize<Stream> for Box<T>
+impl<Stream, T> BtcSerialize<Stream> for Box<T>
 where
     Stream: Write,
-    T: crate::serialize::Serialize<Stream> + ?Sized,
+    T: BtcSerialize<Stream> + ?Sized,
 {
     fn serialize(&self, os: &mut Stream) {
         (**self).serialize(os);
@@ -287,10 +287,10 @@ where
 }
 
 /* -------- Arc<T> -------- */
-impl<Stream, T> Serialize<Stream> for Arc<T>
+impl<Stream, T> BtcSerialize<Stream> for Arc<T>
 where
     Stream: Write,
-    T: crate::serialize::Serialize<Stream> + ?Sized,
+    T: BtcSerialize<Stream> + ?Sized,
 {
     fn serialize(&self, os: &mut Stream) {
         (**self).serialize(os);

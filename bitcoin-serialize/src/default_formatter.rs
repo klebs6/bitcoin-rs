@@ -14,8 +14,8 @@ pub struct DefaultFormatter;
 
 
 impl<T: 
-    for<'a> unserialize::Unserialize<&'a mut dyn bitcoin_imports::Read>
-        + for<'a> serialize::Serialize<&'a mut dyn bitcoin_imports::Write>
+    for<'a> BtcUnserialize<&'a mut dyn bitcoin_imports::Read>
+        + for<'a> BtcSerialize<&'a mut dyn bitcoin_imports::Write>
     > ValueFormatter<T> for DefaultFormatter {
 
     fn ser<S: std::io::Write>(&mut self,
@@ -26,7 +26,7 @@ impl<T:
         let mut sink: &mut dyn std::io::Write = s;
 
         // Use the impls that already exist for *any* `Stream: Write`.
-        crate::serialize::Serialize::<&mut dyn std::io::Write>::serialize(
+        BtcSerialize::<&mut dyn std::io::Write>::serialize(
             value,
             &mut sink,
         );
@@ -38,7 +38,7 @@ impl<T:
     {
         let mut src: &mut dyn std::io::Read = s;
 
-        crate::unserialize::Unserialize::<&mut dyn std::io::Read>::unserialize(
+        BtcUnserialize::<&mut dyn std::io::Read>::unserialize(
             value,
             &mut src,
         );

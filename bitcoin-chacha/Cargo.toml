@@ -3,6 +3,7 @@ zeroize.workspace = true
 tracing.workspace = true
 getset.workspace = true
 derive_builder.workspace = true
+generic-array.workspace = true
 poly1305.workspace = true
 bitcoin-support = { path = "../bitcoin-support" }
 

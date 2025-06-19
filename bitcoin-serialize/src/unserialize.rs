@@ -4,12 +4,12 @@ crate::ix!();
 /// Replace the previous definition (which took `&self`) with a
 /// mutable‐reference API so implementations can actually write the
 /// value that has just been read from the stream.
-pub trait Unserialize<Stream> {
+pub trait BtcUnserialize<Stream> {
     /// Populate `self` with data read from `s`.
     fn unserialize(&mut self, s: &mut Stream);
 }
 
-impl<Stream> Unserialize<Stream> for i8
+impl<Stream> BtcUnserialize<Stream> for i8
 where
     Stream: Read,
 {
@@ -21,7 +21,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for u8
+impl<Stream> BtcUnserialize<Stream> for u8
 where
     Stream: Read,
 {
@@ -33,7 +33,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for i16
+impl<Stream> BtcUnserialize<Stream> for i16
 where
     Stream: Read,
 {
@@ -45,7 +45,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for u16
+impl<Stream> BtcUnserialize<Stream> for u16
 where
     Stream: Read,
 {
@@ -57,7 +57,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for i32
+impl<Stream> BtcUnserialize<Stream> for i32
 where
     Stream: Read,
 {
@@ -69,7 +69,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for u32
+impl<Stream> BtcUnserialize<Stream> for u32
 where
     Stream: Read,
 {
@@ -81,7 +81,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for i64
+impl<Stream> BtcUnserialize<Stream> for i64
 where
     Stream: Read,
 {
@@ -93,7 +93,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for u64
+impl<Stream> BtcUnserialize<Stream> for u64
 where
     Stream: Read,
 {
@@ -105,7 +105,7 @@ where
     }
 }
 
-impl<Stream, const N: usize> Unserialize<Stream> for [u8; N]
+impl<Stream, const N: usize> BtcUnserialize<Stream> for [u8; N]
 where
     Stream: Read,
 {
@@ -117,7 +117,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for bool
+impl<Stream> BtcUnserialize<Stream> for bool
 where
     Stream: Read,
 {
@@ -129,7 +129,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for &[u8]
+impl<Stream> BtcUnserialize<Stream> for &[u8]
 where
     Stream: Read,
 {
@@ -160,7 +160,7 @@ where
     }
 }
 
-impl<Stream> Unserialize<Stream> for String
+impl<Stream> BtcUnserialize<Stream> for String
 where
     Stream: Read,
 {
@@ -177,10 +177,10 @@ where
     }
 }
 
-impl<Stream, T: Default, const N: usize> Unserialize<Stream> for PreVector<T, N>
+impl<Stream, T: Default, const N: usize> BtcUnserialize<Stream> for PreVector<T, N>
 where
     Stream: Read,
-    T: Clone + crate::unserialize::Unserialize<Stream>,
+    T: Clone + BtcUnserialize<Stream>,
 {
     fn unserialize(&mut self, is: &mut Stream) {
         self.clear();
@@ -200,7 +200,7 @@ where
             self.resize(read_elems + blk, T::default()); // safe resize
 
             for i in read_elems..read_elems + blk {
-                crate::unserialize::Unserialize::unserialize(&mut self[i], is);
+                BtcUnserialize::unserialize(&mut self[i], is);
             }
 
             read_elems += blk;
@@ -208,12 +208,12 @@ where
     }
 }
 
-impl<Stream, T, A> Unserialize<Stream> for Vec<T, A>
+impl<Stream, T, A> BtcUnserialize<Stream> for Vec<T, A>
 where
     Stream: Read,
     T: Default,
     A: std::alloc::Allocator + Clone,
-    T: crate::unserialize::Unserialize<Stream>,
+    T: BtcUnserialize<Stream>,
 {
     fn unserialize(&mut self, is: &mut Stream) {
         self.clear();
@@ -230,7 +230,7 @@ where
             self.reserve(blk);
             for _ in 0..blk {
                 let mut elem = T::default();
-                crate::unserialize::Unserialize::unserialize(&mut elem, is);
+                BtcUnserialize::unserialize(&mut elem, is);
                 self.push(elem);
             }
             read_elems += blk;
@@ -238,11 +238,11 @@ where
     }
 }
 
-impl<Stream, K, V> Unserialize<Stream> for (K, V)
+impl<Stream, K, V> BtcUnserialize<Stream> for (K, V)
 where
     Stream: Read,
-    K: crate::unserialize::Unserialize<Stream> + Default,
-    V: crate::unserialize::Unserialize<Stream> + Default,
+    K: BtcUnserialize<Stream> + Default,
+    V: BtcUnserialize<Stream> + Default,
 {
     fn unserialize(&mut self, is: &mut Stream) {
         self.0.unserialize(is);
@@ -251,11 +251,11 @@ where
     }
 }
 
-impl<Stream, K, V, S> Unserialize<Stream> for HashMap<K, V, S>
+impl<Stream, K, V, S> BtcUnserialize<Stream> for HashMap<K, V, S>
 where
     Stream: Read,
-    K: crate::unserialize::Unserialize<Stream> + Eq + std::hash::Hash + Default,
-    V: crate::unserialize::Unserialize<Stream> + Default,
+    K: BtcUnserialize<Stream> + Eq + std::hash::Hash + Default,
+    V: BtcUnserialize<Stream> + Default,
     S: std::hash::BuildHasher + Default,
 {
     fn unserialize(&mut self, is: &mut Stream) {
@@ -273,10 +273,10 @@ where
     }
 }
 
-impl<Stream, K, S> Unserialize<Stream> for HashSet<K, S>
+impl<Stream, K, S> BtcUnserialize<Stream> for HashSet<K, S>
 where
     Stream: Read,
-    K: crate::unserialize::Unserialize<Stream> + Eq + std::hash::Hash + Default,
+    K: BtcUnserialize<Stream> + Eq + std::hash::Hash + Default,
     S: std::hash::BuildHasher + Default,
 {
     fn unserialize(&mut self, is: &mut Stream) {
@@ -292,26 +292,26 @@ where
     }
 }
 
-impl<Stream, T> Unserialize<Stream> for Box<T>
+impl<Stream, T> BtcUnserialize<Stream> for Box<T>
 where
     Stream: Read,
-    T: Default + crate::unserialize::Unserialize<Stream>,
+    T: Default + BtcUnserialize<Stream>,
 {
     fn unserialize(&mut self, is: &mut Stream) {
         let mut tmp = T::default();
-        crate::unserialize::Unserialize::unserialize(&mut tmp, is);
+        BtcUnserialize::unserialize(&mut tmp, is);
         *self = Box::new(tmp);
     }
 }
 
-impl<Stream, T> Unserialize<Stream> for std::sync::Arc<T>
+impl<Stream, T> BtcUnserialize<Stream> for std::sync::Arc<T>
 where
     Stream: Read,
-    T: Default + crate::unserialize::Unserialize<Stream>,
+    T: Default + BtcUnserialize<Stream>,
 {
     fn unserialize(&mut self, is: &mut Stream) {
         let mut tmp = T::default();
-        crate::unserialize::Unserialize::unserialize(&mut tmp, is);
+        BtcUnserialize::unserialize(&mut tmp, is);
         *self = std::sync::Arc::new(tmp);
     }
 }
