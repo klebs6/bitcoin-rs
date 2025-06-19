@@ -3,3 +3,5 @@
 ra_log.txt
 /.cpp/**
 .DS_Store
+tmp*
+all
