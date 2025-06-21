@@ -158,107 +158,115 @@ pub unsafe fn from_hex(data: *mut u8, len: i32, hex: *const u8) {
     trace!(target: "aes", "from_hex – exit");
 }
 
-/* -------------------------------------------------------------------------
- * Exhaustive self‑test harness (mirrors the original C implementation)
- * ---------------------------------------------------------------------- */
-#[inline]
-pub fn crypto_ctaes_test_main() -> i32 {
-    info!(target: "aes", "crypto_ctaes_test_main – running {} vectors", CTAES_TESTS.len());
-    let mut failures = 0usize;
-
-    for (idx, tv) in CTAES_TESTS.iter().enumerate() {
-        debug!(target: "aes", "vector #{idx} (AES‑{})", tv.keysize());
-
-        let key_bytes = decode_hex(tv.key());
-        let plain:  [u8; 16] = decode_hex(tv.plain()).try_into().unwrap();
-        let cipher: [u8; 16] = decode_hex(tv.cipher()).try_into().unwrap();
-
-        match tv.keysize() {
-            128 => {
-                let key: [u8; 16] = key_bytes.try_into().unwrap();
-                let mut ctx = AES128_ctx::default();
-
-                aes128_init(&mut ctx as *mut _, key.as_ptr());
-
-                let mut ciphered   = [0u8; 16];
-                let mut deciphered = [0u8; 16];
-
-                aes128_encrypt(&ctx as *const _, 1, ciphered.as_mut_ptr(),  plain .as_ptr());
-                aes128_decrypt(&ctx as *const _, 1, deciphered.as_mut_ptr(), cipher.as_ptr());
-
-                if ciphered != cipher {
-                    error!(target: "aes", "AES‑128 encrypt mismatch at vector #{idx}");
-                    failures += 1;
-                }
-                if deciphered != plain {
-                    error!(target: "aes", "AES‑128 decrypt mismatch at vector #{idx}");
-                    failures += 1;
-                }
-            }
-            192 => {
-                let key: [u8; 24] = key_bytes.try_into().unwrap();
-                let mut ctx = AES192_ctx::default();
-
-                aes192_init(&mut ctx as *mut _, key.as_ptr());
-
-                let mut ciphered   = [0u8; 16];
-                let mut deciphered = [0u8; 16];
-
-                aes192_encrypt(&ctx as *const _, 1, ciphered.as_mut_ptr(),  plain .as_ptr());
-                aes192_decrypt(&ctx as *const _, 1, deciphered.as_mut_ptr(), cipher.as_ptr());
-
-                if ciphered != cipher {
-                    error!(target: "aes", "AES‑192 encrypt mismatch at vector #{idx}");
-                    failures += 1;
-                }
-                if deciphered != plain {
-                    error!(target: "aes", "AES‑192 decrypt mismatch at vector #{idx}");
-                    failures += 1;
-                }
-            }
-            256 => {
-                let key: [u8; 32] = key_bytes.try_into().unwrap();
-                let mut ctx = AES256_ctx::default();
-
-                aes256_init(&mut ctx as *mut _, key.as_ptr());
-
-                let mut ciphered   = [0u8; 16];
-                let mut deciphered = [0u8; 16];
-
-                aes256_encrypt(&ctx as *const _, 1, ciphered.as_mut_ptr(),  plain .as_ptr());
-                aes256_decrypt(&ctx as *const _, 1, deciphered.as_mut_ptr(), cipher.as_ptr());
-
-                if ciphered != cipher {
-                    error!(target: "aes", "AES‑256 encrypt mismatch at vector #{idx}");
-                    failures += 1;
-                }
-                if deciphered != plain {
-                    error!(target: "aes", "AES‑256 decrypt mismatch at vector #{idx}");
-                    failures += 1;
-                }
-            }
-            k => unreachable!("unrecognised keysize: {k}‑bit"),
-        }
-    }
-
-    if failures == 0 {
-        info!(target: "aes", "All AES reference vectors passed ✔");
-        0
-    } else {
-        error!(target: "aes", "{failures} vector(s) failed ✖");
-        1
-    }
-}
-
-/* -------------------------------------------------------------------------
- * Public‑facing test (cargo test)
- * ---------------------------------------------------------------------- */
 #[cfg(test)]
 mod fips_nist_vector_validation {
     use super::*;
+    use tracing::{debug, info};
 
-    #[traced_test]
-    fn all_reference_vectors_pass() {
-        assert_eq!(crypto_ctaes_test_main(), 0, "AES reference vectors must all pass");
+    /* -------------------------------------------------------------------
+     *  Helper: execute exactly one reference vector by index
+     * ---------------------------------------------------------------- */
+    fn exec_vector(idx: usize) {
+        let tv = &CTAES_TESTS[idx];
+        debug!(target: "test",
+               idx,
+               key_size = tv.keysize(),
+               key = tv.key(),
+               plain = tv.plain(),
+               cipher = tv.cipher(),
+               "running reference vector");
+
+        /* ---- decode hex strings ------------------------------------ */
+        let key_bytes   = decode_hex(tv.key());
+        let plain_vec   = decode_hex(tv.plain());
+        let cipher_vec  = decode_hex(tv.cipher());
+
+        /* ---- runtimes expect fixed 16‑byte blocks ------------------- */
+        let plain:  [u8; 16] = plain_vec .try_into().unwrap();
+        let cipher: [u8; 16] = cipher_vec.try_into().unwrap();
+
+        match tv.keysize() {
+            /* ---------------- AES‑128 ---------------- */
+            128 => {
+                let key: [u8; 16] = key_bytes.try_into().unwrap();
+                let mut ctx = AES128_ctx::default();
+                aes128_init(&mut ctx as *mut _, key.as_ptr());
+
+                let mut enc = [0u8; 16];
+                let mut dec = [0u8; 16];
+
+                aes128_encrypt(&ctx as *const _, 1, enc.as_mut_ptr(),  plain .as_ptr());
+                aes128_decrypt(&ctx as *const _, 1, dec.as_mut_ptr(), cipher.as_ptr());
+
+                assert_eq!(enc, cipher, "AES‑128 encrypt mismatch (vector #{idx})");
+                assert_eq!(dec, plain , "AES‑128 decrypt mismatch (vector #{idx})");
+            }
+            /* ---------------- AES‑192 ---------------- */
+            192 => {
+                let key: [u8; 24] = key_bytes.try_into().unwrap();
+                let mut ctx = AES192_ctx::default();
+                aes192_init(&mut ctx as *mut _, key.as_ptr());
+
+                let mut enc = [0u8; 16];
+                let mut dec = [0u8; 16];
+
+                aes192_encrypt(&ctx as *const _, 1, enc.as_mut_ptr(),  plain .as_ptr());
+                aes192_decrypt(&ctx as *const _, 1, dec.as_mut_ptr(), cipher.as_ptr());
+
+                assert_eq!(enc, cipher, "AES‑192 encrypt mismatch (vector #{idx})");
+                assert_eq!(dec, plain , "AES‑192 decrypt mismatch (vector #{idx})");
+            }
+            /* ---------------- AES‑256 ---------------- */
+            256 => {
+                let key: [u8; 32] = key_bytes.try_into().unwrap();
+                let mut ctx = AES256_ctx::default();
+                aes256_init(&mut ctx as *mut _, key.as_ptr());
+
+                let mut enc = [0u8; 16];
+                let mut dec = [0u8; 16];
+
+                aes256_encrypt(&ctx as *const _, 1, enc.as_mut_ptr(),  plain .as_ptr());
+                aes256_decrypt(&ctx as *const _, 1, dec.as_mut_ptr(), cipher.as_ptr());
+
+                assert_eq!(enc, cipher, "AES‑256 encrypt mismatch (vector #{idx})");
+                assert_eq!(dec, plain , "AES‑256 decrypt mismatch (vector #{idx})");
+            }
+            k => unreachable!("unrecognised key size: {k} bits"),
+        }
+
+        info!(target: "test", idx, "reference vector passed ✓");
+    }
+
+    /* -------------------------------------------------------------------
+     *  Macro: generate one cargo‑test per reference vector
+     * ---------------------------------------------------------------- */
+    macro_rules! gen_ctaes_vector_tests {
+        ($( $fn_name:ident => $index:expr ),* $(,)?) => {$(
+            #[traced_test]
+            fn $fn_name() {
+                exec_vector($index);
+            }
+        )*};
+    }
+
+    /* -------------------------------------------------------------------
+     *  Instantiate 15 individual tests (3 FIPS + 12 NIST)
+     * ---------------------------------------------------------------- */
+    gen_ctaes_vector_tests! {
+        fips_197_aes128          =>  0,
+        fips_197_aes192          =>  1,
+        fips_197_aes256          =>  2,
+        nist_ecb_aes128_vec0     =>  3,
+        nist_ecb_aes128_vec1     =>  4,
+        nist_ecb_aes128_vec2     =>  5,
+        nist_ecb_aes128_vec3     =>  6,
+        nist_ecb_aes192_vec0     =>  7,
+        nist_ecb_aes192_vec1     =>  8,
+        nist_ecb_aes192_vec2     =>  9,
+        nist_ecb_aes192_vec3     => 10,
+        nist_ecb_aes256_vec0     => 11,
+        nist_ecb_aes256_vec1     => 12,
+        nist_ecb_aes256_vec2     => 13,
+        nist_ecb_aes256_vec3     => 14,
     }
 }

@@ -25,6 +25,7 @@ pub fn cbc_encrypt<T: Encrypt>(
 
     // --------------- full blocks ---------------------------------------
     while written + AES_BLOCKSIZE as i32 <= size {
+
         for i in 0..AES_BLOCKSIZE {
             unsafe {
                 mixed[i] ^= *data;

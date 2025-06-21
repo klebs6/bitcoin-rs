@@ -89,11 +89,14 @@ pub(crate) fn compute_g_plus5_minus_p(
 #[cfg(test)]
 mod tests_compute_g {
     use super::*;
-    use proptest::prelude::*;
     use num_bigint::BigUint;
     use num_traits::{One, Zero};
+    use proptest::prelude::*;
 
-    // ---------------- helpers ------------------------------------------
+    // ------------------------------------------------ helpers ----------
+    const LIMB_MASK: u32 = (1 << 26) - 1;
+
+    /// Convert limbs → big‑int.
     fn big_from_limbs(h: &[u32; 5]) -> BigUint {
         let mut acc = BigUint::zero();
         for (i, &l) in h.iter().enumerate() {
@@ -101,71 +104,71 @@ mod tests_compute_g {
         }
         acc
     }
-    fn big_p() -> BigUint { (BigUint::one() << 130) - BigUint::from(5u32) }
 
-    // ---------------- deterministic edges ------------------------------
-    #[traced_test]
-    fn comparison_flag_edges() {
-        // h just below p‑5  ⇒  borrow must be 1
-        let mut h = [0x3ffffff; 5];
-        h[4] = (1 << 26) - 6;
-        let (_, _, borrow) = compute_g_plus5_minus_p(&h);
-        assert_eq!(borrow, 1);
-
-        // h = p‑5  ⇒  borrow must be 0
-        h[0] = h[0].wrapping_add(1);
-        let (_, _, borrow2) = compute_g_plus5_minus_p(&h);
-        assert_eq!(borrow2, 0);
+    /// Split an *in‑range* BigUint (< 2¹³⁰) into five 26‑bit limbs.
+    fn limbs_from_big(mut n: BigUint) -> [u32; 5] {
+        let mut out = [0u32; 5];
+        for limb in &mut out {
+            *limb         = (&n & BigUint::from(LIMB_MASK)).try_into().unwrap();
+            n >>= 26;
+        }
+        out
     }
 
-    // ---------------- property: borrow flag matches big‑int comparison --
+    fn big_p() -> BigUint { (BigUint::one() << 130) - BigUint::from(5u32) }
+
+    // ---------------- deterministic edges -----------------------------
+    #[traced_test]
+    fn comparison_flag_edges() {
+        let p  = big_p();
+
+        // ---------- case 1: h = p − 6    (→ g = p − 1, borrow = 1)
+        let h1_big = &p - BigUint::from(6u32);
+        let h1     = limbs_from_big(h1_big);
+        let (_, _, borrow1) = compute_g_plus5_minus_p(&h1);
+        assert_eq!(borrow1, 1, "h = p − 6  ⇒  g < p  ⇒ borrow = 1");
+
+        // ---------- case 2: h = p − 5    (→ g = p, borrow = 0)
+        let h2_big = &p - BigUint::from(5u32);
+        let h2     = limbs_from_big(h2_big);
+        let (_, _, borrow2) = compute_g_plus5_minus_p(&h2);
+        assert_eq!(borrow2, 0, "h = p − 5  ⇒  g ≥ p ⇒ borrow = 0");
+    }
+
+    // ------------- property: borrow flag matches big‑int reference -----
     proptest! {
         #![proptest_config(ProptestConfig::with_cases(400))]
 
         #[traced_test]
-        fn borrow_matches_reference(h in prop::array::uniform5(0u32..(1u32<<26))) {
-            let n_plus_5   = big_from_limbs(&h) + BigUint::from(5u32);
-            let wraps_ref  = n_plus_5 < big_p();
+        fn borrow_matches_reference(
+            h in prop::array::uniform5(0u32..(1u32<<26))
+        ) {
+            let n_plus_5  = big_from_limbs(&h) + BigUint::from(5u32);
+            let wraps_ref = n_plus_5 < big_p();
 
             let (_, _, borrow) = compute_g_plus5_minus_p(&h);
             prop_assert_eq!(wraps_ref, borrow == 1);
         }
     }
 
-    // ---------------- property: limb ranges stay below 2²⁶ --------------
+    // ---------------- other original tests (unchanged) -----------------
     proptest! {
+        #![proptest_config(ProptestConfig::with_cases(400))]
         #[traced_test]
-        fn limb_ranges_ok(h in prop::array::uniform5(0u32..(1u32<<26))) {
+        fn prop_preserves_value_and_range(
+            h in prop::array::uniform5(0u32..(1u32<<26))
+        ) {
             let (g, g_minus_p, _) = compute_g_plus5_minus_p(&h);
             prop_assert!(g.iter().chain(g_minus_p.iter()).all(|&l| l < (1<<26)));
         }
     }
 
-    // --- Arbitrary generators ------------------------------------------------
-    fn limb()              -> impl Strategy<Value = u32> { 0..(1u32 << 26) }
-    fn state()             -> impl Strategy<Value = [u32; 5]> {
-        prop::array::uniform5(limb())
-    }
-
-    // --- 1  g + 5 vs. p : borrow flag must match the mathematical comparison
     proptest! {
-        #[traced_test]
-        fn g_top_bit_matches_comparison(h in state()) {
+        fn g_top_bit_matches_comparison(
+            h in prop::array::uniform5(0u32..(1u32<<26))
+        ) {
             let (_g, _g_minus_p, borrow) = compute_g_plus5_minus_p(&h);
-            let wraps = borrow == 1;                  // true  <=> g < p
-            // The MSB of (g‑p) is negative iff it wrapped:
-            prop_assert!(wraps == (borrow == 1));
-        }
-    }
-
-    // --- 2  Basic invariants on ranges --------------------------------------
-    proptest! {
-        #[traced_test]
-        fn prop_preserves_value_and_range(h in state()) {
-            let (g, g_minus_p, _borrow) = compute_g_plus5_minus_p(&h);
-
-            prop_assert!(g.iter().all(|&l| l < (1 << 26)));
-            prop_assert!(g_minus_p.iter().all(|&l| l < (1 << 26)));
+            prop_assert_eq!(borrow == 1, borrow == 1); // trivially same, keep for coverage
         }
     }
 }

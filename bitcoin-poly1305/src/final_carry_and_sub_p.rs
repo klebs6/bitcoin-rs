@@ -1,31 +1,20 @@
 // ---------------- [ File: bitcoin-poly1305/src/final_carry_and_sub_p.rs ]
 crate::ix!();
 
-/// Perform the last reduction step:  
-///  * propagate carries once  
-///  * conditionally subtract _p = 2¹³⁰ − 5_ in constant time
-///
-/// The accumulator `h` is updated **in‑place**.  No bytes are serialized
-/// here – that is done later by `add_pad_serialize`.
+// bitcoin-poly1305/src/final_carry_and_sub_p.rs
 #[inline(always)]
 pub(crate) fn final_carry_and_sub_p(h: &mut [u32; 5]) {
-    //--------------------------------------------------------------------
-    // 1. final carry propagation
-    //--------------------------------------------------------------------
+    // 1. finish the single carry‑propagation pass
     propagate_26bit_carries_once(h);
 
-    //--------------------------------------------------------------------
-    // 2. g  = h + 5 , g_minus_p = g − p   (plus borrow flag)
-    //--------------------------------------------------------------------
+    // 2. compute g = h + 5  and  g_minus_p = g − p
     let (_g, g_minus_p, borrow) = compute_g_plus5_minus_p(h);
 
-    //--------------------------------------------------------------------
     // 3. constant‑time selection
-    //    borrow == 0  ⟹  replace h with g_minus_p
-    //    borrow == 1  ⟹  keep h as‑is
-    //--------------------------------------------------------------------
-    let mask = borrow.wrapping_sub(1);       // 0 → 0xffffffff, 1 → 0
-    ct_select_limbs(h, &g_minus_p, mask);
+    //    borrow == 0  →  g wrapped past p  →  take g_minus_p
+    //    borrow == 1  →  no wrap           →  keep the original h
+    let mask = borrow.wrapping_sub(1);      // 0xFFFF_FFFF if borrow==0 else 0
+    ct_select_limbs(h, &g_minus_p, mask);   // one *single* selection, no g
 
     tracing::debug!(h_reduced = ?*h, "final_carry_and_sub_p: finished");
 }
@@ -89,5 +78,4 @@ mod tests_final_and_tag {
             prop_assert!(h.iter().all(|&l| l < (1<<26)));
         }
     }
-
 }

@@ -3,101 +3,69 @@ crate::ix!();
 
 impl AESState {
     /// Apply the (inverse) MixColumns transform in‑place.
-    ///
-    /// * `inv == false` → forward transform  
+    /// * `inv == false` → forward transform
     /// * `inv == true`  → inverse transform
     #[inline(always)]
     pub fn mix_columns(&mut self, inv: bool) {
-        trace!(inv, "mix_columns – input = {:?}", self.slice());
+        /* ---- 1. unpack bit‑sliced state -------------------------------- */
+        let mut bytes = [0u8; 16];
+        unsafe { crate::save_bytes(bytes.as_mut_ptr(), self as *const _); }
 
-        /* The MixColumns transform treats the bytes of the columns of the state as
-         * coefficients of a 3rd degree polynomial over GF(2^8) and multiplies them
-         * by the fixed polynomial a(x) = {03}x^3 + {01}x^2 + {01}x + {02}, modulo
-         * x^4 + {01}.
-         *
-         * In the inverse transform, we multiply by the inverse of a(x),
-         * a^-1(x) = {0b}x^3 + {0d}x^2 + {09}x + {0e}. This is equal to
-         * a(x) * ({04}x^2 + {05}), so we can reuse the forward transform's code
-         * (found in OpenSSL's bsaes-x86_64.pl, attributed to Jussi Kivilinna)
-         *
-         * In the bitsliced representation, a multiplication of every column by x
-         * mod x^4 + 1 is simply a right rotation by 4 bits (one nibble).
-         */
+        /* ---- 2. per‑column GF(2⁸) matrix multiply ---------------------- */
+        #[inline(always)]
+        fn xtime(mut b: u8) -> u8 {
+            let hi = b & 0x80;
+            b <<= 1;
+            if hi != 0 { b ^= 0x1B }
+            b
+        }
+        #[inline(always)]
+        fn mul(mut a: u8, mut k: u8) -> u8 {
+            let mut res = 0;
+            for _ in 0..8 {
+                if (k & 1) != 0 { res ^= a; }
+                let hi = a & 0x80;
+                a = a << 1;
+                if hi != 0 { a ^= 0x1B; }
+                k >>= 1;
+            }
+            res
+        }
 
-        let [s0, s1, s2, s3, s4, s5, s6, s7] = self.slice();
+        for col in 0..4 {
+            let idx = col * 4;
+            let [a0, a1, a2, a3] = [
+                bytes[idx    ], bytes[idx + 1],
+                bytes[idx + 2], bytes[idx + 3],
+            ];
 
-        /// Rotate the 16‑bit word right by *n* nibbles (= 4 × *n* bits).
-        macro_rules! rot {
-            ($v:expr, $n:expr) => {
-                $v.rotate_right(($n * 4) as u32)
+            let (b0, b1, b2, b3) = if !inv {
+                // forward MixColumns (02 03 01 01)
+                (
+                    xtime(a0) ^ (xtime(a1) ^ a1) ^  a2 ^  a3,
+                     a0       ^  xtime(a1)       ^ (xtime(a2) ^ a2) ^  a3,
+                     a0       ^  a1              ^  xtime(a2)       ^ (xtime(a3) ^ a3),
+                    (xtime(a0) ^ a0) ^  a1       ^  a2              ^  xtime(a3),
+                )
+            } else {
+                // inverse MixColumns (0e 0b 0d 09)
+                (
+                    mul(a0,0x0e) ^ mul(a1,0x0b) ^ mul(a2,0x0d) ^ mul(a3,0x09),
+                    mul(a0,0x09) ^ mul(a1,0x0e) ^ mul(a2,0x0b) ^ mul(a3,0x0d),
+                    mul(a0,0x0d) ^ mul(a1,0x09) ^ mul(a2,0x0e) ^ mul(a3,0x0b),
+                    mul(a0,0x0b) ^ mul(a1,0x0d) ^ mul(a2,0x09) ^ mul(a3,0x0e),
+                )
             };
+
+            bytes[idx    ] = b0;
+            bytes[idx + 1] = b1;
+            bytes[idx + 2] = b2;
+            bytes[idx + 3] = b3;
         }
 
-        // (x³ + x² + x) and (x³ + 1) partial products
-        let s0_01  =  s0 ^ rot!(s0, 1);
-        let s0_123 = rot!(s0_01, 1) ^ rot!(s0, 3);
-
-        let s1_01  =  s1 ^ rot!(s1, 1);
-        let s1_123 = rot!(s1_01, 1) ^ rot!(s1, 3);
-
-        let s2_01  =  s2 ^ rot!(s2, 1);
-        let s2_123 = rot!(s2_01, 1) ^ rot!(s2, 3);
-
-        let s3_01  =  s3 ^ rot!(s3, 1);
-        let s3_123 = rot!(s3_01, 1) ^ rot!(s3, 3);
-
-        let s4_01  =  s4 ^ rot!(s4, 1);
-        let s4_123 = rot!(s4_01, 1) ^ rot!(s4, 3);
-
-        let s5_01  =  s5 ^ rot!(s5, 1);
-        let s5_123 = rot!(s5_01, 1) ^ rot!(s5, 3);
-
-        let s6_01  =  s6 ^ rot!(s6, 1);
-        let s6_123 = rot!(s6_01, 1) ^ rot!(s6, 3);
-
-        let s7_01  =  s7 ^ rot!(s7, 1);
-        let s7_123 = rot!(s7_01, 1) ^ rot!(s7, 3);
-
-        // s = (x³+x²+x)s + {02}(x³+1)s
-        self.slice[0] = s7_01 ^ s0_123;
-        self.slice[1] = s7_01 ^ s0_01 ^ s1_123;
-        self.slice[2] = s1_01 ^ s2_123;
-        self.slice[3] = s7_01 ^ s2_01 ^ s3_123;
-        self.slice[4] = s7_01 ^ s3_01 ^ s4_123;
-        self.slice[5] = s4_01 ^ s5_123;
-        self.slice[6] = s5_01 ^ s6_123;
-        self.slice[7] = s6_01 ^ s7_123;
-
-        if inv {
-
-            /* In the reverse direction, we further need to multiply by
-             * {04}x^2 + {05}, which can be written as {04} * (x^2 + {01}) + {01}.
-             *
-             * First compute (x^2 + {01}) * s into the t?_02 variables: */
-
-            /* multiply further by {04}(x²+1)+1 */
-            trace!("mix_columns – after forward step = {:?}", self.slice);
-
-            let t0_02 = self.slice[0] ^ rot!(self.slice[0], 2);
-            let t1_02 = self.slice[1] ^ rot!(self.slice[1], 2);
-            let t2_02 = self.slice[2] ^ rot!(self.slice[2], 2);
-            let t3_02 = self.slice[3] ^ rot!(self.slice[3], 2);
-            let t4_02 = self.slice[4] ^ rot!(self.slice[4], 2);
-            let t5_02 = self.slice[5] ^ rot!(self.slice[5], 2);
-            let t6_02 = self.slice[6] ^ rot!(self.slice[6], 2);
-            let t7_02 = self.slice[7] ^ rot!(self.slice[7], 2);
-
-            self.slice[0] ^= t6_02;
-            self.slice[1] ^= t6_02 ^ t7_02;
-            self.slice[2] ^= t0_02 ^ t7_02;
-            self.slice[3] ^= t1_02 ^ t6_02;
-            self.slice[4] ^= t2_02 ^ t6_02 ^ t7_02;
-            self.slice[5] ^= t3_02 ^ t7_02;
-            self.slice[6] ^= t4_02;
-            self.slice[7] ^= t5_02;
-        }
-
-        trace!(inv, "mix_columns – output = {:?}", self.slice);
+        /* ---- 3. re‑pack into the bit‑sliced state ---------------------- */
+        self.slice = [0u16; 8];          // clear before ORing in new bits
+        unsafe { crate::load_bytes(self as *mut _, bytes.as_ptr()); }
     }
 }
 
@@ -125,6 +93,129 @@ mod mix_columns_tests {
             state.mix_columns(false); // forward
             state.mix_columns(true);  // inverse
             assert_eq!(state.slice(), &sample);
+        }
+    }
+
+    /* -------- helpers: pack / unpack <byte[16]> ↔ AESState ---------- */
+    fn pack(bytes: &[u8; 16]) -> AESState {
+        let mut slice = [0u16; 8];
+        for bit in 0..8 {
+            let mut w = 0u16;
+            for lane in 0..16 {
+                if (bytes[lane] >> bit) & 1 == 1 {
+                    w |= 1 << lane;
+                }
+            }
+            slice[bit] = w;
+        }
+        AESState::from_slice(slice)
+    }
+    fn unpack(state: &AESState) -> [u8; 16] {
+        let mut out = [0u8; 16];
+        for lane in 0..16 {
+            let mut b = 0u8;
+            for bit in 0..8 {
+                if (state.slice()[bit] >> lane) & 1 == 1 {
+                    b |= 1 << bit;
+                }
+            }
+            out[lane] = b;
+        }
+        out
+    }
+
+    /* -------- reference field arithmetic over GF(2^8) --------------- */
+    #[inline(always)]
+    fn gf_mul(mut a: u8, mut b: u8) -> u8 {
+        let mut r = 0;
+        for _ in 0..8 {
+            if (b & 1) != 0 { r ^= a; }
+            let hi = a & 0x80;
+            a <<= 1;
+            if hi != 0 { a ^= 0x1B; }          // x^8 ⇒ x^4+x^3+x+1
+            b >>= 1;
+        }
+        r
+    }
+
+    /* -------- 4×4 MixColumns matrices (column major) ---------------- */
+    const FWD: [[u8; 4]; 4] = [
+        [0x02, 0x03, 0x01, 0x01],
+        [0x01, 0x02, 0x03, 0x01],
+        [0x01, 0x01, 0x02, 0x03],
+        [0x03, 0x01, 0x01, 0x02],
+    ];
+    const INV: [[u8; 4]; 4] = [
+        [0x0e, 0x0b, 0x0d, 0x09],
+        [0x09, 0x0e, 0x0b, 0x0d],
+        [0x0d, 0x09, 0x0e, 0x0b],
+        [0x0b, 0x0d, 0x09, 0x0e],
+    ];
+
+    /* -------- reference scalar MixColumns in column‑major order ------ */
+    fn mix_ref(block: &[u8; 16], inv: bool) -> [u8; 16] {
+        let m = if inv { &INV } else { &FWD };
+        let mut out = [0u8; 16];
+
+        for col in 0..4 {
+            // load one column   a0..a3
+            let a = [
+                block[col * 4 + 0],
+                block[col * 4 + 1],
+                block[col * 4 + 2],
+                block[col * 4 + 3],
+            ];
+            for row in 0..4 {
+                let mut acc = 0u8;
+                for k in 0..4 {
+                    acc ^= gf_mul(m[row][k], a[k]);
+                }
+                out[col * 4 + row] = acc;
+            }
+        }
+        out
+    }
+
+    /* =================================================================
+     *  1. Exhaustive test: 16 lanes × 256 byte values  = 4096 cases
+     * ================================================================= */
+    #[traced_test]
+    fn forward_and_inverse_match_reference_exhaustive() {
+        for lane in 0..16 {
+            for byte in 0u8..=0xFF {
+                let mut input = [0u8; 16];
+                input[lane] = byte;
+
+                /* --- FORWARD ---------------------------------------- */
+                let expected = mix_ref(&input, false);
+                let mut state = pack(&input);
+                state.mix_columns(false);          // ← function under test
+                assert_eq!(unpack(&state), expected,
+                    "forward MC mismatch (lane {lane}, byte 0x{byte:02x})");
+
+                /* --- INVERSE ---------------------------------------- */
+                let expected_inv = mix_ref(&input, true);
+                let mut state = pack(&input);
+                state.mix_columns(true);
+                assert_eq!(unpack(&state), expected_inv,
+                    "inverse MC mismatch (lane {lane}, byte 0x{byte:02x})");
+            }
+        }
+    }
+
+    /* =================================================================
+     *  2. Round‑trip identity on 10 000 random states
+     * ================================================================= */
+    #[traced_test]
+    fn forward_then_inverse_is_identity_randomised() {
+        let mut rng = thread_rng();
+        for _ in 0..10_000 {
+            let mut st = AESState::random(&mut rng);
+            let original = st.clone();
+            st.mix_columns(false);
+            st.mix_columns(true);
+            assert_eq!(st.slice(), original.slice(),
+                "MC round‑trip failed on random state");
         }
     }
 }

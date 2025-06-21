@@ -57,8 +57,8 @@ ACTIVE := bitcoin-rbf
 ACTIVE := bitcoin-base58
 ACTIVE := bitcoin-chacha
 ACTIVE := bitcoin-muhash
-ACTIVE := bitcoin-aes
 ACTIVE := bitcoin-poly1305
+ACTIVE := bitcoin-aes
 #ACTIVE := bitcoinleveldb-filter
 
 #ACTIVE := bitcoin-client-ui
