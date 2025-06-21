@@ -509,6 +509,19 @@ impl Default for Sha256 {
     }
 }
 
+impl Write for Sha256 {
+
+    #[inline]
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.write_ptr(buf.as_ptr(), buf.len());
+        Ok(buf.len())
+    }
+
+    #[inline]
+    fn flush(&mut self) -> std::io::Result<()> { Ok(()) }
+
+}
+
 impl Sha256 {
 
     pub fn new() -> Self { Self::default() }
@@ -520,7 +533,7 @@ impl Sha256 {
         todo!();
     }
 
-    pub fn write(&mut self, 
+    pub fn write_ptr(&mut self, 
         data: *const u8,
         len:  usize) {
         
@@ -551,7 +564,7 @@ impl Sha256 {
         */
     }
 
-    pub fn finalize(&mut self, hash: [u8; SHA256_OUTPUT_SIZE])  {
+    pub fn finalize(&mut self, hash: &mut [u8; SHA256_OUTPUT_SIZE])  {
         
         todo!();
         /*

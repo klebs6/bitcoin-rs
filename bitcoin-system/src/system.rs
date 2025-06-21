@@ -779,7 +779,7 @@ pub fn spanparsing_split(
 
 pub const CONTINUE_EXECUTION: i32 = -1;
 
-pub const G_TRANSLATION_FUN: Option<fn(_0: *const u8) -> String> = None;
+//pub const G_TRANSLATION_FUN: Option<fn(_0: *const u8) -> String> = None;
 
 pub fn setup_bitcoin_util_args(argsman: &mut ArgsManager)  {
     

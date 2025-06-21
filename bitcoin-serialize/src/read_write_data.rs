@@ -116,3 +116,27 @@ pub fn ser_readdata64<Stream: Read>(s: &mut Stream) -> u64 {
     trace!(value = v, "ser_readdata64 (LE)");
     v
 }
+
+#[cfg(test)]
+mod read_write_data_tests {
+    use super::*;
+    use std::io::Cursor;
+
+    macro_rules! roundtrip_scalar {
+        ($name:ident, $write_fn:ident, $read_fn:ident, $ty:ty, $val:expr $(,)?) => {
+            #[traced_test]
+            fn $name() {
+                let mut buf = Cursor::new(Vec::<u8>::new());
+                $write_fn(&mut buf, $val as $ty);
+                buf.set_position(0);
+                let decoded = $read_fn(&mut buf);
+                assert_eq!(decoded as $ty, $val as $ty);
+            }
+        };
+    }
+
+    roundtrip_scalar!(u8_roundtrip,  ser_writedata8,   ser_readdata8,  u8,  0xAB);
+    roundtrip_scalar!(u16_roundtrip, ser_writedata16,  ser_readdata16, u16, 0xBEEF);
+    roundtrip_scalar!(u32_roundtrip, ser_writedata32,  ser_readdata32, u32, 0xDEADBEEF);
+    roundtrip_scalar!(u64_roundtrip, ser_writedata64,  ser_readdata64, u64, 0x0123_4567_89AB_CDEF);
+}

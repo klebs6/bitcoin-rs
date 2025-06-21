@@ -76,3 +76,109 @@ where
     }
     I::try_from(n).expect("ReadVarInt(): value does not fit target type")
 }
+
+#[cfg(test)]
+mod var_int_algo_tests {
+    use super::*;
+    use std::io::Cursor;
+
+    /* ---------- common fixtures ---------- */
+
+    // Representative boundary values plus a few big numbers.
+    const UNSIGNED_SAMPLES: &[u64] = &[
+        0, 1, 0x7F, 0x80, 0x3FFF, 0x4000,
+        0xFFFF_FFFF, (u32::MAX as u64) + 1, u64::MAX / 2,
+    ];
+    const SIGNED_SAMPLES: &[i64] = &[
+        0, 1, 0x7F, 0x1000, 0x1_FFFF, 0x7FFF_FFFF,
+    ];
+
+    /* ---------- Default mode (unsigned) ---------- */
+
+    #[traced_test]
+    fn roundtrip_default_mode() {
+        for &n in UNSIGNED_SAMPLES {
+            let mut buf = Cursor::new(Vec::<u8>::new());
+            write_var_int::<_, u64, { VarIntMode::Default }>(&mut buf, n);
+            buf.set_position(0);
+            let out: u64 =
+                read_var_int::<_, u64, { VarIntMode::Default }>(&mut buf);
+            assert_eq!(out, n, "round‑trip failed for {n}");
+        }
+    }
+
+    #[traced_test]
+    fn size_fn_matches_bytes_written() {
+        for &n in UNSIGNED_SAMPLES {
+            let mut buf = Cursor::new(Vec::<u8>::new());
+            write_var_int::<_, u64, { VarIntMode::Default }>(&mut buf, n);
+            let bytes = buf.get_ref().len();
+            let spec  =
+                get_size_of_var_int::<u64, { VarIntMode::Default }>(n);
+            assert_eq!(bytes, spec as usize, "size mismatch for {n}");
+        }
+    }
+
+    /* ---------- Formatter wrapper ---------- */
+
+    #[traced_test]
+    fn formatter_wrapper_roundtrip() {
+        let original = 300u64;
+        let mut buf  = Cursor::new(Vec::<u8>::new());
+
+        // serialize
+        VarIntFormatter::<{ VarIntMode::Default }>::default()
+            .ser(&mut buf, &original);
+
+        // deserialize
+        buf.set_position(0);
+        let mut decoded = 0u64;
+        VarIntFormatter::<{ VarIntMode::Default }>::default()
+            .unser(&mut buf, &mut decoded);
+
+        assert_eq!(decoded, original);
+    }
+
+    /* ---------- Error handling ---------- */
+
+    /// Encoding of 2 ⁶⁴ − 1 does **not** fit in a `u32`.
+    #[test]
+    #[should_panic]   // exact message is implementation detail
+    fn read_into_too_small_type_panics() {
+        let mut buf = Cursor::new(Vec::<u8>::new());
+        write_var_int::<_, u64, { VarIntMode::Default }>(
+            &mut buf,
+            u64::MAX,
+        );
+        buf.set_position(0);
+        let _: u32 =
+            read_var_int::<_, u32, { VarIntMode::Default }>(&mut buf);
+    }
+
+    /// Malformed byte stream with the continuation‑bit set in every byte.
+    #[test]
+    #[should_panic]
+    fn decode_overflow_panics() {
+        let garbage = [0x80u8; 20];           // will overflow u128
+        let mut buf = Cursor::new(garbage.as_slice());
+        let _: u64 =
+            read_var_int::<_, u64, { VarIntMode::Default }>(&mut buf);
+    }
+
+    /* ---------- Compile‑time assertions ---------- */
+
+    // This function *never* runs – it only verifies that the `ModeConstraint`
+    // accepts (u64, Default) and (i64, NonNegativeSigned).
+    #[allow(dead_code)]
+    fn _compile_time_constraints()
+    where
+        (): crate::check_var_int_mode::ModeConstraint<
+            { VarIntMode::Default },
+            u64,
+        >,
+        (): crate::check_var_int_mode::ModeConstraint<
+            { VarIntMode::NonNegativeSigned },
+            i64,
+        >,
+    {}
+}

@@ -89,60 +89,80 @@ mod aes_decrypt_correctness {
 
     /// The *official* vectors must survive a direct call to `aes_decrypt`.
     #[traced_test]
-    fn decrypt_matches_reference_vectors() {
-        for (idx, (bits, k_hex, p_hex, c_hex)) in VECTORS.iter().enumerate() {
-            let key_bytes = decode_hex(k_hex);
-            let cipher    = decode_hex(c_hex);
-            let mut plain = [0u8; 16];
+    fn decrypt_matches_reference_aes128() {
+        let &(bits, k_hex, p_hex, c_hex) = VECTORS.iter().find(|v| v.0 == 128).unwrap();
+        assert_eq!(bits, 128);
 
-            match bits {
-                128 => {
-                    let key: [u8; 16] = key_bytes.try_into().expect("16‑byte key");
-                    let mut ctx = AES128_ctx::default();
-                    unsafe { aes128_init(&mut ctx as *mut _, key.as_ptr()) };
-                    unsafe {
-                        aes_decrypt(
-                            ctx.rk.as_ptr(),
-                            10,
-                            plain.as_mut_ptr(),
-                            cipher.as_ptr(),
-                        );
-                    }
-                }
-                192 => {
-                    let key: [u8; 24] = key_bytes.try_into().expect("24‑byte key");
-                    let mut ctx = AES192_ctx::default();
-                    unsafe { aes192_init(&mut ctx as *mut _, key.as_ptr()) };
-                    unsafe {
-                        aes_decrypt(
-                            ctx.rk.as_ptr(),
-                            12,
-                            plain.as_mut_ptr(),
-                            cipher.as_ptr(),
-                        );
-                    }
-                }
-                256 => {
-                    let key: [u8; 32] = key_bytes.try_into().expect("32‑byte key");
-                    let mut ctx = AES256_ctx::default();
-                    unsafe { aes256_init(&mut ctx as *mut _, key.as_ptr()) };
-                    unsafe {
-                        aes_decrypt(
-                            ctx.rk.as_ptr(),
-                            14,
-                            plain.as_mut_ptr(),
-                            cipher.as_ptr(),
-                        );
-                    }
-                }
-                _ => unreachable!(),
-            }
+        let key:    [u8; 16] = decode_hex(k_hex).try_into().unwrap();
+        let cipher: [u8; 16] = decode_hex(c_hex).try_into().unwrap();
+        let expected_plain: [u8; 16] = decode_hex(p_hex).try_into().unwrap();
 
-            let expected_plain: [u8; 16] = decode_hex(p_hex).try_into().unwrap();
-            info!(target: "test", vector = idx, key_bits = bits, ?plain, ?expected_plain, "AES decrypt vector");
-            assert_eq!(plain, expected_plain, "AES‑{bits} decrypt failed at vector #{idx}");
+        let mut ctx = AES128_ctx::default();
+        unsafe { aes128_init(&mut ctx as *mut _, key.as_ptr()) };
+
+        let mut plain = [0u8; 16];
+        unsafe {
+            aes_decrypt(
+                ctx.rk.as_ptr(),
+                10,
+                plain.as_mut_ptr(),
+                cipher.as_ptr(),
+            );
         }
+
+        assert_eq!(plain, expected_plain, "AES‑128 decrypt vector failed");
     }
+
+    #[traced_test]
+    fn decrypt_matches_reference_aes192() {
+        let &(bits, k_hex, p_hex, c_hex) = VECTORS.iter().find(|v| v.0 == 192).unwrap();
+        assert_eq!(bits, 192);
+
+        let key:    [u8; 24] = decode_hex(k_hex).try_into().unwrap();
+        let cipher: [u8; 16] = decode_hex(c_hex).try_into().unwrap();
+        let expected_plain: [u8; 16] = decode_hex(p_hex).try_into().unwrap();
+
+        let mut ctx = AES192_ctx::default();
+        unsafe { aes192_init(&mut ctx as *mut _, key.as_ptr()) };
+
+        let mut plain = [0u8; 16];
+        unsafe {
+            aes_decrypt(
+                ctx.rk.as_ptr(),
+                12,
+                plain.as_mut_ptr(),
+                cipher.as_ptr(),
+            );
+        }
+
+        assert_eq!(plain, expected_plain, "AES‑192 decrypt vector failed");
+    }
+
+    #[traced_test]
+    fn decrypt_matches_reference_aes256() {
+        let &(bits, k_hex, p_hex, c_hex) = VECTORS.iter().find(|v| v.0 == 256).unwrap();
+        assert_eq!(bits, 256);
+
+        let key:    [u8; 32] = decode_hex(k_hex).try_into().unwrap();
+        let cipher: [u8; 16] = decode_hex(c_hex).try_into().unwrap();
+        let expected_plain: [u8; 16] = decode_hex(p_hex).try_into().unwrap();
+
+        let mut ctx = AES256_ctx::default();
+        unsafe { aes256_init(&mut ctx as *mut _, key.as_ptr()) };
+
+        let mut plain = [0u8; 16];
+        unsafe {
+            aes_decrypt(
+                ctx.rk.as_ptr(),
+                14,
+                plain.as_mut_ptr(),
+                cipher.as_ptr(),
+            );
+        }
+
+        assert_eq!(plain, expected_plain, "AES‑256 decrypt vector failed");
+    }
+
 
     /// The core round functions (`aes_encrypt` ↔ `aes_decrypt`) must invert
     /// each other for AES‑128/192/256 with *random* keys and plaintext.

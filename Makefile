@@ -36,6 +36,9 @@ ACTIVE := bitcoin-sha1
 ACTIVE := bitcoin-bufferedfile
 ACTIVE := bitcoin-autofile
 ACTIVE := bitcoin-bech32m
+ACTIVE := bitcoin-vectorstream
+ACTIVE := bitcoin-string
+ACTIVE := bitcoin-serialize
 #-------------------------------[done-above]
 
 #ACTIVE := bitcoin-aes
@@ -51,14 +54,11 @@ ACTIVE := bitcoin-sha256
 ACTIVE := bitcoin-ripemd
 ACTIVE := bitcoin-rbf
 
-ACTIVE := bitcoin-poly1305
-ACTIVE := bitcoin-muhash
-ACTIVE := bitcoin-chacha
-ACTIVE := bitcoin-aes
-ACTIVE := bitcoin-serialize
-ACTIVE := bitcoin-vectorstream
 ACTIVE := bitcoin-base58
-ACTIVE := bitcoin-string
+ACTIVE := bitcoin-chacha
+ACTIVE := bitcoin-muhash
+ACTIVE := bitcoin-aes
+ACTIVE := bitcoin-poly1305
 #ACTIVE := bitcoinleveldb-filter
 
 #ACTIVE := bitcoin-client-ui
@@ -109,6 +109,19 @@ ACTIVE := bitcoin-string
 #DEFAULT := build_active
 #DEFAULT := build
 DEFAULT := test_active
+#DEFAULT := test_one
+
+INDIVIDUAL_TEST := propagate_26bit_carries_once
+INDIVIDUAL_TEST := poly1305
+INDIVIDUAL_TEST := final_carry_and_sub_p
+INDIVIDUAL_TEST := decrypt_matches_reference_aes128
+INDIVIDUAL_TEST := load_byte_validation
+INDIVIDUAL_TEST := load_byte
+INDIVIDUAL_TEST := save_byte
+INDIVIDUAL_TEST := shift_row
+INDIVIDUAL_TEST := aes_setup_round_key_validation
+INDIVIDUAL_TEST := compute_g_plus5_minus_p
+INDIVIDUAL_TEST := populate_round_zero
 
 default: $(DEFAULT)
 
@@ -123,6 +136,9 @@ build_active:
 
 test_active:
 	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) -p $(ACTIVE) --verbose
+
+test_one:
+	RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) $(INDIVIDUAL_TEST) -p $(ACTIVE) -- $(NOCAPTURE)
 
 vendor:
 	RUSTFLAGS=$(RUSTFLAGS) $(CARGO) vendor

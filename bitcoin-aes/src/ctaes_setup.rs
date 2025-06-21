@@ -19,75 +19,21 @@ crate::ix!();
   */
 #[inline(always)]
 pub fn aes_setup(
-    rounds: *mut AESState,
-    key: *const u8,
-    nkeywords: i32,
-    nrounds: i32,
+    rounds:     *mut AESState,
+    key:        *const u8,
+    nkeywords:  i32,
+    nrounds:    i32,
 ) {
     tracing::info!(
         target: "aes",
         "aes_setup – entry; rounds = {:p}, key = {:p}, nkeywords = {}, nrounds = {}",
-        rounds,
-        key,
-        nkeywords,
-        nrounds
+        rounds, key, nkeywords, nrounds
     );
 
     unsafe {
-        /* ---------- zero‑initialise the round‑key schedule ------------- */
-        for i in 0..=(nrounds as usize) {
-            (*rounds.add(i)).slice = [0u16; 8];
-        }
-
-        /* ---------- copy the raw key into the first `nkeywords` words -- */
-        let mut key_ptr = key;
-        for word in 0..(nkeywords as usize) {
-            let round_idx = word >> 2;          // which AESState
-            let col_idx = (word & 3) as i32;    // which column within that state
-            for row in 0..4 {
-                let byte = *key_ptr;
-                key_ptr = key_ptr.add(1);
-                load_byte(&mut *rounds.add(round_idx), byte, row as i32, col_idx);
-            }
-        }
-
-        /* ---------- round‑constant (rcon) and working column ----------- */
-        let mut rcon = AESState {
-            slice: [1, 0, 0, 0, 0, 0, 0, 0],
-        };
-        let mut column = AESState::default();
-        get_one_column(
-            &mut column as *mut _,
-            rounds.add(((nkeywords - 1) >> 2) as usize),
-            ((nkeywords - 1) & 3),
-        );
-
-        /* ---------- expand remaining words ---------------------------- */
-        let mut pos: i32 = 0;
-        let total_words = 4 * (nrounds + 1);
-        for i in nkeywords..total_words {
-            /* transform once per full keyword group, and additionally for AES‑256 at pos==4 */
-            if pos == 0 {
-                sub_bytes(&mut column, false);
-                key_setup_transform(&mut column as *mut _, &rcon as *const _);
-                multx(&mut rcon as *mut _);
-            } else if nkeywords > 6 && pos == 4 {
-                sub_bytes(&mut column, false);
-            }
-
-            pos += 1;
-            if pos == nkeywords {
-                pos = 0;
-            }
-
-            key_setup_column_mix(
-                &mut column as *mut _,
-                rounds.add((i >> 2) as usize),
-                rounds.add(((i - nkeywords) >> 2) as usize),
-                (i & 3),
-                ((i - nkeywords) & 3),
-            );
-        }
+        zero_schedule(rounds, nrounds);
+        populate_round_zero(rounds, key, nkeywords);
+        expand_schedule(rounds, nkeywords, nrounds);
     }
 
     tracing::info!(target: "aes", "aes_setup – exit");

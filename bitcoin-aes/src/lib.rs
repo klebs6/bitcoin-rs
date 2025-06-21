@@ -33,3 +33,8 @@ x!{multx}
 x!{print_number}
 x!{run_benchmark}
 x!{shift_rows}
+x!{load_byte}
+x!{save_bytes}
+x!{expand_schedule}
+x!{populate_round_zero}
+x!{zero_schedule}

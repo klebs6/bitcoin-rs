@@ -1,20 +1,23 @@
 // ---------------- [ File: bitcoin-aes/src/key_setup_transform.rs ]
 crate::ix!();
 
-/// Rotate the rows in s one position upwards, and xor in r
+/// Rotate the rows in `s` one position upwards (`RotWord`) and XOR with `r`.
 #[inline(always)]
 pub fn key_setup_transform(s: *mut AESState, r: *const AESState) {
     tracing::trace!(
         target: "aes",
         "key_setup_transform – s {:p}, r {:p}",
-        s,
-        r
+        s, r
     );
 
     unsafe {
         for b in 0..8 {
             let v = (*s).slice[b];
-            (*s).slice[b] = ((v >> 4) | (v << 12)) ^ (*r).slice[b];
+            /*  --------  CHANGE  ---------
+             * RotWord is a **left** rotation by one byte (= 4 lanes),
+             * so we must rotate the 16‑bit word left by 4 bits.
+             */
+            (*s).slice[b] = ((v << 4) | (v >> 12)) ^ (*r).slice[b];
         }
     }
 }
@@ -23,8 +26,7 @@ pub fn key_setup_transform(s: *mut AESState, r: *const AESState) {
 mod key_schedule_transform_validation {
     use super::*;
 
-    /// The helper must perform a one‑row upward rotation (nibble‑wise) and then
-    /// XOR with `r`, slice‑by‑slice.
+    /// `key_setup_transform` = left‑rotate by one nibble **then** XOR with `r`.
     #[traced_test]
     fn rotates_and_xors_exactly_once() {
         let mut rng = thread_rng();
@@ -34,16 +36,13 @@ mod key_schedule_transform_validation {
             let     r     = AESState::random(&mut rng);
             let mut ref_s = AESState::default();
 
-            // Reference transform.
             for b in 0..8 {
                 let v = s.slice()[b];
-                ref_s.slice[b] = ((v >> 4) | (v << 12)) ^ r.slice()[b];
+                ref_s.slice[b] = ((v << 4) | (v >> 12)) ^ r.slice()[b];
             }
 
-            // Function under test.
             unsafe { key_setup_transform(&mut s as *mut _, &r as *const _) };
 
-            debug!(?ref_s.slice, ?s.slice);
             assert_eq!(s.slice(), ref_s.slice(), "transform mismatch");
         }
     }

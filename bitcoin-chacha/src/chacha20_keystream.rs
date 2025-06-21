@@ -46,7 +46,7 @@ impl ChaCha20 {
                 for (i, chunk) in (0..64).step_by(4).enumerate() {
                     write_le32(
                         core::slice::from_raw_parts_mut(out_ptr.add(chunk), 4),
-                        x[i],
+                        x[i].into(),
                     );
                 }
 

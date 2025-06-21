@@ -162,14 +162,46 @@ pub fn ser_read_write_many_with_action_unserialize<Stream, T>(
     args.unserialize_many(s);
 }
 
+impl<'a, Stream, T> SerializeMany<Stream> for &'a T
+where
+    Stream: Write,
+    T: SerializeMany<Stream> + ?Sized,
+{
+    #[inline]
+    fn serialize_many(&self, s: &mut Stream) {
+        (**self).serialize_many(s);
+    }
+}
+
+impl<'a, Stream, T> SerializeMany<Stream> for &'a mut T
+where
+    Stream: Write,
+    T: SerializeMany<Stream> + ?Sized,
+{
+    #[inline]
+    fn serialize_many(&self, s: &mut Stream) {
+        (**self).serialize_many(s);
+    }
+}
+
+impl<'a, Stream, T> UnserializeMany<Stream> for &'a mut T
+where
+    Stream: Read,
+    T: UnserializeMany<Stream> + ?Sized,
+{
+    #[inline]
+    fn unserialize_many(&mut self, s: &mut Stream) {
+        (**self).unserialize_many(s);
+    }
+}
+
 #[cfg(test)]
 mod many_tests {
     use super::*;
     use std::io::Cursor;
 
-    /// End‑to‑end round‑trip for `ser_read_write_many_with_action_*`.
     #[traced_test]
-    fn roundtrip_two_element_tuple() {
+    fn roundtrip_two_elements() {
         let original = (0xAAu8, 0xBBCCu16);
 
         let mut buf = Cursor::new(Vec::<u8>::new());
@@ -190,16 +222,17 @@ mod many_tests {
         assert_eq!(decoded, original);
     }
 
-    /// Verify that `get_serialize_size_many` matches the actual encoded
-    /// size for a triple.
     #[traced_test]
-    fn size_many_matches_bytes_written() {
+    fn serialize_size_many_matches_actual() {
         let triple = (1u8, 2u16, false);
-        let mut buf = Cursor::new(Vec::<u8>::new());
-        triple.serialize_many(&mut buf);
-        let actual_len = buf.get_ref().len();
 
-        let computed_len = crate::get_serialize_size_many(0, &triple);
-        assert_eq!(actual_len, computed_len);
+        let mut cur = Cursor::new(Vec::<u8>::new());
+        BtcSerialize::serialize(&triple.0, &mut cur);
+        BtcSerialize::serialize(&triple.1, &mut cur);
+        BtcSerialize::serialize(&triple.2, &mut cur);
+        let manual = cur.get_ref().len();
+
+        let helper = crate::get_serialize_size_many(0, &triple);
+        assert_eq!(manual, helper);
     }
 }

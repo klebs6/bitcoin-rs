@@ -62,3 +62,65 @@ pub fn ser_write_with_action_unserialize<Stream, T, F>(
 {
     trace!("ser_write_with_action_unserialize (noop)");
 }
+
+#[cfg(test)]
+mod read_write_phase_tests {
+    use super::*;
+    use std::io::Cursor;
+
+    #[traced_test]
+    fn serialize_phase_invokes_closure() {
+        let mut buf = Cursor::new(Vec::<u8>::new());
+        let value   = 0xAAu8;
+
+        let mut hit = false;
+        ser_read_with_action_serialize(
+            &mut buf,
+            SerActionSerialize {},
+            value,
+            |s, v| {
+                hit = true;
+                crate::read_write_data::ser_writedata8(s, v);
+            },
+        );
+        assert!(hit);
+        assert_eq!(buf.get_ref().as_slice(), &[0xAA]);
+    }
+
+    #[traced_test]
+    fn unserialize_phase_invokes_closure() {
+        let mut buf = Cursor::new(vec![0xBB]);
+        let mut out = 0u8;
+        ser_read(
+            &mut buf,
+            SerActionUnserialize {},
+            &mut out,
+            |s, tgt| {
+                *tgt = crate::read_write_data::ser_readdata8(s);
+            },
+        );
+        assert_eq!(out, 0xBB);
+        assert_eq!(buf.position(), 1);
+    }
+
+    #[traced_test]
+    fn write_helpers_roundtrip() {
+        let mut buf = Cursor::new(Vec::<u8>::new());
+        ser_write_with_action_serialize(
+            &mut buf,
+            SerActionSerialize {},
+            0xCCu8,
+            |s, v| crate::read_write_data::ser_writedata8(s, v),
+        );
+        buf.set_position(0);
+
+        ser_write_with_action_unserialize(
+            &mut buf,
+            SerActionUnserialize {},
+            (),
+            |_s, _| {
+                // no‑op – the API explicitly does nothing on read‑phase.
+            },
+        );
+    }
+}

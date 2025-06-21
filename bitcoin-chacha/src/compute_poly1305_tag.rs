@@ -2,38 +2,31 @@
 crate::ix!();
 
 use generic_array::{typenum::U16, GenericArray};
-use poly1305::Key;
 
-/// Compute a Poly1305 tag for an arbitrary‑length message.
+/// Compute a Poly1305 tag for `msg` using the supplied 256‑bit `key`.
 ///
-/// The algorithm processes each 16‑byte block **as‑is**; for the
-/// final partial block (if any) we zero‑pad to 16 bytes and append a
-/// single `1` byte as specified in RFC 8439 §2.5.
+/// This version delegates the entire MAC calculation to the
+/// **constant‑time, RFC 7539‑compatible** `bitcoin_poly1305::poly1305_auth`
+/// routine, eliminating the duplicate high‑bit/padding mistakes that
+/// previously produced incorrect tags.
+///
+/// # Parameters
+/// * `key` – 32‑byte (256‑bit) one‑time key.
+/// * `msg` – The message to authenticate (any length).
+///
+/// # Returns
+/// A `GenericArray<u8, U16>` containing the 16‑byte authentication tag.
+///
+/// # Tracing
+/// Emits a `trace!` event recording the message length.
 pub fn compute_poly1305_tag(
     key: &[u8; POLY1305_KEYLEN],
     msg: &[u8],
 ) -> GenericArray<u8, U16> {
-    let key = Key::from_slice(key);
-    let mut mac = Poly1305::new(key);
-
-    // --- full 16‑byte blocks -------------------------------------------
-    for chunk in msg.chunks_exact(16) {
-        // each call to `update` expects a slice of `Block`s
-        let block = GenericArray::<u8, U16>::clone_from_slice(chunk);
-        mac.update(core::slice::from_ref(&block));
-    }
-
-    // --- trailing partial block (≤15 bytes) -----------------------------
-    let rem = msg.len() % 16;
-    if rem != 0 {
-        let mut last = [0u8; 16];
-        last[..rem].copy_from_slice(&msg[msg.len() - rem..]);
-        last[rem] = 1; // Poly1305 padding bit
-        let block = GenericArray::<u8, U16>::from(last);
-        mac.update(core::slice::from_ref(&block));
-    }
-
-    mac.finalize()
+    trace!(msg_len = msg.len(), "compute_poly1305_tag");
+    let mut tag = [0u8; POLY1305_TAGLEN];
+    poly1305_auth(&mut tag, msg, key);
+    GenericArray::clone_from_slice(&tag)
 }
 
 #[cfg(test)]

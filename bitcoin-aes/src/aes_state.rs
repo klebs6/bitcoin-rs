@@ -4,7 +4,7 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/crypto/ctaes/ctaes.h]
 
 /// Bitsliced AES state (8 × 16‑bit slices).
-#[derive(Copy,Default,Clone, Debug, Getters, Builder)]
+#[derive(PartialEq,Eq,Copy,Default,Clone, Debug, Getters, Builder)]
 #[builder(pattern = "owned")]
 #[getset(get = "pub")]
 pub struct AESState {

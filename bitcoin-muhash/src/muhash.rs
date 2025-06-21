@@ -64,28 +64,31 @@ impl MuHash3072 {
     pub fn to_num3072(in_: &[u8]) -> Num3072 {
         trace!("MuHash3072::to_num3072");
 
-        // (1) SHA‑256 of the input ------------------------------------------------
-        use sha2::{Digest, Sha256 as Sha2_256};
-        let hash = Sha2_256::digest(in_);
+        /* --------------------------------------------------------------------
+         * (1)  SHA‑256 of the input
+         * ------------------------------------------------------------------ */
+        let mut sha = Sha256::default();
+        sha.write(in_);
+        let mut key = [0u8; 32];
+        sha.finalize(&mut key);
 
-        // (2) ChaCha20 keystream using that hash as key ---------------------------
+        /* --------------------------------------------------------------------
+         * (2)  ChaCha20 keystream using that hash as key
+         * ------------------------------------------------------------------ */
         use bitcoin_chacha::ChaCha20;
-        let key_ptr = hash.as_ptr();
-        let key_len = hash.len();
-
-        // All‑zero 64‑bit nonce, exactly like the C++ reference.
-        let nonce: u64 = 0;
         let mut stream = [0u8; num_3072::BYTE_SIZE];
 
-        let mut cipher = ChaCha20::new(key_ptr, key_len);
-        cipher.setiv(nonce);
+        let mut cipher = ChaCha20::new(key.as_ptr(), key.len());
+        cipher.setiv(0);          // all‑zero 64‑bit nonce, as in C++ reference
         cipher.seek(0);
         cipher.keystream(stream.as_mut_ptr(), num_3072::BYTE_SIZE);
 
-        // (3) Interpret the keystream as a 3072‑bit integer -----------------------
+        /* --------------------------------------------------------------------
+         * (3)  Interpret the keystream as a 3072‑bit integer
+         * ------------------------------------------------------------------ */
         Num3072::new(&stream)
     }
-    
+
     /**
       | A singleton with variable sized data
       | in it.
@@ -103,16 +106,27 @@ impl MuHash3072 {
     pub fn finalize(&mut self, out: &mut u256) {
         trace!("MuHash3072::finalize");
 
-        use sha2::{Digest, Sha256 as Sha2_256};
-
+        /* --------------------------------------------------------------------
+         * (1)  Combine numerator / denominator
+         * ------------------------------------------------------------------ */
         self.numerator.divide(&self.denominator);
         self.denominator.set_to_one(); // keep object valid
 
+        /* --------------------------------------------------------------------
+         * (2)  Serialize Num3072 → little‑endian bytes
+         * ------------------------------------------------------------------ */
         let mut data = [0u8; num_3072::BYTE_SIZE];
         self.numerator.to_bytes(&mut data);
 
-        let digest = Sha2_256::digest(&data);
-        *out = u256::from_le_bytes(digest.as_slice().try_into().unwrap());
+        /* --------------------------------------------------------------------
+         * (3)  Single SHA‑256
+         * ------------------------------------------------------------------ */
+        let mut sha = Sha256::default();
+        sha.write(&data);
+        let mut digest = [0u8; 32];
+        sha.finalize(&mut digest);
+
+        *out = u256::from_le_bytes(digest);
     }
 
     /**

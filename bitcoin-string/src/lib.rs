@@ -13,6 +13,7 @@ x!{capitalize}
 x!{check}
 x!{convert_bits}
 x!{decode}
+x!{decode64}
 x!{encode}
 x!{format_money}
 x!{hex}

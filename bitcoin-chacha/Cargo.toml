@@ -1,11 +1,11 @@
 [dependencies]
-zeroize.workspace = true
-tracing.workspace = true
-getset.workspace = true
+zeroize.workspace        = true
+tracing.workspace        = true
+getset.workspace         = true
 derive_builder.workspace = true
-generic-array.workspace = true
-poly1305.workspace = true
-bitcoin-support = { path = "../bitcoin-support" }
+generic-array.workspace  = true
+bitcoin-support          = { path = "../bitcoin-support" }
+bitcoin-poly1305         = { path = "../bitcoin-poly1305" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

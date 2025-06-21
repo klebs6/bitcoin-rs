@@ -1,71 +1,82 @@
+// ---------------- [ File: bitcoin-string/src/encode.rs ]
 crate::ix!();
 
+/// Encode bytes to Base64 (RFC 4648, with `=` padding).
 pub fn encode_base64_bytes(input: &[u8]) -> String {
-    
-    todo!();
-        /*
-            static const char *pbase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const TABLE: &[u8; 64] =
+        b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    trace!("encode_base64_bytes: len={}", input.len());
 
-        std::string str;
-        str.reserve(((input.size() + 2) / 3) * 4);
-        ConvertBits<8, 6, true>([&](int v) { str += pbase64[v]; }, input.begin(), input.end());
-        while (str.size() % 4) str += '=';
-        return str;
-        */
+    let mut out = String::with_capacity(((input.len() + 2) / 3) * 4);
+    convert_bits::<8, 6, true, _, _>(input.iter().copied(), |v| {
+        out.push(TABLE[v as usize] as char)
+    });
+    while out.len() % 4 != 0 {
+        out.push('=');
+    }
+    out
 }
 
-pub fn encode_base64(str_: &String) -> String {
-    
-    todo!();
-        /*
-            return EncodeBase64(MakeUCharSpan(str));
-        */
+/// Encode a UTF‑8 string to Base64.
+pub fn encode_base64(s: &String) -> String {
+    encode_base64_bytes(s.as_bytes())
 }
 
-/**
-  | Base32 encode.
-  | 
-  | If `pad` is true, then the output will
-  | be padded with '=' so that its length
-  | is a multiple of 8.
-  |
-  */
-pub fn encode_base32_bytes(
-        input: &[u8],
-        pad:   Option<bool>) -> String {
-    let pad: bool = pad.unwrap_or(true);
-    
-    todo!();
-        /*
-            static const char *pbase32 = "abcdefghijklmnopqrstuvwxyz234567";
+/// Encode bytes to Base32 (lower‑case RFC 4648 alphabet).
+///
+/// When `pad` is `true`, output is padded with `=` to a multiple of 8.
+pub fn encode_base32_bytes(input: &[u8], pad: Option<bool>) -> String {
+    const TABLE: &[u8; 32] = b"abcdefghijklmnopqrstuvwxyz234567";
+    let pad = pad.unwrap_or(true);
+    trace!(
+        "encode_base32_bytes: len={}, pad={}",
+        input.len(),
+        pad
+    );
 
-        std::string str;
-        str.reserve(((input.size() + 4) / 5) * 8);
-        ConvertBits<8, 5, true>([&](int v) { str += pbase32[v]; }, input.begin(), input.end());
-        if (pad) {
-            while (str.size() % 8) {
-                str += '=';
-            }
+    let mut out = String::with_capacity(((input.len() + 4) / 5) * 8);
+    convert_bits::<8, 5, true, _, _>(input.iter().copied(), |v| {
+        out.push(TABLE[v as usize] as char)
+    });
+    if pad {
+        while out.len() % 8 != 0 {
+            out.push('=');
         }
-        return str;
-        */
+    }
+    out
 }
 
-/**
-  | Base32 encode.
-  | 
-  | If `pad` is true, then the output will
-  | be padded with '=' so that its length
-  | is a multiple of 8.
-  |
-  */
-pub fn encode_base32(
-        str_: &[u8],
-        pad:  Option<bool>) -> String {
-    let pad: bool = pad.unwrap_or(true);
-    
-    todo!();
-        /*
-            return EncodeBase32(MakeUCharSpan(str), pad);
-        */
+/// Base32 encode.
+/// 
+/// If `pad` is true, then the output will be padded with '=' so that its length is a multiple of 8.
+///
+/// Encode arbitrary bytes to Base32.
+pub fn encode_base32(input: &[u8], pad: Option<bool>) -> String {
+    encode_base32_bytes(input, pad)
+}
+
+#[cfg(test)]
+mod tests_base32_64_encoding {
+    use super::*;
+    use tracing::debug;
+
+    /// Full ASCII payload round‑trip through Base64.
+    #[traced_test]
+    fn ascii_roundtrip_base64() {
+        let ascii: Vec<u8> = (0x20u8..=0x7Eu8).collect();
+        let encoded = encode_base64_bytes(&ascii);
+        let decoded = crate::decode_base64(&encoded, None);   // <-- corrected path
+        assert_eq!(decoded.as_bytes(), ascii.as_slice());
+        debug!("ASCII Base64 round‑trip OK");
+    }
+
+    /// Full ASCII payload round‑trip through Base32.
+    #[traced_test]
+    fn ascii_roundtrip_base32() {
+        let ascii: Vec<u8> = (0x20u8..=0x7Eu8).collect();
+        let encoded = encode_base32_bytes(&ascii, Some(true));
+        let decoded = crate::decode::decode_base32(&encoded, None);
+        assert_eq!(decoded.as_bytes(), ascii.as_slice());
+        debug!("ASCII Base32 round‑trip OK");
+    }
 }

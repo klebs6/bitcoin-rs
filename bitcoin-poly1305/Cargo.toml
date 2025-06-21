@@ -1,3 +1,8 @@
+[dev-dependencies]
+proptest.workspace   = true
+num-bigint.workspace = true
+num-traits.workspace = true
+
 [dependencies]
 tracing.workspace     = true
 hex-literal.workspace = true

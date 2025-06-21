@@ -1,53 +1,6 @@
 // ---------------- [ File: bitcoin-aes/src/load_bytes.rs ]
 crate::ix!();
 
-/// Insert one plaintext byte (`byte_in`) into the bit‑sliced AES state `state`.
-///
-/// Each of the eight slices represents one bit‑plane over the 4 × 4 byte
-/// state matrix.  The target bit‑position for the *least‑significant* bit of
-/// `byte_in` is determined by `row` (`0‥3`) and `col` (`0‥3`) as
-/// `row * 4 + col`.  Higher‑order bits follow in the same slice, so the entire
-/// byte occupies a vertical “lane” across the eight 16‑bit words.
-///
-/// This replacement fixes a **debug‑build panic** that arose from shifting an
-/// `u8` by more than 7 bits.  The bit to be inserted is now widened to `u16`
-/// *before* the shift, ensuring all shift counts (up to 15) are within range.
-#[inline(always)]
-pub fn load_byte(
-    state: &mut AESState,
-    mut byte_in: u8,
-    row: i32,
-    col: i32,
-) {
-    //------------------------------------------------------------------------
-    // Diagnostics
-    //------------------------------------------------------------------------
-    tracing::trace!(
-        target = "aes",
-        "load_byte – entry byte = 0x{byte_in:02x}, row = {row}, col = {col}"
-    );
-
-    debug_assert!((0..4).contains(&row), "row must be 0‥3");
-    debug_assert!((0..4).contains(&col), "col must be 0‥3");
-
-    //-----------------------------------------------------------------------
-    // Compute the 0‑based bit offset inside each 16‑bit slice.
-    //-----------------------------------------------------------------------
-    let offset: u16 = (row * 4 + col) as u16;
-
-    //-----------------------------------------------------------------------
-    // Scatter the 8 bits of `byte_in` (LSB first) across the 8 slices.
-    //-----------------------------------------------------------------------
-    for slice_idx in 0..8 {
-        let lsb: u16 = (byte_in & 1) as u16;      // extract current LSB
-        state.slice[slice_idx] |= lsb << offset;  // safe: `lsb` is u16
-
-        byte_in >>= 1;                            // prepare next bit
-    }
-
-    tracing::trace!(target = "aes", "load_byte – exit");
-}
-
 /// Load 16 bytes into their bit‑sliced representation (8× u16 words ≈ AES state).
 #[inline(always)]
 pub fn load_bytes(state: *mut AESState, mut data16: *const u8) {
@@ -60,44 +13,18 @@ pub fn load_bytes(state: *mut AESState, mut data16: *const u8) {
 
     // Safety: caller guarantees both pointers are valid for the required size.
     unsafe {
-        for c in 0..4 {
-            for r in 0..4 {
+        // Column‑major loader (matches FIPS‑197 little‑endian reference
+        // implementation and the lane diagram above).
+        for col in 0..4 {
+            for row in 0..4 {
                 let byte = *data16;
                 data16 = data16.add(1);
-                load_byte(&mut *state, byte, r as i32, c as i32);
+                load_byte(&mut *state, byte, row as i32, col as i32);
             }
         }
     }
 
     tracing::trace!(target: "aes", "load_bytes – exit");
-}
-
-/// Convert a bit‑sliced `AESState` back into its canonical 16‑byte form.
-#[inline(always)]
-pub fn save_bytes(mut data16: *mut u8, state: *const AESState) {
-    tracing::trace!(
-        target: "aes",
-        "save_bytes – entry; state_ptr = {:p}, data_ptr = {:p}",
-        state,
-        data16
-    );
-
-    // Safety: caller guarantees both pointers are valid for the required size.
-    unsafe {
-        for c in 0..4 {
-            for r in 0..4 {
-                let mut v: u8 = 0;
-                for b in 0..8 {
-                    let bit = (((*state).slice[b] >> (r * 4 + c)) & 1) as u8;
-                    v |= bit << b;
-                }
-                *data16 = v;
-                data16 = data16.add(1);
-            }
-        }
-    }
-
-    tracing::trace!(target: "aes", "save_bytes – exit");
 }
 
 // ---------------- [ File: bitcoin-aes/src/load_bytes.rs ] (new)
@@ -117,7 +44,8 @@ mod load_byte_validation {
                     load_byte(&mut state, byte, row, col);
 
                     // Build reference bit‑slices.
-                    let lane = (row * 4 + col) as u16;
+                    let lane = (col * 4 + row) as u16;      // ← updated
+
                     let mut expected = [0u16; 8];
                     for bit in 0..8 {
                         if (byte >> bit) & 1 == 1 {
@@ -217,6 +145,60 @@ mod load_byte_validation {
                 original.slice(),
                 "save/load cycle corrupted the state"
             );
+        }
+    }
+
+    /// Bulk loader must equal sixteen single‑byte loads (property‑test).
+    #[traced_test]
+    fn bulk_equals_scalar() {
+        let mut rng = thread_rng();
+
+        for _ in 0..500 {
+            let mut block = [0u8; 16];
+            rng.fill(&mut block);
+
+            // bulk path
+            let mut bulk = AESState::default();
+            unsafe { load_bytes(&mut bulk as *mut _, block.as_ptr()) };
+
+            // scalar reference path
+            let mut scalar = AESState::default();
+            for (idx, byte) in block.into_iter().enumerate() {
+                let row = (idx % 4) as i32;
+                let col = (idx / 4) as i32; // column‑major
+                load_byte(&mut scalar, byte, row, col);
+            }
+
+            assert_eq!(
+                bulk.slice(),
+                scalar.slice(),
+                "bulk vs scalar mismatch"
+            );
+        }
+    }
+
+    /// Edge vectors: all‑zero, all‑FF, and a single walking‑1 bit across the
+    /// entire 128‑bit block.
+    #[traced_test]
+    fn edge_case_vectors() {
+        let mut vectors = Vec::new();
+        vectors.push([0u8; 16]);
+        vectors.push([0xFFu8; 16]);
+
+        // Walking bit
+        for i in 0..128 {
+            let mut v = [0u8; 16];
+            v[i / 8] = 1u8 << (i % 8);
+            vectors.push(v);
+        }
+
+        for v in vectors {
+            let mut st = AESState::default();
+            unsafe { load_bytes(&mut st as *mut _, v.as_ptr()) };
+
+            let pop_state: u32 = st.slice().iter().map(|w| w.count_ones()).sum();
+            let pop_block: u32 = v.iter().map(|b| b.count_ones()).sum();
+            assert_eq!(pop_state, pop_block, "population count mismatch for {v:?}");
         }
     }
 }

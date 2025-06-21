@@ -41,39 +41,45 @@ pub fn map_into_range(x: u64, n: u64) -> u64 {
     upper64
 }
 
+
 #[cfg(test)]
 mod map_into_range_tests {
     use super::*;
 
-    /// Reference implementation using 128‑bit arithmetic.
     fn reference(x: u64, n: u64) -> u64 {
         (((x as u128) * (n as u128)) >> 64) as u64
     }
 
     #[traced_test]
-    fn matches_reference_for_many_values() {
-        const N: u64 = 1_000_003; // large prime < 2^20
-        for &x in &[0, 1, 2, 3, 42, 1 << 20, u64::MAX / 2, u64::MAX] {
+    fn matches_reference() {
+        const N: u64 = 1_000_003; // arbitrary odd prime
+        for x in [
+            0u64,
+            1,
+            2,
+            3,
+            42,
+            1 << 20,
+            u64::MAX / 2,
+            u64::MAX,
+        ] {
             assert_eq!(map_into_range(x, N), reference(x, N));
         }
     }
 
-    /// Result must always be **strictly less** than `n` (and never
-    /// negative).
     #[traced_test]
-    fn result_is_in_range() {
+    fn result_always_less_than_n() {
         const N: u64 = 123_456_789;
-        for x in [0u64, 1, u64::MAX / 3, u64::MAX].iter() {
-            let y = map_into_range(*x, N);
-            assert!(y < N, "y = {y} not in [0, {N})");
+        for x in [0, 1, u64::MAX / 3, u64::MAX] {
+            let y = map_into_range(x, N);
+            assert!(y < N, "map_into_range({x}, {N}) = {y} ≥ {N}");
         }
     }
 
-    /// Degenerate case `n = 1` must *always* map to 0.
     #[traced_test]
-    fn n_equals_one_maps_to_zero() {
-        for x in [0u64, 1, 2, 3, u64::MAX].iter() {
-            assert_eq!(map_into_range(*x, 1), 0);
+    fn n_equal_one_maps_to_zero() {
+        for x in [0u64, 1, 2, 3, u64::MAX] {
+            assert_eq!(map_into_range(x, 1), 0);
         }
     }
 }

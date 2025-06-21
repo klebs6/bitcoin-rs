@@ -20,39 +20,38 @@ pub fn poly1305_auth(
     msg: &[u8],
     key: &[u8; POLY1305_KEYLEN],
 ) {
-    use tracing::{info, trace};
+    use core::convert::TryInto;
 
-    info!(len = msg.len(), "poly1305_auth: start");
+    tracing::info!(msg_len = msg.len(), "poly1305_auth: start");
 
-    // 1. key expansion
     let (r, s) = expand_key(key);
-
-    // 2. state ‑‑ h0…h4
     let mut h: LimbArr5 = [0; 5];
 
-    // 3. full 16‑byte blocks
+    // full 16‑byte blocks
     let mut m = msg;
+    let mut blk_idx = 0usize;
     while m.len() >= 16 {
-        accumulate_block(&mut h, array_ref::array_ref![m, 0, 16], true);
+        let block: &[u8; 16] = m[..16].try_into().unwrap();
+        tracing::trace!(blk_idx, block = ?*block, "poly1305_auth: process full block");
+        accumulate_block(&mut h, block, true);
         multiply_and_reduce(&mut h, &r, &s);
-        trace!(block = ?&m[..16], "processed full block");
+        blk_idx += 1;
         m = &m[16..];
     }
 
-    // 4. tail (≤15 bytes)
+    // tail (≤ 15 B)
     if !m.is_empty() {
         let mut tail = [0u8; 16];
         tail[..m.len()].copy_from_slice(m);
         tail[m.len()] = 1;
+        tracing::trace!(tail_len = m.len(), tail = ?tail, "poly1305_auth: process tail");
         accumulate_block(&mut h, &tail, false);
         multiply_and_reduce(&mut h, &r, &s);
-        trace!(tail_len = m.len(), "processed tail block");
     }
 
-    // 5. final carry & conditional subtraction
     final_carry_and_sub_p(&mut h);
+    tracing::debug!(h_final = ?h, "poly1305_auth: after final carry reduction");
 
-    // 6. add pad & write tag
     add_pad_serialize(out, &h, key);
-    info!("poly1305_auth: finished");
+    tracing::info!(tag = ?*out, "poly1305_auth: finished");
 }

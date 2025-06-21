@@ -12,7 +12,7 @@ lazy_static!{
 
 pub const CONTINUE_EXECUTION: i32 = -1;
 
-pub const G_TRANSLATION_FUN: Option<fn(_0: *const u8) -> String> = None;
+//pub const G_TRANSLATION_FUN: Option<fn(_0: *const u8) -> String> = None;
 
 /**
   | This function returns either one of EXIT_ codes

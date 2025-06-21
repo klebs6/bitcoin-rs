@@ -53,3 +53,49 @@ where
         fmt.unser(s, &mut *self.object);
     }
 }
+
+#[cfg(test)]
+mod wrapper_tests {
+    use super::*;
+    use std::io::Cursor;
+
+    #[traced_test]
+    fn wrapper_roundtrip_with_varint_formatter() {
+        let mut value  = 300u64;
+        let mut buf    = Cursor::new(Vec::<u8>::new());
+
+        /* ----------------‑‑ serialize ‑‑---------------- */
+        {
+            let wrapper = Wrapper::<
+                VarIntFormatter<{ VarIntMode::Default }>,
+                u64,
+            >::new(&mut value);
+            wrapper.serialize(&mut buf);
+        }
+
+        /* zap and read back */
+        value = 0;
+        buf.set_position(0);
+        {
+            let mut wrapper = Wrapper::<
+                VarIntFormatter<{ VarIntMode::Default }>,
+                u64,
+            >::new(&mut value);
+            wrapper.unserialize(&mut buf);
+        }
+
+        assert_eq!(value, 300);
+    }
+
+    // Higher‑ranked trait bound fixes   E0106 (“missing lifetime”) ----------------
+    #[allow(dead_code)]
+    fn _compile_time_traits()
+    where
+        for<'a> Wrapper<
+            'a,
+            VarIntFormatter<{ VarIntMode::Default }>,
+            u64,
+        >: crate::serialize::BtcSerialize<Cursor<Vec<u8>>>
+         + crate::unserialize::BtcUnserialize<Cursor<Vec<u8>>>,
+    {}
+}

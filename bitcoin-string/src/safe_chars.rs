@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-string/src/safe_chars.rs ]
 crate::ix!();
 
 /**
@@ -34,7 +35,7 @@ pub enum SafeChars
 pub const CHARS_ALPHA_NUM: &'static str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 lazy_static!{
-    static ref SAFE_CHARS: Box<[String]> = 
+    pub static ref SAFE_CHARS: Box<[String]> = 
         Box::new([
             CHARS_ALPHA_NUM.to_owned() + " .,;-_/:?@()",            // SAFE_CHARS_DEFAULT
             CHARS_ALPHA_NUM.to_owned() + " .,;-_?@",                // SAFE_CHARS_UA_COMMENT

@@ -41,6 +41,7 @@ impl<'a, const Limit: usize> LimitedStringFormatter<'a, Limit> {
     }
 }
 
+
 #[cfg(test)]
 mod limited_string_formatter_tests {
     use super::*;
@@ -48,75 +49,71 @@ mod limited_string_formatter_tests {
 
     const LIMIT: usize = 16;
 
-    /// Round‑trip strings whose length is *strictly below* the limit.
+    /// Round‑trip of a short string.
     #[traced_test]
     fn roundtrip_short_string() {
         let original = "hello".to_string();
-        let mut cur = Cursor::new(Vec::<u8>::new());
-
-        // Serialise
-        let mut scratch = String::new();
-        let mut fmt_ser = LimitedStringFormatter::<LIMIT> { item: &mut scratch };
-        fmt_ser.ser(&mut cur, &original);
-
-        // Deserialise
-        let mut decoded = String::new();
-        let mut fmt_de = LimitedStringFormatter::<LIMIT> { item: &mut decoded };
-        cur.set_position(0);
-        fmt_de.unser(&mut cur, &mut decoded);
-
-        assert_eq!(decoded, original);
-    }
-
-    /// Boundary‑value: a string whose length is *exactly* the allowed
-    /// limit must succeed.
-    #[traced_test]
-    fn exactly_at_limit_is_ok() {
-        let original = "X".repeat(LIMIT);
         let mut buf = Cursor::new(Vec::<u8>::new());
-        let mut tmp = String::new();
-        let mut fmt = LimitedStringFormatter::<LIMIT> { item: &mut tmp };
 
+        // ── Serialise ──
+        let mut scratch = String::new();
+        let mut fmt = LimitedStringFormatter::<LIMIT> { item: &mut scratch };
         fmt.ser(&mut buf, &original);
 
-        buf.set_position(0);
+        // ── Deserialise ──
         let mut decoded = String::new();
-        let mut fmt2 = LimitedStringFormatter::<LIMIT> { item: &mut decoded };
+        let mut dummy_holder = String::new();          // avoids double‑borrow
+        let mut fmt2 = LimitedStringFormatter::<LIMIT> { item: &mut dummy_holder };
+        buf.set_position(0);
         fmt2.unser(&mut buf, &mut decoded);
 
         assert_eq!(decoded, original);
     }
 
-    /// Attempting to decode a string that *exceeds* the configured limit
-    /// must panic.  We do not match the exact message.
+    #[traced_test]
+    fn exactly_limit_ok() {
+        let s = "X".repeat(LIMIT);
+        let mut cur = Cursor::new(Vec::<u8>::new());
+
+        let mut tmp = String::new();
+        LimitedStringFormatter::<LIMIT> { item: &mut tmp }.ser(&mut cur, &s);
+
+        cur.set_position(0);
+        let mut decoded = String::new();
+        let mut tmp2 = String::new();
+        LimitedStringFormatter::<LIMIT> { item: &mut tmp2 }.unser(&mut cur, &mut decoded);
+
+        assert_eq!(decoded, s);
+    }
+
     #[test]
     #[should_panic]
     fn oversize_panics() {
-        let original = "Y".repeat(LIMIT + 1);
-        let mut buf = Cursor::new(Vec::<u8>::new());
-        let mut tmp = String::new();
-        let mut fmt = LimitedStringFormatter::<LIMIT> { item: &mut tmp };
-        fmt.ser(&mut buf, &original);
+        let s = "Y".repeat(LIMIT + 1);
+        let mut cur = Cursor::new(Vec::<u8>::new());
 
-        buf.set_position(0);
+        let mut tmp = String::new();
+        LimitedStringFormatter::<LIMIT> { item: &mut tmp }.ser(&mut cur, &s);
+
+        cur.set_position(0);
         let mut decoded = String::new();
-        let mut fmt2 = LimitedStringFormatter::<LIMIT> { item: &mut decoded };
-        fmt2.unser(&mut buf, &mut decoded);
+        let mut tmp2 = String::new();
+        LimitedStringFormatter::<LIMIT> { item: &mut tmp2 }.unser(&mut cur, &mut decoded);
     }
 
-    /// Empty strings are handled correctly.
     #[traced_test]
-    fn empty_string_roundtrip() {
-        let original = String::new();
-        let mut buf = Cursor::new(Vec::<u8>::new());
-        let mut tmp = String::new();
-        let mut fmt = LimitedStringFormatter::<LIMIT> { item: &mut tmp };
-        fmt.ser(&mut buf, &original);
+    fn empty_roundtrip() {
+        let s = String::new();
+        let mut cur = Cursor::new(Vec::<u8>::new());
 
-        buf.set_position(0);
-        let mut decoded = "non‑empty".to_string();
-        let mut fmt2 = LimitedStringFormatter::<LIMIT> { item: &mut decoded };
-        fmt2.unser(&mut buf, &mut decoded);
-        assert_eq!(decoded, original);
+        let mut tmp = String::new();
+        LimitedStringFormatter::<LIMIT> { item: &mut tmp }.ser(&mut cur, &s);
+
+        cur.set_position(0);
+        let mut decoded = "placeholder".to_string();
+        let mut tmp2 = String::new();
+        LimitedStringFormatter::<LIMIT> { item: &mut tmp2 }.unser(&mut cur, &mut decoded);
+
+        assert!(decoded.is_empty());
     }
 }

@@ -18,29 +18,67 @@ crate::ix!();
   |
   */
 pub fn format_money(n: Amount) -> String {
-    
-    todo!();
-        /*
-            // Note: not using straight sprintf here because we do NOT want
-        // localized number formatting.
-        const_assert(COIN > 1);
-        int64_t quotient = n / COIN;
-        int64_t remainder = n % COIN;
-        if (n < 0) {
-            quotient = -quotient;
-            remainder = -remainder;
+    trace!("format_money: input = {}", n);
+    const_assert!(COIN > 1);
+
+    let mut quotient = n / COIN;
+    let mut remainder = n % COIN;
+
+    /* work with positive values for string‑formatting */
+    let negative = n < 0;
+    if negative {
+        quotient = -quotient;
+        remainder = -remainder;
+    }
+
+    let mut out = format!("{quotient}.{remainder:08}");
+
+    /* trim super‑fluous trailing ‘0’s, but never past the decimal point */
+    while out.ends_with('0') {
+        let len = out.len();
+        /* stop if the previous character is the decimal point */
+        if len >= 2 && out.as_bytes()[len - 2] == b'.' {
+            break;
         }
-        std::string str = strprintf("%d.%08d", quotient, remainder);
+        out.pop();
+    }
 
-        // Right-trim excess zeros before the decimal point:
-        int nTrim = 0;
-        for (int i = str.size()-1; (str[i] == '0' && IsDigit(str[i-2])); --i)
-            ++nTrim;
-        if (nTrim)
-            str.erase(str.size()-nTrim, nTrim);
+    if negative {
+        out.insert(0, '-');
+    }
+    trace!("format_money: output = {}", out);
+    out
+}
 
-        if (n < 0)
-            str.insert((unsigned int)0, 1, '-');
-        return str;
-        */
+// --------------[ bitcoin-string/src/format_money.rs ]--------------
+
+#[cfg(test)]
+mod tests_format_money {
+    use super::*;
+
+    /// A satoshi is the smallest unit; `COIN` == 100 000 000.
+    const ONE_BTC: Amount = COIN as Amount;
+
+    #[traced_test]
+    fn renders_full_coin() {
+        assert_eq!(format_money(ONE_BTC), "1.0");
+    }
+
+    #[traced_test]
+    fn keeps_sign_and_decimal_alignment() {
+        let amt = -(ONE_BTC * 3 - 2500); // −2.999975 BTC
+        assert_eq!(format_money(amt), "-2.999975");
+    }
+
+    #[traced_test]
+    fn zero_is_single_zero() {
+        assert_eq!(format_money(0), "0.0");
+    }
+
+    #[traced_test]
+    fn trims_trailing_zeros() {
+        // 42 BTC + 123 450 sat == 42.0012345 BTC
+        let amt = ONE_BTC * 42 + 123_450;
+        assert_eq!(format_money(amt), "42.0012345");
+    }
 }

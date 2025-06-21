@@ -173,4 +173,3 @@ fn base58_random_encode_decode_roundtrip() {
         assert_eq!(decoded, data, "case {n}: round‑trip mismatch");
     }
 }
-

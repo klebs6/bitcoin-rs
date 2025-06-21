@@ -67,3 +67,51 @@ where
         self
     }
 }
+
+#[cfg(test)]
+mod size_computer_tests {
+    use super::*;
+    use std::io::Cursor;
+
+    #[test]
+    fn manual_byte_accounting() {
+        let mut sc = SizeComputer::new(42);
+        assert_eq!(sc.size(),        0);
+        assert_eq!(sc.get_version(), 42);
+
+        sc.add_bytes(5);
+        sc.write_ptr(std::ptr::null(), 7);
+        sc.seek(11);
+
+        assert_eq!(sc.size(), 5 + 7 + 11);
+    }
+
+    #[test]
+    fn write_trait_counts() {
+        let mut sc = SizeComputer::new(0);
+        std::io::Write::write_all(&mut sc, &[0u8; 16]).unwrap();
+        assert_eq!(sc.size(), 16);
+    }
+
+    #[test]
+    fn shl_operator_counts() {
+        let n: u32 = 0xDEAD_BEEF;          // 4 bytes
+        let sc = SizeComputer::new(0) << &n;
+        assert_eq!(sc.size(), 4);
+    }
+
+    #[test]
+    fn size_matches_real_serialisation() {
+        // a 2‑tuple (there is an impl for (K,V), but not for 3‑ or 4‑tuples)
+        let tpl = (0x11u8, 0x2233u16);
+
+        let actual = {
+            let mut cur = Cursor::new(Vec::<u8>::new());
+            BtcSerialize::serialize(&tpl, &mut cur);
+            cur.into_inner().len()
+        };
+
+        let counted = (SizeComputer::new(0) << &tpl).size();
+        assert_eq!(counted, actual);
+    }
+}

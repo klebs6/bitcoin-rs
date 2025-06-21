@@ -315,3 +315,81 @@ where
         *self = std::sync::Arc::new(tmp);
     }
 }
+
+impl<'a, Stream, T> BtcUnserialize<Stream> for &'a mut T
+where
+    Stream: Read,
+    T: BtcUnserialize<Stream> + ?Sized,
+{
+    #[inline]
+    fn unserialize(&mut self, s: &mut Stream) {
+        (**self).unserialize(s);
+    }
+}
+
+#[cfg(test)]
+mod unserialize_roundtrip_tests {
+    use super::*;
+    use crate::serialize::BtcSerialize;
+    use std::{
+        io::Cursor,
+        sync::Arc,
+    };
+    use crate::imports::{HashMap, HashSet};   // crate‑re‑exported aliases
+
+    fn roundtrip<T>(mut value: T)
+    where
+        T: Clone
+            + PartialEq
+            + std::fmt::Debug
+            + Default
+            + BtcSerialize<Cursor<Vec<u8>>>
+            + BtcUnserialize<Cursor<Vec<u8>>>,
+    {
+        let mut cur = Cursor::new(Vec::<u8>::new());
+        BtcSerialize::serialize(&value, &mut cur);
+        cur.set_position(0);
+
+        let mut decoded = T::default();
+        decoded.unserialize(&mut cur);
+
+        assert_eq!(decoded, value);
+    }
+
+    #[traced_test]
+    fn primitives_and_containers() {
+        roundtrip(0xABu8);
+        roundtrip(-0x1234i16);
+        roundtrip(0xBEEFu16);
+        roundtrip(0xDEAD_BEEFu32);
+        roundtrip(0x0123_4567_89AB_CDEFu64);
+        roundtrip(true);
+        roundtrip([1u8, 2, 3, 4]);
+        roundtrip("hello‑unserialize".to_owned());
+        roundtrip(vec![1u8, 2, 3]);
+
+        let mut hm: HashMap<u8, u8> = HashMap::new();
+        hm.insert(1, 2);
+        roundtrip(hm);
+
+        let mut hs: HashSet<u8> = HashSet::new();
+        hs.insert(42);
+        roundtrip(hs);
+
+        roundtrip(Box::new(0x55AAu16));
+        roundtrip(Arc::new(0x1122_3344u32));
+
+        roundtrip((0xCCu8, 0xDDDDu16));   // 2‑tuple
+    }
+
+    #[traced_test]
+    fn fill_immutable_slice() {
+        let mut backing = [0u8; 3];
+        let mut span: &[u8] = &backing;          // immutable view
+
+        let mut cur = Cursor::new(vec![0xAA, 0xBB, 0xCC]);
+        span.unserialize(&mut cur);
+
+        assert_eq!(span, &[0xAA, 0xBB, 0xCC]);
+    }
+}

@@ -115,6 +115,7 @@ where
     }
 }
 
+/*
 impl<'a, Stream> BtcSerialize<Stream> for &'a [u8]
 where
     Stream: Write,
@@ -126,6 +127,7 @@ where
             .expect("I/O error while writing byte slice");
     }
 }
+*/
 
 impl<Stream> BtcSerialize<Stream> for bool
 where
@@ -295,5 +297,223 @@ where
     fn serialize(&self, os: &mut Stream) {
         (**self).serialize(os);
         trace!("serialize Arc<T>");
+    }
+}
+
+impl<Stream, T> BtcSerialize<Stream> for &T
+where
+    Stream: std::io::Write,
+    T: BtcSerialize<Stream> + ?Sized,
+{
+    #[inline]
+    fn serialize(&self, s: &mut Stream) {
+        (*self).serialize(s);
+    }
+}
+
+impl<Stream, T> BtcSerialize<Stream> for &mut T
+where
+    Stream: std::io::Write,
+    T: BtcSerialize<Stream> + ?Sized,
+{
+    #[inline]
+    fn serialize(&self, s: &mut Stream) {
+        (**self).serialize(s);
+    }
+}
+
+#[cfg(test)]
+mod macros_and_serialize_tests {
+    use super::*;
+    use std::{io::Cursor, sync::Arc};
+    use crate::imports::{HashMap, HashSet};
+
+    #[traced_test]
+    fn serialize_smoke_primitive_roundtrip_via_traits() {
+        let original : u32 = 0x12345678;
+        let mut buf  = Cursor::new(Vec::<u8>::new());
+        serialize::BtcSerialize::serialize(&original, &mut buf);
+
+        buf.set_position(0);
+        let mut decoded = 0u32;
+        decoded.unserialize(&mut buf);
+
+        assert_eq!(decoded, original);
+    }
+
+    /* generic helper */
+    fn roundtrip<T>(mut value: T)
+    where
+        T: Clone
+        + PartialEq
+        + std::fmt::Debug
+        + Default
+        + BtcSerialize<Cursor<Vec<u8>>>
+        + BtcSerialize<crate::size_computer::SizeComputer>
+        + BtcUnserialize<Cursor<Vec<u8>>>,
+    {
+        let mut buf = Cursor::new(Vec::<u8>::new());
+        value.serialize(&mut buf);
+
+        assert_eq!(get_serialize_size(&value, None), buf.get_ref().len());
+
+        buf.set_position(0);
+        let mut decoded = T::default();
+        decoded.unserialize(&mut buf);
+
+        assert_eq!(decoded, value);
+    }
+
+    /* --------------------------------------------------------------------- */
+    /*  1.  Primitive & composite type coverage                              */
+    /* --------------------------------------------------------------------- */
+    #[traced_test]
+    fn primitives_and_containers_roundtrip() {
+        roundtrip(0i8);
+        roundtrip(0xABu8);
+        roundtrip(-0x1234i16);
+        roundtrip(0xBEEFu16);
+        roundtrip(-0x1234_5678i32);
+        roundtrip(0xDEAD_BEEFu32);
+        roundtrip(-0x1234_5678_9ABCi64);
+        roundtrip(0x0123_4567_89AB_CDEFu64);
+        roundtrip(true);
+        roundtrip(false);
+        roundtrip([0u8; 4]);
+        roundtrip("hello‑βitcoin".to_string());
+
+        /* Vec, Box, Arc ---------------------------------------------------- */
+        roundtrip(vec![1u8, 2, 3, 4, 5]);
+        roundtrip(Box::new(0x55AAu16));
+        roundtrip(Arc::new(0x1122_3344u32));
+
+        /* Tuple ------------------------------------------------------------ */
+        roundtrip((0xAAu8, 0xBBBBu16));
+
+        /* HashMap & HashSet ------------------------------------------------ */
+        let mut hm: HashMap<u8, u8> = HashMap::new();
+        hm.insert(1, 2);
+        hm.insert(3, 4);
+        roundtrip(hm);
+
+        let mut hs: HashSet<u8> = HashSet::new();
+        hs.insert(42);
+        hs.insert(11);
+        roundtrip(hs);
+    }
+
+    /* --------------------------------------------------------------------- */
+    /*  2.  Macros: varint! / compactsize! / limited_string!                 */
+    /* --------------------------------------------------------------------- */
+    #[traced_test]
+    fn varint_macro_roundtrip() {
+        let mut n = 300u64;
+        let mut buf = Cursor::new(Vec::<u8>::new());
+
+        /* serialize via macro wrapper ------------------------------------- */
+        varint!(&mut n).serialize(&mut buf);
+
+        /* wipe & read back ------------------------------------------------ */
+        n = 0;
+        buf.set_position(0);
+        varint!(&mut n).unserialize(&mut buf);
+        assert_eq!(n, 300);
+    }
+
+    #[traced_test]
+    fn compactsize_macro_roundtrip() {
+        let mut n = crate::constants::MAX_SIZE; // large but allowed
+        let mut buf = Cursor::new(Vec::<u8>::new());
+
+        compactsize!(&mut n).serialize(&mut buf);
+        n = 0;
+        buf.set_position(0);
+        compactsize!(&mut n).unserialize(&mut buf);
+        assert_eq!(n, crate::constants::MAX_SIZE);
+    }
+
+    /* limited_string! borrow‑checker regression test */
+    #[traced_test]
+    fn limited_string_macro_roundtrip() {
+        const LIMIT: usize = 16;
+        let original = "hello".to_string();
+
+        let mut buf = Cursor::new(Vec::<u8>::new());
+        {
+            let mut scratch = String::new();
+            limited_string!(&mut scratch, LIMIT).ser(&mut buf, &original);
+        }
+
+        buf.set_position(0);
+        let mut decoded = String::new();
+        {
+            let mut scratch = String::new();
+            limited_string!(&mut scratch, LIMIT).unser(&mut buf, &mut decoded);
+        }
+
+        assert_eq!(decoded, original);
+    }
+
+    /* broad coverage identical to the macro layer (kept concise here) */
+    #[traced_test]
+    fn primitives_roundtrip() {
+        roundtrip(0x1234_5678u32);
+        roundtrip(true);
+        roundtrip(vec![1u8, 2, 3]);
+        let mut hm = HashMap::<u8, u8>::new();
+        hm.insert(1, 1);
+        roundtrip(hm);
+        let mut hs = HashSet::<u8>::new();
+        hs.insert(7);
+        roundtrip(hs);
+        roundtrip("bitcoin‑serialize".to_string());
+        roundtrip(Arc::new(42u64));
+    }
+
+    /* --------------------------------------------------------------------- */
+    /*  3.  Macros: readwrite! / ser_read! / ser_write!                      */
+    /* --------------------------------------------------------------------- */
+    #[traced_test]
+    fn readwrite_macro_both_phases() {
+        /* serialize phase */
+        let mut s = Cursor::new(Vec::<u8>::new());
+        let a:  u8  = 0x11;
+        let b:  u16 = 0x2233;
+        readwrite!(&mut s, SerActionSerialize {}, a, b);
+        assert_eq!(s.get_ref().as_slice(), &[0x11, 0x33, 0x22]);
+
+        /* unserialize phase */
+        let mut s = Cursor::new(vec![0xAA, 0x55, 0x44]);
+        let mut x: u8  = 0;
+        let mut y: u16 = 0;
+        readwrite!(&mut s, SerActionUnserialize {}, &mut x, &mut y);
+        assert_eq!((x, y), (0xAA, 0x4455));
+    }
+
+    #[traced_test]
+    fn ser_read_and_ser_write_macros() {
+        /* prepare buffer with one byte ------------------------------------ */
+        let mut buf = Cursor::new(Vec::<u8>::new());
+
+        /* use ser_write! during serialize phase --------------------------- */
+        ser_write!(
+            &mut buf,
+            SerActionSerialize {},
+            0xFEu8,
+            |stream, val| { ser_writedata8(stream, val); }
+        );
+        assert_eq!(buf.get_ref().as_slice(), &[0xFE]);
+
+        /* use ser_read! during read phase --------------------------------- */
+        /* read it back */
+        buf.set_position(0);
+        let mut out = 0u8;
+        ser_read!(
+            &mut buf,
+            SerActionUnserialize {},
+            &mut out,
+            |stream, tgt| { *tgt = ser_readdata8(stream); }
+        );
+        assert_eq!(out, 0xFE);
     }
 }
