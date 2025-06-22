@@ -14,12 +14,10 @@ pub struct HashWriter {
 
 impl<T> Shl<&T> for HashWriter
 where
-    T: AsRef<[u8]>,
+    T: AsRef<[u8]> + ?Sized,          // ← `?Sized` so `&[u8]` works
 {
     type Output = HashWriter;
 
-    /// Feed an arbitrary byte slice into the running hash stream
-    /// using the `writer << &bytes` syntax familiar from C++.
     #[inline]
     fn shl(mut self, rhs: &T) -> Self::Output {
         self.write(rhs.as_ref());
@@ -51,7 +49,7 @@ impl HashWriter {
 
     #[instrument(level = "trace", skip(self, pch))]
     pub fn write(&mut self, pch: &[u8]) {
-        self.ctx.write(pch.as_ptr(), pch.len());
+        self.ctx.write(pch);
     }
 
     /**
@@ -64,12 +62,12 @@ impl HashWriter {
     #[instrument(level = "debug", skip(self))]
     pub fn get_hash(&mut self) -> u256 {
         let mut first = [0u8; 32];
-        self.ctx.finalize(first);
+        self.ctx.finalize(&mut first);
 
         self.ctx.reset();
-        self.ctx.write(first.as_ptr(), first.len());
+        self.ctx.write(&first);
         let mut second = [0u8; 32];
-        self.ctx.finalize(second);
+        self.ctx.finalize(&mut second);
 
         u256::from_le_bytes(second)
     }
@@ -84,7 +82,7 @@ impl HashWriter {
     #[instrument(level = "debug", skip(self))]
     pub fn getsha256(&mut self) -> u256 {
         let mut buf = [0u8; 32];
-        self.ctx.finalize(buf);
+        self.ctx.finalize(&mut buf);
         u256::from_le_bytes(buf)
     }
 
@@ -103,23 +101,18 @@ impl HashWriter {
 }
 
 /**
-  | Return a CHashWriter primed for tagged
-  | hashes (as specified in BIP 340).
-  | 
-  | The returned object will have SHA256(tag)
-  | written to it twice (= 64 bytes).
-  | 
-  | A tagged hash can be computed by feeding
-  | the message into this object, and then
-  | calling CHashWriter::GetSHA256().
+  | Return a `HashWriter` primed for tagged hashes
+  | (as specified in BIP‑340).
   |
+  | The returned object will have `SHA256(tag)`
+  | written to it twice (= 64 bytes).
   */
 pub fn tagged_hash(tag: &str) -> HashWriter {
     // Hash the tag once …
     let mut taghash = [0u8; 32];
     let mut sha = Sha256::new();
-    sha.write(tag.as_ptr(), tag.len());
-    sha.finalize(taghash);
+    sha.write(tag.as_bytes());
+    sha.finalize(&mut taghash);
 
     // … prime a writer with the tag hash twice.
     let mut writer = HashWriter::new(SER_GETHASH as i32, 0);

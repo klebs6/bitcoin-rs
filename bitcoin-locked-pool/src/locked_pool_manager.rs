@@ -27,36 +27,29 @@ pub struct LockedPoolManager {
     base: LockedPool,
 }
 
-lazy_static!{
-    /*
-    static LockedPoolManager* _instance;
-    LockedPoolManager* LockedPoolManager::_instance = nullptr;
-    */
-}
-
 impl LockedPoolManager {
 
-    /**
-      | Return the current instance, or create
-      | it once
-      |
-      */
-    pub fn instance() -> &'static mut LockedPoolManager {
-        
-        todo!();
-        /*
-            static std::once_flag init_flag;
-            std::call_once(init_flag, LockedPoolManager::CreateInstance);
-            return *LockedPoolManager::_instance;
-        */
+    /// Obtain the global instance (lazily initialised once, in a thread‑safe way).
+    pub fn instance() -> &'static mut Self {
+        use once_cell::sync::OnceCell;
+        static INSTANCE: OnceCell<LockedPoolManager> = OnceCell::new();
+        INSTANCE.get_or_init(|| {
+            #[cfg(windows)]
+            let alloc: Box<dyn LockedPageAllocator> = Box::new(
+                bitcoin_locked_page_allocator::Win32LockedPageAllocator::default(),
+            );
+            #[cfg(unix)]
+            let alloc: Box<dyn LockedPageAllocator> = Box::new(
+                bitcoin_locked_page_allocator::PosixLockedPageAllocator::default(),
+            );
+            Self::new(alloc)
+        })
     }
-    
-    pub fn new(_allocator_in: Box<dyn LockedPageAllocator>) -> Self {
-    
-        todo!();
-        /*
-            : LockedPool(std::move(allocator_in), &LockedPoolManager::LockingFailed)
-        */
+
+    fn new(allocator: Box<dyn LockedPageAllocator>) -> Self {
+        Self {
+            base: LockedPool::new(allocator, Some(Self::locking_failed)),
+        }
     }
     
     /**
@@ -64,36 +57,18 @@ impl LockedPoolManager {
       | user here
       |
       */
-    pub fn locking_failed(&mut self) -> bool {
-        
-        todo!();
-        /*
-            // TODO: log something but how? without including util.h
-        return true;
-        */
+    fn locking_failed() -> bool {
+        warn!("LockedPoolManager: locking pages failed – continuing unreliably");
+        true // allow operation to continue, mirroring Bitcoin Core behaviour
     }
-    
-    /**
-      | Create a new LockedPoolManager specialized
-      | to the OS
-      |
-      */
-    pub fn create_instance(&mut self)  {
-        
-        todo!();
-        /*
-            // Using a local static instance guarantees that the object is initialized
-        // when it's first needed and also deinitialized after all objects that use
-        // it are done with it.  I can think of one unlikely scenario where we may
-        // have a static deinitialization order/problem, but the check in
-        // LockedPoolManagerBase's destructor helps us detect if that ever happens.
-    #ifdef WIN32
-        std::unique_ptr<LockedPageAllocator> allocator(new Win32LockedPageAllocator());
-    #else
-        std::unique_ptr<LockedPageAllocator> allocator(new PosixLockedPageAllocator());
-    #endif
-        static LockedPoolManager instance(std::move(allocator));
-        LockedPoolManager::_instance = &instance;
-        */
-    }
+}
+
+// Delegate all `LockedPool` API surface.
+impl Deref for LockedPoolManager {
+    type Target = LockedPool;
+    fn deref(&self) -> &Self::Target { &self.base }
+}
+
+impl DerefMut for LockedPoolManager {
+    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.base }
 }

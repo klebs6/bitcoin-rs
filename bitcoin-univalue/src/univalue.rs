@@ -3,8 +3,8 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/univalue/include/univalue.h]
 
-#[derive(Setters,Getters,Clone,Debug)]
-#[getset(get="pub",set="pub")]
+#[derive(Setters,MutGetters,Getters,Clone,Debug)]
+#[getset(get="pub",get_mut="pub",set="pub")]
 pub struct UniValue {
 
     typ:    uni_value::VType,
@@ -23,7 +23,7 @@ lazy_static!{
 
 pub mod uni_value {
 
-    #[derive(PartialEq,Eq,Clone,Debug)]
+    #[derive(Copy,PartialEq,Eq,Clone,Debug)]
     pub enum VType { 
         VNULL, 
         VOBJ, 
@@ -74,49 +74,44 @@ impl UniValue {
         }
         uv
     }
-    
+
+    /// Return `true` when the *values* vector is empty.
+    #[inline]
     pub fn empty(&self) -> bool {
-        
-        todo!();
-        /*
-            return (values.size() == 0);
-        */
+        self.values.is_empty()
     }
-    
+
+    /// Number of child values (arrays/objects) or `0`
+    /// for scalars.
+    #[inline]
     pub fn size(&self) -> usize {
-        
-        todo!();
-        /*
-            return values.size();
-        */
+        self.values.len()
     }
-    
-    pub fn exists(&self, key: &String) -> bool {
-        
-        todo!();
-        /*
-            size_t i; return findKey(key, i);
-        */
+
+    /// `true` if *key* exists in this object.
+    #[inline]
+    pub fn exists(&self, key: &str) -> bool {
+        let mut idx = 0usize;
+        self.find_key(key, &mut idx)
     }
-    
+
+    /// Shorthand for `get_type()` in the C++ original.
+    #[inline]
     pub fn ty(&self) -> uni_value::VType {
-        
-        todo!();
-        /*
-            return getType();
-        */
+        *self.typ()
     }
-    
-    pub fn find_value(&mut self, 
-        obj:  &UniValue,
-        name: &str) -> &UniValue {
-        
-        todo!();
-        /*
-        
-        */
+
+    /// Linear search helper (same algorithm as upstream).
+    pub fn find_key(&self, key: &str, ret_idx: &mut usize) -> bool {
+        for (i, k) in self.keys.iter().enumerate() {
+            if k == key {
+                *ret_idx = i;
+                return true;
+            }
+        }
+        false
     }
-    
+
     /// Clear the current value, turning it into **null**.
     #[instrument(level = "trace", skip(self))]
     pub fn clear(&mut self) {
@@ -126,23 +121,6 @@ impl UniValue {
         self.values.clear();
     }
  
-    pub fn find_key(&self, 
-        key:     &String,
-        ret_idx: &mut usize) -> bool {
-        
-        todo!();
-        /*
-            for (size_t i = 0; i < keys.size(); i++) {
-            if (keys[i] == key) {
-                retIdx = i;
-                return true;
-            }
-        }
-
-        return false;
-        */
-    }
-    
     pub fn check_object(&self, t: &HashMap<String,uni_value::VType>) -> bool {
         
         todo!();
@@ -164,5 +142,26 @@ impl UniValue {
 
         return true;
         */
+    }
+}
+
+#[cfg(test)]
+mod univalue_aux_spec {
+    use super::*;
+
+    #[traced_test]
+    fn helpers_behave() {
+        let mut obj = UniValue::new(uni_value::VType::VOBJ, None);
+        assert!(obj.empty());
+        assert_eq!(obj.size(), 0);
+
+        obj.keys_mut().push("k".into());
+        obj.values_mut().push(7u64.into());
+
+        assert!(!obj.empty());
+        assert_eq!(obj.size(), 1);
+        assert!(obj.exists("k"));
+        assert!(!obj.exists("nope"));
+        assert_eq!(obj.ty(), uni_value::VType::VOBJ);
     }
 }

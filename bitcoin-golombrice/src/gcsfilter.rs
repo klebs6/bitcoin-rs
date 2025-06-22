@@ -32,19 +32,25 @@ pub struct GCSFilter {
 }
 
 impl From<Option<GcsFilterParams>> for GCSFilter {
-    /// Create an *empty* filter with given (or default) parameters.
     fn from(params: Option<GcsFilterParams>) -> Self {
         let params = params.unwrap_or_default();
-        trace!(target: "gcsfilter", ?params, "initialising empty GCSFilter");
+
+        // Encode CompactSize(0) so the empty filter is fully serialised.
+        let mut encoded = Vec::<u8>::new();
+        {
+            let mut w = CVectorWriter::new(GCS_SER_TYPE, GCS_SER_VERSION, &mut encoded, 0);
+            write_compact_size(&mut w, 0);
+        }
+
+        trace!(target: "gcsfilter", "initialised empty GCSFilter");
         Self {
             params,
             n: 0,
             f: 0,
-            encoded: Vec::new(),
+            encoded,
         }
     }
 }
-
 
 impl GCSFilter {
 
@@ -66,20 +72,12 @@ impl GCSFilter {
       |
       */
     pub fn hash_to_range(&self, element: &GcsFilterElement) -> u64 {
-        
         let mut hasher = SipHasher::new_with_keys(
-            self.params.siphash_k0,
-            self.params.siphash_k1
+            *self.params.siphash_k0(),
+            *self.params.siphash_k1(),
         );
-
-        let slice = unsafe {
-            std::slice::from_raw_parts(element.as_ptr(), element.len())
-        };
-
-        hasher.write(slice);
-
+        hasher.write(element);
         let hash = hasher.finish();
-
         map_into_range(hash, self.f)
     }
     
@@ -97,13 +95,13 @@ impl GCSFilter {
 
         hashed_elements
     }
-    
-    /// Re‑hydrate a filter from raw encoding.
+
     pub fn new_with_encoded_filter(
         params: &GcsFilterParams,
         encoded_filter: Vec<u8>,
     ) -> Self {
         info!(target: "gcsfilter", bytes = encoded_filter.len(), "decoding GCSFilter");
+
         let mut stream = VectorReader::new(
             GCS_SER_TYPE.try_into().unwrap(),
             GCS_SER_VERSION.try_into().unwrap(),
@@ -111,16 +109,13 @@ impl GCSFilter {
             0,
         );
 
-        // 1. Read element count *N*.
         let n_u64 = read_compact_size(&mut stream, None);
-        let n = u32::try_from(n_u64)
-            .expect("N must be < 2^32");
-        let f = n as u64 * params.m() as u64;
+        let n = u32::try_from(n_u64).expect("N must be < 2^32");
+        let f = n as u64 * *params.m() as u64;
 
-        // 2. Verify encoded data length by actually decoding.
         let mut bitreader = BitStreamReader::<VectorReader>::new(&mut stream);
         for _ in 0..n {
-            let _ = golomb_rice_decode(&mut bitreader, params.p());
+            let _ = golomb_rice_decode(&mut bitreader, *params.p());
         }
         if !stream.empty() {
             error!(target: "gcsfilter", "encoded_filter contains excess data");
@@ -134,17 +129,16 @@ impl GCSFilter {
             encoded: encoded_filter,
         }
     }
-    
+
     /// Build a filter from a concrete element set.
     pub fn new_with_element_set(
         params: &GcsFilterParams,
         elements: &GcsFilterElementSet,
     ) -> Self {
-        let n_u32 = u32::try_from(elements.len())
-            .expect("N must be < 2^32");
-        let f = n_u32 as u64 * params.m() as u64;
+        let n = u32::try_from(elements.len()).expect("N must be < 2^32");
+        let f = n as u64 * *params.m() as u64;
 
-        // (a) Serialise header – CompactSize N.
+        // Serialise CompactSize‑encoded N.
         let mut encoded = Vec::<u8>::new();
         let mut stream = CVectorWriter::new(
             GCS_SER_TYPE,
@@ -152,52 +146,35 @@ impl GCSFilter {
             &mut encoded,
             0,
         );
-        write_compact_size(&mut stream, n_u32.into());
+        write_compact_size(&mut stream, n.into());
 
-        // Empty filter is legal.
         if elements.is_empty() {
-            return Self {
-                params: params.clone(),
-                n: n_u32,
-                f,
-                encoded,
-            };
+            return Self { params: params.clone(), n, f, encoded };
         }
 
-        // (b) Hash, sort & encode deltas.
+        // Hash, sort, encode deltas.
         let mut hashed: Vec<u64> = elements
             .iter()
             .map(|e| {
-                let mut hasher =
-                    SipHasher::new_with_keys(params.siphash_k0(), params.siphash_k1());
-                hasher.write(e);
-                let h = hasher.finish();
-                map_into_range(h, f)
+                let mut h = SipHasher::new_with_keys(*params.siphash_k0(), *params.siphash_k1());
+                h.write(e);
+                map_into_range(h.finish(), f)
             })
             .collect();
         hashed.sort_unstable();
 
-        let mut bitwriter =
-            BitStreamWriter::<CVectorWriter>::new(&mut stream);
+        let mut bw = BitStreamWriter::<CVectorWriter>::new(&mut stream);
         let mut last = 0u64;
-        for val in hashed {
-            let delta = val - last;
-            golomb_rice_encode(&mut bitwriter, params.p(), delta);
-            last = val;
+        for v in hashed {
+            let delta = v - last;
+            golomb_rice_encode(&mut bw, *params.p(), delta);
+            last = v;
         }
-        bitwriter.flush();
+        bw.flush();
 
-        debug!(target: "gcsfilter",
-               bytes = encoded.len(),
-               n = n_u32,
-               "GCSFilter built");
+        debug!(target: "gcsfilter", n, bytes = encoded.len(), "built GCSFilter");
 
-        Self {
-            params: params.clone(),
-            n: n_u32,
-            f,
-            encoded,
-        }
+        Self { params: params.clone(), n, f, encoded }
     }
 
     /**
@@ -205,58 +182,48 @@ impl GCSFilter {
       | and MatchAny
       |
       */
-    pub fn match_internal(&self, 
+    pub fn match_internal(
+        &self,
         element_hashes: *const u64,
-        size:           usize) -> bool {
-        
-        let mut stream: VectorReader = VectorReader::new(
-            GCS_SER_TYPE.try_into().unwrap(), 
-            GCS_SER_VERSION.try_into().unwrap(), 
-            &self.encoded, 
-            0
+        size:           usize,
+    ) -> bool {
+        let mut stream = VectorReader::new(
+            GCS_SER_TYPE.try_into().unwrap(),
+            GCS_SER_VERSION.try_into().unwrap(),
+            &self.encoded,
+            0,
         );
 
-        //  Seek forward by size of N
-        let N: u64 = read_compact_size(&mut stream, None);
+        let n = read_compact_size(&mut stream, None);
+        debug_assert_eq!(n as u32, self.n);
 
-        assert!(N == self.n.into());
+        let mut br = BitStreamReader::<VectorReader>::new(&mut stream);
+        let mut value = 0u64;
+        let mut idx = 0usize;
 
-        let mut bitreader: BitStreamReader::<VectorReader> 
-            = BitStreamReader::<VectorReader>::new(&mut stream);
-
-        let mut value: u64 = 0;
-        let mut hashes_index: usize = 0;
-
-        for i in 0..self.n {
-
-            let delta: u64 = golomb_rice_decode(&mut bitreader,self.params.p);
+        for _ in 0..self.n {
+            let delta = golomb_rice_decode(&mut br, *self.params.p());
             value += delta;
 
-            while true{
-
-                if hashes_index == size {
+            loop {
+                if idx == size {
                     return false;
-
-                } else {
-
-                    unsafe {
-                        if *element_hashes.add(hashes_index) == value {
-                            return true;
-                        } else {
-                            if *element_hashes.add(hashes_index) > value {
-                                break;
-                            }
-                        }
+                }
+                unsafe {
+                    let query = *element_hashes.add(idx);
+                    if query == value {
+                        return true;
+                    }
+                    if query > value {
+                        break;
                     }
                 }
-
-                hashes_index += 1;
+                idx += 1;
             }
         }
-
         false
     }
-    
+
     /**
       | Checks if the element may be in the set.
       | False positives are possible with probability

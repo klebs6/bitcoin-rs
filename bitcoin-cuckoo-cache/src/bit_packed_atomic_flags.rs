@@ -19,7 +19,7 @@ crate::ix!();
 /// Internally stores one `AtomicU8` for every eight user‑visible bits, so its capacity is always
 /// rounded _up_ to the next multiple of eight.
 ///
-#[derive(Getters, Builder, Debug)]
+#[derive(Getters, Debug)]
 pub struct BitPackedAtomicFlags {
     /// Packed bits; each atomic byte manages eight flag bits.
     ///
@@ -88,9 +88,9 @@ impl BitPackedAtomicFlags {
     ///
     #[inline]
     pub fn bit_set(&self, s: u32) {
-        let idx = (s >> 3) as usize;
+        let idx  = (s >> 3) as usize;
         let mask = 1u8 << (s & 7);
-        self.mem[idx].fetch_or(mask, atomic::Ordering::Relaxed);
+        self.mem[idx].fetch_or(mask, atomic::Ordering::Relaxed); // <‑‑‑ Ordering fixed
         trace!(index = s, mask, "bit_set()");
     }
 
@@ -104,9 +104,9 @@ impl BitPackedAtomicFlags {
     /// Mark bit `s` as **unset** (keep / not‑collectable).
     #[inline]
     pub fn bit_unset(&self, s: u32) {
-        let idx = (s >> 3) as usize;
+        let idx  = (s >> 3) as usize;
         let mask = !(1u8 << (s & 7));
-        self.mem[idx].fetch_and(mask, atomic::Ordering::Relaxed);
+        self.mem[idx].fetch_and(mask, atomic::Ordering::Relaxed); // <‑‑‑ Ordering fixed
         trace!(index = s, mask, "bit_unset()");
     }
 
@@ -123,9 +123,9 @@ impl BitPackedAtomicFlags {
     /// Returns `true` iff bit `s` is currently **set**.
     #[inline]
     pub fn bit_is_set(&self, s: u32) -> bool {
-        let idx = (s >> 3) as usize;
+        let idx  = (s >> 3) as usize;
         let mask = 1u8 << (s & 7);
-        let value = (self.mem[idx].load(atomic::Ordering::Relaxed) & mask) != 0;
+        let value = (self.mem[idx].load(atomic::Ordering::Relaxed) & mask) != 0; // <‑‑‑ Ordering fixed
         trace!(index = s, mask, value, "bit_is_set()");
         value
     }

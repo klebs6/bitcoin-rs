@@ -70,7 +70,7 @@ impl<Base> UniqueLock<Base> {
 
     #[EXCLUSIVE_LOCK_FUNCTION(mutexIn)]
     pub fn new(
-        mutex_in: &mut Mutex,
+        mutex_in: &mut crate::types::Mutex,
         psz_name: *const u8,
         psz_file: *const u8,
         n_line:   i32,

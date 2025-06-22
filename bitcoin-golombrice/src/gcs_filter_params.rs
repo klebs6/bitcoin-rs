@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-golombrice/src/gcs_filter_params.rs ]
 crate::ix!();
 
 pub type GcsFilterElement    = Vec<u8>;
@@ -22,14 +23,14 @@ impl Default for GcsFilterParams {
         Self {
             siphash_k0: 0,
             siphash_k1: 0,
-            p: 19,
-            m: 784_931, // values per BIP‑158 for basic block filters
+            p:          0,  // C++ default
+            m:          1,  // C++ default
         }
     }
 }
 
 impl GcsFilterParams {
-    /// Parameter constructor mirroring the C++ `GcsFilterParams` ctor.
+    /// Parameter constructor mirroring the C++ `GCSFilter::Params` ctor.
     pub fn new(
         siphash_k0: Option<u64>,
         siphash_k1: Option<u64>,
@@ -39,8 +40,8 @@ impl GcsFilterParams {
         let params = Self {
             siphash_k0: siphash_k0.unwrap_or(0),
             siphash_k1: siphash_k1.unwrap_or(0),
-            p:          p.unwrap_or(19),
-            m:          m.unwrap_or(784_931),
+            p:          p.unwrap_or(0),
+            m:          m.unwrap_or(1),
         };
         trace!(target: "gcsfilter", ?params, "constructed GcsFilterParams");
         params

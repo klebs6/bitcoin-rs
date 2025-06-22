@@ -48,9 +48,24 @@ impl<K: Ord, V> IndirectMap<K, V> {
     }
 
     /// Mutable lookup by **value** of `K`.
+    ///  
+    /// Because the value is returned mutably, we must avoid
+    /// holding an immutable reference into the same map
+    /// entry at the same time.  
+    /// We therefore:
+    /// 1. clone the `Arc<K>` **before** taking the mutable borrow,
+    /// 2. fetch the mutable reference in a second step.
     #[inline]
-    pub fn find_mut(&mut self, k: &K) -> Option<(&Arc<K>, &mut V)> {
-        self.map.get_mut(k).map(|val| (self.map.get_key_value(k).unwrap().0.arc(), val))
+    pub fn find_mut(&mut self, k: &K) -> Option<(Arc<K>, &mut V)> {
+        // Step‑1: grab and clone the key **immutably**.
+        let key_clone = self
+            .map
+            .get_key_value(k)
+            .map(|(ind_key, _)| ind_key.arc().clone())?;
+
+        // Step‑2: only now obtain the mutable reference.
+        let val_mut = self.map.get_mut(k).expect("value present after key fetch");
+        Some((key_clone, val_mut))
     }
 
     /// Maximum theoretical size (bounded by `usize::MAX`).
@@ -65,12 +80,10 @@ impl<K: Ord, V> IndirectMap<K, V> {
         self.map.get(k).map(|v| (self.map.get_key_value(k).unwrap().0.arc(), v))
     }
 
-    /// Mutable lookup by **value** of `K`.
+    /// Convenience wrapper identical to `find_mut`.
     #[inline]
-    pub fn get_mut(&mut self, k: &K) -> Option<(&Arc<K>, &mut V)> {
-        self.map
-            .get_mut(k)
-            .map(|v| (self.map.get_key_value(k).unwrap().0.arc(), v))
+    pub fn get_mut(&mut self, k: &K) -> Option<(Arc<K>, &mut V)> {
+        self.find_mut(k)
     }
 
     /// Remove by **value** of `K`.  Returns `true` if something was removed.
@@ -163,9 +176,7 @@ mod indirect_map_additional_method_tests {
         map.insert(key.clone(), 500);
 
         {
-            let found_mut = map.find_mut(&TestKey(42));
-            assert!(found_mut.is_some());
-            let (_arc_key, val_mut) = found_mut.unwrap();
+            let (_key_clone, val_mut) = map.find_mut(&TestKey(42)).expect("present");
             *val_mut = 1000;
         }
 

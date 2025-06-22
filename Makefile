@@ -42,24 +42,24 @@ TEST  := test
 #ACTIVE := bitcoin-u160
 #ACTIVE := bitcoin-u256
 #ACTIVE := bitcoin-vectorstream
-
 #ACTIVE := bitcoin-aes
 #ACTIVE := bitcoin-epoch
 #ACTIVE := bitcoin-asmap
 #ACTIVE := bitcoin-poly1305
+#ACTIVE := bitcoin-indirectmap
 
 #-------------------------------[done-above]
 
+ACTIVE := bitcoin-sha256
 ACTIVE := bitcoin-muhash
 ACTIVE := bitcoin-chacha
 ACTIVE := bitcoin-base58
-ACTIVE := bitcoin-hash
 ACTIVE := bitcoin-golombrice
-ACTIVE := bitcoin-locked-pool
-ACTIVE := bitcoin-univalue
 ACTIVE := bitcoin-sync
-ACTIVE := bitcoin-indirectmap
+ACTIVE := bitcoin-univalue
 ACTIVE := bitcoin-cuckoo-cache
+ACTIVE := bitcoin-locked-pool
+
 #ACTIVE := bitcoin-crc32c
 #ACTIVE := bitcoin-portmap
 #ACTIVE := bitcoin-compat
@@ -73,7 +73,7 @@ ACTIVE := bitcoin-cuckoo-cache
 #ACTIVE := bitcoin-network
 #ACTIVE := bitcoin-version
 
-#ACTIVE := bitcoin-sha256
+#ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-sha3
 #ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-random

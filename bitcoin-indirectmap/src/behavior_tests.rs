@@ -28,7 +28,7 @@ mod indirect_map_behaviour_tests {
         let keys = [1, 2, 3].into_iter().map(|n| Arc::new(IntBox(n))).collect::<Vec<_>>();
 
         for k in &keys {
-            assert!(map.insert(k.clone(), k.0));
+            assert!(map.insert(k.clone(), k.as_ref().0)); // <‑‑ fixed
         }
 
         assert_eq!(map.size(), 3);

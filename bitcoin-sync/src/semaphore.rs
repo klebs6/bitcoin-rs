@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoin-sync/src/semaphore.rs ]
 crate::ix!();
 
-/// A simple counting semaphore using `parking_lot`.
+/// Simple counting semaphore built on `parking_lot`.
 #[derive(Default)]
 pub struct Semaphore {
     cv:    Condvar,
@@ -11,7 +11,7 @@ pub struct Semaphore {
 impl Semaphore {
     /// Create with an initial permit count.
     pub fn new(init: i32) -> Self {
-        assert!(init >= 0, "initial semaphore value must be ≥ 0");
+        assert!(init >= 0, "Semaphore initial count must be ≥ 0");
         trace!("Semaphore::new — init = {}", init);
         Self {
             cv: Condvar::new(),
@@ -24,7 +24,7 @@ impl Semaphore {
         trace!("Semaphore::wait");
         let mut cnt = self.count.lock();
         while *cnt == 0 {
-            cnt = self.cv.wait(cnt);
+            self.cv.wait(&mut cnt);
         }
         *cnt -= 1;
         debug!("Semaphore::wait — remaining = {}", *cnt);
@@ -43,7 +43,7 @@ impl Semaphore {
         true
     }
 
-    /// Add a permit and notify one waiter.
+    /// Add a permit and wake one waiter.
     pub fn post(&self) {
         trace!("Semaphore::post");
         let mut cnt = self.count.lock();
@@ -60,7 +60,6 @@ mod semaphore_functionality_tests {
     use std::thread;
     use std::time::{Duration as StdDuration, Instant};
 
-    /// `wait` must block until `post` supplies a permit.
     #[traced_test]
     fn wait_blocks_until_post() {
         let sem   = Arc::new(Semaphore::new(0));
@@ -72,7 +71,7 @@ mod semaphore_functionality_tests {
             Instant::now()
         });
 
-        std::thread::sleep(StdDuration::from_millis(100));
+        thread::sleep(StdDuration::from_millis(100));
         sem.post();
 
         let woke_at     = handle.join().expect("waiter panicked");
@@ -85,7 +84,6 @@ mod semaphore_functionality_tests {
         );
     }
 
-    /// Validate `try_wait` semantics.
     #[traced_test]
     fn try_wait_semantics() {
         let sem = Semaphore::new(1);

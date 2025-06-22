@@ -16,7 +16,7 @@ impl Hash256 {
 
     #[instrument(level = "trace", skip(self, input))]
     pub fn write(&mut self, input: &[u8]) -> &mut Self {
-        self.sha.write(input.as_ptr(), input.len());
+        self.sha.write(input);
         self
     }
 
@@ -25,11 +25,11 @@ impl Hash256 {
         debug_assert_eq!(output.len(), Hash256::OUTPUT_SIZE);
 
         let mut buf = [0u8; SHA256_OUTPUT_SIZE];
-        self.sha.finalize(buf);
+        self.sha.finalize(&mut buf);
 
         self.sha.reset();
-        self.sha.write(buf.as_ptr(), buf.len());
-        self.sha.finalize(output.clone());
+        self.sha.write(&buf);
+        self.sha.finalize(output);
     }
 
     #[instrument(level = "trace", skip(self))]
@@ -48,13 +48,13 @@ mod hash256_spec {
     fn reference_double_sha(payload: &[u8]) -> [u8; 32] {
         let mut first = [0u8; 32];
         let mut sha = Sha256::new();
-        sha.write(payload.as_ptr(), payload.len());
-        sha.finalize(first);
+        sha.write(payload);
+        sha.finalize(&mut first);
 
         sha.reset();
-        sha.write(first.as_ptr(), first.len());
+        sha.write(&first);
         let mut second = [0u8; 32];
-        sha.finalize(second);
+        sha.finalize(&mut second);
         second
     }
 

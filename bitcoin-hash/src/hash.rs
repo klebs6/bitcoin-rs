@@ -32,16 +32,17 @@ pub fn hash2<T1: AsRef<[u8]>, T2: AsRef<[u8]>>(in1: T1, in2: T2) -> u256 {
 }
 
 /// Compute the 256‑bit hash of a binary blob that can expose its
-/// bytes through `AsRef<[u8]>`.  Type/version parameters are
+/// bytes through `AsRef<[u8]>`. Type/version parameters are
 /// currently ignored because the Rust port serialises directly from
 /// the caller‑supplied slice.
 #[inline]
 pub fn serialize_hash<T>(obj: &T, _n_type: Option<i32>, _n_version: Option<i32>) -> u256
 where
-    T: AsRef<[u8]>,
+    T: AsRef<[u8]> + ?Sized,          // ← now accepts unsized inputs
 {
     hash1(obj.as_ref())
 }
+
 
 //-------------------------------------------[.cpp/bitcoin/src/hash.cpp]
 

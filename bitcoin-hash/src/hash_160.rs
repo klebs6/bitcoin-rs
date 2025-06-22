@@ -19,19 +19,23 @@ impl Hash160 {
 
         /* first SHA‑256 pass */
         let mut sha_buf = [0u8; SHA256_OUTPUT_SIZE];
-        self.sha.finalize(sha_buf);
+        self.sha.finalize(&mut sha_buf);
 
         /* second RIPEMD‑160 pass */
         let mut ripemd = Ripemd160::new();
         ripemd.update(&sha_buf);
-        ripemd.finalize(output.clone()); // writes directly into `output`
+
+        // The back‑end `finalize` consumes the target buffer by value,
+        // so we allocate a local scratch array, let the back‑end fill
+        // it, and then copy the result into the caller‑supplied slice.
+        let mut digest = [0u8; Hash160::OUTPUT_SIZE];
+        ripemd.finalize(digest);
+        *output = digest;
     }
 
     #[instrument(level = "trace", skip(self, input))]
     pub fn write(&mut self, input: &[u8]) -> &mut Self {
-        // SAFETY: slice pointer + len remains valid for the duration
-        // of the call.
-        self.sha.write(input.as_ptr(), input.len());
+        self.sha.write(input);
         self
     }
 
@@ -43,22 +47,21 @@ impl Hash160 {
 }
 
 /**
-  | Compute the 160‑bit (SHA‑256 ➜ RIPEMD‑160) hash of an object that
+  | Compute the 160‑bit (SHA‑256 ➜ RIPEMD‑160) hash of any value that
   | can expose its bytes through `AsRef<[u8]>`.
   |
-  | This is a thin convenience wrapper around [`Hash160`] that mirrors
-  | Bitcoin Core’s `Hash160()` helper.
+  | Accepts `?Sized` inputs so callers may pass plain slices.
   */
 #[inline]
-pub fn hash160<T: AsRef<[u8]>>(in1: &T) -> u160 {
+pub fn hash160<T>(in1: &T) -> u160
+where
+    T: AsRef<[u8]> + ?Sized,
+{
     let mut out = [0u8; RIPEMD160_OUTPUT_SIZE];
     Hash160 { sha: Sha256::new() }
         .write(in1.as_ref())
         .finalize(&mut out);
 
-    // The `bitcoin‑u160` crate exposes `from_le_bytes()` just like
-    // `u256`; fall back to a generic constructor if the exact name
-    // ever changes.
     #[allow(clippy::useless_conversion)]
     u160::from_le_bytes(out)
 }
@@ -70,13 +73,14 @@ mod hash160_spec {
 
     const RIPEMD_OUT: usize = RIPEMD160_OUTPUT_SIZE;
 
-    /// Helper computing the reference SHA‑256 + RIPEMD‑160 chain.
+    /// Reference SHA‑256 ➜ RIPEMD‑160 chain implemented directly
+    /// with the back‑end primitives.
     fn reference_hash(payload: &[u8]) -> [u8; RIPEMD_OUT] {
         /* SHA‑256 */
         let mut sha_buf = [0u8; 32];
         let mut sha = Sha256::new();
-        sha.write(payload.as_ptr(), payload.len());
-        sha.finalize(sha_buf);
+        sha.write(payload);
+        sha.finalize(&mut sha_buf);
 
         /* RIPEMD‑160 */
         let mut ripemd = Ripemd160::new();
@@ -126,8 +130,8 @@ mod hash160_spec {
         /* manual reference computation */
         let mut sha_buf = [0u8; 32];
         let mut sha = Sha256::new();
-        sha.write(data.as_ptr(), data.len());
-        sha.finalize(sha_buf);
+        sha.write(data);
+        sha.finalize(&mut sha_buf);
 
         let mut ripemd = Ripemd160::new();
         ripemd.update(&sha_buf);

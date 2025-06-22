@@ -2,6 +2,7 @@
 #[macro_use] mod imports; use imports::*;
 
 x!{conversion}
+x!{std_exception}
 x!{escapes}
 x!{expect_bits}
 x!{find_value}
