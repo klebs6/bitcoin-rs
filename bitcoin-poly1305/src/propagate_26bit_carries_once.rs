@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-poly1305/src/propagate_26bit_carries_once.rs ]
 crate::ix!();
 
 /// (1 << 26) − 1

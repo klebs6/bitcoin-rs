@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/semaphore_grant.rs ]
 crate::ix!();
 
 /**

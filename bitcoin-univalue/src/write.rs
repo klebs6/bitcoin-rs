@@ -3,38 +3,6 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/univalue/lib/univalue_write.cpp]
 
-pub fn json_escape(ins: &String) -> String {
-    
-    todo!();
-        /*
-            std::string outS;
-        outS.reserve(inS.size() * 2);
-
-        for (unsigned int i = 0; i < inS.size(); i++) {
-            unsigned char ch = static_cast<unsigned char>(inS[i]);
-            const char *escStr = escapes[ch];
-
-            if (escStr)
-                outS += escStr;
-            else
-                outS += static_cast<char>(ch);
-        }
-
-        return outS;
-        */
-}
-
-pub fn indent_str(
-        pretty_indent: u32,
-        indent_level:  u32,
-        s:             &mut String)  {
-    
-    todo!();
-        /*
-            s.append(prettyIndent * indentLevel, ' ');
-        */
-}
-
 impl UniValue {
     
     pub fn write(&self, 

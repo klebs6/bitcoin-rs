@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-poly1305/src/compute_g_plus5_minus_p.rs ]
 crate::ix!();
 
 /// Radix‑2²⁶ representation of the Poly1305 prime *p = 2¹³⁰ − 5*

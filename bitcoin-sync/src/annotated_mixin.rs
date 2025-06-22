@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/annotated_mixin.rs ]
 crate::ix!();
 
 /**

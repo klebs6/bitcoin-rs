@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-string/src/parse_fixed_point.rs ]
 crate::ix!();
 
 /// Parse number as fixed point according to JSON number syntax.

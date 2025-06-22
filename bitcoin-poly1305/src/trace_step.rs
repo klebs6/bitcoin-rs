@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-poly1305/src/trace_step.rs ]
 crate::ix!();
 
 /// Small helper: emit a `TRACE` event whose `step` field is fixed and all
@@ -13,4 +14,3 @@ macro_rules! trace_step {
         );
     };
 }
-

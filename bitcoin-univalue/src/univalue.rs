@@ -3,19 +3,22 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/univalue/include/univalue.h]
 
-#[derive(Clone,Debug)]
+#[derive(Getters,Clone,Debug)]
+#[getset(get="pub")]
 pub struct UniValue {
 
-    pub typ:    uni_value::VType,
+    typ:    uni_value::VType,
 
-    /**
-      | numbers are stored as C++ strings
-      |
-      */
-    pub val:    String,
+    /// numbers are stored as strings
+    val:    String,
+    keys:   Vec<String>,
+    values: Vec<UniValue>,
+}
 
-    pub keys:   Vec<String>,
-    pub values: Vec<UniValue>,
+//-------------------------------------------[.cpp/bitcoin/src/univalue/lib/univalue.cpp]
+
+lazy_static!{
+    pub static ref NULL_UNI_VALUE: UniValue = UniValue::default();
 }
 
 pub mod uni_value {
@@ -36,103 +39,6 @@ impl Default for UniValue {
         todo!();
         /*
             typ = VNULL;
-        */
-    }
-}
-
-impl From<Instant> for UniValue {
-    fn from(val: Instant) -> Self {
-        todo!();
-    }
-}
-
-impl From<u64> for UniValue {
-    fn from(val: u64) -> Self {
-    
-        todo!();
-        /*
-            setInt(val_);
-        */
-    }
-}
-
-impl From<usize> for UniValue {
-    fn from(val: usize) -> Self {
-    
-        todo!();
-        /*
-            setInt(val_);
-        */
-    }
-}
-
-impl From<uni_value::VType> for UniValue {
-    fn from(val: uni_value::VType) -> Self {
-    
-        todo!();
-        /*
-            setInt(val_);
-        */
-    }
-}
-
-impl From<i64> for UniValue {
-    fn from(val: i64) -> Self {
-    
-        todo!();
-        /*
-            setInt(val_);
-        */
-    }
-}
-
-impl From<i32> for UniValue {
-    fn from(val: i32) -> Self {
-    
-        todo!();
-        /*
-            setInt(val_);
-        */
-    }
-}
-
-impl From<bool> for UniValue {
-    fn from(val: bool) -> Self {
-    
-        todo!();
-        /*
-            setBool(val_);
-        */
-    }
-}
-
-impl From<f64> for UniValue {
-    fn from(val: f64) -> Self {
-    
-        todo!();
-        /*
-            setFloat(val_);
-        */
-    }
-}
-
-impl From<&str> for UniValue {
-    fn from(val: &str) -> Self {
-    
-        todo!();
-        /*
-            setStr(val_);
-        */
-    }
-}
-
-impl From<*const u8> for UniValue {
-    fn from(val: *const u8) -> Self {
-    
-        todo!();
-        /*
-            std::string s(val_);
-            setStr(s);
         */
     }
 }
@@ -666,169 +572,4 @@ impl UniValue {
         return true;
         */
     }
-}
-
-pub enum JTokenType {
-    JTOK_ERR        = -1,
-    JTOK_NONE       = 0,                           // eof
-    JTOK_OBJ_OPEN,
-    JTOK_OBJ_CLOSE,
-    JTOK_ARR_OPEN,
-    JTOK_ARR_CLOSE,
-    JTOK_COLON,
-    JTOK_COMMA,
-    JTOK_KW_NULL,
-    JTOK_KW_TRUE,
-    JTOK_KW_FALSE,
-    JTOK_NUMBER,
-    JTOK_STRING,
-}
-
-lazy_static!{
-    /*
-    extern enum jtokentype getJsonToken(std::string& tokenVal,
-                                        unsigned int& consumed, const char *raw, const char *end);
-    */
-}
-
-lazy_static!{
-    /*
-    extern const char *uvTypeName(UniValue::VType t);
-    */
-}
-
-#[inline] pub fn json_token_is_value(jtt: JTokenType) -> bool {
-    
-    todo!();
-        /*
-            switch (jtt) {
-        case JTOK_KW_NULL:
-        case JTOK_KW_TRUE:
-        case JTOK_KW_FALSE:
-        case JTOK_NUMBER:
-        case JTOK_STRING:
-            return true;
-
-        default:
-            return false;
-        }
-
-        // not reached
-        */
-}
-
-#[inline] pub fn json_isspace(ch: i32) -> bool {
-    
-    todo!();
-        /*
-            switch (ch) {
-        case 0x20:
-        case 0x09:
-        case 0x0a:
-        case 0x0d:
-            return true;
-
-        default:
-            return false;
-        }
-
-        // not reached
-        */
-}
-
-//-------------------------------------------[.cpp/bitcoin/src/univalue/lib/univalue.cpp]
-
-lazy_static!{
-    pub static ref NULL_UNI_VALUE: UniValue = UniValue::default();
-}
-
-impl Index<&str> for UniValue {
-    type Output = UniValue;
-    
-    #[inline] fn index(&self, key: &str) -> &Self::Output {
-        todo!();
-        /*
-            if (typ != VOBJ)
-            return NullUniValue;
-
-        size_t index = 0;
-        if (!findKey(key, index))
-            return NullUniValue;
-
-        return values.at(index);
-        */
-    }
-}
-
-impl Index<usize> for UniValue {
-    type Output = UniValue;
-    
-    #[inline] fn index(&self, index: usize) -> &Self::Output {
-        todo!();
-        /*
-            if (typ != VOBJ && typ != VARR)
-            return NullUniValue;
-        if (index >= values.size())
-            return NullUniValue;
-
-        return values.at(index);
-        */
-    }
-}
-
-pub fn uv_type_name(t: uni_value::VType) -> *const u8 {
-    
-    todo!();
-        /*
-            switch (t) {
-        case UniValue::VNULL: return "null";
-        case UniValue::VBOOL: return "bool";
-        case UniValue::VOBJ: return "object";
-        case UniValue::VARR: return "array";
-        case UniValue::VSTR: return "string";
-        case UniValue::VNUM: return "number";
-        }
-
-        // not reached
-        return nullptr;
-        */
-}
-
-pub fn find_value<'a>(
-        obj:  &'a UniValue,
-        name: &'a str) -> &'a UniValue {
-    
-    todo!();
-        /*
-            for (unsigned int i = 0; i < obj.keys.size(); i++)
-            if (obj.keys[i] == name)
-                return obj.values.at(i);
-
-        return NullUniValue;
-        */
-}
-
-pub fn find_value_mut<'a>(
-        obj:  &'a mut UniValue,
-        name: &'a str) -> &'a mut UniValue {
-    
-    todo!();
-        /*
-            for (unsigned int i = 0; i < obj.keys.size(); i++)
-            if (obj.keys[i] == name)
-                return obj.values.at(i);
-
-        return NullUniValue;
-        */
-}
-
-pub fn valid_num_str(s: &str) -> bool {
-    
-    todo!();
-        /*
-            std::string tokenVal;
-        unsigned int consumed;
-        enum jtokentype tt = getJsonToken(tokenVal, consumed, s.data(), s.data() + s.size());
-        return (tt == JTOK_NUMBER);
-        */
 }

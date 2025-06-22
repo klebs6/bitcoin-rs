@@ -31,7 +31,6 @@ consistent.
 crate::ix!();
 
 
-// ---------------- [ File: bitcoin-asmap/src/sanity.rs ]
 
 /// Exhaustive structural validation, exactly mirroring the original C++ logic.
 pub fn sanity_check_as_map(asmap: &[bool], mut bits: i32) -> bool {

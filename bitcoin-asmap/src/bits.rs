@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-asmap/src/bits.rs ]
 /*!
 This function, `decode_bits`, decodes a value from
 a provided iterator of boolean values using the
@@ -39,7 +40,6 @@ Rust implementation that follows the same logic as
 the C++ code provided.
 */
 
-// ---------------- [ File: bitcoin-asmap/src/bits.rs ]
 
 crate::ix!();
 

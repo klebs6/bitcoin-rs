@@ -1,3 +1,6 @@
+crate::ix!();
+
+// ---------------- [ File: bitcoin-sync/src/types.rs ]
 /**
   | Wrapped mutex: supports recursive
   | locking, but no waiting

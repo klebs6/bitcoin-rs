@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/unique_lock.rs ]
 crate::ix!();
 
 pub type MutexUniqueLock = Broken;

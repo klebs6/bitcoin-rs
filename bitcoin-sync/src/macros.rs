@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/macros.rs ]
 /*!
    | The Simple Definition:
    |
@@ -21,7 +22,6 @@
    |     mutex.unlock();
    */
 
-// ---------------- [ File: bitcoin-sync/src/sync_impl.rs ]
 
 crate::ix!();
 

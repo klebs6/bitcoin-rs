@@ -267,4 +267,3 @@ mod vector_writer_exhaustive_suite {
         assert!(result.is_err(), "expected panic on invariant violation");
     }
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-poly1305/src/ct_select_limbs.rs ]
 crate::ix!();
 
 /// In constant time replace *h* with *g* **iff** `select_mask == 0xFFFF_FFFF`.

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-epoch/src/with_fresh_epoch.rs ]
 crate::ix!();
 
 /// Convenience macro mirroring the original C++

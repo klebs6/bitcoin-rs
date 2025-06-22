@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/semaphore.rs ]
 crate::ix!();
 
 /// A counting semaphore implemented with a mutex and condition variable.

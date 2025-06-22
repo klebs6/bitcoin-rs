@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-string/src/decode64.rs ]
 crate::ix!();
 
 /// Map a Base64 character to its 6‑bit value.

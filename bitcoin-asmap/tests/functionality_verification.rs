@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-asmap/tests/functionality_verification.rs ]
 use bitcoin_asmap::*;
 use bitcoin_imports::*;
 

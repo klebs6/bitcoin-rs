@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-aes/src/shift_rows.rs ]
 //! ShiftRows / InvShiftRows – column‑major‑aware implementation
 //!
 //! In this crate every byte “lane” is numbered
@@ -17,7 +18,6 @@
 //! incorrect permutation.  The only fix required is to compute
 //! `row = lane & 3` and `col = lane >> 2`, and to rebuild `new_lane` as
 //! `new_col·4 + row`.
-// ---------------- [ File: bitcoin-aes/src/shift_rows.rs ]
 crate::ix!();
 
 /// Forward AES ShiftRows (left‑rotate row *r* by *r* positions).
