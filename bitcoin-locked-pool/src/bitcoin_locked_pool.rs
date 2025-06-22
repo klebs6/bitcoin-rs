@@ -24,17 +24,16 @@ crate::ix!();
   |
   */
 #[no_copy]
-#[derive(Getters, Builder)]
-#[getset(get = "pub")]
+#[derive(Getters,MutGetters)]
+#[getset(get = "pub", get_mut = "pub")]
 pub struct LockedPool {
-    allocator:               Box<dyn LockedPageAllocator>,
-    arenas:                  Vec<locked_pool::LockedPageArena>,
-    lf_cb:                   Option<locked_pool::LockingFailed_Callback>,
+    allocator:               Box<dyn LockedPageAllocator + Send + Sync>,
+    arenas:                  Vec<LockedPageArena>,
+    lf_cb:                   Option<LockingFailed_Callback>,
     cumulative_bytes_locked: usize,
 
     /// Serialises all internal state mutations.
     ///
-    /// Mutex protects access to this pool's data structures, including arenas.
     mutex:                   Mutex<()>,
 }
 
@@ -49,8 +48,8 @@ impl LockedPool {
     /// returns true the allocation proceeds, but it could warn.
     /// 
     pub fn new(
-        allocator_in: Box<dyn LockedPageAllocator>,
-        lf_cb_in:     Option<locked_pool::LockingFailed_Callback>,
+        allocator_in: Box<dyn LockedPageAllocator + Send + Sync>,         // Send + Sync
+        lf_cb_in:     Option<LockingFailed_Callback>,
     ) -> Self {
         Self {
             allocator: allocator_in,

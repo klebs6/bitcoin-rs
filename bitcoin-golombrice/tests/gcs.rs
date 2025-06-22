@@ -1,5 +1,8 @@
 // ---------------- [ File: bitcoin-golombrice/tests/gcs.rs ]
-crate::ix!();
+use bitcoin_imports::*;
+use bitcoin_golombrice::*;
+
+use std::iter::FromIterator;
 
 fn make_vec(byte: u8) -> GcsFilterElement {
     let mut v = vec![0u8; 32];
@@ -45,3 +48,4 @@ fn gcsfilter_default_constructor() {
     assert_eq!(*params.p(), 0);
     assert_eq!(*params.m(), 1);
 }
+

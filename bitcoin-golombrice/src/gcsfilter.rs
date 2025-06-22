@@ -38,7 +38,7 @@ impl From<Option<GcsFilterParams>> for GCSFilter {
         // Encode CompactSize(0) so the empty filter is fully serialised.
         let mut encoded = Vec::<u8>::new();
         {
-            let mut w = CVectorWriter::new(GCS_SER_TYPE, GCS_SER_VERSION, &mut encoded, 0);
+            let mut w = VectorWriter::new(GCS_SER_TYPE, GCS_SER_VERSION, &mut encoded, 0);
             write_compact_size(&mut w, 0);
         }
 
@@ -140,7 +140,7 @@ impl GCSFilter {
 
         // Serialise CompactSize‑encoded N.
         let mut encoded = Vec::<u8>::new();
-        let mut stream = CVectorWriter::new(
+        let mut stream = VectorWriter::new(
             GCS_SER_TYPE,
             GCS_SER_VERSION,
             &mut encoded,
@@ -163,7 +163,7 @@ impl GCSFilter {
             .collect();
         hashed.sort_unstable();
 
-        let mut bw = BitStreamWriter::<CVectorWriter>::new(&mut stream);
+        let mut bw = BitStreamWriter::<VectorWriter>::new(&mut stream);
         let mut last = 0u64;
         for v in hashed {
             let delta = v - last;

@@ -27,19 +27,25 @@ pub struct LockedPoolManager {
     base: LockedPool,
 }
 
+/*  The internal `Mutex<()>` in `LockedPool` guarantees serialised access.
+    Marking these auto‑traits as `unsafe` is acceptable here and eliminates
+    the `Send/Sync` errors triggered by the global `OnceCell`. */
+unsafe impl Send for LockedPoolManager {}
+unsafe impl Sync for LockedPoolManager {}
+
 impl LockedPoolManager {
 
-    /// Obtain the global instance (lazily initialised once, in a thread‑safe way).
-    pub fn instance() -> &'static mut Self {
+    /// Obtain the global instance (lazily initialised once, thread‑safe).
+    pub fn instance() -> &'static Self {
         use once_cell::sync::OnceCell;
         static INSTANCE: OnceCell<LockedPoolManager> = OnceCell::new();
         INSTANCE.get_or_init(|| {
             #[cfg(windows)]
-            let alloc: Box<dyn LockedPageAllocator> = Box::new(
+            let alloc: Box<dyn LockedPageAllocator + Send + Sync> = Box::new(
                 bitcoin_locked_page_allocator::Win32LockedPageAllocator::default(),
             );
             #[cfg(unix)]
-            let alloc: Box<dyn LockedPageAllocator> = Box::new(
+            let alloc: Box<dyn LockedPageAllocator + Send + Sync> = Box::new(
                 bitcoin_locked_page_allocator::PosixLockedPageAllocator::default(),
             );
             Self::new(alloc)

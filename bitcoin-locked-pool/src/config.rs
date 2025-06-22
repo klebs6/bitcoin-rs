@@ -15,7 +15,7 @@ pub const LOCKED_POOL_ARENA_SIZE: usize = 256 * 1024;
 /// 
 pub const LOCKED_POOL_ARENA_ALIGN: usize = 16;
 
-/// Callback when allocation succeeds
-/// but locking fails.
-/// 
-pub type LockingFailed_Callback = fn();
+/// Callback when allocation succeeds but locking fails.
+///
+/// Return `true` to proceed (warnings only) or `false` to abort the allocation.
+pub type LockingFailed_Callback = fn() -> bool;

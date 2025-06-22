@@ -47,6 +47,7 @@ TEST  := test
 #ACTIVE := bitcoin-asmap
 #ACTIVE := bitcoin-poly1305
 #ACTIVE := bitcoin-indirectmap
+#ACTIVE := bitcoin-cuckoo-cache
 
 #-------------------------------[done-above]
 
@@ -54,10 +55,9 @@ ACTIVE := bitcoin-sha256
 ACTIVE := bitcoin-muhash
 ACTIVE := bitcoin-chacha
 ACTIVE := bitcoin-base58
-ACTIVE := bitcoin-golombrice
 ACTIVE := bitcoin-sync
+ACTIVE := bitcoin-golombrice
 ACTIVE := bitcoin-univalue
-ACTIVE := bitcoin-cuckoo-cache
 ACTIVE := bitcoin-locked-pool
 
 #ACTIVE := bitcoin-crc32c

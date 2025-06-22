@@ -5,5 +5,5 @@ x!{bitcoin_locked_pool}
 x!{locked_pool_manager}
 x!{locked_page_arena}
 x!{stats}
-x!{alloc}
+x!{locked_pool_alloc}
 x!{config}

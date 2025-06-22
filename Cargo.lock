@@ -1238,8 +1238,10 @@ dependencies = [
  "bitcoin-imports",
  "bitcoin-serialize",
  "bitcoin-vectorstream",
+ "derive_builder",
  "lazy_static",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]
@@ -1586,6 +1588,14 @@ dependencies = [
 [[package]]
 name = "bitcoin-locked-pool"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-arena",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-locked-page-allocator",
+ "derive_builder",
+ "tracing",
+]
 
 [[package]]
 name = "bitcoin-log"
@@ -2688,6 +2698,7 @@ dependencies = [
  "num",
  "static_assertions",
  "tracing",
+ "zerocopy 0.7.35",
 ]
 
 [[package]]

@@ -418,7 +418,7 @@ where
     /// 
     /// ----------- @code
     /// 
-    /// ```
+    /// ```no-test
     /// insert(x);
     /// return contains(x, false);
     /// ```
@@ -517,7 +517,7 @@ where
     /// -----------
     /// @code
     /// 
-    /// ```
+    /// ```no-test
     /// insert(x);
     /// if (contains(x, true))
     ///     return contains(x, false);
@@ -594,11 +594,27 @@ mod cuckoo_cache_suite {
         }
     }
 
+    /// Erasure marks a bucket *discardable* but does **not** remove the element
+    /// until a later insertion needs the slot.  This test follows the contract
+    /// spelled out in the original C++ comments.
     #[traced_test]
     fn erase_mechanism_works() {
         let mut c = fresh_cache(32);
         c.insert(42);
-        assert!(c.contains(&42, true),  "first lookup erases");
-        assert!(!c.contains(&42, false), "second lookup may miss");
+
+        // First lookup sets the GC flag.
+        assert!(c.contains(&42, true), "first lookup marks for erase");
+
+        // The element is still discoverable until the slot is reused.
+        assert!(c.contains(&42, false), "element must remain until reclaimed");
+
+        // Push enough additional elements to *possibly* reclaim the slot.
+        for i in 0..64u32 {
+            if i != 42 {
+                c.insert(i);
+            }
+        }
+        // At this point `42` may or may not still be present; the contract places
+        // no guarantee once further inserts occur, so we make no assertion.
     }
 }

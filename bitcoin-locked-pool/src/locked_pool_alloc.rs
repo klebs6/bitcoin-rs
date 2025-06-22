@@ -10,24 +10,24 @@ impl LockedPool {
     /// 0 bytes.
     ///
     pub fn alloc(&mut self, size: usize) -> *mut c_void {
-
         if size == 0 || size > LOCKED_POOL_ARENA_SIZE {
             return std::ptr::null_mut();
         }
 
-        let _lock = self.mutex.lock().unwrap();
+        let _guard = self.mutex().lock();
 
-        // Fast path: try all existing arenas
-        for arena in &mut self.arenas {
-            if let ptr @ _ if !ptr.is_null() = arena.alloc(size) {
+        /* ---------- fast path: existing arenas ---------- */
+        for arena in self.arenas_mut() {
+            let ptr = arena.alloc(size);
+            if !ptr.is_null() {
                 trace!(size, ?ptr, "LockedPool::alloc from existing arena");
                 return ptr;
             }
         }
 
-        // Slow path: create a new arena and retry once
+        /* ---------- slow path: create one new arena ---------- */
         if self.new_arena(LOCKED_POOL_ARENA_SIZE, LOCKED_POOL_ARENA_ALIGN) {
-            if let Some(last) = self.arenas.last_mut() {
+            if let Some(last) = self.arenas_mut().last_mut() {
                 let ptr = last.alloc(size);
                 trace!(size, ?ptr, "LockedPool::alloc after new arena");
                 return ptr;
@@ -46,16 +46,15 @@ impl LockedPool {
         if ptr.is_null() {
             return;
         }
-        let _lock = self.mutex.lock().unwrap();
 
-        // TODO we can do better than this linear search by keeping a map of arena
-        // extents to arena, and looking up the address.
-        for arena in &mut self.arenas {
+        let _guard = self.mutex().lock();
+
+        for arena in self.arenas_mut() {
             if arena.address_in_arena(ptr) {
                 arena.free(ptr);
                 return;
             }
         }
-        panic!("LockedPool::free ‑ invalid address (not in any arena)");
+        panic!("LockedPool::free – invalid address (not in any arena)");
     }
 }

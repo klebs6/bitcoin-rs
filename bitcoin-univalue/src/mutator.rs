@@ -36,31 +36,35 @@ impl UniValue {
         self.set_val(if val { "1" } else { "0" }.to_owned());
         true
     }
-   
+
+     #[instrument(level = "trace", skip(self))]
     pub fn set_num_str(&mut self, val: &String) -> bool {
-        
-        todo!();
-        /*
-            if (!validNumStr(val_))
+        if !parse_prechecks(val) {
             return false;
-
-        clear();
-        typ = VNUM;
-        val = val_;
-        return true;
-        */
+        }
+        self.clear();
+        self.set_typ(uni_value::VType::VNUM);
+        self.set_val(val.clone());
+        true
     }
-    
-    pub fn set_int<T: Integer>(&mut self, val: T) -> bool {
-        
-        todo!();
-        /*
-            std::ostringstream oss;
 
-        oss << val_;
+    #[instrument(level = "trace", skip(self))]
+    pub fn set_int<T: Debug + std::fmt::Display>(&mut self, val: T) -> bool {
+        self.set_num_str(&val.to_string())
+    }
 
-        return setNumStr(oss.str());
-        */
+    #[instrument(level = "trace", skip(self))]
+    pub fn set_array(&mut self) -> bool {
+        self.clear();
+        self.set_typ(uni_value::VType::VARR);
+        true
+    }
+
+    #[instrument(level = "trace", skip(self))]
+    pub fn set_object(&mut self) -> bool {
+        self.clear();
+        self.set_typ(uni_value::VType::VOBJ);
+        true
     }
     
     /// Set from an `f64`. 16‑digit precision replicates
@@ -81,27 +85,7 @@ impl UniValue {
         self.set_val(val.to_owned());
         true
     }
-  
-    pub fn set_array(&mut self) -> bool {
-        
-        todo!();
-        /*
-            clear();
-        typ = VARR;
-        return true;
-        */
-    }
     
-    pub fn set_object(&mut self) -> bool {
-        
-        todo!();
-        /*
-            clear();
-        typ = VOBJ;
-        return true;
-        */
-    }
-
     /// Helper – common implementation for signed / unsigned integers.
     fn set_int_inner(&mut self, s: String) -> bool {
         self.clear();
@@ -109,7 +93,6 @@ impl UniValue {
         self.set_val(s);
         true
     }
-
 }
 
 #[cfg(test)]
@@ -144,5 +127,35 @@ mod core_mutator_spec {
         uv.set_i64(-42);
         assert_eq!(*uv.typ(), uni_value::VType::VNUM);
         assert_eq!(uv.val(), "-42");
+    }
+
+    #[traced_test]
+    fn set_num_str_accepts_valid() {
+        let mut uv = UniValue::default();
+        assert!(uv.set_num_str(&"123".to_string()));
+        assert_eq!(uv.val(), "123");
+    }
+
+    #[traced_test]
+    fn set_num_str_rejects_invalid() {
+        let mut uv = UniValue::default();
+        assert!(!uv.set_num_str(&" 12".to_string()));
+        assert!(uv.is_null());
+    }
+
+    #[traced_test]
+    fn generic_set_int() {
+        let mut uv = UniValue::default();
+        uv.set_int(99u32);
+        assert_eq!(uv.val(), "99");
+    }
+
+    #[traced_test]
+    fn set_array_object() {
+        let mut uv = UniValue::default();
+        uv.set_array();
+        assert_eq!(*uv.typ(), uni_value::VType::VARR);
+        uv.set_object();
+        assert_eq!(*uv.typ(), uni_value::VType::VOBJ);
     }
 }

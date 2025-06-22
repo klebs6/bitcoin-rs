@@ -1,6 +1,7 @@
 // ---------------- [ File: bitcoin-univalue/src/jtoken_type.rs ]
 crate::ix!();
 
+#[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]
 pub enum JTokenType {
     JTOK_ERR        = -1,
     JTOK_NONE       = 0,                           // eof
