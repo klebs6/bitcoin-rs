@@ -4,7 +4,36 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/univalue/lib/univalue_get.cpp]
 
 impl UniValue {
+
+    pub fn get_obj_map(&self, kv: &mut HashMap<String,UniValue>)  {
+        
+        todo!();
+        /*
+            if (typ != VOBJ)
+            return;
+
+        kv.clear();
+        for (size_t i = 0; i < keys.size(); i++)
+            kv[keys[i]] = values[i];
+        */
+    }
+
+    pub fn get_type(&self) -> uni_value::VType {
+
+        todo!();
+        /*
+            return typ;
+        */
+    }
     
+    pub fn get_val_str(&self) -> &String {
+        
+        todo!();
+        /*
+            return val;
+        */
+    }
+   
     /**
       | Strict type-specific getters, these
       | throw std::runtime_error if the value

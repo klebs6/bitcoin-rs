@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-univalue/src/index.rs ]
 crate::ix!();
 
 impl Index<&str> for UniValue {

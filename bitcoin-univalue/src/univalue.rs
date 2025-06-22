@@ -35,51 +35,44 @@ pub mod uni_value {
 }
 
 impl Default for UniValue {
+    /// A default `UniValue` is the JSON literal **null**.
     fn default() -> Self {
-        todo!();
-        /*
-            typ = VNULL;
-        */
+        Self {
+            typ:    uni_value::VType::VNULL,
+            val:    String::new(),
+            keys:   Vec::new(),
+            values: Vec::new(),
+        }
     }
 }
 
 impl UniValue {
 
-    pub fn new(
-        initial_type: uni_value::VType,
-        initial_str:  Option<&str>) -> Self {
-        let initial_str: &str = initial_str.unwrap_or("");
-        todo!();
-        /*
-
-
-            typ = initialType;
-            val = initialStr;
-        */
-    }
-    
-    pub fn set_i32(&mut self, val: i32) -> bool {
-        
-        todo!();
-        /*
-            return setInt((int64_t)val_);
-        */
-    }
-    
-    pub fn get_type(&self) -> uni_value::VType {
-        
-        todo!();
-        /*
-            return typ;
-        */
-    }
-    
-    pub fn get_val_str(&self) -> &String {
-        
-        todo!();
-        /*
-            return val;
-        */
+    /// Create a new `UniValue` with the provided type
+    /// and (optionally) initial string value.
+    #[instrument(level = "trace", skip_all)]
+    pub fn new(initial_type: uni_value::VType, initial_str: Option<&str>) -> Self {
+        let mut uv = Self::default();
+        match initial_type {
+            uni_value::VType::VNULL => { /* nothing */ }
+            uni_value::VType::VBOOL => {
+                uv.set_bool(initial_str == Some("1"));
+            }
+            uni_value::VType::VSTR => {
+                uv.set_str(initial_str.unwrap_or_default());
+            }
+            uni_value::VType::VNUM => {
+                uv.val = initial_str.unwrap_or_default().to_owned();
+                uv.typ = uni_value::VType::VNUM;
+            }
+            uni_value::VType::VARR => {
+                uv.typ = uni_value::VType::VARR;
+            }
+            uni_value::VType::VOBJ => {
+                uv.typ = uni_value::VType::VOBJ;
+            }
+        }
+        uv
     }
     
     pub fn empty(&self) -> bool {
@@ -106,285 +99,6 @@ impl UniValue {
         */
     }
     
-    pub fn is_null(&self) -> bool {
-        
-        todo!();
-        /*
-            return (typ == VNULL);
-        */
-    }
-    
-    pub fn is_true(&self) -> bool {
-        
-        todo!();
-        /*
-            return (typ == VBOOL) && (val == "1");
-        */
-    }
-    
-    pub fn is_false(&self) -> bool {
-        
-        todo!();
-        /*
-            return (typ == VBOOL) && (val != "1");
-        */
-    }
-    
-    pub fn is_bool(&self) -> bool {
-        
-        todo!();
-        /*
-            return (typ == VBOOL);
-        */
-    }
-    
-    pub fn is_str(&self) -> bool {
-        
-        todo!();
-        /*
-            return (typ == VSTR);
-        */
-    }
-    
-    pub fn is_num(&self) -> bool {
-        
-        todo!();
-        /*
-            return (typ == VNUM);
-        */
-    }
-    
-    pub fn is_array(&self) -> bool {
-        
-        todo!();
-        /*
-            return (typ == VARR);
-        */
-    }
-    
-    pub fn is_object(&self) -> bool {
-        
-        todo!();
-        /*
-            return (typ == VOBJ);
-        */
-    }
-
-    pub fn push_back<T: ?Sized>(&mut self, val: &T) -> bool {
-        todo!();
-
-        /*
-        pub fn push_back(&mut self, val: &UniValue) -> bool {
-            
-            todo!();
-            /*
-            
-            */
-        }
-        
-        pub fn push_back(&mut self, val: &String) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(VSTR, val_);
-                return push_back(tmpVal);
-            */
-        }
-        
-        pub fn push_back(&mut self, val: *const u8) -> bool {
-            
-            todo!();
-            /*
-                std::string s(val_);
-                return push_back(s);
-            */
-        }
-        
-        pub fn push_back(&mut self, val: u64) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(val_);
-                return push_back(tmpVal);
-            */
-        }
-        
-        pub fn push_back(&mut self, val: i64) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(val_);
-                return push_back(tmpVal);
-            */
-        }
-        
-        pub fn push_back(&mut self, val: bool) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(val_);
-                return push_back(tmpVal);
-            */
-        }
-        
-        pub fn push_back(&mut self, val: i32) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(val_);
-                return push_back(tmpVal);
-            */
-        }
-        
-        pub fn push_back(&mut self, val: f64) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(val_);
-                return push_back(tmpVal);
-            */
-        }
-
-        pub fn push_back(&mut self, val: &UniValue) -> bool {
-            
-            todo!();
-            /*
-                if (typ != VARR)
-                return false;
-
-            values.push_back(val_);
-            return true;
-            */
-        }
-        
-        pub fn push_backv(&mut self, vec: &Vec<UniValue>) -> bool {
-            
-            todo!();
-            /*
-                if (typ != VARR)
-                return false;
-
-            values.insert(values.end(), vec.begin(), vec.end());
-
-            return true;
-            */
-        }
-        */
-    }
-       
-    pub fn pushkv<K,V>(&mut self, k: K, v: V) {
-
-        todo!();
-
-        /*
-        pub fn pushkv(&mut self, 
-            key: &String,
-            val: &UniValue)  {
-            
-            todo!();
-            /*
-                keys.push_back(key);
-            values.push_back(val_);
-            */
-        }
-        
-        pub fn pushkv(&mut self, 
-            key: &String,
-            val: &UniValue) -> bool {
-            
-            todo!();
-            /*
-                if (typ != VOBJ)
-                return false;
-
-            size_t idx;
-            if (findKey(key, idx))
-                values[idx] = val_;
-            else
-                __pushKV(key, val_);
-            return true;
-            */
-        }
-        
-        pub fn pushkv(&mut self, 
-            key: &String,
-            val: &String) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(VSTR, val_);
-                return pushKV(key, tmpVal);
-            */
-        }
-        
-        pub fn pushkv(&mut self, 
-            key: &String,
-            val: *const u8) -> bool {
-            
-            todo!();
-            /*
-                std::string _val(val_);
-                return pushKV(key, _val);
-            */
-        }
-        
-        pub fn pushkv(&mut self, 
-            key: &String,
-            val: i64) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(val_);
-                return pushKV(key, tmpVal);
-            */
-        }
-        
-        pub fn pushkv(&mut self, 
-            key: &String,
-            val: u64) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(val_);
-                return pushKV(key, tmpVal);
-            */
-        }
-        
-        pub fn pushkv(&mut self, 
-            key: &String,
-            val: bool) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(val_);
-                return pushKV(key, tmpVal);
-            */
-        }
-        
-        pub fn pushkv(&mut self, 
-            key: &String,
-            val: i32) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal((int64_t)val_);
-                return pushKV(key, tmpVal);
-            */
-        }
-        
-        pub fn pushkv(&mut self, 
-            key: &String,
-            val: f64) -> bool {
-            
-            todo!();
-            /*
-                UniValue tmpVal(val_);
-                return pushKV(key, tmpVal);
-            */
-        }
-        */
-    }
-    
     pub fn ty(&self) -> uni_value::VType {
         
         todo!();
@@ -403,136 +117,15 @@ impl UniValue {
         */
     }
     
-    pub fn clear(&mut self)  {
-        
-        todo!();
-        /*
-            typ = VNULL;
-        val.clear();
-        keys.clear();
-        values.clear();
-        */
+    /// Clear the current value, turning it into **null**.
+    #[instrument(level = "trace", skip(self))]
+    pub fn clear(&mut self) {
+        self.typ    = uni_value::VType::VNULL;
+        self.val.clear();
+        self.keys.clear();
+        self.values.clear();
     }
-    
-    pub fn set_null(&mut self) -> bool {
-        
-        todo!();
-        /*
-            clear();
-        return true;
-        */
-    }
-    
-    pub fn set_bool(&mut self, val: bool) -> bool {
-        
-        todo!();
-        /*
-            clear();
-        typ = VBOOL;
-        if (val_)
-            val = "1";
-        return true;
-        */
-    }
-    
-    pub fn set_num_str(&mut self, val: &String) -> bool {
-        
-        todo!();
-        /*
-            if (!validNumStr(val_))
-            return false;
-
-        clear();
-        typ = VNUM;
-        val = val_;
-        return true;
-        */
-    }
-    
-    pub fn set_int<T: Integer>(&mut self, val: T) -> bool {
-        
-        todo!();
-        /*
-            std::ostringstream oss;
-
-        oss << val_;
-
-        return setNumStr(oss.str());
-        */
-    }
-    
-    pub fn set_float(&mut self, val: f64) -> bool {
-        
-        todo!();
-        /*
-            std::ostringstream oss;
-
-        oss << std::setprecision(16) << val_;
-
-        bool ret = setNumStr(oss.str());
-        typ = VNUM;
-        return ret;
-        */
-    }
-    
-    pub fn set_str(&mut self, val: &String) -> bool {
-        
-        todo!();
-        /*
-            clear();
-        typ = VSTR;
-        val = val_;
-        return true;
-        */
-    }
-    
-    pub fn set_array(&mut self) -> bool {
-        
-        todo!();
-        /*
-            clear();
-        typ = VARR;
-        return true;
-        */
-    }
-    
-    pub fn set_object(&mut self) -> bool {
-        
-        todo!();
-        /*
-            clear();
-        typ = VOBJ;
-        return true;
-        */
-    }
-    
-    pub fn push_kvs(&mut self, obj: &UniValue) -> bool {
-        
-        todo!();
-        /*
-            if (typ != VOBJ || obj.typ != VOBJ)
-            return false;
-
-        for (size_t i = 0; i < obj.keys.size(); i++)
-            __pushKV(obj.keys[i], obj.values.at(i));
-
-        return true;
-        */
-    }
-    
-    pub fn get_obj_map(&self, kv: &mut HashMap<String,UniValue>)  {
-        
-        todo!();
-        /*
-            if (typ != VOBJ)
-            return;
-
-        kv.clear();
-        for (size_t i = 0; i < keys.size(); i++)
-            kv[keys[i]] = values[i];
-        */
-    }
-    
+ 
     pub fn find_key(&self, 
         key:     &String,
         ret_idx: &mut usize) -> bool {

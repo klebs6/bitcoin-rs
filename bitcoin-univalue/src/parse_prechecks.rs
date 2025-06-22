@@ -1,26 +1,60 @@
+// ---------------- [ File: bitcoin-univalue/src/parse_prechecks.rs ]
 crate::ix!();
 
-pub fn parse_prechecks(x: &String) -> bool {
-    
+/// *Strict pre‑scan* for numeric / string parsing.
+/// Rejects empty strings, embedded NULs and
+/// padding whitespace (RFC 7159 §2).
+#[instrument(level = "trace", skip_all)]
+pub fn parse_prechecks(x: &str) -> bool {
     if x.is_empty() {
-        //  No empty string allowed
+        trace!("rejected: empty string");
         return false;
     }
 
-    let first  = x.chars().nth(0).unwrap() as i32;
-    let last   = x.chars().nth(x.len() - 1).unwrap() as i32;
+    let first = x.as_bytes()[0] as i32;
+    let last  = x.as_bytes()[x.len() - 1] as i32;
 
-    let padded = json_isspace(first) || json_isspace(last);
-
-    if x.len() >= 1 && padded {
-        //  No padding allowed
+    if json_isspace(first) || json_isspace(last) {
+        trace!("rejected: padded with whitespace");
         return false;
     }
 
-    if x.len() != unsafe { libc::strlen(x.as_ptr() as *const i8) } {
-        //  No embedded NUL characters allowed
+    if x.bytes().any(|b| b == 0) {
+        trace!("rejected: embedded NUL byte");
         return false;
     }
 
     true
+}
+
+#[cfg(test)]
+mod parse_prechecks_spec {
+    use super::*;
+
+    #[traced_test]
+    fn accepts_clean_input() {
+        assert!(parse_prechecks("123"));
+        assert!(parse_prechecks("-42.0"));
+    }
+
+    #[traced_test]
+    fn rejects_empty() {
+        assert!(!parse_prechecks(""));
+    }
+
+    #[traced_test]
+    fn rejects_leading_or_trailing_ws() {
+        assert!(!parse_prechecks(" 1"));
+        assert!(!parse_prechecks("1 "));
+        assert!(!parse_prechecks("\t1"));
+        assert!(!parse_prechecks("1\n"));
+    }
+
+    #[traced_test]
+    fn rejects_embedded_nul() {
+        let mut s = String::from("12");
+        s.push('\0');
+        s.push('3');
+        assert!(!parse_prechecks(&s));
+    }
 }

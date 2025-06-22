@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-univalue/src/gen.rs ]
+// ---------------- [ File: bitcoin-univalue/src/univalue_gen_main.rs ]
 /*!
   | To re-create univalue_escapes.h:
   | $ g++ -o gen gen.cpp
