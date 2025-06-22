@@ -3,3 +3,4 @@
 
 x!{golombrice}
 x!{gcsfilter}
+x!{gcs_filter_params}

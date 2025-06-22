@@ -1038,8 +1038,11 @@ version = "0.1.17-alpha.0"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-imports",
+ "derive_builder",
+ "getset",
  "lazy_static",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]

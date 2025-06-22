@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indirectmap/src/indirect_map.rs ]
 crate::ix!();
 
 /// Map whose keys are `Arc<K>` pointers but are **compared

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indirectmap/src/traits.rs ]
 crate::ix!();
 
 /// Trait used in the Bitcoin code‑base to expose

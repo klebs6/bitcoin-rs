@@ -15,106 +15,36 @@ pub const GCS_SER_TYPE: usize = SER_NETWORK as usize;
   */
 pub const GCS_SER_VERSION: usize = 0;
 
-/**
-  | This implements a Golomb-coded set
-  | as defined in BIP 158. It is a compact,
-  | probabilistic data structure for testing
-  | set membership.
-  |
-  */
-#[derive(Default)]
+/// Compact probabilistic set (BIP‑158 Golomb‑coded filter).
+///
+/// This implements a Golomb-coded set as defined in BIP 158. It is a compact,
+/// probabilistic data structure for testing set membership.
+/// 
+#[derive(Debug, Clone, Getters, Default)]
+#[getset(get = "pub")]
 pub struct GCSFilter {
-
-    pub params:  gcs_filter::Params,
-
-    /**
-      | Number of elements in the filter
-      |
-      */
-    pub n:       u32,
-
-    /**
-      | Range of element hashes, F = N * M
-      |
-      */
-    pub f:       u64,
-
-    pub encoded: Vec<u8>,
+    params:  GcsFilterParams,
+    /// Number of elements in the filter
+    n:       u32,
+    /// Range of element hashes, F = N * M
+    f:       u64,
+    encoded: Vec<u8>,
 }
 
-pub mod gcs_filter {
-
-    use super::*;
-
-    pub type Element    = Vec<u8>;
-    pub type ElementSet = HashSet<Element,ByteVectorHash>;
-
-    pub struct Params {
-
-        pub siphash_k0: u64,
-        pub siphash_k1: u64,
-
-        /**
-          | Golomb-Rice coding parameter
-          |
-          */
-        pub p:          u8,
-
-        /**
-          | Inverse false positive rate
-          |
-          */
-        pub m:          u32,
-    }
-
-    impl Default for Params {
-        fn default() -> Self {
-            Params::new(None,None,None,None)
-        }
-    }
-
-    impl Params {
-
-        pub fn new(
-            siphash_k0: Option<u64>,
-            siphash_k1: Option<u64>,
-            p:          Option<u8>,
-            m:          Option<u32>) -> Self {
-
-            let siphash_k0: u64 = siphash_k0.unwrap_or(0);
-            let siphash_k1: u64 = siphash_k1.unwrap_or(0);
-
-            let p: u8  = p.unwrap_or(0);
-            let m: u32 = m.unwrap_or(1);
-
-            todo!();
-            /*
-            : siphash_k0(siphash_k0),
-            : siphash_k1(siphash_k1),
-            : p(P),
-            : m(M),
-
-            
-            */
+impl From<Option<GcsFilterParams>> for GCSFilter {
+    /// Create an *empty* filter with given (or default) parameters.
+    fn from(params: Option<GcsFilterParams>) -> Self {
+        let params = params.unwrap_or_default();
+        trace!(target: "gcsfilter", ?params, "initialising empty GCSFilter");
+        Self {
+            params,
+            n: 0,
+            f: 0,
+            encoded: Vec::new(),
         }
     }
 }
 
-impl From<Option<gcs_filter::Params>> for GCSFilter {
-
-    /**
-      | Constructs an empty filter.
-      |
-      */
-    fn from(params: Option<gcs_filter::Params>) -> Self {
-        let params: gcs_filter::Params = params.unwrap_or(gcs_filter::Params::default());
-    
-        todo!();
-        /*
-            : m_params(params), m_N(0), m_F(0), m_encoded{0}
-        */
-    }
-}
 
 impl GCSFilter {
 
@@ -122,7 +52,7 @@ impl GCSFilter {
         self.n
     }
     
-    pub fn get_params(&self) -> &gcs_filter::Params {
+    pub fn get_params(&self) -> &GcsFilterParams {
         &self.params
     }
     
@@ -135,7 +65,7 @@ impl GCSFilter {
       | range [0, N * M).
       |
       */
-    pub fn hash_to_range(&self, element: &gcs_filter::Element) -> u64 {
+    pub fn hash_to_range(&self, element: &GcsFilterElement) -> u64 {
         
         let mut hasher = SipHasher::new_with_keys(
             self.params.siphash_k0,
@@ -153,7 +83,7 @@ impl GCSFilter {
         map_into_range(hash, self.f)
     }
     
-    pub fn build_hashed_set(&self, elements: &gcs_filter::ElementSet) -> Vec<u64> {
+    pub fn build_hashed_set(&self, elements: &GcsFilterElementSet) -> Vec<u64> {
         
         let mut hashed_elements = Vec::<u64>::default();
 
@@ -168,85 +98,108 @@ impl GCSFilter {
         hashed_elements
     }
     
-    /**
-      | Reconstructs an already-created filter
-      | from an encoding.
-      |
-      */
+    /// Re‑hydrate a filter from raw encoding.
     pub fn new_with_encoded_filter(
-        params:         &gcs_filter::Params,
-        encoded_filter: Vec<u8>) -> Self {
-    
-        todo!();
-        /*
+        params: &GcsFilterParams,
+        encoded_filter: Vec<u8>,
+    ) -> Self {
+        info!(target: "gcsfilter", bytes = encoded_filter.len(), "decoding GCSFilter");
+        let mut stream = VectorReader::new(
+            GCS_SER_TYPE.try_into().unwrap(),
+            GCS_SER_VERSION.try_into().unwrap(),
+            &encoded_filter,
+            0,
+        );
 
+        // 1. Read element count *N*.
+        let n_u64 = read_compact_size(&mut stream, None);
+        let n = u32::try_from(n_u64)
+            .expect("N must be < 2^32");
+        let f = n as u64 * params.m() as u64;
 
-            : m_params(params), m_encoded(std::move(encoded_filter))
-
-        VectorReader stream(GCS_SER_TYPE, GCS_SER_VERSION, m_encoded, 0);
-
-        uint64_t N = ReadCompactSize(stream);
-        m_N = static_cast<uint32_t>(N);
-        if (m_N != N) {
-            throw std::ios_base::failure("N must be <2^32");
+        // 2. Verify encoded data length by actually decoding.
+        let mut bitreader = BitStreamReader::<VectorReader>::new(&mut stream);
+        for _ in 0..n {
+            let _ = golomb_rice_decode(&mut bitreader, params.p());
         }
-        m_F = static_cast<uint64_t>(m_N) * static_cast<uint64_t>(m_params.m_M);
+        if !stream.empty() {
+            error!(target: "gcsfilter", "encoded_filter contains excess data");
+            panic!("encoded_filter contains excess data");
+        }
 
-        // Verify that the encoded filter contains exactly N elements. If it has too much or too little
-        // data, a std::ios_base::failure exception will be raised.
-        BitStreamReader<VectorReader> bitreader(stream);
-        for (uint64_t i = 0; i < m_N; ++i) {
-            GolombRiceDecode(bitreader, m_params.m_P);
+        Self {
+            params: params.clone(),
+            n,
+            f,
+            encoded: encoded_filter,
         }
-        if (!stream.empty()) {
-            throw std::ios_base::failure("encoded_filter contains excess data");
-        }
-        */
     }
     
-    /**
-      | Builds a new filter from the params and
-      | set of elements.
-      |
-      */
+    /// Build a filter from a concrete element set.
     pub fn new_with_element_set(
-        params:   &gcs_filter::Params,
-        elements: &gcs_filter::ElementSet) -> Self {
-    
-        todo!();
-        /*
+        params: &GcsFilterParams,
+        elements: &GcsFilterElementSet,
+    ) -> Self {
+        let n_u32 = u32::try_from(elements.len())
+            .expect("N must be < 2^32");
+        let f = n_u32 as u64 * params.m() as u64;
 
+        // (a) Serialise header – CompactSize N.
+        let mut encoded = Vec::<u8>::new();
+        let mut stream = CVectorWriter::new(
+            GCS_SER_TYPE,
+            GCS_SER_VERSION,
+            &mut encoded,
+            0,
+        );
+        write_compact_size(&mut stream, n_u32.into());
 
-            : m_params(params)
-
-        size_t N = elements.size();
-        m_N = static_cast<uint32_t>(N);
-        if (m_N != N) {
-            throw invalid_argument("N must be <2^32");
-        }
-        m_F = static_cast<uint64_t>(m_N) * static_cast<uint64_t>(m_params.m_M);
-
-        CVectorWriter stream(GCS_SER_TYPE, GCS_SER_VERSION, m_encoded, 0);
-
-        WriteCompactSize(stream, m_N);
-
-        if (elements.empty()) {
-            return;
-        }
-
-        BitStreamWriter<CVectorWriter> bitwriter(stream);
-
-        uint64_t last_value = 0;
-        for (uint64_t value : BuildHashedSet(elements)) {
-            uint64_t delta = value - last_value;
-            GolombRiceEncode(bitwriter, m_params.m_P, delta);
-            last_value = value;
+        // Empty filter is legal.
+        if elements.is_empty() {
+            return Self {
+                params: params.clone(),
+                n: n_u32,
+                f,
+                encoded,
+            };
         }
 
-        bitwriter.Flush();
-        */
+        // (b) Hash, sort & encode deltas.
+        let mut hashed: Vec<u64> = elements
+            .iter()
+            .map(|e| {
+                let mut hasher =
+                    SipHasher::new_with_keys(params.siphash_k0(), params.siphash_k1());
+                hasher.write(e);
+                let h = hasher.finish();
+                map_into_range(h, f)
+            })
+            .collect();
+        hashed.sort_unstable();
+
+        let mut bitwriter =
+            BitStreamWriter::<CVectorWriter>::new(&mut stream);
+        let mut last = 0u64;
+        for val in hashed {
+            let delta = val - last;
+            golomb_rice_encode(&mut bitwriter, params.p(), delta);
+            last = val;
+        }
+        bitwriter.flush();
+
+        debug!(target: "gcsfilter",
+               bytes = encoded.len(),
+               n = n_u32,
+               "GCSFilter built");
+
+        Self {
+            params: params.clone(),
+            n: n_u32,
+            f,
+            encoded,
+        }
     }
-    
+
     /**
       | Helper method used to implement Match
       | and MatchAny
@@ -310,7 +263,7 @@ impl GCSFilter {
       | 1/M.
       |
       */
-    pub fn match_(&self, element: &gcs_filter::Element) -> bool {
+    pub fn match_(&self, element: &GcsFilterElement) -> bool {
         
         let query: u64 = self.hash_to_range(element);
         self.match_internal(&query, 1)
@@ -327,9 +280,64 @@ impl GCSFilter {
       | on multiple elements separately.
       |
       */
-    pub fn match_any(&self, elements: &gcs_filter::ElementSet) -> bool {
+    pub fn match_any(&self, elements: &GcsFilterElementSet) -> bool {
         
         let queries: Vec<u64> = self.build_hashed_set(elements);
         self.match_internal(queries.as_ptr(), queries.len())
+    }
+}
+
+#[cfg(test)]
+mod gcsfilter_behaviour_tests {
+    use super::*;
+    use std::iter::FromIterator;
+
+    fn sample_params() -> GcsFilterParams {
+        GcsFilterParams::new(None, None, Some(19), Some(784_931))
+    }
+
+    fn bytevec(b: &[u8]) -> GcsFilterElement {
+        Vec::from(b)
+    }
+
+    #[traced_test]
+    fn empty_filter_matches_nothing() {
+        let filter = GCSFilter::from(Some(sample_params()));
+        assert!(!filter.match_(&bytevec(b"anything")),
+            "empty filter must never match");
+    }
+
+    #[traced_test]
+    fn single_element_roundtrip() {
+        let params = sample_params();
+        let elements = GcsFilterElementSet::from_iter(
+            [bytevec(b"satoshi")].into_iter());
+
+        let filter = GCSFilter::new_with_element_set(&params, &elements);
+        assert_eq!(filter.getn(), 1);
+
+        // Encode / decode cycle.
+        let decoded =
+            GCSFilter::new_with_encoded_filter(&params, filter.get_encoded().clone());
+        assert!(decoded.match_(&bytevec(b"satoshi")));
+        assert!(!decoded.match_(&bytevec(b"nakamoto")));
+    }
+
+    #[traced_test]
+    fn match_any_efficiency_check() {
+        let params = sample_params();
+        let elements = GcsFilterElementSet::from_iter(
+            [bytevec(b"a"), bytevec(b"b"), bytevec(b"c")].into_iter());
+
+        let filter = GCSFilter::new_with_element_set(&params, &elements);
+
+        // Query two present, one absent.
+        let queries = GcsFilterElementSet::from_iter(
+            [bytevec(b"c"), bytevec(b"d")].into_iter());
+
+        assert!(filter.match_any(&queries),
+            "should match at least one element");
+        assert!(!filter.match_(&bytevec(b"d")),
+            "specific non‑member must not match deterministically");
     }
 }

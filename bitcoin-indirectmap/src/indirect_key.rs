@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-indirectmap/src/indirect_key.rs ]
 crate::ix!();
 
 /// Key wrapper that orders **by the dereferenced value** of the `Arc`.
