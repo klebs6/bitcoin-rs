@@ -21,7 +21,6 @@ pub fn indent_str(pretty_indent: u32, indent_level: u32, s: &mut String) {
 #[cfg(test)]
 mod indent_str_spec {
     use super::*;
-    use traced_test::traced_test;
 
     #[traced_test]
     fn adds_expected_number_of_spaces() {
@@ -38,4 +37,3 @@ mod indent_str_spec {
         assert_eq!(buf, "x");
     }
 }
-

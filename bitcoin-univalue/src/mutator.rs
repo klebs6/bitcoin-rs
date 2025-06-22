@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-univalue/src/mutator.rs ]
 crate::ix!();
 
 impl UniValue {
@@ -31,8 +32,8 @@ impl UniValue {
     #[instrument(level = "trace", skip(self))]
     pub fn set_bool(&mut self, val: bool) -> bool {
         self.clear();
-        self.typ = uni_value::VType::VBOOL;
-        self.val = if val { "1" } else { "0" }.to_owned();
+        self.set_typ(uni_value::VType::VBOOL);
+        self.set_val(if val { "1" } else { "0" }.to_owned());
         true
     }
    
@@ -67,8 +68,8 @@ impl UniValue {
     #[instrument(level = "trace", skip(self))]
     pub fn set_float(&mut self, val: f64) -> bool {
         self.clear();
-        self.typ = uni_value::VType::VNUM;
-        self.val = format!("{:.16}", val);
+        self.set_typ(uni_value::VType::VNUM);
+        self.set_val(format!("{:.16}", val));
         true
     }
     
@@ -76,8 +77,8 @@ impl UniValue {
     #[instrument(level = "trace", skip(self))]
     pub fn set_str(&mut self, val: &str) -> bool {
         self.clear();
-        self.typ = uni_value::VType::VSTR;
-        self.val = val.to_owned();
+        self.set_typ(uni_value::VType::VSTR);
+        self.set_val(val.to_owned());
         true
     }
   
@@ -104,8 +105,8 @@ impl UniValue {
     /// Helper – common implementation for signed / unsigned integers.
     fn set_int_inner(&mut self, s: String) -> bool {
         self.clear();
-        self.typ = uni_value::VType::VNUM;
-        self.val = s;
+        self.set_typ(uni_value::VType::VNUM);
+        self.set_val(s);
         true
     }
 
@@ -118,30 +119,30 @@ mod core_mutator_spec {
     #[traced_test]
     fn default_is_null() {
         let uv = UniValue::default();
-        assert_eq!(uv.typ, uni_value::VType::VNULL);
+        assert_eq!(*uv.typ(), uni_value::VType::VNULL);
     }
 
     #[traced_test]
     fn set_bool_updates_state() {
         let mut uv = UniValue::default();
         uv.set_bool(true);
-        assert_eq!(uv.typ, uni_value::VType::VBOOL);
-        assert_eq!(uv.val, "1");
+        assert_eq!(*uv.typ(), uni_value::VType::VBOOL);
+        assert_eq!(uv.val(), "1");
     }
 
     #[traced_test]
     fn set_str_updates_state() {
         let mut uv = UniValue::default();
         uv.set_str("hello");
-        assert_eq!(uv.typ, uni_value::VType::VSTR);
-        assert_eq!(uv.val, "hello");
+        assert_eq!(*uv.typ(), uni_value::VType::VSTR);
+        assert_eq!(uv.val(), "hello");
     }
 
     #[traced_test]
     fn set_i64_updates_state() {
         let mut uv = UniValue::default();
         uv.set_i64(-42);
-        assert_eq!(uv.typ, uni_value::VType::VNUM);
-        assert_eq!(uv.val, "-42");
+        assert_eq!(*uv.typ(), uni_value::VType::VNUM);
+        assert_eq!(uv.val(), "-42");
     }
 }

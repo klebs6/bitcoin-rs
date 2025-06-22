@@ -42,22 +42,22 @@ impl UniValue {
       */
     pub fn get_keys<'a>(&'a self) -> Result<&'a Vec<String>,StdException> {
         
-        if self.typ != uni_value::VType::VOBJ {
+        if *self.typ() != uni_value::VType::VOBJ {
             return Err(runtime_error("JSON value is not an object as expected"));
         }
 
-        Ok(&self.keys)
+        Ok(self.keys())
     }
     
     pub fn get_values<'a>(&'a self) -> Result<&'a Vec<UniValue>,StdException> {
         
-        if self.typ != uni_value::VType::VOBJ 
-        && self.typ != uni_value::VType::VARR 
+        if *self.typ() != uni_value::VType::VOBJ 
+        && *self.typ() != uni_value::VType::VARR 
         {
             return Err(runtime_error("JSON value is not an object or array as expected"));
         }
 
-        Ok(&self.values)
+        Ok(self.values())
     }
     
     pub fn get_bool(&self) -> bool {

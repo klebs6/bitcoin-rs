@@ -5,6 +5,7 @@ pub struct RemovePointer<T>   {p: std::marker::PhantomData<T>}
 pub struct RemoveReference<T> {p: std::marker::PhantomData<T>}
 
 x!{annotated_mixin}
+x!{reverse_lock}
 x!{debug_lockorder}
 x!{macros}
 x!{scoped_raw_mutex}

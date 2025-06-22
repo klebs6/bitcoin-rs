@@ -21,10 +21,6 @@ impl<PARENT> Drop for AnnotatedMixin<PARENT> {
     }
 }
 
-pub mod annotated_mixin {
-    pub type UniqueLock<PARENT> = super::UniqueLock<PARENT>;
-}
-
 impl<PARENT> Not for AnnotatedMixin<PARENT> {
     type Output = AnnotatedMixin<PARENT>;
 

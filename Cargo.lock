@@ -1474,6 +1474,9 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-mem",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]
@@ -2681,6 +2684,7 @@ dependencies = [
  "libc",
  "num",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]

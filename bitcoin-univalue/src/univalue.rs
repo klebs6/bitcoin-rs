@@ -3,8 +3,8 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/univalue/include/univalue.h]
 
-#[derive(Getters,Clone,Debug)]
-#[getset(get="pub")]
+#[derive(Setters,Getters,Clone,Debug)]
+#[getset(get="pub",set="pub")]
 pub struct UniValue {
 
     typ:    uni_value::VType,

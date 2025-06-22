@@ -2,7 +2,7 @@
 crate::ix!();
 
 #[repr(u32)]
-pub enum expect_bits {
+pub enum ExpectBits {
     EXP_OBJ_NAME  = 1 << 0,
     EXP_COLON     = 1 << 1,
     EXP_ARR_VALUE = 1 << 2,

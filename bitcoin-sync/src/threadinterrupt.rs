@@ -1,146 +1,138 @@
 // ---------------- [ File: bitcoin-sync/src/threadinterrupt.rs ]
 crate::ix!();
 
+use parking_lot::{Condvar, Mutex};
+use std::{
+    sync::atomic::{AtomicBool, Ordering},
+    time::{Duration as StdDuration, Instant},
+};
+
 //-------------------------------------------[.cpp/bitcoin/src/threadinterrupt.h]
 //-------------------------------------------[.cpp/bitcoin/src/threadinterrupt.cpp]
 
-/// A helper class for interruptible sleeps.
+/// Interruptible sleeper modelled after Bitcoin Core’s `CThreadInterrupt`.
 ///
-/// Calling [`invoke`](Self::invoke) will interrupt any current sleep,
-/// and after that point [`as_bool`](Self::as_bool) will return `true`
-/// until [`reset`](Self::reset) is called.
+/// * Call [`invoke`](Self::invoke) to wake – and permanently
+///   interrupt – all sleepers.
+/// * Call [`reset`](Self::reset) to clear the interrupt flag.
 #[derive(Default)]
 pub struct ThreadInterrupt {
     cond: Condvar,
-    /// Internal mutex used in conjunction with `cond`.
-    mut_: Mutex<()>,
+    gate: Mutex<()>,          // protects `flag`
     flag: AtomicBool,
 }
 
 impl ThreadInterrupt {
-    /// Query whether an interrupt has been requested.
+    /// `true` once an interrupt has been requested.
     #[inline]
     pub fn as_bool(&self) -> bool {
-        self.flag.load(atomic::Ordering::Acquire)
+        self.flag.load(Ordering::Acquire)
     }
 
-    /// Construct a new, *non‑interrupted* [`ThreadInterrupt`].
+    /// New, *non‑interrupted* instance.
     pub fn new() -> Self {
         trace!("ThreadInterrupt::new");
         Self {
             cond: Condvar::new(),
-            mut_: Mutex::new(()),
+            gate: Mutex::new(()),
             flag: AtomicBool::new(false),
         }
     }
 
-    /// Clear any pending interrupt.
+    /// Clear the interrupt flag.
     pub fn reset(&self) {
         trace!("ThreadInterrupt::reset");
-        self.flag.store(false, atomic::Ordering::Release);
+        self.flag.store(false, Ordering::Release);
     }
 
-    /// Request an interrupt and wake every sleeper.
+    /// Set the interrupt flag and wake every waiter.
     pub fn invoke(&self) {
         trace!("ThreadInterrupt::invoke");
         {
-            // Lock scope ensures the mutex guard is dropped before `notify_all`.
-            let _guard = self
-                .mut_
-                .lock()
-                .expect("ThreadInterrupt mutex poisoned during invoke");
-            self.flag.store(true, atomic::Ordering::Release);
+            let _guard = self.gate.lock();
+            self.flag.store(true, Ordering::Release);
         }
         self.cond.notify_all();
     }
 
-    /// Sleep for `rel_time`, returning `true` **only** if the full
-    /// period elapsed **without** an interrupt.
+    /// Sleep for `rel_time`, returning `false` if interrupted first.
     ///
-    /// This mirrors the original C++ semantics:
-    /// * `true`  → timeout reached  
-    /// * `false` → interrupted before timeout
-    pub fn sleep_for(&self, rel_time: Duration) -> bool {
-        debug!(
-            "ThreadInterrupt::sleep_for — {:?} requested",
-            rel_time
-        );
+    /// The API mirrors the C++ original:
+    /// * `true`  → full timeout elapsed  
+    /// * `false` → interrupted
+    pub fn sleep_for(&self, rel_time: StdDuration) -> bool {
+        debug!("ThreadInterrupt::sleep_for — {:?}", rel_time);
 
-        // Fast‑path: abort early if already interrupted.
+        // Quick exit if already interrupted.
         if self.as_bool() {
             debug!("ThreadInterrupt::sleep_for — immediate interrupt");
             return false;
         }
 
-        let guard = self
-            .mut_
-            .lock()
-            .expect("ThreadInterrupt mutex poisoned during sleep_for");
+        let deadline = Instant::now() + rel_time;
+        let mut guard = self.gate.lock();
 
-        // `wait_timeout_while` returns `(guard, wait_result)`
-        // where `wait_result.timed_out()` is `true` when the
-        // timeout elapsed **without** the predicate triggering.
-        let (_guard, wait_result) = self
-            .cond
-            .wait_timeout_while(guard, rel_time, |_| {
-                // Keep waiting **while** *not* interrupted.
-                !self.as_bool()
-            })
-            .expect("ThreadInterrupt condvar poisoned during sleep_for");
+        loop {
+            // Interrupt check with the mutex held.
+            if self.as_bool() {
+                return false;
+            }
 
-        let timed_out = wait_result.timed_out();
+            // Timeout check *without* waiting.
+            let now = Instant::now();
+            if now >= deadline {
+                return true; // waited the entire period
+            }
 
-        debug!(
-            "ThreadInterrupt::sleep_for — finished; timed_out = {}, interrupted = {}",
-            timed_out,
-            self.as_bool()
-        );
-
-        timed_out
+            // Wait for the remaining period or until notified.
+            let remaining = deadline - now;
+            guard = self.cond.wait_for(guard, remaining);
+            // On spurious wake‑up or notify, loop back and re‑test.
+        }
     }
 }
 
-/// ---------------- Tests for `ThreadInterrupt`
+/// ---------------- Tests
 #[cfg(test)]
 mod thread_interrupt_timing_tests {
     use super::*;
+    use std::sync::Arc;
+    use std::thread;
+    use std::time::{Duration as StdDuration, Instant};
 
-    /// Verify that `sleep_for` returns `true` when no interrupt occurs.
+    /// Verify that an uninterrupted sleep reaches its timeout.
     #[traced_test]
-    fn sleep_times_out_without_interrupt() {
+    fn uninterrupted_sleep_times_out() {
         let ti = ThreadInterrupt::new();
         let start = Instant::now();
-        let slept_full = ti.sleep_for(Duration::from_millis(150));
-        let elapsed = start.elapsed();
 
-        assert!(slept_full, "sleep_for should time out without interrupt");
-        // Allow for scheduler variance.
+        let timed_out = ti.sleep_for(StdDuration::from_millis(150));
+        let elapsed   = start.elapsed();
+
+        assert!(timed_out, "must return true on timeout");
         assert!(
-            elapsed >= Duration::from_millis(140),
-            "elapsed = {:?} too short",
+            elapsed >= StdDuration::from_millis(140),
+            "elapsed {:?} unexpectedly short",
             elapsed
         );
     }
 
-    /// Verify that `sleep_for` returns `false` when interrupted.
+    /// Verify that an interrupt wakes sleepers early.
     #[traced_test]
-    fn sleep_returns_false_when_interrupted() {
-        let ti = Arc::new(ThreadInterrupt::new());
+    fn interrupt_wakes_early() {
+        let ti      = Arc::new(ThreadInterrupt::new());
         let sleeper = Arc::clone(&ti);
 
-        let handle = thread::spawn(move || sleeper.sleep_for(Duration::from_secs(10)));
+        let handle = thread::spawn(move || sleeper.sleep_for(StdDuration::from_secs(10)));
 
-        // Give the thread a moment to block.
-        thread::sleep(Duration::from_millis(50));
+        // Give the spawned thread time to block.
+        std::thread::sleep(StdDuration::from_millis(50));
         ti.invoke();
 
-        let slept_full = handle
-            .join()
-            .expect("thread panicked while sleeping");
-
+        let timed_out = handle.join().expect("sleeping thread panicked");
         assert!(
-            !slept_full,
-            "`sleep_for` should have returned false after interrupt"
+            !timed_out,
+            "`sleep_for` should return false after interrupt"
         );
     }
 }
