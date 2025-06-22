@@ -522,6 +522,7 @@ version = "0.1.17-alpha.0"
 dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
+ "tracing",
 ]
 
 [[package]]
@@ -1140,8 +1141,11 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "derive_builder",
+ "getset",
  "lazy_static",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]
@@ -2366,6 +2370,7 @@ dependencies = [
  "lazy_static",
  "parking_lot 0.12.3",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]

@@ -52,6 +52,6 @@ pub fn poly1305_auth(
     final_carry_and_sub_p(&mut h);
     tracing::debug!(h_final = ?h, "poly1305_auth: after final carry reduction");
 
-    add_pad_serialize(out, &h, key);
-    tracing::info!(tag = ?*out, "poly1305_auth: finished");
+    *out = add_pad_serialize(h, &key);
+    tracing::info!(tag = ?out, "poly1305_auth: finished");
 }

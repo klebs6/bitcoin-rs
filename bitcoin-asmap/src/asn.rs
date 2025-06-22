@@ -29,13 +29,14 @@ lazy_static!{
     static ref ASN_BIT_SIZES: Vec<u8> = vec!{15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
 }
 
-pub fn decodeasn<'a, I>(
-        bitpos: &mut I,
-        endpos: &I) -> u32
-where I: Iterator<Item = &'a bool> {
-    
-    todo!();
-        /*
-            return DecodeBits(bitpos, endpos, 1, ASN_BIT_SIZES);
-        */
+/// Decode an ASN starting at `*pos` inside `asmap`.
+pub fn decodeasn(asmap: &[bool], pos: &mut usize) -> u32 {
+    trace!(pos = *pos, "decodeasn");
+    decode_bits(asmap, pos, 1, &ASN_BIT_SIZES)
+}
+
+/// Helper that counts the number of set bits in a `u32`.
+#[inline]
+pub fn count_bits(x: u32) -> u32 {
+    x.count_ones()
 }

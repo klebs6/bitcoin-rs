@@ -1,7 +1,16 @@
 // ---------------- [ File: bitcoin-epoch/src/marker.rs ]
 crate::ix!();
 
-#[derive(Default)]
+/// Per‑transaction epoch marker.
+#[derive(Getters, Builder, Default)]
+#[getset(get = "pub")]
 pub struct EpochMarker {
-    pub(crate) marker: u64,
+    marker: u64,
+}
+
+impl EpochMarker {
+    /// Update the marker; crate‑internal.
+    pub(crate) fn update(&mut self, value: u64) {
+        self.marker = value;
+    }
 }

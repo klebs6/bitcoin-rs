@@ -29,13 +29,8 @@ lazy_static!{
     static ref MATCH_BIT_SIZES: Vec<u8> = vec!{1, 2, 3, 4, 5, 6, 7, 8};
 }
 
-pub fn decode_match<'a, I>(
-        bitpos: &mut I,
-        endpos: &I) -> u32 
-where I: Iterator<Item = &'a bool> {
-    
-    todo!();
-        /*
-            return DecodeBits(bitpos, endpos, 2, MATCH_BIT_SIZES);
-        */
+/// Decode a match value (pattern + sentinel bit) from `asmap`.
+pub fn decode_match(asmap: &[bool], pos: &mut usize) -> u32 {
+    trace!(pos = *pos, "decode_match");
+    decode_bits(asmap, pos, 2, &MATCH_BIT_SIZES)
 }

@@ -1,3 +1,6 @@
+[dependencies]
+tracing.workspace = true
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.17-alpha.0"

@@ -1,4 +1,3 @@
-// ---------------- [ File: bitcoin-asmap/src/bits.rs ]
 /*!
 This function, `decode_bits`, decodes a value from
 a provided iterator of boolean values using the
@@ -40,40 +39,56 @@ Rust implementation that follows the same logic as
 the C++ code provided.
 */
 
+// ---------------- [ File: bitcoin-asmap/src/bits.rs ]
+
 crate::ix!();
 
-pub fn decode_bits<'a, I>(
-    bitpos:    &mut I,
-    endpos:    &I,
+/// Core bit‑stream decoder, mirroring the C++ implementation in behaviour.
+pub fn decode_bits(
+    asmap:     &[bool],
+    pos:       &mut usize,
     minval:    u8,
-    bit_sizes: &Vec<u8>) -> u32 
-where I: Iterator<Item = &'a bool> 
-{
-    todo!();
-        /*
-            uint32_t val = minval;
-        bool bit;
-        for (std::vector<uint8_t>::const_iterator bit_sizes_it = bit_sizes.begin();
-            bit_sizes_it != bit_sizes.end(); ++bit_sizes_it) {
-            if (bit_sizes_it + 1 != bit_sizes.end()) {
-                if (bitpos == endpos) break;
-                bit = *bitpos;
-                bitpos++;
-            } else {
-                bit = 0;
+    bit_sizes: &[u8],
+) -> u32 {
+    trace!(start_pos = *pos, "decode_bits: enter");
+
+    let mut val: u32 = minval as u32;
+
+    for (i, bitsize) in bit_sizes.iter().enumerate() {
+        let last_size = i + 1 == bit_sizes.len();
+
+        // Read exponent bit unless this is the sentinel (last) size.
+        let bit = if !last_size {
+            if *pos >= asmap.len() {
+                trace!("decode_bits: hit EOF in exponent");
+                return INVALID;
             }
-            if (bit) {
-                val += (1 << *bit_sizes_it);
-            } else {
-                for (int b = 0; b < *bit_sizes_it; b++) {
-                    if (bitpos == endpos) return INVALID; // Reached EOF in mantissa
-                    bit = *bitpos;
-                    bitpos++;
-                    val += bit << (*bit_sizes_it - 1 - b);
+            let b = asmap[*pos];
+            *pos += 1;
+            b
+        } else {
+            false
+        };
+
+        if bit {
+            // We set the exponent and continue parsing larger bit‑sizes.
+            val += 1u32 << *bitsize;
+        } else {
+            // Mantissa path: consume `bitsize` bits and finish.
+            for b in 0..*bitsize {
+                if *pos >= asmap.len() {
+                    trace!("decode_bits: hit EOF in mantissa");
+                    return INVALID;
                 }
-                return val;
+                let bit_val = asmap[*pos] as u32;
+                *pos += 1;
+                val += bit_val << (*bitsize - 1 - b);
             }
+            trace!(end_pos = *pos, result = val, "decode_bits: ok");
+            return val;
         }
-        return INVALID; // Reached EOF in exponent
-        */
+    }
+
+    trace!("decode_bits: reached EOF in exponent without terminator");
+    INVALID // Reached EOF in exponent
 }

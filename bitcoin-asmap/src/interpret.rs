@@ -42,52 +42,74 @@ C++ code provided.
 
 crate::ix!();
 
-pub fn interpret(
-        asmap: &Vec<bool>,
-        ip:    &Vec<bool>) -> u32 {
-    
-    todo!();
-        /*
-        std::vector<bool>::const_iterator pos = asmap.begin();
-        const std::vector<bool>::const_iterator endpos = asmap.end();
-        uint8_t bits = ip.size();
-        uint32_t default_asn = 0;
-        uint32_t jump, match, matchlen;
-        Instruction opcode;
-        while (pos != endpos) {
-            opcode = DecodeType(pos, endpos);
-            if (opcode == Instruction::RETURN) {
-                default_asn = DecodeASN(pos, endpos);
-                if (default_asn == INVALID) break; // ASN straddles EOF
-                return default_asn;
-            } else if (opcode == Instruction::JUMP) {
-                jump = DecodeJump(pos, endpos);
-                if (jump == INVALID) break; // Jump offset straddles EOF
-                if (bits == 0) break; // No input bits left
-                if (int64_t{jump} >= int64_t{endpos - pos}) break; // Jumping past EOF
-                if (ip[ip.size() - bits]) {
-                    pos += jump;
+/// Interpret `asmap` for the given `ip`.  
+/// Returns the mapped ASN or 0 on structural failure (which should be ruled
+/// out in production by `sanity_check_as_map`).
+pub fn interpret(asmap: &[bool], ip: &[bool]) -> u32 {
+    let mut pos: usize = 0;
+    let mut bits_left: i32 = ip.len() as i32;
+    let mut default_asn: u32 = 0;
+
+    while pos < asmap.len() {
+        let opcode = decode_type(asmap, &mut pos);
+        debug!(?opcode, pos, bits_left, "interpret: opcode");
+
+        match opcode {
+            Instruction::RETURN => {
+                let asn = decodeasn(asmap, &mut pos);
+                if asn == INVALID {
+                    error!("interpret: ASN straddles EOF");
+                    break;
                 }
-                bits--;
-            } else if (opcode == Instruction::MATCH) {
-                match = DecodeMatch(pos, endpos);
-                if (match == INVALID) break; // Match bits straddle EOF
-                matchlen = CountBits(match) - 1;
-                if (bits < matchlen) break; // Not enough input bits
-                for (uint32_t bit = 0; bit < matchlen; bit++) {
-                    if ((ip[ip.size() - bits]) != ((match >> (matchlen - 1 - bit)) & 1)) {
+                return asn;
+            }
+            Instruction::JUMP => {
+                let jump = decode_jump(asmap, &mut pos);
+                if jump == INVALID || bits_left == 0 {
+                    error!("interpret: invalid jump or no bits left");
+                    break;
+                }
+                if (jump as usize) >= asmap.len() - pos {
+                    error!("interpret: jump past EOF");
+                    break;
+                }
+                let ip_bit = ip[ip.len() - bits_left as usize];
+                if ip_bit {
+                    pos += jump as usize;
+                }
+                bits_left -= 1;
+            }
+            Instruction::MATCH => {
+                let m = decode_match(asmap, &mut pos);
+                if m == INVALID {
+                    error!("interpret: match straddles EOF");
+                    break;
+                }
+                let matchlen = count_bits(m) - 1;
+                if bits_left < matchlen as i32 {
+                    error!("interpret: not enough input bits for match");
+                    break;
+                }
+                for bit in 0..matchlen {
+                    let ip_bit = ip[ip.len() - bits_left as usize];
+                    let pattern_bit = ((m >> (matchlen - 1 - bit)) & 1) != 0;
+                    if ip_bit != pattern_bit {
+                        trace!("interpret: match failed, returning default_asn");
                         return default_asn;
                     }
-                    bits--;
+                    bits_left -= 1;
                 }
-            } else if (opcode == Instruction::DEFAULT) {
-                default_asn = DecodeASN(pos, endpos);
-                if (default_asn == INVALID) break; // ASN straddles EOF
-            } else {
-                break; // Instruction straddles EOF
+            }
+            Instruction::DEFAULT => {
+                default_asn = decodeasn(asmap, &mut pos);
+                if default_asn == INVALID {
+                    error!("interpret: DEFAULT ASN straddles EOF");
+                    break;
+                }
             }
         }
-        assert(false); // Reached EOF without RETURN, or aborted (see any of the breaks above) - should have been caught by SanityCheckASMap below
-        return 0; // 0 is not a valid ASN
-        */
+    }
+
+    error!("interpret: terminated without RETURN – invalid ASMAP");
+    0 // 0 is not a valid ASN
 }

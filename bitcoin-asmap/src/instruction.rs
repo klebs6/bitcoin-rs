@@ -30,6 +30,7 @@ crate::ix!();
 pub const INVALID: u32 = 0xFFFFFFFF;
 
 #[repr(u32)]
+#[derive(Debug,Clone,PartialEq,Eq)]
 pub enum Instruction {
     RETURN  = 0,
     JUMP    = 1,

@@ -49,36 +49,39 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/util/asmap.h]
 //-------------------------------------------[.cpp/bitcoin/src/util/asmap.cpp]
 
-/**
-  | Read asmap from provided binary file
-  |
-  */
-pub fn decode_asmap(path: Box<Path>) -> Vec<bool> {
-    
-    todo!();
-        /*
-        std::vector<bool> bits;
-        FILE *filestr = fsbridge::fopen(path, "rb");
-        CAutoFile file(filestr, SER_DISK, CLIENT_VERSION);
-        if (file.IsNull()) {
-            LogPrintf("Failed to open asmap file from disk\n");
+/// Read an ASMAP from `path`, return its bits or an empty vec on failure.
+///
+/// * The binary on disk is interpreted little‑endian, LSB‑first, exactly like
+///   the original C++ implementation.
+/// * A full sanity check is executed before the vector is returned.
+/// * Robust tracing is provided at every early‑return branch.
+pub fn decode_asmap<P: AsRef<Path>>(path: P) -> Vec<bool> {
+    let mut bits: Vec<bool> = Vec::new();
+
+    let data = match fs::read(&path) {
+        Ok(d) => d,
+        Err(e) => {
+            error!(%e, path = ?path.as_ref(), "Failed to read ASMAP file from disk");
             return bits;
         }
-        fseek(filestr, 0, SEEK_END);
-        int length = ftell(filestr);
-        LogPrintf("Opened asmap file %s (%d bytes) from disk\n", fs::quoted(fs::PathToString(path)), length);
-        fseek(filestr, 0, SEEK_SET);
-        uint8_t cur_byte;
-        for (int i = 0; i < length; ++i) {
-            file >> cur_byte;
-            for (int bit = 0; bit < 8; ++bit) {
-                bits.push_back((cur_byte >> bit) & 1);
-            }
+    };
+
+    info!(
+        bytes   = data.len(),
+        path    = ?path.as_ref(),
+        "Opened ASMAP file from disk"
+    );
+
+    for byte in data {
+        for bit in 0..8 {
+            bits.push(((byte >> bit) & 1) != 0);
         }
-        if (!SanityCheckASMap(bits, 128)) {
-            LogPrintf("Sanity check of asmap file %s failed\n", fs::quoted(fs::PathToString(path)));
-            return {};
-        }
-        return bits;
-        */
+    }
+
+    if !sanity_check_as_map(&bits, 128) {
+        error!(path = ?path.as_ref(), "Sanity check of ASMAP file failed");
+        return Vec::new();
+    }
+
+    bits
 }

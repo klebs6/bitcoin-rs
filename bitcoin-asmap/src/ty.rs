@@ -25,14 +25,12 @@ type from the given iterator positions.
 
 crate::ix!();
 
-lazy_static!{
-    static ref TYPE_BIT_SIZES: Vec<u8> = vec!{0, 0, 1};
+lazy_static! {
+    static ref TYPE_BIT_SIZES: Vec<u8> = vec![0, 0, 1];
 }
 
-pub fn decode_type<'a, I>(
-        bitpos: &mut I,
-        endpos: &I) -> Instruction 
-where I: Iterator<Item = &'a bool> {
-    
-    Instruction::new(decode_bits(bitpos,endpos,0,&TYPE_BIT_SIZES))
+/// Decode an `Instruction` opcode located at `*pos`.
+pub fn decode_type(asmap: &[bool], pos: &mut usize) -> Instruction {
+    trace!(pos = *pos, "decode_type");
+    Instruction::new(decode_bits(asmap, pos, 0, &TYPE_BIT_SIZES))
 }

@@ -42,13 +42,8 @@ lazy_static!{
     };
 }
 
-pub fn decode_jump<'a, I>(
-        bitpos: &mut I,
-        endpos: &I) -> u32
-where I: Iterator<Item = &'a bool> {
-    
-    todo!();
-        /*
-            return DecodeBits(bitpos, endpos, 17, JUMP_BIT_SIZES);
-        */
+/// Decode a jump offset from `asmap`.
+pub fn decode_jump(asmap: &[bool], pos: &mut usize) -> u32 {
+    trace!(pos = *pos, "decode_jump");
+    decode_bits(asmap, pos, 17, &JUMP_BIT_SIZES)
 }
