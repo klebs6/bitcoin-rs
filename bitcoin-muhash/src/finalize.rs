@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-muhash/src/finalize.rs ]
 crate::ix!();
 
 impl MuHash3072 {
@@ -35,4 +36,3 @@ impl MuHash3072 {
         *out = u256::from_le_bytes(digest);
     }
 }
-

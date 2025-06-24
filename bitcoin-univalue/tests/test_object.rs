@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-univalue/src/test_object.rs ]
+// ---------------- [ File: bitcoin-univalue/tests/test_object.rs ]
 use bitcoin_univalue::*;
 use bitcoin_imports::*;
 use std::panic;

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sync/src/lock_api.rs ]
 crate::ix!();
 
 /// Minimal trait representing the operations we need

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-golombrice/src/new_with_element_set.rs ]
 crate::ix!();
 
 impl GCSFilter {

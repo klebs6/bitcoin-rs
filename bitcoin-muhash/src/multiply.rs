@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-muhash/src/multiply.rs ]
 crate::ix!();
 
 impl Num3072 {

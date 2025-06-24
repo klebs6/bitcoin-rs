@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-pool/tests/locked_pool_alloc.rs ]
 use bitcoin_imports::*;
 use bitcoin_support::*;
 use bitcoin_locked_pool::*;

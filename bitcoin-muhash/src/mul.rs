@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-muhash/src/mul.rs ]
 crate::ix!();
 
 /**

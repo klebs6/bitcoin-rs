@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-golombrice/src/new_with_encoded_filter.rs ]
 crate::ix!();
 
 impl GCSFilter {

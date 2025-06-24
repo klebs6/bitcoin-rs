@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-golombrice/src/config.rs ]
 crate::ix!();
 
 /**

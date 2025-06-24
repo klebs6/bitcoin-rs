@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-univalue/src/test_no_nul.rs ]
+// ---------------- [ File: bitcoin-univalue/tests/test_no_nul.rs ]
 use bitcoin_univalue::*;
 use bitcoin_imports::*;
 

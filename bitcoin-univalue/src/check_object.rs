@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-univalue/src/check_object.rs ]
 crate::ix!();
 
 // ---------------- [ File: bitcoin-univalue/src/univalue.rs ]  (additional impl block)

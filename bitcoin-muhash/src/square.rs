@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-muhash/src/square.rs ]
 crate::ix!();
 
 impl Num3072 {

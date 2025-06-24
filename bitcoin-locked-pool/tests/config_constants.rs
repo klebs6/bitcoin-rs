@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-pool/tests/config_constants.rs ]
 use bitcoin_imports::*;
 use bitcoin_support::*;
 use bitcoin_locked_pool::*;

@@ -208,4 +208,3 @@ mod utffilter_spec {
         assert!(!f.finalize());
     }
 }
-

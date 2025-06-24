@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-pool/tests/locked_page_arena.rs ]
 use bitcoin_imports::*;
 use bitcoin_support::*;
 use bitcoin_locked_pool::*;

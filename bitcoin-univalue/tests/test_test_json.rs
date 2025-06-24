@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-univalue/src/test_test_json.rs ]
+// ---------------- [ File: bitcoin-univalue/tests/test_test_json.rs ]
 /*!
   | Test program that can be called by the JSON
   | test suite at

@@ -34,4 +34,3 @@ mod univalue_gen_main_spec {
         assert_eq!(univalue_gen_main(0, &[]), 0);
     }
 }
-

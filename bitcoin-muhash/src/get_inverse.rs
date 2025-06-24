@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-muhash/src/get_inverse.rs ]
 crate::ix!();
 
 impl Num3072 {
