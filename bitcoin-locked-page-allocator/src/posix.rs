@@ -114,9 +114,49 @@ impl GetLimit for PosixLockedPageAllocator {
 
 #[cfg(unix)]
 impl Default for PosixLockedPageAllocator {
+    /// Run‑time discovery of the system page size **with robust fall‑backs**.
+    ///
+    /// * Ensures the determined page size is a power‑of‑two – a hard
+    ///   requirement for `align_up`’s internal invariants.
+    /// * Emits helpful diagnostics when the platform call fails or returns an
+    ///   unexpected value (e.g. non‑power‑of‑two on exotic platforms).
+    ///
+    /// This closes the crash pathway observed in `locked_pool_full_coverage`
+    /// where `sysconf(_SC_PAGESIZE)` returned an error (‑1), propagating a
+    /// non‑power‑of‑two into `align_up`, which then tripped its `debug_assert!`.
     fn default() -> Self {
-        // *Every* POSIX‑y platform we care about supports `_SC_PAGESIZE`.
-        let ps = unsafe { sysconf(_SC_PAGESIZE) as usize };
+        // SAFETY: `sysconf` is a simple, re‑entrant libc wrapper.
+        let raw_pagesize = unsafe { sysconf(_SC_PAGESIZE) };
+
+        // Convert and validate.  A negative or zero result signals failure.
+        let mut ps = if raw_pagesize > 0 {
+            raw_pagesize as usize
+        } else {
+            warn!(
+                target: "locked_page_alloc",
+                raw_pagesize,
+                "sysconf(_SC_PAGESIZE) failed – falling back to 4 KiB"
+            );
+            4 * 1024 // universally valid, conservative default
+        };
+
+        // Enforce power‑of‑two to satisfy `align_up` invariants.
+        if !ps.is_power_of_two() {
+            let rounded = ps.next_power_of_two();
+            warn!(
+                target: "locked_page_alloc",
+                original = ps,
+                rounded,
+                "page size not power‑of‑two – rounding up"
+            );
+            ps = rounded;
+        }
+
+        trace!(
+            target: "locked_page_alloc",
+            page_size = ps,
+            "PosixLockedPageAllocator initialised"
+        );
         Self { page_size: ps }
     }
 }

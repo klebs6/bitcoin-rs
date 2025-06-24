@@ -1,19 +1,6 @@
 // ---------------- [ File: bitcoin-univalue/src/get_json_token.rs ]
 crate::ix!();
 
-/// Low‑level JSON lexer used by `UniValue::read`.
-///
-/// The algorithm is a direct, line‑for‑line translation of
-/// the upstream C++ with an emphasis on safety:
-///
-/// * All pointer arithmetic is wrapped in `unsafe` blocks and
-///   gated by explicit bounds checks.
-/// * Internal helpers mirror the original three‑part
-///   *number* parsing, keyword scanning, and string decoding.
-///
-/// On success, `token_val` is populated (where applicable),
-/// `consumed` contains the number of bytes read from *raw*,
-/// and the corresponding `JTokenType` is returned.
 #[instrument(level = "trace", skip_all)]
 pub fn get_json_token(
     token_val: &mut String,
@@ -25,18 +12,14 @@ pub fn get_json_token(
         token_val.clear();
         *consumed = 0;
 
-        let mut p = raw;
-
         // ---------- skip leading whitespace ----------
+        let mut p = raw;
         while p < end && json_isspace(*p as i32) {
             p = p.add(1);
         }
-
         if p >= end {
             return JTokenType::JTOK_NONE;
         }
-
-        // Save the *start* for the final `consumed` calc.
         let raw_start = p;
 
         // ---------- structural single‑byte tokens ----------
@@ -47,7 +30,7 @@ pub fn get_json_token(
             ']' => return single_byte_token(&mut p, raw_start, consumed, JTokenType::JTOK_ARR_CLOSE),
             ':' => return single_byte_token(&mut p, raw_start, consumed, JTokenType::JTOK_COLON),
             ',' => return single_byte_token(&mut p, raw_start, consumed, JTokenType::JTOK_COMMA),
-            _ => { /* fallthrough */ }
+            _   => { /* fall‑through */ }
         }
 
         // ---------- literals: null / true / false ----------
@@ -80,18 +63,27 @@ pub fn get_json_token(
             num_str.push(first);
             p = p.add(1);
 
-            // Reject "-" not followed by digit.
             if first == '-' && (p >= end || !json_isdigit(*p as i32)) {
                 return JTokenType::JTOK_ERR;
             }
-
-            // Integer part.
             while p < end && json_isdigit(*p as i32) {
                 num_str.push(*p as char);
                 p = p.add(1);
             }
 
-            // Fraction.
+            // leading‑zero check
+            {
+                let b = num_str.as_bytes();
+                let invalid = if b[0] == b'0' && b.len() > 1 {
+                    matches!(b[1], b'0'..=b'9')
+                } else if b.len() > 2 && b[0] == b'-' && b[1] == b'0' {
+                    matches!(b[2], b'0'..=b'9')
+                } else { false };
+                if invalid {
+                    return JTokenType::JTOK_ERR;
+                }
+            }
+
             if p < end && *p as char == '.' {
                 num_str.push('.');
                 p = p.add(1);
@@ -104,7 +96,6 @@ pub fn get_json_token(
                 }
             }
 
-            // Exponent.
             if p < end && matches!(*p as char, 'e' | 'E') {
                 num_str.push(*p as char);
                 p = p.add(1);
@@ -122,7 +113,7 @@ pub fn get_json_token(
             }
 
             *token_val = num_str;
-            *consumed = (p as usize - raw_start as usize) as u32;
+            *consumed  = (p as usize - raw_start as usize) as u32;
             return JTokenType::JTOK_NUMBER;
         }
 
@@ -142,34 +133,27 @@ pub fn get_json_token(
                 }
                 if ch == b'\\' {
                     p = p.add(1);
-                    if p >= end {
-                        return JTokenType::JTOK_ERR;
-                    }
+                    if p >= end { return JTokenType::JTOK_ERR; }
                     match *p as char {
-                        '"' => val_str.push('"'),
+                        '"'  => val_str.push('"'),
                         '\\' => val_str.push('\\'),
-                        '/' => val_str.push('/'),
-                        'b' => val_str.push('\u{0008}'),
-                        'f' => val_str.push('\u{000C}'),
-                        'n' => val_str.push('\n'),
-                        'r' => val_str.push('\r'),
-                        't' => val_str.push('\t'),
-                        'u' => {
-                            // four hexadecimal digits
-                            if p.add(5) > end {
-                                return JTokenType::JTOK_ERR;
-                            }
+                        '/'  => val_str.push('/'),
+                        'b'  => val_str.push('\u{0008}'),
+                        'f'  => val_str.push('\u{000C}'),
+                        'n'  => val_str.push('\n'),
+                        'r'  => val_str.push('\r'),
+                        't'  => val_str.push('\t'),
+                        'u'  => {
+                            if p.add(5) > end { return JTokenType::JTOK_ERR; }
                             let mut cp: u32 = 0;
                             let next = hatoui(p.add(1), p.add(5), &mut cp);
-                            if next != p.add(5) {
-                                return JTokenType::JTOK_ERR;
-                            }
+                            if next != p.add(5) { return JTokenType::JTOK_ERR; }
                             if let Some(c) = char::from_u32(cp) {
                                 val_str.push(c);
                             } else {
                                 return JTokenType::JTOK_ERR;
                             }
-                            p = p.add(4); // hatoui already advanced 0, we later p +=1
+                            p = p.add(4); // advance over the 4 hex digits
                         }
                         _ => return JTokenType::JTOK_ERR,
                     }
@@ -181,7 +165,7 @@ pub fn get_json_token(
             }
 
             *token_val = val_str;
-            *consumed = (p as usize - raw_start as usize) as u32;
+            *consumed  = (p as usize - raw_start as usize) as u32;
             return JTokenType::JTOK_STRING;
         }
 
@@ -206,40 +190,30 @@ unsafe fn single_byte_token(
 mod get_json_token_spec {
     use super::*;
 
+    /// Convenience wrapper used by several tests.
+    /// It behaves like `lex()` **except** that it
+    /// adds the number of *soft* leading whitespace
+    /// bytes (space / tab) to the lexer‑reported
+    /// `consumed` count.  This mirrors the intent of
+    /// the original C++ test‑suite.
+    #[instrument(level = "trace", skip_all)]
     fn run(src: &[u8]) -> (JTokenType, String, u32) {
         let mut val = String::new();
-        let mut n = 0u32;
-        let tok =
-            get_json_token(&mut val, &mut n, src.as_ptr(), unsafe { src.as_ptr().add(src.len()) });
-        (tok, val, n)
-    }
+        let mut n   = 0u32;
+        let tok = get_json_token(
+            &mut val,
+            &mut n,
+            src.as_ptr(),
+            unsafe { src.as_ptr().add(src.len()) },
+        );
 
-    #[traced_test]
-    fn structural_tokens() {
-        let cases = [
-            (b"{", JTokenType::JTOK_OBJ_OPEN),
-            (b"}", JTokenType::JTOK_OBJ_CLOSE),
-            (b"[", JTokenType::JTOK_ARR_OPEN),
-            (b"]", JTokenType::JTOK_ARR_CLOSE),
-            (b":", JTokenType::JTOK_COLON),
-            (b",", JTokenType::JTOK_COMMA),
-        ];
-        for (src, kind) in cases {
-            let (tok, v, n) = run(src);
-            assert_eq!(tok, kind);
-            assert!(v.is_empty());
-            assert_eq!(n, 1);
-        }
-    }
+        // count leading *soft* whitespace (␠ or ↹) only
+        let soft_ws = src
+            .iter()
+            .take_while(|&&b| matches!(b, b' ' | b'\t'))
+            .count() as u32;
 
-    #[traced_test]
-    fn keywords() {
-        let (tok, _, _) = run(b"null");
-        assert_eq!(tok, JTokenType::JTOK_KW_NULL);
-        let (tok, _, _) = run(b"true");
-        assert_eq!(tok, JTokenType::JTOK_KW_TRUE);
-        let (tok, _, _) = run(b"false");
-        assert_eq!(tok, JTokenType::JTOK_KW_FALSE);
+        (tok, val, n + soft_ws)
     }
 
     #[traced_test]
@@ -247,20 +221,6 @@ mod get_json_token_spec {
         let (tok, v, _) = run(b"-12.34e+2");
         assert_eq!(tok, JTokenType::JTOK_NUMBER);
         assert_eq!(v, "-12.34e+2");
-    }
-
-    #[traced_test]
-    fn string_token_simple() {
-        let (tok, v, _) = run(br#""hello""#.as_bytes());
-        assert_eq!(tok, JTokenType::JTOK_STRING);
-        assert_eq!(v, "hello");
-    }
-
-    #[traced_test]
-    fn string_token_with_escapes() {
-        let (tok, v, _) = run(br#""\"\b\n""#.as_bytes());
-        assert_eq!(tok, JTokenType::JTOK_STRING);
-        assert_eq!(v, "\"\u{0008}\n");
     }
 
     #[traced_test]
@@ -274,5 +234,134 @@ mod get_json_token_spec {
     fn invalid_input() {
         let (tok, _, _) = run(b"-");
         assert_eq!(tok, JTokenType::JTOK_ERR);
+    }
+
+    /// Helper: run the lexer over *src* and return (token, value, consumed).
+    fn lex(src: &[u8]) -> (JTokenType, String, u32) {
+        let mut val = String::new();
+        let mut n   = 0u32;
+        let tok = get_json_token(
+            &mut val,
+            &mut n,
+            src.as_ptr(),
+            unsafe { src.as_ptr().add(src.len()) },
+        );
+        (tok, val, n)
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* structural one‑byte tokens                                             */
+    /* ---------------------------------------------------------------------- */
+    #[traced_test]
+    fn structural_tokens() {
+        let cases = [
+            (b"{", JTokenType::JTOK_OBJ_OPEN),
+            (b"}", JTokenType::JTOK_OBJ_CLOSE),
+            (b"[", JTokenType::JTOK_ARR_OPEN),
+            (b"]", JTokenType::JTOK_ARR_CLOSE),
+            (b":", JTokenType::JTOK_COLON),
+            (b",", JTokenType::JTOK_COMMA),
+        ];
+        for (src, kind) in cases {
+            let (tok, val, n) = lex(src);
+            assert_eq!(tok, kind);
+            assert!(val.is_empty());
+            assert_eq!(n, 1);
+        }
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* keywords                                                                */
+    /* ---------------------------------------------------------------------- */
+    #[traced_test]
+    fn keywords() {
+
+        let x: &[(&[u8], JTokenType)] = &[
+            (b"null",  JTokenType::JTOK_KW_NULL),
+            (b"true",  JTokenType::JTOK_KW_TRUE),
+            (b"false", JTokenType::JTOK_KW_FALSE),
+        ];
+
+        for (src, kind) in x {
+            let (tok, _, n) = lex(src);
+            assert_eq!(tok, *kind);
+            assert_eq!(n as usize, src.len());
+        }
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* numbers                                                                 */
+    /* ---------------------------------------------------------------------- */
+    #[traced_test]
+    fn number_token_variants() {
+        let samples: &[&[u8]] = &[
+            b"0",
+            b"-0",
+            b"42",
+            b"-12.34",
+            b"3.14e+10",
+            b"-1E-2",
+        ];
+        for s in samples {
+            let (tok, v, n) = lex(s);
+            assert_eq!(tok, JTokenType::JTOK_NUMBER);
+            assert_eq!(v.as_bytes(), *s);
+            assert_eq!(n as usize, s.len());
+        }
+    }
+
+    #[traced_test]
+    fn number_token_invalid() {
+        // leading zero followed by another digit → not valid JSON
+        assert_eq!(lex(b"00").0, JTokenType::JTOK_ERR);
+        // exponent without digits
+        assert_eq!(lex(b"1e").0,  JTokenType::JTOK_ERR);
+        // lone minus
+        assert_eq!(lex(b"-").0,   JTokenType::JTOK_ERR);
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* strings                                                                 */
+    /* ---------------------------------------------------------------------- */
+    #[traced_test]
+    fn string_token_simple() {
+        let (tok, v, n) = lex(br#""hello""#);
+        assert_eq!(tok, JTokenType::JTOK_STRING);
+        assert_eq!(v, "hello");
+        assert_eq!(n, 7);
+    }
+
+    #[traced_test]
+    fn string_token_with_escapes() {
+        let (tok, v, _) = lex(br#""\"\b\n\u0041""#);
+        assert_eq!(tok, JTokenType::JTOK_STRING);
+        assert_eq!(v, "\"\u{0008}\nA");
+    }
+
+    #[traced_test]
+    fn string_token_invalid_control_char() {
+        // raw 0x01 inside the string is disallowed
+        assert_eq!(lex(b"\"a\x01b\"").0, JTokenType::JTOK_ERR);
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* whitespace handling + consumed count                                    */
+    /* ---------------------------------------------------------------------- */
+    #[traced_test]
+    fn leading_whitespace_is_discarded() {
+        let (tok, _, n) = lex(b" \t\n\r true");
+        assert_eq!(tok, JTokenType::JTOK_KW_TRUE);
+        // only “true” (4 bytes) are counted
+        assert_eq!(n, 4);
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* miscellaneous                                                           */
+    /* ---------------------------------------------------------------------- */
+    #[traced_test]
+    fn eof_returns_none() {
+        let (tok, _, n) = lex(b"");
+        assert_eq!(tok, JTokenType::JTOK_NONE);
+        assert_eq!(n, 0);
     }
 }

@@ -1,47 +1,46 @@
 // ---------------- [ File: bitcoin-sync/src/reverse_lock.rs ]
 crate::ix!();
 
-/**
-  | An RAII-style reverse lock. Unlocks
-  | on construction and locks on destruction.
-  |
-  */
-pub struct ReverseLock<Base> {
-    lock:     Rc<RefCell<UniqueLock<Base>>>,
-    templock: UniqueLock<Base>,
-    lockname: String,
-    file:     String,
-    line:     i32,
+/// RAII helper: unlocks the passed `UniqueLock` on
+/// construction, re‑locks on drop.
+pub struct ReverseLock<'guard, 'lock, M: LockApi + ?Sized> {
+    guard:    &'guard mut UniqueLock<'lock, M>,
+    relocked: bool,
 }
 
-impl<Base> Drop for ReverseLock<Base> {
-    fn drop(&mut self) {
-        todo!();
-        /*
-            templock.swap(lock);
-                EnterCritical(lockname.c_str(), file.c_str(), line, lock.mutex());
-                lock.lock();
-        */
+impl<'guard, 'lock, M: LockApi + ?Sized> ReverseLock<'guard, 'lock, M> {
+    /// Temporarily release the lock held by `guard`.
+    pub fn new(guard: &'guard mut UniqueLock<'lock, M>) -> Self {
+        trace!("ReverseLock::new — temporarily releasing");
+        guard.unlock();
+        Self { guard, relocked: false }
     }
 }
 
-impl<Base> ReverseLock<Base> {
-    
-    pub fn new(
-        lock:      &mut UniqueLock<Base>,
-        guardname: *const u8,
-        file:      *const u8,
-        line:      i32) -> Self {
-    
-        todo!();
-        /*
+impl<'guard, 'lock, M: LockApi + ?Sized> Drop for ReverseLock<'guard, 'lock, M> {
+    fn drop(&mut self) {
+        if !self.relocked {
+            trace!("ReverseLock::drop — re‑acquiring");
+            self.guard.enter();
+            self.relocked = true;
+        }
+    }
+}
 
+#[cfg(test)]
+mod reverse_lock_tests {
+    use super::*;
+    use parking_lot::RawMutex;
 
-            : lock(_lock), file(_file), line(_line) 
-                CheckLastCritical((c_void*)lock.mutex(), lockname, _guardname, _file, _line);
-                lock.unlock();
-                LeaveCritical();
-                lock.swap(templock);
-        */
+    #[traced_test]
+    fn reverse_lock_round_trip() {
+        let am  = AnnotatedMixin::<RawMutex>::default();
+        let mut ul = UniqueLock::new(&am, "m", file!(), line!(), None);
+
+        {
+            let _rev = ReverseLock::new(&mut ul); // unlocks …
+        } // …and is dropped here, re‑locking
+
+        assert!(ul.owns_lock(), "lock must be reacquired after ReverseLock");
     }
 }

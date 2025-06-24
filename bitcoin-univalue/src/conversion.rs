@@ -80,6 +80,15 @@ impl From<&str> for UniValue {
     }
 }
 
+impl From<String> for UniValue {
+    #[instrument(level = "trace", skip_all)]
+    fn from(val: String) -> Self {
+        let mut uv = UniValue::default();
+        uv.set_str(&val);
+        uv
+    }
+}
+
 impl From<*const u8> for UniValue {
     #[instrument(level = "trace", skip_all)]
     fn from(val: *const u8) -> Self {
@@ -114,5 +123,13 @@ mod conversion_spec {
         let uv: UniValue = "hi".into();
         assert_eq!(uv.val(), "hi");
         assert_eq!(uv.typ(), &uni_value::VType::VSTR);
+    }
+
+    #[traced_test]
+    fn converts_from_owned_string() {
+        let owned_str = String::from("hello");
+        let uv: UniValue = owned_str.clone().into();
+        assert_eq!(uv.typ(), &uni_value::VType::VSTR);
+        assert_eq!(uv.val(), &owned_str);
     }
 }

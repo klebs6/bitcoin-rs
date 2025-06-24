@@ -49,3 +49,45 @@ pub const MAP_BASE58: [i8; 256] = [
     -1,-1,-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1,-1,
     -1,-1,-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1,-1,
 ];
+
+#[cfg(test)]
+mod base58_spec {
+    use super::*;
+
+    /// Ensure the canonical **Base‑58 alphabet** is correct and unique.
+    #[traced_test]
+    fn alphabet_has_58_distinct_chars() {
+        let mut seen = std::collections::HashSet::new();
+        for (idx, ch) in PSZ_BASE58.chars().enumerate() {
+            trace!(idx, %ch, "checking Base‑58 alphabet character");
+            assert!(seen.insert(ch), "duplicate character {ch} in alphabet");
+        }
+        info!(len = PSZ_BASE58.len(), "alphabet length");
+        assert_eq!(PSZ_BASE58.len(), 58, "alphabet must contain 58 symbols");
+    }
+
+    /// Validate that `MAP_BASE58` is **fully initialised** and agrees with `PSZ_BASE58`.
+    #[traced_test]
+    fn map_table_is_consistent() {
+        assert_eq!(MAP_BASE58.len(), 256, "lookup table must be 256 bytes long");
+        for (sym_idx, ch) in PSZ_BASE58.bytes().enumerate() {
+            let mapped = MAP_BASE58[ch as usize];
+            debug!(sym_idx, char = %char::from(ch), mapped, "verifying mapping");
+            assert_eq!(
+                mapped as usize, sym_idx,
+                "character {} should map to {} but maps to {}",
+                char::from(ch), sym_idx, mapped
+            );
+        }
+
+        // Forbidden characters (0,O,I,l) must map to -1
+        for &c in b"0OIl" {
+            assert_eq!(
+                MAP_BASE58[c as usize],
+                -1,
+                "forbidden character {} should map to -1",
+                c as char
+            );
+        }
+    }
+}

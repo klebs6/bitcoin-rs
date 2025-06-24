@@ -17,16 +17,3 @@ pub enum JTokenType {
     JTOK_NUMBER,
     JTOK_STRING,
 }
-
-lazy_static!{
-    /*
-    extern enum jtokentype getJsonToken(std::string& tokenVal,
-                                        unsigned int& consumed, const char *raw, const char *end);
-    */
-}
-
-lazy_static!{
-    /*
-    extern const char *uvTypeName(UniValue::VType t);
-    */
-}

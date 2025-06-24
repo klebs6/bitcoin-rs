@@ -32,3 +32,4 @@ x!{utffilter}
 x!{uv_type_name}
 x!{valid_num_str}
 x!{write}
+x!{check_object}

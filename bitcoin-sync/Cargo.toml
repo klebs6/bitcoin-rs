@@ -1,5 +1,8 @@
 [dependencies]
 tracing.workspace = true
+paste.workspace = true
+derive_builder.workspace = true
+getset.workspace = true
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

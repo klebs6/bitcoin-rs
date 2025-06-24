@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-univalue/src/std_exception.rs ]
 /// Minimal stand‑in so we can faithfully mirror the upstream
 /// C++ exception‑based API without adopting `std::error::Error`
 /// plumbing throughout the translated crate just yet.

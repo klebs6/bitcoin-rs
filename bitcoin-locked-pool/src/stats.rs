@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-pool/src/stats.rs ]
 crate::ix!();
 
 /// Pool-wide memory statistics.
@@ -17,6 +18,7 @@ impl LockedPool {
 
     /// Collect pool‑wide usage statistics.
     pub fn stats(&self) -> LockedPoolStats {
+
         let _guard = self.mutex().lock();
 
         let mut agg_used        = 0;

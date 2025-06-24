@@ -1593,6 +1593,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-locked-page-allocator",
+ "bitcoin-support",
  "derive_builder",
  "tracing",
 ]
@@ -1951,7 +1952,7 @@ dependencies = [
  "bitcoin-imports",
  "hex-literal",
  "num-bigint",
- "num-traits 0.1.43",
+ "num-traits 0.2.19",
  "proptest",
  "tracing",
 ]
@@ -2343,7 +2344,7 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-imports",
  "lazy_static",
- "num-traits 0.1.43",
+ "num-traits 0.2.19",
  "static_assertions",
  "tracing",
 ]
@@ -2383,8 +2384,11 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "derive_builder",
+ "getset",
  "lazy_static",
  "parking_lot 0.12.3",
+ "paste",
  "static_assertions",
  "tracing",
 ]
@@ -2698,7 +2702,7 @@ dependencies = [
  "num",
  "static_assertions",
  "tracing",
- "zerocopy 0.7.35",
+ "zerocopy 0.8.25",
 ]
 
 [[package]]
@@ -5535,6 +5539,12 @@ dependencies = [
  "smallvec",
  "windows-targets 0.52.6",
 ]
+
+[[package]]
+name = "paste"
+version = "1.0.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57c0d7b74b563b49d38dae00a0c37d4d6de9b432382b2892f0574ddcae73fd0a"
 
 [[package]]
 name = "peeking_take_while"

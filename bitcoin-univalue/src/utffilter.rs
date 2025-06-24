@@ -3,169 +3,209 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/univalue/lib/univalue_utffilter.h]
 
-/**
-  | Filter that generates and validates
-  | UTF-8, as well as collates UTF-16 surrogate
-  | pairs as specified in RFC4627.
-  |
-  */
-pub struct JSONUTF8StringFilter {
+use std::{cell::RefCell, rc::Rc};
 
+/// Filter that generates and validates UTF-8, as well as collates UTF-16
+/// surrogate pairs as specified in RFC4627.
+/// 
+/// Validates UTF‑8 byte‑by‑byte and, when the input comes from JSON `\uXXXX`
+/// escapes, additionally collates UTF‑16 surrogate pairs into a single scalar
+/// value.
+///
+/// Keep track of the following state to handle the following section of
+/// RFC4627:
+/// 
+///    To escape an extended character that is not in the Basic Multilingual
+///    Plane, the character is represented as a twelve-character sequence,
+///    encoding the UTF-16 surrogate pair.  
+///
+///    So, for example, a string containing only the G clef character (U+1D11E)
+///    may be represented as "\uD834\uDD1E".
+/// 
+///  Two subsequent \u.... may have to be replaced with one actual codepoint.
+///
+pub struct JSONUTF8StringFilter {
     str_:      Rc<RefCell<String>>,
     is_valid:  bool,
 
-    /**
-      | Current UTF-8 decoding state
-      |
-      */
-    codepoint: u32,
+    /// Current UTF-8 decoding state
+    ///
+    codepoint: u32, // assembling UCS‑4 value
 
-    /**
-      | Top bit to be filled in for next UTF-8
-      | byte, or 0
-      |
-      */
-    state:     i32,
-
-    /*
-      | Keep track of the following state to handle
-      | the following section of RFC4627:
-      |
-      |    To escape an extended character that is
-      |    not in the Basic Multilingual Plane, the
-      |    character is represented as
-      |    a twelve-character sequence, encoding
-      |    the UTF-16 surrogate pair.  So, for
-      |    example, a string containing only the
-      |    G clef character (U+1D11E) may be
-      |    represented as "\uD834\uDD1E".
-      |
-      |  Two subsequent \u.... may have to be
-      |  replaced with one actual codepoint.
-      */
-
-    /**
-      | First half of open UTF-16 surrogate
-      | pair, or 0
-      |
-      */
-    surpair: u32,
+    /// Top bit to be filled in for next UTF-8
+    /// byte, or 0
+    /// 
+    ///
+    state:     u8,  // remaining continuation bits (0 / 6 / 12 / 18)
+   
+    /// First half of open UTF-16 surrogate
+    /// pair, or 0
+    ///
+    surpair:   u32, // open UTF‑16 surrogate, else 0
 }
 
 impl JSONUTF8StringFilter {
-    
-    pub fn new(s: &mut String) -> Self {
-    
-        todo!();
-        /*
-            :
-            str(s), is_valid(true), codepoint(0), state(0), surpair(0)
-        */
+
+    /// Create a new filter writing into *target*.
+    ///
+    ///
+    pub fn new(target: Rc<RefCell<String>>) -> Self {
+        Self {
+            str_: target,
+            is_valid: true,
+            codepoint: 0,
+            state: 0,
+            surpair: 0,
+        }
     }
 
-    /**
-      | Write single 8-bit char (may be part
-      | of UTF-8 sequence)
-      |
-      */
-    pub fn push_back(&mut self, ch: u8)  {
-        
-        todo!();
-        /*
-            if (state == 0) {
-                if (ch < 0x80) // 7-bit ASCII, fast direct pass-through
-                    str.push_back(ch);
-                else if (ch < 0xc0) // Mid-sequence character, invalid in this state
-                    is_valid = false;
-                else if (ch < 0xe0) { // Start of 2-byte sequence
-                    codepoint = (ch & 0x1f) << 6;
-                    state = 6;
-                } else if (ch < 0xf0) { // Start of 3-byte sequence
-                    codepoint = (ch & 0x0f) << 12;
-                    state = 12;
-                } else if (ch < 0xf8) { // Start of 4-byte sequence
-                    codepoint = (ch & 0x07) << 18;
-                    state = 18;
-                } else // Reserved, invalid
-                    is_valid = false;
-            } else {
-                if ((ch & 0xc0) != 0x80) // Not a continuation, invalid
-                    is_valid = false;
-                state -= 6;
-                codepoint |= (ch & 0x3f) << state;
-                if (state == 0)
-                    push_back_u(codepoint);
+    /// Feed a single input byte.
+    ///
+    /// Write single 8-bit char (may be part of UTF-8 sequence)
+    #[instrument(level = "trace", skip(self))]
+    pub fn push_back(&mut self, ch: u8) {
+        if self.state == 0 {
+            match ch {
+                0x00..=0x7F => self.str_.borrow_mut().push(ch as char),
+                0xC0..=0xDF => {
+                    self.codepoint = ((ch & 0x1F) as u32) << 6;
+                    self.state = 6;
+                }
+                0xE0..=0xEF => {
+                    self.codepoint = ((ch & 0x0F) as u32) << 12;
+                    self.state = 12;
+                }
+                0xF0..=0xF7 => {
+                    self.codepoint = ((ch & 0x07) as u32) << 18;
+                    self.state = 18;
+                }
+                _ => self.is_valid = false, // stray continuation or reserved
             }
-        */
-    }
-
-    /**
-      | Write codepoint directly, possibly
-      | collating surrogate pairs
-      |
-      */
-    pub fn push_back_u(&mut self, codepoint: u32)  {
-        
-        todo!();
-        /*
-            if (state) // Only accept full codepoints in open state
-                is_valid = false;
-            if (codepoint_ >= 0xD800 && codepoint_ < 0xDC00) { // First half of surrogate pair
-                if (surpair) // Two subsequent surrogate pair openers - fail
-                    is_valid = false;
-                else
-                    surpair = codepoint_;
-            } else if (codepoint_ >= 0xDC00 && codepoint_ < 0xE000) { // Second half of surrogate pair
-                if (surpair) { // Open surrogate pair, expect second half
-                    // Compute code point from UTF-16 surrogate pair
-                    append_codepoint(0x10000 | ((surpair - 0xD800)<<10) | (codepoint_ - 0xDC00));
-                    surpair = 0;
-                } else // Second half doesn't follow a first half - fail
-                    is_valid = false;
-            } else {
-                if (surpair) // First half of surrogate pair not followed by second - fail
-                    is_valid = false;
-                else
-                    append_codepoint(codepoint_);
+        } else {
+            if (ch & 0xC0) != 0x80 {
+                self.is_valid = false;
             }
-        */
+            self.state -= 6;
+            self.codepoint |= ((ch & 0x3F) as u32) << self.state;
+            if self.state == 0 {
+                self.push_back_u(self.codepoint);
+            }
+        }
     }
 
-    /**
-      | Check that we're in a state where the
-      | string can be ended No open sequences,
-      | no open surrogate pairs, etc
-      |
-      */
+    /// Inject a full scalar value (used when parsing `\uXXXX`) and deal with
+    /// UTF‑16 surrogate bookkeeping.
+    ///
+    /// Write codepoint directly, possibly collating surrogate pairs
+    ///
+    #[instrument(level = "trace", skip(self))]
+    pub fn push_back_u(&mut self, cp: u32) {
+        if self.state != 0 {
+            self.is_valid = false;
+            return;
+        }
+
+        match cp {
+            0xD800..=0xDBFF => {
+                if self.surpair != 0 {
+                    self.is_valid = false; // two high surrogates in a row
+                } else {
+                    self.surpair = cp;
+                }
+            }
+            0xDC00..=0xDFFF => {
+                if self.surpair != 0 {
+                    let full = 0x10000 | ((self.surpair - 0xD800) << 10) | (cp - 0xDC00);
+                    self.append_codepoint(full);
+                    self.surpair = 0;
+                } else {
+                    self.is_valid = false; // low surrogate without opener
+                }
+            }
+            _ => {
+                if self.surpair != 0 {
+                    self.is_valid = false; // opener not followed by closer
+                } else {
+                    self.append_codepoint(cp);
+                }
+            }
+        }
+    }
+
+    /// Finalise the stream – no open sequences or surrogate pairs allowed.
+    ///
+    /// Check that we're in a state where the string can be ended No open
+    /// sequences, no open surrogate pairs, etc
+    ///
+    #[instrument(level = "trace", skip(self))]
     pub fn finalize(&mut self) -> bool {
-        
-        todo!();
-        /*
-            if (state || surpair)
-                is_valid = false;
-            return is_valid;
-        */
+        if self.state != 0 || self.surpair != 0 {
+            self.is_valid = false;
+        }
+        self.is_valid
     }
-    
-    pub fn append_codepoint(&mut self, codepoint: u32)  {
-        
-        todo!();
-        /*
-            if (codepoint_ <= 0x7f)
-                str.push_back((char)codepoint_);
-            else if (codepoint_ <= 0x7FF) {
-                str.push_back((char)(0xC0 | (codepoint_ >> 6)));
-                str.push_back((char)(0x80 | (codepoint_ & 0x3F)));
-            } else if (codepoint_ <= 0xFFFF) {
-                str.push_back((char)(0xE0 | (codepoint_ >> 12)));
-                str.push_back((char)(0x80 | ((codepoint_ >> 6) & 0x3F)));
-                str.push_back((char)(0x80 | (codepoint_ & 0x3F)));
-            } else if (codepoint_ <= 0x1FFFFF) {
-                str.push_back((char)(0xF0 | (codepoint_ >> 18)));
-                str.push_back((char)(0x80 | ((codepoint_ >> 12) & 0x3F)));
-                str.push_back((char)(0x80 | ((codepoint_ >> 6) & 0x3F)));
-                str.push_back((char)(0x80 | (codepoint_ & 0x3F)));
-            }
-        */
+
+    /// Emit *cp* as UTF‑8 into the target string.
+    fn append_codepoint(&mut self, cp: u32) {
+        if let Some(ch) = char::from_u32(cp) {
+            self.str_.borrow_mut().push(ch);
+        } else {
+            self.is_valid = false;
+        }
     }
 }
+
+#[cfg(test)]
+mod utffilter_spec {
+    use super::*;
+
+    fn run_bytes(bytes: &[u8]) -> (bool, String) {
+        let buf = Rc::new(RefCell::new(String::new()));
+        let mut f = JSONUTF8StringFilter::new(buf.clone());
+        for &b in bytes {
+            f.push_back(b);
+        }
+        let ok = f.finalize();
+        let x = (ok, buf.borrow().clone());
+        x
+    }
+
+    #[traced_test]
+    fn accepts_plain_ascii() {
+        let (ok, s) = run_bytes(b"hello");
+        assert!(ok);
+        assert_eq!(s, "hello");
+    }
+
+    #[traced_test]
+    fn accepts_multibyte_utf8() {
+        // U+20AC (€) -> E2 82 AC
+        let (ok, s) = run_bytes(&[0xE2, 0x82, 0xAC]);
+        assert!(ok);
+        assert_eq!(s, "€");
+    }
+
+    #[traced_test]
+    fn surrogate_pair_collation() {
+        let buf = Rc::new(RefCell::new(String::new()));
+        let mut f = JSONUTF8StringFilter::new(buf.clone());
+        f.push_back_u(0xD834); // high surrogate
+        f.push_back_u(0xDD1E); // low surrogate → U+1D11E
+        assert!(f.finalize());
+        assert_eq!(buf.borrow().as_str(), "𝄞"); // musical G‑clef
+    }
+
+    #[traced_test]
+    fn detects_invalid_sequence() {
+        // lone continuation byte
+        let (ok, _) = run_bytes(&[0x80]);
+        assert!(!ok);
+
+        // high surrogate without low
+        let buf = Rc::new(RefCell::new(String::new()));
+        let mut f = JSONUTF8StringFilter::new(buf);
+        f.push_back_u(0xD800);
+        assert!(!f.finalize());
+    }
+}
+

@@ -5,3 +5,4 @@ pub(crate) use bitcoin_imports::*;
 pub(crate) use bitcoin_derive::*;
 pub(crate) use bitcoin_locked_page_allocator::*;
 pub(crate) use bitcoin_arena::*;
+pub(crate) use bitcoin_support::*;

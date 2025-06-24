@@ -77,3 +77,61 @@ pub fn encode_base58(mut input: &[u8]) -> String {
 
     s
 }
+
+#[cfg(test)]
+mod encode_spec {
+    use super::*;
+
+    /// Hex‑to‑bytes helper (duplicates logic locally to avoid cross‑module deps).
+    fn parse_hex(src: &str) -> Vec<u8> {
+        fn nibble(b: u8) -> u8 {
+            match b {
+                b'0'..=b'9' => b - b'0',
+                b'a'..=b'f' => b - b'a' + 10,
+                b'A'..=b'F' => b - b'A' + 10,
+                _ => panic!("non‑hex digit {b:?}"),
+            }
+        }
+        assert!(src.len() % 2 == 0, "odd‑length hex");
+        src.as_bytes()
+            .chunks_exact(2)
+            .map(|c| (nibble(c[0]) << 4) | nibble(c[1]))
+            .collect()
+    }
+
+    const ENCODE_VECTORS: &[(&str, &str)] = &[
+        ("", ""),
+        ("00", "1"),
+        ("61", "2g"),
+        ("626262", "a3gV"),
+        ("73696d706c652e", "2cFupjhnEsSn"),
+    ];
+
+    /// Ensure `encode_base58` matches known vectors.
+    #[traced_test]
+    fn encode_reference_vectors() {
+        for (idx, (hex, expected)) in ENCODE_VECTORS.iter().enumerate() {
+            let encoded = encode_base58(&parse_hex(hex));
+            debug!(idx, ?hex, ?expected, ?encoded, "verifying encode vector");
+            assert_eq!(
+                encoded, *expected,
+                "vector #{idx}: expected {expected}, got {encoded}"
+            );
+        }
+    }
+
+    /// Exhaustive test of **leading‑zero preservation**.
+    #[traced_test]
+    fn preserves_leading_zero_bytes() {
+        for zeros in 0..5 {
+            let mut payload = vec![0u8; zeros];
+            payload.extend_from_slice(b"data");
+            let encoded = encode_base58(&payload);
+            info!(zeros, ?encoded, "encoded with leading zeros");
+            assert!(
+                encoded.starts_with(&"1".repeat(zeros)),
+                "expected {zeros} leading ‘1’ symbols"
+            );
+        }
+    }
+}

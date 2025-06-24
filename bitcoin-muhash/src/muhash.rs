@@ -102,33 +102,6 @@ impl MuHash3072 {
         }
     }
     
-    /// Combine numerator and denominator and return a 32‑byte MuHash digest.
-    pub fn finalize(&mut self, out: &mut u256) {
-        trace!("MuHash3072::finalize");
-
-        /* --------------------------------------------------------------------
-         * (1)  Combine numerator / denominator
-         * ------------------------------------------------------------------ */
-        self.numerator.divide(&self.denominator);
-        self.denominator.set_to_one(); // keep object valid
-
-        /* --------------------------------------------------------------------
-         * (2)  Serialize Num3072 → little‑endian bytes
-         * ------------------------------------------------------------------ */
-        let mut data = [0u8; num_3072::BYTE_SIZE];
-        self.numerator.to_bytes(&mut data);
-
-        /* --------------------------------------------------------------------
-         * (3)  Single SHA‑256
-         * ------------------------------------------------------------------ */
-        let mut sha = Sha256::default();
-        sha.write(&data);
-        let mut digest = [0u8; 32];
-        sha.finalize(&mut digest);
-
-        *out = u256::from_le_bytes(digest);
-    }
-
     /**
       | Insert a single piece of data into the
       | set.
@@ -155,8 +128,8 @@ impl MuHash3072 {
 #[cfg(test)]
 mod set_semantics_validation {
     use super::*;
-    use rand::{RngCore, SeedableRng};
     use rand_chacha::ChaCha20Rng;
+    use rand_chacha::rand_core::{RngCore, SeedableRng};
     use bitcoin_u256::u256;
     use tracing::info;
 

@@ -1,5 +1,6 @@
 // ---------------- [ File: bitcoin-univalue/src/test_unitester.rs ]
-crate::ix!();
+use bitcoin_univalue::*;
+use bitcoin_imports::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/univalue/test/unitester.cpp]
 

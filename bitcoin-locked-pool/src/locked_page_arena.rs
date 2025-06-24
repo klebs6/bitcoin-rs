@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-pool/src/locked_page_arena.rs ]
 crate::ix!();
 
 // -------------------------------------------------------------------------
@@ -11,6 +12,7 @@ pub struct LockedPageArena {
 }
 
 impl Drop for LockedPageArena {
+
     fn drop(&mut self) {
         unsafe {
             if !self.base.is_null() && self.size != 0 {

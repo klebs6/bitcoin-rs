@@ -1,27 +1,14 @@
 // ---------------- [ File: bitcoin-golombrice/src/gcsfilter.rs ]
 crate::ix!();
 
-/**
-  | SerType used to serialize parameters
-  | in GCS filter encoding.
-  |
-  */
-pub const GCS_SER_TYPE: usize = SER_NETWORK as usize;
-
-/**
-  | Protocol version used to serialize
-  | parameters in GCS filter encoding.
-  |
-  */
-pub const GCS_SER_VERSION: usize = 0;
-
 /// Compact probabilistic set (BIP‑158 Golomb‑coded filter).
 ///
 /// This implements a Golomb-coded set as defined in BIP 158. It is a compact,
 /// probabilistic data structure for testing set membership.
 /// 
-#[derive(Debug, Clone, Getters, Default)]
+#[derive(Builder,Debug, Clone, Getters, Default)]
 #[getset(get = "pub")]
+#[builder(setter(into))]
 pub struct GCSFilter {
     params:  GcsFilterParams,
     /// Number of elements in the filter
@@ -35,20 +22,21 @@ impl From<Option<GcsFilterParams>> for GCSFilter {
     fn from(params: Option<GcsFilterParams>) -> Self {
         let params = params.unwrap_or_default();
 
-        // Encode CompactSize(0) so the empty filter is fully serialised.
-        let mut encoded = Vec::<u8>::new();
+        // Serialise CompactSize(0) with a `VectorWriter`.
+        let buf_rc = std::rc::Rc::new(std::cell::RefCell::new(Vec::<u8>::new()));
         {
-            let mut w = VectorWriter::new(GCS_SER_TYPE, GCS_SER_VERSION, &mut encoded, 0);
-            write_compact_size(&mut w, 0);
+            let mut vw = VectorWriter::new(
+                GCS_SER_TYPE as i32,
+                GCS_SER_VERSION as i32,
+                buf_rc.clone(),
+                0,
+            );
+            write_compact_size(&mut vw, 0);
         }
 
-        trace!(target: "gcsfilter", "initialised empty GCSFilter");
-        Self {
-            params,
-            n: 0,
-            f: 0,
-            encoded,
-        }
+        let x = Self { params, n: 0, f: 0, encoded: buf_rc.borrow().clone() };
+
+        x
     }
 }
 
@@ -94,134 +82,6 @@ impl GCSFilter {
         hashed_elements.sort();
 
         hashed_elements
-    }
-
-    pub fn new_with_encoded_filter(
-        params: &GcsFilterParams,
-        encoded_filter: Vec<u8>,
-    ) -> Self {
-        info!(target: "gcsfilter", bytes = encoded_filter.len(), "decoding GCSFilter");
-
-        let mut stream = VectorReader::new(
-            GCS_SER_TYPE.try_into().unwrap(),
-            GCS_SER_VERSION.try_into().unwrap(),
-            &encoded_filter,
-            0,
-        );
-
-        let n_u64 = read_compact_size(&mut stream, None);
-        let n = u32::try_from(n_u64).expect("N must be < 2^32");
-        let f = n as u64 * *params.m() as u64;
-
-        let mut bitreader = BitStreamReader::<VectorReader>::new(&mut stream);
-        for _ in 0..n {
-            let _ = golomb_rice_decode(&mut bitreader, *params.p());
-        }
-        if !stream.empty() {
-            error!(target: "gcsfilter", "encoded_filter contains excess data");
-            panic!("encoded_filter contains excess data");
-        }
-
-        Self {
-            params: params.clone(),
-            n,
-            f,
-            encoded: encoded_filter,
-        }
-    }
-
-    /// Build a filter from a concrete element set.
-    pub fn new_with_element_set(
-        params: &GcsFilterParams,
-        elements: &GcsFilterElementSet,
-    ) -> Self {
-        let n = u32::try_from(elements.len()).expect("N must be < 2^32");
-        let f = n as u64 * *params.m() as u64;
-
-        // Serialise CompactSize‑encoded N.
-        let mut encoded = Vec::<u8>::new();
-        let mut stream = VectorWriter::new(
-            GCS_SER_TYPE,
-            GCS_SER_VERSION,
-            &mut encoded,
-            0,
-        );
-        write_compact_size(&mut stream, n.into());
-
-        if elements.is_empty() {
-            return Self { params: params.clone(), n, f, encoded };
-        }
-
-        // Hash, sort, encode deltas.
-        let mut hashed: Vec<u64> = elements
-            .iter()
-            .map(|e| {
-                let mut h = SipHasher::new_with_keys(*params.siphash_k0(), *params.siphash_k1());
-                h.write(e);
-                map_into_range(h.finish(), f)
-            })
-            .collect();
-        hashed.sort_unstable();
-
-        let mut bw = BitStreamWriter::<VectorWriter>::new(&mut stream);
-        let mut last = 0u64;
-        for v in hashed {
-            let delta = v - last;
-            golomb_rice_encode(&mut bw, *params.p(), delta);
-            last = v;
-        }
-        bw.flush();
-
-        debug!(target: "gcsfilter", n, bytes = encoded.len(), "built GCSFilter");
-
-        Self { params: params.clone(), n, f, encoded }
-    }
-
-    /**
-      | Helper method used to implement Match
-      | and MatchAny
-      |
-      */
-    pub fn match_internal(
-        &self,
-        element_hashes: *const u64,
-        size:           usize,
-    ) -> bool {
-        let mut stream = VectorReader::new(
-            GCS_SER_TYPE.try_into().unwrap(),
-            GCS_SER_VERSION.try_into().unwrap(),
-            &self.encoded,
-            0,
-        );
-
-        let n = read_compact_size(&mut stream, None);
-        debug_assert_eq!(n as u32, self.n);
-
-        let mut br = BitStreamReader::<VectorReader>::new(&mut stream);
-        let mut value = 0u64;
-        let mut idx = 0usize;
-
-        for _ in 0..self.n {
-            let delta = golomb_rice_decode(&mut br, *self.params.p());
-            value += delta;
-
-            loop {
-                if idx == size {
-                    return false;
-                }
-                unsafe {
-                    let query = *element_hashes.add(idx);
-                    if query == value {
-                        return true;
-                    }
-                    if query > value {
-                        break;
-                    }
-                }
-                idx += 1;
-            }
-        }
-        false
     }
 
     /**

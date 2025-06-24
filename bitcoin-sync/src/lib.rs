@@ -15,3 +15,4 @@ x!{thread}
 x!{threadinterrupt}
 x!{types}
 x!{unique_lock}
+x!{lock_api}

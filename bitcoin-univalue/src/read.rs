@@ -16,211 +16,255 @@ crate::ix!();
 pub const MAX_JSON_DEPTH: usize = 512;
 
 impl UniValue {
-    
-    pub fn read(&mut self, 
-        raw:  *const u8,
-        size: usize) -> bool {
-        
-        todo!();
-        /*
-        clear();
+    /// Parse *raw[0 … size)* as JSON, storing the result in `self`.
+    /// The logic is a direct, line‑for‑line translation of Bitcoin‑Core’s
+    /// `UniValue::read`, including depth‑checking and expectation masks.
+    #[instrument(level = "trace", skip(self))]
+    pub fn read(&mut self, raw: *const u8, size: usize) -> bool {
+        use crate::ExpectBits::{EXP_ARR_VALUE, EXP_COLON, EXP_NOT_VALUE, EXP_OBJ_NAME, EXP_VALUE};
 
-        uint32_t expectMask = 0;
-        std::vector<UniValue*> stack;
+        unsafe {
+            self.clear();
 
-        std::string tokenVal;
-        unsigned int consumed;
-        enum jtokentype tok = JTOK_NONE;
-        enum jtokentype last_tok = JTOK_NONE;
-        const char* end = raw + size;
-        do {
-            last_tok = tok;
+            let mut expect_mask: u32 = 0;
+            let mut stack: Vec<*mut UniValue> = Vec::new();
 
-            tok = getJsonToken(tokenVal, consumed, raw, end);
-            if (tok == JTOK_NONE || tok == JTOK_ERR)
-                return false;
-            raw += consumed;
+            let mut token_val = String::new();
+            let mut consumed: u32 = 0;
+            let mut tok = JTokenType::JTOK_NONE;
+            let mut last_tok = JTokenType::JTOK_NONE;
 
-            bool isValueOpen = jsonTokenIsValue(tok) ||
-                tok == JTOK_OBJ_OPEN || tok == JTOK_ARR_OPEN;
+            let mut p = raw;
+            let end = raw.add(size);
 
-            if (expect(VALUE)) {
-                if (!isValueOpen)
+            while {
+                last_tok = tok;
+                tok = get_json_token(&mut token_val, &mut consumed, p, end);
+                if matches!(tok, JTokenType::JTOK_NONE | JTokenType::JTOK_ERR) {
                     return false;
-                clearExpect(VALUE);
-
-            } else if (expect(ARR_VALUE)) {
-                bool isArrValue = isValueOpen || (tok == JTOK_ARR_CLOSE);
-                if (!isArrValue)
-                    return false;
-
-                clearExpect(ARR_VALUE);
-
-            } else if (expect(OBJ_NAME)) {
-                bool isObjName = (tok == JTOK_OBJ_CLOSE || tok == JTOK_STRING);
-                if (!isObjName)
-                    return false;
-
-            } else if (expect(COLON)) {
-                if (tok != JTOK_COLON)
-                    return false;
-                clearExpect(COLON);
-
-            } else if (!expect(COLON) && (tok == JTOK_COLON)) {
-                return false;
-            }
-
-            if (expect(NOT_VALUE)) {
-                if (isValueOpen)
-                    return false;
-                clearExpect(NOT_VALUE);
-            }
-
-            switch (tok) {
-
-            case JTOK_OBJ_OPEN:
-            case JTOK_ARR_OPEN: {
-                VType utyp = (tok == JTOK_OBJ_OPEN ? VOBJ : VARR);
-                if (!stack.size()) {
-                    if (utyp == VOBJ)
-                        setObject();
-                    else
-                        setArray();
-                    stack.push_back(this);
-                } else {
-                    UniValue tmpVal(utyp);
-                    UniValue *top = stack.back();
-                    top->values.push_back(tmpVal);
-
-                    UniValue *newTop = &(top->values.back());
-                    stack.push_back(newTop);
                 }
+                p = p.add(consumed as usize);
 
-                if (stack.size() > MAX_JSON_DEPTH)
-                    return false;
+                /* ---------- expectation bookkeeping ---------- */
+                let is_value_open = json_token_is_value(tok)
+                    || tok == JTokenType::JTOK_OBJ_OPEN
+                    || tok == JTokenType::JTOK_ARR_OPEN;
 
-                if (utyp == VOBJ)
-                    setExpect(OBJ_NAME);
-                else
-                    setExpect(ARR_VALUE);
-                break;
-                }
-
-            case JTOK_OBJ_CLOSE:
-            case JTOK_ARR_CLOSE: {
-                if (!stack.size() || (last_tok == JTOK_COMMA))
-                    return false;
-
-                VType utyp = (tok == JTOK_OBJ_CLOSE ? VOBJ : VARR);
-                UniValue *top = stack.back();
-                if (utyp != top->getType())
-                    return false;
-
-                stack.pop_back();
-                clearExpect(OBJ_NAME);
-                setExpect(NOT_VALUE);
-                break;
-                }
-
-            case JTOK_COLON: {
-                if (!stack.size())
-                    return false;
-
-                UniValue *top = stack.back();
-                if (top->getType() != VOBJ)
-                    return false;
-
-                setExpect(VALUE);
-                break;
-                }
-
-            case JTOK_COMMA: {
-                if (!stack.size() ||
-                    (last_tok == JTOK_COMMA) || (last_tok == JTOK_ARR_OPEN))
-                    return false;
-
-                UniValue *top = stack.back();
-                if (top->getType() == VOBJ)
-                    setExpect(OBJ_NAME);
-                else
-                    setExpect(ARR_VALUE);
-                break;
-                }
-
-            case JTOK_KW_NULL:
-            case JTOK_KW_TRUE:
-            case JTOK_KW_FALSE: {
-                UniValue tmpVal;
-                switch (tok) {
-                case JTOK_KW_NULL:
-                    // do nothing more
-                    break;
-                case JTOK_KW_TRUE:
-                    tmpVal.setBool(true);
-                    break;
-                case JTOK_KW_FALSE:
-                    tmpVal.setBool(false);
-                    break;
-                default: /* impossible */ break;
-                }
-
-                if (!stack.size()) {
-                    *this = tmpVal;
-                    break;
-                }
-
-                UniValue *top = stack.back();
-                top->values.push_back(tmpVal);
-
-                setExpect(NOT_VALUE);
-                break;
-                }
-
-            case JTOK_NUMBER: {
-                UniValue tmpVal(VNUM, tokenVal);
-                if (!stack.size()) {
-                    *this = tmpVal;
-                    break;
-                }
-
-                UniValue *top = stack.back();
-                top->values.push_back(tmpVal);
-
-                setExpect(NOT_VALUE);
-                break;
-                }
-
-            case JTOK_STRING: {
-                if (expect(OBJ_NAME)) {
-                    UniValue *top = stack.back();
-                    top->keys.push_back(tokenVal);
-                    clearExpect(OBJ_NAME);
-                    setExpect(COLON);
-                } else {
-                    UniValue tmpVal(VSTR, tokenVal);
-                    if (!stack.size()) {
-                        *this = tmpVal;
-                        break;
+                if expect!(expect_mask, EXP_VALUE) {
+                    if !is_value_open {
+                        return false;
                     }
-                    UniValue *top = stack.back();
-                    top->values.push_back(tmpVal);
+                    clear_expect!(expect_mask, EXP_VALUE);
+                } else if expect!(expect_mask, EXP_ARR_VALUE) {
+                    let is_arr_val = is_value_open || tok == JTokenType::JTOK_ARR_CLOSE;
+                    if !is_arr_val {
+                        return false;
+                    }
+                    clear_expect!(expect_mask, EXP_ARR_VALUE);
+                } else if expect!(expect_mask, EXP_OBJ_NAME) {
+                    let ok = tok == JTokenType::JTOK_OBJ_CLOSE || tok == JTokenType::JTOK_STRING;
+                    if !ok {
+                        return false;
+                    }
+                } else if expect!(expect_mask, EXP_COLON) {
+                    if tok != JTokenType::JTOK_COLON {
+                        return false;
+                    }
+                    clear_expect!(expect_mask, EXP_COLON);
+                } else if !expect!(expect_mask, EXP_COLON) && tok == JTokenType::JTOK_COLON {
+                    return false;
                 }
 
-                setExpect(NOT_VALUE);
-                break;
+                if expect!(expect_mask, EXP_NOT_VALUE) {
+                    if is_value_open {
+                        return false;
+                    }
+                    clear_expect!(expect_mask, EXP_NOT_VALUE);
                 }
 
-            default:
+                /* ---------- state machine ---------- */
+                match tok {
+                    /* ----- structure openers ----- */
+                    JTokenType::JTOK_OBJ_OPEN | JTokenType::JTOK_ARR_OPEN => {
+                        let utyp = if tok == JTokenType::JTOK_OBJ_OPEN {
+                            uni_value::VType::VOBJ
+                        } else {
+                            uni_value::VType::VARR
+                        };
+
+                        if stack.is_empty() {
+                            if utyp == uni_value::VType::VOBJ {
+                                self.set_object();
+                            } else {
+                                self.set_array();
+                            }
+                            stack.push(self as *mut UniValue);
+                        } else {
+                            let mut tmp = UniValue::new(utyp, None);
+                            let top = *stack.last().unwrap();
+                            (*top).values_mut().push(tmp);
+                            let new_top = (*top).values_mut().last_mut().unwrap() as *mut UniValue;
+                            stack.push(new_top);
+                        }
+
+                        if stack.len() > MAX_JSON_DEPTH {
+                            return false;
+                        }
+
+                        if utyp == uni_value::VType::VOBJ {
+                            set_expect!(expect_mask, EXP_OBJ_NAME);
+                        } else {
+                            set_expect!(expect_mask, EXP_ARR_VALUE);
+                        }
+                    }
+
+                    /* ----- structure closers ----- */
+                    JTokenType::JTOK_OBJ_CLOSE | JTokenType::JTOK_ARR_CLOSE => {
+                        if stack.is_empty() || last_tok == JTokenType::JTOK_COMMA {
+                            return false;
+                        }
+
+                        let utyp = if tok == JTokenType::JTOK_OBJ_CLOSE {
+                            uni_value::VType::VOBJ
+                        } else {
+                            uni_value::VType::VARR
+                        };
+
+                        let top = *stack.last().unwrap();
+                        if (*top).get_type() != utyp {
+                            return false;
+                        }
+                        stack.pop();
+                        clear_expect!(expect_mask, EXP_OBJ_NAME);
+                        set_expect!(expect_mask, EXP_NOT_VALUE);
+                    }
+
+                    /* ----- colon / comma ----- */
+                    JTokenType::JTOK_COLON => {
+                        if stack.is_empty() {
+                            return false;
+                        }
+                        let top = *stack.last().unwrap();
+                        if (*top).get_type() != uni_value::VType::VOBJ {
+                            return false;
+                        }
+                        set_expect!(expect_mask, EXP_VALUE);
+                    }
+
+                    JTokenType::JTOK_COMMA => {
+                        if stack.is_empty()
+                            || last_tok == JTokenType::JTOK_COMMA
+                            || last_tok == JTokenType::JTOK_ARR_OPEN
+                        {
+                            return false;
+                        }
+                        let top = *stack.last().unwrap();
+                        if (*top).get_type() == uni_value::VType::VOBJ {
+                            set_expect!(expect_mask, EXP_OBJ_NAME);
+                        } else {
+                            set_expect!(expect_mask, EXP_ARR_VALUE);
+                        }
+                    }
+
+                    /* ----- literals ----- */
+                    JTokenType::JTOK_KW_NULL | JTokenType::JTOK_KW_TRUE | JTokenType::JTOK_KW_FALSE => {
+                        let mut tmp = UniValue::default();
+                        if tok == JTokenType::JTOK_KW_TRUE {
+                            tmp.set_bool(true);
+                        } else if tok == JTokenType::JTOK_KW_FALSE {
+                            tmp.set_bool(false);
+                        }
+
+                        if stack.is_empty() {
+                            *self = tmp;
+                        } else {
+                            let top = *stack.last().unwrap();
+                            (*top).values_mut().push(tmp);
+                            set_expect!(expect_mask, EXP_NOT_VALUE);
+                        }
+                    }
+
+                    /* ----- numbers ----- */
+                    JTokenType::JTOK_NUMBER => {
+                        let mut tmp = UniValue::new(uni_value::VType::VNUM, Some(&token_val));
+                        if stack.is_empty() {
+                            *self = tmp;
+                        } else {
+                            let top = *stack.last().unwrap();
+                            (*top).values_mut().push(tmp);
+                            set_expect!(expect_mask, EXP_NOT_VALUE);
+                        }
+                    }
+
+                    /* ----- strings ----- */
+                    JTokenType::JTOK_STRING => {
+                        if expect!(expect_mask, EXP_OBJ_NAME) {
+                            let top = *stack.last().unwrap();
+                            (*top).keys_mut().push(token_val.clone());
+                            clear_expect!(expect_mask, EXP_OBJ_NAME);
+                            set_expect!(expect_mask, EXP_COLON);
+                        } else {
+                            let mut tmp = UniValue::new(uni_value::VType::VSTR, Some(&token_val));
+                            if stack.is_empty() {
+                                *self = tmp;
+                            } else {
+                                let top = *stack.last().unwrap();
+                                (*top).values_mut().push(tmp);
+                                set_expect!(expect_mask, EXP_NOT_VALUE);
+                            }
+                        }
+                    }
+
+                    /* ----- anything else ----- */
+                    _ => return false,
+                };
+
+                !stack.is_empty()
+            } {}
+
+            /* ----- ensure no trailing junk ----- */
+            let mut dummy = String::new();
+            let mut n = 0u32;
+            if get_json_token(&mut dummy, &mut n, p, end) != JTokenType::JTOK_NONE {
                 return false;
             }
-        } while (!stack.empty ());
+            true
+        }
+    }
+}
 
-        /* Check that nothing follows the initial construct (parsed above).  */
-        tok = getJsonToken(tokenVal, consumed, raw, end);
-        if (tok != JTOK_NONE)
-            return false;
+#[cfg(test)]
+mod read_spec {
+    use super::*;
 
-        return true;
-        */
+    fn parse(src: &str) -> bool {
+        let mut uv = UniValue::default();
+        uv.read(src.as_ptr(), src.len())
+    }
+
+    #[traced_test]
+    fn parses_scalars() {
+        for s in ["null", "true", "false", "123", r#""hi""#] {
+            assert!(parse(s));
+        }
+    }
+
+    #[traced_test]
+    fn parses_structures() {
+        assert!(parse("[1,2,3]"));
+        assert!(parse(r#"{"a":1,"b":[true,false]}"#));
+    }
+
+    #[traced_test]
+    fn depth_limit_enforced() {
+        let deep = "[".repeat(513) + &"]".repeat(513);
+        assert!(!parse(&deep));
+    }
+
+    #[traced_test]
+    fn detects_errors() {
+        for bad in ["[1,2,]", r#"{"a" 1}"#, "{]"] {
+            assert!(!parse(bad));
+        }
     }
 }

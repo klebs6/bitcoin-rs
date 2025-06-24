@@ -48,4 +48,3 @@ fn gcsfilter_default_constructor() {
     assert_eq!(*params.p(), 0);
     assert_eq!(*params.m(), 1);
 }
-

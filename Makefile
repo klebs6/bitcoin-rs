@@ -45,24 +45,25 @@ TEST  := test
 #ACTIVE := bitcoin-aes
 #ACTIVE := bitcoin-epoch
 #ACTIVE := bitcoin-asmap
-#ACTIVE := bitcoin-poly1305
 #ACTIVE := bitcoin-indirectmap
 #ACTIVE := bitcoin-cuckoo-cache
+#ACTIVE := bitcoin-golombrice
+#ACTIVE := bitcoin-locked-pool
 
 #-------------------------------[done-above]
 
+
+#ACTIVE := bitcoin-compat
 ACTIVE := bitcoin-sha256
-ACTIVE := bitcoin-muhash
-ACTIVE := bitcoin-chacha
-ACTIVE := bitcoin-base58
-ACTIVE := bitcoin-sync
-ACTIVE := bitcoin-golombrice
+
+ACTIVE := bitcoin-poly1305
 ACTIVE := bitcoin-univalue
-ACTIVE := bitcoin-locked-pool
+ACTIVE := bitcoin-sync
+ACTIVE := bitcoin-chacha
+ACTIVE := bitcoin-muhash
 
 #ACTIVE := bitcoin-crc32c
 #ACTIVE := bitcoin-portmap
-#ACTIVE := bitcoin-compat
 #ACTIVE := bitcoin-remote
 #ACTIVE := bitcoin-ripemd
 #ACTIVE := bitcoin-service-flags
@@ -78,6 +79,7 @@ ACTIVE := bitcoin-locked-pool
 #ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-random
 #ACTIVE := bitcoin-fees
+#ACTIVE := bitcoin-base58
 
 #-------------------------------[unblocked-above]
 

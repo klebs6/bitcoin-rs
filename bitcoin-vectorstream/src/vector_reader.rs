@@ -23,6 +23,14 @@ pub struct VectorReader {
     pos:     usize,
 }
 
+impl Default for VectorReader {
+    fn default() -> Self {
+        // A trivially empty reader is sufficient to satisfy the `Default`
+        // bound required by `BitStreamReader`.
+        Self::new(0, 0, std::sync::Arc::new(Vec::new()), 0)
+    }
+}
+
 impl<T> Shr<&mut T> for VectorReader
 where
     T: bitcoin_serialize::BtcUnserialize<VectorReader> + ?Sized,

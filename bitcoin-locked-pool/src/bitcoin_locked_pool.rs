@@ -37,6 +37,36 @@ pub struct LockedPool {
     mutex:                   Mutex<()>,
 }
 
+impl Drop for LockedPool {
+    /// Ensure that all `LockedPageArena`s are destroyed **before**
+    /// the underlying `allocator` is dropped.
+    ///
+    /// Each arena stores a raw pointer back to `self.allocator`.  If the
+    /// allocator were dropped first (the default field‑drop order), the
+    /// arenas would dereference a dangling pointer in their own `drop`,
+    /// leading to UB and the panic observed in `locked_pool_full_coverage`.
+    ///
+    /// We explicitly clear the arenas *inside* this `drop` implementation,
+    /// guaranteeing that their destructors run while the allocator is still
+    /// alive and valid.
+    fn drop(&mut self) {
+        // Move the arenas out, leaving an empty Vec behind so `self` stays
+        // structurally valid for the remainder of the destructor.
+        let arenas = std::mem::take(&mut self.arenas);
+
+        trace!(
+            total = arenas.len(),
+            "LockedPool::drop – dropping arenas before allocator"
+        );
+
+        // Drop the arenas *now* (before `allocator` goes away).
+        drop(arenas);
+
+        // Remaining fields (`allocator`, `mutex`, …) are dropped automatically
+        // in declaration order *after* this function returns.
+    }
+}
+
 impl LockedPool {
 
     /// Create a new LockedPool. This takes ownership of the MemoryPageLocker, you can only

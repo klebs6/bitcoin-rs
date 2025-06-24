@@ -16,3 +16,4 @@ bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoin-derive = { path = "../bitcoin-derive" }
 bitcoin-locked-page-allocator = { path = "../bitcoin-locked-page-allocator" }
 bitcoin-arena = { path = "../bitcoin-arena" }
+bitcoin-support = { path = "../bitcoin-support" }

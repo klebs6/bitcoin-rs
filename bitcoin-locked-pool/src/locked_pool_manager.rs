@@ -52,12 +52,6 @@ impl LockedPoolManager {
         })
     }
 
-    fn new(allocator: Box<dyn LockedPageAllocator>) -> Self {
-        Self {
-            base: LockedPool::new(allocator, Some(Self::locking_failed)),
-        }
-    }
-    
     /**
       | Called when locking fails, warn the
       | user here
@@ -67,7 +61,15 @@ impl LockedPoolManager {
         warn!("LockedPoolManager: locking pages failed – continuing unreliably");
         true // allow operation to continue, mirroring Bitcoin Core behaviour
     }
+
+    /// Internal constructor.
+    fn new(allocator: Box<dyn LockedPageAllocator + Send + Sync>) -> Self {
+        Self {
+            base: LockedPool::new(allocator, Some(Self::locking_failed)),
+        }
+    }
 }
+
 
 // Delegate all `LockedPool` API surface.
 impl Deref for LockedPoolManager {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-pool/src/locked_pool_alloc.rs ]
 crate::ix!();
 
 impl LockedPool {
@@ -9,12 +10,11 @@ impl LockedPool {
     /// Returns pointer on success, or 0 if memory is full or the application tried to allocate
     /// 0 bytes.
     ///
+    #[inline]
     pub fn alloc(&mut self, size: usize) -> *mut c_void {
         if size == 0 || size > LOCKED_POOL_ARENA_SIZE {
             return std::ptr::null_mut();
         }
-
-        let _guard = self.mutex().lock();
 
         /* ---------- fast path: existing arenas ---------- */
         for arena in self.arenas_mut() {
@@ -42,12 +42,11 @@ impl LockedPool {
     /// 
     /// Raises std::runtime_error in case of error.
     ///
+    #[inline]
     pub fn free(&mut self, ptr: *mut c_void) {
         if ptr.is_null() {
             return;
         }
-
-        let _guard = self.mutex().lock();
 
         for arena in self.arenas_mut() {
             if arena.address_in_arena(ptr) {

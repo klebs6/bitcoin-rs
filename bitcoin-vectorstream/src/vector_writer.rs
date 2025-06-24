@@ -24,6 +24,14 @@ pub struct VectorWriter {
     n_pos:     usize,
 }
 
+impl Default for VectorWriter {
+    fn default() -> Self {
+        // Empty buffer held inside an `Rc<RefCell<…>>`, matching the
+        // interior‑mutability pattern used by `BitStreamWriter`.
+        Self::new(0, 0, std::rc::Rc::new(std::cell::RefCell::new(Vec::new())), 0)
+    }
+}
+
 impl<T> Shl<&T> for VectorWriter
 where
     T: bitcoin_serialize::BtcSerialize<VectorWriter> + ?Sized,

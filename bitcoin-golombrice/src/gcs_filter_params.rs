@@ -2,7 +2,7 @@
 crate::ix!();
 
 pub type GcsFilterElement    = Vec<u8>;
-pub type GcsFilterElementSet = HashSet<GcsFilterElement,ByteVectorHash>;
+pub type GcsFilterElementSet = std::collections::HashSet<GcsFilterElement,ByteVectorHash>;
 
 /// Filter parameter set (BIP‑158 §3.1).
 #[derive(Debug, Clone, Getters, Builder)]

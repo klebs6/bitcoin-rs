@@ -1,72 +1,48 @@
 // ---------------- [ File: bitcoin-sync/src/annotated_mixin.rs ]
 crate::ix!();
 
-/**
-  | Template mixin that adds -Wthread-safety
-  | locking annotations and lock order
-  | checking to a subset of the mutex API.
-  |
-  */
-#[LOCKABLE]
-pub struct AnnotatedMixin<PARENT> {
-    base: PARENT,
+/// Mixin that forwards to the underlying mutex **and**
+/// provides future hooks for lock‑order tracking.
+pub struct AnnotatedMixin<Parent: LockApi> {
+    parent: Parent,
 }
 
-impl<PARENT> Drop for AnnotatedMixin<PARENT> {
+impl<Parent: LockApi> AnnotatedMixin<Parent> {
+    #[inline]
+    pub const fn new(parent: Parent) -> Self { Self { parent } }
+
+    #[inline]
+    pub fn as_ptr(&self) -> *const Self { self as *const _ }
+}
+
+impl<Parent: LockApi> LockApi for AnnotatedMixin<Parent> {
+    #[inline] fn lock(&self)             { self.parent.lock() }
+    #[inline] fn unlock(&self)           { self.parent.unlock() }
+    #[inline] fn try_lock(&self) -> bool { self.parent.try_lock() }
+}
+
+/// Generic `Drop` (no specialisation).
+impl<Parent: LockApi> Drop for AnnotatedMixin<Parent> {
     fn drop(&mut self) {
-        todo!();
-        /*
-            DeleteLock((c_void*)this);
-        */
+        trace!("AnnotatedMixin dropped @ {:p}", self.as_ptr());
     }
 }
 
-impl<PARENT> Not for AnnotatedMixin<PARENT> {
-    type Output = AnnotatedMixin<PARENT>;
-
-    /**
-      | For negative capabilities in the Clang
-      | Thread Safety Analysis.
-      |
-      | A negative requirement uses the
-      | EXCLUSIVE_LOCKS_REQUIRED attribute, in
-      | conjunction with the ! operator, to
-      | indicate that a mutex should not be held.
-      */
-    #[inline] fn not(self) -> Self::Output {
-        todo!();
-        /*
-            return *this;
-        */
-    }
+/// Provide `Default` only for the concrete `RawMutex` case.
+impl Default for AnnotatedMixin<parking_lot::RawMutex> {
+    fn default() -> Self { Self::new(parking_lot::RawMutex::INIT) }
 }
 
-impl<PARENT> AnnotatedMixin<PARENT> {
+#[cfg(test)]
+mod annotated_mixin_tests {
+    use super::*;
 
-    #[EXCLUSIVE_LOCK_FUNCTION()]
-    pub fn lock(&mut self)  {
-        
-        todo!();
-        /*
-            PARENT::lock();
-        */
-    }
-
-    #[UNLOCK_FUNCTION()]
-    pub fn unlock(&mut self)  {
-        
-        todo!();
-        /*
-            PARENT::unlock();
-        */
-    }
-
-    #[EXCLUSIVE_TRYLOCK_FUNCTION(true)]
-    pub fn try_lock(&mut self) -> bool {
-        
-        todo!();
-        /*
-            return PARENT::try_lock();
-        */
+    #[traced_test]
+    fn basic_lock_cycle() {
+        let m = AnnotatedMixin::<parking_lot::RawMutex>::default();
+        assert!(m.try_lock());
+        m.unlock();
+        m.lock();
+        m.unlock();
     }
 }

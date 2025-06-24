@@ -159,7 +159,7 @@ fn base58_random_encode_decode_roundtrip() {
         let mut decoded = Vec::new();
         let too_small = rng.range(len);
         assert!(
-            !decode_base_58check(&encoded, &mut decoded, too_small as i32),
+            !decode_base_58check(&encoded, &mut decoded, (too_small as i32).try_into().unwrap()),
             "case {n}: unexpectedly succeeded with max_len={too_small}"
         );
 
@@ -167,7 +167,7 @@ fn base58_random_encode_decode_roundtrip() {
         decoded.clear();
         let ok_limit = len + rng.range(257 - len);
         assert!(
-            decode_base_58check(&encoded, &mut decoded, ok_limit as i32),
+            decode_base_58check(&encoded, &mut decoded, (ok_limit as i32).try_into().unwrap()),
             "case {n}: failed with max_len={ok_limit}"
         );
         assert_eq!(decoded, data, "case {n}: round‑trip mismatch");

@@ -120,29 +120,6 @@ impl UniValue {
         self.keys.clear();
         self.values.clear();
     }
- 
-    pub fn check_object(&self, t: &HashMap<String,uni_value::VType>) -> bool {
-        
-        todo!();
-        /*
-            if (typ != VOBJ) {
-            return false;
-        }
-
-        for (const auto& object: t) {
-            size_t idx = 0;
-            if (!findKey(object.first, idx)) {
-                return false;
-            }
-
-            if (values.at(idx).getType() != object.second) {
-                return false;
-            }
-        }
-
-        return true;
-        */
-    }
 }
 
 #[cfg(test)]

@@ -40,26 +40,69 @@ pub fn decode_base_58check_raw(
     return true
 }
 
-/**
-  | Decode a base58-encoded string (str)
-  | that includes a checksum into a byte
-  | vector (vchRet), return true if decoding
-  | is successful
-  |
-  */
-pub fn decode_base_58check(
-        str_:    &str,
-        vch_ret: &mut Vec<u8>,
-        max_ret: i32) -> bool {
-
-
-    if !valid_as_cstring(str_) {
-        return false
+/// Decode a base58-encoded string (str) that includes a checksum into a byte
+/// vector (vchRet), return true if decoding is successful
+/// 
+pub fn decode_base_58check(input: &str, vch_ret: &mut Vec<u8>, max_ret_len: usize) -> bool {
+    if max_ret_len > usize::MAX - 4 {
+        return false;
     }
 
-    decode_base_58check_raw(
-        str_.as_ptr(),
-        vch_ret,
-        max_ret
-    )
+    if !decode_base58(input, vch_ret, max_ret_len + 4) || vch_ret.len() < 4 {
+        vch_ret.clear();
+        return false;
+    }
+
+    let payload_len = vch_ret.len() - 4;
+    let hash = hash1(&vch_ret[0..payload_len]);
+
+    if &hash.as_ref()[..4] != &vch_ret[payload_len..] {
+        vch_ret.clear();
+        return false;
+    }
+
+    vch_ret.resize(payload_len, 0);
+    true
+}
+
+#[cfg(test)]
+mod decode_check_spec {
+    use super::*;
+
+    /// Round‑trip using **Base‑58‑check** with random payloads.
+    #[traced_test]
+    fn base58check_roundtrip_randomised() {
+        // Simple LCG for deterministic pseudo‑random bytes
+        let mut state = 0x1234_5678_9ABC_DEF0u64;
+        for case in 0..128 {
+            state = state.wrapping_mul(6364136223846793005u64).wrapping_add(1);
+            let len = (state & 0x1F) as usize + 1; // 1‑32 bytes
+            let mut data = (0..len).map(|i| (state >> ((i * 7) % 56)) as u8).collect::<Vec<_>>();
+
+            let encoded = encode_base_58check(&data);
+            trace!(case, len, ?encoded, "encoded random payload");
+
+            let mut decoded = Vec::new();
+            assert!(
+                decode_base_58check(&encoded, &mut decoded, ((len + 4) as i32).try_into().unwrap()),
+                "case {case}: decode failed"
+            );
+            assert_eq!(decoded, data, "case {case}: round‑trip mismatch");
+        }
+    }
+
+    /// Corruption in **checksum** must be detected.
+    #[traced_test]
+    fn detects_bad_checksum() {
+        let payload = b"bitcoin";
+        let mut encoded = encode_base_58check(payload);
+        // Flip one character that is guaranteed to stay in the alphabet.
+        encoded.pop();
+        encoded.push('2'); // replace final char
+        let mut sink = Vec::new();
+        assert!(
+            !decode_base_58check(&encoded, &mut sink, 128),
+            "corrupted checksum was not detected"
+        );
+    }
 }

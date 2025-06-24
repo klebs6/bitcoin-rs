@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-cuckoo-cache/src/cuckoocache.rs ]
 /// High-performance cache primitives.
 /// 
 /// Summary:
@@ -7,7 +8,6 @@
 /// 2. @ref cache is a cache which is performant in memory usage and lookup speed. It is lockfree
 /// for erase operations. Elements are lazily erased on the next insert.
 /// 
-// ---------------- [ File: bitcoin-cuckoo-cache/src/cuckoocache.rs ]
 
 crate::ix!();
 

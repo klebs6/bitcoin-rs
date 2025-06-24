@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-locked-pool/src/config.rs ]
 crate::ix!();
 
 /// Size of one arena of locked memory. This is a compromise.

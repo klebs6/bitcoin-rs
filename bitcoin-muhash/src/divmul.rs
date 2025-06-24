@@ -28,7 +28,7 @@ impl core::ops::DivAssign<&MuHash3072> for MuHash3072 {
 mod union_and_difference_validation {
     use super::*;
     use traced_test::traced_test;
-    use rand::{RngCore, SeedableRng};
+    use rand_chacha::rand_core::{RngCore, SeedableRng};
     use rand_chacha::ChaCha20Rng;
     use bitcoin_u256::u256;
     use tracing::{info, trace};
@@ -53,7 +53,7 @@ mod union_and_difference_validation {
 
             // Approach 2: multiply MuHash(A) by MuHash(B).
             let mut h_mul = MuHash3072::new(&buf_a);
-            let h_b     = MuHash3072::new(&buf_b); // rhs
+            let h_b       = MuHash3072::new(&buf_b); // rhs
             h_mul *= &h_b;
             let mut out_mul = u256::default();
             h_mul.finalize(&mut out_mul);
