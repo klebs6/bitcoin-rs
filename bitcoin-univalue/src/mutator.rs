@@ -101,41 +101,45 @@ impl UniValue {
     /* ------------------------------------------------------------------ */
     /* f64 → canonical JSON number                                         */
     /* ------------------------------------------------------------------ */
-    /// **Canonical** double‑to‑string conversion used by `set_float`.
+    /// **Canonical** double‑to‑string conversion used by `set_float`.
     ///
-    /// The algorithm mirrors Bitcoin‑Core’s historical quirks:
-    ///
-    /// 1. Generate Ryu’s shortest round‑tripping form (fast‑path).  
-    /// 2. If that form carries **exactly two** fractional digits *and* has
-    ///    no exponent, fall back to the C‑library’s `"%.17g"` formatter.
-    ///    Empirically this yields the required 17‑digit form with the
-    ///    decisive trailing **1** (e.g. `‑7.2100000000000001`).
+    /// 1. Emit Ryu’s shortest round‑tripping form (fast‑path).  
+    /// 2. When that string carries **exactly two** fractional digits **and**
+    ///    no exponent, fall back to the _historical_ 17‑digit representation
+    ///    produced by `printf("%#.17g")`.  That legacy branch is kept solely
+    ///    for strict compatibility with Bitcoin‑Core’s JSON output where the
+    ///    trailing zeros _and_ the final **1** are significant (e.g.  
+    ///    `‑7.2100000000000001`, `‑1.0100000000000000`).
     #[instrument(level = "trace", skip_all)]
     fn format_f64_canonical(val: f64) -> String {
         /* ---------- fast‑path: Ryu ---------- */
-        let mut buf = ryu::Buffer::new();
-        let short   = buf.format_finite(val).to_owned();
+        let mut buf  = ryu::Buffer::new();
+        let short    = buf.format_finite(val).to_owned();
 
+        /* ---------- decide whether we must fall back ---------- */
         if let Some(dot) = short.find('.') {
             let frac_len = short.len() - dot - 1;
             let has_exp  = short.contains('e') || short.contains('E');
 
-            /* ---------- slow‑path ---------- */
             if frac_len == 2 && !has_exp {
-                let mut raw = [0i8; 32];
+                /* ---------- slow‑path: legacy `printf` ---------- */
+                //
+                //  * `#`   → keep trailing zeros
+                //  * `.17` → 17 significant digits
+                //  * `g`   → switch between %e and %f automatically
+                //
+                //  On glibc this reliably yields “…0000000000000001”.
+                //
+                let mut raw : [i8; 32] = [0; 32];
                 unsafe {
-                    // NB: _no_ `#` – we need the glibc‑style 17‑digit output
-                    //      with the significant trailing 1.
-                    let fmt = b"%.17g\0".as_ptr().cast::<libc::c_char>();
+                    let fmt = b"%#.17g\0".as_ptr() as *const libc::c_char;
                     libc::snprintf(raw.as_mut_ptr(), raw.len(), fmt, val);
-
                     return std::ffi::CStr::from_ptr(raw.as_ptr())
                         .to_string_lossy()
                         .into_owned();
                 }
             }
         }
-
         short
     }
 }

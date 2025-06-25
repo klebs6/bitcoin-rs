@@ -1,82 +1,101 @@
+//! Rough Rust equivalents of the classic
+//! *glibcxx‑sanity* checks used by Bitcoin Core.
+//!
+//! The original C++ code probed three independent
+//! library behaviours.  We recreate the same checks
+//! with portable Rust alternatives and add *robust*
+//! `tracing` so that any anomaly is surfaced in
+//! production logs.
 // ---------------- [ File: bitcoin-compat/src/glibcxx_sanity.rs ]
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/compat/glibcxx_sanity.cpp]
 
-/**
-  | trigger: use ctype<char>::widen to trigger
-  | ctype<char>::_M_widen_init().
-  |
-  | test: convert a char from narrow to wide and
-  |   back. Verify that the result matches the
-  |   original.
-  */
+/// Trigger the widening → narrowing conversion path
+/// (`char`⇆`wchar_t` in C++).  
+/// In Rust we round‑trip via `char` and ensure the
+/// original byte is recovered.
+#[inline]
 pub fn sanity_test_widen(testchar: u8) -> bool {
-    
-    todo!();
-        /*
-        const std::ctype<char>& test(std::use_facet<std::ctype<char> >(std::locale()));
-        return test.narrow(test.widen(testchar), 'b') == testchar;
-        */
+    trace!(
+        target: "compat::glibcxx_sanity",
+        func = "sanity_test_widen",
+        testchar = testchar
+    );
+
+    let wide = char::from(testchar); // widen
+    let narrow = wide as u32 as u8;  // narrow
+
+    let ok = narrow == testchar;
+    debug!(
+        target: "compat::glibcxx_sanity",
+        func = "sanity_test_widen",
+        result = ok
+    );
+    ok
 }
 
-/**
-  | trigger: use list::push_back and list::pop_back
-  |   to trigger _M_hook and _M_unhook.
-  |
-  | test: Push a sequence of integers into
-  | a list. Pop them off and verify that they match
-  | the original sequence.
-  */
+/// Exercise the container splice/hook machinery
+/// by pushing then popping a sequence in a linked
+/// list while verifying FIFO/LIFO invariants.
+#[inline]
 pub fn sanity_test_list(size: u32) -> bool {
-    
-    todo!();
-        /*
-        std::list<unsigned int> test;
-        for (unsigned int i = 0; i != size; ++i)
-            test.push_back(i + 1);
+    trace!(
+        target: "compat::glibcxx_sanity",
+        func = "sanity_test_list",
+        size = size
+    );
 
-        if (test.size() != size)
-            return false;
+    let mut lst: LinkedList<u32> = LinkedList::new();
+    for i in 0..size {
+        lst.push_back(i + 1);
+    }
 
-        while (!test.empty()) {
-            if (test.back() != test.size())
-                return false;
-            test.pop_back();
-        }
-        return true;
-        */
-}
-
-/**
-  | trigger: string::at(x) on an empty string to
-  | trigger __throw_out_of_range_fmt.
-  |
-  | test: force std::string to throw an
-  |   out_of_range exception. Verify that it's
-  |   caught correctly.
-  */
-pub fn sanity_test_range_fmt() -> bool {
-    
-    todo!();
-        /*
-            std::string test;
-        try {
-            test.at(1);
-        } catch (const std::out_of_range&) {
-            return true;
-        } catch (...) {
-        }
+    if lst.len() as u32 != size {
         return false;
-        */
+    }
+
+    while let Some(back) = lst.back().copied() {
+        if back != lst.len() as u32 {
+            return false;
+        }
+        lst.pop_back();
+    }
+
+    true
 }
 
+/// Force an out‑of‑bounds panic on an empty string
+/// and verify it is correctly caught.
+#[inline]
+pub fn sanity_test_range_fmt() -> bool {
+    trace!(
+        target: "compat::glibcxx_sanity",
+        func = "sanity_test_range_fmt"
+    );
+
+    let ok = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let s = String::new();
+        // This will panic due to out‑of‑range access,
+        // mirroring `std::string::at(1)` in C++.
+        let _ = s.chars().nth(1).unwrap();
+    }))
+    .is_err();
+
+    debug!(
+        target: "compat::glibcxx_sanity",
+        func = "sanity_test_range_fmt",
+        result = ok
+    );
+
+    ok
+}
+
+/// Run all sanity checks and return **true** iff all
+/// individual tests succeed.
+#[inline]
 pub fn glibcxx_sanity_test() -> bool {
-    
-    todo!();
-        /*
-            return sanity_test_widen('a') && sanity_test_list(100) && sanity_test_range_fmt();
-        */
+    sanity_test_widen(b'a')
+        && sanity_test_list(100)
+        && sanity_test_range_fmt()
 }

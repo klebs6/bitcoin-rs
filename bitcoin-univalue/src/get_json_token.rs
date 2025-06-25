@@ -1,25 +1,35 @@
 // ---------------- [ File: bitcoin-univalue/src/get_json_token.rs ]
 crate::ix!();
 
+/// Lex a single JSON token starting at `raw` (`end` is *one past* the
+/// buffer’s limit).  
+/// Writes the token payload into `token_val`, the number of raw bytes
+/// consumed into `consumed`, and returns a `JTokenType` discriminator.
+///
+/// The implementation is a close transliteration of Bitcoin‑Core’s
+/// original C++ lexer, with added `tracing` hooks for every significant
+/// branch.
 #[instrument(level = "trace", skip_all)]
 pub fn get_json_token(
     token_val: &mut String,
-    consumed: &mut u32,
-    raw: *const u8,
-    end: *const u8,
+    consumed:  &mut u32,
+    raw:       *const u8,
+    end:       *const u8,
 ) -> JTokenType {
-
     unsafe {
+        trace!("get_json_token – entry");
 
+        /* ---------- reset caller‑provided out‑params ---------- */
         token_val.clear();
         *consumed = 0;
 
-        /* ---------- skip leading whitespace (+ trailing NULs) ---------- */
+        /* ---------- skip leading whitespace (+ NUL padding) ---------- */
         let mut p = raw;
         while p < end && (json_isspace(*p as i32) || *p == 0) {
             p = p.add(1);
         }
         if p >= end {
+            trace!("only whitespace until EOF ⇒ JTOK_NONE");
             return JTokenType::JTOK_NONE;
         }
         let raw_start = p;
@@ -32,20 +42,22 @@ pub fn get_json_token(
             ']' => return single_byte_token(&mut p, raw_start, consumed, JTokenType::JTOK_ARR_CLOSE),
             ':' => return single_byte_token(&mut p, raw_start, consumed, JTokenType::JTOK_COLON),
             ',' => return single_byte_token(&mut p, raw_start, consumed, JTokenType::JTOK_COMMA),
-            _   => { /* fall‑through */ }
+            _   => { /* fall‑through for literals / numbers / strings */ }
         }
 
-        // ---------- literals: null / true / false ----------
+        /* ---------- literals: null / true / false ---------- */
         if p.add(4) <= end {
             let lit4 = std::slice::from_raw_parts(p, 4);
             if lit4 == b"null" {
                 p = p.add(4);
                 *consumed = (p as usize - raw_start as usize) as u32;
+                trace!(consumed, "keyword: null");
                 return JTokenType::JTOK_KW_NULL;
             }
             if lit4 == b"true" {
                 p = p.add(4);
                 *consumed = (p as usize - raw_start as usize) as u32;
+                trace!(consumed, "keyword: true");
                 return JTokenType::JTOK_KW_TRUE;
             }
         }
@@ -54,11 +66,12 @@ pub fn get_json_token(
             if lit5 == b"false" {
                 p = p.add(5);
                 *consumed = (p as usize - raw_start as usize) as u32;
+                trace!(consumed, "keyword: false");
                 return JTokenType::JTOK_KW_FALSE;
             }
         }
 
-        // ---------- number ----------
+        /* ---------- number ---------- */
         if matches!(*p as char, '-' | '0'..='9') {
             let mut num_str = String::new();
             let first = *p as char;
@@ -66,14 +79,16 @@ pub fn get_json_token(
             p = p.add(1);
 
             if first == '-' && (p >= end || !json_isdigit(*p as i32)) {
+                trace!("lone minus ⇒ JTOK_ERR");
                 return JTokenType::JTOK_ERR;
             }
+
             while p < end && json_isdigit(*p as i32) {
                 num_str.push(*p as char);
                 p = p.add(1);
             }
 
-            // leading‑zero check
+            /* leading‑zero check */
             {
                 let b = num_str.as_bytes();
                 let invalid = if b[0] == b'0' && b.len() > 1 {
@@ -82,14 +97,18 @@ pub fn get_json_token(
                     matches!(b[2], b'0'..=b'9')
                 } else { false };
                 if invalid {
+                    trace!("leading‑zero violation ⇒ JTOK_ERR");
                     return JTokenType::JTOK_ERR;
                 }
             }
 
+            /* fraction */
             if p < end && *p as char == '.' {
                 num_str.push('.');
                 p = p.add(1);
+
                 if p >= end || !json_isdigit(*p as i32) {
+                    trace!("decimal point not followed by digit ⇒ JTOK_ERR");
                     return JTokenType::JTOK_ERR;
                 }
                 while p < end && json_isdigit(*p as i32) {
@@ -98,14 +117,17 @@ pub fn get_json_token(
                 }
             }
 
+            /* exponent */
             if p < end && matches!(*p as char, 'e' | 'E') {
                 num_str.push(*p as char);
                 p = p.add(1);
+
                 if p < end && matches!(*p as char, '+' | '-') {
                     num_str.push(*p as char);
                     p = p.add(1);
                 }
                 if p >= end || !json_isdigit(*p as i32) {
+                    trace!("exponent missing digits ⇒ JTOK_ERR");
                     return JTokenType::JTOK_ERR;
                 }
                 while p < end && json_isdigit(*p as i32) {
@@ -116,26 +138,30 @@ pub fn get_json_token(
 
             *token_val = num_str;
             *consumed  = (p as usize - raw_start as usize) as u32;
+            trace!(value = %token_val, consumed, "number token");
             return JTokenType::JTOK_NUMBER;
         }
 
         /* ---------------- string ---------------- */
         if *p as char == '"' {
-            p = p.add(1);                  // skip opening quote
+            p = p.add(1);                       // skip opening quote
             let mut val_str = String::new();
 
             while p < end {
                 let ch = *p;
                 if ch < 0x20 {
-                    return JTokenType::JTOK_ERR;      // control char not allowed
+                    trace!("control char in string ⇒ JTOK_ERR");
+                    return JTokenType::JTOK_ERR;
                 }
                 if ch == b'"' {
-                    p = p.add(1);           // skip closing quote
-                    break;
+                    p = p.add(1);
+                    break;                       // closing quote
                 }
+
                 if ch == b'\\' {
                     p = p.add(1);
                     if p >= end { return JTokenType::JTOK_ERR; }
+
                     match *p as char {
                         '"'  => val_str.push('"'),
                         '\\' => val_str.push('\\'),
@@ -146,23 +172,23 @@ pub fn get_json_token(
                         'r'  => val_str.push('\r'),
                         't'  => val_str.push('\t'),
                         'u' => {
+                            /* Ensure we have at least 4 hex digits following the 'u' */
                             if p.add(5) > end { return JTokenType::JTOK_ERR; }
-                            let mut cp: u32 = 0;
-                            let next = hatoui(p.add(1), p.add(5), &mut cp);
+
+                            /* -------- first code‑unit -------- */
+                            let mut cp : u32 = 0;
+                            let next   = hatoui(p.add(1), p.add(5), &mut cp);
                             if next != p.add(5) { return JTokenType::JTOK_ERR; }
 
                             match cp {
-                                /* ‑‑‑ surrogate handling (unchanged) ‑‑‑ */
+                                /* ---------- high surrogate ---------- */
                                 0xD800..=0xDBFF => {
-                                    /* must be followed by low surrogate */
-                                    if p.add(6) > end
-                                        || *p.add(5) != b'\\'
-                                        || *p.add(6) != b'u'
-                                    {
+                                    /* must be followed by '\u' + low surrogate */
+                                    if p.add(6) > end || *p.add(5) != b'\\' || *p.add(6) != b'u' {
                                         return JTokenType::JTOK_ERR;
                                     }
-                                    let mut low: u32 = 0;
-                                    let next2 = hatoui(p.add(7), p.add(11), &mut low);
+                                    let mut low : u32 = 0;
+                                    let next2   = hatoui(p.add(7), p.add(11), &mut low);
                                     if next2 != p.add(11) || !(0xDC00..=0xDFFF).contains(&low) {
                                         return JTokenType::JTOK_ERR;
                                     }
@@ -172,47 +198,63 @@ pub fn get_json_token(
                                     } else {
                                         return JTokenType::JTOK_ERR;
                                     }
-                                    p = p.add(10);          // **11 → 10**  (skip: uXXXX\uXXXX)
+                                    /*  move cursor _just before_ the final hex digit – the     *
+                                     *  generic `p = p.add(1)` a few lines below will then put  *
+                                     *  us on the **next** character after the escape sequence. */
+                                    p = next2.sub(1);          // total skip: 11 bytes
                                 }
+
+                                /* ---------- isolated low surrogate → error ---------- */
                                 0xDC00..=0xDFFF => return JTokenType::JTOK_ERR,
+
+                                /* ---------- plain BMP code‑point ---------- */
                                 _ => {
                                     if let Some(ch) = char::from_u32(cp) {
                                         val_str.push(ch);
                                     } else {
                                         return JTokenType::JTOK_ERR;
                                     }
-                                    p = p.add(4);           // **5 → 4** (skip: uXXXX)
+                                    p = next.sub(1);           // total skip: 5 bytes
                                 }
                             }
                         }
+
                         _ => return JTokenType::JTOK_ERR,
                     }
                     p = p.add(1);
                     continue;
                 }
+
                 val_str.push(ch as char);
                 p = p.add(1);
             }
 
             *token_val = val_str;
             *consumed  = (p as usize - raw_start as usize) as u32;
+            trace!(value = %token_val, consumed, "string token");
             return JTokenType::JTOK_STRING;
         }
 
-        // ---------- fallback ----------
+        /* ---------- fallback ⇒ error ---------- */
+        trace!(byte = *p, "unrecognised input ⇒ JTOK_ERR");
         JTokenType::JTOK_ERR
     }
 }
 
-/// Helper for single‑byte structural tokens.
+/* ------------------------------------------------------------------------- */
+/* helper: one‑byte structural tokens                                        */
+/* ------------------------------------------------------------------------- */
+#[inline]
+#[instrument(level = "trace", skip(p, consumed))]
 unsafe fn single_byte_token(
-    p: &mut *const u8,
-    start: *const u8,
+    p:        &mut *const u8,
+    start:    *const u8,
     consumed: &mut u32,
-    kind: JTokenType,
+    kind:     JTokenType,
 ) -> JTokenType {
-    *p = p.add(1);
+    *p = (*p).add(1);                                       // advance cursor
     *consumed = (*p as usize - start as usize) as u32;
+    trace!(?kind, consumed, "single_byte_token emitted");
     kind
 }
 

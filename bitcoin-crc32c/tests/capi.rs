@@ -1,9 +1,10 @@
 use bitcoin_crc32c::*;
+use bitcoin_imports::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/crc32c/src/crc32c_capi_unittest.c]
 
 #[traced_test]
-pub fn crc32c_crc32c_capi_unittest_main() -> i32 {
+pub fn crc32c_crc32c_capi_unittest_main() -> Result<(),&'static str> {
     
     todo!();
         /*

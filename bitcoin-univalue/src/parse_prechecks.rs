@@ -1,29 +1,27 @@
 // ---------------- [ File: bitcoin-univalue/src/parse_prechecks.rs ]
 crate::ix!();
 
-/// *Strict pre‑scan* for numeric / string parsing.
-/// Rejects empty strings, embedded NULs and
-/// padding whitespace (RFC 7159 §2).
+/// Strict pre‑scan for numeric / string parsing.
+/// Rejects empty input, padding whitespace, and
+/// embedded NUL bytes (RFC 7159 §2).
 #[instrument(level = "trace", skip_all)]
 pub fn parse_prechecks(x: &str) -> bool {
     if x.is_empty() {
-        trace!("rejected: empty string");
+        trace!(input = x, "rejected: empty string");
         return false;
     }
-
     let first = x.as_bytes()[0] as i32;
     let last  = x.as_bytes()[x.len() - 1] as i32;
-
     if json_isspace(first) || json_isspace(last) {
-        trace!("rejected: padded with whitespace");
+        trace!(input = x, "rejected: padded with whitespace");
         return false;
     }
-
     if x.bytes().any(|b| b == 0) {
-        trace!("rejected: embedded NUL byte");
+        trace!(input = x, "rejected: embedded NUL");
         return false;
     }
 
+    trace!(input = x, "parse_prechecks accepted");
     true
 }
 

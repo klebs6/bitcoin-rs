@@ -7,7 +7,7 @@ x!{compat}
 x!{cpuid}
 x!{endian}
 x!{glibcxx_sanity}
-x!{sanity}
 x!{stdin}
+x!{stdin_unix}
+x!{stdin_windows}
 x!{strnlen}
-x!{syscall_sandbox}

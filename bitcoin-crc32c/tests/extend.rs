@@ -1,11 +1,7 @@
+// Common test cases for all implementations of CRC32C_Extend().
+
 use bitcoin_crc32c::*;
 use bitcoin_imports::*;
-
-/*!
-  | Common test cases for all implementations
-  | of CRC32C_Extend().
-  |
-  */
 
 #[traced_test] fn extend_test_standard_results() {
     todo!();

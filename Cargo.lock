@@ -2397,6 +2397,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitcoin-syscall"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "derive_builder",
+ "getset",
+ "tracing",
+]
+
+[[package]]
 name = "bitcoin-system"
 version = "0.1.18"
 dependencies = [

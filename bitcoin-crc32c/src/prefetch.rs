@@ -1,34 +1,42 @@
 // ---------------- [ File: bitcoin-crc32c/src/prefetch.rs ]
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/crc32c/src/crc32c_prefetch.h]
 
 pub mod crc32c {
+    use super::*;
 
-    /**
-      | Ask the hardware to prefetch the data
-      | at the given address into the L1 cache.
-      |
-      */
-    #[inline] pub fn request_prefetch(address: *const u8)  {
-        
-        todo!();
-            /*
-                #if HAVE_BUILTIN_PREFETCH
-              // Clang and GCC implement the __builtin_prefetch non-standard extension,
-              // which maps to the best instruction on the target architecture.
-              __builtin_prefetch(reinterpret_cast<const char*>(address), 0 /* Read only. */,
-                                 0 /* No temporal locality. */);
-            #elif HAVE_MM_PREFETCH
-              // Visual Studio doesn't implement __builtin_prefetch, but exposes the
-              // PREFETCHNTA instruction via the _mm_prefetch intrinsic.
-              _mm_prefetch(reinterpret_cast<const char*>(address), _MM_HINT_NTA);
-            #else
-              // No prefetch support. Silence compiler warnings.
-              (c_void)address;
-            #endif  // HAVE_BUILTIN_PREFETCH
-            */
+    /// Platform‑agnostic “best‑effort” pre‑fetch.  
+    ///
+    /// On targets where an appropriate intrinsic is unavailable (or disabled at compile‑time) the
+    /// call degrades to a harmless no‑op.
+    ///
+    /// Ask the hardware to prefetch the data at the given address into the L1 cache.
+    ///
+    #[inline]
+    pub fn request_prefetch(address: *const u8) {
+        trace!(?address, "request_prefetch()");
+        #[cfg(all(target_arch = "x86_64", target_feature = "sse"))]
+        unsafe {
+            core::arch::x86_64::_mm_prefetch(address as *const i8,
+                                             core::arch::x86_64::_MM_HINT_NTA);
+        }
+
+        #[cfg(all(target_arch = "aarch64", target_feature = "neon"))]
+        unsafe {
+            // `pldl1keep` equivalent – the exact intrinsic name may vary
+            // between toolchains; this variant is supported by nightly rustc.
+            core::arch::aarch64::prefetch_read_data(address, 0);
+        }
+
+        // Other targets: nothing to do (silences “unused” warnings).
+        #[cfg(not(any(
+            all(target_arch = "x86_64", target_feature = "sse"),
+            all(target_arch = "aarch64", target_feature = "neon")
+        )))]
+        {
+            let _ = address;
+        }
     }
 }
+

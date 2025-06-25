@@ -87,68 +87,65 @@ macro_rules! crc32c1024bytes {
 }
 
 #[cfg(HAVE_ARM64_CRC32C)]
-pub mod crc32c {
+pub fn crc32c_extend_arm64(
+        crc:  u32,
+        data: *const u8,
+        size: usize) -> u32 {
+    
+    todo!();
+        /*
+            int64_t length = size;
+      uint32_t crc0, crc1, crc2, crc3;
+      uint64_t t0, t1, t2;
 
-    pub fn extend_arm64(
-            crc:  u32,
-            data: *const u8,
-            size: usize) -> u32 {
-        
-        todo!();
-            /*
-                int64_t length = size;
-          uint32_t crc0, crc1, crc2, crc3;
-          uint64_t t0, t1, t2;
+      // k0=CRC(x^(3*SEGMENTBYTES*8)), k1=CRC(x^(2*SEGMENTBYTES*8)),
+      // k2=CRC(x^(SEGMENTBYTES*8))
+      const poly64_t k0 = 0x8d96551c, k1 = 0xbd6f81f8, k2 = 0xdcb17aa4;
 
-          // k0=CRC(x^(3*SEGMENTBYTES*8)), k1=CRC(x^(2*SEGMENTBYTES*8)),
-          // k2=CRC(x^(SEGMENTBYTES*8))
-          const poly64_t k0 = 0x8d96551c, k1 = 0xbd6f81f8, k2 = 0xdcb17aa4;
+      crc = crc ^ kCRC32Xor;
 
-          crc = crc ^ kCRC32Xor;
+      while (length >= KBYTES) {
+        crc0 = crc;
+        crc1 = 0;
+        crc2 = 0;
+        crc3 = 0;
 
-          while (length >= KBYTES) {
-            crc0 = crc;
-            crc1 = 0;
-            crc2 = 0;
-            crc3 = 0;
+        // Process 1024 bytes in parallel.
+        CRC32C1024BYTES(data);
 
-            // Process 1024 bytes in parallel.
-            CRC32C1024BYTES(data);
+        // Merge the 4 partial CRC32C values.
+        t2 = (uint64_t)vmull_p64(crc2, k2);
+        t1 = (uint64_t)vmull_p64(crc1, k1);
+        t0 = (uint64_t)vmull_p64(crc0, k0);
+        crc = __crc32cd(crc3, *(uint64_t *)data);
+        data += sizeof(uint64_t);
+        crc ^= __crc32cd(0, t2);
+        crc ^= __crc32cd(0, t1);
+        crc ^= __crc32cd(0, t0);
 
-            // Merge the 4 partial CRC32C values.
-            t2 = (uint64_t)vmull_p64(crc2, k2);
-            t1 = (uint64_t)vmull_p64(crc1, k1);
-            t0 = (uint64_t)vmull_p64(crc0, k0);
-            crc = __crc32cd(crc3, *(uint64_t *)data);
-            data += sizeof(uint64_t);
-            crc ^= __crc32cd(0, t2);
-            crc ^= __crc32cd(0, t1);
-            crc ^= __crc32cd(0, t0);
+        length -= KBYTES;
+      }
 
-            length -= KBYTES;
-          }
+      while (length >= 8) {
+        crc = __crc32cd(crc, *(uint64_t *)data);
+        data += 8;
+        length -= 8;
+      }
 
-          while (length >= 8) {
-            crc = __crc32cd(crc, *(uint64_t *)data);
-            data += 8;
-            length -= 8;
-          }
+      if (length & 4) {
+        crc = __crc32cw(crc, *(uint32_t *)data);
+        data += 4;
+      }
 
-          if (length & 4) {
-            crc = __crc32cw(crc, *(uint32_t *)data);
-            data += 4;
-          }
+      if (length & 2) {
+        crc = __crc32ch(crc, *(uint16_t *)data);
+        data += 2;
+      }
 
-          if (length & 2) {
-            crc = __crc32ch(crc, *(uint16_t *)data);
-            data += 2;
-          }
+      if (length & 1) {
+        crc = __crc32cb(crc, *data);
+      }
 
-          if (length & 1) {
-            crc = __crc32cb(crc, *data);
-          }
-
-          return crc ^ kCRC32Xor;
-            */
-    }
+      return crc ^ kCRC32Xor;
+        */
 }

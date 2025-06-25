@@ -3,22 +3,16 @@ crate::ix!();
 
 #[instrument(level = "trace", skip_all)]
 pub fn parse_int32(str_: &String, out: *mut i32) -> bool {
-    if !parse_prechecks(str_) {
-        trace!("pre‑checks failed");
-        return false;
-    }
+    if !parse_prechecks(str_) { return false; }
 
     match str_.parse::<i64>() {
-        Ok(n) if n >= i32::MIN as i64 && n <= i32::MAX as i64 => {
-            unsafe {
-                if !out.is_null() {
-                    *out = n as i32;
-                }
-            }
+        Ok(n) if (i32::MIN as i64..=i32::MAX as i64).contains(&n) => {
+            unsafe { if !out.is_null() { *out = n as i32; } }
+            trace!(value = n, "parse_int32 success");
             true
         }
         _ => {
-            trace!("parse or range error");
+            trace!("parse_int32 failure: range or syntax error");
             false
         }
     }
@@ -26,22 +20,16 @@ pub fn parse_int32(str_: &String, out: *mut i32) -> bool {
 
 #[instrument(level = "trace", skip_all)]
 pub fn parse_int64(str_: &String, out: *mut i64) -> bool {
-    if !parse_prechecks(str_) {
-        trace!("pre‑checks failed");
-        return false;
-    }
+    if !parse_prechecks(str_) { return false; }
 
     match str_.parse::<i64>() {
         Ok(n) => {
-            unsafe {
-                if !out.is_null() {
-                    *out = n;
-                }
-            }
+            unsafe { if !out.is_null() { *out = n; } }
+            trace!(value = n, "parse_int64 success");
             true
         }
         Err(e) => {
-            trace!(%e, "parse error / overflow");
+            trace!(%e, "parse_int64 failure");
             false
         }
     }

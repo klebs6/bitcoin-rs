@@ -1,5 +1,6 @@
 // ---------------- [ File: bitcoin-crc32c/src/read_le_unittest.rs ]
 use bitcoin_crc32c::*;
+use bitcoin_imports::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/crc32c/src/crc32c_read_le_unittest.cc]
 

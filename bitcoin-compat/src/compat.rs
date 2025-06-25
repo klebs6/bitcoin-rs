@@ -52,17 +52,6 @@ lazy_static!{
 #[cfg(_MSC_VER)] #[cfg(not(ssize_t))] #[cfg(_WIN64)]      pub type ssize_t = i64;
 #[cfg(_MSC_VER)] #[cfg(not(ssize_t))] #[cfg(not(_WIN64))] pub type ssize_t = i32;
 
-#[cfg(HAVE_DECL_STRNLEN_EQ_0)]
-pub fn strnlen(
-        start:   *const u8,
-        max_len: usize) -> usize {
-    
-    todo!();
-        /*
-        
-        */
-}
-
 #[cfg(not(WIN32))]
 pub type sockopt_arg_type = *mut c_void;
 
@@ -80,16 +69,39 @@ pub type sockopt_arg_type = *mut u8;
 #[cfg(__linux__)]
 pub const USE_POLL: bool = true;
 
-#[inline] pub fn is_selectable_socket(s: &CSocket) -> bool {
-    
-    todo!();
-        /*
-            #if defined(USE_POLL) || defined(WIN32)
-        return true;
-    #else
-        return (s < FD_SETSIZE);
-    #endif
-        */
+/// Native Windows `SOCKET` handle (always `usize`‑sized).
+#[cfg(target_os = "windows")]
+pub type CSocket = usize;
+
+/// POSIX file‑descriptor representing a socket.
+#[cfg(not(target_os = "windows"))]
+pub type CSocket = libc::c_int;
+
+/// Determine whether the socket `s` can safely be
+/// used with `select(2)` on the current platform.
+///
+/// * On Windows **or** when the build is configured
+///   with `USE_POLL`, every socket is considered
+///   selectable (mirrors the original C++ logic).
+/// * On Unix builds that rely on classic `select(2)`
+///   we ensure the descriptor is `< FD_SETSIZE`.
+#[inline]
+pub fn is_selectable_socket(s: &CSocket) -> bool {
+    trace!(
+        target: "compat::socket",
+        fd = *s as u64,
+        "is_selectable_socket"
+    );
+
+    #[cfg(any(target_os = "windows", feature = "use_poll"))]
+    {
+        true
+    }
+
+    #[cfg(not(any(target_os = "windows", feature = "use_poll")))]
+    {
+        (*s as usize) < libc::FD_SETSIZE as usize
+    }
 }
 
 /**

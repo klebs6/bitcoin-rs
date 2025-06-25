@@ -1,3 +1,8 @@
+/*!
+  | Internal functions that may change
+  | between releases.
+  |
+  */
 // ---------------- [ File: bitcoin-crc32c/src/portable.rs ]
 crate::ix!();
 
@@ -235,147 +240,132 @@ pub const STRIDE_EXTENSION_TABLE3: [u32; 256] = [
 
 pub const PREFETCH_HORIZON: libc::ptrdiff_t = 256;
 
-/**
-  | Internal functions that may change
-  | between releases.
-  |
-  */
-pub mod crc32c {
+pub struct PortableTestTraits {
 
-    pub struct PortableTestTraits {
+}
 
-    }
-
-    impl PortableTestTraits {
-        
-        pub fn extend(
-            crc:   u32,
-            data:  *const u8,
-            count: usize) -> u32 {
-            extend_portable(crc, data, count)
-        }
-    }
-
-    /**
-      | CRCs are pre- and post- conditioned
-      | by xoring with all ones.
-      |
-      */
-    pub const CRC32XOR: u32 = 0xffffffff as u32;
-
-    /**
-      | Un-accelerated implementation that
-      | works on all CPUs.
-      |
-      */
-    pub fn extend_portable(
-            crc:  u32,
-            data: *const u8,
-            size: usize) -> u32 {
-        
-        todo!();
-            /*
-                const uint8_t* p = data;
-          const uint8_t* e = p + size;
-          uint32_t l = crc ^ kCRC32Xor;
-
-        // Process one byte at a time.
-        #define STEP1                              \
-          do {                                     \
-            int c = (l & 0xff) ^ *p++;             \
-            l = kByteExtensionTable[c] ^ (l >> 8); \
-          } while (0)
-
-        // Process one of the 4 strides of 4-byte data.
-        #define STEP4(s)                                                               \
-          do {                                                                         \
-            crc##s = ReadUint32LE(p + s * 4) ^ kStrideExtensionTable3[crc##s & 0xff] ^ \
-                     kStrideExtensionTable2[(crc##s >> 8) & 0xff] ^                    \
-                     kStrideExtensionTable1[(crc##s >> 16) & 0xff] ^                   \
-                     kStrideExtensionTable0[crc##s >> 24];                             \
-          } while (0)
-
-        // Process a 16-byte swath of 4 strides, each of which has 4 bytes of data.
-        #define STEP16 \
-          do {         \
-            STEP4(0);  \
-            STEP4(1);  \
-            STEP4(2);  \
-            STEP4(3);  \
-            p += 16;   \
-          } while (0)
-
-        // Process 4 bytes that were already loaded into a word.
-        #define STEP4W(w)                                   \
-          do {                                              \
-            w ^= l;                                         \
-            for (size_t i = 0; i < 4; ++i) {                \
-              w = (w >> 8) ^ kByteExtensionTable[w & 0xff]; \
-            }                                               \
-            l = w;                                          \
-          } while (0)
-
-          // Point x at first 4-byte aligned byte in the buffer. This might be past the
-          // end of the buffer.
-          const uint8_t* x = RoundUp<4>(p);
-          if (x <= e) {
-            // Process bytes p is 4-byte aligned.
-            while (p != x) {
-              STEP1;
-            }
-          }
-
-          if ((e - p) >= 16) {
-            // Load a 16-byte swath into the stride partial results.
-            uint32_t crc0 = ReadUint32LE(p + 0 * 4) ^ l;
-            uint32_t crc1 = ReadUint32LE(p + 1 * 4);
-            uint32_t crc2 = ReadUint32LE(p + 2 * 4);
-            uint32_t crc3 = ReadUint32LE(p + 3 * 4);
-            p += 16;
-
-            while ((e - p) > kPrefetchHorizon) {
-              RequestPrefetch(p + kPrefetchHorizon);
-
-              // Process 64 bytes at a time.
-              STEP16;
-              STEP16;
-              STEP16;
-              STEP16;
-            }
-
-            // Process one 16-byte swath at a time.
-            while ((e - p) >= 16) {
-              STEP16;
-            }
-
-            // Advance one word at a time as far as possible.
-            while ((e - p) >= 4) {
-              STEP4(0);
-              uint32_t tmp = crc0;
-              crc0 = crc1;
-              crc1 = crc2;
-              crc2 = crc3;
-              crc3 = tmp;
-              p += 4;
-            }
-
-            // Combine the 4 partial stride results.
-            l = 0;
-            STEP4W(crc0);
-            STEP4W(crc1);
-            STEP4W(crc2);
-            STEP4W(crc3);
-          }
-
-          // Process the last few bytes.
-          while (p != e) {
-            STEP1;
-          }
-        #undef STEP4W
-        #undef STEP16
-        #undef STEP4
-        #undef STEP1
-          return l ^ kCRC32Xor;
-            */
+impl PortableTestTraits {
+    
+    pub fn extend(
+        crc:   u32,
+        data:  *const u8,
+        count: usize) -> u32 {
+        crc32c_extend_portable(crc, data, count)
     }
 }
+
+/**
+  | CRCs are pre‑ and post‑conditioned by xoring with all ones.
+  |
+  */
+pub const CRC32XOR: u32 = 0xffff_ffff;
+
+#[inline(always)]
+unsafe fn read_u32_le(p: *const u8) -> u32 {
+    u32::from_le(std::ptr::read_unaligned(p as *const u32))
+}
+
+#[inline(always)]
+unsafe fn step4(crc: &mut u32, p: *const u8) {
+    *crc = read_u32_le(p)
+        ^ STRIDE_EXTENSION_TABLE3[(*crc & 0xff) as usize]
+        ^ STRIDE_EXTENSION_TABLE2[(((*crc) >> 8) & 0xff) as usize]
+        ^ STRIDE_EXTENSION_TABLE1[(((*crc) >> 16) & 0xff) as usize]
+        ^ STRIDE_EXTENSION_TABLE0[(((*crc) >> 24) & 0xff) as usize];
+}
+
+#[inline(always)]
+fn step4w(l: &mut u32, mut w: u32) {
+    w ^= *l;
+    for _ in 0..4 {
+        w = (w >> 8) ^ BYTE_EXTENSION_TABLE[(w & 0xff) as usize];
+    }
+    *l = w;
+}
+
+/**
+  | Un‑accelerated implementation that
+  | works on all CPUs.
+  |
+  */
+pub fn crc32c_extend_portable(crc: u32, data: *const u8, size: usize) -> u32 {
+    trace!("crc32c_extend_portable start (size={})", size);
+    // Safety: caller guarantees that `data` is valid for `size` bytes.
+    unsafe {
+        let mut p = data;
+        let e = data.add(size);
+        let mut l = crc ^ CRC32XOR;
+
+        // Align to the next 4‑byte boundary.
+        let mut x = ((p as usize + 3) & !3) as *const u8;
+        if x > e {
+            x = e;
+        }
+
+        // Process initial unaligned bytes.
+        while p < x {
+            let c = ((l & 0xff) ^ (*p as u32)) as usize;
+            l = BYTE_EXTENSION_TABLE[c] ^ (l >> 8);
+            p = p.add(1);
+        }
+
+        // Bulk processing for >= 16 remaining bytes.
+        if (e as usize - p as usize) >= 16 {
+            let mut crc0 = read_u32_le(p) ^ l;
+            let mut crc1 = read_u32_le(p.add(4));
+            let mut crc2 = read_u32_le(p.add(8));
+            let mut crc3 = read_u32_le(p.add(12));
+            p = p.add(16);
+
+            // Process large blocks (64‑byte iterations).
+            while (e as usize - p as usize) > PREFETCH_HORIZON as usize {
+                for _ in 0..4 {
+                    step4(&mut crc0, p.add(0));
+                    step4(&mut crc1, p.add(4));
+                    step4(&mut crc2, p.add(8));
+                    step4(&mut crc3, p.add(12));
+                    p = p.add(16);
+                }
+            }
+
+            // Process remaining 16‑byte chunks.
+            while (e as usize - p as usize) >= 16 {
+                step4(&mut crc0, p.add(0));
+                step4(&mut crc1, p.add(4));
+                step4(&mut crc2, p.add(8));
+                step4(&mut crc3, p.add(12));
+                p = p.add(16);
+            }
+
+            // Process remaining 4‑byte chunks.
+            while (e as usize - p as usize) >= 4 {
+                step4(&mut crc0, p);
+                let tmp = crc0;
+                crc0 = crc1;
+                crc1 = crc2;
+                crc2 = crc3;
+                crc3 = tmp;
+                p = p.add(4);
+            }
+
+            // Combine the four partial CRCs.
+            l = 0;
+            step4w(&mut l, crc0);
+            step4w(&mut l, crc1);
+            step4w(&mut l, crc2);
+            step4w(&mut l, crc3);
+        }
+
+        // Process any remaining tail bytes.
+        while p < e {
+            let c = ((l & 0xff) ^ (*p as u32)) as usize;
+            l = BYTE_EXTENSION_TABLE[c] ^ (l >> 8);
+            p = p.add(1);
+        }
+
+        let result = l ^ CRC32XOR;
+        trace!("crc32c_extend_portable finished (crc={:#010x})", result);
+        result
+    }
+}
+

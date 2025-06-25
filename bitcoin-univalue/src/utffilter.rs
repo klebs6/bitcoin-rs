@@ -59,79 +59,6 @@ impl JSONUTF8StringFilter {
         }
     }
 
-    /// Feed a single input byte.
-    ///
-    /// Write single 8-bit char (may be part of UTF-8 sequence)
-    #[instrument(level = "trace", skip(self))]
-    pub fn push_back(&mut self, ch: u8) {
-        if self.state == 0 {
-            match ch {
-                0x00..=0x7F => self.str_.borrow_mut().push(ch as char),
-                0xC0..=0xDF => {
-                    self.codepoint = ((ch & 0x1F) as u32) << 6;
-                    self.state = 6;
-                }
-                0xE0..=0xEF => {
-                    self.codepoint = ((ch & 0x0F) as u32) << 12;
-                    self.state = 12;
-                }
-                0xF0..=0xF7 => {
-                    self.codepoint = ((ch & 0x07) as u32) << 18;
-                    self.state = 18;
-                }
-                _ => self.is_valid = false, // stray continuation or reserved
-            }
-        } else {
-            if (ch & 0xC0) != 0x80 {
-                self.is_valid = false;
-            }
-            self.state -= 6;
-            self.codepoint |= ((ch & 0x3F) as u32) << self.state;
-            if self.state == 0 {
-                self.push_back_u(self.codepoint);
-            }
-        }
-    }
-
-    /// Inject a full scalar value (used when parsing `\uXXXX`) and deal with
-    /// UTF‑16 surrogate bookkeeping.
-    ///
-    /// Write codepoint directly, possibly collating surrogate pairs
-    ///
-    #[instrument(level = "trace", skip(self))]
-    pub fn push_back_u(&mut self, cp: u32) {
-        if self.state != 0 {
-            self.is_valid = false;
-            return;
-        }
-
-        match cp {
-            0xD800..=0xDBFF => {
-                if self.surpair != 0 {
-                    self.is_valid = false; // two high surrogates in a row
-                } else {
-                    self.surpair = cp;
-                }
-            }
-            0xDC00..=0xDFFF => {
-                if self.surpair != 0 {
-                    let full = 0x10000 | ((self.surpair - 0xD800) << 10) | (cp - 0xDC00);
-                    self.append_codepoint(full);
-                    self.surpair = 0;
-                } else {
-                    self.is_valid = false; // low surrogate without opener
-                }
-            }
-            _ => {
-                if self.surpair != 0 {
-                    self.is_valid = false; // opener not followed by closer
-                } else {
-                    self.append_codepoint(cp);
-                }
-            }
-        }
-    }
-
     /// Finalise the stream – no open sequences or surrogate pairs allowed.
     ///
     /// Check that we're in a state where the string can be ended No open
@@ -151,6 +78,97 @@ impl JSONUTF8StringFilter {
             self.str_.borrow_mut().push(ch);
         } else {
             self.is_valid = false;
+        }
+    }
+
+    /// Feed a single raw byte (possibly part of a UTF‑8 multi‑byte
+    /// sequence) into the filter.
+    #[instrument(level = "trace", skip(self))]
+    pub fn push_back(&mut self, ch: u8) {
+        trace!(byte = ch, state = self.state, codepoint = self.codepoint);
+
+        if self.state == 0 {
+            match ch {
+                0x00..=0x7F => self.str_.borrow_mut().push(ch as char),
+                0xC0..=0xDF => {
+                    self.codepoint = ((ch & 0x1F) as u32) << 6;
+                    self.state = 6;
+                }
+                0xE0..=0xEF => {
+                    self.codepoint = ((ch & 0x0F) as u32) << 12;
+                    self.state = 12;
+                }
+                0xF0..=0xF7 => {
+                    self.codepoint = ((ch & 0x07) as u32) << 18;
+                    self.state = 18;
+                }
+                _ => {
+                    self.is_valid = false; // stray continuation / reserved
+                    trace!("invalid first byte – marked as invalid");
+                }
+            }
+        } else {
+            if (ch & 0xC0) != 0x80 {
+                self.is_valid = false;
+                trace!("continuation byte violates 10xxxxxx rule");
+            }
+            self.state -= 6;
+            self.codepoint |= ((ch & 0x3F) as u32) << self.state;
+
+            if self.state == 0 {
+                self.push_back_u(self.codepoint);
+            }
+        }
+    }
+
+    /// Inject a full UCS‑4 value (used when decoding `\uXXXX` escapes),
+    /// handling surrogate‑pair collation and validity checks.
+    #[instrument(level = "trace", skip(self))]
+    pub fn push_back_u(&mut self, cp: u32) {
+        trace!(cp, surpair = self.surpair, state = self.state);
+
+        if self.state != 0 {
+            self.is_valid = false;
+            trace!("push_back_u called with open UTF‑8 sequence – invalid");
+            return;
+        }
+
+        match cp {
+            /* -------- high surrogate -------- */
+            0xD800..=0xDBFF => {
+                if self.surpair != 0 {
+                    self.is_valid = false; // two high surrogates in a row
+                    trace!("double high surrogate – invalid");
+                } else {
+                    self.surpair = cp;
+                    trace!("stored high surrogate");
+                }
+            }
+
+            /* -------- low surrogate -------- */
+            0xDC00..=0xDFFF => {
+                if self.surpair != 0 {
+                    let full = 0x10000
+                        | ((self.surpair - 0xD800) << 10)
+                        | (cp - 0xDC00);
+                    self.append_codepoint(full);
+                    self.surpair = 0;
+                    trace!(full, "surrogate pair combined");
+                } else {
+                    self.is_valid = false; // low without high
+                    trace!("lone low surrogate – invalid");
+                }
+            }
+
+            /* -------- regular scalar -------- */
+            _ => {
+                if self.surpair != 0 {
+                    self.is_valid = false; // dangling high surrogate
+                    trace!("dangling high surrogate – invalid");
+                } else {
+                    self.append_codepoint(cp);
+                }
+            }
         }
     }
 }

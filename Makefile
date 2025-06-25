@@ -52,12 +52,13 @@ TEST  := test
 #ACTIVE := bitcoin-locked-pool
 #ACTIVE := bitcoin-chacha
 #ACTIVE := bitcoin-sync
+#ACTIVE := bitcoin-compat
 
 #-------------------------------[done-above]
 
-ACTIVE := bitcoin-crc32c
 ACTIVE := bitcoin-univalue
-ACTIVE := bitcoin-compat
+ACTIVE := bitcoin-crc32c
+ACTIVE := bitcoin-syscall
 
 #ACTIVE := bitcoin-portmap
 #ACTIVE := bitcoin-remote
