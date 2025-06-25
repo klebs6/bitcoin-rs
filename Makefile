@@ -59,10 +59,10 @@ TEST  := test
 ACTIVE := bitcoin-univalue
 ACTIVE := bitcoin-crc32c
 ACTIVE := bitcoin-syscall
+ACTIVE := bitcoin-ripemd
+ACTIVE := bitcoin-portmap
 
-#ACTIVE := bitcoin-portmap
 #ACTIVE := bitcoin-remote
-#ACTIVE := bitcoin-ripemd
 #ACTIVE := bitcoin-service-flags
 #ACTIVE := bitcoin-settings
 #ACTIVE := bitcoin-siphash
