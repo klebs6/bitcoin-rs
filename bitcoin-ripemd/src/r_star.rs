@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-ripemd/src/r_star.rs ]
 crate::ix!();
 
 #[inline] pub fn ripemd160_r11(

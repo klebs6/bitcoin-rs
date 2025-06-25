@@ -61,11 +61,11 @@ ACTIVE := bitcoin-crc32c
 ACTIVE := bitcoin-syscall
 ACTIVE := bitcoin-ripemd
 ACTIVE := bitcoin-portmap
+#ACTIVE := bitcoin-service-flags
+#ACTIVE := bitcoin-siphash
 
 #ACTIVE := bitcoin-remote
-#ACTIVE := bitcoin-service-flags
 #ACTIVE := bitcoin-settings
-#ACTIVE := bitcoin-siphash
 #ACTIVE := bitcoin-sock
 #ACTIVE := bitcoin-tokenpipe
 #ACTIVE := bitcoin-network

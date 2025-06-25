@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-ripemd/src/f_star.rs ]
 crate::ix!();
 
 /* ----- Internal RIPEMD-160 implementation.   ----- */

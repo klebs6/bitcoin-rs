@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-ripemd/src/write.rs ]
 crate::ix!();
 
 impl Ripemd160 {
