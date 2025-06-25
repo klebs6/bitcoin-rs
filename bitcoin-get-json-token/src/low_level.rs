@@ -1,0 +1,40 @@
+crate::ix!();
+
+/* ------------------------------------------------------------------------- */
+/* helper: one‑byte structural tokens                                        */
+/* ------------------------------------------------------------------------- */
+#[inline]
+#[instrument(level = "trace", skip(p, consumed))]
+pub unsafe fn single_byte_token(
+    p:        &mut *const u8,
+    start:    *const u8,
+    consumed: &mut u32,
+    kind:     JTokenType,
+) -> JTokenType {
+    *p = (*p).add(1);                                       // advance cursor
+    *consumed = (*p as usize - start as usize) as u32;
+    trace!(?kind, consumed, "single_byte_token emitted");
+    kind
+}
+
+/* ===================================================================== */
+/*  ────────────────  low‑level helpers – no semantic state  ───────────  */
+/* ===================================================================== */
+
+/// Skip JSON whitespace (`SP`, `HT`, `LF`, `CR`) **and** trailing NUL
+/// padding.  Returns the first non‑whitespace, non‑NUL position.
+#[inline]
+#[instrument(level = "trace", skip_all)]
+pub unsafe fn skip_ws_nul(mut p: *const u8, end: *const u8) -> *const u8 {
+    while p < end && (json_isspace(*p as i32) || *p == 0) {
+        p = p.add(1);
+    }
+    p
+}
+
+/// Helper used by *all* sub‑lexers to compute the byte count that was
+/// consumed for the current token.
+#[inline]
+pub unsafe fn bytes_consumed(start: *const u8, after: *const u8) -> u32 {
+    (after as usize - start as usize) as u32
+}

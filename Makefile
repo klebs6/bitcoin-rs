@@ -56,13 +56,14 @@ TEST  := test
 
 #-------------------------------[done-above]
 
-ACTIVE := bitcoin-univalue
 ACTIVE := bitcoin-crc32c
 ACTIVE := bitcoin-syscall
 ACTIVE := bitcoin-ripemd
 ACTIVE := bitcoin-portmap
 #ACTIVE := bitcoin-service-flags
 #ACTIVE := bitcoin-siphash
+ACTIVE := bitcoin-univalue
+ACTIVE := bitcoin-get-json-token
 
 #ACTIVE := bitcoin-remote
 #ACTIVE := bitcoin-settings

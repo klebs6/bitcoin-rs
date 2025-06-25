@@ -1,0 +1,16 @@
+[package]
+name = "bitcoin-get-json-token"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+tracing.workspace  = true
+ryu.workspace      = true
+zerocopy.workspace = true
+bitcoin-imports    = { path = "../bitcoin-imports" }

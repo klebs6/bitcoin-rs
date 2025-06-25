@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-service-flags/src/checks.rs ]
 crate::ix!();
 
 

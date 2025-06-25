@@ -1231,6 +1231,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitcoin-get-json-token"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "ryu",
+ "tracing",
+ "zerocopy 0.7.35",
+]
+
+[[package]]
 name = "bitcoin-golombrice"
 version = "0.1.18"
 dependencies = [
@@ -2709,6 +2719,7 @@ name = "bitcoin-univalue"
 version = "0.1.18"
 dependencies = [
  "bitcoin-cfg",
+ "bitcoin-get-json-token",
  "bitcoin-imports",
  "lazy_static",
  "libc",

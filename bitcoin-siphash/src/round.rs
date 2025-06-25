@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-siphash/src/round.rs ]
 crate::ix!();
 
 macro_rules! rotl {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-siphash/src/optimized.rs ]
 crate::ix!();
 
 /**

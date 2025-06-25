@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-siphash/src/write.rs ]
 crate::ix!();
 
 impl SipHasher {

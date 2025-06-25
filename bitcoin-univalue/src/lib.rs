@@ -7,16 +7,10 @@ x!{escapes}
 x!{expect_bits}
 x!{find_value}
 x!{get}
-x!{get_json_token}
-x!{hatoui}
 x!{indent_str}
 x!{index}
 x!{init_json_escape}
 x!{json_escape}
-x!{json_isdigit}
-x!{json_isspace}
-x!{json_token_is_value}
-x!{jtoken_type}
 x!{mutator}
 x!{checks}
 x!{pushkv}
@@ -30,6 +24,5 @@ x!{univalue}
 x!{univalue_gen_main}
 x!{utffilter}
 x!{uv_type_name}
-x!{valid_num_str}
 x!{write}
 x!{check_object}

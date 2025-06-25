@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-siphash/src/extra.rs ]
 crate::ix!();
 
 pub fn sip_hash_uint_256extra(
