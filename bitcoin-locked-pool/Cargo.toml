@@ -1,19 +1,30 @@
+[dependencies.bitcoin-arena]
+path = "../bitcoin-arena"
+version = "0.1.1"
+
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+
+[dependencies.bitcoin-locked-page-allocator]
+path = "../bitcoin-locked-page-allocator"
+version = "0.1.18"
+
+[dependencies.bitcoin-support]
+path = "../bitcoin-support"
+
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+
 [package]
-name = "bitcoin-locked-pool"
-version = "0.1.0"
 authors = ["YourName <you@example.com>"]
-license = "MIT"
-edition = "2024"
 description = "todo: write a description here"
-
-# keywords = []
-# categories = []
-
-[dependencies]
-tracing.workspace = true
-derive_builder.workspace = true
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoin-derive = { path = "../bitcoin-derive" }
-bitcoin-locked-page-allocator = { path = "../bitcoin-locked-page-allocator" }
-bitcoin-arena = { path = "../bitcoin-arena" }
-bitcoin-support = { path = "../bitcoin-support" }
+edition = "2024"
+license = "MIT"
+name = "bitcoin-locked-pool"
+version = "0.1.1"

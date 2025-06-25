@@ -36,30 +36,30 @@ impl UniValue {
         self.val()
     }
    
-    /**
-      | Strict type-specific getters, these
-      | throw std::runtime_error if the value
-      | is of unexpected type
-      |
-      */
-    pub fn get_keys<'a>(&'a self) -> Result<&'a Vec<String>,StdException> {
-        
+    /// Return the object's *key* vector.
+    ///
+    /// Up‑stream throws a `std::runtime_error` when the value is not an
+    /// object; we mirror that behaviour with a plain Rust `panic!`.
+    #[inline]
+    #[instrument(level = "trace", skip_all)]
+    pub fn get_keys(&self) -> &Vec<String> {
         if *self.typ() != uni_value::VType::VOBJ {
-            return Err(runtime_error("JSON value is not an object as expected"));
+            panic!("JSON value is not an object as expected");
         }
-
-        Ok(self.keys())
+        self.keys()
     }
     
-    pub fn get_values<'a>(&'a self) -> Result<&'a Vec<UniValue>,StdException> {
-        
-        if *self.typ() != uni_value::VType::VOBJ 
-        && *self.typ() != uni_value::VType::VARR 
-        {
-            return Err(runtime_error("JSON value is not an object or array as expected"));
+    /// Return the object's/array's *value* vector.
+    ///
+    /// Panics unless the receiver is an object **or** an array –
+    /// identical contract to the original C++ implementation.
+    #[inline]
+    #[instrument(level = "trace", skip_all)]
+    pub fn get_values(&self) -> &Vec<UniValue> {
+        match *self.typ() {
+            uni_value::VType::VOBJ | uni_value::VType::VARR => self.values(),
+            _ => panic!("JSON value is not an object or array as expected"),
         }
-
-        Ok(self.values())
     }
 
     #[instrument(level = "trace", skip_all)]

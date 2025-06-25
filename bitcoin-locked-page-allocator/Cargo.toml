@@ -1,15 +1,17 @@
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+
+[dependencies.bitcoin-support]
+path = "../bitcoin-support"
+version = "0.1.18"
+
+[dependencies.derive_builder]
+workspace = true
+
 [package]
-name = "bitcoin-locked-page-allocator"
-version = "0.1.0"
 authors = ["YourName <you@example.com>"]
-license = "MIT"
-edition = "2024"
 description = "todo: write a description here"
-
-# keywords = []
-# categories = []
-
-[dependencies]
-bitcoin-imports = { path = "../bitcoin-imports" }
-derive_builder.workspace = true
-bitcoin-support = { path = "../bitcoin-support" }
+edition = "2024"
+license = "MIT"
+name = "bitcoin-locked-page-allocator"
+version = "0.1.18"

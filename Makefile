@@ -48,19 +48,15 @@ TEST  := test
 #ACTIVE := bitcoin-indirectmap
 #ACTIVE := bitcoin-cuckoo-cache
 #ACTIVE := bitcoin-golombrice
+#ACTIVE := bitcoin-poly1305
 #ACTIVE := bitcoin-locked-pool
+#ACTIVE := bitcoin-chacha
+#ACTIVE := bitcoin-sync
 
 #-------------------------------[done-above]
 
-
-#ACTIVE := bitcoin-compat
-ACTIVE := bitcoin-sha256
-
-ACTIVE := bitcoin-poly1305
 ACTIVE := bitcoin-univalue
-ACTIVE := bitcoin-sync
-ACTIVE := bitcoin-chacha
-ACTIVE := bitcoin-muhash
+ACTIVE := bitcoin-compat
 
 #ACTIVE := bitcoin-crc32c
 #ACTIVE := bitcoin-portmap
@@ -75,11 +71,13 @@ ACTIVE := bitcoin-muhash
 #ACTIVE := bitcoin-version
 
 #ACTIVE := bitcoin-hash
+#ACTIVE := bitcoin-base58
+#ACTIVE := bitcoin-muhash
+#ACTIVE := bitcoin-sha256
 #ACTIVE := bitcoin-sha3
 #ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-random
 #ACTIVE := bitcoin-fees
-#ACTIVE := bitcoin-base58
 
 #-------------------------------[unblocked-above]
 

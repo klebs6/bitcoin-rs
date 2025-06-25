@@ -1,26 +1,25 @@
-[package]
-name = "bitcoin-arena"
-version = "0.1.0"
-authors = ["YourName <you@example.com>"]
-license = "MIT"
-edition = "2024"
-description = "todo: write a description here"
-
-# keywords = []
-# categories = []
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+version = "0.1.18"
 
 [dependencies.bitcoin-imports]
-path    = "../bitcoin-imports"
-version = "0.1.17-alpha.0"
-
-[dependencies.bitcoin-derive]
-path    = "../bitcoin-derive"
-version = "0.1.17-alpha.0"
+path = "../bitcoin-imports"
+version = "0.1.18"
 
 [dependencies.bitcoin-support]
-path    = "../bitcoin-support"
-version = "0.1.17-alpha.0"
+path = "../bitcoin-support"
+version = "0.1.18"
 
-[dependencies]
-tracing.workspace = true
-derive_builder.workspace = true
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+
+[package]
+authors = ["YourName <you@example.com>"]
+description = "todo: write a description here"
+edition = "2024"
+license = "MIT"
+name = "bitcoin-arena"
+version = "0.1.1"

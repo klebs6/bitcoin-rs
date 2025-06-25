@@ -62,15 +62,6 @@ impl From<bool> for UniValue {
     }
 }
 
-impl From<f64> for UniValue {
-    #[instrument(level = "trace", skip_all)]
-    fn from(val: f64) -> Self {
-        let mut uv = UniValue::default();
-        uv.set_float(val);
-        uv
-    }
-}
-
 impl From<&str> for UniValue {
     #[instrument(level = "trace", skip_all)]
     fn from(val: &str) -> Self {
@@ -97,6 +88,16 @@ impl From<*const u8> for UniValue {
         let c_str = unsafe { std::ffi::CStr::from_ptr(val as *const i8) };
         let s     = c_str.to_string_lossy();
         UniValue::from(s.as_ref())
+    }
+}
+
+impl From<f64> for UniValue {
+    #[instrument(level = "trace", skip_all)]
+    fn from(val: f64) -> Self {
+        let mut uv = UniValue::default();
+        // delegates to the revised canonical formatter
+        uv.set_float(val);
+        uv
     }
 }
 

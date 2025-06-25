@@ -117,18 +117,18 @@ pub fn get_json_token(
             return JTokenType::JTOK_NUMBER;
         }
 
-        // ---------- string ----------
+        /* ---------------- string ---------------- */
         if *p as char == '"' {
-            p = p.add(1); // skip opening quote
+            p = p.add(1);                  // skip opening quote
             let mut val_str = String::new();
 
             while p < end {
                 let ch = *p;
                 if ch < 0x20 {
-                    return JTokenType::JTOK_ERR; // control char
+                    return JTokenType::JTOK_ERR;      // control char not allowed
                 }
                 if ch == b'"' {
-                    p = p.add(1); // skip closing quote
+                    p = p.add(1);           // skip closing quote
                     break;
                 }
                 if ch == b'\\' {
@@ -143,17 +143,45 @@ pub fn get_json_token(
                         'n'  => val_str.push('\n'),
                         'r'  => val_str.push('\r'),
                         't'  => val_str.push('\t'),
-                        'u'  => {
+                        'u' => {
                             if p.add(5) > end { return JTokenType::JTOK_ERR; }
                             let mut cp: u32 = 0;
                             let next = hatoui(p.add(1), p.add(5), &mut cp);
                             if next != p.add(5) { return JTokenType::JTOK_ERR; }
-                            if let Some(c) = char::from_u32(cp) {
-                                val_str.push(c);
-                            } else {
-                                return JTokenType::JTOK_ERR;
+
+                            match cp {
+                                /* ‑‑‑ surrogate handling (unchanged) ‑‑‑ */
+                                0xD800..=0xDBFF => {
+                                    /* must be followed by low surrogate */
+                                    if p.add(6) > end
+                                        || *p.add(5) != b'\\'
+                                        || *p.add(6) != b'u'
+                                    {
+                                        return JTokenType::JTOK_ERR;
+                                    }
+                                    let mut low: u32 = 0;
+                                    let next2 = hatoui(p.add(7), p.add(11), &mut low);
+                                    if next2 != p.add(11) || !(0xDC00..=0xDFFF).contains(&low) {
+                                        return JTokenType::JTOK_ERR;
+                                    }
+                                    let full = 0x10000 + ((cp - 0xD800) << 10) + (low - 0xDC00);
+                                    if let Some(ch) = char::from_u32(full) {
+                                        val_str.push(ch);
+                                    } else {
+                                        return JTokenType::JTOK_ERR;
+                                    }
+                                    p = p.add(10);          // **11 → 10**  (skip: uXXXX\uXXXX)
+                                }
+                                0xDC00..=0xDFFF => return JTokenType::JTOK_ERR,
+                                _ => {
+                                    if let Some(ch) = char::from_u32(cp) {
+                                        val_str.push(ch);
+                                    } else {
+                                        return JTokenType::JTOK_ERR;
+                                    }
+                                    p = p.add(4);           // **5 → 4** (skip: uXXXX)
+                                }
                             }
-                            p = p.add(4); // advance over the 4 hex digits
                         }
                         _ => return JTokenType::JTOK_ERR,
                     }

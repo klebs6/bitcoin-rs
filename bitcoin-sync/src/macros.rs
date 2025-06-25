@@ -27,15 +27,21 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/sync.h]
 
+/// Helper: cast a reference to *mut c_void in a single, type‑safe expression
+#[inline(always)]
+pub const fn as_void_ptr<T>(r: &T) -> *mut core::ffi::c_void {
+    r as *const T as *mut core::ffi::c_void
+}
+
 #[macro_export]
 macro_rules! assert_lock_held {
     ($cs:expr) => {{
         unsafe {
             $crate::assert_lock_held_internal(
                 concat!(stringify!($cs), "\0").as_ptr(),
-                concat!(file!(),            "\0").as_ptr(),
+                concat!(file!(),         "\0").as_ptr(),
                 line!() as i32,
-                &($cs) as *const _ as *mut _,
+                $crate::as_void_ptr(&$cs),
             );
         }
     }};
@@ -47,60 +53,65 @@ macro_rules! assert_lock_not_held {
         unsafe {
             $crate::assert_lock_not_held_internal(
                 concat!(stringify!($cs), "\0").as_ptr(),
-                concat!(file!(),            "\0").as_ptr(),
+                concat!(file!(),         "\0").as_ptr(),
                 line!() as i32,
-                &($cs) as *const _ as *mut _,
+                $crate::as_void_ptr(&$cs),
             );
         }
     }};
 }
 
+// ────────────────────────────────────────────────────────────────────────────
+// reverse_lock! – generate a unique guard identifier per call
+// ────────────────────────────────────────────────────────────────────────────
 #[macro_export]
 macro_rules! reverse_lock {
     ($g:ident) => {
         paste! {
-            let mut [<__revlock_  line!() _ column!()>] =
-                $crate::ReverseLock::new(&mut $g);
+            let mut [<__revlock _ line>] = $crate::ReverseLock::new(&mut $g);
         }
     };
 }
 
+// ────────────────────────────────────────────────────────────────────────────
+// lock! – generate a unique guard identifier per call
+// ────────────────────────────────────────────────────────────────────────────
 #[macro_export]
 macro_rules! lock {
     ($cs:expr) => {
         paste! {
-            let [<__criticalblock_  line!() _ column!()>] =
-                $crate::UniqueLock::new(
-                    &$cs,
-                    stringify!($cs),
-                    file!(),
-                    line!(),
-                    None,
-                );
+            let [<__criticalblock _ line>] = $crate::UniqueLock::new(
+                &$cs,
+                stringify!($cs),
+                file!(),
+                line!(),
+                None,
+            );
         }
     };
 }
 
+// ────────────────────────────────────────────────────────────────────────────
+// lock2! – generate two distinct guard identifiers per call
+// ────────────────────────────────────────────────────────────────────────────
 #[macro_export]
 macro_rules! lock2 {
     ($cs1:expr, $cs2:expr) => {
         paste! {
-            let [<__criticalblock1_  line!() _ column!()>] =
-                $crate::UniqueLock::new(
-                    &$cs1,
-                    stringify!($cs1),
-                    file!(),
-                    line!(),
-                    None,
-                );
-            let [<__criticalblock2_  line!() _ column!()>] =
-                $crate::UniqueLock::new(
-                    &$cs2,
-                    stringify!($cs2),
-                    file!(),
-                    line!(),
-                    None,
-                );
+            let [<__criticalblock1 _ line>] = $crate::UniqueLock::new(
+                &$cs1,
+                stringify!($cs1),
+                file!(),
+                line!(),
+                None,
+            );
+            let [<__criticalblock2 _ line>] = $crate::UniqueLock::new(
+                &$cs2,
+                stringify!($cs2),
+                file!(),
+                line!(),
+                None,
+            );
         }
     };
 }
@@ -137,9 +148,9 @@ macro_rules! enter_critical_section {
         unsafe {
             $crate::enter_critical(
                 concat!(stringify!($cs), "\0").as_ptr(),
-                concat!(file!(),            "\0").as_ptr(),
+                concat!(file!(),         "\0").as_ptr(),
                 line!() as i32,
-                &($cs) as *const _ as *mut _,
+                $crate::as_void_ptr(&$cs),
                 false,
             );
         }
@@ -153,10 +164,10 @@ macro_rules! leave_critical_section {
         let mut lockname = String::new();
         unsafe {
             $crate::check_last_critical(
-                &($cs) as *const _ as *mut core::ffi::c_void,
+                $crate::as_void_ptr(&$cs),
                 &mut lockname,
                 concat!(stringify!($cs), "\0").as_ptr(),
-                concat!(file!(),            "\0").as_ptr(),
+                concat!(file!(),         "\0").as_ptr(),
                 line!() as i32,
             );
         }
@@ -198,10 +209,8 @@ macro_rules! leave_critical_section {
 #[macro_export]
 macro_rules! with_lock {
     ($cs:expr, $code:expr) => {{
-        (|| {
-            lock!($cs);
-            $code
-        })()
+        lock!($cs);
+        $code
     }};
 }
 

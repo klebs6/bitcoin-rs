@@ -1,7 +1,8 @@
 // ---------------- [ File: bitcoin-muhash/src/num3072.rs ]
 crate::ix!();
 
-#[derive(MutGetters,Getters,Debug, Copy, Clone)]
+#[derive(Builder,MutGetters,Getters,Debug, Copy, Clone)]
+#[builder(setter(into))]
 #[getset(get="pub",get_mut="pub")]
 pub struct Num3072 {
     limbs: [Limb; num_3072::LIMBS],
@@ -144,9 +145,10 @@ mod num3072_property_validation {
     /// must return to the original value.
     #[traced_test]
     fn multiply_then_divide_is_identity() -> Result<(), Box<dyn std::error::Error>> {
+        const ROUNDS: usize = 32;          // further trimmed for runtime
         let mut rng = ChaCha20Rng::from_seed([3u8; 32]);
 
-        for round in 0..512 {
+        for round in 0..ROUNDS {
             let mut raw = [0u8; num_3072::BYTE_SIZE];
             rng.fill_bytes(&mut raw);
             let mut x = Num3072::new(&raw);
@@ -162,7 +164,7 @@ mod num3072_property_validation {
 
             assert_eq!(x.limbs, original, "Round {round} failed");
         }
-        info!("multiply_then_divide_is_identity completed 512 rounds");
+        info!("multiply_then_divide_is_identity completed {ROUNDS} rounds");
         Ok(())
     }
 

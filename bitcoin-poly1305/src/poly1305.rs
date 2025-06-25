@@ -88,4 +88,27 @@ mod poly1305_tests {
             prop_assert_eq!(tag1, tag2, "same input must yield identical tag");
         }
     }
+
+    #[traced_test]
+    fn rfc7539_vector_1_key_bytes() {
+        // --- RFC 7539 §2.5.2 test‑vector inputs ---------------------------
+        const KEY: [u8; POLY1305_KEYLEN] = hex!(
+            "85d6be7857556d337f4452fe42d506a8\
+            0103808afb0db2fd4abff6af4149f51b"
+        );
+        const MSG: &[u8] = b"Cryptographic Forum Research Group";
+        const TAG_REF: [u8; POLY1305_TAGLEN] =
+            hex!("a8061dc1305136c6c22b8baf0c0127a9");
+
+        // --- MAC calculation via our in‑tree implementation ---------------
+        let mut tag = [0u8; POLY1305_TAGLEN];
+        poly1305_auth(&mut tag, MSG, &KEY);
+
+        // --- Verification --------------------------------------------------
+        assert_eq!(
+            tag, TAG_REF,
+            "RFC 7539 vector #1: tag mismatch – \
+            key or algorithm is wrong"
+        );
+    }
 }

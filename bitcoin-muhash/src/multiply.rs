@@ -8,7 +8,14 @@ impl Num3072 {
         let mut c0: Limb = 0;
         let mut c1: Limb = 0;
         let mut c2: Limb = 0;
-        let mut tmp = Num3072::default();
+
+        /*  NOTE: tmp must start at 0, not 1. Using `Num3072::default()`  
+         *  (value = 1) was injecting an unintended 1‑limb into every
+         *  product, breaking MuHash set algebra.                              */
+        let mut tmp = Num3072Builder::default()
+            .limbs([0; num_3072::LIMBS])
+            .build()
+            .unwrap();
 
         // limbs 0 .. N‑2 with one reduction
         for j in 0..num_3072::LIMBS - 1 {
@@ -52,7 +59,7 @@ impl Num3072 {
             extract3(&mut c0, &mut c1, &mut c2, &mut tmp.limbs_mut()[j]);
         }
 
-        /* Compute limb N-1 of a*b into tmp. */
+        /* Compute limb N‑1 of a*b into tmp. */
         debug_assert_eq!(c2, 0);
         for i in 0..num_3072::LIMBS {
             muladd3(
@@ -77,8 +84,7 @@ impl Num3072 {
         }
         debug_assert!(c1 == 0 && (c0 == 0 || c0 == 1));
 
-        /* Perform up to two more reductions if the internal state has already overflown the MAX of Num3072 or if it is larger than the modulus or if both are the case. */
-
+        /* Perform up to two more reductions if the internal state is too large. */
         if self.is_overflow() {
             self.full_reduce();
         }

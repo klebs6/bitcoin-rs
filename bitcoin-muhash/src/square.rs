@@ -4,14 +4,18 @@ crate::ix!();
 impl Num3072 {
 
     pub fn square(&mut self) {
-
         trace!("Num3072::square");
         let mut c0: Limb = 0;
         let mut c1: Limb = 0;
         let mut c2: Limb = 0;
-        let mut tmp = Num3072::default();
 
-        /* Compute limbs 0..N-2 of this*this into tmp, including one reduction. */
+        /*  As in `multiply`, `tmp` must be zero‑initialised.                   */
+        let mut tmp = Num3072Builder::default()
+            .limbs([0; num_3072::LIMBS])
+            .build()
+            .unwrap();
+
+        /* Compute limbs 0..N‑2 of this*this into tmp, including one reduction. */
         for j in 0..num_3072::LIMBS - 1 {
             let mut d0: Limb = 0;
             let mut d1: Limb = 0;
@@ -32,9 +36,7 @@ impl Num3072 {
                     &mut d1,
                     &mut d2,
                     &self.limbs()[(num_3072::LIMBS - 1 - j) / 2 + j + 1],
-                    &self.limbs()[num_3072::LIMBS
-                    - 1
-                    - (num_3072::LIMBS - 1 - j) / 2],
+                    &self.limbs()[num_3072::LIMBS - 1 - (num_3072::LIMBS - 1 - j) / 2],
                 );
             }
             mulnadd3(
@@ -91,7 +93,6 @@ impl Num3072 {
         }
         debug_assert!(c1 == 0 && (c0 == 0 || c0 == 1));
 
-        /* Perform up to two more reductions if the internal state has already overflown the MAX of Num3072 or if it is larger than the modulus or if both are the case. */
         if self.is_overflow() {
             self.full_reduce();
         }
