@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/stdin_unix.rs ]
 crate::ix!();
 
 #[cfg(unix)]

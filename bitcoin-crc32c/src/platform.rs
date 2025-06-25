@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-crc32c/src/sse42_check.rs ]
+// ---------------- [ File: bitcoin-crc32c/src/platform.rs ]
 crate::ix!();
 
 /// X86-specific code checking the availability of

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/endian.rs ]
 //! Host ↔ Endian conversion helpers.
 //
 //! The original C++ code provided a large matrix of
@@ -11,7 +12,6 @@
 //! All helpers are instrumented with `tracing` so any
 //! misuse is surfaced immediately in production
 //! deployments.
-// ---------------- [ File: bitcoin-compat/src/endian.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/endian.h]

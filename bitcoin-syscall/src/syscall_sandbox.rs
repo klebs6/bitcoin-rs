@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-compat/src/syscall_sandbox.rs ]
+// ---------------- [ File: bitcoin-syscall/src/syscall_sandbox.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/util/syscall_sandbox.h]

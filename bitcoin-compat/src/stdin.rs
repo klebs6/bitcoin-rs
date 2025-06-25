@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/stdin.rs ]
 //! Cross‑platform helpers for controlling echo on
 //! `STDIN`, plus a small RAII guard (`NoechoInst`)
 //! that disables echo for the lifetime of a scope.
@@ -8,7 +9,6 @@
 //! *robust* `tracing` so operational issues are
 //! surfaced in production.
 
-// ---------------- [ File: bitcoin-compat/src/stdin.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/stdin.h]

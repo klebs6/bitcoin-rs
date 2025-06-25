@@ -263,4 +263,3 @@ pub fn crc32c_extend_sse42(
       return l ^ kCRC32Xor;
         */
 }
-

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/tests/selectable_socket.rs ]
 //! Interface‑level tests for `is_selectable_socket`.
 
 use bitcoin_compat::*;

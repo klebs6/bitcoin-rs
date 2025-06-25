@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/glibcxx_sanity.rs ]
 //! Rough Rust equivalents of the classic
 //! *glibcxx‑sanity* checks used by Bitcoin Core.
 //!
@@ -6,7 +7,6 @@
 //! with portable Rust alternatives and add *robust*
 //! `tracing` so that any anomaly is surfaced in
 //! production logs.
-// ---------------- [ File: bitcoin-compat/src/glibcxx_sanity.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/glibcxx_sanity.cpp]

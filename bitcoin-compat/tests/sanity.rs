@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/tests/sanity.rs ]
 use bitcoin_compat::*;
 use bitcoin_imports::*;
 

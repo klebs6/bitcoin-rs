@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/byteswap.rs ]
 //! Platform‑independent byte‑swap helpers.
 //!
 //! These functions mirror the semantics of the classic

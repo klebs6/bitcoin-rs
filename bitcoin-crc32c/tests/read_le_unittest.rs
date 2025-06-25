@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-crc32c/src/read_le_unittest.rs ]
+// ---------------- [ File: bitcoin-crc32c/tests/read_le_unittest.rs ]
 use bitcoin_crc32c::*;
 use bitcoin_imports::*;
 

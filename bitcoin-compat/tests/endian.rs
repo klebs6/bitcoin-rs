@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/tests/endian.rs ]
 //! Round‑trip and numeric tests for host/endian helpers.
 
 use bitcoin_compat::*;

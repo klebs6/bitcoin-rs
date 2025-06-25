@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/cpuid.rs ]
 //! Minimal, **safe‑ish** wrapper around the `CPUID`
 //! instruction for x86/x86‑64 platforms.
 //!
@@ -11,7 +12,6 @@
 //! emits a `warn!` so that any accidental usage is
 //! immediately obvious in production logs.
 
-// ---------------- [ File: bitcoin-compat/src/cpuid.rs ]
 crate::ix!();
 
 /// Execute `CPUID` with the given `leaf` & `subleaf`

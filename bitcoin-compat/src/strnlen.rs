@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/strnlen.rs ]
 //! Safe replacement for the C `strnlen` routine.
 //!
 //! The C++ reference implementation relied on `memchr`
@@ -20,7 +21,6 @@
 //!
 //! If either condition is violated the behaviour is
 //! undefined – identical to the original C contract.
-// ---------------- [ File: bitcoin-compat/src/strnlen.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/strnlen.cpp]

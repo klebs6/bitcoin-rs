@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-syscall/src/syscall_sandbox_debug_signal_handler.rs ]
 crate::ix!();
 
 /// See Linux kernel developer Kees Cook's seccomp guide at <https://outflux.net/teach-seccomp/>

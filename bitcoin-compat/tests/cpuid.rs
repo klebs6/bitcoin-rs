@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/tests/cpuid.rs ]
 //! Interface‑level tests for the `getcpuid` wrapper
 //! on x86/x86‑64.  
 //!

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-syscall/src/setup_syscall_debug_handler.rs ]
 crate::ix!();
 
 /// This function largely follows install_syscall_reporter from Kees Cook's seccomp guide:

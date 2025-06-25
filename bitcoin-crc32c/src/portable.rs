@@ -1,9 +1,9 @@
+// ---------------- [ File: bitcoin-crc32c/src/portable.rs ]
 /*!
   | Internal functions that may change
   | between releases.
   |
   */
-// ---------------- [ File: bitcoin-crc32c/src/portable.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crc32c/src/crc32c_portable.cc]
@@ -368,4 +368,3 @@ pub fn crc32c_extend_portable(crc: u32, data: *const u8, size: usize) -> u32 {
         result
     }
 }
-

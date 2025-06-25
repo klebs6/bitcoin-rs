@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-compat/src/stdin_windows.rs ]
 crate::ix!();
 
 #[cfg(target_os = "windows")]

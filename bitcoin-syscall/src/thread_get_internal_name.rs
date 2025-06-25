@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-syscall/src/thread_get_internal_name.rs ]
 crate::ix!();
 
 /// Return the current thread name or an empty
