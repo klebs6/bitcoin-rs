@@ -1,49 +1,49 @@
-// ---------------- [ File: bitcoin-compat/src/byteswap.rs ]
+//! Platform‑independent byte‑swap helpers.
+//!
+//! These functions mirror the semantics of the classic
+//! `bswap_16/32/64` intrinsics on Unix‐like systems, while
+//! adding structured tracing so that any misuse can be
+//! detected immediately in production builds.
+
 crate::ix!();
-
-
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/byteswap.h]
 
-#[cfg(MAC_OSX)] macro_rules! bswap_16 { ($x:ident) => { /* OSSwapInt16(x) */ } }
-#[cfg(MAC_OSX)] macro_rules! bswap_32 { ($x:ident) => { /* OSSwapInt32(x) */ } }
-#[cfg(MAC_OSX)] macro_rules! bswap_64 { ($x:ident) => { /* OSSwapInt64(x) */ } }
-
-/* ------------ Non-MacOS / non-Darwin  ------------ */
-#[cfg(not(MAC_OSX))]
-#[cfg(HAVE_DECL_BSWAP_16_EQ_0)]
-#[inline] pub fn bswap_16(x: u16) -> u16 {
-    
-    todo!();
-        /*
-            return (x >> 8) | (x << 8);
-        */
+/// Swap the two bytes of a 16‑bit unsigned integer.
+///
+/// ```text
+/// 0xAABB → 0xBBAA
+/// ```
+#[inline]
+pub fn bswap_16(x: u16) -> u16 {
+    trace!(target: "compat::byteswap", input = format!("{:#06x}", x), "bswap_16");
+    let res = x.swap_bytes();
+    trace!(target: "compat::byteswap", output = format!("{:#06x}", res), "bswap_16");
+    res
 }
 
-#[cfg(not(MAC_OSX))]
-#[cfg(HAVE_DECL_BSWAP_32_EQ_0)]
-#[inline] pub fn bswap_32(x: u32) -> u32 {
-    
-    todo!();
-        /*
-            return (((x & 0xff000000U) >> 24) | ((x & 0x00ff0000U) >>  8) |
-                ((x & 0x0000ff00U) <<  8) | ((x & 0x000000ffU) << 24));
-        */
+/// Swap the four bytes of a 32‑bit unsigned integer.
+///
+/// ```text
+/// 0xAABB_CCDD → 0xDDCC_BBAA
+/// ```
+#[inline]
+pub fn bswap_32(x: u32) -> u32 {
+    trace!(target: "compat::byteswap", input = format!("{:#010x}", x), "bswap_32");
+    let res = x.swap_bytes();
+    trace!(target: "compat::byteswap", output = format!("{:#010x}", res), "bswap_32");
+    res
 }
 
-#[cfg(not(MAC_OSX))]
-#[cfg(HAVE_DECL_BSWAP_64_EQ_0)]
-#[inline] pub fn bswap_64(x: u64) -> u64 {
-    
-    todo!();
-        /*
-            return (((x & 0xff00000000000000ull) >> 56)
-              | ((x & 0x00ff000000000000ull) >> 40)
-              | ((x & 0x0000ff0000000000ull) >> 24)
-              | ((x & 0x000000ff00000000ull) >> 8)
-              | ((x & 0x00000000ff000000ull) << 8)
-              | ((x & 0x0000000000ff0000ull) << 24)
-              | ((x & 0x000000000000ff00ull) << 40)
-              | ((x & 0x00000000000000ffull) << 56));
-        */
+/// Swap the eight bytes of a 64‑bit unsigned integer.
+///
+/// ```text
+/// 0x1122_3344_5566_7788 → 0x8877_6655_4433_2211
+/// ```
+#[inline]
+pub fn bswap_64(x: u64) -> u64 {
+    trace!(target: "compat::byteswap", input = format!("{:#018x}", x), "bswap_64");
+    let res = x.swap_bytes();
+    trace!(target: "compat::byteswap", output = format!("{:#018x}", res), "bswap_64");
+    res
 }

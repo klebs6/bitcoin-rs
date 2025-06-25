@@ -24,31 +24,41 @@ impl UniValue {
         use crate::ExpectBits::{EXP_ARR_VALUE, EXP_COLON, EXP_NOT_VALUE, EXP_OBJ_NAME, EXP_VALUE};
 
         unsafe {
+
             self.clear();
 
             let mut expect_mask: u32 = 0;
             let mut stack: Vec<*mut UniValue> = Vec::new();
 
             let mut token_val = String::new();
-            let mut consumed: u32 = 0;
-            let mut tok = JTokenType::JTOK_NONE;
-            let mut last_tok = JTokenType::JTOK_NONE;
+            let mut consumed:  u32 = 0;
+            let mut tok        = JTokenType::JTOK_NONE;
+            let mut last_tok   = JTokenType::JTOK_NONE;
 
-            let mut p = raw;
-            let end = raw.add(size);
+            let mut p   = raw;
+            let end_ptr = raw.add(size);
 
             while {
                 last_tok = tok;
-                tok = get_json_token(&mut token_val, &mut consumed, p, end);
+                tok = get_json_token(&mut token_val, &mut consumed, p, end_ptr);
                 if matches!(tok, JTokenType::JTOK_NONE | JTokenType::JTOK_ERR) {
                     return false;
                 }
+
+                /* advance past the token itself */
                 p = p.add(consumed as usize);
+
+                /* NEW: consume any subsequent whitespace or NUL padding       *
+                 *      (Bitcoin‑Core’s C++ version silently tolerates both).   */
+                while p < end_ptr && ((*p == 0) || json_isspace(*p as i32)) {
+                    p = p.add(1);
+                }
 
                 /* ---------- expectation bookkeeping ---------- */
                 let is_value_open = json_token_is_value(tok)
                     || tok == JTokenType::JTOK_OBJ_OPEN
                     || tok == JTokenType::JTOK_ARR_OPEN;
+
 
                 if expect!(expect_mask, EXP_VALUE) {
                     if !is_value_open {
@@ -222,10 +232,10 @@ impl UniValue {
                 !stack.is_empty()
             } {}
 
-            /* ----- ensure no trailing junk ----- */
+            /* ---------- ensure no trailing junk ---------- */
             let mut dummy = String::new();
-            let mut n = 0u32;
-            if get_json_token(&mut dummy, &mut n, p, end) != JTokenType::JTOK_NONE {
+            let mut n     = 0u32;
+            if get_json_token(&mut dummy, &mut n, p, end_ptr) != JTokenType::JTOK_NONE {
                 return false;
             }
             true

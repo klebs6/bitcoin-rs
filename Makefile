@@ -55,10 +55,10 @@ TEST  := test
 
 #-------------------------------[done-above]
 
+ACTIVE := bitcoin-crc32c
 ACTIVE := bitcoin-univalue
 ACTIVE := bitcoin-compat
 
-#ACTIVE := bitcoin-crc32c
 #ACTIVE := bitcoin-portmap
 #ACTIVE := bitcoin-remote
 #ACTIVE := bitcoin-ripemd

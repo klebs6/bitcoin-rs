@@ -8,13 +8,15 @@ pub fn get_json_token(
     raw: *const u8,
     end: *const u8,
 ) -> JTokenType {
+
     unsafe {
+
         token_val.clear();
         *consumed = 0;
 
-        // ---------- skip leading whitespace ----------
+        /* ---------- skip leading whitespace (+ trailing NULs) ---------- */
         let mut p = raw;
-        while p < end && json_isspace(*p as i32) {
+        while p < end && (json_isspace(*p as i32) || *p == 0) {
             p = p.add(1);
         }
         if p >= end {
@@ -22,7 +24,7 @@ pub fn get_json_token(
         }
         let raw_start = p;
 
-        // ---------- structural single‑byte tokens ----------
+        /* ---------- single‑byte structural tokens ---------- */
         match *p as char {
             '{' => return single_byte_token(&mut p, raw_start, consumed, JTokenType::JTOK_OBJ_OPEN),
             '}' => return single_byte_token(&mut p, raw_start, consumed, JTokenType::JTOK_OBJ_CLOSE),

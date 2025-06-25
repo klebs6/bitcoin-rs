@@ -952,6 +952,7 @@ dependencies = [
  "bitcoin-imports",
  "lazy_static",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]
@@ -1017,6 +1018,7 @@ dependencies = [
  "lazy_static",
  "libc",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]

@@ -1,5 +1,5 @@
-// ---------------- [ File: bitcoin-crc32c/src/arm64_unittest.rs ]
-crate::ix!();
+use bitcoin_crc32c::*;
+use bitcoin_imports::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/crc32c/src/crc32c_arm64_unittest.cc]
 

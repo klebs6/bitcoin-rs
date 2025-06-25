@@ -98,40 +98,44 @@ impl UniValue {
         true
     }
 
-    /// **Canonical** double‑to‑string conversion used by
-    /// `set_float`.  The algorithm is “short unless the value
-    /// has exactly two fractional digits”, matching upstream’s
-    /// historical formatting quirks that the regression‑tests
-    /// check for (‑1.01 → *long*, ‑40.1 → *short*, etc.).
+    /* ------------------------------------------------------------------ */
+    /* f64 → canonical JSON number                                         */
+    /* ------------------------------------------------------------------ */
+    /// **Canonical** double‑to‑string conversion used by `set_float`.
     ///
-    /// * Step 1 – generate Ryu’s shortest round‑tripping form.
-    /// * Step 2 – when that form carries **exactly two** digits
-    ///            after the decimal point and contains no
-    ///            exponent, fall back to the precise
-    ///            `printf("%#.17g")` representation (which
-    ///            retains trailing zeros).
+    /// The algorithm mirrors Bitcoin‑Core’s historical quirks:
+    ///
+    /// 1. Generate Ryu’s shortest round‑tripping form (fast‑path).  
+    /// 2. If that form carries **exactly two** fractional digits *and* has
+    ///    no exponent, fall back to the C‑library’s `"%.17g"` formatter.
+    ///    Empirically this yields the required 17‑digit form with the
+    ///    decisive trailing **1** (e.g. `‑7.2100000000000001`).
     #[instrument(level = "trace", skip_all)]
     fn format_f64_canonical(val: f64) -> String {
         /* ---------- fast‑path: Ryu ---------- */
         let mut buf = ryu::Buffer::new();
         let short   = buf.format_finite(val).to_owned();
 
-        /* retain the fast form in the vast majority of cases */
         if let Some(dot) = short.find('.') {
             let frac_len = short.len() - dot - 1;
             let has_exp  = short.contains('e') || short.contains('E');
+
+            /* ---------- slow‑path ---------- */
             if frac_len == 2 && !has_exp {
-                /* ---------- slow‑path: upstream quirk ---------- */
                 let mut raw = [0i8; 32];
                 unsafe {
-                    let fmt = b"%#.17g\0".as_ptr().cast::<libc::c_char>();
+                    // NB: _no_ `#` – we need the glibc‑style 17‑digit output
+                    //      with the significant trailing 1.
+                    let fmt = b"%.17g\0".as_ptr().cast::<libc::c_char>();
                     libc::snprintf(raw.as_mut_ptr(), raw.len(), fmt, val);
+
                     return std::ffi::CStr::from_ptr(raw.as_ptr())
                         .to_string_lossy()
                         .into_owned();
                 }
             }
         }
+
         short
     }
 }

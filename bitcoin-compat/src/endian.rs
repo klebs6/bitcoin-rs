@@ -1,266 +1,125 @@
+//! Host ↔ Endian conversion helpers.
+//
+//! The original C++ code provided a large matrix of
+//! `htobe*`, `htole*`, `be*toh`, and `le*toh` helpers
+//! hidden behind a thicket of pre‑processor guards.
+//! In Rust the same behaviour is achievable in a
+//! single, portable implementation using the
+//! intrinsic `[u{16,32,64}::to_be / to_le / from_be / from_le]`
+//! conversions.
+//!
+//! All helpers are instrumented with `tracing` so any
+//! misuse is surfaced immediately in production
+//! deployments.
 // ---------------- [ File: bitcoin-compat/src/endian.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/compat/endian.h]
 
-/*
-  | While not technically a supported
-  | configuration, defaulting to defining these
-  | DECLs when we were compiled without autotools
-  | makes it easier for other build systems to
-  | build things like libbitcoinconsensus for
-  | strange targets.
-  */
-
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(htobe16)] pub const HAVE_DECL_HTOBE16: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(htole16)] pub const HAVE_DECL_HTOLE16: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(be16toh)] pub const HAVE_DECL_BE16TOH: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(le16toh)] pub const HAVE_DECL_LE16TOH: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(htobe32)] pub const HAVE_DECL_HTOBE32: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(htole32)] pub const HAVE_DECL_HTOLE32: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(be32toh)] pub const HAVE_DECL_BE32TOH: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(le32toh)] pub const HAVE_DECL_LE32TOH: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(htobe64)] pub const HAVE_DECL_HTOBE64: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(htole64)] pub const HAVE_DECL_HTOLE64: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(be64toh)] pub const HAVE_DECL_BE64TOH: usize = 1;
-#[cfg(not(HAVE_CONFIG_H))] #[cfg(le64toh)] pub const HAVE_DECL_LE64TOH: usize = 1;
-
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_HTOBE16_EQ_0)]
-#[inline] pub fn htobe16(host_16bits: u16) -> u16 {
-    
-    todo!();
-        /*
-            return host_16bits;
-        */
+/// Convert a host‑order `u16` to big‑endian.
+#[inline]
+pub fn htobe16(x: u16) -> u16 {
+    trace!(target: "compat::endian", func = "htobe16", input = format!("{:#06x}", x));
+    let res = x.to_be();
+    trace!(target: "compat::endian", func = "htobe16", output = format!("{:#06x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_HTOLE16_EQ_0)]
-#[inline] pub fn htole16(host_16bits: u16) -> u16 {
-    
-    todo!();
-        /*
-            return bswap_16(host_16bits);
-        */
+/// Convert a host‑order `u16` to little‑endian.
+#[inline]
+pub fn htole16(x: u16) -> u16 {
+    trace!(target: "compat::endian", func = "htole16", input = format!("{:#06x}", x));
+    let res = x.to_le();
+    trace!(target: "compat::endian", func = "htole16", output = format!("{:#06x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_BE16TOH_EQ_0)]
-#[inline] pub fn be_16toh(big_endian_16bits: u16) -> u16 {
-    
-    todo!();
-        /*
-            return big_endian_16bits;
-        */
+/// Convert a big‑endian `u16` to host order.
+#[inline]
+pub fn be_16toh(x: u16) -> u16 {
+    trace!(target: "compat::endian", func = "be_16toh", input = format!("{:#06x}", x));
+    let res = u16::from_be(x);
+    trace!(target: "compat::endian", func = "be_16toh", output = format!("{:#06x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_LE16TOH_EQ_0)]
-#[inline] pub fn le_16toh(little_endian_16bits: u16) -> u16 {
-    
-    todo!();
-        /*
-            return bswap_16(little_endian_16bits);
-        */
+/// Convert a little‑endian `u16` to host order.
+#[inline]
+pub fn le_16toh(x: u16) -> u16 {
+    trace!(target: "compat::endian", func = "le_16toh", input = format!("{:#06x}", x));
+    let res = u16::from_le(x);
+    trace!(target: "compat::endian", func = "le_16toh", output = format!("{:#06x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_HTOBE32_EQ_0)]
-#[inline] pub fn htobe32(host_32bits: u32) -> u32 {
-    
-    todo!();
-        /*
-            return host_32bits;
-        */
+/// Convert a host‑order `u32` to big‑endian.
+#[inline]
+pub fn htobe32(x: u32) -> u32 {
+    trace!(target: "compat::endian", func = "htobe32", input = format!("{:#010x}", x));
+    let res = x.to_be();
+    trace!(target: "compat::endian", func = "htobe32", output = format!("{:#010x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_HTOLE32_EQ_0)]
-#[inline] pub fn htole32(host_32bits: u32) -> u32 {
-    
-    todo!();
-        /*
-            return bswap_32(host_32bits);
-        */
+/// Convert a host‑order `u32` to little‑endian.
+#[inline]
+pub fn htole32(x: u32) -> u32 {
+    trace!(target: "compat::endian", func = "htole32", input = format!("{:#010x}", x));
+    let res = x.to_le();
+    trace!(target: "compat::endian", func = "htole32", output = format!("{:#010x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_BE32TOH_EQ_0)]
-#[inline] pub fn be_32toh(big_endian_32bits: u32) -> u32 {
-    
-    todo!();
-        /*
-            return big_endian_32bits;
-        */
+/// Convert a big‑endian `u32` to host order.
+#[inline]
+pub fn be_32toh(x: u32) -> u32 {
+    trace!(target: "compat::endian", func = "be_32toh", input = format!("{:#010x}", x));
+    let res = u32::from_be(x);
+    trace!(target: "compat::endian", func = "be_32toh", output = format!("{:#010x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_LE32TOH_EQ_0)]
-#[inline] pub fn le_32toh(little_endian_32bits: u32) -> u32 {
-    
-    todo!();
-        /*
-            return bswap_32(little_endian_32bits);
-        */
+/// Convert a little‑endian `u32` to host order.
+#[inline]
+pub fn le_32toh(x: u32) -> u32 {
+    trace!(target: "compat::endian", func = "le_32toh", input = format!("{:#010x}", x));
+    let res = u32::from_le(x);
+    trace!(target: "compat::endian", func = "le_32toh", output = format!("{:#010x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_HTOBE64_EQ_0)]
-#[inline] pub fn htobe64(host_64bits: u64) -> u64 {
-    
-    todo!();
-        /*
-            return host_64bits;
-        */
+/// Convert a host‑order `u64` to big‑endian.
+#[inline]
+pub fn htobe64(x: u64) -> u64 {
+    trace!(target: "compat::endian", func = "htobe64", input = format!("{:#018x}", x));
+    let res = x.to_be();
+    trace!(target: "compat::endian", func = "htobe64", output = format!("{:#018x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_HTOLE64_EQ_0)]
-#[inline] pub fn htole64(host_64bits: u64) -> u64 {
-    
-    todo!();
-        /*
-            return bswap_64(host_64bits);
-        */
+/// Convert a host‑order `u64` to little‑endian.
+#[inline]
+pub fn htole64(x: u64) -> u64 {
+    trace!(target: "compat::endian", func = "htole64", input = format!("{:#018x}", x));
+    let res = x.to_le();
+    trace!(target: "compat::endian", func = "htole64", output = format!("{:#018x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_BE64TOH_EQ_0)]
-#[inline] pub fn be_64toh(big_endian_64bits: u64) -> u64 {
-    
-    todo!();
-        /*
-            return big_endian_64bits;
-        */
+/// Convert a big‑endian `u64` to host order.
+#[inline]
+pub fn be_64toh(x: u64) -> u64 {
+    trace!(target: "compat::endian", func = "be_64toh", input = format!("{:#018x}", x));
+    let res = u64::from_be(x);
+    trace!(target: "compat::endian", func = "be_64toh", output = format!("{:#018x}", res));
+    res
 }
 
-#[cfg(WORDS_BIGENDIAN)]
-#[cfg(HAVE_DECL_LE64TOH_EQ_0)]
-#[inline] pub fn le_64toh(little_endian_64bits: u64) -> u64 {
-    
-    todo!();
-        /*
-            return bswap_64(little_endian_64bits);
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_HTOBE16_EQ_0)]
-#[inline] pub fn htobe16(host_16bits: u16) -> u16 {
-    
-    todo!();
-        /*
-            return bswap_16(host_16bits);
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_HTOLE16_EQ_0)]
-#[inline] pub fn htole16(host_16bits: u16) -> u16 {
-    
-    todo!();
-        /*
-            return host_16bits;
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_BE16TOH_EQ_0)]
-#[inline] pub fn be_16toh(big_endian_16bits: u16) -> u16 {
-    
-    todo!();
-        /*
-            return bswap_16(big_endian_16bits);
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_LE16TOH_EQ_0)]
-#[inline] pub fn le_16toh(little_endian_16bits: u16) -> u16 {
-    
-    todo!();
-        /*
-            return little_endian_16bits;
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_HTOBE32_EQ_0)]
-#[inline] pub fn htobe32(host_32bits: u32) -> u32 {
-    
-    todo!();
-        /*
-            return bswap_32(host_32bits);
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_HTOLE32_EQ_0)]
-#[inline] pub fn htole32(host_32bits: u32) -> u32 {
-    
-    todo!();
-        /*
-            return host_32bits;
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_BE32TOH_EQ_0)]
-#[inline] pub fn be_32toh(big_endian_32bits: u32) -> u32 {
-    
-    todo!();
-        /*
-            return bswap_32(big_endian_32bits);
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_LE32TOH_EQ_0)]
-#[inline] pub fn le_32toh(little_endian_32bits: u32) -> u32 {
-    
-    todo!();
-        /*
-            return little_endian_32bits;
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_HTOBE64_EQ_0)]
-#[inline] pub fn htobe64(host_64bits: u64) -> u64 {
-    
-    todo!();
-        /*
-            return bswap_64(host_64bits);
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_HTOLE64_EQ_0)]
-#[inline] pub fn htole64(host_64bits: u64) -> u64 {
-    
-    todo!();
-        /*
-            return host_64bits;
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_BE64TOH_EQ_0)]
-#[inline] pub fn be_64toh(big_endian_64bits: u64) -> u64 {
-    
-    todo!();
-        /*
-            return bswap_64(big_endian_64bits);
-        */
-}
-
-#[cfg(not(WORDS_BIGENDIAN))]
-#[cfg(HAVE_DECL_LE64TOH_EQ_0)]
-#[inline] pub fn le_64toh(little_endian_64bits: u64) -> u64 {
-    
-    todo!();
-        /*
-            return little_endian_64bits;
-        */
+/// Convert a little‑endian `u64` to host order.
+#[inline]
+pub fn le_64toh(x: u64) -> u64 {
+    trace!(target: "compat::endian", func = "le_64toh", input = format!("{:#018x}", x));
+    let res = u64::from_le(x);
+    trace!(target: "compat::endian", func = "le_64toh", output = format!("{:#018x}", res));
+    res
 }
