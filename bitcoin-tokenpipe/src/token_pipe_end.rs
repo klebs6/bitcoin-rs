@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tokenpipe/src/token_pipe_end.rs ]
 crate::ix!();
 
 /// One end of a token pipe.

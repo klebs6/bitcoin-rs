@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/io_error_is_permanent.rs ]
 crate::ix!();
 
 #[cfg(unix)]

@@ -33,7 +33,6 @@ FEATURES :=
 #-------------------------------[active-below]
 
 ACTIVE := bitcoin-get-json-token
-ACTIVE := bitcoin-network
 ACTIVE := bitcoin-version
 ACTIVE := bitcoin-settings
 ACTIVE := bitcoin-fees
@@ -42,6 +41,7 @@ ACTIVE := bitcoin-portmap
 ACTIVE := bitcoin-remote
 ACTIVE := bitcoin-sock
 ACTIVE := bitcoin-tokenpipe
+ACTIVE := bitcoin-network
 
 #ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-base58

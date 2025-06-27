@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tokenpipe/src/token_pipe_end_status.rs ]
 crate::ix!();
 
 /// Return value constants for TokenWrite and TokenRead.

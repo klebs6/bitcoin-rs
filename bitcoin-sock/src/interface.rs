@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/interface.rs ]
 crate::ix!();
 
 pub trait SockInterface:

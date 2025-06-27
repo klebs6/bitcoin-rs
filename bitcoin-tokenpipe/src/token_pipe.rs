@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tokenpipe/src/token_pipe.rs ]
 crate::ix!();
 
 /// An interprocess or interthread pipe for sending tokens (one-byte values) over.
