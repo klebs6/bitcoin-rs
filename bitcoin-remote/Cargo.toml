@@ -1,3 +1,8 @@
+[dependencies]
+derive_builder.workspace = true
+getset.workspace         = true
+tracing.workspace        = true
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"

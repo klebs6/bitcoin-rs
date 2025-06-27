@@ -2100,6 +2100,9 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-univalue",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]
@@ -2366,6 +2369,9 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-sync",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]
@@ -2538,6 +2544,9 @@ version = "0.1.18"
 dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]

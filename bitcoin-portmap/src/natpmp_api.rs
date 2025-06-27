@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-portmap/src/natpmp_api.rs ]
 crate::ix!();
 
 /// The literal C‑function surface we want to preserve.

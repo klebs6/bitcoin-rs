@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-syscall/src/seccomp_policy_builder.rs ]
 //! Rust one‑to‑one port of Bitcoin Core’s `SeccompPolicyBuilder`.
 //!
 //!  * Identical function names and call‑order.  
@@ -15,7 +16,6 @@
 //! Compile‑time constants, field offsets and BPF helper macros are reproduced verbatim so that
 //! a side‑by‑side diff with the upstream code is trivial.
 
-// ---------------- [ File: bitcoin-syscall/src/seccomp_policy_builder.rs ]
 crate::ix!();
 
 pub struct SeccompPolicyBuilder {

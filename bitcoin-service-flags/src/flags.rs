@@ -172,4 +172,3 @@ mod service_flags_roundtrip {
         assert_eq!(flags.bits(), raw_unknown);
     }
 }
-

@@ -28,57 +28,20 @@ DEFAULT := test_active
 #DEFAULT := test_one
 
 FEATURES := --features "natpmp"
+FEATURES := 
 
-#-------------------------------./u/write-remaining
-
-#ACTIVE := bitcoin-amt
-#ACTIVE := bitcoin-arena
-#ACTIVE := bitcoin-autofile
-#ACTIVE := bitcoin-bech32m
-#ACTIVE := bitcoin-bitstream
-#ACTIVE := bitcoin-blob
-#ACTIVE := bitcoin-bufferedfile
-#ACTIVE := bitcoin-locked-page-allocator
-#ACTIVE := bitcoin-log
-#ACTIVE := bitcoin-mem
-#ACTIVE := bitcoin-serialize
-#ACTIVE := bitcoin-service
-#ACTIVE := bitcoin-sha1
-#ACTIVE := bitcoin-string
-#ACTIVE := bitcoin-support
-#ACTIVE := bitcoin-time
-#ACTIVE := bitcoin-u160
-#ACTIVE := bitcoin-u256
-#ACTIVE := bitcoin-vectorstream
-#ACTIVE := bitcoin-aes
-#ACTIVE := bitcoin-epoch
-#ACTIVE := bitcoin-asmap
-#ACTIVE := bitcoin-indirectmap
-#ACTIVE := bitcoin-cuckoo-cache
-#ACTIVE := bitcoin-golombrice
-#ACTIVE := bitcoin-poly1305
-#ACTIVE := bitcoin-locked-pool
-#ACTIVE := bitcoin-chacha
-#ACTIVE := bitcoin-sync
-#ACTIVE := bitcoin-compat
-#ACTIVE := bitcoin-ripemd
-#ACTIVE := bitcoin-siphash
-#ACTIVE := bitcoin-service-flags
-#ACTIVE := bitcoin-syscall
-#ACTIVE := bitcoin-crc32c
-
-#-------------------------------[done-above]
+#-------------------------------[active-below]
 
 ACTIVE := bitcoin-get-json-token
-ACTIVE := bitcoin-remote
-ACTIVE := bitcoin-sock
-ACTIVE := bitcoin-tokenpipe
 ACTIVE := bitcoin-network
 ACTIVE := bitcoin-version
 ACTIVE := bitcoin-settings
 ACTIVE := bitcoin-fees
 ACTIVE := bitcoin-univalue
 ACTIVE := bitcoin-portmap
+ACTIVE := bitcoin-remote
+ACTIVE := bitcoin-sock
+ACTIVE := bitcoin-tokenpipe
 
 #ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-base58
@@ -88,7 +51,7 @@ ACTIVE := bitcoin-portmap
 #ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-random
 
-#-------------------------------[unblocked-above]
+#-------------------------------[next]
 #ACTIVE := bitcoinleveldb-arena
 #ACTIVE := bitcoinleveldb-batch
 #ACTIVE := bitcoinleveldb-bench
@@ -130,7 +93,7 @@ ACTIVE := bitcoin-portmap
 #ACTIVE := bitcoinleveldb-version
 #ACTIVE := bitcoinleveldb-versionedit
 
-#-------------------------------[leveldb-above]
+#-------------------------------[future]
 #ACTIVE := bitcoinsecp256k1-keys
 #ACTIVE := bitcoin-scripting
 #ACTIVE := bitcoin-key
@@ -291,3 +254,41 @@ json:
 
 timings:
 	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) +nightly build -Z timings
+
+#-------------------------------[done-below]
+
+#ACTIVE := bitcoin-amt
+#ACTIVE := bitcoin-arena
+#ACTIVE := bitcoin-autofile
+#ACTIVE := bitcoin-bech32m
+#ACTIVE := bitcoin-bitstream
+#ACTIVE := bitcoin-blob
+#ACTIVE := bitcoin-bufferedfile
+#ACTIVE := bitcoin-locked-page-allocator
+#ACTIVE := bitcoin-log
+#ACTIVE := bitcoin-mem
+#ACTIVE := bitcoin-serialize
+#ACTIVE := bitcoin-service
+#ACTIVE := bitcoin-sha1
+#ACTIVE := bitcoin-string
+#ACTIVE := bitcoin-support
+#ACTIVE := bitcoin-time
+#ACTIVE := bitcoin-u160
+#ACTIVE := bitcoin-u256
+#ACTIVE := bitcoin-vectorstream
+#ACTIVE := bitcoin-aes
+#ACTIVE := bitcoin-epoch
+#ACTIVE := bitcoin-asmap
+#ACTIVE := bitcoin-indirectmap
+#ACTIVE := bitcoin-cuckoo-cache
+#ACTIVE := bitcoin-golombrice
+#ACTIVE := bitcoin-poly1305
+#ACTIVE := bitcoin-locked-pool
+#ACTIVE := bitcoin-chacha
+#ACTIVE := bitcoin-sync
+#ACTIVE := bitcoin-compat
+#ACTIVE := bitcoin-ripemd
+#ACTIVE := bitcoin-siphash
+#ACTIVE := bitcoin-service-flags
+#ACTIVE := bitcoin-syscall
+#ACTIVE := bitcoin-crc32c

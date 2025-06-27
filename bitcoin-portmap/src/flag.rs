@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-portmap/src/flag.rs ]
 crate::ix!();
 
 /// Enabled protocol bit‑mask (UPnP/NAT‑PMP).

@@ -1,5 +1,5 @@
-//! Rust port of crc32c_unittest.cc – high‑level convenience API tests
 // ---------------- [ File: bitcoin-crc32c/tests/basic.rs ]
+//! Rust port of crc32c_unittest.cc – high‑level convenience API tests
 use bitcoin_crc32c::*;
 use bitcoin_imports::*;
 

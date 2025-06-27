@@ -35,4 +35,3 @@ pub fn request_prefetch(address: *const u8) {
         let _ = address;
     }
 }
-

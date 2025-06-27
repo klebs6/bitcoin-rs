@@ -4,6 +4,9 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/rpc/client.h]
 //-------------------------------------------[.cpp/bitcoin/src/rpc/client.cpp]
 
+#[derive(Debug, Getters, MutGetters, Setters, Default, Builder)]
+#[builder(pattern = "owned", setter(into), default)]
+#[getset(get="pub")]
 pub struct RPCConvertParam {
 
     /**

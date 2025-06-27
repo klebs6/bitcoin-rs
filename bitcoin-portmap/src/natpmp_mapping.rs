@@ -1,4 +1,3 @@
-
 // ---------------- [ File: bitcoin-portmap/src/natpmp_mapping.rs ]
 crate::ix!();
 
