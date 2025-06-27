@@ -1,0 +1,14 @@
+greetings! we are in the process of translating the following crate from c++ to rust.
+
+{crate_text}
+
+we would like you to help us complete the translation. we require exact bitmatch, so the following constraints are in effect:
+
+1) please follow the flow of the C++ code exactly. while you may adopt safe rust ergonomics where possible, please do not change or reinterpret the code flow
+2) each file shown in the above code eventually needs to be upgraded with its own robust, exhaustive, well-named test suite module. 
+3) you don't need to translate the whole thing in one shot. we can focus on it chunk by chunk. please choose a translation order which makes sense
+4) do not change the internal variable names or the interfaces. it should be very clear from reading the new code where it came from and which decisions were made along the way.
+5) if and when you add comments, they should strictly *upgrade* and augment those from the original. descriptive comments are important. please do not clobber them
+6) macros may become inline functions as long as it is appropriate and they bear the same name
+
+thank you!
