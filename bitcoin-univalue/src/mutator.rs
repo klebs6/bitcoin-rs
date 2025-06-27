@@ -97,51 +97,6 @@ impl UniValue {
         self.set_val(Self::format_f64_canonical(val));
         true
     }
-
-    /* ------------------------------------------------------------------ */
-    /* f64 → canonical JSON number                                         */
-    /* ------------------------------------------------------------------ */
-    /// **Canonical** double‑to‑string conversion used by `set_float`.
-    ///
-    /// 1. Emit Ryu’s shortest round‑tripping form (fast‑path).  
-    /// 2. When that string carries **exactly two** fractional digits **and**
-    ///    no exponent, fall back to the _historical_ 17‑digit representation
-    ///    produced by `printf("%#.17g")`.  That legacy branch is kept solely
-    ///    for strict compatibility with Bitcoin‑Core’s JSON output where the
-    ///    trailing zeros _and_ the final **1** are significant (e.g.  
-    ///    `‑7.2100000000000001`, `‑1.0100000000000000`).
-    #[instrument(level = "trace", skip_all)]
-    fn format_f64_canonical(val: f64) -> String {
-        /* ---------- fast‑path: Ryu ---------- */
-        let mut buf  = ryu::Buffer::new();
-        let short    = buf.format_finite(val).to_owned();
-
-        /* ---------- decide whether we must fall back ---------- */
-        if let Some(dot) = short.find('.') {
-            let frac_len = short.len() - dot - 1;
-            let has_exp  = short.contains('e') || short.contains('E');
-
-            if frac_len == 2 && !has_exp {
-                /* ---------- slow‑path: legacy `printf` ---------- */
-                //
-                //  * `#`   → keep trailing zeros
-                //  * `.17` → 17 significant digits
-                //  * `g`   → switch between %e and %f automatically
-                //
-                //  On glibc this reliably yields “…0000000000000001”.
-                //
-                let mut raw : [i8; 32] = [0; 32];
-                unsafe {
-                    let fmt = b"%#.17g\0".as_ptr() as *const libc::c_char;
-                    libc::snprintf(raw.as_mut_ptr(), raw.len(), fmt, val);
-                    return std::ffi::CStr::from_ptr(raw.as_ptr())
-                        .to_string_lossy()
-                        .into_owned();
-                }
-            }
-        }
-        short
-    }
 }
 
 #[cfg(test)]

@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-univalue/src/get_json_token.rs ]
+// ---------------- [ File: bitcoin-get-json-token/src/get_json_token.rs ]
 crate::ix!();
 
 #[instrument(level = "trace", skip(token_val, consumed))]
@@ -17,8 +17,12 @@ pub fn get_json_token(
         let raw_start    = p;
 
         /* ---------- 2 / 5  try structural ---------- */
-        if let Some((tok, after, n)) = lex_structural(p, end) {
-            *consumed = n;
+        /* record how many bytes were skipped */
+        let skipped = (raw_start as usize - raw as usize) as u32;
+
+        /* ---------- 2 / 5  try structural ---------- */
+        if let Some((tok, after, _)) = lex_structural(p, end) {
+            *consumed = bytes_consumed(raw, after);          // <── NEW
             return tok;
         }
 

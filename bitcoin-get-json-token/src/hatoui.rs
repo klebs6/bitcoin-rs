@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-univalue/src/hatoui.rs ]
+// ---------------- [ File: bitcoin-get-json-token/src/hatoui.rs ]
 crate::ix!();
 
 /**

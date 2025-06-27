@@ -21,6 +21,12 @@ CARGO     := env CARGO_MSG_LIMIT=15 \
 BUILD := build --verbose
 TEST  := test
 
+#DEFAULT := build_active
+#DEFAULT := build
+DEFAULT := hack_test
+DEFAULT := test_active
+#DEFAULT := test_one
+
 #-------------------------------./u/write-remaining
 
 #ACTIVE := bitcoin-amt
@@ -53,24 +59,24 @@ TEST  := test
 #ACTIVE := bitcoin-chacha
 #ACTIVE := bitcoin-sync
 #ACTIVE := bitcoin-compat
+#ACTIVE := bitcoin-ripemd
+#ACTIVE := bitcoin-siphash
+#ACTIVE := bitcoin-service-flags
+#ACTIVE := bitcoin-syscall
+#ACTIVE := bitcoin-crc32c
 
 #-------------------------------[done-above]
 
-ACTIVE := bitcoin-crc32c
-ACTIVE := bitcoin-syscall
-ACTIVE := bitcoin-ripemd
-ACTIVE := bitcoin-portmap
-#ACTIVE := bitcoin-service-flags
-#ACTIVE := bitcoin-siphash
-ACTIVE := bitcoin-univalue
 ACTIVE := bitcoin-get-json-token
-
-#ACTIVE := bitcoin-remote
-#ACTIVE := bitcoin-settings
-#ACTIVE := bitcoin-sock
-#ACTIVE := bitcoin-tokenpipe
-#ACTIVE := bitcoin-network
-#ACTIVE := bitcoin-version
+ACTIVE := bitcoin-portmap
+ACTIVE := bitcoin-remote
+ACTIVE := bitcoin-sock
+ACTIVE := bitcoin-tokenpipe
+ACTIVE := bitcoin-network
+ACTIVE := bitcoin-version
+ACTIVE := bitcoin-settings
+ACTIVE := bitcoin-fees
+ACTIVE := bitcoin-univalue
 
 #ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-base58
@@ -79,10 +85,50 @@ ACTIVE := bitcoin-get-json-token
 #ACTIVE := bitcoin-sha3
 #ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-random
-#ACTIVE := bitcoin-fees
 
 #-------------------------------[unblocked-above]
+#ACTIVE := bitcoinleveldb-arena
+#ACTIVE := bitcoinleveldb-batch
+#ACTIVE := bitcoinleveldb-bench
+#ACTIVE := bitcoinleveldb-bloom
+#ACTIVE := bitcoinleveldb-cache
+#ACTIVE := bitcoinleveldb-cfg
+#ACTIVE := bitcoinleveldb-coding
+#ACTIVE := bitcoinleveldb-comparator
+#ACTIVE := bitcoinleveldb-compat
+#ACTIVE := bitcoinleveldb-crc32
+#ACTIVE := bitcoinleveldb-db
+#ACTIVE := bitcoinleveldb-dumpfile
+#ACTIVE := bitcoinleveldb-duplex
+#ACTIVE := bitcoinleveldb-env
+#ACTIVE := bitcoinleveldb-file
+#ACTIVE := bitcoinleveldb-filter
+#ACTIVE := bitcoinleveldb-hash
+#ACTIVE := bitcoinleveldb-histogram
+#ACTIVE := bitcoinleveldb-key
+#ACTIVE := bitcoinleveldb-limiter
+#ACTIVE := bitcoinleveldb-log
+#ACTIVE := bitcoinleveldb-lru
+#ACTIVE := bitcoinleveldb-memenv
+#ACTIVE := bitcoinleveldb-memtable
+#ACTIVE := bitcoinleveldb-merger
+#ACTIVE := bitcoinleveldb-meta
+#ACTIVE := bitcoinleveldb-options
+#ACTIVE := bitcoinleveldb-posix
+#ACTIVE := bitcoinleveldb-rand
+#ACTIVE := bitcoinleveldb-repair
+#ACTIVE := bitcoinleveldb-skiplist
+#ACTIVE := bitcoinleveldb-slice
+#ACTIVE := bitcoinleveldb-snapshot
+#ACTIVE := bitcoinleveldb-status
+#ACTIVE := bitcoinleveldb-sync
+#ACTIVE := bitcoinleveldb-table
+#ACTIVE := bitcoinleveldb-test
+#ACTIVE := bitcoinleveldb-util
+#ACTIVE := bitcoinleveldb-version
+#ACTIVE := bitcoinleveldb-versionedit
 
+#-------------------------------[leveldb-above]
 #ACTIVE := bitcoinsecp256k1-keys
 #ACTIVE := bitcoin-scripting
 #ACTIVE := bitcoin-key
@@ -168,46 +214,6 @@ ACTIVE := bitcoin-get-json-token
 #ACTIVE := bitcoinchain-interface
 #ACTIVE := bitcoinchain-notifications
 #ACTIVE := bitcoinchain-params
-#ACTIVE := bitcoinleveldb-arena
-#ACTIVE := bitcoinleveldb-batch
-#ACTIVE := bitcoinleveldb-bench
-#ACTIVE := bitcoinleveldb-bloom
-#ACTIVE := bitcoinleveldb-cache
-#ACTIVE := bitcoinleveldb-cfg
-#ACTIVE := bitcoinleveldb-coding
-#ACTIVE := bitcoinleveldb-comparator
-#ACTIVE := bitcoinleveldb-compat
-#ACTIVE := bitcoinleveldb-crc32
-#ACTIVE := bitcoinleveldb-db
-#ACTIVE := bitcoinleveldb-dumpfile
-#ACTIVE := bitcoinleveldb-duplex
-#ACTIVE := bitcoinleveldb-env
-#ACTIVE := bitcoinleveldb-file
-#ACTIVE := bitcoinleveldb-filter
-#ACTIVE := bitcoinleveldb-hash
-#ACTIVE := bitcoinleveldb-histogram
-#ACTIVE := bitcoinleveldb-key
-#ACTIVE := bitcoinleveldb-limiter
-#ACTIVE := bitcoinleveldb-log
-#ACTIVE := bitcoinleveldb-lru
-#ACTIVE := bitcoinleveldb-memenv
-#ACTIVE := bitcoinleveldb-memtable
-#ACTIVE := bitcoinleveldb-merger
-#ACTIVE := bitcoinleveldb-meta
-#ACTIVE := bitcoinleveldb-options
-#ACTIVE := bitcoinleveldb-posix
-#ACTIVE := bitcoinleveldb-rand
-#ACTIVE := bitcoinleveldb-repair
-#ACTIVE := bitcoinleveldb-skiplist
-#ACTIVE := bitcoinleveldb-slice
-#ACTIVE := bitcoinleveldb-snapshot
-#ACTIVE := bitcoinleveldb-status
-#ACTIVE := bitcoinleveldb-sync
-#ACTIVE := bitcoinleveldb-table
-#ACTIVE := bitcoinleveldb-test
-#ACTIVE := bitcoinleveldb-util
-#ACTIVE := bitcoinleveldb-version
-#ACTIVE := bitcoinleveldb-versionedit
 #ACTIVE := bitcoinnode-interface
 #ACTIVE := bitcoinnode-stats
 #ACTIVE := bitcoinnode-txrelay
@@ -243,11 +249,6 @@ ACTIVE := bitcoin-get-json-token
 
 #-------------------------------DONE
 
-#DEFAULT := build_active
-#DEFAULT := build
-DEFAULT := test_active
-#DEFAULT := test_one
-
 INDIVIDUAL_TEST := propagate_26bit_carries_once
 INDIVIDUAL_TEST := poly1305
 INDIVIDUAL_TEST := final_carry_and_sub_p
@@ -276,6 +277,9 @@ test_active:
 
 test_one:
 	RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) $(INDIVIDUAL_TEST) -p $(ACTIVE) -- $(NOCAPTURE)
+
+hack_test:
+	RUSTFLAGS=$(RUSTFLAGS) cargo hack test --feature-powerset -p $(ACTIVE) --verbose -- --test-threads 1
 
 vendor:
 	RUSTFLAGS=$(RUSTFLAGS) $(CARGO) vendor

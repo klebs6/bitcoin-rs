@@ -11,6 +11,6 @@ description = "todo: write a description here"
 
 [dependencies]
 derive_builder.workspace = true
-getset.workspace = true
-tracing.workspace = true
-bitcoin-imports = { path = "../bitcoin-imports" }
+getset.workspace         = true
+tracing.workspace        = true
+bitcoin-imports          = { path = "../bitcoin-imports" }

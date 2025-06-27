@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-get-json-token/src/lexer.rs ]
 crate::ix!();
 
 /// Try to lex a single‑byte structural token.  On success returns
@@ -68,57 +69,70 @@ pub unsafe fn lex_number(
 ) -> Option<(JTokenType, *const u8, u32)> {
     use std::ptr::copy_nonoverlapping;
 
-    if p >= end || !matches!(*p as char, '-' | '0'..='9') {
+    /* ---------- 1/7  basic pre‑filter ----------------------------------- */
+    if p >= end {
         return None;
     }
+    let first = *p as char;
+    if !matches!(first, '-' | '0'..='9') {
+        return None;
+    }
+
+    /* ---------- 2/7  “‑” MUST be followed by a digit -------------------- */
+    if first == '-' {
+        if p.add(1) >= end || !json_isdigit(*p.add(1) as i32) {
+            //  lone “‑”, “‑e…”, “‑.…” ⇒ *not* a valid number
+            return None;
+        }
+    }
+
+    /* ---------- 3/7  fast scan over the integer part ------------------- */
     let start = p;
-    let mut cur = p;
-
-    /* --------‑‑ first char already validated ‑‑-------- */
-    cur = cur.add(1);
-
-    /* --------‑‑ digits before dot ‑‑-------- */
+    let mut cur = p.add(1);                       // we already looked at the 1st char
     while cur < end && json_isdigit(*cur as i32) {
         cur = cur.add(1);
     }
 
-    /* ---- leading‑zero check (same as previous impl) ---- */
+    /* ---------- 4/7  reject leading‑zero violations -------------------- */
     {
-        let len = (cur as usize - start as usize) as usize;
+        let len   = (cur as usize - start as usize) as usize;
         let slice = std::slice::from_raw_parts(start, len);
         if (slice[0] == b'0' && len > 1 && slice[1].is_ascii_digit())
-            || (slice[0] == b'-' && len > 2 && slice[1] == b'0' && slice[2].is_ascii_digit())
+            || (slice[0] == b'-'
+                && len > 2
+                && slice[1] == b'0'
+                && slice[2].is_ascii_digit())
         {
             return None;
         }
     }
 
-    /* --------‑‑ fraction ‑‑-------- */
+    /* ---------- 5/7  optional fraction --------------------------------- */
     if cur < end && *cur as char == '.' {
         cur = cur.add(1);
         if cur >= end || !json_isdigit(*cur as i32) {
-            return None;
+            return None;                          // “1.” is illegal
         }
         while cur < end && json_isdigit(*cur as i32) {
             cur = cur.add(1);
         }
     }
 
-    /* --------‑‑ exponent ‑‑-------- */
+    /* ---------- 6/7  optional exponent ---------------------------------- */
     if cur < end && matches!(*cur as char, 'e' | 'E') {
         cur = cur.add(1);
         if cur < end && matches!(*cur as char, '+' | '-') {
             cur = cur.add(1);
         }
         if cur >= end || !json_isdigit(*cur as i32) {
-            return None;
+            return None;                          // “1e”, “1e+” …
         }
         while cur < end && json_isdigit(*cur as i32) {
             cur = cur.add(1);
         }
     }
 
-    /* --------‑‑ copy literal into token_val ‑‑-------- */
+    /* ---------- 7/7  materialise literal into `token_val` --------------- */
     let len = (cur as usize - start as usize) as usize;
     token_val.clear();
     token_val.reserve(len);
@@ -334,5 +348,23 @@ mod lexer_subroutine_spec {
         );
         assert_eq!(tok, JTokenType::JTOK_OBJ_OPEN);     // “{”
         assert_eq!(n, 1);
+    }
+
+    /* -------------------------------------------------------------- */
+    /*  NEW – dedicated edge‑cases around the leading “‑”             */
+    /* -------------------------------------------------------------- */
+    #[traced_test]
+    fn number_token_leading_minus_edge_cases() {
+        unsafe {
+            let mut v = String::new();
+            // lone minus  →  invalid
+            assert!(lex_number(&mut v, b"-".as_ptr(), b"-".as_ptr().add(1)).is_none());
+            // “-.5”       →  invalid (must have digit after ’‑’ *and* before ‘.’)
+            assert!(lex_number(&mut v, b"-.5".as_ptr(), b"-.5".as_ptr().add(3)).is_none());
+            // “-0”        →  **valid**
+            let (tok, _, n) = lex_number(&mut v, b"-0".as_ptr(), b"-0".as_ptr().add(2)).unwrap();
+            assert_eq!(tok, JTokenType::JTOK_NUMBER);
+            assert_eq!(n, 2);
+        }
     }
 }

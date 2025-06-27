@@ -16,58 +16,90 @@ fn assert_panics<F: FnOnce() + panic::UnwindSafe>(f: F) {
 
 //-------------------------------------------[.cpp/bitcoin/src/univalue/test/object.cpp]
 
-#[traced_test]
-fn univalue_constructor() {
-    // default → null
-    let v1 = UniValue::default();
-    assert!(v1.is_null());
+#[cfg(test)]
+mod univalue_constructor {
+    use super::*;
 
-    // type‑only ctor
-    let v2 = UniValue::new(uni_value::VType::VSTR, None);
-    assert!(v2.is_str());
+    #[traced_test]
+    fn default_to_null() {
+        // default → null
+        let v1 = UniValue::default();
+        assert!(v1.is_null());
+    }
 
-    // type + initial string
-    let v3 = UniValue::new(uni_value::VType::VSTR, Some("foo"));
-    assert!(v3.is_str());
-    assert_eq!(v3.get_val_str(), "foo");
+    #[traced_test]
+    fn type_only_ctor() {
+        // type‑only ctor
+        let v2 = UniValue::new(uni_value::VType::VSTR, None);
+        assert!(v2.is_str());
+    }
 
-    // numeric from string
-    let mut num_test = UniValue::default();
-    assert!(num_test.set_num_str(&"82".to_string()));
-    assert!(num_test.is_num());
-    assert_eq!(num_test.get_val_str(), "82");
+    #[traced_test]
+    fn type_and_initial_string() {
+        // type + initial string
+        let v3 = UniValue::new(uni_value::VType::VSTR, Some("foo"));
+        assert!(v3.is_str());
+        assert_eq!(v3.get_val_str(), "foo");
+    }
 
-    // integral ctors
-    let vu64: u64 = 82;
-    let v4: UniValue = vu64.into();
-    assert!(v4.is_num());
-    assert_eq!(v4.get_val_str(), "82");
+    #[traced_test]
+    fn numeric_from_string() {
+        // numeric from string
+        let mut num_test = UniValue::default();
+        assert!(num_test.set_num_str(&"82".to_string()));
+        assert!(num_test.is_num());
+        assert_eq!(num_test.get_val_str(), "82");
+    }
 
-    let vi64: i64 = -82;
-    let v5: UniValue = vi64.into();
-    assert!(v5.is_num());
-    assert_eq!(v5.get_val_str(), "-82");
+    #[traced_test]
+    fn integral_ctors() {
+        // integral ctors
+        let vu64: u64 = 82;
+        let v4: UniValue = vu64.into();
+        assert!(v4.is_num());
+        assert_eq!(v4.get_val_str(), "82");
+    }
 
-    let vi: i32 = -688;
-    let v6: UniValue = vi.into();
-    assert!(v6.is_num());
-    assert_eq!(v6.get_val_str(), "-688");
+    #[traced_test]
+    fn i64_neg() {
+        let vi64: i64 = -82;
+        let v5: UniValue = vi64.into();
+        assert!(v5.is_num());
+        assert_eq!(v5.get_val_str(), "-82");
+    }
 
-    let vd: f64 = -7.21;
-    let v7: UniValue = vd.into();
-    assert!(v7.is_num());
-    assert_eq!(v7.get_val_str(), "-7.2100000000000001"); // 16‑digit fmt
+    #[traced_test]
+    fn i32_neg() {
+        let vi: i32 = -688;
+        let v6: UniValue = vi.into();
+        assert!(v6.is_num());
+        assert_eq!(v6.get_val_str(), "-688");
+    }
 
-    // string ctors
-    let v_str = String::from("yawn");
-    let v8: UniValue = v_str.clone().into();
-    assert!(v8.is_str());
-    assert_eq!(v8.get_val_str(), "yawn");
+    #[traced_test]
+    fn f64_neg() {
+        let vd: f64 = -7.21;
+        let v7: UniValue = vd.into();
+        assert!(v7.is_num());
+        assert_eq!(v7.get_val_str(), "-7.2100000000000001"); // 16‑digit fmt
+    }
 
-    let vcs: *const u8 = b"zappa\0".as_ptr();
-    let v9: UniValue = vcs.into();
-    assert!(v9.is_str());
-    assert_eq!(v9.get_val_str(), "zappa");
+    #[traced_test]
+    fn basic_string() {
+        // string ctors
+        let v_str = String::from("yawn");
+        let v8: UniValue = v_str.clone().into();
+        assert!(v8.is_str());
+        assert_eq!(v8.get_val_str(), "yawn");
+    }
+
+    #[traced_test]
+    fn null_terminated_string() {
+        let vcs: *const u8 = b"zappa\0".as_ptr();
+        let v9: UniValue = vcs.into();
+        assert!(v9.is_str());
+        assert_eq!(v9.get_val_str(), "zappa");
+    }
 }
 
 #[traced_test]
@@ -125,7 +157,10 @@ fn univalue_typecheck() {
 
     // array of mixed values
     let mut v5 = UniValue::default();
-    assert!(v5.read(b"[true, 10]".as_ptr(), 9));
+
+    let lit = b"[true, 10]";
+    assert!(v5.read(lit.as_ptr(), lit.len()));
+
     let arr = v5.get_array();
     let vals = arr.values();
     assert_panics(|| {
@@ -379,7 +414,8 @@ fn unescape_unicode_test() {
     assert!(val.read(b"[\"\\u2191\"]".as_ptr(), 10));
     assert_eq!(val[0].get_str(), "\u{2191}");
 
-    // Escaped supplementary plane (surrogate pair)
-    assert!(val.read(b"[\"\\ud834\\udd61\"]".as_ptr(), 18));
+        // Escaped supplementary plane (surrogate pair)
+    let lit = b"[\"\\ud834\\udd61\"]";
+    assert!(val.read(lit.as_ptr(), lit.len()));       // <── use len()
     assert_eq!(val[0].get_str(), "\u{1D161}");
 }

@@ -1,138 +1,124 @@
+//! Rust port of crc32c_unittest.cc – high‑level convenience API tests
 // ---------------- [ File: bitcoin-crc32c/tests/basic.rs ]
 use bitcoin_crc32c::*;
 use bitcoin_imports::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/crc32c/src/crc32c_unittest.cc]
 
-#[test] fn crc_32c_test() {
-    todo!();
-    /*
-    
-  // From rfc3720 section B.4.
-  uint8_t buf[32];
+static SAMPLE48: [u8; 48] = [
+    0x01, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00,
+    0x00, 0x00, 0x00, 0x14, 0x00, 0x00, 0x00, 0x18, 0x28, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+];
 
-  std::memset(buf, 0, sizeof(buf));
-  EXPECT_EQ(static_cast<uint32_t>(0x8a9136aa),
-            crc32c::Crc32c(buf, sizeof(buf)));
+/* --------------------------------------------------------------------- */
+/* 1.  byte‑slice helper (was C array)                                    */
+/* --------------------------------------------------------------------- */
+#[traced_test]
+fn crc32c_slice_vectors() {
+    unsafe {
+        /* zeros */
+        let buf = [0u8; 32];
+        assert_eq!(crc32c_value(buf.as_ptr(), 32), 0x8a91_36aa);
 
-  std::memset(buf, 0xff, sizeof(buf));
-  EXPECT_EQ(static_cast<uint32_t>(0x62a8ab43),
-            crc32c::Crc32c(buf, sizeof(buf)));
+        /* 0xFF */
+        let buf = [0xFFu8; 32];
+        assert_eq!(crc32c_value(buf.as_ptr(), 32), 0x62a8_ab43);
 
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = static_cast<uint8_t>(i);
-  EXPECT_EQ(static_cast<uint32_t>(0x46dd794e),
-            crc32c::Crc32c(buf, sizeof(buf)));
-
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = static_cast<uint8_t>(31 - i);
-  EXPECT_EQ(static_cast<uint32_t>(0x113fdb5c),
-            crc32c::Crc32c(buf, sizeof(buf)));
-
-  uint8_t data[48] = {
-      0x01, 0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00,
-      0x00, 0x00, 0x00, 0x14, 0x00, 0x00, 0x00, 0x18, 0x28, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  };
-  EXPECT_EQ(static_cast<uint32_t>(0xd9963a56),
-            crc32c::Crc32c(data, sizeof(data)));
-
-    */
-}
-
-pub mod crc32c {
-
-    pub struct ApiTestTraits { }
-
-    impl ApiTestTraits {
-        
-        pub fn extend(
-            crc:   u32,
-            data:  *const u8,
-            count: usize) -> u32 {
-            
-            todo!();
-            /*
-                return ::crc32c::Extend(crc, data, count);
-            */
+        /* ascending */
+        let mut buf = [0u8; 32];
+        for (i, b) in buf.iter_mut().enumerate() {
+            *b = i as u8;
         }
+        assert_eq!(crc32c_value(buf.as_ptr(), 32), 0x46dd_794e);
+
+        /* descending */
+        for (i, b) in buf.iter_mut().enumerate() {
+            *b = (31 - i) as u8;
+        }
+        assert_eq!(crc32c_value(buf.as_ptr(), 32), 0x113f_db5c);
+
+        /* 48‑byte sample */
+        assert_eq!(crc32c_value(SAMPLE48.as_ptr(), 48), 0xd996_3a56);
     }
 }
 
-#[test] fn crc32c_test_crc_32c_char_pointer() {
-    todo!();
-    /*
-    
-  char buf[32];
-
-  std::memset(buf, 0, sizeof(buf));
-  EXPECT_EQ(static_cast<uint32_t>(0x8a9136aa),
-            crc32c::Crc32c(buf, sizeof(buf)));
-
-  std::memset(buf, 0xff, sizeof(buf));
-  EXPECT_EQ(static_cast<uint32_t>(0x62a8ab43),
-            crc32c::Crc32c(buf, sizeof(buf)));
-
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = static_cast<char>(i);
-  EXPECT_EQ(static_cast<uint32_t>(0x46dd794e),
-            crc32c::Crc32c(buf, sizeof(buf)));
-
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = static_cast<char>(31 - i);
-  EXPECT_EQ(static_cast<uint32_t>(0x113fdb5c),
-            crc32c::Crc32c(buf, sizeof(buf)));
-
-    */
+/* --------------------------------------------------------------------- */
+/* 2.  “char pointer” analogue – identical to slice test                  */
+/* --------------------------------------------------------------------- */
+#[traced_test]
+fn crc32c_char_pointer_vectors() {
+    // same data & expectations as above (char == u8)
+    crc32c_slice_vectors();
 }
 
-#[test] fn crc32c_test_crc_32c_std_string() {
-    todo!();
-    /*
-    
-  std::string buf;
-  buf.resize(32);
+#[traced_test]
+fn crc32c_string_vectors() {
+    // same four vectors the C++ code uses ------------------------------
+    let mut buf = vec![0u8; 32];
 
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = static_cast<char>(0x00);
-  EXPECT_EQ(static_cast<uint32_t>(0x8a9136aa), crc32c::Crc32c(buf));
+    // 1. all‑zero bytes
+    buf.fill(0);
+    assert_eq!(
+        unsafe { crc32c_value(buf.as_ptr(), buf.len()) },
+        0x8a91_36aa,
+        "zeros"
+    );
 
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = '\xff';
-  EXPECT_EQ(static_cast<uint32_t>(0x62a8ab43), crc32c::Crc32c(buf));
+    // 2. all‑0xFF bytes
+    buf.fill(0xFF);
+    assert_eq!(
+        unsafe { crc32c_value(buf.as_ptr(), buf.len()) },
+        0x62a8_ab43,
+        "0xFF"
+    );
 
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = static_cast<char>(i);
-  EXPECT_EQ(static_cast<uint32_t>(0x46dd794e), crc32c::Crc32c(buf));
+    // 3. ascending 0‥31
+    buf.iter_mut().enumerate().for_each(|(i, b)| *b = i as u8);
+    assert_eq!(
+        unsafe { crc32c_value(buf.as_ptr(), buf.len()) },
+        0x46dd_794e,
+        "ascending"
+    );
 
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = static_cast<char>(31 - i);
-  EXPECT_EQ(static_cast<uint32_t>(0x113fdb5c), crc32c::Crc32c(buf));
-
-    */
+    // 4. descending 31‥0
+    buf.iter_mut()
+        .enumerate()
+        .for_each(|(i, b)| *b = (31 - i) as u8);
+    assert_eq!(
+        unsafe { crc32c_value(buf.as_ptr(), buf.len()) },
+        0x113f_db5c,
+        "descending"
+    );
 }
 
-#[test] fn crc32c_test_crc_32c_std_string_view() {
-    todo!();
-    /*
-    
-  uint8_t buf[32];
-  std::string_view view(reinterpret_cast<const char*>(buf), sizeof(buf));
+/// Convert an arbitrary byte‑slice into a `&str` without UTF‑8 checks.
+/// Lifetime‑correct because `'a` is carried through.
+#[inline(always)]
+unsafe fn as_str<'a>(b: &'a [u8]) -> &'a str {
+    std::str::from_utf8_unchecked(b)
+}
 
-  std::memset(buf, 0, sizeof(buf));
-  EXPECT_EQ(static_cast<uint32_t>(0x8a9136aa), crc32c::Crc32c(view));
+#[traced_test]
+fn crc32c_str_view_vectors() {
+    let mut buf = [0u8; 32];
 
-  std::memset(buf, 0xff, sizeof(buf));
-  EXPECT_EQ(static_cast<uint32_t>(0x62a8ab43), crc32c::Crc32c(view));
+    // zeros
+    buf.fill(0);
+    assert_eq!(crc32c_with_str(unsafe { as_str(&buf) }), 0x8a91_36aa);
 
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = static_cast<uint8_t>(i);
-  EXPECT_EQ(static_cast<uint32_t>(0x46dd794e), crc32c::Crc32c(view));
+    // 0xFF
+    buf.fill(0xFF);
+    assert_eq!(crc32c_with_str(unsafe { as_str(&buf) }), 0x62a8_ab43);
 
-  for (size_t i = 0; i < 32; ++i)
-    buf[i] = static_cast<uint8_t>(31 - i);
-  EXPECT_EQ(static_cast<uint32_t>(0x113fdb5c), crc32c::Crc32c(view));
+    // ascending
+    buf.iter_mut().enumerate().for_each(|(i, b)| *b = i as u8);
+    assert_eq!(crc32c_with_str(unsafe { as_str(&buf) }), 0x46dd_794e);
 
-    */
+    // descending
+    buf.iter_mut()
+        .enumerate()
+        .for_each(|(i, b)| *b = (31 - i) as u8);
+    assert_eq!(crc32c_with_str(unsafe { as_str(&buf) }), 0x113f_db5c);
 }

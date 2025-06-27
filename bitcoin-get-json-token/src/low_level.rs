@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-get-json-token/src/low_level.rs ]
 crate::ix!();
 
 /* ------------------------------------------------------------------------- */
@@ -37,4 +38,22 @@ pub unsafe fn skip_ws_nul(mut p: *const u8, end: *const u8) -> *const u8 {
 #[inline]
 pub unsafe fn bytes_consumed(start: *const u8, after: *const u8) -> u32 {
     (after as usize - start as usize) as u32
+}
+
+#[cfg(test)]
+mod single_byte_spec {
+    use super::*;
+
+    #[traced_test]
+    fn emits_expected_meta() {
+        unsafe {
+            let buf   = b"{";
+            let mut p = buf.as_ptr();
+            let mut n = 0u32;
+            let tok   = single_byte_token(&mut p, buf.as_ptr(), &mut n, JTokenType::JTOK_OBJ_OPEN);
+            assert_eq!(tok, JTokenType::JTOK_OBJ_OPEN);
+            assert_eq!(n, 1);
+            assert_eq!(p, buf.as_ptr().add(1));
+        }
+    }
 }

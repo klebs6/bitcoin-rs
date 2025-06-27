@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-univalue/src/jtoken_type.rs ]
+// ---------------- [ File: bitcoin-get-json-token/src/jtoken_type.rs ]
 crate::ix!();
 
 #[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]

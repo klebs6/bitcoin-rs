@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-univalue/src/json_token_is_value.rs ]
+// ---------------- [ File: bitcoin-get-json-token/src/json_token_is_value.rs ]
 crate::ix!();
 
 /// Return `true` when *jtt* represents one of the five

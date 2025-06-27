@@ -26,3 +26,4 @@ x!{utffilter}
 x!{uv_type_name}
 x!{write}
 x!{check_object}
+x!{format_f64_canonical}

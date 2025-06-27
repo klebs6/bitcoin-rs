@@ -1,3 +1,5 @@
+#![cfg(feature = "natpmp")]
+
 // ---------------- [ File: bitcoin-portmap/src/process_natpmp.rs ]
 crate::ix!();
 
@@ -30,4 +32,17 @@ pub fn process_natpmp() -> bool {
         closenatpmp(&natpmp);
         return ret;
         */
+}
+
+#[cfg(all(test, feature = "natpmp"))]
+mod process_natpmp_tests {
+    use super::*;
+
+    /// Ensure the function executes without panicking.
+    /// The result is **not** asserted because CI runners seldom sit
+    /// behind a NAT‑PMP‑capable gateway; we only test the public API.
+    #[traced_test]
+    fn executes_gracefully() {
+        let _ = process_natpmp();
+    }
 }

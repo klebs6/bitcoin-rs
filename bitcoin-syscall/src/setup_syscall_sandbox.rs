@@ -8,22 +8,21 @@ crate::ix!();
   | SetSyscallSandboxPolicy(SyscallSandboxPolicy::INITIALIZATION)
   | is called as part of SetupSyscallSandbox(...).
   */
-#[cfg(USE_SYSCALL_SANDBOX)]
-pub fn setup_syscall_sandbox(log_syscall_violation_before_terminating: bool) -> bool {
-    
-    todo!();
-        /*
-            assert(!g_syscall_sandbox_enabled && "SetupSyscallSandbox(...) should only be called once.");
-        g_syscall_sandbox_enabled = true;
-        g_syscall_sandbox_log_violation_before_terminating = log_syscall_violation_before_terminating;
-        if (log_syscall_violation_before_terminating) {
-            if (!SetupSyscallSandboxDebugHandler()) {
-                return false;
-            }
-        }
-        SetSyscallSandboxPolicy(SyscallSandboxPolicy::INITIALIZATION);
-        return true;
-        */
+pub fn setup_syscall_sandbox(log_before_terminate: bool) -> bool {
+    // Only succeed on first invocation (same assert as C++).
+    if G_SYSCALL_SANDBOX_ENABLED.swap(true, atomic::Ordering::SeqCst) {
+        panic!("SetupSyscallSandbox(...) should only be called once.");
+    }
+    G_SYSCALL_SANDBOX_LOG_VIOLATION_BEFORE_TERMINATING
+        .store(log_before_terminate, atomic::Ordering::SeqCst);
+
+    if log_before_terminate && !setup_syscall_sandbox_debug_handler() {
+        return false;
+    }
+
+    // Load the most permissive (initialisation) profile first.
+    set_syscall_sandbox_policy(SyscallSandboxPolicy::INITIALIZATION);
+    true
 }
 
 /**
@@ -31,13 +30,13 @@ pub fn setup_syscall_sandbox(log_syscall_violation_before_terminating: bool) -> 
   | testing purposes.
   |
   */
-#[cfg(USE_SYSCALL_SANDBOX)]
-pub fn test_disallowed_sandbox_call()  {
-    
-    todo!();
-        /*
-            // The getgroups syscall is assumed NOT to be allowed by the syscall sandbox policy.
-        std::array<gid_t, 1> groups;
-        [[maybe_unused]] int32_t ignored = getgroups(groups.size(), groups.data());
-        */
+pub fn test_disallowed_sandbox_call() {
+
+    // Intentionally use a syscall (getgroups) that is *not* on any allow‑list.
+    //
+    // The getgroups syscall is assumed NOT to be allowed by the syscall sandbox policy.
+    unsafe {
+        let mut buf: [libc::gid_t; 1] = [0];
+        libc::getgroups(buf.len() as libc::c_int, buf.as_mut_ptr());
+    }
 }

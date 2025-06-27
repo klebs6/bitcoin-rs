@@ -55,7 +55,6 @@ crate::ix!();
   |   #endif // defined(__NR_arch_dependent_syscall)
   |   ...
   */
-#[cfg(USE_SYSCALL_SANDBOX)]
 pub const LINUX_SYSCALLS: HashMap<u32, &'static str> = hashmap!{
     __NR_accept                 => "accept",
     __NR_accept4                => "accept4",

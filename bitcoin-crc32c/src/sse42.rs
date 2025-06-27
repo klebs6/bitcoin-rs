@@ -1,8 +1,6 @@
 // ---------------- [ File: bitcoin-crc32c/src/sse42.rs ]
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/crc32c/src/crc32c_sse42.h]
 //-------------------------------------------[.cpp/bitcoin/src/crc32c/src/crc32c_sse42.cc]
 
@@ -26,15 +24,15 @@ crate::ix!();
   | Computation for iSCSI Polynomial Using CRC32
   | Instruction".
   */
-#[cfg(all(HAVE_SSE42,any(_M_X64,__x86_64__)))]
-pub mod crc32c {
+#[cfg(target_arch = "x86_64")]
+pub mod sse42_crc32c {
 
     pub const GROUPS:      libc::ptrdiff_t = 3;
-    pub const BLOCK_0SIZE: libc::ptrdiff_t = 16 * 1024 / kGroups / 64 * 64;
-    pub const BLOCK_1SIZE: libc::ptrdiff_t = 4 * 1024 / kGroups / 8 * 8;
-    pub const BLOCK_2SIZE: libc::ptrdiff_t = 1024 / kGroups / 8 * 8;
+    pub const BLOCK_0SIZE: libc::ptrdiff_t = 16 * 1024 / GROUPS / 64 * 64;
+    pub const BLOCK_1SIZE: libc::ptrdiff_t = 4 * 1024 / GROUPS / 8 * 8;
+    pub const BLOCK_2SIZE: libc::ptrdiff_t = 1024 / GROUPS / 8 * 8;
 
-    pub const BLOCK_0SKIP_TABLE: [[u32; 8]; 16] = &[
+    pub const BLOCK_0SKIP_TABLE: [[u32; 16]; 8] = [
         [0x00000000, 0xff770459, 0xfb027e43, 0x04757a1a, 0xf3e88a77, 0x0c9f8e2e,
          0x08eaf434, 0xf79df06d, 0xe23d621f, 0x1d4a6646, 0x193f1c5c, 0xe6481805,
          0x11d5e868, 0xeea2ec31, 0xead7962b, 0x15a09272],
@@ -61,7 +59,7 @@ pub mod crc32c {
          0x780631ba, 0x0c54a348, 0x90a3145e, 0xe4f186ac],
     ];
 
-    pub const BLOCK_1SKIP_TABLE: [[u32; 8]; 16] = &[
+    pub const BLOCK_1SKIP_TABLE: [[u32; 16]; 8] = [
         [0x00000000, 0x79113270, 0xf22264e0, 0x8b335690, 0xe1a8bf31, 0x98b98d41,
          0x138adbd1, 0x6a9be9a1, 0xc6bd0893, 0xbfac3ae3, 0x349f6c73, 0x4d8e5e03,
          0x2715b7a2, 0x5e0485d2, 0xd537d342, 0xac26e132],
@@ -88,7 +86,7 @@ pub mod crc32c {
          0x3f0264b2, 0x4410057e, 0xc926a72a, 0xb234c6e6],
     ];
 
-    pub const BLOCK_2SKIP_TABLE: [[u32; 8]; 16] = &[
+    pub const BLOCK_2SKIP_TABLE: [[u32; 16]; 8] = [
         [0x00000000, 0x8f158014, 0x1bc776d9, 0x94d2f6cd, 0x378eedb2, 0xb89b6da6,
          0x2c499b6b, 0xa35c1b7f, 0x6f1ddb64, 0xe0085b70, 0x74daadbd, 0xfbcf2da9,
          0x589336d6, 0xd786b6c2, 0x4354400f, 0xcc41c01b],
@@ -116,150 +114,251 @@ pub mod crc32c {
     ];
 
     pub const PREFETCH_HORIZON: libc::ptrdiff_t = 256;
-
 }
 
-/**
-  | SSE4.2-accelerated implementation
-  | in crc32c_sse42.cc
-  |
-  */
+/// SSE4.2-accelerated implementation in crc32c_sse42.cc
 #[cfg(target_arch = "x86_64")]
-pub fn crc32c_extend_sse42(
-        crc:  u32,
-        data: *const u8,
-        size: usize) -> u32 {
-    
-    todo!();
-        /*
-            const uint8_t* p = data;
-      const uint8_t* e = data + size;
-      uint32_t l = crc ^ kCRC32Xor;
+#[inline]
+pub unsafe fn crc32c_extend_sse42(crc: u32, data: *const u8, size: usize) -> u32 {
 
-    #define STEP1                  \
-      do {                         \
-        l = _mm_crc32_u8(l, *p++); \
-      } while (0)
+    use sse42_crc32c::*;
 
-    #define STEP4(crc)                             \
-      do {                                         \
-        crc = _mm_crc32_u32(crc, ReadUint32LE(p)); \
-        p += 4;                                    \
-      } while (0)
+    use core::arch::x86_64::{
+        _mm_crc32_u32 as crc32_u32, _mm_crc32_u64 as crc32_u64, _mm_crc32_u8 as crc32_u8,
+    };
 
-    #define STEP8(crc, data)                          \
-      do {                                            \
-        crc = _mm_crc32_u64(crc, ReadUint64LE(data)); \
-        data += 8;                                    \
-      } while (0)
+    trace!(crc, size, "crc32c_extend_sse42()");
 
-    #define STEP8BY3(crc0, crc1, crc2, p0, p1, p2) \
-      do {                                         \
-        STEP8(crc0, p0);                           \
-        STEP8(crc1, p1);                           \
-        STEP8(crc2, p2);                           \
-      } while (0)
+    // ---------------- helpers (formerly pre‑processor macros) ----------------
+    #[inline(always)]
+    unsafe fn step1(l: &mut u32, p: &mut *const u8) {
+        *l = crc32_u8(*l, **p);
+        *p = p.add(1);
+    }
 
-    #define STEP8X3(crc0, crc1, crc2, bs)                     \
-      do {                                                    \
-        crc0 = _mm_crc32_u64(crc0, ReadUint64LE(p));          \
-        crc1 = _mm_crc32_u64(crc1, ReadUint64LE(p + bs));     \
-        crc2 = _mm_crc32_u64(crc2, ReadUint64LE(p + 2 * bs)); \
-        p += 8;                                               \
-      } while (0)
+    #[inline(always)]
+    unsafe fn step4(crc: &mut u32, p: &mut *const u8) {
+        *crc = crc32_u32(*crc, read_uint32le(*p));
+        *p = p.add(4);
+    }
 
-    #define SKIP_BLOCK(crc, tab)                                      \
-      do {                                                            \
-        crc = tab[0][crc & 0xf] ^ tab[1][(crc >> 4) & 0xf] ^          \
-              tab[2][(crc >> 8) & 0xf] ^ tab[3][(crc >> 12) & 0xf] ^  \
-              tab[4][(crc >> 16) & 0xf] ^ tab[5][(crc >> 20) & 0xf] ^ \
-              tab[6][(crc >> 24) & 0xf] ^ tab[7][(crc >> 28) & 0xf];  \
-      } while (0)
+    #[inline(always)]
+    unsafe fn step8(crc: &mut u64, data: &mut *const u8) {
+        *crc = crc32_u64(*crc, read_uint64le(*data));
+        *data = data.add(8);
+    }
 
-      // Point x at first 8-byte aligned byte in the buffer. This might be past the
-      // end of the buffer.
-      const uint8_t* x = RoundUp<8>(p);
-      if (x <= e) {
-        // Process bytes p is 8-byte aligned.
-        while (p != x) {
-          STEP1;
+    #[inline(always)]
+    unsafe fn step8_by3(
+        crc0: &mut u64,
+        crc1: &mut u64,
+        crc2: &mut u64,
+        p0: &mut *const u8,
+        p1: &mut *const u8,
+        p2: &mut *const u8,
+    ) {
+        step8(crc0, p0);
+        step8(crc1, p1);
+        step8(crc2, p2);
+    }
+
+    #[inline(always)]
+    unsafe fn step8x3(
+        crc0: &mut u64,
+        crc1: &mut u64,
+        crc2: &mut u64,
+        p: &mut *const u8,
+        block_span: isize,
+    ) {
+        *crc0 = crc32_u64(*crc0, read_uint64le(*p));
+        *crc1 = crc32_u64(*crc1, read_uint64le(p.offset(block_span)));
+        *crc2 = crc32_u64(*crc2, read_uint64le(p.offset(2 * block_span)));
+        *p = p.add(8);
+    }
+
+    #[inline(always)]
+    fn skip_block(mut crc: u64, table: &[[u32; 16]; 8]) -> u64 {
+        let c32 = crc as u32;
+        crc = table[0][(c32 & 0xF) as usize] as u64
+            ^ table[1][((c32 >> 4) & 0xF) as usize] as u64
+            ^ table[2][((c32 >> 8) & 0xF) as usize] as u64
+            ^ table[3][((c32 >> 12) & 0xF) as usize] as u64
+            ^ table[4][((c32 >> 16) & 0xF) as usize] as u64
+            ^ table[5][((c32 >> 20) & 0xF) as usize] as u64
+            ^ table[6][((c32 >> 24) & 0xF) as usize] as u64
+            ^ table[7][((c32 >> 28) & 0xF) as usize] as u64;
+        crc
+    }
+
+    // ---------------- main algorithm ----------------
+    let mut p = data;
+    let e = data.add(size);
+    let mut l: u32 = crc ^ CRC32XOR;
+
+    // Align ‑ process up to first 8‑byte boundary.
+    let x = crate::round_up::<8>(p);
+    if x <= e {
+        while p != x {
+            step1(&mut l, &mut p);
         }
-      }
+    }
 
-      // Proccess the data in predetermined block sizes with tables for quickly
-      // combining the checksum. Experimentally it's better to use larger block
-      // sizes where possible so use a hierarchy of decreasing block sizes.
-      uint64_t l64 = l;
-      while ((e - p) >= kGroups * kBlock0Size) {
-        uint64_t l641 = 0;
-        uint64_t l642 = 0;
-        for (int i = 0; i < kBlock0Size; i += 8 * 8) {
-          // Prefetch ahead to hide latency.
-          RequestPrefetch(p + kPrefetchHorizon);
-          RequestPrefetch(p + kBlock0Size + kPrefetchHorizon);
-          RequestPrefetch(p + 2 * kBlock0Size + kPrefetchHorizon);
+    // Typed as u64 for the SIMD path.
+    let mut l64 = l as u64;
 
-          // Process 64 bytes at a time.
-          STEP8X3(l64, l641, l642, kBlock0Size);
-          STEP8X3(l64, l641, l642, kBlock0Size);
-          STEP8X3(l64, l641, l642, kBlock0Size);
-          STEP8X3(l64, l641, l642, kBlock0Size);
-          STEP8X3(l64, l641, l642, kBlock0Size);
-          STEP8X3(l64, l641, l642, kBlock0Size);
-          STEP8X3(l64, l641, l642, kBlock0Size);
-          STEP8X3(l64, l641, l642, kBlock0Size);
+    // ==== big‑block loop (kBlock0Size) =================================================
+    while e.offset_from(p) >= GROUPS * BLOCK_0SIZE {
+        let mut l641: u64 = 0;
+        let mut l642: u64 = 0;
+        for _ in 0..(BLOCK_0SIZE / 64) {
+            // Prefetch far ahead to hide DRAM latency.
+            request_prefetch(p.offset(PREFETCH_HORIZON));
+            request_prefetch(p.offset(BLOCK_0SIZE + PREFETCH_HORIZON));
+            request_prefetch(p.offset(2 * BLOCK_0SIZE + PREFETCH_HORIZON));
+
+            // 64 bytes: eight 8‑byte triples.
+            for _ in 0..8 {
+                step8x3(&mut l64, &mut l641, &mut l642, &mut p, BLOCK_0SIZE);
+            }
         }
-
-        // Combine results.
-        SKIP_BLOCK(l64, kBlock0SkipTable);
+        l64 = skip_block(l64, &BLOCK_0SKIP_TABLE);
         l64 ^= l641;
-        SKIP_BLOCK(l64, kBlock0SkipTable);
+        l64 = skip_block(l64, &BLOCK_0SKIP_TABLE);
         l64 ^= l642;
-        p += (kGroups - 1) * kBlock0Size;
-      }
-      while ((e - p) >= kGroups * kBlock1Size) {
-        uint64_t l641 = 0;
-        uint64_t l642 = 0;
-        for (int i = 0; i < kBlock1Size; i += 8) {
-          STEP8X3(l64, l641, l642, kBlock1Size);
+        p = p.offset((GROUPS - 1) * BLOCK_0SIZE);
+    }
+
+    // ==== medium‑block loop (kBlock1Size) =============================================
+    while e.offset_from(p) >= GROUPS * BLOCK_1SIZE {
+        let mut l641: u64 = 0;
+        let mut l642: u64 = 0;
+        for _ in 0..(BLOCK_1SIZE / 8) {
+            step8x3(&mut l64, &mut l641, &mut l642, &mut p, BLOCK_1SIZE);
         }
-        SKIP_BLOCK(l64, kBlock1SkipTable);
+        l64 = skip_block(l64, &BLOCK_1SKIP_TABLE);
         l64 ^= l641;
-        SKIP_BLOCK(l64, kBlock1SkipTable);
+        l64 = skip_block(l64, &BLOCK_1SKIP_TABLE);
         l64 ^= l642;
-        p += (kGroups - 1) * kBlock1Size;
-      }
-      while ((e - p) >= kGroups * kBlock2Size) {
-        uint64_t l641 = 0;
-        uint64_t l642 = 0;
-        for (int i = 0; i < kBlock2Size; i += 8) {
-          STEP8X3(l64, l641, l642, kBlock2Size);
+        p = p.offset((GROUPS - 1) * BLOCK_1SIZE);
+    }
+
+    // ==== small‑block loop (kBlock2Size) =============================================
+    while e.offset_from(p) >= GROUPS * BLOCK_2SIZE {
+        let mut l641: u64 = 0;
+        let mut l642: u64 = 0;
+        for _ in 0..(BLOCK_2SIZE / 8) {
+            step8x3(&mut l64, &mut l641, &mut l642, &mut p, BLOCK_2SIZE);
         }
-        SKIP_BLOCK(l64, kBlock2SkipTable);
+        l64 = skip_block(l64, &BLOCK_2SKIP_TABLE);
         l64 ^= l641;
-        SKIP_BLOCK(l64, kBlock2SkipTable);
+        l64 = skip_block(l64, &BLOCK_2SKIP_TABLE);
         l64 ^= l642;
-        p += (kGroups - 1) * kBlock2Size;
-      }
+        p = p.offset((GROUPS - 1) * BLOCK_2SIZE);
+    }
 
-      // Process bytes 16 at a time
-      while ((e - p) >= 16) {
-        STEP8(l64, p);
-        STEP8(l64, p);
-      }
+    // ==== 16‑byte chunks ==============================================================
+    while e.offset_from(p) >= 16 {
+        step8(&mut l64, &mut p); // first 8 bytes
+        step8(&mut l64, &mut p); // next 8 bytes
+    }
 
-      l = static_cast<uint32_t>(l64);
-      // Process the last few bytes.
-      while (p != e) {
-        STEP1;
-      }
-    #undef SKIP_BLOCK
-    #undef STEP8X3
-    #undef STEP8BY3
-    #undef STEP8
-    #undef STEP4
-    #undef STEP1
+    // Cast back to u32 for tail processing.
+    let mut l = l64 as u32;
 
-      return l ^ kCRC32Xor;
-        */
+    // ==== remaining <16 bytes =========================================================
+    while p != e {
+        step1(&mut l, &mut p);
+    }
+
+    let result = l ^ CRC32XOR;
+    trace!("crc32c_extend_sse42() finished (crc={:#010x})", result);
+    result
+}
+
+#[cfg(all(test, target_arch = "x86_64"))]
+mod crc32c_extend_sse42_tests {
+    use super::*;
+    use rand::{rngs::SmallRng, RngCore, SeedableRng};
+
+    /// Guard: skip on CPUs that *cannot* execute SSE4.2 instructions.
+    macro_rules! require_sse42 {
+        () => {
+            if !std::arch::is_x86_feature_detected!("sse4.2") {
+                eprintln!("SSE4.2 not available ‑‑ skipping test suite for crc32c_extend_sse42");
+                return;
+            }
+        };
+    }
+
+    #[traced_test]
+    fn known_vectors_match_portable() {
+        require_sse42!();
+
+        // RFC‑3720 §B.4 test‑set
+        let vectors: &[(&[u8], u32)] = &[
+            (&[0u8; 32], 0x8a9136aa),
+            (&[0xffu8; 32], 0x62a8ab43),
+            (&(0u8..32u8).collect::<Vec<_>>(), 0x46dd794e),
+            (&(0u8..32u8).rev().collect::<Vec<_>>(), 0x113fdb5c),
+        ];
+
+        for (buf, expected) in vectors {
+            let fast = unsafe { crc32c_extend_sse42(0, buf.as_ptr(), buf.len()) };
+            assert_eq!(
+                fast, *expected,
+                "fast CRC32C mismatch on known vector (len={})",
+                buf.len()
+            );
+        }
+        info!("validated standard RFC vectors");
+    }
+
+    #[traced_test]
+    fn random_buffers_equal_portable() {
+        require_sse42!();
+
+        let mut rng = SmallRng::from_seed([0x42; 32]);
+        let mut buf = vec![0u8; 4096];
+
+        for len in 0..=buf.len() {
+            rng.fill_bytes(&mut buf[..len]);
+
+            let portable = unsafe { crc32c_extend_portable(0, buf.as_ptr(), len) };
+            let sse42 = unsafe { crc32c_extend_sse42(0, buf.as_ptr(), len) };
+
+            assert_eq!(
+                portable, sse42,
+                "CRC mismatch at length {}: portable={:#010x}, sse42={:#010x}",
+                len, portable, sse42
+            );
+        }
+        info!("exhaustively compared 0…4096 random‑data lengths");
+    }
+
+    #[traced_test]
+    fn incremental_vs_one_shot() {
+        require_sse42!();
+
+        let mut rng = SmallRng::from_seed([0x99; 32]);
+        let mut buf = vec![0u8; 2048];
+        rng.fill_bytes(&mut buf);
+
+        for split in 0..=buf.len() {
+            let (left, right) = buf.split_at(split);
+
+            let one_shot =
+                unsafe { crc32c_extend_sse42(0, buf.as_ptr(), buf.len()) };
+
+            let mut crc =
+                unsafe { crc32c_extend_sse42(0, left.as_ptr(), left.len()) };
+            crc = unsafe { crc32c_extend_sse42(crc, right.as_ptr(), right.len()) };
+
+            assert_eq!(
+                crc, one_shot,
+                "incremental mismatch (split={}): inc={:#010x}, one_shot={:#010x}",
+                split, crc, one_shot
+            );
+        }
+        info!("incremental extension validated for all 2049 split points");
+    }
 }

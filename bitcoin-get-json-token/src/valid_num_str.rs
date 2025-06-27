@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-univalue/src/valid_num_str.rs ]
+// ---------------- [ File: bitcoin-get-json-token/src/valid_num_str.rs ]
 crate::ix!();
 
 /// Lightweight helper – returns **true** iff `s` is *exactly* one

@@ -316,10 +316,6 @@ impl Inv {
 
 //-------------------------------------------[.cpp/bitcoin/src/protocol.cpp]
 
-lazy_static!{
-    static ref INITIAL_BLOCK_DOWNLOAD_COMPLETED: AtomicBool = AtomicBool::new(false);
-}
-
 /**
   | Bitcoin protocol message types. When
   | adding new message types, don't forget

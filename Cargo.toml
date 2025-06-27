@@ -202,8 +202,13 @@ members = [
     "bitcoin-blob", 
     "bitcoin-autofile", 
     "bitcoin-bufferedfile", 
-    "bitcoin-vectorstream" 
-, "bitcoin-locked-pool", "bitcoin-locked-page-allocator", "bitcoin-arena", "bitcoin-syscall", "bitcoin-get-json-token"]
+    "bitcoin-vectorstream", 
+    "bitcoin-locked-pool", 
+    "bitcoin-locked-page-allocator", 
+    "bitcoin-arena", 
+    "bitcoin-syscall", 
+    "bitcoin-get-json-token"
+]
 
 [workspace.dependencies]
 #qmetaobject            = "0.2.7"
@@ -286,4 +291,9 @@ rand_core               = "0.9.3"
 proptest                = "*"
 zerocopy                = "*"
 paste                   = "*"
-ryu                   = "*"
+ryu                     = "*"
+criterion               = "*"
+
+igd    = { version = "*" } # UPnP / IGD protocol
+natpmp = { version = "*" } # NAT‑PMP protocol
+

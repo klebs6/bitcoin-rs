@@ -9,3 +9,4 @@ x!{portmap}
 x!{process_natpmp}
 x!{process_upnp}
 x!{thread_map_port}
+x!{flag}

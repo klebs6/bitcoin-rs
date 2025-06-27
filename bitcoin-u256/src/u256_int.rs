@@ -36,6 +36,18 @@ impl core::fmt::Display for u256 {
 
 impl u256 {
 
+    /// Return the 64‑bit little‑endian limb at position `index` (0 ≤ index < 4).  
+    /// This is the direct analogue of C++ `uint256::GetUint64()`.
+    #[inline]
+    pub fn get_uint64(&self, index: usize) -> u64 {
+        assert!(index < 4, "u256::get_uint64 index out of range (0‑3)");
+        let bytes = self.as_slice();
+        let start = index * 8;
+        let mut buf = [0u8; 8];
+        buf.copy_from_slice(&bytes[start..start + 8]);
+        u64::from_le_bytes(buf)
+    }
+
     delegate! {
         to self.blob {
             pub fn as_slice(&self) -> &[u8];

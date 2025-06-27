@@ -1,10 +1,11 @@
 // ---------------- [ File: bitcoin-crc32c/src/arm64.rs ]
-/*!
-  | In a separate source file to allow this
-  | accelerated CRC32C function to be compiled with
-  | the appropriate compiler flags to enable ARM
-  | NEON CRC32C instructions.
-  */
+// -----------------------------------------------------------------------------
+//  A R M  /  C R C  +  P M U L L     (hardware‑accelerated Castagnoli CRC‑32)
+// -----------------------------------------------------------------------------
+//
+// A faithful, instruction‑for‑instruction port of
+//   crc32c/src/crc32c_arm64.cc  (Bitcoin‑Core fork of  Google‑CRC32C)
+// -----------------------------------------------------------------------------
 
 crate::ix!();
 
@@ -17,135 +18,105 @@ crate::ix!();
    This implementation is based on
    https://github.com/google/leveldb/pull/490.
   */
-#[cfg(HAVE_ARM64_CRC32C)]
 pub const KBYTES:       usize = 1032;
 
-#[cfg(HAVE_ARM64_CRC32C)]
 pub const SEGMENTBYTES: usize = 256;
 
-/**
-   compute 8bytes for each segment parallelly
-  */
-#[cfg(HAVE_ARM64_CRC32C)]
-macro_rules! crc32c32bytes {
-    ($P:ident, $IND:ident) => {
-        /*
-        
-          do {                                                                    
-            crc1 = __crc32cd(                                                     
-                crc1, *((const uint64_t *)(P) + (SEGMENTBYTES / 8) * 1 + (IND))); 
-            crc2 = __crc32cd(                                                     
-                crc2, *((const uint64_t *)(P) + (SEGMENTBYTES / 8) * 2 + (IND))); 
-            crc3 = __crc32cd(                                                     
-                crc3, *((const uint64_t *)(P) + (SEGMENTBYTES / 8) * 3 + (IND))); 
-            crc0 = __crc32cd(                                                     
-                crc0, *((const uint64_t *)(P) + (SEGMENTBYTES / 8) * 0 + (IND))); 
-          } while (0);
-        */
-    }
+const K0: u64 = 0x8d96_551c;
+const K1: u64 = 0xbd6f_81f8;
+const K2: u64 = 0xdcb1_7aa4;
+
+/// 8‑byte step on *one* of the four parallel segments.
+#[inline(always)]
+unsafe fn step64(crc: &mut u32, p: *const u8) {
+    *crc = __crc32cd(*crc, core::ptr::read_unaligned(p as *const u64));
 }
 
-/**
-   compute 8*8 bytes for each segment parallelly
-  */
-#[cfg(HAVE_ARM64_CRC32C)]
-macro_rules! crc32c256bytes {
-    ($P:ident, $IND:ident) => {
-        /*
-        
-          do {                              
-            CRC32C32BYTES((P), (IND)*8 + 0) 
-            CRC32C32BYTES((P), (IND)*8 + 1) 
-            CRC32C32BYTES((P), (IND)*8 + 2) 
-            CRC32C32BYTES((P), (IND)*8 + 3) 
-            CRC32C32BYTES((P), (IND)*8 + 4) 
-            CRC32C32BYTES((P), (IND)*8 + 5) 
-            CRC32C32BYTES((P), (IND)*8 + 6) 
-            CRC32C32BYTES((P), (IND)*8 + 7) 
-          } while (0);
-        */
-    }
+/// Process 32 B (4 × 8 B) of *every* segment (former `CRC32C32BYTES`).
+///
+/// compute 8bytes for each segment parallelly
+///
+#[inline(always)]
+unsafe fn crc32c32bytes(seg0: &mut u32, seg1: &mut u32, seg2: &mut u32, seg3: &mut u32, p: *const u8, ind: usize) {
+    step64(seg1, p.add(SEGMENTBYTES + ind * 8));
+    step64(seg2, p.add(SEGMENTBYTES * 2 + ind * 8));
+    step64(seg3, p.add(SEGMENTBYTES * 3 + ind * 8));
+    step64(seg0, p.add(SEGMENTBYTES * 0 + ind * 8));
 }
 
-/**
-   compute 4*8*8 bytes for each segment parallelly
-  */
-#[cfg(HAVE_ARM64_CRC32C)]
-macro_rules! crc32c1024bytes {
-    ($P:ident) => {
-        /*
-        
-          do {                       
-            CRC32C256BYTES((P), 0)   
-            CRC32C256BYTES((P), 1)   
-            CRC32C256BYTES((P), 2)   
-            CRC32C256BYTES((P), 3)   
-            (P) += 4 * SEGMENTBYTES; 
-          } while (0)
-        */
-    }
+/// Process 256 B ≙ 8× the previous helper (former `CRC32C256BYTES`).
+#[inline(always)]
+unsafe fn crc32c256bytes(seg0:&mut u32, seg1:&mut u32, seg2:&mut u32, seg3:&mut u32, p:*const u8, ind:usize) {
+    crc32c32bytes(seg0, seg1, seg2, seg3, p, ind*8 + 0);
+    crc32c32bytes(seg0, seg1, seg2, seg3, p, ind*8 + 1);
+    crc32c32bytes(seg0, seg1, seg2, seg3, p, ind*8 + 2);
+    crc32c32bytes(seg0, seg1, seg2, seg3, p, ind*8 + 3);
+    crc32c32bytes(seg0, seg1, seg2, seg3, p, ind*8 + 4);
+    crc32c32bytes(seg0, seg1, seg2, seg3, p, ind*8 + 5);
+    crc32c32bytes(seg0, seg1, seg2, seg3, p, ind*8 + 6);
+    crc32c32bytes(seg0, seg1, seg2, seg3, p, ind*8 + 7);
 }
 
-#[cfg(HAVE_ARM64_CRC32C)]
-pub fn crc32c_extend_arm64(
-        crc:  u32,
-        data: *const u8,
-        size: usize) -> u32 {
-    
-    todo!();
-        /*
-            int64_t length = size;
-      uint32_t crc0, crc1, crc2, crc3;
-      uint64_t t0, t1, t2;
+/// Process a full 1024 B chunk (former `CRC32C1024BYTES`).
+#[inline(always)]
+unsafe fn crc32c1024bytes(seg0:&mut u32, seg1:&mut u32, seg2:&mut u32, seg3:&mut u32, mut p:*const u8) -> *const u8 {
+    crc32c256bytes(seg0, seg1, seg2, seg3, p, 0);
+    crc32c256bytes(seg0, seg1, seg2, seg3, p, 1);
+    crc32c256bytes(seg0, seg1, seg2, seg3, p, 2);
+    crc32c256bytes(seg0, seg1, seg2, seg3, p, 3);
+    p.add(4*SEGMENTBYTES)
+}
 
-      // k0=CRC(x^(3*SEGMENTBYTES*8)), k1=CRC(x^(2*SEGMENTBYTES*8)),
-      // k2=CRC(x^(SEGMENTBYTES*8))
-      const poly64_t k0 = 0x8d96551c, k1 = 0xbd6f81f8, k2 = 0xdcb17aa4;
+#[inline]
+pub unsafe fn crc32c_extend_arm64(mut crc: u32, mut data: *const u8, mut size: usize) -> u32 {
 
-      crc = crc ^ kCRC32Xor;
+    let mut length = size as isize;
 
-      while (length >= KBYTES) {
-        crc0 = crc;
-        crc1 = 0;
-        crc2 = 0;
-        crc3 = 0;
+    crc ^= CRC32XOR;
 
-        // Process 1024 bytes in parallel.
-        CRC32C1024BYTES(data);
+    while length >= KBYTES as isize {
+        // --- process 1 KiB in four independent 256 B segments ---------------
+        let mut crc0 = crc;
+        let mut crc1 = 0u32;
+        let mut crc2 = 0u32;
+        let mut crc3 = 0u32;
 
-        // Merge the 4 partial CRC32C values.
-        t2 = (uint64_t)vmull_p64(crc2, k2);
-        t1 = (uint64_t)vmull_p64(crc1, k1);
-        t0 = (uint64_t)vmull_p64(crc0, k0);
-        crc = __crc32cd(crc3, *(uint64_t *)data);
-        data += sizeof(uint64_t);
+        data = crc32c1024bytes(&mut crc0,&mut crc1,&mut crc2,&mut crc3,data);
+
+        // --- GF(2) polynomial merging of the four partial CRCs --------------
+        let t2 = vgetq_lane_u64::<1>(vmull_p64(crc2 as u64, K2));
+        let t1 = vgetq_lane_u64::<1>(vmull_p64(crc1 as u64, K1));
+        let t0 = vgetq_lane_u64::<1>(vmull_p64(crc0 as u64, K0));
+
+        crc  = __crc32cd(crc3, core::ptr::read_unaligned(data as *const u64));
+        data = data.add(core::mem::size_of::<u64>());
+
         crc ^= __crc32cd(0, t2);
         crc ^= __crc32cd(0, t1);
         crc ^= __crc32cd(0, t0);
 
-        length -= KBYTES;
-      }
+        length -= KBYTES as isize;
+    }
 
-      while (length >= 8) {
-        crc = __crc32cd(crc, *(uint64_t *)data);
-        data += 8;
+    // ---------------- fast 8‑byte loop --------------------------------------
+    while length >= 8 {
+        crc = __crc32cd(crc, core::ptr::read_unaligned(data as *const u64));
+        data = data.add(8);
         length -= 8;
-      }
+    }
 
-      if (length & 4) {
-        crc = __crc32cw(crc, *(uint32_t *)data);
-        data += 4;
-      }
-
-      if (length & 2) {
-        crc = __crc32ch(crc, *(uint16_t *)data);
-        data += 2;
-      }
-
-      if (length & 1) {
+    // ---------------- remaining tail  ---------------------------------------
+    if (length & 4) != 0 {
+        crc = __crc32cw(crc, core::ptr::read_unaligned(data as *const u32));
+        data = data.add(4);
+    }
+    if (length & 2) != 0 {
+        crc = __crc32ch(crc, core::ptr::read_unaligned(data as *const u16));
+        data = data.add(2);
+    }
+    if (length & 1) != 0 {
         crc = __crc32cb(crc, *data);
-      }
+    }
 
-      return crc ^ kCRC32Xor;
-        */
+    crc ^ CRC32XOR
 }

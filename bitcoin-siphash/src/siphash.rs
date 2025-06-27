@@ -3,41 +3,36 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/siphash.h]
 
-/**
-  | SipHash-2-4
-  |
-  */
-pub struct SipHasher {
+/// SipHash-2-4
+#[derive(Debug,Clone,CopyGetters,MutGetters,Getters)]
+pub struct BitcoinSipHasher {
+
+    #[getset(get = "pub(crate)", get_mut = "pub(crate)")]
     v:     [u64; 4],
+
+    #[getset(get_copy = "pub(crate)", get_mut = "pub(crate)")]
     tmp:   u64,
 
-    /**
-      | Only the low 8 bits of the input size matter.
-      |
-      */
+    /// Only the low 8 bits of the input size matter.
+    #[getset(get_copy = "pub(crate)", get_mut = "pub(crate)")]
     count: u8,
 }
 
-impl SipHasher {
+impl BitcoinSipHasher {
 
-    /**
-      | Construct a SipHash calculator initialized
-      | with 128-bit key (k0, k1)
-      |
-      */
+    /// Initialise a SipHash‑2‑4 state with the 128‑bit key `(k0,k1)`.
+    #[inline]
     pub fn new(k0: u64, k1: u64) -> Self {
-    
-        todo!();
-        /*
-
-        v[0] = 0x736f6d6570736575ULL ^ k0;
-        v[1] = 0x646f72616e646f6dULL ^ k1;
-        v[2] = 0x6c7967656e657261ULL ^ k0;
-        v[3] = 0x7465646279746573ULL ^ k1;
-        count = 0;
-        tmp = 0;
-        */
+        debug!("BitcoinSipHasher::new(k0={:016x}, k1={:016x})", k0, k1);
+        Self {
+            v: [
+                0x736f6d6570736575u64 ^ k0,
+                0x646f72616e646f6du64 ^ k1,
+                0x6c7967656e657261u64 ^ k0,
+                0x7465646279746573u64 ^ k1,
+            ],
+            tmp:   0,
+            count: 0,
+        }
     }
 }
-
-//-------------------------------------------[.cpp/bitcoin/src/crypto/siphash.cpp]

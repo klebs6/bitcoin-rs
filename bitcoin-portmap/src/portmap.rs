@@ -3,18 +3,29 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/mapport.h]
 
-#[cfg(USE_UPNP)]        pub const DEFAULT_UPNP:   bool = USE_UPNP;
-#[cfg(not(USE_UPNP))]   pub const DEFAULT_UPNP:   bool = false;
+#[cfg(feature = "upnp")]      pub const DEFAULT_UPNP: bool = true;
+#[cfg(not(feature = "upnp"))] pub const DEFAULT_UPNP: bool = false;
 
-#[cfg(USE_NATPMP)]      pub const DEFAULT_NATPMP: bool = USE_NATPMP;
-#[cfg(not(USE_NATPMP))] pub const DEFAULT_NATPMP: bool = false;
+#[cfg(feature = "natpmp")]      pub const DEFAULT_NATPMP: bool = true;
+#[cfg(not(feature = "natpmp"))] pub const DEFAULT_NATPMP: bool = false;
 
+/// Protocol bit flags (kept identical to the C++ values).
 #[repr(u32)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum MapPortProtoFlag {
     NONE    = 0x00,
     UPNP    = 0x01,
     NAT_PMP = 0x02,
 }
+
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
+pub(crate) static G_MAPPORT_ENABLED_PROTOS: AtomicU32 =
+    AtomicU32::new(MapPortProtoFlag::NONE as u32);
+
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
+pub(crate) static G_MAPPORT_CURRENT_PROTO: AtomicU32 =
+    AtomicU32::new(MapPortProtoFlag::NONE as u32);
+
 
 //-------------------------------------------[.cpp/bitcoin/src/mapport.cpp]
 
@@ -28,16 +39,6 @@ pub enum MapPortProtoFlag {
 const_assert!{
     MINIUPNPC_API_VERSION >= 10
 } //"miniUPnPc API version >= 10 assumed"
-
-#[cfg(any(USE_NATPMP,USE_UPNP))]
-lazy_static!{
-    /*
-    static CThreadInterrupt g_mapport_interrupt;
-    static std::thread g_mapport_thread;
-    static std::atomic_uint g_mapport_enabled_protos{MapPortProtoFlag::NONE};
-    static std::atomic<MapPortProtoFlag> g_mapport_current_proto{MapPortProtoFlag::NONE};
-    */
-}
 
 #[cfg(any(USE_NATPMP,USE_UPNP))]
 pub const PORT_MAPPING_REANNOUNCE_PERIOD: Minutes = 20;
@@ -66,17 +67,6 @@ pub fn natpmp_init(natpmp: *mut NatPmp) -> bool {
         */
 }
 
-#[cfg(any(USE_NATPMP,USE_UPNP))]
-pub fn map_port_proto_set_enabled(
-        proto:   MapPortProtoFlag,
-        enabled: bool)  {
-    
-    todo!();
-        /*
-            if (enabled) {
-            g_mapport_enabled_protos |= proto;
-        } else {
-            g_mapport_enabled_protos &= ~proto;
-        }
-        */
-}
+/// Single global instance mirroring `g_mapport_interrupt` in C++.
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
+pub(crate) static G_MAPPORT_INTERRUPT: Lazy<ThreadInterrupt> = Lazy::new(ThreadInterrupt::new);

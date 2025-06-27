@@ -423,7 +423,8 @@ pub use std::sync::{
     //Mutex,
 };
 
-pub use getset::{Setters,Getters,MutGetters};
+pub use once_cell::sync::Lazy;
+pub use getset::{CopyGetters,Setters,Getters,MutGetters};
 pub use derive_builder::*;
 pub use std::process;
 pub use once_cell;
