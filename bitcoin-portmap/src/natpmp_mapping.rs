@@ -1,10 +1,10 @@
+
 // ---------------- [ File: bitcoin-portmap/src/natpmp_mapping.rs ]
 crate::ix!();
 
-#[cfg(any(USE_NATPMP,USE_UPNP))]
-#[cfg(USE_NATPMP)]
+#[cfg(feature = "natpmp")]
 pub fn natpmp_mapping(
-        natpmp:                 *mut NatPmp,
+        natpmp:                 *mut Natpmp,
         external_ipv4_addr:     &InAddr,
         private_port:           u16,
         external_ip_discovered: &mut bool) -> bool {

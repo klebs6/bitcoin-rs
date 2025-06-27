@@ -3,14 +3,6 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/net.h]
 
-pub fn get_listen_port() -> u16 {
-    
-    todo!();
-        /*
-            return static_cast<uint16_t>(gArgs.GetIntArg("-port", Params().GetDefaultPort()));
-        */
-}
-
 /**
   | find 'best' local address for a particular
   | peer

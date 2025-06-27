@@ -27,6 +27,8 @@ DEFAULT := hack_test
 DEFAULT := test_active
 #DEFAULT := test_one
 
+FEATURES := --features "natpmp"
+
 #-------------------------------./u/write-remaining
 
 #ACTIVE := bitcoin-amt
@@ -68,7 +70,6 @@ DEFAULT := test_active
 #-------------------------------[done-above]
 
 ACTIVE := bitcoin-get-json-token
-ACTIVE := bitcoin-portmap
 ACTIVE := bitcoin-remote
 ACTIVE := bitcoin-sock
 ACTIVE := bitcoin-tokenpipe
@@ -77,6 +78,7 @@ ACTIVE := bitcoin-version
 ACTIVE := bitcoin-settings
 ACTIVE := bitcoin-fees
 ACTIVE := bitcoin-univalue
+ACTIVE := bitcoin-portmap
 
 #ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-base58
@@ -273,7 +275,7 @@ build_active:
 	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(BUILD) -p $(ACTIVE) --verbose
 
 test_active:
-	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) -p $(ACTIVE) --verbose
+	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) -p $(ACTIVE) --verbose $(FEATURES)
 
 test_one:
 	RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) $(INDIVIDUAL_TEST) -p $(ACTIVE) -- $(NOCAPTURE)

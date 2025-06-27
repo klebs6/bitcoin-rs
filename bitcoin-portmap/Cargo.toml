@@ -3,6 +3,7 @@ tracing.workspace = true
 bitcoin-sync = { path      = "../bitcoin-sync" }
 igd          = { workspace = true, optional      = true } # UPnP / IGD protocol
 natpmp       = { workspace = true,  optional     = true } # NAT‑PMP protocol
+bitcoin-time = { path = "../bitcoin-time" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

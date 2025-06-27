@@ -19,11 +19,11 @@ pub enum MapPortProtoFlag {
 }
 
 #[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub(crate) static G_MAPPORT_ENABLED_PROTOS: AtomicU32 =
+pub static G_MAPPORT_ENABLED_PROTOS: AtomicU32 =
     AtomicU32::new(MapPortProtoFlag::NONE as u32);
 
 #[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub(crate) static G_MAPPORT_CURRENT_PROTO: AtomicU32 =
+pub static G_MAPPORT_CURRENT_PROTO: AtomicU32 =
     AtomicU32::new(MapPortProtoFlag::NONE as u32);
 
 
@@ -35,28 +35,26 @@ pub(crate) static G_MAPPORT_CURRENT_PROTO: AtomicU32 =
   | 16.04 LTS and Debian 8 libminiupnpc-dev
   | packages.
   */
-#[cfg(USE_UPNP)]
+#[cfg(feature="upnpp")]
 const_assert!{
     MINIUPNPC_API_VERSION >= 10
 } //"miniUPnPc API version >= 10 assumed"
 
-#[cfg(any(USE_NATPMP,USE_UPNP))]
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
 pub const PORT_MAPPING_REANNOUNCE_PERIOD: Minutes = 20;
 
-#[cfg(any(USE_NATPMP,USE_UPNP))]
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
 pub const PORT_MAPPING_RETRY_PERIOD:      Minutes = 5;
 
-#[cfg(any(USE_NATPMP,USE_UPNP))]
-#[cfg(USE_NATPMP)]
+#[cfg(feature="natpmp")]
 lazy_static!{
     /*
     static uint16_t g_mapport_external_port = 0;
     */
 }
 
-#[cfg(any(USE_NATPMP,USE_UPNP))]
-#[cfg(USE_NATPMP)]
-pub fn natpmp_init(natpmp: *mut NatPmp) -> bool {
+#[cfg(feature="natpmp")]
+pub fn natpmp_init(natpmp: *mut Natpmp) -> bool {
     
     todo!();
         /*
@@ -69,4 +67,4 @@ pub fn natpmp_init(natpmp: *mut NatPmp) -> bool {
 
 /// Single global instance mirroring `g_mapport_interrupt` in C++.
 #[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub(crate) static G_MAPPORT_INTERRUPT: Lazy<ThreadInterrupt> = Lazy::new(ThreadInterrupt::new);
+pub static G_MAPPORT_INTERRUPT: Lazy<ThreadInterrupt> = Lazy::new(ThreadInterrupt::new);

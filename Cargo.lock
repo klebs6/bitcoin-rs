@@ -2002,6 +2002,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-sync",
+ "bitcoin-time",
  "igd",
  "natpmp",
  "tracing",
