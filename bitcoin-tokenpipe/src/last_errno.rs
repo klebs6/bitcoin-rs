@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-tokenpipe/src/last_errno.rs ]
 crate::ix!();
 
 /// Cross‑platform helper to fetch the thread‑local `errno`.
