@@ -6,3 +6,5 @@
 
 x!{version}
 x!{clientversion}
+x!{copyright_str}
+x!{computed_constants}

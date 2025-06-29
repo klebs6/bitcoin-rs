@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-network/src/set_i2p.rs ]
 crate::ix!();
 
 impl NetAddr {

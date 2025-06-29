@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-network/src/get_group.rs ]
 crate::ix!();
 
 impl NetAddr {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-network/src/set_legacy_ipv6.rs ]
 crate::ix!();
 
 impl NetAddr {

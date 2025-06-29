@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-network/src/netaddr_checks.rs ]
 crate::ix!();
 
 impl NetAddr {
@@ -32,28 +33,21 @@ impl NetAddr {
     }
     
     /**
-      | IPv4 mapped address (::FFFF:0:0/96,
-      | 0.0.0.0/0)
-      |
+      | IPv4 mapped address (::FFFF:0:0/96, 0.0.0.0/0)
       */
+    #[inline]
     pub fn is_ipv4(&self) -> bool {
-        
-        todo!();
-        /*
-            return m_net == NET_IPV4;
-        */
+        trace!(target: "netaddr", ?self.net, "Checking IPv4 network classification");
+        *self.net() == Network::NET_IPV4
     }
     
     /**
       | IPv6 address (not mapped IPv4, not Tor)
-      |
       */
+    #[inline]
     pub fn is_ipv6(&self) -> bool {
-        
-        todo!();
-        /*
-            return m_net == NET_IPV6;
-        */
+        trace!(target: "netaddr", ?self.net, "Checking IPv6 network classification");
+        *self.net() == Network::NET_IPV6
     }
 
     /**
@@ -75,12 +69,10 @@ impl NetAddr {
       | std::string &)
       |
       */
+    #[inline]
     pub fn is_tor(&self) -> bool {
-        
-        todo!();
-        /*
-            return m_net == NET_ONION;
-        */
+        trace!(target: "netaddr", ?self.net, "Checking Tor network classification");
+        *self.net() == Network::NET_ONION
     }
 
     pub fn is_local(&self) -> bool {
@@ -408,12 +400,10 @@ impl NetAddr {
       | an I2P address.
       |
       */
+    #[inline]
     pub fn isi2p(&self) -> bool {
-        
-        todo!();
-        /*
-            return m_net == NET_I2P;
-        */
+        trace!(target: "netaddr", ?self.net, "Checking I2P network classification");
+        *self.net() == Network::NET_I2P
     }
 
     /**
@@ -421,11 +411,42 @@ impl NetAddr {
       | a CJDNS address.
       |
       */
+    #[inline]
     pub fn iscjdns(&self) -> bool {
-        
-        todo!();
-        /*
-            return m_net == NET_CJDNS;
-        */
+        trace!(target: "netaddr", ?self.net, "Checking CJDNS network classification");
+        *self.net() == Network::NET_CJDNS
+    }
+}
+
+#[cfg(test)]
+mod netaddr_classification_tests {
+    use super::*;
+
+    #[traced_test]
+    fn ipv4_and_ipv6_detection_works() {
+        let mut addr4 = NetAddr::default();
+        addr4.set_net(Network::NET_IPV4);
+        assert!(addr4.is_ipv4(), "Expected NET_IPV4 to be detected as IPv4");
+        assert!(!addr4.is_ipv6(), "Expected NET_IPV4 not to be detected as IPv6");
+
+        let mut addr6 = NetAddr::default();
+        addr6.set_net(Network::NET_IPV6);
+        assert!(addr6.is_ipv6(), "Expected NET_IPV6 to be detected as IPv6");
+        assert!(!addr6.is_ipv4(), "Expected NET_IPV6 not to be detected as IPv4");
+    }
+
+    #[traced_test]
+    fn tor_i2p_cjdns_detection() {
+        let mut addr_tor = NetAddr::default();
+        addr_tor.set_net(Network::NET_ONION);
+        assert!(addr_tor.is_tor(), "Expected NET_ONION to be detected as Tor");
+
+        let mut addr_i2p = NetAddr::default();
+        addr_i2p.set_net(Network::NET_I2P);
+        assert!(addr_i2p.isi2p(), "Expected NET_I2P to be detected as I2P");
+
+        let mut addr_cjdns = NetAddr::default();
+        addr_cjdns.set_net(Network::NET_CJDNS);
+        assert!(addr_cjdns.iscjdns(), "Expected NET_CJDNS to be detected as CJDNS");
     }
 }

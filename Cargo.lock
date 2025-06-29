@@ -1834,7 +1834,10 @@ dependencies = [
  "bitcoin-imports",
  "bitcoin-sha3",
  "bitcoin-string",
+ "derive_builder",
+ "getset",
  "serde",
+ "tracing",
 ]
 
 [[package]]
@@ -2803,6 +2806,7 @@ dependencies = [
  "lazy_static",
  "libc",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]

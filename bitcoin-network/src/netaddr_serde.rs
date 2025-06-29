@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-network/src/netaddr_serde.rs ]
 crate::ix!();
 
 impl NetAddr {

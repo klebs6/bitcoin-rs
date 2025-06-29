@@ -1,11 +1,12 @@
+// ---------------- [ File: bitcoin-network/src/net_addr.rs ]
 crate::ix!();
 
 /**
   | Network address.
   |
   */
-#[derive(Getters,MutGetters,Debug,Serialize,Deserialize,Clone,Hash)]
-#[getset(get="pub",get_mut="pub")]
+#[derive(Setters,Getters,MutGetters,Debug,Serialize,Deserialize,Clone,Hash)]
+#[getset(get="pub",set="pub",get_mut="pub")]
 pub struct NetAddr {
 
     /**
