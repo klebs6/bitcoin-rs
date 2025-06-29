@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/is_connected.rs ]
 crate::ix!();
 
 impl Sock {

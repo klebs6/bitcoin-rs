@@ -9,8 +9,8 @@ pub const NATPMP_PROTOCOL_TCP: Protocol = Protocol::TCP;
 /// Variable names and call sequence are kept **identical** to the C++.
 #[cfg(feature = "natpmp")]
 pub fn process_natpmp() -> bool {
-    let interrupt = G_MAPPORT_INTERRUPT();
-    let ext_port  = G_MAPPORT_EXTERNAL_PORT();
+    let interrupt  = g_mapport_interrupt();
+    let ext_port   = g_mapport_external_port();
     let reannounce = PORT_MAPPING_REANNOUNCE_PERIOD;
 
     let mut ret: bool = false;

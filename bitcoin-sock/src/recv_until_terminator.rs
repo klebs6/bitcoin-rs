@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/recv_until_terminator.rs ]
 crate::ix!();
 
 impl Sock {

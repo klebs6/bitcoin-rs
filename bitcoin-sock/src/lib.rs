@@ -11,3 +11,4 @@ x!{send_complete}
 x!{wait}
 x!{close_socket}
 x!{compat}
+x!{lifetime}

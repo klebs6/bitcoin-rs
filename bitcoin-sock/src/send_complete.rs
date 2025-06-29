@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/send_complete.rs ]
 crate::ix!();
 
 impl Sock {

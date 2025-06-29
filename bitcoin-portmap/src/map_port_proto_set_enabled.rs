@@ -1,14 +1,6 @@
 // ---------------- [ File: bitcoin-portmap/src/flag.rs ]
 crate::ix!();
 
-/// Enabled protocol bit‑mask (UPnP/NAT‑PMP).
-#[cfg(any(feature = "natpmp", feature = "upnp"))]
-static G_MAPPORT_ENABLED_PROTOS: AtomicU32 = AtomicU32::new(MapPortProtoFlag::NONE as u32);
-
-/// Protocol currently in use by the background thread.
-#[cfg(any(feature = "natpmp", feature = "upnp"))]
-static G_MAPPORT_CURRENT_PROTO: AtomicU32 = AtomicU32::new(MapPortProtoFlag::NONE as u32);
-
 /// Atomically enable or disable a `MapPortProtoFlag`.
 ///
 /// Mirrors the original C++ logic while adding extensive
@@ -28,22 +20,23 @@ pub fn map_port_proto_set_enabled(proto: MapPortProtoFlag, enabled: bool) {
     );
 
     if enabled {
-        let previous = G_MAPPORT_ENABLED_PROTOS.fetch_or(proto as u32, atomic::Ordering::SeqCst);
+        let prev = g_mapport_enabled_protos().fetch_or(proto as u32, atomic::Ordering::SeqCst);
         trace!(
             target: "portmap",
             "enable proto={:?} previous_mask={:#04x} new_mask={:#04x}",
             proto,
-            previous,
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst)
+            prev,
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst)
         );
     } else {
-        let previous = G_MAPPORT_ENABLED_PROTOS.fetch_and(!(proto as u32), atomic::Ordering::SeqCst);
+        let prev =
+            g_mapport_enabled_protos().fetch_and(!(proto as u32), atomic::Ordering::SeqCst);
         trace!(
             target: "portmap",
             "disable proto={:?} previous_mask={:#04x} new_mask={:#04x}",
             proto,
-            previous,
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst)
+            prev,
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst)
         );
     }
 }

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/wait.rs ]
 crate::ix!();
 
 impl Sock {

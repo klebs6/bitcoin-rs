@@ -11,5 +11,8 @@ x!{portmap}
 x!{process_natpmp}
 x!{process_upnp}
 x!{thread_map_port}
+x!{start_thread_map_port}
 x!{flag}
 x!{get_listen_port}
+x!{map_port_proto_set_enabled}
+x!{statics}

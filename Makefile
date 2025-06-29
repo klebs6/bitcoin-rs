@@ -24,7 +24,7 @@ TEST  := test
 #DEFAULT := build_active
 #DEFAULT := build
 DEFAULT := hack_test
-DEFAULT := test_active
+#DEFAULT := test_active
 #DEFAULT := test_one
 
 FEATURES := --features "natpmp"
@@ -33,14 +33,14 @@ FEATURES :=
 #-------------------------------[active-below]
 
 #ACTIVE := bitcoin-get-json-token # note that this one has a failing test
-ACTIVE := bitcoin-portmap
-ACTIVE := bitcoin-remote
 ACTIVE := bitcoin-fees
 ACTIVE := bitcoin-random
 ACTIVE := bitcoin-settings
 ACTIVE := bitcoin-network
 ACTIVE := bitcoin-tokenpipe
 ACTIVE := bitcoin-sock
+ACTIVE := bitcoin-remote
+ACTIVE := bitcoin-portmap
 
 #ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-base58

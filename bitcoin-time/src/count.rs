@@ -51,3 +51,6 @@ pub type Microseconds  = StdDuration;                              // NEW
 pub type Seconds       = StdDuration;                              // NEW
 pub type SecondsDouble = StdDuration;                              // NEW
 //pub type SecondsDouble = Seconds<u64>;
+
+/// Preserve the upstream “minutes” unit while using `Duration` underneath.
+pub type Minutes = Duration;

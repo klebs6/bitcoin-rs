@@ -24,9 +24,10 @@ impl NatpmpApi for NatpmpClient {
     }
 
     fn natpmp_discover(&mut self, external_ipv4_addr: &mut Ipv4Addr) -> bool {
+        // `natpmp 0.5` returns the IP directly.
         match self.inner.send_public_address_request() {
-            Ok(resp) => {
-                *external_ipv4_addr = resp.public_address();
+            Ok(addr) => {
+                *external_ipv4_addr = addr;
                 true
             }
             Err(e) => {

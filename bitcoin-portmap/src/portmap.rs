@@ -18,15 +18,6 @@ pub enum MapPortProtoFlag {
     NAT_PMP = 0x02,
 }
 
-#[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub static G_MAPPORT_ENABLED_PROTOS: AtomicU32 =
-    AtomicU32::new(MapPortProtoFlag::NONE as u32);
-
-#[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub static G_MAPPORT_CURRENT_PROTO: AtomicU32 =
-    AtomicU32::new(MapPortProtoFlag::NONE as u32);
-
-
 //-------------------------------------------[.cpp/bitcoin/src/mapport.cpp]
 
 /**
@@ -38,20 +29,15 @@ pub static G_MAPPORT_CURRENT_PROTO: AtomicU32 =
 #[cfg(feature="upnpp")]
 const_assert!{
     MINIUPNPC_API_VERSION >= 10
-} //"miniUPnPc API version >= 10 assumed"
-
-#[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub const PORT_MAPPING_REANNOUNCE_PERIOD: Minutes = 20;
-
-#[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub const PORT_MAPPING_RETRY_PERIOD:      Minutes = 5;
-
-#[cfg(feature="natpmp")]
-lazy_static!{
-    /*
-    static uint16_t g_mapport_external_port = 0;
-    */
 }
+
+/// 20 minutes
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
+pub const PORT_MAPPING_REANNOUNCE_PERIOD: Duration = Duration::from_secs(20 * 60);
+
+/// 5 minutes
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
+pub const PORT_MAPPING_RETRY_PERIOD:      Duration = Duration::from_secs(5  * 60);
 
 #[cfg(feature="natpmp")]
 pub fn natpmp_init(natpmp: *mut Natpmp) -> bool {
@@ -64,7 +50,3 @@ pub fn natpmp_init(natpmp: *mut Natpmp) -> bool {
         return false;
         */
 }
-
-/// Single global instance mirroring `g_mapport_interrupt` in C++.
-#[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub static G_MAPPORT_INTERRUPT: Lazy<ThreadInterrupt> = Lazy::new(ThreadInterrupt::new);

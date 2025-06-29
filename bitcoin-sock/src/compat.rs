@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/compat.rs ]
 crate::ix!();
 
 #[cfg(not(target_os = "windows"))] 
