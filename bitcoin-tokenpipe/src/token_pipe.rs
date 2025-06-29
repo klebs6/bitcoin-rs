@@ -2,7 +2,6 @@
 crate::ix!();
 
 /// An interprocess or interthread pipe for sending tokens (one-byte values) over.
-#[cfg(not(windows))]
 #[derive(Debug, Getters, Builder)]
 #[getset(get = "pub(crate)")]
 pub struct TokenPipe {
@@ -11,7 +10,6 @@ pub struct TokenPipe {
     fds: [i32; 2],
 }
 
-#[cfg(not(windows))]
 impl Drop for TokenPipe {
     fn drop(&mut self) {
         trace!(fds = ?self.fds, "TokenPipe::drop");
@@ -19,90 +17,93 @@ impl Drop for TokenPipe {
     }
 }
 
-#[cfg(not(windows))]
 impl TokenPipe {
-    /// Construct directly from raw fds.
+    /// Construct directly from raw FDs.
     pub fn new(fds: [i32; 2]) -> Self {
         trace!(fds = ?fds, "TokenPipe::new");
         Self { fds }
     }
 
-    /// Create a brand‑new pipe (uses `pipe(2)`).
+    /// Create a fresh pipe.
     ///
-    /// * **`Some(pipe)`** on success  
-    /// * **`None`**        on error
-    pub fn make() -> Option<TokenPipe> {
+    /// * `Some(pipe)` on success  
+    /// * `None`       on error
+    pub fn make() -> Option<Self> {
         trace!("TokenPipe::make → start");
-        let mut fds = [-1; 2];
-        // SAFETY: we give `pipe` a valid pointer to two ints.
-        let rc = unsafe { libc::pipe(fds.as_mut_ptr()) };
-        if rc != 0 {
-            let errno = unsafe { *libc::__errno_location() };
-            error!(errno, "pipe(2) failed");
-            return None;
+
+        //―――― POSIX (non‑Windows) ――――
+        #[cfg(not(windows))]
+        {
+            let mut fds = [-1; 2];
+            if unsafe { libc::pipe(fds.as_mut_ptr()) } != 0 {
+                error!(errno = last_errno(), "pipe(2) failed");
+                return None;
+            }
+            info!(fds = ?fds, "pipe(2) created");
+            return Some(Self { fds });
         }
-        info!(fds = ?fds, "pipe(2) created successfully");
-        Some(Self { fds })
+
+        //―――― Windows (msvcrt `_pipe`) ――――
+        #[cfg(windows)]
+        {
+            let mut fds = [-1; 2];
+            const BUFSZ: libc::c_int = 4096;
+            const O_BINARY: libc::c_int = 0x8000; // _O_BINARY
+            if unsafe { libc::_pipe(fds.as_mut_ptr(), BUFSZ, O_BINARY) } != 0 {
+                error!(errno = last_errno(), "_pipe failed");
+                return None;
+            }
+            info!(fds = ?fds, "_pipe created");
+            return Some(Self { fds });
+        }
     }
 
-    /// Take (move out) the read end.
-    ///
-    /// Take the read end of this pipe. 
-    /// This can only be called once, as the object will be moved out.
-    ///
+    /// Move out the read end (may be called once).
     pub fn take_read_end(&mut self) -> TokenPipeEnd {
         trace!(fd = self.fds[0], "TokenPipe::take_read_end");
-        let fd = self.fds[0];
-        self.fds[0] = -1;
+        let fd = self.fds[0]; 
+        self.fds[0] = -1; 
         TokenPipeEnd::new(Some(fd))
     }
 
-    /// Take (move out) the write end.
-    ///
-    /// Take the write end of this pipe. 
-    /// This should only be called once, as the object will be moved out.
-    ///
+    /// Move out the write end (may be called once).
     pub fn take_write_end(&mut self) -> TokenPipeEnd {
         trace!(fd = self.fds[1], "TokenPipe::take_write_end");
-        let fd = self.fds[1];
-        self.fds[1] = -1;
+        let fd = self.fds[1]; 
+        self.fds[1] = -1; 
         TokenPipeEnd::new(Some(fd))
     }
 
-    /// Close any endpoint that has not been moved out.
+    /// Close any still‑owned endpoints.
     pub fn close(&mut self) {
         trace!(fds = ?self.fds, "TokenPipe::close");
         for fd in &mut self.fds {
             if *fd != -1 {
-                // SAFETY: valid fd / or ignored by OS if already closed.
-                unsafe { libc::close(*fd) };
+                #[cfg(windows)]
+                unsafe { libc::_close(*fd); }
+                #[cfg(not(windows))]
+                unsafe { libc::close(*fd); }
                 *fd = -1;
             }
         }
     }
 
-    //---- Move‑only helpers ------------------------------------------
-
-    pub fn new_from_other(mut other: TokenPipe) -> Self {
+    //―――― move‑only helpers ――――
+    pub fn new_from_other(mut other: Self) -> Self {
         trace!(fds = ?other.fds, "TokenPipe::new_from_other");
         let mut fds = [-1; 2];
-        for (dst, src) in fds.iter_mut().zip(other.fds.iter_mut()) {
-            *dst = *src;
-            *src = -1;
+        for (d, s) in fds.iter_mut().zip(other.fds.iter_mut()) { 
+            *d = *s; 
+            *s = -1; 
         }
         Self { fds }
     }
-
-    pub fn assign_from(&mut self, mut other: TokenPipe) -> &mut TokenPipe {
-        trace!(
-            self_fds = ?self.fds,
-            other_fds = ?other.fds,
-            "TokenPipe::assign_from"
-        );
+    pub fn assign_from(&mut self, mut other: Self) -> &mut Self {
+        trace!(self_fds = ?self.fds, other_fds = ?other.fds, "TokenPipe::assign_from");
         self.close();
-        for (dst, src) in self.fds.iter_mut().zip(other.fds.iter_mut()) {
-            *dst = *src;
-            *src = -1;
+        for (d, s) in self.fds.iter_mut().zip(other.fds.iter_mut()) { 
+            *d = *s; 
+            *s = -1; 
         }
         self
     }

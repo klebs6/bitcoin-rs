@@ -1188,8 +1188,11 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-random",
+ "derive_builder",
+ "getset",
  "lazy_static",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]
@@ -2274,8 +2277,11 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-univalue",
+ "derive_builder",
+ "getset",
  "lazy_static",
  "static_assertions",
+ "tracing",
 ]
 
 [[package]]

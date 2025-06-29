@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-settings/src/settings_value.rs ]
 crate::ix!();
 
 /**
@@ -18,17 +19,30 @@ crate::ix!();
   |       boost::variant was posted at
   |       https://github.com/bitcoin/bitcoin/pull/15934/files#r337691812)
   */
+#[derive(Debug,Clone)]
 pub struct SettingsValue(pub UniValue);
+
+impl SettingsValue {
+    /// Returns `true` when the wrapped UniValue is a JSON boolean **false**.
+    #[inline]
+    pub fn is_false(&self) -> bool {
+        self.0.is_bool() && !self.0.get_bool()
+    }
+}
+
+impl From<bool> for SettingsValue {
+    fn from(val: bool) -> Self {
+        Self(UniValue::from(val))
+    }
+}
 
 impl PartialEq<SettingsValue> for SettingsValue {
     fn eq(&self, other: &SettingsValue) -> bool {
         // Equality follows the C++ semantics: compare the serialized form.
-        let self_str = self.0.write();
-        let other_str = other.0.write();
+        let self_str  = self.0.write(None, None);   // ← specify both options
+        let other_str = other.0.write(None, None);  // ← specify both options
         trace!(
-            "Comparing SettingsValue: self='{}', other='{}'",
-            self_str,
-            other_str
+            "Comparing SettingsValue: self='{self_str}', other='{other_str}'"
         );
         self_str == other_str
     }
@@ -38,22 +52,8 @@ impl Eq for SettingsValue {}
 
 impl fmt::Display for SettingsValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let written = self.0.write();
-        trace!("Formatting SettingsValue: '{}'", written);
+        let written = self.0.write(None, None);  // ← specify both options
+        trace!("Formatting SettingsValue: '{written}'");
         write!(f, "{written}")
-    }
-}
-
-impl SettingsValue {
-    /// Returns `true` when the wrapped UniValue is a JSON boolean **false**.
-    #[inline]
-    pub fn is_false(&self) -> bool {
-        self.0.isBool() && !self.0.get_bool()
-    }
-}
-
-impl From<bool> for SettingsValue {
-    fn from(val: bool) -> Self {
-        Self(UniValue::from(val))
     }
 }

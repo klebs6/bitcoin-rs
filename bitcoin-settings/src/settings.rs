@@ -8,7 +8,7 @@ crate::ix!();
   | settings file.
   */
 #[derive(Builder,Getters,MutGetters,Default)]
-#[bulider(setter(into))]
+#[builder(setter(into))]
 #[getset(get="pub")]
 pub struct Settings {
 
@@ -40,4 +40,3 @@ pub struct Settings {
       */
     ro_config:            HashMap<String,HashMap<String,Vec<SettingsValue>>>,
 }
-

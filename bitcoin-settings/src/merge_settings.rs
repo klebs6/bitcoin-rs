@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-settings/src/merge_settings.rs ]
 crate::ix!();
 
 pub enum Source {

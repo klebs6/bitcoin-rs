@@ -81,7 +81,7 @@ pub type Amount = i64;
   | The amount of satoshis in one BTC.
   |
   */
-pub const COIN: Amount = 100000000;
+pub const COIN: Amount = 100_000_000;
 
 /**
   | No amount larger than this (in satoshi)

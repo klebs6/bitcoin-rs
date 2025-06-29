@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-settings/src/settings_span.rs ]
 crate::ix!();
 
 /**

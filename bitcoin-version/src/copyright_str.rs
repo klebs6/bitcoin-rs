@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-version/src/copyright_str.rs ]
 crate::ix!();
 
 #[macro_export]

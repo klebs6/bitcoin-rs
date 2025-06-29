@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-settings/src/write_settings.rs ]
 crate::ix!();
 
 /**

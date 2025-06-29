@@ -37,7 +37,11 @@ impl NetAddr {
       */
     #[inline]
     pub fn is_ipv4(&self) -> bool {
-        trace!(target: "netaddr", ?self.net, "Checking IPv4 network classification");
+        trace!(
+            target: "netaddr",
+            net = ?self.net(),
+            "Checking IPv4 network classification"
+        );
         *self.net() == Network::NET_IPV4
     }
     
@@ -46,7 +50,11 @@ impl NetAddr {
       */
     #[inline]
     pub fn is_ipv6(&self) -> bool {
-        trace!(target: "netaddr", ?self.net, "Checking IPv6 network classification");
+        trace!(
+            target: "netaddr",
+            net = ?self.net(),
+            "Checking IPv6 network classification"
+        );
         *self.net() == Network::NET_IPV6
     }
 
@@ -65,13 +73,15 @@ impl NetAddr {
 
     /**
       | Check whether this object represents
-      | a TOR address. @see CNetAddr::SetSpecial(const
-      | std::string &)
-      |
+      | a TOR address. see `NetAddr::set_special`
       */
     #[inline]
     pub fn is_tor(&self) -> bool {
-        trace!(target: "netaddr", ?self.net, "Checking Tor network classification");
+        trace!(
+            target: "netaddr",
+            net = ?self.net(),
+            "Checking Tor network classification"
+        );
         *self.net() == Network::NET_ONION
     }
 
@@ -402,7 +412,11 @@ impl NetAddr {
       */
     #[inline]
     pub fn isi2p(&self) -> bool {
-        trace!(target: "netaddr", ?self.net, "Checking I2P network classification");
+        trace!(
+            target: "netaddr",
+            net = ?self.net(),
+            "Checking I2P network classification"
+        );
         *self.net() == Network::NET_I2P
     }
 
@@ -413,7 +427,11 @@ impl NetAddr {
       */
     #[inline]
     pub fn iscjdns(&self) -> bool {
-        trace!(target: "netaddr", ?self.net, "Checking CJDNS network classification");
+        trace!(
+            target: "netaddr",
+            net = ?self.net(),
+            "Checking CJDNS network classification"
+        );
         *self.net() == Network::NET_CJDNS
     }
 }

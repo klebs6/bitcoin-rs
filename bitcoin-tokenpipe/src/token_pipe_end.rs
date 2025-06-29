@@ -2,7 +2,6 @@
 crate::ix!();
 
 /// One end of a token pipe.
-#[cfg(not(windows))]
 #[derive(Debug, Getters, Builder)]
 #[getset(get = "pub(crate)")]
 pub struct TokenPipeEnd {
@@ -35,9 +34,7 @@ impl TokenPipeEnd {
     /// * **return <0** on error (`TS_ERR` / `TS_EOS`)
     ///
     /// TS_ERR If an error happened.
-    ///
     /// TS_EOS If end of stream happened.
-    ///
     pub fn token_write(&mut self, token: u8) -> i32 {
         trace!(fd = self.fd, token, "token_write → start");
         if self.fd == -1 {
@@ -46,7 +43,6 @@ impl TokenPipeEnd {
         }
 
         loop {
-            // SAFETY: we pass a valid pointer to one byte of data.
             let rc = unsafe {
                 libc::write(
                     self.fd,
@@ -64,12 +60,9 @@ impl TokenPipeEnd {
                     return TokenPipeEndStatus::TS_EOS as i32;
                 }
                 _ if rc < 0 => {
-                    let errno = unsafe { *libc::__errno_location() };
-                    if errno == libc::EINTR {
-                        debug!("token_write interrupted → retry");
-                        continue;
-                    }
-                    error!(errno, "token_write error");
+                    let e = last_errno();
+                    if e == libc::EINTR { debug!("retry after EINTR"); continue; }
+                    error!(e, "token_write error");
                     return TokenPipeEndStatus::TS_ERR as i32;
                 }
                 _ => unreachable!("write returned unexpected count"),
@@ -113,12 +106,9 @@ impl TokenPipeEnd {
                     return TokenPipeEndStatus::TS_EOS as i32;
                 }
                 _ if rc < 0 => {
-                    let errno = unsafe { *libc::__errno_location() };
-                    if errno == libc::EINTR {
-                        debug!("token_read interrupted → retry");
-                        continue;
-                    }
-                    error!(errno, "token_read error");
+                    let e = last_errno();
+                    if e == libc::EINTR { debug!("retry after EINTR"); continue; }
+                    error!(e, "token_read error (windows)");
                     return TokenPipeEndStatus::TS_ERR as i32;
                 }
                 _ => unreachable!("read returned unexpected count"),
@@ -126,12 +116,15 @@ impl TokenPipeEnd {
         }
     }
 
-    /// Close this endpoint explicitly.
+    /// Explicitly close this endpoint.
     pub fn close(&mut self) {
         trace!(fd = self.fd, "TokenPipeEnd::close");
         if self.fd != -1 {
             // SAFETY: valid fd / or ignored by OS if already closed.
-            unsafe { libc::close(self.fd) };
+            #[cfg(windows)]
+            unsafe { libc::_close(self.fd); }
+            #[cfg(not(windows))]
+            unsafe { libc::close(self.fd); }
             self.fd = -1;
         }
     }
@@ -167,43 +160,19 @@ mod tokenpipe_end_behavior {
 
     #[traced_test]
     fn roundtrip_single_token() {
-
-        let mut pipe = match TokenPipe::make() {
-            Some(p) => p,
-            None => {
-                panic!("Failed to create TokenPipe");
-            }
-        };
-
+        let mut pipe   = TokenPipe::make().expect("create pipe");
         let mut reader = pipe.take_read_end();
         let mut writer = pipe.take_write_end();
-
-        // Write a single byte.
         assert_eq!(writer.token_write(42), 0);
-
-        // Read it back.
-        let rcv = reader.token_read();
-        assert_eq!(rcv, 42);
-
-        // Clean‑up.
-        writer.close();
-        reader.close();
+        assert_eq!(reader.token_read(), 42);
     }
 
     #[traced_test]
     fn writer_close_signals_eos() {
-
-        let mut pipe = TokenPipe::make().expect("pipe must be creatable");
-
+        let mut pipe   = TokenPipe::make().unwrap();
         let mut reader = pipe.take_read_end();
         let mut writer = pipe.take_write_end();
-
-        // Close writer immediately.
-        writer.close();
-        assert!(!writer.is_open());
-
-        // Reader should observe EOS.
-        let rc = reader.token_read();
-        assert_eq!(rc, TokenPipeEndStatus::TS_EOS as i32);
+        writer.close(); assert!(!writer.is_open());
+        assert_eq!(reader.token_read(), TokenPipeEndStatus::TS_EOS as i32);
     }
 }

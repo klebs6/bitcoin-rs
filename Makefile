@@ -32,15 +32,15 @@ FEATURES :=
 
 #-------------------------------[active-below]
 
-ACTIVE := bitcoin-get-json-token
-ACTIVE := bitcoin-fees
-ACTIVE := bitcoin-univalue
+#ACTIVE := bitcoin-get-json-token # note that this one has a failing test
 ACTIVE := bitcoin-portmap
 ACTIVE := bitcoin-remote
 ACTIVE := bitcoin-sock
-ACTIVE := bitcoin-tokenpipe
-ACTIVE := bitcoin-network
+ACTIVE := bitcoin-fees
+ACTIVE := bitcoin-random
 ACTIVE := bitcoin-settings
+ACTIVE := bitcoin-network
+ACTIVE := bitcoin-tokenpipe
 
 #ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-base58
@@ -48,7 +48,6 @@ ACTIVE := bitcoin-settings
 #ACTIVE := bitcoin-sha256
 #ACTIVE := bitcoin-sha3
 #ACTIVE := bitcoin-sha512
-#ACTIVE := bitcoin-random
 
 #-------------------------------[next]
 #ACTIVE := bitcoinleveldb-arena
@@ -292,3 +291,4 @@ timings:
 #ACTIVE := bitcoin-syscall
 #ACTIVE := bitcoin-crc32c
 #ACTIVE := bitcoin-version
+#ACTIVE := bitcoin-univalue       #note this one has a failing test

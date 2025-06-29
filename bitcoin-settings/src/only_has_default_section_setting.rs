@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-settings/src/only_has_default_section_setting.rs ]
 crate::ix!();
 
 /**
