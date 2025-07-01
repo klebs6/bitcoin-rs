@@ -36,11 +36,10 @@ FEATURES :=
 ACTIVE := bitcoin-fees
 ACTIVE := bitcoin-random
 ACTIVE := bitcoin-settings
-ACTIVE := bitcoin-network
-ACTIVE := bitcoin-tokenpipe
-ACTIVE := bitcoin-sock
-ACTIVE := bitcoin-remote
 ACTIVE := bitcoin-portmap
+ACTIVE := bitcoin-remote
+ACTIVE := bitcoin-sock
+ACTIVE := bitcoin-network
 
 #ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-base58
@@ -292,3 +291,4 @@ timings:
 #ACTIVE := bitcoin-crc32c
 #ACTIVE := bitcoin-version
 #ACTIVE := bitcoin-univalue       #note this one has a failing test
+#ACTIVE := bitcoin-tokenpipe

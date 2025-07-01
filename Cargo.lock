@@ -1832,6 +1832,7 @@ dependencies = [
 name = "bitcoin-network"
 version = "0.1.18"
 dependencies = [
+ "bitcoin-bitstream",
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
@@ -2008,6 +2009,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-sync",
+ "bitcoin-syscall",
  "bitcoin-time",
  "igd",
  "natpmp",
@@ -2375,6 +2377,7 @@ name = "bitcoin-sock"
 version = "0.1.18"
 dependencies = [
  "bitcoin-cfg",
+ "bitcoin-compat",
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-sync",
@@ -2551,6 +2554,7 @@ dependencies = [
 name = "bitcoin-tokenpipe"
 version = "0.1.18"
 dependencies = [
+ "bitcoin-compat",
  "bitcoin-derive",
  "bitcoin-imports",
  "derive_builder",

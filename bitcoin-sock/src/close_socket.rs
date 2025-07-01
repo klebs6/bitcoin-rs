@@ -2,26 +2,42 @@
 crate::ix!();
 
 /**
-  | Close socket and set hSocket to INVALID_SOCKET
+  | Close socket and set `h_socket` to `INVALID_SOCKET`.
   |
+  | Mirrors the original C++ logic while adding rich tracing.
   */
 pub fn close_socket(h_socket: &mut CSocket) -> bool {
-    
-    todo!();
-        /*
-            if (hSocket == INVALID_SOCKET)
-            return false;
+    if *h_socket == INVALID_SOCKET {
+        return false;
+    }
 
-    #ifdef WIN32
-        int ret = closesocket(hSocket);
-    #else
-        int ret = close(hSocket);
-    #endif
+    // --- perform the actual close -------------------------------------------------------------
+    #[cfg(target_os = "windows")]
+    let ret: libc::c_int =
+        unsafe { winapi::um::winsock2::closesocket(*h_socket as winapi::um::winsock2::SOCKET) };
 
-        if (ret) {
-            LogPrintf("Socket close failed: %d. Error: %s\n", hSocket, NetworkErrorString(WSAGetLastError()));
-        }
-        hSocket = INVALID_SOCKET;
-        return ret != SOCKET_ERROR;
-        */
+    #[cfg(not(target_os = "windows"))]
+    let ret: libc::c_int = unsafe { libc::close(*h_socket) };
+    // ------------------------------------------------------------------------------------------
+
+    if ret != 0 {
+        #[cfg(target_os = "windows")]
+        let err_code = unsafe { winapi::um::winsock2::WSAGetLastError() };
+
+        #[cfg(not(target_os = "windows"))]
+        let err_code = last_errno();
+
+        warn!(
+            socket = *h_socket as i64,
+            ret,
+            err_code,
+            "Socket close failed: {}. Error: {}",
+            *h_socket as i64,
+            network_error_string(err_code)
+        );
+    }
+
+    *h_socket = INVALID_SOCKET;
+
+    ret != SOCKET_ERROR
 }

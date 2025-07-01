@@ -2,6 +2,7 @@
 tracing.workspace        = true
 getset.workspace         = true
 derive_builder.workspace = true
+bitcoin-compat = { path = "../bitcoin-compat" }
 
 [dependencies.bitcoin-derive]
 path    = "../bitcoin-derive"

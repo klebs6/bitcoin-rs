@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-portmap/src/statics.rs ]
 crate::ix!();
 
 /// Single global instance mirroring `g_mapport_interrupt` in C++.
@@ -24,21 +25,25 @@ static G_MAPPORT_THREAD: Lazy<Mutex<Option<JoinHandle<()>>>> = Lazy::new(|| Mute
 // Public accessor fns matching the old “callable‐static” style --------------------
 
 #[inline]
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
 pub fn g_mapport_enabled_protos() -> &'static AtomicU32 {
     &G_MAPPORT_ENABLED_PROTOS_STATIC
 }
 
 #[inline]
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
 pub fn g_mapport_current_proto() -> &'static AtomicU32 {
     &G_MAPPORT_CURRENT_PROTO_STATIC
 }
 
 #[inline]
+#[cfg(any(feature = "natpmp", feature = "upnp"))]
 pub fn g_mapport_interrupt() -> &'static ThreadInterrupt {
     &G_MAPPORT_INTERRUPT_STATIC
 }
 
 #[inline]
+#[cfg(feature="natpmp")]
 pub fn g_mapport_external_port() -> &'static Mutex<u16> {
     &G_MAPPORT_EXTERNAL_PORT_STATIC
 }

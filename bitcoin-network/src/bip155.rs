@@ -36,117 +36,146 @@ pub const BIP155_MAX_ADDRV2_SIZE: usize = 512;
 
 impl NetAddr {
 
-    /**
-      | Get the BIP155 network id of this address.
-      | 
-      | Must not be called for IsInternal()
-      | objects.
-      | 
-      | 
-      | -----------
-      | @return
-      | 
-      | BIP155 network id, except TORV2 which
-      | is no longer supported.
-      |
-      */
+    /// Get the BIP155 network id of this address.
+    /// 
+    /// **Panics** if called for an `NET_INTERNAL` object (the caller must ensure that case never
+    /// happens – exactly like the original C++ code). @return
+    /// 
+    /// BIP155 network id, except TORV2 which is no longer supported.
+    ///
+    #[inline]
     pub fn get_bip155network(&self) -> BIP155Network {
-        
-        todo!();
-        /*
-            switch (m_net) {
-        case NET_IPV4:
-            return BIP155Network::IPV4;
-        case NET_IPV6:
-            return BIP155Network::IPV6;
-        case NET_ONION:
-            return BIP155Network::TORV3;
-        case NET_I2P:
-            return BIP155Network::I2P;
-        case NET_CJDNS:
-            return BIP155Network::CJDNS;
-        case NET_INTERNAL:   // should have been handled before calling this function
-        case NET_UNROUTABLE: // m_net is never and should not be set to NET_UNROUTABLE
-        case NET_MAX:        // m_net is never and should not be set to NET_MAX
-            assert(false);
-        } // no default case, so the compiler can warn about missing cases
-
-        assert(false);
-        */
+        trace!(target: "netaddr", net = ?self.net(), "Deriving BIP155 network id");
+        match *self.net() {
+            Network::NET_IPV4     => BIP155Network::IPV4,
+            Network::NET_IPV6     => BIP155Network::IPV6,
+            Network::NET_ONION    => BIP155Network::TORV3,
+            Network::NET_I2P      => BIP155Network::I2P,
+            Network::NET_CJDNS    => BIP155Network::CJDNS,
+            Network::NET_INTERNAL | Network::NET_UNROUTABLE | Network::NET_MAX => {
+                panic!("get_bip155network() called for invalid network variant")
+            }
+        }
     }
     
-    /**
-      | Set `m_net` from the provided BIP155
-      | network id and size after validation.
-      | 
-      | -----------
-      | @return
-      | 
-      | true the network was recognized, is
-      | valid and `m_net` was set
-      | ----------
-      | @return
-      | 
-      | false not recognised (from future?)
-      | and should be silently ignored @throws
-      | std::ios_base::failure if the network
-      | is one of the BIP155 founding networks
-      | (id 1..6) with wrong address size.
-      |
-      */
-    pub fn set_net_from_bip155network(&mut self, 
+    /// Validate `(id,size)` and set `self.net` accordingly.
+    /// 
+    /// Returns `true` for a *known* and *well‑sized* founding network id (1‥6).  
+    ///
+    /// Returns `false` for an *unknown* id (from the future).  
+    ///
+    /// **Panics** on founding ids with a mismatching size – faithful to the C++
+    /// behaviour.
+    ///
+    pub fn set_net_from_bip155network(
+        &mut self,
         possible_bip155_net: u8,
-        address_size:        usize) -> bool {
-        
-        todo!();
-        /*
-            switch (possible_bip155_net) {
-        case BIP155Network::IPV4:
-            if (address_size == ADDR_IPV4_SIZE) {
-                m_net = NET_IPV4;
-                return true;
+        address_size: usize,
+    ) -> bool {
+        debug!(
+            target: "netaddr",
+            id = possible_bip155_net,
+            size = address_size,
+            "Mapping BIP155 id to internal Network"
+        );
+        match possible_bip155_net {
+            x if x == BIP155Network::IPV4 as u8 => {
+                if address_size == ADDR_IPV4_SIZE {
+                    self.set_net(Network::NET_IPV4);
+                    true
+                } else {
+                    panic!(
+                        "BIP155 IPv4 address with length {} (expected {})",
+                        address_size, ADDR_IPV4_SIZE
+                    );
+                }
             }
-            throw std::ios_base::failure(
-                strprintf("BIP155 IPv4 address with length %u (should be %u)", address_size,
-                          ADDR_IPV4_SIZE));
-        case BIP155Network::IPV6:
-            if (address_size == ADDR_IPV6_SIZE) {
-                m_net = NET_IPV6;
-                return true;
+            x if x == BIP155Network::IPV6 as u8 => {
+                if address_size == ADDR_IPV6_SIZE {
+                    self.set_net(Network::NET_IPV6);
+                    true
+                } else {
+                    panic!(
+                        "BIP155 IPv6 address with length {} (expected {})",
+                        address_size, ADDR_IPV6_SIZE
+                    );
+                }
             }
-            throw std::ios_base::failure(
-                strprintf("BIP155 IPv6 address with length %u (should be %u)", address_size,
-                          ADDR_IPV6_SIZE));
-        case BIP155Network::TORV3:
-            if (address_size == ADDR_TORV3_SIZE) {
-                m_net = NET_ONION;
-                return true;
+            x if x == BIP155Network::TORV3 as u8 => {
+                if address_size == ADDR_TORV3_SIZE {
+                    self.set_net(Network::NET_ONION);
+                    true
+                } else {
+                    panic!(
+                        "BIP155 TORv3 address with length {} (expected {})",
+                        address_size, ADDR_TORV3_SIZE
+                    );
+                }
             }
-            throw std::ios_base::failure(
-                strprintf("BIP155 TORv3 address with length %u (should be %u)", address_size,
-                          ADDR_TORV3_SIZE));
-        case BIP155Network::I2P:
-            if (address_size == ADDR_I2P_SIZE) {
-                m_net = NET_I2P;
-                return true;
+            x if x == BIP155Network::I2P as u8 => {
+                if address_size == ADDR_I2P_SIZE {
+                    self.set_net(Network::NET_I2P);
+                    true
+                } else {
+                    panic!(
+                        "BIP155 I2P address with length {} (expected {})",
+                        address_size, ADDR_I2P_SIZE
+                    );
+                }
             }
-            throw std::ios_base::failure(
-                strprintf("BIP155 I2P address with length %u (should be %u)", address_size,
-                          ADDR_I2P_SIZE));
-        case BIP155Network::CJDNS:
-            if (address_size == ADDR_CJDNS_SIZE) {
-                m_net = NET_CJDNS;
-                return true;
+            x if x == BIP155Network::CJDNS as u8 => {
+                if address_size == ADDR_CJDNS_SIZE {
+                    self.set_net(Network::NET_CJDNS);
+                    true
+                } else {
+                    panic!(
+                        "BIP155 CJDNS address with length {} (expected {})",
+                        address_size, ADDR_CJDNS_SIZE
+                    );
+                }
             }
-            throw std::ios_base::failure(
-                strprintf("BIP155 CJDNS address with length %u (should be %u)", address_size,
-                          ADDR_CJDNS_SIZE));
+            // Unknown / future network id – silently ignore.
+            //
+            // Don't throw on addresses with unknown network ids (maybe from the future).
+            // Instead silently drop them and have the unserialization code consume
+            // subsequent ones which may be known to us.
+            _ => false,
         }
+    }
+}
 
-        // Don't throw on addresses with unknown network ids (maybe from the future).
-        // Instead silently drop them and have the unserialization code consume
-        // subsequent ones which may be known to us.
-        return false;
-        */
+#[cfg(test)]
+mod bip155_tests {
+    use super::*;
+
+    #[traced_test]
+    fn mapping_round_trip() {
+        let mut addr = NetAddr::default();
+
+        // IPv4
+        assert!(addr.set_net_from_bip155network(BIP155Network::IPV4 as u8, ADDR_IPV4_SIZE));
+        assert_eq!(addr.get_bip155network() as u8, BIP155Network::IPV4 as u8);
+
+        // IPv6
+        assert!(addr.set_net_from_bip155network(BIP155Network::IPV6 as u8, ADDR_IPV6_SIZE));
+        assert_eq!(addr.get_bip155network() as u8, BIP155Network::IPV6 as u8);
+
+        // Tor v3
+        assert!(addr.set_net_from_bip155network(BIP155Network::TORV3 as u8, ADDR_TORV3_SIZE));
+        assert_eq!(addr.get_bip155network() as u8, BIP155Network::TORV3 as u8);
+    }
+
+    #[test]
+    #[should_panic(expected = "IPv4 address with length")]
+    fn wrong_size_panics() {
+        let mut addr = NetAddr::default();
+        // Founding id with wrong length must panic.
+        addr.set_net_from_bip155network(BIP155Network::IPV4 as u8, 15);
+    }
+
+    #[traced_test]
+    fn unknown_id_is_ignored() {
+        let mut addr = NetAddr::default();
+        assert!(!addr.set_net_from_bip155network(250, 7)); // bogus future id
     }
 }

@@ -23,7 +23,7 @@ crate::ix!();
   |
   */
 #[repr(u8)]
-#[derive(Debug,Serialize,Deserialize,Hash,PartialEq,Eq,Clone)]
+#[derive(Copy,Debug,Serialize,Deserialize,Hash,PartialEq,Eq,Clone)]
 pub enum Network {
 
     /**

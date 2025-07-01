@@ -2,6 +2,7 @@
 tracing.workspace        = true
 derive_builder.workspace = true
 getset.workspace         = true
+bitcoin-bitstream = { path = "../bitcoin-bitstream" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

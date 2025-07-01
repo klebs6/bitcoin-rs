@@ -16,4 +16,3 @@ x!{threadinterrupt}
 x!{types}
 x!{unique_lock}
 x!{lock_api}
-x!{is_thread_joinable}

@@ -5,8 +5,9 @@ crate::ix!();
   | Network address.
   |
   */
-#[derive(Setters,Getters,MutGetters,Debug,Serialize,Deserialize,Clone,Hash)]
+#[derive(Builder,Setters,Getters,MutGetters,Debug,Serialize,Deserialize,Clone,Hash)]
 #[getset(get="pub",set="pub",get_mut="pub")]
+#[builder(setter(into))]
 pub struct NetAddr {
 
     /**

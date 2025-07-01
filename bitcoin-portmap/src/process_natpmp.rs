@@ -49,14 +49,14 @@ pub fn process_natpmp() -> bool {
             NATPMP_PROTOCOL_TCP,
             private_port,
             {
-                let ext = *ext_port.lock().expect("lock");
+                let ext = *ext_port.lock();
                 ext
             },
             0, /* lifetime 0 removes mapping */
         );
 
         {
-            let mut ext = ext_port.lock().expect("lock");
+            let mut ext = ext_port.lock();
             *ext = 0;
         }
 
@@ -153,13 +153,13 @@ mod process_natpmp_tests {
                 NATPMP_PROTOCOL_TCP,
                 private_port,
                 {
-                    let ext = *ext_port.lock().expect("lock");
+                    let ext = *ext_port.lock();
                     ext
                 },
                 0,
             );
             {
-                let mut ext = ext_port.lock().expect("lock");
+                let mut ext = ext_port.lock();
                 *ext = 0;
             }
         }

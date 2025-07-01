@@ -33,11 +33,11 @@ const_assert!{
 
 /// 20 minutes
 #[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub const PORT_MAPPING_REANNOUNCE_PERIOD: Duration = Duration::from_secs(20 * 60);
+pub const PORT_MAPPING_REANNOUNCE_PERIOD: Duration = Duration::seconds(20 * 60);
 
 /// 5 minutes
 #[cfg(any(feature = "natpmp", feature = "upnp"))]
-pub const PORT_MAPPING_RETRY_PERIOD:      Duration = Duration::from_secs(5  * 60);
+pub const PORT_MAPPING_RETRY_PERIOD:      Duration = Duration::seconds(5  * 60);
 
 #[cfg(feature="natpmp")]
 pub fn natpmp_init(natpmp: *mut Natpmp) -> bool {

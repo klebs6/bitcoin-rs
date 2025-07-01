@@ -11,9 +11,11 @@ pub const INVALID_SOCKET: CSocket = !0;
 pub const SOCKET_ERROR: libc::c_int = -1;
 
 #[cfg(not(WIN32))]
+#[allow(non_camel_case_types)]
 pub type sockopt_arg_type = *mut c_void;
 
 #[cfg(WIN32)]
+#[allow(non_camel_case_types)]
 pub type sockopt_arg_type = *mut u8;
 
 /**

@@ -4,5 +4,9 @@
 x!{auth_cookie}
 x!{convert_param}
 x!{convert_table}
-x!{json_request}
+x!{delete_auth_cookie}
 x!{error_code}
+x!{generate_auth_cookie}
+x!{get_auth_cookie}
+x!{json_request}
+x!{register}

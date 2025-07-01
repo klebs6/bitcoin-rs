@@ -11,3 +11,4 @@ x!{stdin}
 x!{stdin_unix}
 x!{stdin_windows}
 x!{strnlen}
+x!{last_errno}

@@ -108,3 +108,61 @@ impl TokenPipe {
         self
     }
 }
+
+#[cfg(all(test, not(windows)))]
+mod tokenpipe_pipe_behavior {
+    use super::*;
+
+    // -------------------------------------------------------------
+    //  take_read_end / take_write_end are move‑only
+    // -------------------------------------------------------------
+    #[traced_test]
+    fn endpoints_are_moved_only_once() {
+
+        let mut pipe = TokenPipe::make().expect("pipe creation");
+
+        // First call succeeds
+        let _r1 = pipe.take_read_end();
+        let _w1 = pipe.take_write_end();
+
+        // Subsequent calls hand back closed endpoints
+        let mut r2 = pipe.take_read_end();
+        let mut w2 = pipe.take_write_end();
+        assert_eq!(r2.token_read(), TokenPipeEndStatus::TS_ERR as i32);
+        assert_eq!(w2.token_write(1), TokenPipeEndStatus::TS_ERR as i32);
+    }
+
+    // -------------------------------------------------------------
+    //  assign_from moves FD ownership
+    // -------------------------------------------------------------
+    #[traced_test]
+    fn assign_from_transfers_fd() {
+
+        let mut pipe   = TokenPipe::make().expect("pipe creation");
+        let mut writer1 = pipe.take_write_end();       // valid writer
+        let mut writer2 = TokenPipeEnd::new(None);     // closed endpoint
+
+        // Transfer ownership
+        writer2.assign_from(writer1);
+
+        // Roundtrip through new owner
+        let mut reader = pipe.take_read_end();
+        assert_eq!(writer2.token_write(0xAB), 0);
+        assert_eq!(reader.token_read(),       0xAB);
+    }
+
+    // -------------------------------------------------------------
+    //  Closing a pipe before taking endpoints
+    // -------------------------------------------------------------
+    #[traced_test]
+    fn close_then_take_returns_closed_endpoints() {
+
+        let mut pipe = TokenPipe::make().expect("pipe creation");
+        pipe.close();
+
+        let mut r = pipe.take_read_end();
+        let mut w = pipe.take_write_end();
+        assert_eq!(r.token_read(),            TokenPipeEndStatus::TS_ERR as i32);
+        assert_eq!(w.token_write(77),         TokenPipeEndStatus::TS_ERR as i32);
+    }
+}

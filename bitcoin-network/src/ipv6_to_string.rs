@@ -1,68 +1,43 @@
 // ---------------- [ File: bitcoin-network/src/ipv6_to_string.rs ]
 crate::ix!();
 
-/**
-  | Return an IPv6 address text representation with
-  | zero compression as described in RFC 5952 ("A
-  | Recommendation for IPv6 Address Text
-  | Representation").
-  */
-pub fn ipv6_to_string(
-        a:        &[u8],
-        scope_id: u32) -> String {
-    
-    todo!();
-        /*
-            assert(a.size() == ADDR_IPV6_SIZE);
-        const std::array groups{
-            ReadBE16(&a[0]),
-            ReadBE16(&a[2]),
-            ReadBE16(&a[4]),
-            ReadBE16(&a[6]),
-            ReadBE16(&a[8]),
-            ReadBE16(&a[10]),
-            ReadBE16(&a[12]),
-            ReadBE16(&a[14]),
-        };
+/// Return an IPv6 address text representation with zero compression as described in RFC 5952 ("A Recommendation for IPv6 Address Text Representation").
+#[inline]
+pub fn ipv6_to_string(a: &[u8], scope_id: u32) -> String {
+    debug!(target: "netaddr", bytes=?a, scope_id, "Formatting IPv6 address");
+    assert!(
+        a.len() == ADDR_IPV6_SIZE,
+        "ipv6_to_string expects 16‑byte slice"
+    );
 
-        // The zero compression implementation is inspired by Rust's std::net::Ipv6Addr, see
-        // https://github.com/rust-lang/rust/blob/cc4103089f40a163f6d143f06359cba7043da29b/library/std/src/net/ip.rs#L1635-L1683
-        struct ZeroSpan {
-            size_t start_index{0};
-            size_t len{0};
-        };
+    let addr = std::net::Ipv6Addr::from(<[u8; 16]>::try_from(a).unwrap());
+    let mut s = addr.to_string(); // Rust's implementation follows RFC 5952
 
-        // Find longest sequence of consecutive all-zero fields. Use first zero sequence if two or more
-        // zero sequences of equal length are found.
-        ZeroSpan longest, current;
-        for (size_t i{0}; i < groups.size(); ++i) {
-            if (groups[i] != 0) {
-                current = {i + 1, 0};
-                continue;
-            }
-            current.len += 1;
-            if (current.len > longest.len) {
-                longest = current;
-            }
-        }
+    if scope_id != 0 {
+        s.push('%');
+        s.push_str(&scope_id.to_string());
+    }
+    s
+}
 
-        std::string r;
-        r.reserve(39);
-        for (size_t i{0}; i < groups.size(); ++i) {
-            // Replace the longest sequence of consecutive all-zero fields with two colons ("::").
-            if (longest.len >= 2 && i >= longest.start_index && i < longest.start_index + longest.len) {
-                if (i == longest.start_index) {
-                    r += "::";
-                }
-                continue;
-            }
-            r += strprintf("%s%x", ((!r.empty() && r.back() != ':') ? ":" : ""), groups[i]);
-        }
+#[cfg(test)]
+mod ipv6_fmt_tests {
+    use super::*;
 
-        if (scope_id != 0) {
-            r += strprintf("%%%u", scope_id);
-        }
+    #[traced_test]
+    fn loopback_formatting() {
+        let ip = [0u8; 15].into_iter().chain(std::iter::once(1)).collect::<Vec<_>>();
+        assert_eq!(ipv6_to_string(&ip, 0), "::1");
+    }
 
-        return r;
-        */
+    #[traced_test]
+    fn scoped_link_local() {
+        // FE80::1234 with scope id 4 → "fe80::1234%4"
+        let mut ip = [0u8; 16];
+        ip[0] = 0xFE;
+        ip[1] = 0x80;
+        ip[14] = 0x12;
+        ip[15] = 0x34;
+        assert_eq!(ipv6_to_string(&ip, 4), "fe80::1234%4");
+    }
 }

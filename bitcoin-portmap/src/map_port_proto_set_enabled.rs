@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-portmap/src/flag.rs ]
+// ---------------- [ File: bitcoin-portmap/src/map_port_proto_set_enabled.rs ]
 crate::ix!();
 
 /// Atomically enable or disable a `MapPortProtoFlag`.
@@ -51,33 +51,33 @@ mod map_port_proto_flag_behavior {
     #[traced_test]
     fn verifies_flag_mask_transitions() {
         // Reset to a known state.
-        G_MAPPORT_ENABLED_PROTOS.store(MapPortProtoFlag::NONE as u32, atomic::Ordering::SeqCst);
+        g_mapport_enabled_protos().store(MapPortProtoFlag::NONE as u32, atomic::Ordering::SeqCst);
 
         // Enable UPNP.
         map_port_proto_set_enabled(MapPortProtoFlag::UPNP, true);
         assert_eq!(
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst),
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst),
             MapPortProtoFlag::UPNP as u32
         );
 
         // Enable NAT‑PMP in addition.
         map_port_proto_set_enabled(MapPortProtoFlag::NAT_PMP, true);
         assert_eq!(
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst),
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst),
             (MapPortProtoFlag::UPNP as u32) | (MapPortProtoFlag::NAT_PMP as u32)
         );
 
         // Disable UPNP.
         map_port_proto_set_enabled(MapPortProtoFlag::UPNP, false);
         assert_eq!(
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst),
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst),
             MapPortProtoFlag::NAT_PMP as u32
         );
 
         // Disable NAT‑PMP, leaving mask empty.
         map_port_proto_set_enabled(MapPortProtoFlag::NAT_PMP, false);
         assert_eq!(
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst),
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst),
             MapPortProtoFlag::NONE as u32
         );
     }
@@ -87,33 +87,33 @@ mod map_port_proto_flag_behavior {
     #[traced_test]
     fn transitions_match_reference() {
         // Start from a clean slate.
-        G_MAPPORT_ENABLED_PROTOS.store(MapPortProtoFlag::NONE as u32, atomic::Ordering::SeqCst);
+        g_mapport_enabled_protos().store(MapPortProtoFlag::NONE as u32, atomic::Ordering::SeqCst);
 
         // Enable UPnP.
         map_port_proto_set_enabled(MapPortProtoFlag::UPNP, true);
         assert_eq!(
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst),
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst),
             MapPortProtoFlag::UPNP as u32
         );
 
         // Enable NAT‑PMP alongside.
         map_port_proto_set_enabled(MapPortProtoFlag::NAT_PMP, true);
         assert_eq!(
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst),
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst),
             (MapPortProtoFlag::UPNP as u32) | (MapPortProtoFlag::NAT_PMP as u32)
         );
 
         // Disable UPnP.
         map_port_proto_set_enabled(MapPortProtoFlag::UPNP, false);
         assert_eq!(
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst),
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst),
             MapPortProtoFlag::NAT_PMP as u32
         );
 
         // Disable NAT‑PMP.
         map_port_proto_set_enabled(MapPortProtoFlag::NAT_PMP, false);
         assert_eq!(
-            G_MAPPORT_ENABLED_PROTOS.load(atomic::Ordering::SeqCst),
+            g_mapport_enabled_protos().load(atomic::Ordering::SeqCst),
             MapPortProtoFlag::NONE as u32
         );
     }
