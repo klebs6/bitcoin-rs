@@ -217,7 +217,7 @@ members = [
 atomic                  = "0.5.1"
 atomic-take             = "1.0.0"
 atomic_float            = "0.1.0"
-bincode                 = { version = "*", features = ["serde"] }
+bincode                 = { version = "2.0.1", features = ["serde"] }
 bitflags                = "1.3.2"
 bitset                  = "0.1.2"
 comparator              = "0.3.0"
@@ -234,8 +234,10 @@ integer-encoding        = "3.0.4"
 lazy_static             = "1.4.0"
 libc                    = "0.2.126"
 libc-stdhandle          = "0.1.0"
-libevent                = { version = "*", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
-libevent-sys            = { version = "*", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
+#libevent                = { version = "*", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
+#libevent-sys            = { version = "*", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
+libevent                = { version = "0.1.0" }
+libevent-sys            = { version = "0.3.0" }
 lock_api                = "0.4.7"
 maplit                  = "1.0.2"
 modular-bitfield        = "0.11.2"
@@ -244,7 +246,7 @@ multimap                = "0.8.3"
 multiset                = "0.0.5"
 nix                     = "0.24.1"
 num                     = "0.4.0"
-once_cell               = "*"
+once_cell               = "1.21.3"
 parking_lot             = "0.12.1"
 phf                     = { version = "0.10",    features   = [ "macros" ]  }
 pnet_sys                = "0.31.0"
@@ -255,7 +257,7 @@ same-file               = "1.0.6"
 scan-crate-for-typedefs = "0.6.0"
 serde                   = { version = "1.0.152", features   = [ "derive", "serde_derive", "rc" ]  }
 serde-big-array         = "0.4.1"
-serde_test              = "*"
+serde_test              = "1.0.177"
 shared-mutex            = "0.3.1"
 socket2                 = "0.4.4"
 sqlite                  = "0.25.3"
@@ -265,35 +267,35 @@ thiserror               = "1.0.31"
 time                    = { version = "0.3.9",   features   = [ "std", "rand", "serde" ]  }
 time-point              = "0.1.1"
 tinyvec                 = { version = "1.5.1",   features   = [ "alloc", "rustc_1_55", "serde" ]  }
-traced-test             = "*"
-tracing                 = { version = "*", features = ["log"] }
-tracing-setup           = "*"
-tracing-subscriber      = { version = "*", default-features = false, features = ["fmt", "std", "env-filter", "json"] }
+traced-test             = "1.0.4"
+tracing                 = { version = "0.1.41", features = ["log"] }
+tracing-setup           = "1.0.4"
+tracing-subscriber      = { version = "0.3.19", default-features = false, features = ["fmt", "std", "env-filter", "json"] }
 try-catch               = "0.2.2"
-usdt                    = "*"
-usdt-impl               = "*"
+usdt                    = "0.5.0"
+usdt-impl               = "0.5.0"
 winapi                  = "0.2.8"
-chrono                  = "*"
-derive_builder          = "*"
-getset                  = "*"
-serial_test             = "*"
-num-traits              = "*"
-num-bigint              = "*"
-sha1                    = "*"
-sha256                  = "*"
-hex                     = "*"
-zeroize                 = "*"
-poly1305                = "*"
-hex-literal             = "*"
-rand_chacha             = "*"
-generic-array           = "*"
+chrono                  = "0.4.41"
+derive_builder          = "0.20.2"
+getset                  = "0.1.5"
+serial_test             = "0.5.1"
+num-traits              = "0.1.43"
+num-bigint              = "0.4.6"
+sha1                    = "0.10.6"
+sha256                  = "1.6.0"
+hex                     = "0.4.3"
+zeroize                 = "1.8.1"
+#poly1305                = "*"
+hex-literal             = "1.0.0"
+rand_chacha             = "0.3.1"
+generic-array           = "0.14.7"
 rand_core               = "0.9.3"
-proptest                = "*"
-zerocopy                = "*"
-paste                   = "*"
-ryu                     = "*"
-criterion               = "*"
+proptest                = "1.7.0"
+zerocopy                = "0.7.35"
+paste                   = "1.0.15"
+ryu                     = "1.0.20"
+criterion               = "0.6.0"
 
-igd    = { version = "*" } # UPnP / IGD protocol
-natpmp = { version = "*" } # NAT‑PMP protocol
+igd    = { version = "0.12.1" } # UPnP / IGD protocol
+natpmp = { version = "0.5.0" } # NAT‑PMP protocol
 
