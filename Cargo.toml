@@ -234,10 +234,10 @@ integer-encoding        = "3.0.4"
 lazy_static             = "1.4.0"
 libc                    = "0.2.126"
 libc-stdhandle          = "0.1.0"
-#libevent                = { version = "*", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
-#libevent-sys            = { version = "*", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
-libevent                = { version = "0.1.0" }
-libevent-sys            = { version = "0.3.0" }
+libevent                = { version = "0.1.0", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
+libevent-sys            = { version = "0.2.5", git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
+#libevent                = { version = "0.1.0" }
+#libevent-sys            = { version = "0.3.0" }
 lock_api                = "0.4.7"
 maplit                  = "1.0.2"
 modular-bitfield        = "0.11.2"
