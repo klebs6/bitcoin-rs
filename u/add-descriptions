@@ -216,7 +216,7 @@ sub ensure-correct-toml($file) {
 
     %toml<package><description>   = %descriptions{$name};
     %toml<package><readme>        = "../README";
-    %toml<package><repository>    = "https://github.com/klebz/bitcoin-rs";
+    %toml<package><repository>    = "https://github.com/klebs6/bitcoin-rs";
     %toml<package><documentation> = "https://docs.rs/$name";
 
     $file.IO.spurt: to-toml(%toml);

@@ -37,7 +37,7 @@ documentation = "https://docs.rs/bitcoinsecp256k1-ec"
 edition = "2021"
 license = "MIT"
 name = "bitcoinsecp256k1-ec"
-repository = "https://github.com/klebz/bitcoin-rs"
+repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.18"
 
 [package.metadata]

@@ -49,7 +49,7 @@ documentation = "https://docs.rs/bitcoin-mainsignals"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-mainsignals"
-repository = "https://github.com/klebz/bitcoin-rs"
+repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.18"
 
 [package.metadata]

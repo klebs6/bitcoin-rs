@@ -69,7 +69,7 @@ documentation = "https://docs.rs/bitcoinchain-params"
 edition = "2021"
 license = "MIT"
 name = "bitcoinchain-params"
-repository = "https://github.com/klebz/bitcoin-rs"
+repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.18"
 
 [package.metadata]

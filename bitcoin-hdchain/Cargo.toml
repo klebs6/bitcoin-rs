@@ -17,7 +17,7 @@ documentation = "https://docs.rs/bitcoin-hdchain"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-hdchain"
-repository = "https://github.com/klebz/bitcoin-rs"
+repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.18"
 
 [package.metadata]

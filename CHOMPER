@@ -3,7 +3,7 @@ incomplete) transpiler named `chomper` for this
 purpose.  
 
 It may be found here:
-https://github.com/klebz/chomper
+https://github.com/klebs6/chomper
 
 The language is `Raku` which is wonderful for text
 processing.

@@ -45,13 +45,15 @@ version = "0.1.18"
 
 [package]
 authors = ["klebs <none>"]
-description = "a 256-bit opaque blob type and a 256-bit unsigned big integer type for working with Bitcoin data structures."
+description = "A Rust crate for handling 256-bit unsigned integers, optimized for blockchain computations, offering arithmetic operations and compact representation conversions."
 documentation = "https://docs.rs/bitcoin-u256"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-u256"
-repository = "https://github.com/klebz/bitcoin-rs"
+repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.18"
+keywords = ["bitcoin", "u256", "blockchain", "cryptography", "arithmetic"]
+categories = ["cryptography", "finance", "mathematics", "data-structures", "encoding"]
 
 [package.metadata]
 cpp-authors = [
