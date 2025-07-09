@@ -18,10 +18,21 @@ workspace = true
 
 [package]
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
+categories = [
+    "memory-management",
+    "data-structures",
+    "compilers",
+    "development-tools",
+]
+description = "Efficient arena-based memory management crate for high-performance Rust applications, facilitating customized memory allocations."
 edition = "2024"
+keywords = [
+    "arena",
+    "memory",
+    "allocation",
+    "performance",
+    "custom",
+]
 license = "MIT"
 name = "bitcoin-arena"
-version = "0.1.1"
-description = "Efficient arena-based memory management crate for high-performance Rust applications, facilitating customized memory allocations."
-keywords = ["arena", "memory", "allocation", "performance", "custom"]
-categories = ["memory-management", "data-structures", "compilers", "development-tools"]
+version = "0.1.2"

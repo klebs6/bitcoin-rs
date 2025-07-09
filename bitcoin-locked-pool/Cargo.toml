@@ -1,6 +1,6 @@
 [dependencies.bitcoin-arena]
 path = "../bitcoin-arena"
-version = "0.1.1"
+version = "0.1.2"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -26,10 +26,20 @@ workspace = true
 
 [package]
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
+categories = [
+    "cryptography",
+    "memory-management",
+    "data-structures",
+]
+description = "A memory pool for locked memory chunks to securely handle sensitive data, preventing it from being swapped to disk."
 edition = "2024"
+keywords = [
+    "lockedmemory",
+    "memorypool",
+    "security",
+    "cryptography",
+    "memorymanagement",
+]
 license = "MIT"
 name = "bitcoin-locked-pool"
 version = "0.1.1"
-description = "A memory pool for locked memory chunks to securely handle sensitive data, preventing it from being swapped to disk."
-keywords = ["lockedmemory", "memorypool", "security", "cryptography", "memorymanagement"]
-categories = ["cryptography", "memory-management", "data-structures"]
