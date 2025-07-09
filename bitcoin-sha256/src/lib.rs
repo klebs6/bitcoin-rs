@@ -1,6 +1,7 @@
 // ---------------- [ File: bitcoin-sha256/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
+//TODO: this crate will be translated soon
 x!{sha256_avx2}
 x!{hash}
 x!{sha256_sse4}
