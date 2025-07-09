@@ -1,0 +1,5 @@
+# .cargo/config.toml
+[patch.crates-io]
+libevent       = { git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
+libevent-sys   = { git = "https://github.com/klebs6/libevent-rs", branch = "patch-1" }
+
