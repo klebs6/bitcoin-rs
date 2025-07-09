@@ -60,6 +60,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
+version = "0.1.18"
 
 [dependencies.bitcoinnode-interface]
 path = "../bitcoinnode-interface"

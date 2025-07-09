@@ -16,12 +16,12 @@ version = "1.4.0"
 [dependencies.libevent]
 branch = "patch-1"
 git = "https://github.com/klebs6/libevent-rs"
-version = "*"
+version = "0.1.0"
 
 [dependencies.libevent-sys]
 branch = "patch-1"
 git = "https://github.com/klebs6/libevent-rs"
-version = "*"
+version = "0.2.6"
 
 [dependencies.multimap]
 version = "0.8.3"

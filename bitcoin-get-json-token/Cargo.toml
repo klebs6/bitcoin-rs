@@ -13,4 +13,4 @@ description = "todo: write a description here"
 tracing.workspace  = true
 ryu.workspace      = true
 zerocopy.workspace = true
-bitcoin-imports    = { path = "../bitcoin-imports" }
+bitcoin-imports    = { path = "../bitcoin-imports" , version = "0.1.18" }

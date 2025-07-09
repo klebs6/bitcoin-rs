@@ -2,7 +2,7 @@
 tracing.workspace = true
 ryu.workspace = true
 zerocopy.workspace = true
-bitcoin-get-json-token = { path = "../bitcoin-get-json-token" }
+bitcoin-get-json-token = { path = "../bitcoin-get-json-token" , version = "0.1.0" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

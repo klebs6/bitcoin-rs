@@ -4,9 +4,11 @@ version = "0.1.1"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
+version = "0.1.18"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
+version = "0.1.18"
 
 [dependencies.bitcoin-locked-page-allocator]
 path = "../bitcoin-locked-page-allocator"
@@ -14,6 +16,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
+version = "0.1.18"
 
 [dependencies.derive_builder]
 workspace = true

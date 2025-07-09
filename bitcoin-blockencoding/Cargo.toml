@@ -4,6 +4,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
+version = "0.1.18"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
@@ -35,6 +36,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
+version = "0.1.18"
 
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"

@@ -52,9 +52,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
+version = "0.1.18"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
+version = "0.1.18"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"

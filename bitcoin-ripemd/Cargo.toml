@@ -1,6 +1,6 @@
 [dependencies]
 tracing.workspace = true
-bitcoin-bitstream = { path = "../bitcoin-bitstream" }
+bitcoin-bitstream = { path = "../bitcoin-bitstream" , version = "0.1.18" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

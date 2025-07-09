@@ -20,6 +20,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-autofile]
 path = "../bitcoin-autofile"
+version = "0.1.19"
 
 [dependencies.bitcoin-banman]
 path = "../bitcoin-banman"
@@ -27,6 +28,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
+version = "0.1.18"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
@@ -134,9 +136,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
+version = "0.1.18"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
+version = "0.1.18"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
@@ -163,12 +167,12 @@ version = "0.2.126"
 [dependencies.libevent]
 branch = "patch-1"
 git = "https://github.com/klebs6/libevent-rs"
-version = "*"
+version = "0.1.0"
 
 [dependencies.libevent-sys]
 branch = "patch-1"
 git = "https://github.com/klebs6/libevent-rs"
-version = "*"
+version = "0.2.6"
 
 [dependencies.num]
 version = "0.4.0"
