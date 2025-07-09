@@ -1,10 +1,12 @@
 [package]
 name = "bitcoin-get-json-token"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
+authors = ["klebs6 <tpk3.mx@gmail.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "A comprehensive Rust library for parsing and tokenizing JSON data, optimized for Bitcoin applications."
+keywords = ["json", "bitcoin", "tokenization", "parsing", "cryptocurrency"]
+categories = ["cryptography", "parsing", "finance", "algorithms"]
 
 # keywords = []
 # categories = []

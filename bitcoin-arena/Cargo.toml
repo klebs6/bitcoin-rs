@@ -17,9 +17,11 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+authors = ["klebs6 <tpk3.mx@gmail.com>"]
 edition = "2024"
 license = "MIT"
 name = "bitcoin-arena"
 version = "0.1.1"
+description = "Efficient arena-based memory management crate for high-performance Rust applications, facilitating customized memory allocations."
+keywords = ["arena", "memory", "allocation", "performance", "custom"]
+categories = ["memory-management", "data-structures", "compilers", "development-tools"]

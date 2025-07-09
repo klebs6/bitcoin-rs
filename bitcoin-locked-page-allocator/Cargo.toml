@@ -10,9 +10,11 @@ version = "0.1.18"
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+authors = ["klebs6 <tpk3.mx@gmail.com>"]
 edition = "2024"
 license = "MIT"
 name = "bitcoin-locked-page-allocator"
 version = "0.1.18"
+description = "Provides OS-dependent allocation of locked memory pages, minimizing paging out of sensitive data."
+keywords = ["allocator", "memory", "cryptography", "secure", "pinned"]
+categories = ["os", "memory-management", "cryptography", "concurrency"]
