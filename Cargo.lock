@@ -515,7 +515,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-arena"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
@@ -1625,7 +1625,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-locked-pool"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "bitcoin-arena",
  "bitcoin-derive",
@@ -2458,7 +2458,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-syscall"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bitcoin-imports",
  "derive_builder",
