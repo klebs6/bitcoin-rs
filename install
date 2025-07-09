@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-../klebs-general/workspacer/target/debug/ws --trace publish crate-tree --path . --root  bitcoin-locked-pool
-../klebs-general/workspacer/target/debug/ws --trace publish crate-tree --path . --root  bitcoin-locked-page-allocator
+#../klebs-general/workspacer/target/debug/ws --trace publish crate-tree --path . --root  bitcoin-locked-pool
+#../klebs-general/workspacer/target/debug/ws --trace publish crate-tree --path . --root  bitcoin-locked-page-allocator
 ../klebs-general/workspacer/target/debug/ws --trace publish crate-tree --path . --root  bitcoin-arena
-../klebs-general/workspacer/target/debug/ws --trace publish crate-tree --path . --root  bitcoin-syscall
+#../klebs-general/workspacer/target/debug/ws --trace publish crate-tree --path . --root  bitcoin-syscall

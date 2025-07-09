@@ -44,9 +44,9 @@ ACTIVE := bitcoin-network
 #ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-base58
 #ACTIVE := bitcoin-muhash
-#ACTIVE := bitcoin-sha256
 #ACTIVE := bitcoin-sha3
 #ACTIVE := bitcoin-sha512
+ACTIVE := bitcoin-sha256
 
 #-------------------------------[next]
 #ACTIVE := bitcoinleveldb-arena

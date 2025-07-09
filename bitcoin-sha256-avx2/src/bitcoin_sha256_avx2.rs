@@ -1,302 +1,334 @@
-// ---------------- [ File: bitcoin-sha256/src/sha256_sse41.rs ]
+#[!cfg(ENABLE_AVX2)]
+
+/**
+  | Check whether the OS has enabled AVX
+  | registers.
+  |
+  */
+#[cfg(all(USE_ASM,any(any(__x86_64__,__amd64__),__i386__)))]
+pub fn avx_enabled() -> bool {
+    
+    todo!();
+        /*
+            uint32_t a, d;
+        __asm__("xgetbv" : "=a"(a), "=d"(d) : "c"(0));
+        return (a & 6) == 6;
+        */
+}
+
+pub fn sha256d64_avx2_transform_8way(
+        out: *mut u8,
+        in_: *const u8)  {
+    
+    todo!();
+        /*
+        
+        */
+}
+
+//-------------------------------------------[.cpp/bitcoin/src/crypto/sha256_avx2.cpp]
 crate::ix!();
 
-//-------------------------------------------[.cpp/bitcoin/src/crypto/sha256_sse41.cpp]
+#[inline] pub fn k(x: u32) -> __m256i {
+    
+    todo!();
+        /*
+            return _mm256_set1_epi32(x);
+        */
+}
 
-#[cfg(ENABLE_SSE41)]
-pub mod sha256d64_sse41 {
+#[inline] pub fn add(
+        x: __m256i,
+        y: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return _mm256_add_epi32(x, y);
+        */
+}
 
-    #[inline] pub fn k(x: u32) -> __m128i {
-        
-        todo!();
-            /*
-                return _mm_set1_epi32(x);
-            */
-    }
+#[inline] pub fn add(
+        x: __m256i,
+        y: __m256i,
+        z: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Add(Add(x, y), z);
+        */
+}
 
-    #[inline] pub fn add(
-            x: __m128i,
-            y: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return _mm_add_epi32(x, y);
-            */
-    }
+#[inline] pub fn add(
+        x: __m256i,
+        y: __m256i,
+        z: __m256i,
+        w: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Add(Add(x, y), Add(z, w));
+        */
+}
 
-    #[inline] pub fn add(
-            x: __m128i,
-            y: __m128i,
-            z: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return Add(Add(x, y), z);
-            */
-    }
+#[inline] pub fn add(
+        x: __m256i,
+        y: __m256i,
+        z: __m256i,
+        w: __m256i,
+        v: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Add(Add(x, y, z), Add(w, v));
+        */
+}
 
-    #[inline] pub fn add(
-            x: __m128i,
-            y: __m128i,
-            z: __m128i,
-            w: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return Add(Add(x, y), Add(z, w));
-            */
-    }
+#[inline] pub fn inc(
+        x: &mut __m256i,
+        y: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            x = Add(x, y); return x;
+        */
+}
 
-    #[inline] pub fn add(
-            x: __m128i,
-            y: __m128i,
-            z: __m128i,
-            w: __m128i,
-            v: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return Add(Add(x, y, z), Add(w, v));
-            */
-    }
+#[inline] pub fn inc(
+        x: &mut __m256i,
+        y: __m256i,
+        z: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            x = Add(x, y, z); return x;
+        */
+}
 
-    #[inline] pub fn inc(
-            x: &mut __m128i,
-            y: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                x = Add(x, y); return x;
-            */
-    }
+#[inline] pub fn inc(
+        x: &mut __m256i,
+        y: __m256i,
+        z: __m256i,
+        w: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            x = Add(x, y, z, w); return x;
+        */
+}
 
-    #[inline] pub fn inc(
-            x: &mut __m128i,
-            y: __m128i,
-            z: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                x = Add(x, y, z); return x;
-            */
-    }
+#[inline] pub fn xor(
+        x: __m256i,
+        y: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return _mm256_xor_si256(x, y);
+        */
+}
 
-    #[inline] pub fn inc(
-            x: &mut __m128i,
-            y: __m128i,
-            z: __m128i,
-            w: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                x = Add(x, y, z, w); return x;
-            */
-    }
+#[inline] pub fn xor(
+        x: __m256i,
+        y: __m256i,
+        z: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Xor(Xor(x, y), z);
+        */
+}
 
-    #[inline] pub fn xor(
-            x: __m128i,
-            y: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return _mm_xor_si128(x, y);
-            */
-    }
+#[inline] pub fn or(
+        x: __m256i,
+        y: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return _mm256_or_si256(x, y);
+        */
+}
 
-    #[inline] pub fn xor(
-            x: __m128i,
-            y: __m128i,
-            z: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return Xor(Xor(x, y), z);
-            */
-    }
+#[inline] pub fn and(
+        x: __m256i,
+        y: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return _mm256_and_si256(x, y);
+        */
+}
 
-    #[inline] pub fn or(
-            x: __m128i,
-            y: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return _mm_or_si128(x, y);
-            */
-    }
+#[inline] pub fn shr(
+        x: __m256i,
+        n: i32) -> __m256i {
+    
+    todo!();
+        /*
+            return _mm256_srli_epi32(x, n);
+        */
+}
 
-    #[inline] pub fn and(
-            x: __m128i,
-            y: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return _mm_and_si128(x, y);
-            */
-    }
+#[inline] pub fn shl(
+        x: __m256i,
+        n: i32) -> __m256i {
+    
+    todo!();
+        /*
+            return _mm256_slli_epi32(x, n);
+        */
+}
 
-    #[inline] pub fn shr(
-            x: __m128i,
-            n: i32) -> __m128i {
-        
-        todo!();
-            /*
-                return _mm_srli_epi32(x, n);
-            */
-    }
 
-    #[inline] pub fn shl(
-            x: __m128i,
-            n: i32) -> __m128i {
-        
-        todo!();
-            /*
-                return _mm_slli_epi32(x, n);
-            */
-    }
+#[inline] pub fn ch(
+        x: __m256i,
+        y: __m256i,
+        z: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Xor(z, And(x, Xor(y, z)));
+        */
+}
 
-    #[inline] pub fn ch(
-            x: __m128i,
-            y: __m128i,
-            z: __m128i)  {
-        
-        todo!();
-            /*
-                return Xor(z, And(x, Xor(y, z)));
-            */
-    }
+#[inline] pub fn maj(
+        x: __m256i,
+        y: __m256i,
+        z: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Or(And(x, y), And(z, Or(x, y)));
+        */
+}
 
-    #[inline] pub fn maj(
-            x: __m128i,
-            y: __m128i,
-            z: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return Or(And(x, y), And(z, Or(x, y)));
-            */
-    }
+#[inline] pub fn sigma0(x: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Xor(Or(ShR(x, 2), ShL(x, 30)), Or(ShR(x, 13), ShL(x, 19)), Or(ShR(x, 22), ShL(x, 10)));
+        */
+}
 
-    #[inline] pub fn sigma0(x: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return Xor(Or(ShR(x, 2), ShL(x, 30)), Or(ShR(x, 13), ShL(x, 19)), Or(ShR(x, 22), ShL(x, 10)));
-            */
-    }
+#[inline] pub fn sigma1(x: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Xor(Or(ShR(x, 6), ShL(x, 26)), Or(ShR(x, 11), ShL(x, 21)), Or(ShR(x, 25), ShL(x, 7)));
+        */
+}
 
-    #[inline] pub fn sigma1(x: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return Xor(Or(ShR(x, 6), ShL(x, 26)), Or(ShR(x, 11), ShL(x, 21)), Or(ShR(x, 25), ShL(x, 7)));
-            */
-    }
+#[inline] pub fn sigma0(x: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Xor(Or(ShR(x, 7), ShL(x, 25)), Or(ShR(x, 18), ShL(x, 14)), ShR(x, 3));
+        */
+}
 
-    #[inline] pub fn sigma0(x: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return Xor(Or(ShR(x, 7), ShL(x, 25)), Or(ShR(x, 18), ShL(x, 14)), ShR(x, 3));
-            */
-    }
+#[inline] pub fn sigma1(x: __m256i) -> __m256i {
+    
+    todo!();
+        /*
+            return Xor(Or(ShR(x, 17), ShL(x, 15)), Or(ShR(x, 19), ShL(x, 13)), ShR(x, 10));
+        */
+}
 
-    #[inline] pub fn sigma1(x: __m128i) -> __m128i {
-        
-        todo!();
-            /*
-                return Xor(Or(ShR(x, 17), ShL(x, 15)), Or(ShR(x, 19), ShL(x, 13)), ShR(x, 10));
-            */
-    }
-
-    /**
-      | One round of SHA-256.
-      |
-      */
-    #[inline(always)] pub fn round(
-            a: __m128i,
-            b: __m128i,
-            c: __m128i,
-            d: &mut __m128i,
-            e: __m128i,
-            f: __m128i,
-            g: __m128i,
-            h: &mut __m128i,
-            k: __m128i)  {
-        
-        todo!();
-            /*
-                __m128i t1 = Add(h, Sigma1(e), Ch(e, f, g), k);
-            __m128i t2 = Add(Sigma0(a), Maj(a, b, c));
+/**
+  | One round of SHA-256.
+  |
+  */
+#[inline(always)] pub fn round(
+        a: __m256i,
+        b: __m256i,
+        c: __m256i,
+        d: &mut __m256i,
+        e: __m256i,
+        f: __m256i,
+        g: __m256i,
+        h: &mut __m256i,
+        k: __m256i)  {
+    
+    todo!();
+        /*
+            __m256i t1 = Add(h, Sigma1(e), Ch(e, f, g), k);
+            __m256i t2 = Add(Sigma0(a), Maj(a, b, c));
             d = Add(d, t1);
             h = Add(t1, t2);
-            */
-    }
+        */
+}
 
-    #[inline] pub fn read4(
-            chunk:  *const u8,
-            offset: i32) -> __m128i {
-        
-        todo!();
-            /*
-                __m128i ret = _mm_set_epi32(
+#[inline] pub fn read8(
+        chunk:  *const u8,
+        offset: i32) -> __m256i {
+    
+    todo!();
+        /*
+            __m256i ret = _mm256_set_epi32(
                 ReadLE32(chunk + 0 + offset),
                 ReadLE32(chunk + 64 + offset),
                 ReadLE32(chunk + 128 + offset),
-                ReadLE32(chunk + 192 + offset)
+                ReadLE32(chunk + 192 + offset),
+                ReadLE32(chunk + 256 + offset),
+                ReadLE32(chunk + 320 + offset),
+                ReadLE32(chunk + 384 + offset),
+                ReadLE32(chunk + 448 + offset)
             );
-            return _mm_shuffle_epi8(ret, _mm_set_epi32(0x0C0D0E0FUL, 0x08090A0BUL, 0x04050607UL, 0x00010203UL));
-            */
-    }
+            return _mm256_shuffle_epi8(ret, _mm256_set_epi32(0x0C0D0E0FUL, 0x08090A0BUL, 0x04050607UL, 0x00010203UL, 0x0C0D0E0FUL, 0x08090A0BUL, 0x04050607UL, 0x00010203UL));
+        */
+}
 
-    #[inline] pub fn write4(
-            out:    *mut u8,
-            offset: i32,
-            v:      __m128i)  {
-        
-        todo!();
-            /*
-                v = _mm_shuffle_epi8(v, _mm_set_epi32(0x0C0D0E0FUL, 0x08090A0BUL, 0x04050607UL, 0x00010203UL));
-            WriteLE32(out + 0 + offset, _mm_extract_epi32(v, 3));
-            WriteLE32(out + 32 + offset, _mm_extract_epi32(v, 2));
-            WriteLE32(out + 64 + offset, _mm_extract_epi32(v, 1));
-            WriteLE32(out + 96 + offset, _mm_extract_epi32(v, 0));
-            */
-    }
+#[inline] pub fn write8(
+        out:    *mut u8,
+        offset: i32,
+        v:      __m256i)  {
+    
+    todo!();
+        /*
+            v = _mm256_shuffle_epi8(v, _mm256_set_epi32(0x0C0D0E0FUL, 0x08090A0BUL, 0x04050607UL, 0x00010203UL, 0x0C0D0E0FUL, 0x08090A0BUL, 0x04050607UL, 0x00010203UL));
+            WriteLE32(out + 0 + offset, _mm256_extract_epi32(v, 7));
+            WriteLE32(out + 32 + offset, _mm256_extract_epi32(v, 6));
+            WriteLE32(out + 64 + offset, _mm256_extract_epi32(v, 5));
+            WriteLE32(out + 96 + offset, _mm256_extract_epi32(v, 4));
+            WriteLE32(out + 128 + offset, _mm256_extract_epi32(v, 3));
+            WriteLE32(out + 160 + offset, _mm256_extract_epi32(v, 2));
+            WriteLE32(out + 192 + offset, _mm256_extract_epi32(v, 1));
+            WriteLE32(out + 224 + offset, _mm256_extract_epi32(v, 0));
+        */
+}
 
-    pub fn transform_4way(
-            out: *mut u8,
-            in_: *const u8)  {
-        
-        todo!();
-            /*
-                // Transform 1
-            __m128i a = K(0x6a09e667ul);
-            __m128i b = K(0xbb67ae85ul);
-            __m128i c = K(0x3c6ef372ul);
-            __m128i d = K(0xa54ff53aul);
-            __m128i e = K(0x510e527ful);
-            __m128i f = K(0x9b05688cul);
-            __m128i g = K(0x1f83d9abul);
-            __m128i h = K(0x5be0cd19ul);
+pub fn transform_8way(
+        out: *mut u8,
+        in_: *const u8)  {
+    
+    todo!();
+        /*
+            // Transform 1
+            __m256i a = K(0x6a09e667ul);
+            __m256i b = K(0xbb67ae85ul);
+            __m256i c = K(0x3c6ef372ul);
+            __m256i d = K(0xa54ff53aul);
+            __m256i e = K(0x510e527ful);
+            __m256i f = K(0x9b05688cul);
+            __m256i g = K(0x1f83d9abul);
+            __m256i h = K(0x5be0cd19ul);
 
-            __m128i w0, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15;
+            __m256i w0, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15;
 
-            Round(a, b, c, d, e, f, g, h, Add(K(0x428a2f98ul), w0 = Read4(in, 0)));
-            Round(h, a, b, c, d, e, f, g, Add(K(0x71374491ul), w1 = Read4(in, 4)));
-            Round(g, h, a, b, c, d, e, f, Add(K(0xb5c0fbcful), w2 = Read4(in, 8)));
-            Round(f, g, h, a, b, c, d, e, Add(K(0xe9b5dba5ul), w3 = Read4(in, 12)));
-            Round(e, f, g, h, a, b, c, d, Add(K(0x3956c25bul), w4 = Read4(in, 16)));
-            Round(d, e, f, g, h, a, b, c, Add(K(0x59f111f1ul), w5 = Read4(in, 20)));
-            Round(c, d, e, f, g, h, a, b, Add(K(0x923f82a4ul), w6 = Read4(in, 24)));
-            Round(b, c, d, e, f, g, h, a, Add(K(0xab1c5ed5ul), w7 = Read4(in, 28)));
-            Round(a, b, c, d, e, f, g, h, Add(K(0xd807aa98ul), w8 = Read4(in, 32)));
-            Round(h, a, b, c, d, e, f, g, Add(K(0x12835b01ul), w9 = Read4(in, 36)));
-            Round(g, h, a, b, c, d, e, f, Add(K(0x243185beul), w10 = Read4(in, 40)));
-            Round(f, g, h, a, b, c, d, e, Add(K(0x550c7dc3ul), w11 = Read4(in, 44)));
-            Round(e, f, g, h, a, b, c, d, Add(K(0x72be5d74ul), w12 = Read4(in, 48)));
-            Round(d, e, f, g, h, a, b, c, Add(K(0x80deb1feul), w13 = Read4(in, 52)));
-            Round(c, d, e, f, g, h, a, b, Add(K(0x9bdc06a7ul), w14 = Read4(in, 56)));
-            Round(b, c, d, e, f, g, h, a, Add(K(0xc19bf174ul), w15 = Read4(in, 60)));
+            Round(a, b, c, d, e, f, g, h, Add(K(0x428a2f98ul), w0 = Read8(in, 0)));
+            Round(h, a, b, c, d, e, f, g, Add(K(0x71374491ul), w1 = Read8(in, 4)));
+            Round(g, h, a, b, c, d, e, f, Add(K(0xb5c0fbcful), w2 = Read8(in, 8)));
+            Round(f, g, h, a, b, c, d, e, Add(K(0xe9b5dba5ul), w3 = Read8(in, 12)));
+            Round(e, f, g, h, a, b, c, d, Add(K(0x3956c25bul), w4 = Read8(in, 16)));
+            Round(d, e, f, g, h, a, b, c, Add(K(0x59f111f1ul), w5 = Read8(in, 20)));
+            Round(c, d, e, f, g, h, a, b, Add(K(0x923f82a4ul), w6 = Read8(in, 24)));
+            Round(b, c, d, e, f, g, h, a, Add(K(0xab1c5ed5ul), w7 = Read8(in, 28)));
+            Round(a, b, c, d, e, f, g, h, Add(K(0xd807aa98ul), w8 = Read8(in, 32)));
+            Round(h, a, b, c, d, e, f, g, Add(K(0x12835b01ul), w9 = Read8(in, 36)));
+            Round(g, h, a, b, c, d, e, f, Add(K(0x243185beul), w10 = Read8(in, 40)));
+            Round(f, g, h, a, b, c, d, e, Add(K(0x550c7dc3ul), w11 = Read8(in, 44)));
+            Round(e, f, g, h, a, b, c, d, Add(K(0x72be5d74ul), w12 = Read8(in, 48)));
+            Round(d, e, f, g, h, a, b, c, Add(K(0x80deb1feul), w13 = Read8(in, 52)));
+            Round(c, d, e, f, g, h, a, b, Add(K(0x9bdc06a7ul), w14 = Read8(in, 56)));
+            Round(b, c, d, e, f, g, h, a, Add(K(0xc19bf174ul), w15 = Read8(in, 60)));
             Round(a, b, c, d, e, f, g, h, Add(K(0xe49b69c1ul), Inc(w0, sigma1(w14), w9, sigma0(w1))));
             Round(h, a, b, c, d, e, f, g, Add(K(0xefbe4786ul), Inc(w1, sigma1(w15), w10, sigma0(w2))));
             Round(g, h, a, b, c, d, e, f, Add(K(0x0fc19dc6ul), Inc(w2, sigma1(w0), w11, sigma0(w3))));
@@ -355,7 +387,7 @@ pub mod sha256d64_sse41 {
             g = Add(g, K(0x1f83d9abul));
             h = Add(h, K(0x5be0cd19ul));
 
-            __m128i t0 = a, t1 = b, t2 = c, t3 = d, t4 = e, t5 = f, t6 = g, t7 = h;
+            __m256i t0 = a, t1 = b, t2 = c, t3 = d, t4 = e, t5 = f, t6 = g, t7 = h;
 
             // Transform 2
             Round(a, b, c, d, e, f, g, h, K(0xc28a2f98ul));
@@ -508,14 +540,13 @@ pub mod sha256d64_sse41 {
             Round(b, c, d, e, f, g, h, a, Add(K(0xc67178f2ul), w15, sigma1(w13), w8, sigma0(w0)));
 
             // Output
-            Write4(out, 0, Add(a, K(0x6a09e667ul)));
-            Write4(out, 4, Add(b, K(0xbb67ae85ul)));
-            Write4(out, 8, Add(c, K(0x3c6ef372ul)));
-            Write4(out, 12, Add(d, K(0xa54ff53aul)));
-            Write4(out, 16, Add(e, K(0x510e527ful)));
-            Write4(out, 20, Add(f, K(0x9b05688cul)));
-            Write4(out, 24, Add(g, K(0x1f83d9abul)));
-            Write4(out, 28, Add(h, K(0x5be0cd19ul)));
-            */
-    }
+            Write8(out, 0, Add(a, K(0x6a09e667ul)));
+            Write8(out, 4, Add(b, K(0xbb67ae85ul)));
+            Write8(out, 8, Add(c, K(0x3c6ef372ul)));
+            Write8(out, 12, Add(d, K(0xa54ff53aul)));
+            Write8(out, 16, Add(e, K(0x510e527ful)));
+            Write8(out, 20, Add(f, K(0x9b05688cul)));
+            Write8(out, 24, Add(g, K(0x1f83d9abul)));
+            Write8(out, 28, Add(h, K(0x5be0cd19ul)));
+        */
 }

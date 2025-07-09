@@ -11,3 +11,9 @@ x!{sha256_sse41}
 x!{sha256_round}
 x!{hmac_sha256}
 x!{sha256_shani}
+pub use bitcoin_sha256_sse4::*;
+pub use bitcoin_sha256_sse41::*;
+pub use bitcoin_sha256_shani::*;
+pub use bitcoin_sha256_avx2::*;
+pub use bitcoin_sha256_hmac::*;
+pub use bitcoin_sha256_hkdf::*;

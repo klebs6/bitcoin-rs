@@ -208,7 +208,7 @@ members = [
     "bitcoin-arena", 
     "bitcoin-syscall", 
     "bitcoin-get-json-token"
-]
+, "bitcoin-sha256-sse4", "bitcoin-sha256-sse41", "bitcoin-sha256d", "bitcoin-sha256-shani", "bitcoin-sha256-avx2", "bitcoin-sha256-hmac", "bitcoin-sha256-hkdf"]
 
 [workspace.dependencies]
 #qmetaobject            = "0.2.7"
