@@ -19,5 +19,3 @@ mod ipv4_fmt_tests {
         assert_eq!(ipv4_to_string(&ip), "192.168.0.1");
     }
 }
-
-
