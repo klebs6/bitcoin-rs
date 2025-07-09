@@ -42,4 +42,4 @@ keywords = [
 ]
 license = "MIT"
 name = "bitcoin-locked-pool"
-version = "0.1.1"
+version = "0.1.2"
