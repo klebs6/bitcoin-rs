@@ -1,15 +1,19 @@
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.18"
+
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.getset]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+
 [package]
-name = "bitcoin-syscall"
-version = "0.1.0"
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
-license = "MIT"
 edition = "2024"
-
-# keywords = []
-# categories = []
-
-[dependencies]
-derive_builder.workspace = true
-getset.workspace         = true
-tracing.workspace        = true
-bitcoin-imports          = { path = "../bitcoin-imports" , version = "0.1.18" }
+license = "MIT"
+name = "bitcoin-syscall"
+version = "0.1.1"
