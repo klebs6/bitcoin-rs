@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256-shani/src/lib.rs ]
 #![cfg(ENABLE_SHANI)]
 
 #[macro_use] mod imports; use imports::*;

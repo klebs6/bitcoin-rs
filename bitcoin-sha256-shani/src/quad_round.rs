@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256-shani/src/quad_round.rs ]
 crate::ix!();
 
 #[inline(always)] pub fn quad_round(

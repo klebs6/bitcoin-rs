@@ -1,4 +1,4 @@
-
+// ---------------- [ File: bitcoin-sha256-avx2/src/bitcoin_sha256_avx2.rs ]
 /**
   | Check whether the OS has enabled AVX
   | registers.

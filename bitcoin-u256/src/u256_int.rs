@@ -20,6 +20,13 @@ impl AsRef<[u8]> for u256 {
     }
 }
 
+impl u256 {
+
+    pub fn as_mut_slice_exact(&mut self) -> &mut [u8; 32] {
+        self.as_mut().try_into().unwrap()
+    }
+}
+
 impl AsMut<[u8]> for u256 {
     #[inline]
     fn as_mut(&mut self) -> &mut [u8] {

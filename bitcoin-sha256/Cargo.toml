@@ -10,6 +10,7 @@ bitcoin-sha256-avx2   = { path = "../bitcoin-sha256-avx2" }
 bitcoin-sha256-hkdf   = { path = "../bitcoin-sha256-hkdf" }
 tracing.workspace     = true
 serde.workspace       = true
+getset.workspace      = true
 hex-literal.workspace = true
 
 [dependencies.bitcoin-derive]

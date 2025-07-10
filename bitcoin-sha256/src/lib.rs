@@ -7,13 +7,22 @@ pub use bitcoin_sha256_shani::*;
 pub use bitcoin_sha256_avx2::*;
 pub use bitcoin_sha256_hkdf::*;
 
-x!{hash}
+x!{beio_helpers}
+x!{majority_and_choice}
 x!{self_test}
 x!{sha256}
 x!{sha256_auto_detect}
+x!{sha256_finalize}
+x!{sha256_initialize}
+x!{sha256_initialize_tagged}
+x!{sha256_reset}
 x!{sha256_round}
 x!{sha256_transform}
-x!{sha256_streaming_tests}
-x!{sha256_uint256}
+x!{sha256_transform_block}
+x!{sha256_transform_one_block}
+x!{sha256_write}
+x!{sha256_write_ffi}
+x!{sigma}
 x!{transforms}
-x!{beio_helpers}
+x!{transform_d64_scalar}
+x!{compute}

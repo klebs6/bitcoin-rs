@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256-sse41/src/bitcoin_sha256_sse41.rs ]
 #![cfg(ENABLE_SSE41)]
 
 crate::ix!();

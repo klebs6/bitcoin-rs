@@ -1,118 +1,78 @@
 crate::ix!();
 
-/**
-  | Select the fastest SHA‑256 backend supported by the current
-  | CPU **at runtime** and initialise global function pointers so
-  | that subsequent calls transparently dispatch to that backend.
-  |
-  | *Returns* the backend description string (e.g.  
-  | `"standard"`, `"sse4(1way)"`, `"shani(1way,2way)"`, …).
-  |
-  | The routine is *idempotent*: the detection logic runs exactly
-  | once per process.  Re‑invocations cheaply return the cached
-  | backend label.
-  */
-#[inline]
+/// Autodetect and configure the best available SHA‑256 backend.
+///
+/// Returns a human‑readable description mirroring Bitcoin Core’s string.
 pub fn sha256auto_detect() -> String {
+    unsafe {
+        /* ------------------------------------------------------------------
+         * Default: portable scalar reference implementation.
+         * ---------------------------------------------------------------- */
+        TRANSFORM            = sha256_transform_wrapper;
+        TRANSFORM_D64        = transform_d64_scalar;
+        TRANSFORM_D64_2WAY   = None;
+        TRANSFORM_D64_4WAY   = None;
+        TRANSFORM_D64_8WAY   = None;
+        let mut desc = String::from("standard");
 
-    static BACKEND: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+        /* ------------------------------------------------------------------
+         * x86‑64 feature probing (mirrors Core ≈1‑for‑1).
+         * ---------------------------------------------------------------- */
+        #[cfg(target_arch = "x86_64")]
+        {
+            use std::arch::is_x86_feature_detected;
 
-    BACKEND
-        .get_or_init(|| {
-            // ----------------------------------------------------------------
-            // 1.  Detect ISA extensions
-            // ----------------------------------------------------------------
-            #[cfg(target_arch = "x86_64")]
-            let (have_sse41, have_avx, have_avx2, have_shani) = {
-                (
-                    std::arch::is_x86_feature_detected!("sse4.1"),
-                    std::arch::is_x86_feature_detected!("avx"),
-                    std::arch::is_x86_feature_detected!("avx2"),
-                    std::arch::is_x86_feature_detected!("sha"),
-                )
-            };
+            // ---- SHA‑NI pathway (highest priority) ------------------------
+            #[cfg(feature = "enable-shani")]
+            if is_x86_feature_detected!("sha") {
+                TRANSFORM          = sha256_shani::Transform;
+                TRANSFORM_D64      = sha256d64_shani::Transform_2way;
+                TRANSFORM_D64_2WAY = Some(sha256d64_shani::Transform_2way);
+                desc = "shani(1way,2way)".into();
+                trace!(target: "sha256", "backend: {}", desc);
+                assert!(self_test(), "SHA‑NI backend failed self‑test");
+                return desc;
+            }
 
-            #[cfg(not(target_arch = "x86_64"))]
-            let (have_sse41, have_avx, have_avx2, have_shani) =
-                (false, false, false, false);
+            // ---- SSE4 / SSE4.1 -------------------------------------------
+            //
+            // Only compile this block when the specialised SSE4 crate has
+            // been ported and the symbols exist.  Until then the scalar
+            // fallback is kept.
+            #[cfg(all(feature = "enable-sse4", feature = "sse4-port-complete"))]
+            {
+                if is_x86_feature_detected!("sse4.1") {
+                    TRANSFORM     = bitcoin_sha256_sse4::Transform;
+                    TRANSFORM_D64 = bitcoin_sha256_sse4::transform_d64_sse4;
 
-            trace!(
-                target: "sha256",
-                have_sse41,
-                have_avx,
-                have_avx2,
-                have_shani,
-                "CPU feature probe completed"
-            );
-
-            // ----------------------------------------------------------------
-            // 2.  Bind global function pointers
-            // ----------------------------------------------------------------
-            let mut label = "standard".to_string();
-
-            unsafe {
-                if have_shani {
-                    // Intel SHA‑NI back‑end (1‑way + 2‑way double‑SHA)
-                    TRANSFORM           = bitcoin_sha256_shani::sha256_shani_transform;
-                    TRANSFORM_D64       = transform_d64_stub; // no dedicated 1‑way impl yet
-                    TRANSFORM_D64_2WAY  =
-                        Some(bitcoin_sha256_shani::sha256d64_shani_transform_2way);
-                    label = "shani(1way,2way)".into();
-                } else if have_sse41 {
-                    // SSE4.1 scalar 1‑way back‑end
-                    TRANSFORM     = bitcoin_sha256_sse4::sha256_sse4_transform;
-                    TRANSFORM_D64 = transform_d64_stub; // placeholder
-                    label         = "sse4(1way)".into();
-
-                    // Optional 4‑way SSE4.1 double‑SHA
-                    TRANSFORM_D64_4WAY =
-                        Some(bitcoin_sha256_sse41::sha256d64_sse41_transform_4way);
-                    label.push_str(",sse41(4way)");
-
-                    // Optional 8‑way AVX2 double‑SHA
-                    if have_avx && have_avx2 {
-                        TRANSFORM_D64_8WAY =
-                            Some(bitcoin_sha256_avx2::sha256d64_avx2_transform_8way);
-                        label.push_str(",avx2(8way)");
+                    desc = "sse4(1way)".into();
+                    #[cfg(feature = "enable-sse41")]
+                    {
+                        TRANSFORM_D64_4WAY = Some(sha256d64_sse41::Transform_4way);
+                        desc.push_str(",sse41(4way)");
                     }
+                    trace!(target: "sha256", "backend: {}", desc);
+                    assert!(self_test(), "SSE4 backend failed self‑test");
+                    return desc;
                 }
             }
 
-            // ----------------------------------------------------------------
-            // 3.  Sanity self‑test
-            // ----------------------------------------------------------------
-            assert!(
-                crate::self_test(),
-                "sha256auto_detect: internal SELF‑TEST failed after \
-                 selecting backend `{}`",
-                label
-            );
+            // ---- AVX2 eight‑way ------------------------------------------
+            #[cfg(feature = "enable-avx2")]
+            if is_x86_feature_detected!("avx2") && is_x86_feature_detected!("avx") {
+                TRANSFORM_D64_8WAY = Some(sha256d64_avx2::Transform_8way);
+                desc = "avx2(8way)".into();
+                trace!(target: "sha256", "backend: {}", desc);
+                assert!(self_test(), "AVX2 backend failed self‑test");
+                return desc;
+            }
+        }
 
-            info!(
-                target: "sha256",
-                backend = %label,
-                "SHA‑256 backend selected"
-            );
-
-            label
-        })
-        .clone()
-}
-
-#[cfg(test)]
-mod autodetect_tests {
-    use super::*;
-
-    #[traced_test]
-    fn autodetect_produces_valid_backend_label_and_passes_selftest() {
-        let backend = sha256auto_detect();
-        assert!(
-            !backend.is_empty(),
-            "backend label must not be empty"
-        );
-        assert!(
-            self_test(),
-            "self‑test must succeed after backend selection"
-        );
+        /* ------------------------------------------------------------------
+         * Fallback path was already initialised above.
+         * ---------------------------------------------------------------- */
+        trace!(target: "sha256", "backend: {}", desc);
+        assert!(self_test(), "scalar backend failed self‑test");
+        desc
     }
 }

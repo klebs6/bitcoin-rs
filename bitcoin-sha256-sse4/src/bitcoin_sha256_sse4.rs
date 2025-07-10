@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256-sse4/src/bitcoin_sha256_sse4.rs ]
 /*!
   | This is a translation to GCC extended asm
   | syntax from YASM code by Intel (available at

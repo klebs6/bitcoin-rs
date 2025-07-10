@@ -1,4 +1,4 @@
-
+// ---------------- [ File: bitcoin-sha256-shani/src/bitcoin_sha256_shani.rs ]
 /*!
   | Based on
   | https://github.com/noloader/SHA-Intrinsics/blob/master/sha256-x86.c,

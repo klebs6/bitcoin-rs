@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-sha256/src/sha256.rs ]
+// ---------------- [ File: bitcoin-sha256/src/sha256_round.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/sha256.h]
@@ -55,52 +55,6 @@ pub fn sha256_round(
         t1, t2,
         "sha256_round (canonical implementation)"
     );
-}
-
-pub const SHA256_OUTPUT_SIZE: usize = 32;
-
-/// Upper‑case Σ₀: `(x >> 2 | x << 30) ^ (x >> 13 | x << 19) ^ (x >> 22 | x << 10)`
-#[inline(always)]
-pub fn big_sigma0(x: u32) -> u32 {
-    x.rotate_right(2) ^ x.rotate_right(13) ^ x.rotate_right(22)
-}
-
-/// Upper‑case Σ₁: `(x >> 6 | x << 26) ^ (x >> 11 | x << 21) ^ (x >> 25 | x << 7)`
-#[inline(always)]
-pub fn big_sigma1(x: u32) -> u32 {
-    x.rotate_right(6) ^ x.rotate_right(11) ^ x.rotate_right(25)
-}
-
-/// Choice function: `z ^ (x & (y ^ z))`
-#[inline(always)]
-pub fn sha256_ch(x: u32, y: u32, z: u32) -> u32 {
-    let res = z ^ (x & (y ^ z));
-    trace!(target: "sha256", x, y, z, res, "sha256_ch");
-    res
-}
-
-/// Majority function: `(x & y) | (z & (x | y))`
-#[inline(always)]
-pub fn sha256_maj(x: u32, y: u32, z: u32) -> u32 {
-    let res = (x & y) | (z & (x | y));
-    trace!(target: "sha256", x, y, z, res, "sha256_maj");
-    res
-}
-
-/** Lower‑case σ₀: `(x >> 7 | x << 25) ^ (x >> 18 | x << 14) ^ (x >> 3)` */
-#[inline]
-pub fn sha256_sigma0(x: u32) -> u32 {
-    let res = x.rotate_right(7) ^ x.rotate_right(18) ^ (x >> 3);
-    trace!(target: "sha256", x, result = res, "sha256_sigma0 (root)");
-    res
-}
-
-/** Lower‑case σ₁: `(x >> 17 | x << 15) ^ (x >> 19 | x << 13) ^ (x >> 10)` */
-#[inline]
-pub fn sha256_sigma1(x: u32) -> u32 {
-    let res = x.rotate_right(17) ^ x.rotate_right(19) ^ (x >> 10);
-    trace!(target: "sha256", x, result = res, "sha256_sigma1 (root)");
-    res
 }
 
 // ---------------- [bitcoin-sha256/src/sha256_round_tests.rs] ----------------

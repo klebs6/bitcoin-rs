@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-remote/src/delete_auth_cookie.rs ]
 crate::ix!();
 
 /// Delete RPC authentication cookie from disk

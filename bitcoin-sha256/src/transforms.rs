@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/transforms.rs ]
 crate::ix!();
 
 pub type TransformType    = unsafe fn(*mut u32, *const u8, usize);
@@ -15,7 +16,7 @@ pub unsafe fn transform_d64_stub(_out: *mut u8, _inp: *const u8) {}
 pub(crate) static mut TRANSFORM:            TransformType      = sha256_transform_wrapper;
 
 #[allow(clippy::declare_interior_mutable_const)]
-pub(crate) static mut TRANSFORM_D64:        TransformD64Type   = transform_d64_stub;
+pub(crate) static mut TRANSFORM_D64: TransformD64Type = transform_d64_scalar;
 
 #[allow(clippy::declare_interior_mutable_const)]
 pub(crate) static mut TRANSFORM_D64_2WAY:   Option<TransformD64Type> = None;
@@ -40,7 +41,7 @@ pub unsafe fn sha256_transform_wrapper(
     blocks: usize,
 ) {
     for i in 0..blocks {
-        let off = chunk.add(i * 64) as *const u32;
-        hash::sha256_transform(state, off);
+        let off = chunk.add(i * 64);
+        sha256_transform_block(state, off);
     }
 }

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256-shani/src/shuffle_unshuffle.rs ]
 crate::ix!();
 
 #[inline(always)] pub fn shuffle(

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256-shani/src/shift_message.rs ]
 crate::ix!();
 
 #[inline(always)] pub fn shift_messagea(

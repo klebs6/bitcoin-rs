@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256d/src/transform_d64_wrapper.rs ]
 crate::ix!();
 
 pub fn transform_d64wrapper(

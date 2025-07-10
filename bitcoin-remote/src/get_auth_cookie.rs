@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-remote/src/get_auth_cookie.rs ]
 crate::ix!();
 
 /// Read the cookie from disk into `cookie_out`.  Returns

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256d/src/bitcoin_sha256d.rs ]
 crate::ix!();
 
 pub fn sha256_transformd64(

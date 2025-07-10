@@ -2311,6 +2311,7 @@ dependencies = [
  "bitcoin-sha256-sse4",
  "bitcoin-sha256-sse41",
  "bitcoin-u256",
+ "getset",
  "hex-literal",
  "serde",
  "serde-big-array",

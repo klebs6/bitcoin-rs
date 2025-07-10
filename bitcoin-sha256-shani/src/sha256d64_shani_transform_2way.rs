@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256-shani/src/sha256d64_shani_transform_2way.rs ]
 crate::ix!();
 
 pub fn sha256d64_shani_transform_2way(

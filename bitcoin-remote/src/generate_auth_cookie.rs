@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-remote/src/generate_auth_cookie.rs ]
 crate::ix!();
 
 /// Generate a brand‑new cookie and *atomically* write it to disk.  

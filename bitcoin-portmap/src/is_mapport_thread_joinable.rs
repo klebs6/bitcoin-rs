@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-sync/src/is_mapport_thread_joinable.rs ]
+// ---------------- [ File: bitcoin-portmap/src/is_mapport_thread_joinable.rs ]
 crate::ix!();
 
 /// Is the background thread joinable (alive)?

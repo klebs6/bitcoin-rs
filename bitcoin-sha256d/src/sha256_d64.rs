@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256d/src/sha256_d64.rs ]
 crate::ix!();
 
 /**

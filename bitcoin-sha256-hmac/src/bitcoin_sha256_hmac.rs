@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256-hmac/src/bitcoin_sha256_hmac.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/crypto/hmac_sha256.h]
