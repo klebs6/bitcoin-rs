@@ -1,4 +1,3 @@
-#[!cfg(ENABLE_AVX2)]
 
 /**
   | Check whether the OS has enabled AVX

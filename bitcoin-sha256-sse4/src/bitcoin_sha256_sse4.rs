@@ -1,5 +1,3 @@
-#[!cfg(any(__x86_64__,__amd64__))]
-
 /*!
   | This is a translation to GCC extended asm
   | syntax from YASM code by Intel (available at

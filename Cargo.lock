@@ -1347,6 +1347,7 @@ dependencies = [
  "derivative",
  "derive_builder",
  "errno 0.2.8",
+ "export-magic",
  "float-ord",
  "fs2",
  "getset",
@@ -2306,42 +2307,79 @@ dependencies = [
  "bitcoin-imports",
  "bitcoin-sha256-avx2",
  "bitcoin-sha256-hkdf",
- "bitcoin-sha256-hmac",
  "bitcoin-sha256-shani",
  "bitcoin-sha256-sse4",
  "bitcoin-sha256-sse41",
  "bitcoin-u256",
+ "hex-literal",
  "serde",
  "serde-big-array",
+ "tracing",
 ]
 
 [[package]]
 name = "bitcoin-sha256-avx2"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-u256",
+]
 
 [[package]]
 name = "bitcoin-sha256-hkdf"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-u256",
+]
 
 [[package]]
 name = "bitcoin-sha256-hmac"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-sha256",
+ "bitcoin-u256",
+]
 
 [[package]]
 name = "bitcoin-sha256-shani"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-u256",
+]
 
 [[package]]
 name = "bitcoin-sha256-sse4"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-u256",
+]
 
 [[package]]
 name = "bitcoin-sha256-sse41"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-u256",
+]
 
 [[package]]
 name = "bitcoin-sha256d"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-u256",
+]
 
 [[package]]
 name = "bitcoin-sha3"

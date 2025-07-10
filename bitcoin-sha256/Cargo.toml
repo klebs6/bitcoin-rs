@@ -3,12 +3,14 @@ path = "../bitcoin-cfg"
 version = "0.1.18"
 
 [dependencies]
-bitcoin-sha256-sse4 = { path = "../bitcoin-sha256-sse4" }
-bitcoin-sha256-sse41 = { path = "../bitcoin-sha256-sse41" }
-bitcoin-sha256-shani = { path = "../bitcoin-sha256-shani" }
-bitcoin-sha256-avx2 = { path = "../bitcoin-sha256-avx2" }
-bitcoin-sha256-hmac = { path = "../bitcoin-sha256-hmac" }
-bitcoin-sha256-hkdf = { path = "../bitcoin-sha256-hkdf" }
+bitcoin-sha256-sse4   = { path = "../bitcoin-sha256-sse4" }
+bitcoin-sha256-sse41  = { path = "../bitcoin-sha256-sse41" }
+bitcoin-sha256-shani  = { path = "../bitcoin-sha256-shani" }
+bitcoin-sha256-avx2   = { path = "../bitcoin-sha256-avx2" }
+bitcoin-sha256-hkdf   = { path = "../bitcoin-sha256-hkdf" }
+tracing.workspace     = true
+serde.workspace       = true
+hex-literal.workspace = true
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -21,10 +23,6 @@ version = "0.1.18"
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
 version = "0.1.18"
-
-[dependencies.serde]
-features = ["derive"]
-version = "1.0.152"
 
 [dependencies.serde-big-array]
 version = "0.4.1"

@@ -8,23 +8,6 @@
 #[macro_use] mod multidex; pub use multidex::*;
 #[macro_use] mod util;     pub use util::*;
 
-
-#[macro_export] macro_rules! x { 
-    ($x:ident) => { 
-        mod $x; 
-        pub use $x::*; 
-    }
-}
-
-#[macro_export] macro_rules! ix { 
-    () => { 
-        use crate::{ 
-            imports::* , 
-        };
-        use crate::*;
-    } 
-}
-
 #[macro_export] macro_rules! as_mut_cvoid {
     ($x:expr) => {
         $x as *mut _ as *mut c_void
@@ -330,6 +313,7 @@ pub use maplit::hashmap;
 pub use modular_bitfield::prelude::*;
 pub use multimap::*;
 pub use multiset::HashMultiSet as MultiSet;
+pub use export_magic::*;
 
 pub use nix;
 pub use nix::sys::time::{

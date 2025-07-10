@@ -1,4 +1,4 @@
-#[!cfg(ENABLE_SSE41)]
+#![cfg(ENABLE_SSE41)]
 
 crate::ix!();
 

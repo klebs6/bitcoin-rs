@@ -3,6 +3,7 @@ scan-crate-for-typedefs.workspace = true
 
 [dependencies]
 bincode.workspace               = true
+export-magic.workspace          = true
 chrono.workspace                = true
 serde_test.workspace            = true
 atomic-take.workspace           = true

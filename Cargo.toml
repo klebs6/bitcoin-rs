@@ -295,6 +295,7 @@ zerocopy                = "0.7.35"
 paste                   = "1.0.15"
 ryu                     = "1.0.20"
 criterion               = "0.6.0"
+export-magic            = "*"
 
 igd    = { version = "0.12.1" } # UPnP / IGD protocol
 natpmp = { version = "0.5.0" } # NAT‑PMP protocol

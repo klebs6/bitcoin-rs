@@ -1,4 +1,3 @@
-#[!cfg(ENABLE_SHANI)]
 
 /*!
   | Based on
