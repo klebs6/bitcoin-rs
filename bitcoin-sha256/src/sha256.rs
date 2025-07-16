@@ -60,3 +60,52 @@ impl Default for Sha256 {
         ctx
     }
 }
+
+// -----------------------------------------------------------------------------
+// Tests: constructor & initialise helpers
+// -----------------------------------------------------------------------------
+#[cfg(test)]
+mod sha256_constructor_behavior_validation {
+    use super::*;
+    use std::io::Write;
+
+    /// `Sha256::new()` must be a thin wrapper over `Default`.
+    #[traced_test]
+    fn new_and_default_construct_equivalent_contexts() {
+        let a = Sha256::new();
+        let b = Sha256::default();
+
+        assert_eq!(a.s(),     b.s(),     "state words differ");
+        assert_eq!(a.buf(),   b.buf(),   "internal buffer differs");
+        assert_eq!(*a.bytes(), *b.bytes(), "byte counters differ");
+    }
+
+    /// Re‑calling `initialize()` on an existing context must overwrite the
+    /// state words with the canonical IV **without** touching the buffer
+    /// or byte counter.
+    #[traced_test]
+    fn initialize_overwrites_state_only() {
+        const FILL: &[u8] = b"buffer-fill-data-for-test";
+
+        let mut ctx = Sha256::new();
+        ctx.write_all(FILL).unwrap();
+        let buf_before = ctx.buf().clone();
+        let bytes_before = *ctx.bytes();
+
+        // ── SUT ─────────────────────────────────────────────────────────────
+        ctx.initialize();
+
+        // Reference IV
+        const IV: [u32; 8] = [
+            0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+            0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
+        ];
+
+        assert_eq!(*ctx.s(), IV, "state words not reset to IV");
+        assert_eq!(ctx.buf(), &buf_before, "buffer was unexpectedly modified");
+        assert_eq!(
+            *ctx.bytes(), bytes_before,
+            "byte counter was changed by initialize()"
+        );
+    }
+}

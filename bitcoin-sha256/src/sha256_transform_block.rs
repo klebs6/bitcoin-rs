@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/sha256_transform_block.rs ]
 crate::ix!();
 
 /// Perform **exactly one** SHA‑256 compression on a 64‑byte chunk.
@@ -115,6 +116,24 @@ pub unsafe fn sha256_transform_block(s: *mut u32, chunk: *const u8) {
     schedule_and_round!(0xd6990624, w13, w11, w6,  w14, d, e, f, g, h, a, b, c);
     schedule_and_round!(0xf40e3585, w14, w12, w7,  w15, c, d, e, f, g, h, a, b);
     schedule_and_round!(0x106aa070, w15, w13, w8,  w0,  b, c, d, e, f, g, h, a);
+
+    schedule_and_round!(0x19a4c116, w0,  w14, w9,  w1,  a, b, c, d, e, f, g, h);
+    schedule_and_round!(0x1e376c08, w1,  w15, w10, w2,  h, a, b, c, d, e, f, g);
+    schedule_and_round!(0x2748774c, w2,  w0,  w11, w3,  g, h, a, b, c, d, e, f);
+    schedule_and_round!(0x34b0bcb5, w3,  w1,  w12, w4,  f, g, h, a, b, c, d, e);
+    schedule_and_round!(0x391c0cb3, w4,  w2,  w13, w5,  e, f, g, h, a, b, c, d);
+    schedule_and_round!(0x4ed8aa4a, w5,  w3,  w14, w6,  d, e, f, g, h, a, b, c);
+    schedule_and_round!(0x5b9cca4f, w6,  w4,  w15, w7,  c, d, e, f, g, h, a, b);
+    schedule_and_round!(0x682e6ff3, w7,  w5,  w0,  w8,  b, c, d, e, f, g, h, a);
+
+    schedule_and_round!(0x748f82ee, w8,  w6,  w1,  w9,  a, b, c, d, e, f, g, h);
+    schedule_and_round!(0x78a5636f, w9,  w7,  w2,  w10, h, a, b, c, d, e, f, g);
+    schedule_and_round!(0x84c87814, w10, w8,  w3,  w11, g, h, a, b, c, d, e, f);
+    schedule_and_round!(0x8cc70208, w11, w9,  w4,  w12, f, g, h, a, b, c, d, e);
+    schedule_and_round!(0x90befffa, w12, w10, w5,  w13, e, f, g, h, a, b, c, d);
+    schedule_and_round!(0xa4506ceb, w13, w11, w6,  w14, d, e, f, g, h, a, b, c);
+    schedule_and_round!(0xbef9a3f7, w14, w12, w7,  w15, c, d, e, f, g, h, a, b);
+    schedule_and_round!(0xc67178f2, w15, w13, w8,  w0,  b, c, d, e, f, g, h, a);
 
     // --- Feed‑forward ------------------------------------------------------------
     *s.add(0) = (*s.add(0)).wrapping_add(a);

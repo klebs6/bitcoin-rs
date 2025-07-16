@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/majority_and_choice.rs ]
 crate::ix!();
 
 /// Choice function: `z ^ (x & (y ^ z))`

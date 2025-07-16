@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/sha256_write_ffi.rs ]
 crate::ix!();
 
 /// FFI‑compatible front‑end to [`Sha256::write_ptr`].

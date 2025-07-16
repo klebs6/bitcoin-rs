@@ -61,11 +61,15 @@ impl Default for NetAddr {
 
 impl PartialEq<NetAddr> for NetAddr {
     
-    #[inline] fn eq(&self, other: &NetAddr) -> bool {
-        todo!();
-        /*
-            return a.m_net == b.m_net && a.m_addr == b.m_addr;
-        */
+    #[inline]
+    fn eq(&self, other: &NetAddr) -> bool {
+        trace!(
+            target: "netaddr",
+            ours  = ?self.net(),
+            theirs = ?other.net(),
+            "Comparing NetAddr equality"
+        );
+        *self.net() == *other.net() && self.addr() == other.addr()
     }
 }
 
@@ -73,11 +77,18 @@ impl Eq for NetAddr {}
 
 impl Ord for NetAddr {
     
-    #[inline] fn cmp(&self, other: &NetAddr) -> Ordering {
-        todo!();
-        /*
-            return std::tie(a.m_net, a.m_addr) < std::tie(b.m_net, b.m_addr);
-        */
+    #[inline]
+    fn cmp(&self, other: &NetAddr) -> std::cmp::Ordering {
+        use std::cmp::Ordering;
+
+        // First compare the network type; if those are equal,
+        // fall back to a lexicographic comparison of the raw bytes.
+        let by_net = (*self.net() as u8).cmp(&(*other.net() as u8));
+        if by_net == Ordering::Equal {
+            self.addr().cmp(other.addr())
+        } else {
+            by_net
+        }
     }
 }
 
@@ -88,16 +99,18 @@ impl PartialOrd<NetAddr> for NetAddr {
 }
 
 impl From<&InAddr> for NetAddr {
-    fn from(ipv_4addr: &InAddr) -> Self {
-    
-        todo!();
-        /*
-
-
-            m_net = NET_IPV4;
-        const uint8_t* ptr = reinterpret_cast<const uint8_t*>(&ipv4Addr);
-        m_addr.assign(ptr, ptr + ADDR_IPV4_SIZE);
-        */
+    fn from(ipv4_addr: &InAddr) -> Self {
+        trace!(target: "netaddr", "Constructing NetAddr from InAddr (IPv4)");
+        // Safety: an `InAddr` is exactly four bytes in network byte‑order.
+        let bytes = unsafe {
+            std::slice::from_raw_parts(ipv4_addr as *const _ as *const u8, ADDR_IPV4_SIZE)
+        };
+        NetAddrBuilder::default()
+            .addr(PreVector::from(bytes))
+            .net(Network::NET_IPV4)
+            .scope_id(0_u32)
+            .build()
+            .expect("building IPv4 NetAddr never fails")
     }
 }
 
@@ -111,13 +124,11 @@ impl NetAddr {
     
         todo!();
         /*
-
-
-            SetLegacyIPv6(Span<const uint8_t>(reinterpret_cast<const uint8_t*>(&ipv6Addr), sizeof(ipv6Addr)));
+        SetLegacyIPv6(Span<const uint8_t>(reinterpret_cast<const uint8_t*>(&ipv6Addr), sizeof(ipv6Addr)));
         m_scope_id = scope;
         */
     }
-    
+
     pub fn get_addr_bytes(&self) -> Vec<u8> {
         
         todo!();
@@ -130,7 +141,7 @@ impl NetAddr {
         return std::vector<unsigned char>(m_addr.begin(), m_addr.end());
         */
     }
-    
+
     pub fn get_hash(&self) -> u64 {
         
         todo!();

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/sha256_initialize.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/hash.h]

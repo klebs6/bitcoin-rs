@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/sha256_transform.rs ]
 crate::ix!();
 
 /// Perform *`blocks`* SHA‑256 transformations over consecutive 64‑byte chunks.

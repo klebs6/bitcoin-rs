@@ -23,9 +23,12 @@ TEST  := test
 
 #DEFAULT := build_active
 #DEFAULT := build
-DEFAULT := hack_test
-#DEFAULT := test_active
+#DEFAULT := hack_test
+#DEFAULT := test_one_release
+DEFAULT := test_active
 #DEFAULT := test_one
+#DEFAULT := test_ignored
+#DEFAULT := test_one_ignored
 
 FEATURES := --features "natpmp"
 FEATURES := 
@@ -39,14 +42,14 @@ ACTIVE := bitcoin-settings
 ACTIVE := bitcoin-portmap
 ACTIVE := bitcoin-remote
 ACTIVE := bitcoin-sock
-ACTIVE := bitcoin-network
 
-#ACTIVE := bitcoin-hash
+#ACTIVE := bitcoin-network
 #ACTIVE := bitcoin-base58
 #ACTIVE := bitcoin-muhash
 #ACTIVE := bitcoin-sha3
 #ACTIVE := bitcoin-sha512
-ACTIVE := bitcoin-sha256
+#ACTIVE := bitcoin-sha256
+#ACTIVE := bitcoin-hash
 
 #-------------------------------[next]
 #ACTIVE := bitcoinleveldb-arena
@@ -222,6 +225,7 @@ INDIVIDUAL_TEST := shift_row
 INDIVIDUAL_TEST := aes_setup_round_key_validation
 INDIVIDUAL_TEST := compute_g_plus5_minus_p
 INDIVIDUAL_TEST := populate_round_zero
+INDIVIDUAL_TEST := sha256_round
 
 default: $(DEFAULT)
 
@@ -237,8 +241,17 @@ build_active:
 test_active:
 	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) -p $(ACTIVE) --verbose $(FEATURES)
 
+test_ignored:
+	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) --release -p $(ACTIVE) --verbose $(FEATURES) -- --ignored
+
 test_one:
 	RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) $(INDIVIDUAL_TEST) -p $(ACTIVE) -- $(NOCAPTURE)
+
+test_one_ignored:
+	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) $(INDIVIDUAL_TEST) --release -p $(ACTIVE) --verbose $(FEATURES) -- --ignored
+
+test_one_release:
+	RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) --release $(INDIVIDUAL_TEST) -p $(ACTIVE) -- --ignored $(NOCAPTURE)
 
 hack_test:
 	RUSTFLAGS=$(RUSTFLAGS) cargo hack test --feature-powerset -p $(ACTIVE) --verbose -- --test-threads 1

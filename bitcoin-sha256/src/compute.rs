@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/compute.rs ]
 crate::ix!();
 
 pub trait ComputeSha256 {

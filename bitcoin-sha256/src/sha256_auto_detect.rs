@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/sha256_auto_detect.rs ]
 crate::ix!();
 
 /// Autodetect and configure the best available SHA‑256 backend.

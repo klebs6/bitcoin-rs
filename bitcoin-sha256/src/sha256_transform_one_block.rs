@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/sha256_transform_one_block.rs ]
 crate::ix!();
 
 /// Perform exactly one SHA-256 transformation, processing exactly 16 big-endian
