@@ -1,11 +1,13 @@
 // ---------------- [ File: bitcoin-sha256/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
+/*
 pub use bitcoin_sha256_sse4::*;
 pub use bitcoin_sha256_sse41::*;
 pub use bitcoin_sha256_shani::*;
 pub use bitcoin_sha256_avx2::*;
 pub use bitcoin_sha256_hkdf::*;
+*/
 
 x!{beio_helpers}
 x!{majority_and_choice}

@@ -45,9 +45,7 @@ ACTIVE := bitcoin-remote
 #ACTIVE := bitcoin-random
 #ACTIVE := bitcoin-base58
 #ACTIVE := bitcoin-muhash
-#ACTIVE := bitcoin-sha3
-#ACTIVE := bitcoin-sha512
-ACTIVE := bitcoin-sha256
+ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-hash
 
 #-------------------------------[next]
@@ -305,3 +303,5 @@ timings:
 #ACTIVE := bitcoin-version
 #ACTIVE := bitcoin-univalue       #note this one has a failing test
 #ACTIVE := bitcoin-tokenpipe
+#ACTIVE := bitcoin-sha256
+#ACTIVE := bitcoin-sha3

@@ -29,6 +29,11 @@ impl Sha256 {
         // Safety: caller guarantees `s` points to at least eight `u32`s.
         unsafe { sha256_initialize(self.s_mut().as_mut_ptr()) };
     }
+
+    /// Finalize and zero internal state words.
+    pub fn finalize_wipe(&mut self, out: &mut [u8; SHA256_OUTPUT_SIZE]) {
+        unsafe { finalize_inner(self, out.as_mut_ptr(), /*wipe=*/true) }
+    }
 }
 
 impl Default for Sha256 {

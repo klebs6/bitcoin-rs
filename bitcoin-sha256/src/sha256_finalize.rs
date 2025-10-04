@@ -15,7 +15,7 @@ pub unsafe fn sha256_finalize(hash: *mut Sha256, out32: *mut u8) {
 
 // bitcoin‑sha256/src/sha256_finalize_core.rs (new, private)
 #[inline(always)]
-fn finalize_inner(ctx: &mut Sha256, out: *mut u8, wipe_state: bool) {
+pub(crate) fn finalize_inner(ctx: &mut Sha256, out: *mut u8, wipe_state: bool) {
     /* ---- 1. padding ---- */
     const PAD: [u8; 64] = [
         0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
