@@ -10,6 +10,7 @@ pub use bitcoin_sha256_hkdf::*;
 x!{beio_helpers}
 x!{majority_and_choice}
 x!{self_test}
+x!{self_test_with_diagnostics}
 x!{sha256}
 x!{sha256_auto_detect}
 x!{sha256_finalize}

@@ -18,9 +18,9 @@ pub unsafe fn sha256_initialize_tagged(
     sha256_write(hash, tag, taglen);
     sha256_finalize(hash, buf.as_mut_ptr());
 
-    sha256_initialize((*hash).s_mut().as_mut_ptr());
-    sha256_write(hash, buf.as_mut_ptr(), 32);
-    sha256_write(hash, buf.as_mut_ptr(), 32);
+    (*hash).reset();
+    sha256_write(hash, buf.as_ptr(), 32);
+    sha256_write(hash, buf.as_ptr(), 32);
 }
 
 // -----------------------------------------------------------------------------

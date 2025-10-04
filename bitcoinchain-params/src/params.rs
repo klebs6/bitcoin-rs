@@ -83,6 +83,12 @@ pub mod chain_params {
 
 impl ChainParams {
 
+    /// Chain‑specific default port (8333 for mainnet, etc.).
+    #[inline]
+    pub fn get_default_port(&self) -> u16 {
+        self.n_default_port
+    }
+
     pub fn get_consensus(&self) -> Arc<ChainConsensusParams> {
         
         todo!();
@@ -96,14 +102,6 @@ impl ChainParams {
         todo!();
         /*
             return pchMessageStart;
-        */
-    }
-    
-    pub fn get_default_port(&self) -> u16 {
-        
-        todo!();
-        /*
-            return nDefaultPort;
         */
     }
     

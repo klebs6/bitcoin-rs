@@ -37,18 +37,17 @@ FEATURES :=
 
 #ACTIVE := bitcoin-get-json-token # note that this one has a failing test
 ACTIVE := bitcoin-fees
-ACTIVE := bitcoin-random
 ACTIVE := bitcoin-settings
-ACTIVE := bitcoin-portmap
 ACTIVE := bitcoin-remote
-ACTIVE := bitcoin-sock
+#ACTIVE := bitcoin-sock
 
 #ACTIVE := bitcoin-network
+#ACTIVE := bitcoin-random
 #ACTIVE := bitcoin-base58
 #ACTIVE := bitcoin-muhash
 #ACTIVE := bitcoin-sha3
 #ACTIVE := bitcoin-sha512
-#ACTIVE := bitcoin-sha256
+ACTIVE := bitcoin-sha256
 #ACTIVE := bitcoin-hash
 
 #-------------------------------[next]
@@ -94,6 +93,7 @@ ACTIVE := bitcoin-sock
 #ACTIVE := bitcoinleveldb-versionedit
 
 #-------------------------------[future]
+#ACTIVE := bitcoin-portmap
 #ACTIVE := bitcoinsecp256k1-keys
 #ACTIVE := bitcoin-scripting
 #ACTIVE := bitcoin-key

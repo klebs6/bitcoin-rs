@@ -1,25 +1,20 @@
 // ---------------- [ File: bitcoinchain-params/src/create_select.rs ]
 crate::ix!();
 
-lazy_static!{
-    /*
-    static std::unique_ptr<const CChainParams> globalChainParams;
-    */
-}
-
-/**
-  | Return the currently selected parameters.
-  | This won't change after app startup,
-  | except for unit tests.
-  |
-  */
+/// Global accessor for the currently selected active chain parameters (`Params()` in C++).
+///
+/// Until the full network‑selection logic is ported, we expose a **static
+/// main‑network** instance with `n_default_port = 8333`.  
+/// This satisfies callers such as `get_listen_port()` without blocking
+/// incremental translation work.
 pub fn params() -> &'static ChainParams {
-    
-    todo!();
-        /*
-            assert(globalChainParams);
-        return *globalChainParams;
-        */
+    static GLOBAL_CHAIN_PARAMS: Lazy<ChainParams> = Lazy::new(|| {
+        let mut p = ChainParams::default();
+        p.n_default_port = 8333;
+        debug!("create_select::params – using MAIN defaults");
+        p
+    });
+    &GLOBAL_CHAIN_PARAMS
 }
 
 /**

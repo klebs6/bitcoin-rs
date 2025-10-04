@@ -153,12 +153,26 @@ mod sha256_round_tests {
         assert_eq!(h_ref, h_root, "h mismatch between round variants");
     }
 
+    /// Independent (“oracle”) round: spec-algebra only,
+    /// no calls into the SUT’s helpers.
+    #[inline(always)]
+    fn reference_round(
+        a: u32, b: u32, c: u32, d: u32,
+        e: u32, f: u32, g: u32, h: u32,
+        k: u32, w: u32,
+    ) -> (u32 /*d'*/, u32 /*h'*/) {
+        let ch  = (e & f) ^ ((!e) & g); // Ch(e,f,g)
+        let maj = (a & b) ^ (a & c) ^ (b & c); // Maj(a,b,c)
+        let s1  = e.rotate_right(6) ^ e.rotate_right(11) ^ e.rotate_right(25); // Σ1(e)
+        let s0  = a.rotate_right(2) ^ a.rotate_right(13) ^ a.rotate_right(22); // Σ0(a)
+        let t1  = h.wrapping_add(s1).wrapping_add(ch).wrapping_add(k).wrapping_add(w);
+        let t2  = s0.wrapping_add(maj);
+        (d.wrapping_add(t1), t1.wrapping_add(t2))
+    }
+
     #[traced_test]
     fn sha256_round_correctness() {
-        let mut d = 0xa54ff53a;
-        let mut h = 0x5be0cd19;
-
-        // Known-good inputs and expected outputs from Bitcoin Core reference implementation:
+        // IV-derived inputs for first round over big-endian "abc\x80"
         let (a, b, c, e, f, g) = (
             0x6a09e667u32,
             0xbb67ae85,
@@ -167,50 +181,85 @@ mod sha256_round_tests {
             0x9b05688c,
             0x1f83d9ab,
         );
+        let (mut d, mut h) = (0xa54ff53a, 0x5be0cd19);
+        let (k, w) = (0x428a2f98u32, 0x61626380u32);
 
-        // Known constant and schedule word.
-        let k = 0x428a2f98u32;
-        let w = 0x61626380u32;
+        // Expected via independent oracle:
+        let (d_expected, h_expected) = reference_round(a, b, c, d, e, f, g, h, k, w);
 
-        // Perform the canonical round:
+        // Sanity: if these change, it means the inputs changed; keep the constants to catch drift.
+        assert_eq!(d_expected, 0xfa2a4622, "sanity: d_expected changed");
+        assert_eq!(h_expected, 0x5d6aebcd, "sanity: h_expected changed");
+
+        // Unit under test:
         sha256_round(a, b, c, &mut d, e, f, g, &mut h, k, w);
 
-        // Verified outputs via reference run:
-        let expected_d = 0x165b8fa8u32;
-        let expected_h = 0x70b725eau32;
-
-        assert_eq!(d, expected_d, "Mismatch in 'd' after sha256_round");
-        assert_eq!(h, expected_h, "Mismatch in 'h' after sha256_round");
+        assert_eq!(d, d_expected, "Mismatch in 'd' after sha256_round");
+        assert_eq!(h, h_expected, "Mismatch in 'h' after sha256_round");
     }
 
     #[traced_test]
     fn sha256_round_edge_cases() {
-        let mut d = 0;
-        let mut h = 0xFFFFFFFF;
+        // ---- Case 1: all zeros except h = 0xFFFF_FFFF ----
+        let (a0, b0, c0, mut d0, e0, f0, g0, mut h0) =
+            (0u32, 0, 0, 0u32, 0, 0, 0, 0xFFFF_FFFFu32);
+        let (k0, w0) = (0u32, 0u32);
 
-        sha256_round(0, 0, 0, &mut d, 0, 0, 0, &mut h, 0, 0);
+        let (d0_expected, h0_expected) = reference_round(a0, b0, c0, d0, e0, f0, g0, h0, k0, w0);
 
-        assert_eq!(d, 0, "Edge case (zero inputs) failed for 'd'");
-        assert_eq!(h, 0xFFFFFFFF, "Edge case (zero inputs) failed for 'h'");
+        sha256_round(a0, b0, c0, &mut d0, e0, f0, g0, &mut h0, k0, w0);
 
-        d = 0xFFFFFFFF;
-        h = 0;
+        assert_eq!(d0, d0_expected, "Edge case (zero inputs) wrong 'd'");
+        assert_eq!(h0, h0_expected, "Edge case (zero inputs) wrong 'h'");
+        // Optional: tighten expectations
+        assert_eq!(d0, 0xFFFF_FFFF);
+        assert_eq!(h0, 0xFFFF_FFFF);
 
-        sha256_round(
-            0xFFFFFFFF,
-            0xFFFFFFFF,
-            0xFFFFFFFF,
-            &mut d,
-            0xFFFFFFFF,
-            0xFFFFFFFF,
-            0xFFFFFFFF,
-            &mut h,
-            0xFFFFFFFF,
-            0xFFFFFFFF,
-        );
+        // ---- Case 2: all ones, h = 0, k = w = 0xFFFF_FFFF ----
+        let (a1, b1, c1, mut d1, e1, f1, g1, mut h1) =
+            (0xFFFF_FFFFu32, 0xFFFF_FFFF, 0xFFFF_FFFF, 0xFFFF_FFFF,
+             0xFFFF_FFFF, 0xFFFF_FFFF, 0xFFFF_FFFF, 0u32);
+        let (k1, w1) = (0xFFFF_FFFFu32, 0xFFFF_FFFFu32);
 
-        assert_ne!(d, 0, "Edge case (max inputs) yielded zero 'd'");
-        assert_ne!(h, 0, "Edge case (max inputs) yielded zero 'h'");
+        let (d1_expected, h1_expected) = reference_round(a1, b1, c1, d1, e1, f1, g1, h1, k1, w1);
+
+        sha256_round(a1, b1, c1, &mut d1, e1, f1, g1, &mut h1, k1, w1);
+
+        assert_eq!(d1, d1_expected, "Edge case (all ones) wrong 'd'");
+        assert_eq!(h1, h1_expected, "Edge case (all ones) wrong 'h'");
+        // Optional: exact values (documented)
+        assert_eq!(d1, 0xFFFF_FFFB);
+        assert_eq!(h1, 0xFFFF_FFFA);
+    }
+
+    #[cfg(test)]
+    mod cross_impl_rustcrypto {
+        use super::*;
+        use sha2::compress256;
+        use sha2::digest::generic_array::GenericArray;
+
+        /// FIPS 180‑4 IV
+        const IV: [u32; 8] = [
+            0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+            0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
+        ];
+
+        #[traced_test]
+        fn transform_block_matches_rustcrypto() {
+            // First block from the canonical fixtures (skip leading '-').
+            let block_bytes = &fixtures::SELF_TEST_DATA[1..65];
+
+            // --- Our implementation ---
+            let mut ours = IV;
+            unsafe { sha256_transform(ours.as_mut_ptr(), block_bytes.as_ptr(), 1) };
+
+            // --- RustCrypto reference ---
+            let mut theirs = IV;
+            let block = GenericArray::clone_from_slice(block_bytes);
+            compress256(&mut theirs, &[block]);
+
+            assert_eq!(ours, theirs, "sha256_transform diverges from RustCrypto");
+        }
     }
 }
 

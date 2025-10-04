@@ -9,3 +9,5 @@ pub(crate) use natpmp::{Natpmp, Protocol};
 pub(crate) use bitcoin_time::*;
 pub(crate) use bitcoin_sync::*;
 pub(crate) use bitcoin_syscall::*;
+pub(crate) use bitcoin_argsman::*;
+pub(crate) use bitcoinchain_params::*;

@@ -2,6 +2,11 @@
 path = "../bitcoin-cfg"
 version = "0.1.18"
 
+[dev-dependencies]
+sha2 = { version = "0.10", default-features = false, features = ["compress"] }
+byteorder = "1.5"
+hex = "*"
+
 [dependencies]
 bitcoin-sha256-sse4   = { path = "../bitcoin-sha256-sse4" }
 bitcoin-sha256-sse41  = { path = "../bitcoin-sha256-sse41" }

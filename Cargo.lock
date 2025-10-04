@@ -2005,11 +2005,13 @@ dependencies = [
 name = "bitcoin-portmap"
 version = "0.1.18"
 dependencies = [
+ "bitcoin-argsman",
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-sync",
  "bitcoin-syscall",
  "bitcoin-time",
+ "bitcoinchain-params",
  "igd",
  "natpmp",
  "tracing",
@@ -2311,10 +2313,13 @@ dependencies = [
  "bitcoin-sha256-sse4",
  "bitcoin-sha256-sse41",
  "bitcoin-u256",
+ "byteorder",
  "getset",
+ "hex",
  "hex-literal",
  "serde",
  "serde-big-array",
+ "sha2",
  "tracing",
 ]
 
