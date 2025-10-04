@@ -6,6 +6,7 @@ crate::ix!();
 /// *Never* duplicate these bytes or tables anywhere else in the crate.
 /// Import from here instead (e.g., `use crate::fixtures::*;`).
 pub mod fixtures {
+
     /// Input state (FIPS 180‑4 IV).
     pub const INIT: [u32; 8] = [
         0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
