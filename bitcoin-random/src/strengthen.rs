@@ -26,7 +26,7 @@ pub fn strengthen(
     loop {
 
         for i in 0..1000 {
-            inner_hasher.finalize(buffer);
+            inner_hasher.finalize(&mut buffer);
             inner_hasher.reset();
             inner_hasher.write(buffer.as_mut_ptr() as *const u8, size_of_val(&buffer));
         }
@@ -42,7 +42,7 @@ pub fn strengthen(
     }
 
     // Produce output from inner state and feed it to outer hasher.
-    inner_hasher.finalize(buffer);
+    inner_hasher.finalize(&mut buffer);
     hasher.write(buffer.as_mut_ptr() as *const u8, size_of_val(&buffer));
 
     // Try to clean up.

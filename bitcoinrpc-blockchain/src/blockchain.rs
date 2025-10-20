@@ -1208,7 +1208,7 @@ pub fn pruneblockchain() -> RPCHelpMan {
         else if (height > chainHeight)
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Blockchain is shorter than the attempted prune height.");
         else if (height > chainHeight - MIN_BLOCKS_TO_KEEP) {
-            LogPrint(BCLog::RPC, "Attempt to prune blocks close to the tip.  Retaining the minimum number of blocks.\n");
+            LogPrint(LogFlags::RPC, "Attempt to prune blocks close to the tip.  Retaining the minimum number of blocks.\n");
             height = chainHeight - MIN_BLOCKS_TO_KEEP;
         }
 

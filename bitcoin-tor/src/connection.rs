@@ -128,7 +128,7 @@ impl TorControlConnection {
                         self->reply_handlers.front()(*self, self->message);
                         self->reply_handlers.pop_front();
                     } else {
-                        LogPrint(BCLog::TOR, "tor: Received unexpected sync reply %i\n", self->message.code);
+                        LogPrint(LogFlags::TOR, "tor: Received unexpected sync reply %i\n", self->message.code);
                     }
                 }
                 self->message.Clear();
@@ -153,13 +153,13 @@ impl TorControlConnection {
         /*
             TorControlConnection *self = static_cast<TorControlConnection*>(ctx);
         if (what & BEV_EVENT_CONNECTED) {
-            LogPrint(BCLog::TOR, "tor: Successfully connected!\n");
+            LogPrint(LogFlags::TOR, "tor: Successfully connected!\n");
             self->connected(*self);
         } else if (what & (BEV_EVENT_EOF|BEV_EVENT_ERROR)) {
             if (what & BEV_EVENT_ERROR) {
-                LogPrint(BCLog::TOR, "tor: Error connecting to Tor control socket\n");
+                LogPrint(LogFlags::TOR, "tor: Error connecting to Tor control socket\n");
             } else {
-                LogPrint(BCLog::TOR, "tor: End of stream\n");
+                LogPrint(LogFlags::TOR, "tor: End of stream\n");
             }
             self->Disconnect();
             self->disconnected(*self);

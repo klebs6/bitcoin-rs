@@ -168,14 +168,14 @@ impl BlockManager {
                 if (ppindex)
                     *ppindex = pindex;
                 if (pindex->nStatus & BLOCK_FAILED_MASK) {
-                    LogPrint(BCLog::VALIDATION, "%s: block %s is marked invalid\n", __func__, hash.ToString());
+                    LogPrint(LogFlags::VALIDATION, "%s: block %s is marked invalid\n", __func__, hash.ToString());
                     return state.Invalid(BlockValidationResult::BLOCK_CACHED_INVALID, "duplicate");
                 }
                 return true;
             }
 
             if (!CheckBlockHeader(block, state, chainparams.GetConsensus())) {
-                LogPrint(BCLog::VALIDATION, "%s: consensus::CheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
+                LogPrint(LogFlags::VALIDATION, "%s: consensus::CheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
                 return false;
             }
 
@@ -183,16 +183,16 @@ impl BlockManager {
             CBlockIndex* pindexPrev = nullptr;
             BlockMap::iterator mi = m_block_index.find(block.hashPrevBlock);
             if (mi == m_block_index.end()) {
-                LogPrint(BCLog::VALIDATION, "%s: %s prev block not found\n", __func__, hash.ToString());
+                LogPrint(LogFlags::VALIDATION, "%s: %s prev block not found\n", __func__, hash.ToString());
                 return state.Invalid(BlockValidationResult::BLOCK_MISSING_PREV, "prev-blk-not-found");
             }
             pindexPrev = (*mi).second;
             if (pindexPrev->nStatus & BLOCK_FAILED_MASK) {
-                LogPrint(BCLog::VALIDATION, "%s: %s prev block invalid\n", __func__, hash.ToString());
+                LogPrint(LogFlags::VALIDATION, "%s: %s prev block invalid\n", __func__, hash.ToString());
                 return state.Invalid(BlockValidationResult::BLOCK_INVALID_PREV, "bad-prevblk");
             }
             if (!ContextualCheckBlockHeader(block, state, *this, chainparams, pindexPrev, GetAdjustedTime())) {
-                LogPrint(BCLog::VALIDATION, "%s: consensus::ContextualCheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
+                LogPrint(LogFlags::VALIDATION, "%s: consensus::ContextualCheckBlockHeader: %s, %s\n", __func__, hash.ToString(), state.ToString());
                 return false;
             }
 
@@ -229,7 +229,7 @@ impl BlockManager {
                             setDirtyBlockIndex.insert(invalid_walk);
                             invalid_walk = invalid_walk->pprev;
                         }
-                        LogPrint(BCLog::VALIDATION, "%s: %s prev block invalid\n", __func__, hash.ToString());
+                        LogPrint(LogFlags::VALIDATION, "%s: %s prev block invalid\n", __func__, hash.ToString());
                         return state.Invalid(BlockValidationResult::BLOCK_INVALID_PREV, "bad-prevblk");
                     }
                 }
@@ -353,7 +353,7 @@ impl BlockManager {
             }
         }
 
-        LogPrint(BCLog::PRUNE, "Prune: target=%dMiB actual=%dMiB diff=%dMiB max_prune_height=%d removed %d blk/rev pairs\n",
+        LogPrint(LogFlags::PRUNE, "Prune: target=%dMiB actual=%dMiB diff=%dMiB max_prune_height=%d removed %d blk/rev pairs\n",
                nPruneTarget/1024/1024, nCurrentUsage/1024/1024,
                ((int64_t)nPruneTarget - (int64_t)nCurrentUsage)/1024/1024,
                nLastBlockWeCanPrune, count);

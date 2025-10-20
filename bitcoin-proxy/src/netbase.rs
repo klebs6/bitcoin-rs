@@ -535,7 +535,7 @@ pub fn socks5(
     todo!();
         /*
             IntrRecvError recvr;
-        LogPrint(BCLog::NET, "SOCKS5 connecting %s\n", strDest);
+        LogPrint(LogFlags::NET, "SOCKS5 connecting %s\n", strDest);
         if (strDest.size() > 255) {
             return error("Hostname too long");
         }
@@ -576,7 +576,7 @@ pub fn socks5(
             if (ret != (ssize_t)vAuth.size()) {
                 return error("Error sending authentication to proxy");
             }
-            LogPrint(BCLog::PROXY, "SOCKS5 sending proxy authentication %s:%s\n", auth->username, auth->password);
+            LogPrint(LogFlags::PROXY, "SOCKS5 sending proxy authentication %s:%s\n", auth->username, auth->password);
             uint8_t pchRetA[2];
             if ((recvr = InterruptibleRecv(pchRetA, 2, g_socks5_recv_timeout, sock)) != IntrRecvError::OK) {
                 return error("Error reading proxy authentication response");
@@ -647,7 +647,7 @@ pub fn socks5(
         if ((recvr = InterruptibleRecv(pchRet3, 2, g_socks5_recv_timeout, sock)) != IntrRecvError::OK) {
             return error("Error reading from proxy");
         }
-        LogPrint(BCLog::NET, "SOCKS5 connected %s\n", strDest);
+        LogPrint(LogFlags::NET, "SOCKS5 connected %s\n", strDest);
         return true;
         */
 }
@@ -733,7 +733,7 @@ pub fn log_connect_failure<Args>(
         if (manual_connection) {
             LogPrintf("%s\n", error_message);
         } else {
-            LogPrint(BCLog::NET, "%s\n", error_message);
+            LogPrint(LogFlags::NET, "%s\n", error_message);
         }
         */
 }
@@ -806,7 +806,7 @@ pub fn connect_socket_directly(
                               NetworkErrorString(WSAGetLastError()));
                     return false;
                 } else if (occurred == 0) {
-                    LogPrint(BCLog::NET, "connection attempt to %s timed out\n", addrConnect.ToString());
+                    LogPrint(LogFlags::NET, "connection attempt to %s timed out\n", addrConnect.ToString());
                     return false;
                 }
 

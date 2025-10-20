@@ -49,10 +49,10 @@ impl BlockPolicyEstimator {
 
         if (firstRecordedHeight == 0 && countedTxs > 0) {
             firstRecordedHeight = nBestSeenHeight;
-            LogPrint(BCLog::ESTIMATEFEE, "Blockpolicy first recorded height %u\n", firstRecordedHeight);
+            LogPrint(LogFlags::ESTIMATEFEE, "Blockpolicy first recorded height %u\n", firstRecordedHeight);
         }
 
-        LogPrint(BCLog::ESTIMATEFEE, "Blockpolicy estimates updated by %u of %u block txs, since last block %u of %u tracked, mempool map size %u, max target %u from %s\n",
+        LogPrint(LogFlags::ESTIMATEFEE, "Blockpolicy estimates updated by %u of %u block txs, since last block %u of %u tracked, mempool map size %u, max target %u from %s\n",
                  countedTxs, entries.size(), trackedTxs, trackedTxs + untrackedTxs, mapMemPoolTxs.size(),
                  MaxUsableEstimate(), HistoricalBlockSpan() > BlockSpan() ? "historical" : "current");
 

@@ -81,7 +81,7 @@ impl From<&u256> for FastRandomContext {
     fn from(seed: &u256) -> Self {
     
         let mut rng = ChaCha20::default();
-        rng.set_key(seed.blob.begin(), 32);
+        rng.set_key(seed.blob().begin(), 32);
 
         Self {
             requires_seed: false,
@@ -179,7 +179,7 @@ impl FastRandomContext {
 
         let mut seed: u256 = u256::default();
 
-        x.rng.set_key(seed.blob.begin(), 32);
+        x.rng.set_key(seed.blob().begin(), 32);
 
         x
     }
@@ -275,7 +275,7 @@ impl FastRandomContext {
     pub fn random_seed(&mut self)  {
         
         let seed: u256 = get_rand_hash();
-        self.rng.set_key(seed.blob.begin(), 32);
+        self.rng.set_key(seed.blob().begin(), 32);
         self.requires_seed = false;
     }
     
@@ -294,7 +294,7 @@ impl FastRandomContext {
         let offset: isize = self.bytebuf_size.try_into().unwrap();
 
         unsafe {
-            let dst = ret.blob.begin() as *mut c_void;
+            let dst = ret.blob().begin() as *mut c_void;
             let src = self.bytebuf.as_mut_ptr().add(64).offset(-offset);
 
             libc::memcpy(

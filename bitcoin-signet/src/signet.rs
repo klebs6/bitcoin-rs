@@ -177,7 +177,7 @@ pub fn check_signet_block_solution(
         const std::optional<SignetTxs> signet_txs = SignetTxs::Create(block, challenge);
 
         if (!signet_txs) {
-            LogPrint(BCLog::VALIDATION, "CheckSignetBlockSolution: Errors in block (block solution parse failure)\n");
+            LogPrint(LogFlags::VALIDATION, "CheckSignetBlockSolution: Errors in block (block solution parse failure)\n");
             return false;
         }
 
@@ -189,7 +189,7 @@ pub fn check_signet_block_solution(
         TransactionSignatureChecker sigcheck(&signet_txs->m_to_sign, /* nInIn= */ 0, /* amountIn= */ signet_txs->m_to_spend.vout[0].nValue, txdata, MissingDataBehavior::ASSERT_FAIL);
 
         if (!VerifyScript(scriptSig, signet_txs->m_to_spend.vout[0].scriptPubKey, &witness, BLOCK_SCRIPT_VERIFY_FLAGS, sigcheck)) {
-            LogPrint(BCLog::VALIDATION, "CheckSignetBlockSolution: Errors in block (block solution invalid)\n");
+            LogPrint(LogFlags::VALIDATION, "CheckSignetBlockSolution: Errors in block (block solution invalid)\n");
             return false;
         }
         return true;

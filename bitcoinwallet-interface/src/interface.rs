@@ -1998,7 +1998,7 @@ impl WalletBatch {
             }
             else if ((*it) == hash) {
                 if(!EraseTx(hash)) {
-                    LogPrint(BCLog::WALLETDB, "Transaction was found for deletion but returned database error: %s\n", hash.GetHex());
+                    LogPrint(LogFlags::WALLETDB, "Transaction was found for deletion but returned database error: %s\n", hash.GetHex());
                     delerror = true;
                 }
                 vTxHashOut.push_back(hash);

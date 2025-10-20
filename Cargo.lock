@@ -452,7 +452,7 @@ checksum = "5e764a1d40d510daf35e07be9eb06e75770908c27d411ee6c92109c9840eaaf7"
 
 [[package]]
 name = "bitcoin-addr"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -467,7 +467,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-addrman"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-addr",
  "bitcoin-argsman",
@@ -561,7 +561,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-banman"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bloom",
  "bitcoin-cfg",
@@ -583,7 +583,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-base58"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -600,7 +600,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-bdb"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -624,7 +624,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-bench"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-addrman",
  "bitcoin-amt",
@@ -691,7 +691,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-block"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -712,7 +712,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-blockencoding"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-block",
@@ -729,7 +729,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-blockfilter"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-block",
@@ -748,7 +748,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-blockman"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-cfg",
@@ -766,7 +766,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-blockpolicy"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-autofile",
@@ -782,7 +782,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-bloom"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -837,7 +837,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-chain-consensus"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-block",
@@ -852,7 +852,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-chainman"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-autofile",
  "bitcoin-block",
@@ -876,7 +876,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-cli"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "actix-web",
  "bitcoin-addr",
@@ -902,7 +902,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-client-ui"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-cfg",
@@ -913,7 +913,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-coincontrol"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-bitstream",
@@ -935,7 +935,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-coinselect"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -950,7 +950,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-coinsview"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -979,7 +979,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-compressor"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -993,7 +993,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-connman"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "atomic",
  "bitcoin-addr",
@@ -1072,7 +1072,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-daemon"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -1089,7 +1089,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-db"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -1106,7 +1106,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-deployment"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-chain-consensus",
@@ -1128,7 +1128,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-dns"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -1140,7 +1140,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-dummywallet"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-argsman",
  "bitcoin-cfg",
@@ -1153,7 +1153,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-dumpwallet"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -1178,7 +1178,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-fees"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-autofile",
@@ -1195,7 +1195,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-foundblock"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-derive",
@@ -1205,7 +1205,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-fuzz"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-addr",
  "bitcoin-addrman",
@@ -1268,7 +1268,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-golombrice"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -1284,9 +1284,10 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-hash"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
+ "bitcoin-cuckoo-cache",
  "bitcoin-imports",
  "bitcoin-mem",
  "bitcoin-ripemd",
@@ -1310,7 +1311,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-hmac-sha256"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
@@ -1345,7 +1346,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-http"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -1433,7 +1434,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-index"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "atomic",
  "bitcoin-amt",
@@ -1459,7 +1460,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-indexed-chain"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-addr",
  "bitcoin-addrman",
@@ -1560,7 +1561,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-init"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-argsman",
  "bitcoin-bitstream",
@@ -1582,7 +1583,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-ipc"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -1692,7 +1693,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-mainsignals"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-blockman",
@@ -1719,7 +1720,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-merkle"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-bloom",
@@ -1743,7 +1744,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-miner"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-block",
@@ -1765,7 +1766,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-muhash"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-chacha",
@@ -1783,7 +1784,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-net"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-addr",
  "bitcoin-amt",
@@ -1817,7 +1818,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-net-zmq"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-cfg",
@@ -1839,7 +1840,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-netmsg"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -1852,7 +1853,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-netpermissions"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -1880,7 +1881,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-node"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-addr",
  "bitcoin-addrman",
@@ -1931,7 +1932,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-noui"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
@@ -1941,7 +1942,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-packages"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -1954,7 +1955,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-peerman"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-addr",
  "bitcoin-addrman",
@@ -2010,7 +2011,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-policy"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -2038,7 +2039,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-portmap"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-argsman",
  "bitcoin-derive",
@@ -2054,7 +2055,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-pow"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-cfg",
@@ -2068,7 +2069,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-proxy"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -2081,7 +2082,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-psbt"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-bitstream",
@@ -2107,7 +2108,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-random"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -2125,7 +2126,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-rbf"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -2151,7 +2152,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-restapi"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-chainman",
  "bitcoin-derive",
@@ -2177,7 +2178,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-sam"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -2205,7 +2206,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-scripting"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -2231,7 +2232,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-scriptpubkeyman"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-coinsview",
@@ -2287,7 +2288,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-service"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -2337,7 +2338,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-sha256"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -2445,7 +2446,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-signet"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-chain-consensus",
@@ -2458,7 +2459,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-signingprovider"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -2502,7 +2503,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-sqlite"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -2584,7 +2585,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-system"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-argsman",
@@ -2602,7 +2603,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-test"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-argsman",
@@ -2678,7 +2679,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-top"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "atomic",
  "bitcoin-addrman",
@@ -2766,7 +2767,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-tor"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -2780,7 +2781,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-tx"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-bitstream",
@@ -2799,7 +2800,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-txmempool"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-argsman",
@@ -2841,7 +2842,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-txmempoolentry"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-block",
@@ -2935,7 +2936,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoin-walletdb"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-bitstream",
  "bitcoin-cfg",
@@ -2957,7 +2958,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinchain-interface"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-block",
@@ -2980,7 +2981,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinchain-notifications"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-derive",
@@ -2993,7 +2994,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinchain-params"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-argsman",
@@ -3571,7 +3572,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinnode-interface"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-addr",
  "bitcoin-banman",
@@ -3605,7 +3606,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinnode-stats"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-addr",
  "bitcoin-amt",
@@ -3621,7 +3622,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinnode-txrelay"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-bloom",
@@ -3632,7 +3633,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinrpc-blockchain"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-autofile",
@@ -3661,7 +3662,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinrpc-dump"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -3678,7 +3679,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinrpc-mining"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-block",
  "bitcoin-blockman",
@@ -3700,7 +3701,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinrpc-misc"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -3714,7 +3715,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinrpc-net"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-connman",
@@ -3729,7 +3730,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinrpc-server"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -3742,7 +3743,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinrpc-txn"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-coinsview",
@@ -3761,7 +3762,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinrpc-util"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -3779,7 +3780,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinrpc-wallet"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -3914,7 +3915,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinsecp256k1-schnorr"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
@@ -3937,7 +3938,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinwallet-client"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-argsman",
  "bitcoin-derive",
@@ -3955,7 +3956,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinwallet-context"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-argsman",
  "bitcoin-derive",
@@ -3966,7 +3967,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinwallet-feature"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
@@ -3975,7 +3976,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinwallet-fees"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -3992,7 +3993,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinwallet-init"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-argsman",
  "bitcoin-cfg",
@@ -4006,7 +4007,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinwallet-interface"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-argsman",
@@ -4049,7 +4050,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinwallet-library"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-argsman",
@@ -4085,7 +4086,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinwallet-receive"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",
@@ -4111,7 +4112,7 @@ dependencies = [
 
 [[package]]
 name = "bitcoinwallet-spend"
-version = "0.1.18"
+version = "0.1.19"
 dependencies = [
  "bitcoin-amt",
  "bitcoin-cfg",

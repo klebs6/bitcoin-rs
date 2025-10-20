@@ -87,6 +87,7 @@
   | state.
   */
 
+#![allow(internal_features)]
 #![feature(const_fn_trait_bound)]
 #![feature(core_intrinsics)]
 #![feature(allocator_api)]

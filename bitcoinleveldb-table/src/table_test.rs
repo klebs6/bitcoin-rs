@@ -31,6 +31,9 @@ struct ReverseKeyComparator {
 
 impl SliceComparator for ReverseKeyComparator {
 
+    fn bytewise_comparator(&self) -> *const (dyn bitcoinleveldb_comparator::SliceComparator + 'static) { 
+        todo!() 
+    }
 }
 
 impl Name for ReverseKeyComparator {
@@ -59,9 +62,10 @@ impl Compare for ReverseKeyComparator {
 
 impl FindShortestSeparator for ReverseKeyComparator {
 
-    fn find_shortest_separator(&self, 
-        start: *mut String,
-        limit: &Slice)  {
+    fn find_shortest_separator(
+        &self, 
+        start: &mut Vec<u8>,
+        limit: &[u8])  {
         
         todo!();
         /*
@@ -75,7 +79,7 @@ impl FindShortestSeparator for ReverseKeyComparator {
     
 impl FindShortSuccessor for ReverseKeyComparator {
 
-    fn find_short_successor(&self, key_: *mut String)  {
+    fn find_short_successor(&self, key_: &mut Vec<u8>)  {
         
         todo!();
         /*

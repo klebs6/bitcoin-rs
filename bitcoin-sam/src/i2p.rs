@@ -540,7 +540,7 @@ impl SAMSession {
     }
     
     /**
-      | Log a message in the `BCLog::I2P` category.
+      | Log a message in the `LogFlags::I2P` category.
       | 
       | -----------
       | @param[in] fmt
@@ -559,7 +559,7 @@ impl SAMSession {
     
         todo!();
         /*
-            LogPrint(BCLog::I2P, "I2P: %s\n", tfm::format(fmt, args...));
+            LogPrint(LogFlags::I2P, "I2P: %s\n", tfm::format(fmt, args...));
         */
     }
     

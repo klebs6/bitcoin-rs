@@ -435,7 +435,7 @@ impl TxConfirmStats {
             failed_within_target_perc = 100 * failBucket.withinTarget / (failBucket.totalConfirmed + failBucket.inMempool + failBucket.leftMempool);
         }
 
-        LogPrint(BCLog::ESTIMATEFEE, "FeeEst: %d > %.0f%% decay %.5f: feerate: %g from (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out) Fail: (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out)\n",
+        LogPrint(LogFlags::ESTIMATEFEE, "FeeEst: %d > %.0f%% decay %.5f: feerate: %g from (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out) Fail: (%g - %g) %.2f%% %.1f/(%.1f %d mem %.1f out)\n",
                  confTarget, 100.0 * successBreakPoint, decay,
                  median, passBucket.start, passBucket.end,
                  passed_within_target_perc,
@@ -535,7 +535,7 @@ impl TxConfirmStats {
         // to match the number of confirms and buckets
         resizeInMemoryCounters(numBuckets);
 
-        LogPrint(BCLog::ESTIMATEFEE, "Reading estimates: %u buckets counting confirms up to %u blocks\n",
+        LogPrint(LogFlags::ESTIMATEFEE, "Reading estimates: %u buckets counting confirms up to %u blocks\n",
                  numBuckets, maxConfirms);
         */
     }
@@ -576,7 +576,7 @@ impl TxConfirmStats {
         if (nBestSeenHeight == 0)  // the BlockPolicyEstimator hasn't seen any blocks yet
             blocksAgo = 0;
         if (blocksAgo < 0) {
-            LogPrint(BCLog::ESTIMATEFEE, "Blockpolicy error, blocks ago is negative for mempool tx\n");
+            LogPrint(LogFlags::ESTIMATEFEE, "Blockpolicy error, blocks ago is negative for mempool tx\n");
             return;  //This can't happen because we call this with our best seen height, no entries can have higher
         }
 
@@ -584,7 +584,7 @@ impl TxConfirmStats {
             if (oldUnconfTxs[bucketindex] > 0) {
                 oldUnconfTxs[bucketindex]--;
             } else {
-                LogPrint(BCLog::ESTIMATEFEE, "Blockpolicy error, mempool tx removed from >25 blocks,bucketIndex=%u already\n",
+                LogPrint(LogFlags::ESTIMATEFEE, "Blockpolicy error, mempool tx removed from >25 blocks,bucketIndex=%u already\n",
                          bucketindex);
             }
         }
@@ -593,7 +593,7 @@ impl TxConfirmStats {
             if (unconfTxs[blockIndex][bucketindex] > 0) {
                 unconfTxs[blockIndex][bucketindex]--;
             } else {
-                LogPrint(BCLog::ESTIMATEFEE, "Blockpolicy error, mempool tx removed from blockIndex=%u,bucketIndex=%u already\n",
+                LogPrint(LogFlags::ESTIMATEFEE, "Blockpolicy error, mempool tx removed from blockIndex=%u,bucketIndex=%u already\n",
                          blockIndex, bucketindex);
             }
         }

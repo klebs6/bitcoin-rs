@@ -162,7 +162,7 @@ impl GetMessage for V1TransportDeserializer {
 
         // Check checksum and header command string
         if (memcmp(hash.begin(), hdr.pchChecksum, CMessageHeader::CHECKSUM_SIZE) != 0) {
-            LogPrint(BCLog::NET, "Header error: Wrong checksum (%s, %u bytes), expected %s was %s, peer=%d\n",
+            LogPrint(LogFlags::NET, "Header error: Wrong checksum (%s, %u bytes), expected %s was %s, peer=%d\n",
                      SanitizeString(msg->m_command), msg->m_message_size,
                      HexStr(Span<uint8_t>(hash.begin(), hash.begin() + CMessageHeader::CHECKSUM_SIZE)),
                      HexStr(hdr.pchChecksum),
@@ -170,7 +170,7 @@ impl GetMessage for V1TransportDeserializer {
             out_err_raw_size = msg->m_raw_message_size;
             msg = std::nullopt;
         } else if (!hdr.IsCommandValid()) {
-            LogPrint(BCLog::NET, "Header error: Invalid message type (%s, %u bytes), peer=%d\n",
+            LogPrint(LogFlags::NET, "Header error: Invalid message type (%s, %u bytes), peer=%d\n",
                      SanitizeString(hdr.GetCommand()), msg->m_message_size, m_node_id);
             out_err_raw_size = msg->m_raw_message_size;
             msg.reset();
@@ -233,19 +233,19 @@ impl V1TransportDeserializer {
             hdrbuf >> hdr;
         }
         catch (const std::exception&) {
-            LogPrint(BCLog::NET, "Header error: Unable to deserialize, peer=%d\n", m_node_id);
+            LogPrint(LogFlags::NET, "Header error: Unable to deserialize, peer=%d\n", m_node_id);
             return -1;
         }
 
         // Check start string, network magic
         if (memcmp(hdr.pchMessageStart, m_chain_params.MessageStart(), CMessageHeader::MESSAGE_START_SIZE) != 0) {
-            LogPrint(BCLog::NET, "Header error: Wrong MessageStart %s received, peer=%d\n", HexStr(hdr.pchMessageStart), m_node_id);
+            LogPrint(LogFlags::NET, "Header error: Wrong MessageStart %s received, peer=%d\n", HexStr(hdr.pchMessageStart), m_node_id);
             return -1;
         }
 
         // reject messages larger than MAX_SIZE or MAX_PROTOCOL_MESSAGE_LENGTH
         if (hdr.nMessageSize > MAX_SIZE || hdr.nMessageSize > MAX_PROTOCOL_MESSAGE_LENGTH) {
-            LogPrint(BCLog::NET, "Header error: Size too large (%s, %u bytes), peer=%d\n", SanitizeString(hdr.GetCommand()), hdr.nMessageSize, m_node_id);
+            LogPrint(LogFlags::NET, "Header error: Size too large (%s, %u bytes), peer=%d\n", SanitizeString(hdr.GetCommand()), hdr.nMessageSize, m_node_id);
             return -1;
         }
 

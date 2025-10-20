@@ -408,7 +408,7 @@ pub fn on_rpc_stopped()  {
             rpc_notify_block_change_connection.disconnect();
         RPCNotifyBlockChange(nullptr);
         g_best_block_cv.notify_all();
-        LogPrint(BCLog::RPC, "RPC stopped.\n");
+        LogPrint(LogFlags::RPC, "RPC stopped.\n");
         */
 }
 

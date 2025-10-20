@@ -374,7 +374,7 @@ pub fn init_http_allow_list() -> bool {
         std::string strAllowed;
         for (const CSubNet& subnet : rpc_allow_subnets)
             strAllowed += subnet.ToString() + " ";
-        LogPrint(BCLog::HTTP, "Allowing HTTP connections from: %s\n", strAllowed);
+        LogPrint(LogFlags::HTTP, "Allowing HTTP connections from: %s\n", strAllowed);
         return true;
         */
 }
@@ -431,7 +431,7 @@ pub fn http_request_cb(
 
         // Early address-based allow check
         if (!ClientAllowed(hreq->GetPeer())) {
-            LogPrint(BCLog::HTTP, "HTTP request from %s rejected: Client network is not allowed RPC access\n",
+            LogPrint(LogFlags::HTTP, "HTTP request from %s rejected: Client network is not allowed RPC access\n",
                      hreq->GetPeer().ToString());
             hreq->WriteReply(HTTP_FORBIDDEN);
             return;
@@ -439,13 +439,13 @@ pub fn http_request_cb(
 
         // Early reject unknown HTTP methods
         if (hreq->GetRequestMethod() == HTTPRequest::UNKNOWN) {
-            LogPrint(BCLog::HTTP, "HTTP request from %s rejected: Unknown HTTP request method\n",
+            LogPrint(LogFlags::HTTP, "HTTP request from %s rejected: Unknown HTTP request method\n",
                      hreq->GetPeer().ToString());
             hreq->WriteReply(HTTP_BAD_METHOD);
             return;
         }
 
-        LogPrint(BCLog::HTTP, "Received a %s request for %s from %s\n",
+        LogPrint(LogFlags::HTTP, "Received a %s request for %s from %s\n",
                  RequestMethodString(hreq->GetRequestMethod()), SanitizeString(hreq->GetURI(), SAFE_CHARS_URI).substr(0, 100), hreq->GetPeer().ToString());
 
         // Find registered handler for prefix
@@ -492,7 +492,7 @@ pub fn http_reject_request_cb(
     
     todo!();
         /*
-            LogPrint(BCLog::HTTP, "Rejecting request while shutting down\n");
+            LogPrint(LogFlags::HTTP, "Rejecting request while shutting down\n");
         evhttp_send_error(req, HTTP_SERVUNAVAIL, nullptr);
         */
 }
@@ -507,10 +507,10 @@ pub fn threadhttp(base: *mut libevent_sys::event_base) -> bool {
         /*
             util::ThreadRename("http");
         SetSyscallSandboxPolicy(SyscallSandboxPolicy::NET_HTTP_SERVER);
-        LogPrint(BCLog::HTTP, "Entering http event loop\n");
+        LogPrint(LogFlags::HTTP, "Entering http event loop\n");
         event_base_dispatch(base);
         // libevent_sys::event loop will be interrupted by InterruptHTTPServer()
-        LogPrint(BCLog::HTTP, "Exited http event loop\n");
+        LogPrint(LogFlags::HTTP, "Exited http event loop\n");
         return event_base_got_break(base) == 0;
         */
 }
@@ -547,7 +547,7 @@ pub fn http_bind_addresses(http: *mut libevent_sys::evhttp) -> bool {
 
         // Bind addresses
         for (std::vector<std::pair<std::string, uint16_t> >::iterator i = endpoints.begin(); i != endpoints.end(); ++i) {
-            LogPrint(BCLog::HTTP, "Binding RPC on address %s port %i\n", i->first, i->second);
+            LogPrint(LogFlags::HTTP, "Binding RPC on address %s port %i\n", i->first, i->second);
             evhttp_bound_socket *bind_handle = evhttp_bind_socket_with_handle(http, i->first.empty() ? nullptr : i->first.c_str(), i->second);
             if (bind_handle) {
                 CNetAddr addr;
@@ -593,7 +593,7 @@ pub fn libevent_log_cb(
             if (severity >= EVENT_LOG_WARN) // Log warn messages and higher without debug category
             LogPrintf("libevent: %s\n", msg);
         else
-            LogPrint(BCLog::LIBEVENT, "libevent: %s\n", msg);
+            LogPrint(LogFlags::LIBEVENT, "libevent: %s\n", msg);
         */
 }
 
@@ -615,9 +615,9 @@ pub fn init_http_server() -> bool {
         event_set_log_callback(&libevent_log_cb);
         // Update libevent's log handling. Returns false if our version of
         // libevent doesn't support debug logging, in which case we should
-        // clear the BCLog::LIBEVENT flag.
-        if (!UpdateHTTPServerLogging(LogInstance().WillLogCategory(BCLog::LIBEVENT))) {
-            LogInstance().DisableCategory(BCLog::LIBEVENT);
+        // clear the LogFlags::LIBEVENT flag.
+        if (!UpdateHTTPServerLogging(LogInstance().WillLogCategory(LogFlags::LIBEVENT))) {
+            LogInstance().DisableCategory(LogFlags::LIBEVENT);
         }
 
     #ifdef WIN32
@@ -646,7 +646,7 @@ pub fn init_http_server() -> bool {
             return false;
         }
 
-        LogPrint(BCLog::HTTP, "Initialized HTTP server\n");
+        LogPrint(LogFlags::HTTP, "Initialized HTTP server\n");
         int workQueueDepth = std::max((long)gArgs.GetIntArg("-rpcworkqueue", DEFAULT_HTTP_WORKQUEUE), 1L);
         LogPrintf("HTTP: creating work queue of depth %d\n", workQueueDepth);
 
@@ -660,7 +660,7 @@ pub fn init_http_server() -> bool {
 
 /**
   | Change logging level for libevent.
-  | Removes BCLog::LIBEVENT from log categories
+  | Removes LogFlags::LIBEVENT from log categories
   | if libevent doesn't support debug logging.
   |
   */
@@ -702,7 +702,7 @@ pub fn start_http_server()  {
     
     todo!();
         /*
-            LogPrint(BCLog::HTTP, "Starting HTTP server\n");
+            LogPrint(LogFlags::HTTP, "Starting HTTP server\n");
         int rpcThreads = std::max((long)gArgs.GetIntArg("-rpcthreads", DEFAULT_HTTP_THREADS), 1L);
         LogPrintf("HTTP: starting %d worker threads\n", rpcThreads);
         g_thread_http = std::thread(ThreadHTTP, eventBase);
@@ -721,7 +721,7 @@ pub fn interrupt_http_server()  {
     
     todo!();
         /*
-            LogPrint(BCLog::HTTP, "Interrupting HTTP server\n");
+            LogPrint(LogFlags::HTTP, "Interrupting HTTP server\n");
         if (eventHTTP) {
             // Reject requests on current connections
             evhttp_set_gencb(eventHTTP, http_reject_request_cb, nullptr);
@@ -740,9 +740,9 @@ pub fn stop_http_server()  {
     
     todo!();
         /*
-            LogPrint(BCLog::HTTP, "Stopping HTTP server\n");
+            LogPrint(LogFlags::HTTP, "Stopping HTTP server\n");
         if (g_work_queue) {
-            LogPrint(BCLog::HTTP, "Waiting for HTTP worker threads to exit\n");
+            LogPrint(LogFlags::HTTP, "Waiting for HTTP worker threads to exit\n");
             for (auto& thread : g_thread_http_workers) {
                 thread.join();
             }
@@ -755,7 +755,7 @@ pub fn stop_http_server()  {
         }
         boundSockets.clear();
         if (eventBase) {
-            LogPrint(BCLog::HTTP, "Waiting for HTTP event thread to exit\n");
+            LogPrint(LogFlags::HTTP, "Waiting for HTTP event thread to exit\n");
             if (g_thread_http.joinable()) g_thread_http.join();
         }
         if (eventHTTP) {
@@ -767,7 +767,7 @@ pub fn stop_http_server()  {
             eventBase = nullptr;
         }
         g_work_queue.reset();
-        LogPrint(BCLog::HTTP, "Stopped HTTP server\n");
+        LogPrint(LogFlags::HTTP, "Stopped HTTP server\n");
         */
 }
 
@@ -1055,7 +1055,7 @@ pub fn register_http_handler(
     
     todo!();
         /*
-            LogPrint(BCLog::HTTP, "Registering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
+            LogPrint(LogFlags::HTTP, "Registering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
         pathHandlers.push_back(HTTPPathHandler(prefix, exactMatch, handler));
         */
 }
@@ -1077,7 +1077,7 @@ pub fn unregister_http_handler(
                 break;
         if (i != iend)
         {
-            LogPrint(BCLog::HTTP, "Unregistering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
+            LogPrint(LogFlags::HTTP, "Unregistering HTTP handler for %s (exactmatch %d)\n", prefix, exactMatch);
             pathHandlers.erase(i);
         }
         */

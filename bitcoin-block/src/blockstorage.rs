@@ -253,7 +253,7 @@ pub fn unlink_pruned_files(set_files_to_prune: &HashSet<i32>)  {
             FlatFilePos pos(*it, 0);
             fs::remove(BlockFileSeq().FileName(pos));
             fs::remove(UndoFileSeq().FileName(pos));
-            LogPrint(BCLog::BLOCKSTORE, "Prune: %s deleted blk/rev (%05u)\n", __func__, *it);
+            LogPrint(LogFlags::BLOCKSTORE, "Prune: %s deleted blk/rev (%05u)\n", __func__, *it);
         }
         */
 }
@@ -352,7 +352,7 @@ pub fn find_block_pos(
 
         if ((int)nFile != nLastBlockFile) {
             if (!fKnown) {
-                LogPrint(BCLog::BLOCKSTORE, "Leaving block file %i: %s\n", nLastBlockFile, vinfoBlockFile[nLastBlockFile].ToString());
+                LogPrint(LogFlags::BLOCKSTORE, "Leaving block file %i: %s\n", nLastBlockFile, vinfoBlockFile[nLastBlockFile].ToString());
             }
             FlushBlockFile(!fKnown, finalize_undo);
             nLastBlockFile = nFile;

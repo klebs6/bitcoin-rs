@@ -535,7 +535,7 @@ pub fn startrpc()  {
     
     todo!();
         /*
-            LogPrint(BCLog::RPC, "Starting RPC\n");
+            LogPrint(LogFlags::RPC, "Starting RPC\n");
         g_rpc_running = true;
         g_rpcSignals.Started();
         */
@@ -548,7 +548,7 @@ pub fn interruptrpc()  {
             static std::once_flag g_rpc_interrupt_flag;
         // This function could be called twice if the GUI has been started with -server=1.
         std::call_once(g_rpc_interrupt_flag, []() {
-            LogPrint(BCLog::RPC, "Interrupting RPC\n");
+            LogPrint(LogFlags::RPC, "Interrupting RPC\n");
             // Interrupt e.g. running longpolls
             g_rpc_running = false;
         });
@@ -563,7 +563,7 @@ pub fn stoprpc()  {
         // This function could be called twice if the GUI has been started with -server=1.
         assert(!g_rpc_running);
         std::call_once(g_rpc_stop_flag, []() {
-            LogPrint(BCLog::RPC, "Stopping RPC\n");
+            LogPrint(LogFlags::RPC, "Stopping RPC\n");
             
     [&]() { LOCK(g_deadline_timers_mutex);  deadlineTimers.clear() }()
     ;
@@ -911,7 +911,7 @@ pub fn rpc_run_later(
             throw JSONRPCError(RPC_INTERNAL_ERROR, "No timer handler registered for RPC");
         LOCK(g_deadline_timers_mutex);
         deadlineTimers.erase(name);
-        LogPrint(BCLog::RPC, "queue run of timer %s in %i seconds (using %s)\n", name, nSeconds, timerInterface->Name());
+        LogPrint(LogFlags::RPC, "queue run of timer %s in %i seconds (using %s)\n", name, nSeconds, timerInterface->Name());
         deadlineTimers.emplace(name, std::unique_ptr<RPCTimerBase>(timerInterface->NewTimer(func, nSeconds*1000)));
         */
 }

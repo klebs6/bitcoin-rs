@@ -43,7 +43,7 @@ pub fn get_local_addr_for_peer(pnode: Amo<Box<dyn NodeInterface>>)
         }
         if (addrLocal.IsRoutable() || gArgs.GetBoolArg("-addrmantest", false))
         {
-            LogPrint(BCLog::NET, "Advertising address %s to peer=%d\n", addrLocal.ToString(), pnode->GetId());
+            LogPrint(LogFlags::NET, "Advertising address %s to peer=%d\n", addrLocal.ToString(), pnode->GetId());
             return addrLocal;
         }
         // Address is unroutable. Don't advertise.

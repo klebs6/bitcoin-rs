@@ -796,9 +796,9 @@ impl Node {
         mapRecvBytesPerMsgCmd[NET_MESSAGE_COMMAND_OTHER] = 0;
 
         if (fLogIPs) {
-            LogPrint(BCLog::NET, "Added connection to %s peer=%d\n", m_addr_name, id);
+            LogPrint(LogFlags::NET, "Added connection to %s peer=%d\n", m_addr_name, id);
         } else {
-            LogPrint(BCLog::NET, "Added connection peer=%d\n", id);
+            LogPrint(LogFlags::NET, "Added connection peer=%d\n", id);
         }
 
         m_deserializer = std::make_unique<V1TransportDeserializer>(V1TransportDeserializer(Params(), GetId(), SER_NETWORK, INIT_PROTO_VERSION));
@@ -960,7 +960,7 @@ impl CloseSocketDisconnect for Node {
         LOCK(cs_hSocket);
         if (hSocket != INVALID_SOCKET)
         {
-            LogPrint(BCLog::NET, "disconnecting peer=%d\n", id);
+            LogPrint(LogFlags::NET, "disconnecting peer=%d\n", id);
             CloseSocket(hSocket);
         }
         */

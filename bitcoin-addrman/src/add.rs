@@ -138,7 +138,7 @@ impl AddrManInner {
                 self.vv_new[n_ubucket][n_ubucket_pos] = n_id;
 
                 log_print!{
-                    BCLog::ADDRMAN, 
+                    LogFlags::ADDRMAN, 
                     "Added %s mapped to AS%i to new[%i][%i]\n",
                     addr.ToString(), 
                     addr.get_mapped_as(asmap), 

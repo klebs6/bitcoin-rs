@@ -23,7 +23,7 @@ impl leveldb::Logv for BitcoinLevelDBLogger {
         
         todo!();
         /*
-            if (!LogAcceptCategory(BCLog::LEVELDB)) {
+            if (!LogAcceptCategory(LogFlags::LEVELDB)) {
                     return;
                 }
                 char buffer[500];

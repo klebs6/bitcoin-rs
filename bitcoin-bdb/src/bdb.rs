@@ -312,7 +312,7 @@ impl BerkeleyDatabase {
         // Don't flush if there haven't been any batch writes for this database.
         if (m_refcount < 0) return false;
 
-        LogPrint(BCLog::WALLETDB, "Flushing %s\n", strFile);
+        LogPrint(LogFlags::WALLETDB, "Flushing %s\n", strFile);
         int64_t nStart = GetTimeMillis();
 
         // Flush wallet file so it's self contained
@@ -320,7 +320,7 @@ impl BerkeleyDatabase {
         env->CheckpointLSN(strFile);
         m_refcount = -1;
 
-        LogPrint(BCLog::WALLETDB, "Flushed %s %dms\n", strFile, GetTimeMillis() - nStart);
+        LogPrint(LogFlags::WALLETDB, "Flushed %s %dms\n", strFile, GetTimeMillis() - nStart);
 
         return true;
         */

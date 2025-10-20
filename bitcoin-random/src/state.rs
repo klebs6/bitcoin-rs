@@ -64,7 +64,7 @@ impl RNGState {
 
         let mut events = self.events.lock();
 
-        events.hasher.write(
+        events.hasher.write_ptr(
             &event_info as *const _ as *const u8, 
             size_of_val(&event_info)
         );
@@ -78,7 +78,7 @@ impl RNGState {
         let perfcounter: u32 
         = (get_performance_counter() & 0xffffffff).try_into().unwrap();
 
-        events.hasher.write(
+        events.hasher.write_ptr(
             &perfcounter as *const _ as *const u8, 
             size_of_val(&perfcounter)
         );
@@ -102,12 +102,12 @@ impl RNGState {
 
         let mut events_hash: [u8; 32] = [0; 32];
 
-        events.hasher.finalize(events_hash);
-        events.hasher.write(events_hash.as_mut_ptr(), 32);
+        events.hasher.finalize(&mut events_hash);
+        events.hasher.write_ptr(events_hash.as_mut_ptr(), 32);
 
         // Re-initialize the hasher with the finalized state to use later.
         events.hasher.reset();
-        events.hasher.write(events_hash.as_mut_ptr(), 32);
+        events.hasher.write_ptr(events_hash.as_mut_ptr(), 32);
     }
 
     /**
@@ -167,7 +167,7 @@ impl RNGState {
             inner.counter += 1;
 
             // Finalize the hasher
-            hasher.finalize(buf);
+            hasher.finalize(&mut buf);
 
             unsafe {
 

@@ -26,7 +26,7 @@ pub fn capnp_ipc_log_fn(
     
     todo!();
         /*
-            LogPrint(BCLog::IPC, "%s\n", message);
+        LogPrint(LogFlags::IPC, "%s\n", message);
         if (raise) throw Exception(message);
         */
 }

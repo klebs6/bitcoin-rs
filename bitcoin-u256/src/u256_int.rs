@@ -20,17 +20,24 @@ impl AsRef<[u8]> for u256 {
     }
 }
 
-impl u256 {
-
-    pub fn as_mut_slice_exact(&mut self) -> &mut [u8; 32] {
-        self.as_mut().try_into().unwrap()
-    }
-}
-
 impl AsMut<[u8]> for u256 {
     #[inline]
     fn as_mut(&mut self) -> &mut [u8] {
         self.as_slice_mut()
+    }
+}
+
+impl AsRef<[u8; 32]> for u256 {
+    #[inline]
+    fn as_ref(&self) -> &[u8; 32] {
+        self.as_slice_exact()
+    }
+}
+
+impl AsMut<[u8; 32]> for u256 {
+    #[inline]
+    fn as_mut(&mut self) -> &mut [u8; 32] {
+        self.as_mut_slice_exact()
     }
 }
 
@@ -42,6 +49,20 @@ impl core::fmt::Display for u256 {
 }
 
 impl u256 {
+
+    /// Immutable view as an exact 32-byte array
+    #[inline]
+    pub fn as_slice_exact(&self) -> &[u8; 32] {
+        <&[u8] as core::convert::TryInto<&[u8; 32]>>::try_into(self.as_slice())
+            .expect("u256 should always be 32 bytes")
+    }
+
+    /// Mutable view as an exact 32-byte array
+    #[inline]
+    pub fn as_mut_slice_exact(&mut self) -> &mut [u8; 32] {
+        <&mut [u8] as core::convert::TryInto<&mut [u8; 32]>>::try_into(self.as_mut())
+            .expect("u256 should always be 32 bytes")
+    }
 
     /// Return the 64‑bit little‑endian limb at position `index` (0 ≤ index < 4).  
     /// This is the direct analogue of C++ `uint256::GetUint64()`.

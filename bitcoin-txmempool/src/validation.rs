@@ -32,7 +32,7 @@ macro_rules! log_event {
     ($fmt:ident, $($arg:ident),*) => {
         /*
         
-            LogPrint(BCLog::VALIDATION, fmt "\n", __VA_ARGS__)
+            LogPrint(LogFlags::VALIDATION, fmt "\n", __VA_ARGS__)
         */
     }
 }
@@ -576,7 +576,7 @@ pub fn limit_mempool_size(
         /*
             int expired = pool.Expire(GetTime<seconds>() - age);
         if (expired != 0) {
-            LogPrint(BCLog::MEMPOOL, "Expired %i transactions from the memory pool\n", expired);
+            LogPrint(LogFlags::MEMPOOL, "Expired %i transactions from the memory pool\n", expired);
         }
 
         std::vector<OutPoint> vNoSpendsRemaining;

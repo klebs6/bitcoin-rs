@@ -72,6 +72,6 @@ pub fn zmq_error(str_: &String)  {
     
     todo!();
         /*
-            LogPrint(BCLog::ZMQ, "zmq: Error: %s, msg: %s\n", str, zmq_strerror(errno));
+            LogPrint(LogFlags::ZMQ, "zmq: Error: %s, msg: %s\n", str, zmq_strerror(errno));
         */
 }

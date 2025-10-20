@@ -153,8 +153,8 @@ pub fn seed_periodic(
     rand_add_dynamic_env(hasher);
 
     log_print!{
-        BCLog::RAND, 
-        "Feeding %i bytes of dynamic environment data into RNG\n", 
+        LogFlags::RAND, 
+        "Feeding {} bytes of dynamic environment data into RNG\n", 
         hasher.size() - old_size
     };
 
@@ -195,8 +195,8 @@ pub fn seed_startup(
     rand_add_static_env(hasher);
 
     log_print!{
-        BCLog::RAND, 
-        "Feeding %i bytes of environment data into RNG\n", 
+        LogFlags::RAND, 
+        "Feeding {} bytes of environment data into RNG\n", 
         hasher.size() - old_size
     };
 

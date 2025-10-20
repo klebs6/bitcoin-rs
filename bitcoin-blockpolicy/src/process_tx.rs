@@ -18,7 +18,7 @@ impl BlockPolicyEstimator {
         unsigned int txHeight = entry.GetHeight();
         uint256 hash = entry.GetTx().GetHash();
         if (mapMemPoolTxs.count(hash)) {
-            LogPrint(BCLog::ESTIMATEFEE, "Blockpolicy error mempool tx %s already being tracked\n",
+            LogPrint(LogFlags::ESTIMATEFEE, "Blockpolicy error mempool tx %s already being tracked\n",
                      hash.ToString());
             return;
         }

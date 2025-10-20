@@ -43,7 +43,12 @@ ACTIVE := bitcoin-remote
 #ACTIVE := bitcoin-sock
 
 #ACTIVE := bitcoin-network
-#ACTIVE := bitcoin-random
+ACTIVE := bitcoin-random
+ACTIVE := bitcoin-top
+ACTIVE := bitcoin-sock
+#ACTIVE := bitcoin-remote
+#ACTIVE := bitcoin-argsman
+
 #ACTIVE := bitcoin-base58
 #ACTIVE := bitcoin-muhash
 #ACTIVE := bitcoin-hash
@@ -307,7 +312,7 @@ bench:
 #ACTIVE := bitcoin-univalue       #note this one has a failing test
 #ACTIVE := bitcoin-tokenpipe
 #----------------------------------------------[done-but-uninstalled]
-ACTIVE := bitcoin-sha256
+#ACTIVE := bitcoin-sha256
 #ACTIVE := bitcoin-sha3
 #ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-hmac-sha512

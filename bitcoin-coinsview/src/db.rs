@@ -132,7 +132,7 @@ impl BatchWrite for CoinsViewDB {
             coins_map::iterator itOld = it++;
             mapCoins.erase(itOld);
             if (batch.SizeEstimate() > batch_size) {
-                LogPrint(BCLog::COINDB, "Writing partial batch of %.2f MiB\n", batch.SizeEstimate() * (1.0 / 1048576.0));
+                LogPrint(LogFlags::COINDB, "Writing partial batch of %.2f MiB\n", batch.SizeEstimate() * (1.0 / 1048576.0));
                 m_db->WriteBatch(batch);
                 batch.Clear();
                 if (crash_simulate) {
@@ -149,9 +149,9 @@ impl BatchWrite for CoinsViewDB {
         batch.Erase(DB_HEAD_BLOCKS);
         batch.Write(DB_BEST_BLOCK, hashBlock);
 
-        LogPrint(BCLog::COINDB, "Writing final batch of %.2f MiB\n", batch.SizeEstimate() * (1.0 / 1048576.0));
+        LogPrint(LogFlags::COINDB, "Writing final batch of %.2f MiB\n", batch.SizeEstimate() * (1.0 / 1048576.0));
         bool ret = m_db->WriteBatch(batch);
-        LogPrint(BCLog::COINDB, "Committed %u changed transaction outputs (out of %u) to coin database...\n", (unsigned int)changed, (unsigned int)count);
+        LogPrint(LogFlags::COINDB, "Committed %u changed transaction outputs (out of %u) to coin database...\n", (unsigned int)changed, (unsigned int)count);
         return ret;
         */
     }

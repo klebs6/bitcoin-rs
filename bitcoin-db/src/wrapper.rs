@@ -407,7 +407,7 @@ impl DBWrapper {
         dbwrapper::HandleError(status);
         if (log_memory) {
             double mem_after = DynamicMemoryUsage() / 1024.0 / 1024;
-            LogPrint(BCLog::LEVELDB, "WriteBatch memory usage: db=%s, before=%.1fMiB, after=%.1fMiB\n",
+            LogPrint(LogFlags::LEVELDB, "WriteBatch memory usage: db=%s, before=%.1fMiB, after=%.1fMiB\n",
                      m_name, mem_before, mem_after);
         }
         return true;
@@ -425,7 +425,7 @@ impl DBWrapper {
         let mut parsed: Option<usize> = None;
 
         let log_fail = || {
-            log_print!(BCLog::LEVELDB, "Failed to get approximate-memory-usage property\n");
+            log_print!(LogFlags::LEVELDB, "Failed to get approximate-memory-usage property\n");
         };
         
         if !(*self.pdb).borrow_mut().get_property("leveldb.approximate-memory-usage", &mut memory as *mut String) 

@@ -22,7 +22,7 @@ impl BlockPolicyEstimator {
             removeTx(mi->first, false); // this calls erase() on mapMemPoolTxs
         }
         int64_t endclear = GetTimeMicros();
-        LogPrint(BCLog::ESTIMATEFEE, "Recorded %u unconfirmed txs from mempool in %gs\n", num_entries, (endclear - startclear)*0.000001);
+        LogPrint(LogFlags::ESTIMATEFEE, "Recorded %u unconfirmed txs from mempool in %gs\n", num_entries, (endclear - startclear)*0.000001);
         */
     }
 

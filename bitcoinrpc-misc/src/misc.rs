@@ -633,15 +633,15 @@ pub fn logging() -> RPCHelpMan {
         uint32_t updated_log_categories = LogInstance().GetCategoryMask();
         uint32_t changed_log_categories = original_log_categories ^ updated_log_categories;
 
-        // Update libevent logging if BCLog::LIBEVENT has changed.
+        // Update libevent logging if LogFlags::LIBEVENT has changed.
         // If the library version doesn't allow it, UpdateHTTPServerLogging() returns false,
-        // in which case we should clear the BCLog::LIBEVENT flag.
+        // in which case we should clear the LogFlags::LIBEVENT flag.
         // Throw an error if the user has explicitly asked to change only the libevent
         // flag and it failed.
-        if (changed_log_categories & BCLog::LIBEVENT) {
-            if (!UpdateHTTPServerLogging(LogInstance().WillLogCategory(BCLog::LIBEVENT))) {
-                LogInstance().DisableCategory(BCLog::LIBEVENT);
-                if (changed_log_categories == BCLog::LIBEVENT) {
+        if (changed_log_categories & LogFlags::LIBEVENT) {
+            if (!UpdateHTTPServerLogging(LogInstance().WillLogCategory(LogFlags::LIBEVENT))) {
+                LogInstance().DisableCategory(LogFlags::LIBEVENT);
+                if (changed_log_categories == LogFlags::LIBEVENT) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "libevent logging cannot be updated when using libevent before v2.1.1.");
                 }
             }

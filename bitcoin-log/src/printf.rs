@@ -9,10 +9,10 @@ crate::ix!();
 ///
 pub fn log_printf<Args>(
     logging_function: &String,
-    source_file: &String,
-    source_line: i32,
-    fmt: *const u8,
-    _args: &Args
+    source_file:      &String,
+    source_line:      i32,
+    fmt:              *const std::ffi::c_char,
+    _args:            &Args
 ) {
     if !log_instance().enabled() {
         return;

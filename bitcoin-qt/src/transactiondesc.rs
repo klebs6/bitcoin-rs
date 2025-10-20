@@ -290,7 +290,7 @@ impl TransactionDesc {
         //
         // Debug view
         //
-        if (node.getLogCategories() != BCLog::NONE)
+        if (node.getLogCategories() != LogFlags::NONE)
         {
             strHTML += "<hr><br>" + tr("Debug information") + "<br><br>";
             for (const CTxIn& txin : wtx.tx->vin)

@@ -21,9 +21,10 @@ impl PartialEq<GenTxId> for GenTxId {
 impl Eq for GenTxId {}
 
 impl Ord for GenTxId {
-    
-    #[inline] fn cmp(&self, other: &GenTxId) -> Ordering {
-        (&self.is_wtxid, &self.hash.blob).cmp(&(&other.is_wtxid, &other.hash.blob))
+    #[inline]
+    fn cmp(&self, other: &GenTxId) -> core::cmp::Ordering {
+        // Compare (is_wtxid, hash.blob) lexicographically using the public getter
+        (&self.is_wtxid, self.hash.blob()).cmp(&(&other.is_wtxid, other.hash.blob()))
     }
 }
 

@@ -2,6 +2,9 @@
 path = "../bitcoin-cfg"
 version = "0.1.18"
 
+[dependencies]
+bitcoin-cuckoo-cache = { path = "../bitcoin-cuckoo-cache" }
+
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
 version = "0.1.18"

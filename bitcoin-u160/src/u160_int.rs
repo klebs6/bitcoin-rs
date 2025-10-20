@@ -74,6 +74,29 @@ impl DerefMut for u160 {
     }
 }
 
+impl AsRef<[u8]> for u160 {
+    #[inline]
+    fn as_ref(&self) -> &[u8] {
+        // BaseBlob160 already exposes a slice
+        self.blob.as_slice()
+    }
+}
+
+impl AsMut<[u8]> for u160 {
+    #[inline]
+    fn as_mut(&mut self) -> &mut [u8] {
+        self.blob.as_mut_slice()
+    }
+}
+
+impl core::fmt::Display for u160 {
+    #[inline]
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        core::fmt::Write::write_str(f, &self.to_string())
+    }
+}
+
+
 impl u160 {
 
     delegate! {

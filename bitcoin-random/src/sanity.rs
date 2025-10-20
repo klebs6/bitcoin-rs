@@ -91,7 +91,7 @@ pub fn random_sanity_check() -> bool {
 
     let mut stop: u64 = get_performance_counter().try_into().unwrap();
 
-    if (stop == start) {
+    if stop == start {
         return false;
     }
 

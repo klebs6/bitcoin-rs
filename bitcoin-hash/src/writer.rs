@@ -95,7 +95,7 @@ impl HashWriter {
     pub fn get_cheap_hash(&mut self) -> u64 {
         let digest = self.get_hash();
         let mut tmp = [0u8; 8];
-        tmp.copy_from_slice(&digest.as_ref()[..8]);
+        tmp.copy_from_slice(&<u256 as AsRef<[u8]>>::as_ref(&digest)[..8]);
         u64::from_le_bytes(tmp)
     }
 }

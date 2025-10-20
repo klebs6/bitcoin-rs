@@ -132,7 +132,7 @@ impl AddrManImpl {
 
         if n_add != 0 {
             log_print!(
-                BCLog::ADDRMAN, 
+                LogFlags::ADDRMAN, 
                 format!{
                     "Added {} addresses from {}: {} tried, {} new\n", 
                     n_add, 

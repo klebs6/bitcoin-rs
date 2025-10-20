@@ -444,7 +444,7 @@ pub fn start_http_rpc(context: &dyn Any) -> bool {
     
     todo!();
         /*
-            LogPrint(BCLog::RPC, "Starting HTTP RPC server\n");
+            LogPrint(LogFlags::RPC, "Starting HTTP RPC server\n");
         if (!InitRPCAuthentication())
             return false;
 
@@ -469,7 +469,7 @@ pub fn interrupt_http_rpc()  {
     
     todo!();
         /*
-            LogPrint(BCLog::RPC, "Interrupting HTTP RPC server\n");
+            LogPrint(LogFlags::RPC, "Interrupting HTTP RPC server\n");
         */
 }
 
@@ -477,7 +477,7 @@ pub fn stop_http_rpc()  {
     
     todo!();
         /*
-            LogPrint(BCLog::RPC, "Stopping HTTP RPC server\n");
+            LogPrint(LogFlags::RPC, "Stopping HTTP RPC server\n");
         UnregisterHTTPHandler("/", true);
         if (g_wallet_init_interface.HasWalletSupport()) {
             UnregisterHTTPHandler("/wallet/", false);

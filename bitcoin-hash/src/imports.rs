@@ -7,3 +7,4 @@ pub(crate) use bitcoin_sha256::*;
 pub(crate) use bitcoin_u160::*;
 pub(crate) use bitcoin_u256::*;
 pub(crate) use bitcoin_version::*;
+pub(crate) use bitcoin_cuckoo_cache::*;

@@ -42,10 +42,10 @@ impl JSONRPCRequest {
             throw JSONRPCError(RPC_INVALID_REQUEST, "Method must be a string");
         strMethod = valMethod.get_str();
         if (fLogIPs)
-            LogPrint(BCLog::RPC, "ThreadRPCServer method=%s user=%s peeraddr=%s\n", SanitizeString(strMethod),
+            LogPrint(LogFlags::RPC, "ThreadRPCServer method=%s user=%s peeraddr=%s\n", SanitizeString(strMethod),
                 this->authUser, this->peerAddr);
         else
-            LogPrint(BCLog::RPC, "ThreadRPCServer method=%s user=%s\n", SanitizeString(strMethod), this->authUser);
+            LogPrint(LogFlags::RPC, "ThreadRPCServer method=%s user=%s\n", SanitizeString(strMethod), this->authUser);
 
         // Parse params
         UniValue valParams = find_value(request, "params");

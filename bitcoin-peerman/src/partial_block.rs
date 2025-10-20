@@ -377,7 +377,7 @@ impl PartiallyDownloadedBlock {
         }
 
         log_print!(
-            BCLog::CMPCTBLOCK, 
+            LogFlags::CMPCTBLOCK, 
             "Successfully reconstructed block %s with %lu txn prefilled, 
                 %lu txn from mempool (incl at least %lu from extra pool) 
                 and %lu txn requested\n", 
@@ -393,7 +393,7 @@ impl PartiallyDownloadedBlock {
             for tx in vtx_missing.iter() {
 
                 log_print!(
-                    BCLog::CMPCTBLOCK, 
+                    LogFlags::CMPCTBLOCK, 
                     "Reconstructed block %s required tx %s\n", 
                     hash.to_string(), 
                     (*tx).get_hash().to_string()

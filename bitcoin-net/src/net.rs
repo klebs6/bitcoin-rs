@@ -59,7 +59,7 @@ pub fn convert_seeds(seeds_in: &Vec<u8>) -> Vec<Address> {
             s >> endpoint;
             CAddress addr{endpoint, GetDesirableServiceFlags(NODE_NONE)};
             addr.nTime = GetTime() - rng.randrange(nOneWeek) - nOneWeek;
-            LogPrint(BCLog::NET, "Added hardcoded seed: %s\n", addr.ToString());
+            LogPrint(LogFlags::NET, "Added hardcoded seed: %s\n", addr.ToString());
             vSeedsOut.push_back(addr);
         }
         return vSeedsOut;
@@ -211,7 +211,7 @@ pub fn get_bind_address(sock: CSocket) -> Address {
             if (!getsockname(sock, (struct sockaddr*)&sockaddr_bind, &sockaddr_bind_len)) {
                 addr_bind.SetSockAddr((const struct sockaddr*)&sockaddr_bind);
             } else {
-                LogPrint(BCLog::NET, "Warning: getsockname failed\n");
+                LogPrint(LogFlags::NET, "Warning: getsockname failed\n");
             }
         }
         return addr_bind;
@@ -235,7 +235,7 @@ pub fn add_time_data(
         // Add data
         static CMedianFilter<int64_t> vTimeOffsets(BITCOIN_TIMEDATA_MAX_SAMPLES, 0);
         vTimeOffsets.input(nOffsetSample);
-        LogPrint(BCLog::NET, "added time data, samples %d, offset %+d (%+d minutes)\n", vTimeOffsets.size(), nOffsetSample, nOffsetSample / 60);
+        LogPrint(LogFlags::NET, "added time data, samples %d, offset %+d (%+d minutes)\n", vTimeOffsets.size(), nOffsetSample, nOffsetSample / 60);
 
         // There is a known issue here (see issue #4521):
         //
@@ -281,13 +281,13 @@ pub fn add_time_data(
                 }
             }
 
-            if (LogAcceptCategory(BCLog::NET)) {
+            if (LogAcceptCategory(LogFlags::NET)) {
                 std::string log_message{"time data samples: "};
                 for (const int64_t n : vSorted) {
                     log_message += strprintf("%+d  ", n);
                 }
                 log_message += strprintf("|  median offset = %+d  (%+d minutes)", nTimeOffset, nTimeOffset / 60);
-                LogPrint(BCLog::NET, "%s\n", log_message);
+                LogPrint(LogFlags::NET, "%s\n", log_message);
             }
         }
         */

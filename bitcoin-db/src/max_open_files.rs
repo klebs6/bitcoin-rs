@@ -25,7 +25,7 @@ pub fn set_max_open_files(options: *mut leveldb::Options)  {
             options->max_open_files = 64;
         }
     #endif
-        LogPrint(BCLog::LEVELDB, "LevelDB using max_open_files=%d (default=%d)\n",
+        LogPrint(LogFlags::LEVELDB, "LevelDB using max_open_files=%d (default=%d)\n",
                  options->max_open_files, default_open_files);
         */
 }

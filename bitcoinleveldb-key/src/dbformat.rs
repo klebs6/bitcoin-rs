@@ -190,6 +190,9 @@ pub struct InternalKeyComparator {
 
 impl SliceComparator for InternalKeyComparator {
 
+    fn bytewise_comparator(&self) -> *const (dyn bitcoinleveldb_comparator::SliceComparator + 'static) { 
+        todo!() 
+    }
 }
 
 impl Compare for InternalKeyComparator {
@@ -246,10 +249,11 @@ impl Name for InternalFilterPolicy {
 
 impl CreateFilter for InternalFilterPolicy {
 
-    fn create_filter(&self, 
+    fn create_filter(
+        &self, 
         keys: *const Slice,
         n:    i32,
-        dst:  *mut String)  {
+        dst:  &mut Vec<u8>)  {
         
         todo!();
         /*
@@ -541,8 +545,8 @@ impl InternalKey {
 
 impl FindShortSuccessor for InternalKeyComparator {
 
-    fn find_short_successor(&self, k: *mut String)  {
-        
+    fn find_short_successor(&self, k: &mut Vec<u8>)  {
+
         todo!();
         /*
             Slice user_key = ExtractUserKey(*k);
@@ -600,9 +604,12 @@ impl InternalKeyComparator {
 }
 
 impl FindShortestSeparator for InternalKeyComparator {
-    fn find_shortest_separator(&self, 
-        start: *mut String,
-        limit: &Slice)  {
+
+    fn find_shortest_separator(
+        &self, 
+        start: &mut Vec<u8>,
+        limit: &[u8]
+    ) {
         
         todo!();
         /*

@@ -27,7 +27,7 @@ impl BlockPolicyEstimator {
         if (blocksToConfirm <= 0) {
             // This can't happen because we don't process transactions from a block with a height
             // lower than our greatest seen height
-            LogPrint(BCLog::ESTIMATEFEE, "Blockpolicy error Transaction had negative blocksToConfirm\n");
+            LogPrint(LogFlags::ESTIMATEFEE, "Blockpolicy error Transaction had negative blocksToConfirm\n");
             return false;
         }
 

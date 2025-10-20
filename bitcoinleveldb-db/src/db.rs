@@ -456,8 +456,8 @@ impl FindShortestSeparator for LevelDBComparator {
       |
       */
     fn find_shortest_separator(&self, 
-        _0: *mut String,
-        _1: &Slice)  {
+        _0: &mut Vec<u8>,
+        _1: &[u8])  {
         
         todo!();
         /*
@@ -467,7 +467,8 @@ impl FindShortestSeparator for LevelDBComparator {
 }
 
 impl FindShortSuccessor for LevelDBComparator {
-    fn find_short_successor(&self, key_: *mut String)  {
+
+    fn find_short_successor(&self, key_: &mut Vec<u8>)  {
         
         todo!();
         /*
@@ -545,10 +546,12 @@ impl Name for LevelDBFilterPolicy {
 }
 
 impl CreateFilter for LevelDBFilterPolicy {
-    fn create_filter(&self, 
+
+    fn create_filter(
+        &self, 
         keys: *const Slice,
         n:    i32,
-        dst:  *mut String)  {
+        dst:  &mut Vec<u8>)  {
         
         todo!();
         /*

@@ -29,7 +29,7 @@ impl Hash160 {
         // so we allocate a local scratch array, let the back‑end fill
         // it, and then copy the result into the caller‑supplied slice.
         let mut digest = [0u8; Hash160::OUTPUT_SIZE];
-        ripemd.finalize(digest);
+        ripemd.finalize(&mut digest);
         *output = digest;
     }
 

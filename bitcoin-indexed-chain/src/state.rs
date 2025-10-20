@@ -843,7 +843,7 @@ impl ChainState {
         }
 
         int64_t nTime1 = GetTimeMicros(); nTimeCheck += nTime1 - nTimeStart;
-        LogPrint(BCLog::BENCH, "    - Sanity checks: %.2fms [%.2fs (%.2fms/blk)]\n", MILLI * (nTime1 - nTimeStart), nTimeCheck * MICRO, nTimeCheck * MILLI / nBlocksTotal);
+        LogPrint(LogFlags::BENCH, "    - Sanity checks: %.2fms [%.2fs (%.2fms/blk)]\n", MILLI * (nTime1 - nTimeStart), nTimeCheck * MICRO, nTimeCheck * MILLI / nBlocksTotal);
 
         // Do not allow blocks that contain transactions which 'overwrite' older transactions,
         // unless those are already completely spent.
@@ -945,7 +945,7 @@ impl ChainState {
         unsigned int flags = GetBlockScriptFlags(pindex, m_params.GetConsensus());
 
         int64_t nTime2 = GetTimeMicros(); nTimeForks += nTime2 - nTime1;
-        LogPrint(BCLog::BENCH, "    - Fork checks: %.2fms [%.2fs (%.2fms/blk)]\n", MILLI * (nTime2 - nTime1), nTimeForks * MICRO, nTimeForks * MILLI / nBlocksTotal);
+        LogPrint(LogFlags::BENCH, "    - Fork checks: %.2fms [%.2fs (%.2fms/blk)]\n", MILLI * (nTime2 - nTime1), nTimeForks * MICRO, nTimeForks * MILLI / nBlocksTotal);
 
         CBlockUndo blockundo;
 
@@ -1030,7 +1030,7 @@ impl ChainState {
             UpdateCoins(tx, view, i == 0 ? undoDummy : blockundo.vtxundo.back(), pindex->nHeight);
         }
         int64_t nTime3 = GetTimeMicros(); nTimeConnect += nTime3 - nTime2;
-        LogPrint(BCLog::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
+        LogPrint(LogFlags::BENCH, "      - Connect %u transactions: %.2fms (%.3fms/tx, %.3fms/txin) [%.2fs (%.2fms/blk)]\n", (unsigned)block.vtx.size(), MILLI * (nTime3 - nTime2), MILLI * (nTime3 - nTime2) / block.vtx.size(), nInputs <= 1 ? 0 : MILLI * (nTime3 - nTime2) / (nInputs-1), nTimeConnect * MICRO, nTimeConnect * MILLI / nBlocksTotal);
 
         CAmount blockReward = nFees + GetBlockSubsidy(pindex->nHeight, m_params.GetConsensus());
         if (block.vtx[0]->GetValueOut() > blockReward) {
@@ -1043,7 +1043,7 @@ impl ChainState {
             return state.Invalid(BlockValidationResult::BLOCK_CONSENSUS, "block-validation-failed");
         }
         int64_t nTime4 = GetTimeMicros(); nTimeVerify += nTime4 - nTime2;
-        LogPrint(BCLog::BENCH, "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs (%.2fms/blk)]\n", nInputs - 1, MILLI * (nTime4 - nTime2), nInputs <= 1 ? 0 : MILLI * (nTime4 - nTime2) / (nInputs-1), nTimeVerify * MICRO, nTimeVerify * MILLI / nBlocksTotal);
+        LogPrint(LogFlags::BENCH, "    - Verify %u txins: %.2fms (%.3fms/txin) [%.2fs (%.2fms/blk)]\n", nInputs - 1, MILLI * (nTime4 - nTime2), nInputs <= 1 ? 0 : MILLI * (nTime4 - nTime2) / (nInputs-1), nTimeVerify * MICRO, nTimeVerify * MILLI / nBlocksTotal);
 
         if (fJustCheck)
             return true;
@@ -1062,7 +1062,7 @@ impl ChainState {
         view.SetBestBlock(pindex->GetBlockHash());
 
         int64_t nTime5 = GetTimeMicros(); nTimeIndex += nTime5 - nTime4;
-        LogPrint(BCLog::BENCH, "    - Index writing: %.2fms [%.2fs (%.2fms/blk)]\n", MILLI * (nTime5 - nTime4), nTimeIndex * MICRO, nTimeIndex * MILLI / nBlocksTotal);
+        LogPrint(LogFlags::BENCH, "    - Index writing: %.2fms [%.2fs (%.2fms/blk)]\n", MILLI * (nTime5 - nTime4), nTimeIndex * MICRO, nTimeIndex * MILLI / nBlocksTotal);
 
         TRACE6(validation, block_connected,
             block.GetHash().data(),
@@ -1178,11 +1178,11 @@ impl ChainState {
                 });
 
                 if (nManualPruneHeight > 0) {
-                    LOG_TIME_MILLIS_WITH_CATEGORY("find files to prune (manual)", BCLog::BENCH);
+                    LOG_TIME_MILLIS_WITH_CATEGORY("find files to prune (manual)", LogFlags::BENCH);
 
                     m_blockman.FindFilesToPruneManual(setFilesToPrune, std::min(last_prune, nManualPruneHeight), m_chain.Height());
                 } else {
-                    LOG_TIME_MILLIS_WITH_CATEGORY("find files to prune", BCLog::BENCH);
+                    LOG_TIME_MILLIS_WITH_CATEGORY("find files to prune", LogFlags::BENCH);
 
                     m_blockman.FindFilesToPrune(setFilesToPrune, m_params.PruneAfterHeight(), m_chain.Height(), last_prune, IsInitialBlockDownload());
                     fCheckForPruning = false;
@@ -1220,7 +1220,7 @@ impl ChainState {
                     return AbortNode(state, "Disk space is too low!", _("Disk space is too low!"));
                 }
                 {
-                    LOG_TIME_MILLIS_WITH_CATEGORY("write block and undo data to disk", BCLog::BENCH);
+                    LOG_TIME_MILLIS_WITH_CATEGORY("write block and undo data to disk", LogFlags::BENCH);
 
                     // First make sure all block and undo data is flushed to disk.
                     FlushBlockFile();
@@ -1228,7 +1228,7 @@ impl ChainState {
 
                 // Then update all block file information (which may refer to block and undo files).
                 {
-                    LOG_TIME_MILLIS_WITH_CATEGORY("write block index to disk", BCLog::BENCH);
+                    LOG_TIME_MILLIS_WITH_CATEGORY("write block index to disk", LogFlags::BENCH);
 
                     std::vector<std::pair<int, const CBlockFileInfo*> > vFiles;
                     vFiles.reserve(setDirtyFileInfo.size());
@@ -1248,7 +1248,7 @@ impl ChainState {
                 }
                 // Finally remove any pruned files
                 if (fFlushForPrune) {
-                    LOG_TIME_MILLIS_WITH_CATEGORY("unlink pruned files", BCLog::BENCH);
+                    LOG_TIME_MILLIS_WITH_CATEGORY("unlink pruned files", LogFlags::BENCH);
 
                     UnlinkPrunedFiles(setFilesToPrune);
                 }
@@ -1257,7 +1257,7 @@ impl ChainState {
             // Flush best chain related state. This can only be done if the blocks / block index write was also done.
             if (fDoFullFlush && !CoinsTip().GetBestBlock().IsNull()) {
                 LOG_TIME_MILLIS_WITH_CATEGORY(strprintf("write coins cache to disk (%d coins, %.2fkB)",
-                    coins_count, coins_mem_usage / 1000), BCLog::BENCH);
+                    coins_count, coins_mem_usage / 1000), LogFlags::BENCH);
 
                 // Typical Coin structures on disk are around 48 bytes in size.
                 // Pushing a new one to the database can cause it to be written
@@ -1422,7 +1422,7 @@ impl ChainState {
             bool flushed = view.Flush();
             assert(flushed);
         }
-        LogPrint(BCLog::BENCH, "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * MILLI);
+        LogPrint(LogFlags::BENCH, "- Disconnect block: %.2fms\n", (GetTimeMicros() - nStart) * MILLI);
         // Write the chain state to disk, if necessary.
         if (!FlushStateToDisk(state, FlushStateMode::IF_NEEDED)) {
             return false;
@@ -1491,7 +1491,7 @@ impl ChainState {
         // Apply the block atomically to the chain state.
         int64_t nTime2 = GetTimeMicros(); nTimeReadFromDisk += nTime2 - nTime1;
         int64_t nTime3;
-        LogPrint(BCLog::BENCH, "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * MILLI, nTimeReadFromDisk * MICRO);
+        LogPrint(LogFlags::BENCH, "  - Load block from disk: %.2fms [%.2fs]\n", (nTime2 - nTime1) * MILLI, nTimeReadFromDisk * MICRO);
         {
             CCoinsViewCache view(&CoinsTip());
             bool rv = ConnectBlock(blockConnecting, state, pindexNew, view);
@@ -1503,18 +1503,18 @@ impl ChainState {
             }
             nTime3 = GetTimeMicros(); nTimeConnectTotal += nTime3 - nTime2;
             assert(nBlocksTotal > 0);
-            LogPrint(BCLog::BENCH, "  - Connect total: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime3 - nTime2) * MILLI, nTimeConnectTotal * MICRO, nTimeConnectTotal * MILLI / nBlocksTotal);
+            LogPrint(LogFlags::BENCH, "  - Connect total: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime3 - nTime2) * MILLI, nTimeConnectTotal * MICRO, nTimeConnectTotal * MILLI / nBlocksTotal);
             bool flushed = view.Flush();
             assert(flushed);
         }
         int64_t nTime4 = GetTimeMicros(); nTimeFlush += nTime4 - nTime3;
-        LogPrint(BCLog::BENCH, "  - Flush: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime4 - nTime3) * MILLI, nTimeFlush * MICRO, nTimeFlush * MILLI / nBlocksTotal);
+        LogPrint(LogFlags::BENCH, "  - Flush: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime4 - nTime3) * MILLI, nTimeFlush * MICRO, nTimeFlush * MILLI / nBlocksTotal);
         // Write the chain state to disk, if necessary.
         if (!FlushStateToDisk(state, FlushStateMode::IF_NEEDED)) {
             return false;
         }
         int64_t nTime5 = GetTimeMicros(); nTimeChainState += nTime5 - nTime4;
-        LogPrint(BCLog::BENCH, "  - Writing chainstate: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime5 - nTime4) * MILLI, nTimeChainState * MICRO, nTimeChainState * MILLI / nBlocksTotal);
+        LogPrint(LogFlags::BENCH, "  - Writing chainstate: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime5 - nTime4) * MILLI, nTimeChainState * MICRO, nTimeChainState * MILLI / nBlocksTotal);
         // Remove conflicting transactions from the mempool.;
         if (m_mempool) {
             m_mempool->removeForBlock(blockConnecting.vtx, pindexNew->nHeight);
@@ -1525,8 +1525,8 @@ impl ChainState {
         UpdateTip(pindexNew);
 
         int64_t nTime6 = GetTimeMicros(); nTimePostConnect += nTime6 - nTime5; nTimeTotal += nTime6 - nTime1;
-        LogPrint(BCLog::BENCH, "  - Connect postprocess: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime6 - nTime5) * MILLI, nTimePostConnect * MICRO, nTimePostConnect * MILLI / nBlocksTotal);
-        LogPrint(BCLog::BENCH, "- Connect block: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime6 - nTime1) * MILLI, nTimeTotal * MICRO, nTimeTotal * MILLI / nBlocksTotal);
+        LogPrint(LogFlags::BENCH, "  - Connect postprocess: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime6 - nTime5) * MILLI, nTimePostConnect * MICRO, nTimePostConnect * MILLI / nBlocksTotal);
+        LogPrint(LogFlags::BENCH, "- Connect block: %.2fms [%.2fs (%.2fms/blk)]\n", (nTime6 - nTime1) * MILLI, nTimeTotal * MICRO, nTimeTotal * MILLI / nBlocksTotal);
 
         connectTrace.BlockConnected(pindexNew, std::move(pthisBlock));
         return true;
@@ -2410,7 +2410,7 @@ impl ChainState {
                         LOCK(cs_main);
                         // detect out of order blocks, and store them for later
                         if (hash != m_params.GetConsensus().hashGenesisBlock && !m_blockman.LookupBlockIndex(block.hashPrevBlock)) {
-                            LogPrint(BCLog::REINDEX, "%s: Out of order block %s, parent %s not known\n", __func__, hash.ToString(),
+                            LogPrint(LogFlags::REINDEX, "%s: Out of order block %s, parent %s not known\n", __func__, hash.ToString(),
                                     block.hashPrevBlock.ToString());
                             if (dbp)
                                 mapBlocksUnknownParent.insert(std::make_pair(block.hashPrevBlock, *dbp));
@@ -2428,7 +2428,7 @@ impl ChainState {
                               break;
                           }
                         } else if (hash != m_params.GetConsensus().hashGenesisBlock && pindex->nHeight % 1000 == 0) {
-                            LogPrint(BCLog::REINDEX, "Block Import: already had block %s at height %d\n", hash.ToString(), pindex->nHeight);
+                            LogPrint(LogFlags::REINDEX, "Block Import: already had block %s at height %d\n", hash.ToString(), pindex->nHeight);
                         }
                     }
 
@@ -2453,7 +2453,7 @@ impl ChainState {
                             std::multimap<uint256, FlatFilePos>::iterator it = range.first;
                             std::shared_ptr<CBlock> pblockrecursive = std::make_shared<CBlock>();
                             if (ReadBlockFromDisk(*pblockrecursive, it->second, m_params.GetConsensus())) {
-                                LogPrint(BCLog::REINDEX, "%s: Processing out of order child %s of %s\n", __func__, pblockrecursive->GetHash().ToString(),
+                                LogPrint(LogFlags::REINDEX, "%s: Processing out of order child %s of %s\n", __func__, pblockrecursive->GetHash().ToString(),
                                         head.ToString());
                                 LOCK(cs_main);
                                 BlockValidationState dummy;

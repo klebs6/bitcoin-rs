@@ -265,7 +265,7 @@ pub fn debug_message_handler(
         /*
             Q_UNUSED(context);
         if (type == QtDebugMsg) {
-            LogPrint(BCLog::QT, "GUI: %s\n", msg.toStdString());
+            LogPrint(LogFlags::QT, "GUI: %s\n", msg.toStdString());
         } else {
             LogPrintf("GUI: %s\n", msg.toStdString());
         }
