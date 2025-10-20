@@ -1037,7 +1037,7 @@ version = "0.1.18"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-imports",
- "criterion",
+ "criterion 0.6.0",
  "lazy_static",
  "libc",
  "static_assertions",
@@ -1306,6 +1306,41 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-key",
+]
+
+[[package]]
+name = "bitcoin-hmac-sha256"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-sha256",
+ "bitcoin-u256",
+ "derive_builder",
+ "getset",
+ "hex",
+ "hex-literal",
+ "hmac",
+ "proptest",
+ "serde",
+ "sha2",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoin-hmac-sha512"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "bitcoin-sha512",
+ "getset",
+ "hex",
+ "hex-literal",
+ "hmac",
+ "proptest",
+ "serde",
+ "sha2",
+ "tracing",
 ]
 
 [[package]]
@@ -2342,16 +2377,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bitcoin-sha256-hmac"
-version = "0.1.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoin-sha256",
- "bitcoin-u256",
-]
-
-[[package]]
 name = "bitcoin-sha256-shani"
 version = "0.1.0"
 dependencies = [
@@ -2394,6 +2419,7 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "criterion 0.7.0",
  "getset",
  "hex-literal",
  "serde",
@@ -2408,6 +2434,13 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "getset",
+ "hex",
+ "hex-literal",
+ "proptest",
+ "serde",
+ "sha2",
+ "tracing",
 ]
 
 [[package]]
@@ -4400,7 +4433,30 @@ dependencies = [
  "cast",
  "ciborium",
  "clap",
- "criterion-plot",
+ "criterion-plot 0.5.0",
+ "itertools 0.13.0",
+ "num-traits 0.2.19",
+ "oorandom",
+ "plotters",
+ "rayon",
+ "regex",
+ "serde",
+ "serde_json",
+ "tinytemplate",
+ "walkdir",
+]
+
+[[package]]
+name = "criterion"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1c047a62b0cc3e145fa84415a3191f628e980b194c2755aa12300a4e6cbd928"
+dependencies = [
+ "anes",
+ "cast",
+ "ciborium",
+ "clap",
+ "criterion-plot 0.6.0",
  "itertools 0.13.0",
  "num-traits 0.2.19",
  "oorandom",
@@ -4421,6 +4477,16 @@ checksum = "6b50826342786a51a89e2da3a28f1c32b06e387201bc2d19791f622c673706b1"
 dependencies = [
  "cast",
  "itertools 0.10.5",
+]
+
+[[package]]
+name = "criterion-plot"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b1bcc0dc7dfae599d84ad0b1a55f80cde8af3725da8313b528da95ef783e338"
+dependencies = [
+ "cast",
+ "itertools 0.13.0",
 ]
 
 [[package]]
@@ -4659,6 +4725,7 @@ checksum = "9ed9a281f7bc9b7576e61468ba615a66a5c8cfdff42420a70aa82701a3b1e292"
 dependencies = [
  "block-buffer",
  "crypto-common",
+ "subtle",
 ]
 
 [[package]]
@@ -5042,6 +5109,15 @@ name = "hex-literal"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bcaaec4551594c969335c98c903c1397853d4198408ea609190f420500f6be71"
+
+[[package]]
+name = "hmac"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c49c37c09c17a53d937dfbb742eb3a961d65a994e6bcdcf37e7399d0cc8ab5e"
+dependencies = [
+ "digest",
+]
 
 [[package]]
 name = "http"
@@ -6954,6 +7030,12 @@ name = "strsim"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
+
+[[package]]
+name = "subtle"
+version = "2.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 
 [[package]]
 name = "syn"

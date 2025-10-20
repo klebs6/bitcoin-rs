@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoin-sha3/src/sha3.rs ]
+// ---------------- [ File: bitcoin-sha3/src/sha3_impl.rs ]
 crate::ix!();
 
 use core::mem::size_of;

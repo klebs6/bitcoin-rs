@@ -1,0 +1,24 @@
+[package]
+name = "bitcoin-hmac-sha512"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dev-dependencies]
+hex      = "0.4"
+hmac     = "0.12"      # Reference HMAC
+sha2     = "0.10"      # with Sha512
+proptest = "1"
+
+[dependencies]
+bitcoin-sha512        = { path = "../bitcoin-sha512" }
+bitcoin-imports       = { path = "../bitcoin-imports" }
+tracing.workspace     = true
+serde.workspace       = true
+getset.workspace      = true
+hex-literal.workspace = true

@@ -20,6 +20,7 @@ CARGO     := env CARGO_MSG_LIMIT=15 \
 #CARGO_MSG_LIMIT := 100
 BUILD := build --verbose
 TEST  := test
+BENCH := bench
 
 #DEFAULT := build_active
 #DEFAULT := build
@@ -45,7 +46,6 @@ ACTIVE := bitcoin-remote
 #ACTIVE := bitcoin-random
 #ACTIVE := bitcoin-base58
 #ACTIVE := bitcoin-muhash
-ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-hash
 
 #-------------------------------[next]
@@ -263,6 +263,9 @@ json:
 timings:
 	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) +nightly build -Z timings
 
+bench:
+	RUSTFLAGS="-Awarnings -C target-cpu=native" $(CARGO) $(BENCH) -p $(ACTIVE)
+
 #-------------------------------[done-below]
 
 #ACTIVE := bitcoin-amt
@@ -303,5 +306,9 @@ timings:
 #ACTIVE := bitcoin-version
 #ACTIVE := bitcoin-univalue       #note this one has a failing test
 #ACTIVE := bitcoin-tokenpipe
-#ACTIVE := bitcoin-sha256
+#----------------------------------------------[done-but-uninstalled]
+ACTIVE := bitcoin-sha256
 #ACTIVE := bitcoin-sha3
+#ACTIVE := bitcoin-sha512
+#ACTIVE := bitcoin-hmac-sha512
+#ACTIVE := bitcoin-hmac-sha256

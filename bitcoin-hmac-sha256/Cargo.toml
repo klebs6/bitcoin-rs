@@ -1,5 +1,5 @@
 [package]
-name = "bitcoin-sha256-hmac"
+name = "bitcoin-hmac-sha256"
 version = "0.1.0"
 authors = ["YourName <you@example.com>"]
 license = "MIT"
@@ -14,3 +14,14 @@ bitcoin-imports = { version = "0.1.18", path = "../bitcoin-imports" }
 bitcoin-derive = { version = "0.1.18", path = "../bitcoin-derive" }
 bitcoin-u256 = { version = "0.1.18", path = "../bitcoin-u256" }
 bitcoin-sha256 = { path = "../bitcoin-sha256" }
+tracing.workspace     = true
+serde.workspace       = true
+getset.workspace      = true
+derive_builder.workspace      = true
+hex-literal.workspace = true
+
+[dev-dependencies]
+hex      = "0.4"
+hmac     = "0.12"      # Reference HMAC
+sha2     = "0.10"      # with Sha512
+proptest = "1"

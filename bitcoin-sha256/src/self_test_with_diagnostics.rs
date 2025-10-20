@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sha256/src/self_test_with_diagnostics.rs ]
 crate::ix!();
 
 #[cfg(test)]
