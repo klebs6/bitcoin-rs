@@ -24,7 +24,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
@@ -48,7 +48,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-db"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

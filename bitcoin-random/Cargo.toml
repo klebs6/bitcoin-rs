@@ -28,7 +28,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-sha256]
 path = "../bitcoin-sha256"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-sha512]
 path = "../bitcoin-sha512"
@@ -54,7 +54,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-random"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

@@ -60,7 +60,7 @@ version = "0.1.18"
 
 [dependencies.bitcoinwallet-library]
 path = "../bitcoinwallet-library"
-version = "0.1.18"
+version = "0.1.19"
 
 [package]
 authors = ["klebs <none>"]
@@ -70,7 +70,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-spend"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

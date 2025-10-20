@@ -115,7 +115,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-fuzz]
 path = "../bitcoin-fuzz"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-golombrice]
 path = "../bitcoin-golombrice"
@@ -327,7 +327,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-top"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

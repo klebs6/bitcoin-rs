@@ -8,7 +8,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-hash]
 path = "../bitcoin-hash"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
@@ -42,7 +42,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-golombrice"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

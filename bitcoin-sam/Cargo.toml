@@ -16,7 +16,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-service]
 path = "../bitcoin-service"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-sock]
 path = "../bitcoin-sock"
@@ -34,7 +34,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-sam"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

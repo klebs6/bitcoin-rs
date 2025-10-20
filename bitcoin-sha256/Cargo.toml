@@ -2,22 +2,6 @@
 path = "../bitcoin-cfg"
 version = "0.1.18"
 
-[dev-dependencies]
-sha2 = { version = "0.10", default-features = false, features = ["compress"] }
-byteorder = "1.5"
-hex = "*"
-
-[dependencies]
-bitcoin-sha256-sse4   = { path = "../bitcoin-sha256-sse4" }
-bitcoin-sha256-sse41  = { path = "../bitcoin-sha256-sse41" }
-bitcoin-sha256-shani  = { path = "../bitcoin-sha256-shani" }
-bitcoin-sha256-avx2   = { path = "../bitcoin-sha256-avx2" }
-bitcoin-sha256-hkdf   = { path = "../bitcoin-sha256-hkdf" }
-tracing.workspace     = true
-serde.workspace       = true
-getset.workspace      = true
-hex-literal.workspace = true
-
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.18"
@@ -26,12 +10,48 @@ version = "0.1.18"
 path = "../bitcoin-imports"
 version = "0.1.18"
 
+[dependencies.bitcoin-sha256-avx2]
+path = "../bitcoin-sha256-avx2"
+
+[dependencies.bitcoin-sha256-hkdf]
+path = "../bitcoin-sha256-hkdf"
+
+[dependencies.bitcoin-sha256-shani]
+path = "../bitcoin-sha256-shani"
+
+[dependencies.bitcoin-sha256-sse4]
+path = "../bitcoin-sha256-sse4"
+
+[dependencies.bitcoin-sha256-sse41]
+path = "../bitcoin-sha256-sse41"
+
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
 version = "0.1.18"
 
+[dependencies.getset]
+workspace = true
+
+[dependencies.hex-literal]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+
 [dependencies.serde-big-array]
 version = "0.4.1"
+
+[dependencies.tracing]
+workspace = true
+
+[dev-dependencies]
+byteorder = "1.5"
+hex = "*"
+
+[dev-dependencies.sha2]
+default-features = false
+features = ["compress"]
+version = "0.10"
 
 [package]
 authors = ["klebs <none>"]
@@ -41,7 +61,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-sha256"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

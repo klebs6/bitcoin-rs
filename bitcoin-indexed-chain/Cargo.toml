@@ -164,7 +164,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-peerman]
 path = "../bitcoin-peerman"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-policy]
 path = "../bitcoin-policy"
@@ -333,7 +333,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-indexed-chain"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

@@ -32,7 +32,7 @@ version = "0.1.18"
 
 [dependencies.bitcoinchain-interface]
 path = "../bitcoinchain-interface"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoinchain-params]
 path = "../bitcoinchain-params"
@@ -46,7 +46,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-chainman"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

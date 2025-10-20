@@ -48,7 +48,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
@@ -197,7 +197,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-test"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

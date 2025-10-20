@@ -1,27 +1,44 @@
-[package]
-name = "bitcoin-hmac-sha256"
-version = "0.1.0"
-authors = ["YourName <you@example.com>"]
-license = "MIT"
-edition = "2024"
-description = "todo: write a description here"
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+version = "0.1.18"
 
-# keywords = []
-# categories = []
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.18"
 
-[dependencies]
-bitcoin-imports = { version = "0.1.18", path = "../bitcoin-imports" }
-bitcoin-derive = { version = "0.1.18", path = "../bitcoin-derive" }
-bitcoin-u256 = { version = "0.1.18", path = "../bitcoin-u256" }
-bitcoin-sha256 = { path = "../bitcoin-sha256" }
-tracing.workspace     = true
-serde.workspace       = true
-getset.workspace      = true
-derive_builder.workspace      = true
-hex-literal.workspace = true
+[dependencies.bitcoin-sha256]
+path = "../bitcoin-sha256"
+version = "0.1.19"
+
+[dependencies.bitcoin-u256]
+path = "../bitcoin-u256"
+version = "0.1.18"
+
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.getset]
+workspace = true
+
+[dependencies.hex-literal]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
 
 [dev-dependencies]
-hex      = "0.4"
-hmac     = "0.12"      # Reference HMAC
-sha2     = "0.10"      # with Sha512
+hex = "0.4"
+hmac = "0.12"
 proptest = "1"
+sha2 = "0.10"
+
+[package]
+authors = ["YourName <you@example.com>"]
+description = "todo: write a description here"
+edition = "2024"
+license = "MIT"
+name = "bitcoin-hmac-sha256"
+version = "0.1.1"

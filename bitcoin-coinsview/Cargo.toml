@@ -8,7 +8,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-db]
 path = "../bitcoin-db"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -57,7 +57,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-coinsview"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [
