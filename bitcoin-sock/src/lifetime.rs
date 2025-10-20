@@ -16,23 +16,23 @@ mod sock_lifetime_spec {
 
     #[traced_test]
     fn reset_closes_descriptor() {
+
+        serialize_fds!();
+
         #[cfg(unix)]
         {
-            use libc::{read, EBADF, EINTR};
+            use libc::read;
 
-            let (a, _b) = make_socket_pair();
+            let (a, b) = make_socket_pair();
             let mut sock = Sock::from(a);
 
             sock.reset();
             assert_eq!(sock.get(), crate::compat::INVALID_SOCKET);
 
+            // The peer must now see EOF immediately.
             let mut buf = [0u8; 1];
-            let ret = unsafe { read(a, buf.as_mut_ptr() as *mut _, 1) };
-            assert_eq!(ret, -1);
-
-            let err = last_errno();
-            assert_eq!(err, EBADF, "descriptor should be closed");
-            assert_ne!(err, EINTR, "unexpected EINTR");
+            let ret = unsafe { read(b, buf.as_mut_ptr() as *mut _, 1) };
+            assert_eq!(ret, 0, "peer should see EOF after close");
         }
 
         info!("reset_closes_descriptor passed");
@@ -40,6 +40,7 @@ mod sock_lifetime_spec {
 
     #[traced_test]
     fn release_transfers_ownership() {
+        serialize_fds!();
         #[cfg(unix)]
         {
             use libc::{fcntl, F_GETFD};

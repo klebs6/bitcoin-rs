@@ -48,6 +48,8 @@ mod io_error_is_permanent_spec {
 
     #[traced_test]
     fn recognises_transient_and_permanent_errors() {
+        serialize_fds!(); // <— add this
+
         #[cfg(unix)]
         {
             use libc::{

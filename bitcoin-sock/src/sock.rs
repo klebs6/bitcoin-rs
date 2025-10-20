@@ -229,26 +229,29 @@ mod sock_basic_io_spec {
 
     #[traced_test]
     fn assign_from_transfers_descriptor() {
+
+        serialize_fds!();
+
         #[cfg(unix)]
         {
-            use libc::{read, EBADF, EINTR};
+            use libc::read;
 
-            let (a, b) = make_socket_pair();
+            // Use two independent pairs so replacing `dst` doesn't
+            // simultaneously kill the new endpoint's peer.
+            let (a, a_peer) = make_socket_pair();
+            let (b, _b_peer) = make_socket_pair();
             let mut dst = Sock::from(a);
-            let mut src = Sock::from(b);
+            let src = Sock::from(b);
 
-            let old = dst.get();
-            dst.assign_from(src); // `src` consumed here
+            let old_peer = a_peer;
+            dst.assign_from(src); // `src` moved; old `a` closed inside reset()
 
-            // Old descriptor should now be closed.
+            // Old peer must see EOF -> proves old endpoint was closed.
             let mut tmp = [0u8; 1];
-            let ret = unsafe { read(old, tmp.as_mut_ptr() as *mut _, 1) };
-            assert_eq!(ret, -1);
-            let err = last_errno();
-            assert_eq!(err, EBADF);
-            assert_ne!(err, EINTR);
+            let eof = unsafe { read(old_peer, tmp.as_mut_ptr() as *mut _, 1) };
+            assert_eq!(eof, 0, "old peer should see EOF after reassign");
 
-            // New descriptor is valid and identical to `b`.
+            // New descriptor is valid and equals `b`.
             assert_eq!(dst.get(), b);
         }
 
@@ -257,6 +260,7 @@ mod sock_basic_io_spec {
 
     #[traced_test]
     fn raw_send_and_recv() {
+        serialize_fds!(); // <— add this
         #[cfg(unix)]
         {
             let (a, b) = make_socket_pair();

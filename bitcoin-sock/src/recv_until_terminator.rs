@@ -2,6 +2,7 @@
 crate::ix!();
 
 impl Sock {
+
     /// Read until `terminator` without consuming past it.
     pub fn recv_until_terminator(
         &self,
@@ -75,7 +76,7 @@ impl Sock {
                     data.len()
                 );
             }
-            if interrupt.is_interrupted() {
+            if interrupt.as_bool() {
                 panic!(
                     "Receive interrupted (received {} bytes without terminator before that)",
                     data.len()
@@ -83,58 +84,39 @@ impl Sock {
             }
 
             // Short bounded wait before retrying.
-            let wait_ns = min(
-                (deadline - Instant::now()).as_nanos(),
-                MAX_WAIT_FOR_IO.num_nanoseconds().unwrap_or(1_000_000_000),
-            );
-            let _ = self.wait(
-                chrono::Duration::nanoseconds(wait_ns as i64),
-                SOCK_RECV as u8,
-                std::ptr::null_mut(),
-            );
+            let wait_dur = compute_bounded_wait(deadline);
+            let _ = self.wait(wait_dur, SOCK_RECV as u8, core::ptr::null_mut());
         }
 
         // Terminator consumed – omit it in the returned string.
+        if terminator_found && data.last() == Some(&terminator) {
+            data.pop();
+        }
         let s = String::from_utf8(data).expect("socket stream must be valid UTF‑8");
         trace!(len = s.len(), "recv_until_terminator – finished");
         s
     }
 
     /// Consume exactly `len` bytes from the socket, appending to `out`.
-    fn read_exact(&self, peek: &[u8], len: usize, out: &mut Vec<u8>) {
+    fn read_exact(&self, _peek: &[u8], len: usize, out: &mut Vec<u8>) {
         let mut scratch = vec![0u8; len];
-        let ret = self.recv(scratch.as_mut_ptr() as *mut c_void, len, 0);
-        if ret < 0 || ret as usize != len {
-            panic!(
-                "recv() returned {} bytes on attempt to read {} bytes",
-                ret, len
+        let mut read_total = 0;
+        while read_total < len {
+            let n = self.recv(
+                scratch[read_total..].as_mut_ptr() as *mut c_void,
+                len - read_total,
+                0,
             );
+            if n <= 0 {
+                let err = last_socket_error();
+                panic!(
+                    "recv() failed while reading {} of {} bytes: {}",
+                    read_total, len, network_error_string(err)
+                );
+            }
+            read_total += n as usize;
         }
         out.extend_from_slice(&scratch[..len]);
-    }
-}
-
-#[inline(always)]
-const fn msg_peek_const() -> i32 {
-    #[cfg(target_os = "windows")]
-    {
-        winapi::um::winsock2::MSG_PEEK
-    }
-    #[cfg(not(target_os = "windows"))]
-    {
-        libc::MSG_PEEK
-    }
-}
-
-#[inline(always)]
-fn last_socket_error() -> i32 {
-    #[cfg(target_os = "windows")]
-    {
-        unsafe { winapi::um::winsock2::WSAGetLastError() }
-    }
-    #[cfg(not(target_os = "windows"))]
-    {
-        last_errno()
     }
 }
 
@@ -145,17 +127,10 @@ fn last_socket_error() -> i32 {
 mod recv_until_terminator_spec {
     use super::*;
 
-    #[cfg(unix)]
-    fn make_socket_pair() -> (libc::c_int, libc::c_int) {
-        let mut sv = [-1; 2];
-        let ret =
-            unsafe { libc::socketpair(libc::AF_UNIX, libc::SOCK_STREAM, 0, sv.as_mut_ptr()) };
-        assert_eq!(ret, 0);
-        (sv[0], sv[1])
-    }
-
     #[traced_test]
     fn reads_up_to_newline() {
+        serialize_fds!();
+
         #[cfg(unix)]
         {
             let (a, b) = make_socket_pair();

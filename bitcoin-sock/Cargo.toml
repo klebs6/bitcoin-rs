@@ -2,6 +2,9 @@
 tracing.workspace        = true
 derive_builder.workspace = true
 getset.workspace         = true
+lazy_static.workspace         = true
+parking_lot.workspace         = true
+once_cell.workspace         = true
 bitcoin-compat = { path = "../bitcoin-compat" , version = "0.1.18" }
 
 [build-dependencies.bitcoin-cfg]
@@ -10,6 +13,11 @@ version = "0.1.18"
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.18"
+
+[dependencies.bitcoin-time]
+path = "../bitcoin-time"
+version = "0.1.18"
+
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
 version = "0.1.18"

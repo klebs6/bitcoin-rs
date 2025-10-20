@@ -107,6 +107,7 @@ mod network_error_string_spec {
 
     #[traced_test]
     fn formats_known_error() {
+        serialize_fds!(); // <— add this
         #[cfg(unix)]
         {
             let text = network_error_string(libc::EBADF);

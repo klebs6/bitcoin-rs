@@ -2496,8 +2496,12 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-sync",
+ "bitcoin-time",
  "derive_builder",
  "getset",
+ "lazy_static",
+ "once_cell",
+ "parking_lot 0.12.4",
  "tracing",
 ]
 

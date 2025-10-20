@@ -53,7 +53,7 @@ impl Sock {
             }
 
             // Interrupt?
-            if interrupt.is_interrupted() {
+            if interrupt.as_bool() {
                 panic!(
                     "Send interrupted (sent only {} of {} bytes before that)",
                     sent,
@@ -62,40 +62,9 @@ impl Sock {
             }
 
             // Wait a bounded amount before retrying.
-            let wait_ns = min(
-                (deadline - Instant::now()).as_nanos(),
-                MAX_WAIT_FOR_IO.num_nanoseconds().unwrap_or(1_000_000_000),
-            );
-            let _ = self.wait(
-                chrono::Duration::nanoseconds(wait_ns as i64),
-                SOCK_SEND as u8,
-                std::ptr::null_mut(),
-            );
+            let wait_dur = compute_bounded_wait(deadline);
+            let _ = self.wait(wait_dur, SOCK_SEND as u8, core::ptr::null_mut());
         }
-    }
-}
-
-#[inline(always)]
-const fn msg_nosignal_const() -> i32 {
-    #[cfg(any(target_os = "linux", target_os = "android"))]
-    {
-        libc::MSG_NOSIGNAL
-    }
-    #[cfg(not(any(target_os = "linux", target_os = "android")))]
-    {
-        0
-    }
-}
-
-#[inline(always)]
-fn last_socket_error() -> i32 {
-    #[cfg(target_os = "windows")]
-    {
-        unsafe { winapi::um::winsock2::WSAGetLastError() }
-    }
-    #[cfg(not(target_os = "windows"))]
-    {
-        last_errno()
     }
 }
 
@@ -106,17 +75,9 @@ fn last_socket_error() -> i32 {
 mod send_complete_spec {
     use super::*;
 
-    #[cfg(unix)]
-    fn make_socket_pair() -> (libc::c_int, libc::c_int) {
-        let mut sv = [-1; 2];
-        let ret =
-            unsafe { libc::socketpair(libc::AF_UNIX, libc::SOCK_STREAM, 0, sv.as_mut_ptr()) };
-        assert_eq!(ret, 0);
-        (sv[0], sv[1])
-    }
-
     #[traced_test]
     fn transmits_entire_payload() {
+        serialize_fds!(); // <— add this
         #[cfg(unix)]
         {
             let (a, b) = make_socket_pair();

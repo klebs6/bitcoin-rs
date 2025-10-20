@@ -80,6 +80,7 @@ mod is_connected_spec {
 
     #[traced_test]
     fn detects_closed_peer() {
+        serialize_fds!(); // <— add this
         #[cfg(unix)]
         {
             let (a, b) = make_socket_pair();

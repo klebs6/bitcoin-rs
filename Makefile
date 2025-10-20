@@ -40,13 +40,13 @@ FEATURES :=
 ACTIVE := bitcoin-fees
 ACTIVE := bitcoin-settings
 ACTIVE := bitcoin-remote
-#ACTIVE := bitcoin-sock
 
-#ACTIVE := bitcoin-network
-ACTIVE := bitcoin-random
 ACTIVE := bitcoin-top
-ACTIVE := bitcoin-sock
+ACTIVE := bitcoin-fees
+#ACTIVE := bitcoin-random
+#ACTIVE := bitcoin-network
 #ACTIVE := bitcoin-remote
+#ACTIVE := bitcoin-db
 #ACTIVE := bitcoin-argsman
 
 #ACTIVE := bitcoin-base58
@@ -317,3 +317,4 @@ bench:
 #ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-hmac-sha512
 #ACTIVE := bitcoin-hmac-sha256
+#ACTIVE := bitcoin-sock

@@ -125,6 +125,7 @@ mod sock_wait_spec {
 
     #[traced_test]
     fn wait_detects_readiness() {
+        serialize_fds!(); // <— add this
         #[cfg(unix)]
         {
             use std::ptr;
