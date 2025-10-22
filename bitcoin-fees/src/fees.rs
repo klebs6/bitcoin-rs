@@ -22,43 +22,29 @@ pub enum FeeReason {
 
 pub struct FeeCalculation
 {
-    est:             EstimationResult,
+    est:             FeeRateEstimationResult,
     reason:          FeeReason, //= FeeReason::NONE;
     desired_target:  i32,       // default = 0
     returned_target: i32,       // default = 0
 }
 
-///------------------------
-//-------------------------------------------[.cpp/bitcoin/src/policy/fees.cpp]
-
-///------------------------
-
-//-------------------------------------------[.cpp/bitcoin/src/util/fees.h]
-//-------------------------------------------[.cpp/bitcoin/src/util/fees.cpp]
-
 pub fn string_for_fee_reason(reason: FeeReason) -> String {
-    
-    todo!();
-        /*
-            static const std::map<FeeReason, std::string> fee_reason_strings = {
-            {FeeReason::NONE, "None"},
-            {FeeReason::HALF_ESTIMATE, "Half Target 60% Threshold"},
-            {FeeReason::FULL_ESTIMATE, "Target 85% Threshold"},
-            {FeeReason::DOUBLE_ESTIMATE, "Double Target 95% Threshold"},
-            {FeeReason::CONSERVATIVE, "Conservative Double Target longer horizon"},
-            {FeeReason::MEMPOOL_MIN, "Mempool Min Fee"},
-            {FeeReason::PAYTXFEE, "PayTxFee set"},
-            {FeeReason::FALLBACK, "Fallback fee"},
-            {FeeReason::REQUIRED, "Minimum Required Fee"},
-        };
-        auto reason_string = fee_reason_strings.find(reason);
-
-        if (reason_string == fee_reason_strings.end()) return "Unknown";
-
-        return reason_string->second;
-        */
+    match reason {
+        FeeReason::NONE           => "None",
+        FeeReason::HALF_ESTIMATE  => "Half Target 60% Threshold",
+        FeeReason::FULL_ESTIMATE  => "Target 85% Threshold",
+        FeeReason::DOUBLE_ESTIMATE=> "Double Target 95% Threshold",
+        FeeReason::CONSERVATIVE   => "Conservative Double Target longer horizon",
+        FeeReason::MEMPOOL_MIN    => "Mempool Min Fee",
+        FeeReason::PAYTXFEE       => "PayTxFee set",
+        FeeReason::FALLBACK       => "Fallback fee",
+        FeeReason::REQUIRED       => "Minimum Required Fee",
+    }.to_string()
 }
 
+//-------------------------------------------[.cpp/bitcoin/src/policy/fees.cpp]
+//-------------------------------------------[.cpp/bitcoin/src/util/fees.h]
+//-------------------------------------------[.cpp/bitcoin/src/util/fees.cpp]
 pub fn fee_mode_map() -> &'static Vec<(String,FeeEstimateMode)> {
     
     todo!();
@@ -72,7 +58,7 @@ pub fn fee_mode_map() -> &'static Vec<(String,FeeEstimateMode)> {
         */
 }
 
-pub fn fee_modes(delimiter: &String) -> String {
+pub fn fee_modes(delimiter: &str) -> String {
     
     todo!();
         /*

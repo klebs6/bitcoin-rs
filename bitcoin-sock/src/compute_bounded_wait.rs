@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/compute_bounded_wait.rs ]
 crate::ix!();
 
 /// Compute the bounded wait interval until `deadline`,

@@ -8,9 +8,10 @@ crate::ix!();
 ///
 /// Internally this is stored exactly as integer satoshis per **1000 bytes**
 /// ( **k** = 1000, matching the historical behaviour in Bitcoin Core).
-#[derive(Serialize,Deserialize,Getters, Default, Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Serialize,Deserialize,Getters, Debug, Clone, Copy, PartialEq, Eq)]
 #[getset(get = "pub")]
 pub struct FeeRate {
+
     /// Satoshis per **k** B.
     ///
     /// This is *never* exposed mutably; callers go through the typed API
@@ -32,6 +33,7 @@ impl Default for FeeRate {
 }
 
 impl Ord for FeeRate {
+
     #[inline]
     fn cmp(&self, other: &Self) -> Ordering {
         self.n_satoshis_perk.cmp(&other.n_satoshis_perk)
@@ -39,6 +41,7 @@ impl Ord for FeeRate {
 }
 
 impl PartialOrd for FeeRate {
+
     #[inline]
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
@@ -46,6 +49,7 @@ impl PartialOrd for FeeRate {
 }
 
 impl AddAssign<&FeeRate> for FeeRate {
+
     #[inline]
     fn add_assign(&mut self, other: &FeeRate) {
         self.n_satoshis_perk += other.n_satoshis_perk;
@@ -53,6 +57,7 @@ impl AddAssign<&FeeRate> for FeeRate {
 }
 
 impl fmt::Display for FeeRate {
+
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(&self.to_string(None))
     }
@@ -97,6 +102,7 @@ impl FeeRate {
     /// BTC/kvB to sat/vB.
     ///
     pub fn new_with_fee_paid(n_fee_paid: &Amount, num_bytes: u32) -> Self {
+
         trace!(
             n_fee_paid = *n_fee_paid,
             num_bytes,
@@ -120,6 +126,7 @@ impl FeeRate {
     /// the result is bumped to ±1 sat so that the direction of the fee is
     /// retained and never hidden.
     pub fn get_fee(&self, num_bytes: u32) -> Amount {
+
         trace!(rate = self.n_satoshis_perk, num_bytes, "FeeRate::get_fee");
 
         if num_bytes == 0 {
@@ -145,6 +152,7 @@ impl FeeRate {
     ///
     /// Defaults to `FeeEstimateMode::BTC_KVB` when no mode is supplied.
     pub fn to_string(&self, fee_estimate_mode: Option<&FeeEstimateMode>) -> String {
+
         let mode = fee_estimate_mode.unwrap_or(&FeeEstimateMode::BTC_KVB);
 
         match mode {
@@ -217,7 +225,9 @@ mod fee_rate_validation_tests {
         assert!(a <= b && a <= a);
         assert!(b >= a && b >= b);
 
-        a += &a; // a == 2 sat/kvB now
+        // FIX: avoid aliasing immutable + mutable borrow of `a`.
+        let a_copy = a;
+        a += &a_copy; // a == 2 sat/kvB now
         assert_eq!(a, b);
     }
 

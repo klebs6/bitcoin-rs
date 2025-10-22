@@ -48,3 +48,5 @@ x!{vector_formatter}
 x!{wrapper}
 x!{write_with_size_computer}
 x!{formatter}
+x!{encoded_double_formatter}
+x!{primitives}

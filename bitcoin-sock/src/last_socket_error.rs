@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-sock/src/last_socket_error.rs ]
 crate::ix!();
 
 #[inline(always)]

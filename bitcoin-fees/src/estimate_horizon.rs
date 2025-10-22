@@ -7,31 +7,24 @@ crate::ix!();
   | over different time horizons.
   |
   */
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FeeEstimateHorizon {
     SHORT_HALFLIFE,
     MED_HALFLIFE,
     LONG_HALFLIFE,
 }
 
-lazy_static!{
-    /*
-    static constexpr auto ALL_FEE_ESTIMATE_HORIZONS = std::array{
-        FeeEstimateHorizon::SHORT_HALFLIFE,
-        FeeEstimateHorizon::MED_HALFLIFE,
-        FeeEstimateHorizon::LONG_HALFLIFE,
-    };
-    */
-}
+pub const ALL_FEE_ESTIMATE_HORIZONS: [FeeEstimateHorizon; 3] = [
+    FeeEstimateHorizon::SHORT_HALFLIFE,
+    FeeEstimateHorizon::MED_HALFLIFE,
+    FeeEstimateHorizon::LONG_HALFLIFE,
+];
 
 pub fn string_for_fee_estimate_horizon(horizon: FeeEstimateHorizon) -> String {
-    
-    todo!();
-        /*
-        switch (horizon) {
-        case FeeEstimateHorizon::SHORT_HALFLIFE: return "short";
-        case FeeEstimateHorizon::MED_HALFLIFE: return "medium";
-        case FeeEstimateHorizon::LONG_HALFLIFE: return "long";
-        } // no default case, so the compiler can warn about missing cases
-        assert(false);
-        */
+    // switch (…) { … } + assert(false) in Core
+    match horizon {
+        FeeEstimateHorizon::SHORT_HALFLIFE => "short".to_string(),
+        FeeEstimateHorizon::MED_HALFLIFE   => "medium".to_string(),
+        FeeEstimateHorizon::LONG_HALFLIFE  => "long".to_string(),
+    }
 }

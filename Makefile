@@ -43,6 +43,7 @@ ACTIVE := bitcoin-remote
 
 ACTIVE := bitcoin-top
 ACTIVE := bitcoin-fees
+ACTIVE := bitcoin-tx-confirm-stats
 #ACTIVE := bitcoin-random
 #ACTIVE := bitcoin-network
 #ACTIVE := bitcoin-remote

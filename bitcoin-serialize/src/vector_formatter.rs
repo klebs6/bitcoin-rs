@@ -60,6 +60,30 @@ where
     }
 }
 
+pub fn write_vec_f64_fmt<S: Write>(s: &mut S, v: &Vec<f64>) {
+    let mut vf = VectorFormatter::<EncodedDoubleFormatter>::default();
+    vf.ser(s, v);
+}
+
+pub fn read_vec_f64_fmt<S: Read>(s: &mut S) -> Vec<f64> {
+    let mut vf = VectorFormatter::<EncodedDoubleFormatter>::default();
+    let mut out = Vec::<f64>::default();
+    vf.unser(s, &mut out);
+    out
+}
+
+pub fn write_matrix_f64_fmt<S: Write>(s: &mut S, m: &Vec<Vec<f64>>) {
+    let mut mf = VectorFormatter::<VectorFormatter<EncodedDoubleFormatter>>::default();
+    mf.ser(s, m);
+}
+
+pub fn read_matrix_f64_fmt<S: Read>(s: &mut S) -> Vec<Vec<f64>> {
+    let mut mf = VectorFormatter::<VectorFormatter<EncodedDoubleFormatter>>::default();
+    let mut out = Vec::<Vec<f64>>::default();
+    mf.unser(s, &mut out);
+    out
+}
+
 #[cfg(test)]
 mod vector_formatter_tests {
     use super::*;

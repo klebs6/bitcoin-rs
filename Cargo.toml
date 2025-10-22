@@ -216,7 +216,7 @@ members = [
     "bitcoin-sha256-hkdf", 
     "bitcoin-hmac-sha512", 
     "bitcoin-hmac-sha256"
-]
+, "bitcoin-tx-confirm-stats"]
 
 [workspace.dependencies]
 #qmetaobject            = "0.2.7"

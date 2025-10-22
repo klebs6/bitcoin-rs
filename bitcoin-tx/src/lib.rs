@@ -17,3 +17,4 @@ x!{disconnected}
 x!{utxo_snapshot}
 x!{encoding}
 x!{tx}
+pub use bitcoin_tx_confirm_stats::*;

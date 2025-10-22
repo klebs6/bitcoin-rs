@@ -2,6 +2,9 @@
 path = "../bitcoin-cfg"
 version = "0.1.18"
 
+[dependencies]
+bitcoin-tx-confirm-stats = { path = "../bitcoin-tx-confirm-stats" }
+
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
 version = "0.1.18"

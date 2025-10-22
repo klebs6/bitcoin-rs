@@ -1187,8 +1187,10 @@ dependencies = [
  "bitcoin-imports",
  "bitcoin-random",
  "derive_builder",
+ "export-magic",
  "getset",
  "lazy_static",
+ "serde",
  "static_assertions",
  "tracing",
 ]
@@ -2796,10 +2798,25 @@ dependencies = [
  "bitcoin-key",
  "bitcoin-mem",
  "bitcoin-scripting",
+ "bitcoin-tx-confirm-stats",
  "bitcoin-u256",
  "bitcoin-univalue",
  "bitcoinsecp256k1-keys",
  "serde",
+]
+
+[[package]]
+name = "bitcoin-tx-confirm-stats"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-autofile",
+ "bitcoin-imports",
+ "bitcoin-serialize",
+ "derive_builder",
+ "export-magic",
+ "getset",
+ "serde",
+ "tracing",
 ]
 
 [[package]]

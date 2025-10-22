@@ -42,27 +42,45 @@ pub enum FeeEstimateMode {
     SAT_VB,       
 }
 
+pub fn fee_mode_map() -> &'static Vec<(String, FeeEstimateMode)> {
+    use once_cell::sync::Lazy;
+    static MODES: Lazy<Vec<(String, FeeEstimateMode)>> = Lazy::new(|| {
+        vec![
+            ("unset".to_string(),       FeeEstimateMode::UNSET),
+            ("economical".to_string(),  FeeEstimateMode::ECONOMICAL),
+            ("conservative".to_string(),FeeEstimateMode::CONSERVATIVE),
+        ]
+    });
+    &MODES
+}
+
+pub fn fee_modes(delimiter: &str) -> String {
+    fee_mode_map()
+        .iter()
+        .map(|(s, _)| s.as_str())
+        .collect::<Vec<_>>()
+        .join(delimiter)
+}
+
 pub fn invalid_estimate_mode_error_message() -> String {
-    
-    todo!();
-        /*
-            return "Invalid estimate_mode parameter, must be one of: \"" + FeeModes("\", \"") + "\"";
-        */
+    // "Invalid estimate_mode parameter, must be one of: \"" + FeeModes("\", \"") + "\""
+    format!(
+        "Invalid estimate_mode parameter, must be one of: \"{}\"",
+        fee_modes(&"\", \"".to_string())
+    )
 }
 
 pub fn fee_mode_from_string(
-    mode_string:       &String,
-    fee_estimate_mode: &mut FeeEstimateMode) -> bool {
-    
-    todo!();
-        /*
-            auto searchkey = ToUpper(mode_string);
-        for (const auto& pair : FeeModeMap()) {
-            if (ToUpper(pair.first) == searchkey) {
-                fee_estimate_mode = pair.second;
-                return true;
-            }
+    mode_string:       &str,
+    fee_estimate_mode: &mut FeeEstimateMode,
+) -> bool {
+    // auto searchkey = ToUpper(mode_string); match against FeeModeMap
+    let key = mode_string.to_ascii_lowercase();
+    for (name, mode) in fee_mode_map().iter() {
+        if name.eq_ignore_ascii_case(&key) {
+            *fee_estimate_mode = *mode;
+            return true;
         }
-        return false;
-        */
+    }
+    false
 }
