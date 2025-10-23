@@ -9,68 +9,61 @@ crate::ix!();
   */
 #[cfg(have_getcpuid)]
 pub fn get_rd_seed() -> u64 {
-    
-    // RdSeed may fail when the HW RNG is
-    // overloaded. Loop indefinitely until enough
-    // entropy is gathered, but pause after every
-    // failure.
-    #[cfg(i386)]
+
+    // RdSeed may fail when the HW RNG is overloaded. 
+    //
+    // Loop indefinitely until enough entropy is gathered, but pause after every failure.
+    //
+    #[cfg(target_arch = "x86")]
     {
-        let ok:  u8 = 0;
-        let r1: u32 = 0;
-        let r2: u32 = 0;
+        let mut ok: u8 = 0;
+        let mut r1: u32 = 0;
+        let mut r2: u32 = 0;
 
         loop {
-
-            // rdseed %eax
-            asm!{".byte 0x0f, 0xc7, 0xf8; setc %1" 
-                : "=a"(r1), "=q"(ok) :: "cc" : "volatile"}; 
-
-            if ok != 0 {
-                break;
+            unsafe {
+                // rdseed %eax
+                core::arch::asm!(".byte 0x0f, 0xc7, 0xf8; setc {ok}",
+                                  out("eax") r1, ok = out(reg_byte) ok,
+                                  options(nostack, preserves_flags));
             }
-
-            asm!{"pause" : "volatile"};
+            if ok != 0 { break; }
+            unsafe { core::arch::asm!("pause", options(nomem, nostack, preserves_flags)); }
         }
-
         loop {
-
-            // rdseed %eax
-            asm!{".byte 0x0f, 0xc7, 0xf8; setc %1" 
-                : "=a"(r2), "=q"(ok) :: "cc" : "volatile" }; 
-
-            if ok != 0 {
-                break;
+            unsafe {
+                // rdseed %eax
+                core::arch::asm!(".byte 0x0f, 0xc7, 0xf8; setc {ok}",
+                                  out("eax") r2, ok = out(reg_byte) ok,
+                                  options(nostack, preserves_flags));
             }
-
-            asm!{"pause" : "volatile"};
+            if ok != 0 { break; }
+            unsafe { core::arch::asm!("pause", options(nomem, nostack, preserves_flags)); }
         }
-
-        return ((r2 as u64) << 32) | r1;
+        return ((r2 as u64) << 32) | (r1 as u64);
     }
 
-    #[cfg(x86_64_or_amd64)]
+    #[cfg(target_arch = "x86_64")]
     {
-        let ok:  u8 = 0;
-        let r1: u64 = 0;
-
+        let mut ok: u8 = 0;
+        let mut r: u64 = 0;
         loop {
-
-            // rdseed %rax
-            asm!{".byte 0x48, 0x0f, 0xc7, 0xf8; setc %1" 
-                : "=a"(r1), "=q"(ok) :: "cc" : "volatile"}; 
-
-            if ok != 0 {
-                break;
+            unsafe {
+                // rdseed %rax
+                core::arch::asm!(".byte 0x48, 0x0f, 0xc7, 0xf8; setc {ok}",
+                                  out("rax") r, ok = out(reg_byte) ok,
+                                  options(nostack, preserves_flags));
             }
-
-            asm!{"pause" : "volatile"};
+            if ok != 0 { break; }
+            unsafe { core::arch::asm!("pause", options(nomem, nostack, preserves_flags)); }
         }
-
-        return r1;
+        return r;
     }
 
-    panic!{"RdSeed is only supported on x86 and x86_64"}
+    #[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+    {
+        panic!("RdSeed is only supported on x86 and x86_64");
+    }
 }
 
 #[cfg(test)]
@@ -78,10 +71,12 @@ mod rd_seed_spec {
     use super::*;
 
     #[traced_test]
-    #[cfg(have_getcpuid)]
+    #[cfg(all(have_getcpuid, any(target_arch = "x86", target_arch = "x86_64")))]
     fn rd_seed_callable_if_supported() {
+        // Ensure flags are initialized for this process.
+        init_hardware_rand();
         if G_RDSEED_SUPPORTED.load(core::sync::atomic::Ordering::Relaxed) {
-            let _ = get_rd_seed(); // loops until it succeeds; should not panic on supported HW
+            let _ = get_rd_seed(); // loops until success; should not panic on supported HW
         }
     }
 }

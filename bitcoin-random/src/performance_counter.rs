@@ -9,31 +9,36 @@ crate::ix!();
    | https://en.wikipedia.org/wiki/Time_Stamp_Counter
    | for more information.
    */
-#[cfg(all(_MSC_VER,any(_M_IX86,_M_X64)))]
-#[inline] pub fn get_performance_counter() -> i64 {
-    __rdtsc()
+#[cfg(all(windows, any(target_arch = "x86", target_arch = "x86_64")))]
+#[inline]
+pub fn get_performance_counter() -> i64 {
+    // Use RDTSC where available
+    unsafe {
+        #[cfg(target_arch = "x86")]   { core::arch::x86::_rdtsc() as i64 }
+        #[cfg(target_arch = "x86_64")]{ core::arch::x86_64::_rdtsc() as i64 }
+    }
 }
 
-#[cfg(i386_but_not_windows)]
-#[inline] pub fn get_performance_counter() -> i64 {
-    let r: u64 = 0;
-
-    // Constrain the r variable to the eax:edx pair.
-    asm!{"rdtsc" : "=A" (r) : "volatile"}; 
-
-    r
+#[cfg(all(not(windows), target_arch = "x86"))]
+#[inline]
+pub fn get_performance_counter() -> i64 {
+    let mut r_lo: u32 = 0;
+    let mut r_hi: u32 = 0;
+    unsafe {
+        core::arch::asm!("rdtsc", out("eax") r_lo, out("edx") r_hi, options(nostack, preserves_flags));
+    }
+    ((r_hi as u64) << 32 | (r_lo as u64)) as i64
 }
 
-#[cfg(all(not(_MSC_VER),any(__x86_64__,__amd64__)))]
-#[inline] pub fn get_performance_counter() -> i64 {
-
-    let r1: u64 = 0; 
-    let r2: u64 = 0;
-
-    // Constrain r1 to rax and r2 to rdx.
-    asm!{"rdtsc" : "=a"(r1), "=d"(r2) : "volatile"}; 
-
-    (r2 << 32) | r1
+#[cfg(all(not(windows), target_arch = "x86_64"))]
+#[inline]
+pub fn get_performance_counter() -> i64 {
+    let mut r: u64 = 0;
+    unsafe {
+        // Constrain r1 to rax and r2 to rdx.
+        core::arch::asm!("rdtsc", out("rax") r, out("rdx") _, options(nostack, preserves_flags));
+    }
+    r as i64
 }
 
 /**
@@ -42,13 +47,13 @@ crate::ix!();
    |
    */
 #[cfg(not(any(
-            all(_MSC_VER,any(_M_IX86,_M_X64)),
-            i386_but_not_windows,
-            all(not(_MSC_VER),any(__x86_64__,__amd64__)),
+    all(windows, any(target_arch = "x86", target_arch = "x86_64")),
+    all(not(windows), target_arch = "x86"),
+    all(not(windows), target_arch = "x86_64"),
 )))]
-#[inline] pub fn get_performance_counter() -> i64 {
-
-    quanta::Instant::now().as_u64().try_into().unwrap()
+#[inline]
+pub fn get_performance_counter() -> i64 {
+    quanta::Instant::now().as_u64() as i64
 }
 
 #[cfg(test)]

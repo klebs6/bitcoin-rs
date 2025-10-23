@@ -86,7 +86,7 @@ mod hash160_spec {
         let mut ripemd = Ripemd160::new();
         ripemd.update(&sha_buf);
         let mut out = [0u8; RIPEMD_OUT];
-        ripemd.finalize(out);
+        ripemd.finalize(&mut out);
         out
     }
 
@@ -136,7 +136,7 @@ mod hash160_spec {
         let mut ripemd = Ripemd160::new();
         ripemd.update(&sha_buf);
         let mut ref_buf = [0u8; RIPEMD160_OUTPUT_SIZE];
-        ripemd.finalize(ref_buf);
+        ripemd.finalize(&mut ref_buf);
 
         let via_manual = u160::from_le_bytes(ref_buf);
         assert_eq!(via_helper, via_manual);

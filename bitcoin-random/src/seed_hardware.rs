@@ -7,18 +7,20 @@ crate::ix!();
   | supported.
   |
   */
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 pub fn seed_hardware_fast(hasher: &mut Sha512)  {
     
-    #[cfg(x86_64_or_amd64_or_i386)]
-    {
-        if G_RDRAND_SUPPORTED.load(Ordering::Relaxed) {
+    if G_RDRAND_SUPPORTED.load(atomic::Ordering::Relaxed) {
 
-            let out: u64 = get_rd_rand();
+        let out: u64 = get_rd_rand();
 
-            hasher.write(&out as *const _ as *const u8, size_of_val(&out));
-        }
+        hasher.write(&out as *const _ as *const u8, size_of_val(&out));
     }
+
 }
+
+#[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+pub fn seed_hardware_fast(_hasher: &mut Sha512) {}
 
 /**
   | Add 256 bits of entropy gathered from
@@ -26,48 +28,50 @@ pub fn seed_hardware_fast(hasher: &mut Sha512)  {
   | supported.
   |
   */
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 pub fn seed_hardware_slow(hasher: &mut Sha512)  {
     
-    #[cfg(x86_64_or_amd64_or_i386)]
-    {
-        // When we want 256 bits of entropy,
-        // prefer RdSeed over RdRand, as it's
-        // guaranteed to produce independent
-        // randomness on every call.
-        if G_RDSEED_SUPPORTED.load(Ordering::Relaxed) {
+    // When we want 256 bits of entropy,
+    // prefer RdSeed over RdRand, as it's
+    // guaranteed to produce independent
+    // randomness on every call.
+    //
+    if G_RDSEED_SUPPORTED.load(atomic::Ordering::Relaxed) {
 
-            for i in 0..4 {
+        for i in 0..4 {
 
-                let out: u64 = get_rd_seed();
+            let out: u64 = get_rd_seed();
 
-                hasher.write(&out as *const _ as *const u8, size_of_val(&out));
-            }
-
-            return;
+            hasher.write(&out as *const _ as *const u8, size_of_val(&out));
         }
 
-        // When falling back to RdRand, XOR the
-        // result of 1024 results.
-        //
-        // This guarantees a reseeding occurs
-        // between each.
-        if G_RDRAND_SUPPORTED.load(Ordering::Relaxed) {
+        return;
+    }
 
-            for i in 0..4 {
+    // When falling back to RdRand, XOR the
+    // result of 1024 results.
+    //
+    // This guarantees a reseeding occurs
+    // between each.
+    if G_RDRAND_SUPPORTED.load(atomic::Ordering::Relaxed) {
 
-                let mut out: u64 = 0;
+        for i in 0..4 {
 
-                for j in 0..1024 {
-                    out ^= get_rd_rand();
-                }
+            let mut out: u64 = 0;
 
-                hasher.write(&out as *const _ as *const u8, size_of_val(&out));
+            for j in 0..1024 {
+                out ^= get_rd_rand();
             }
 
-            return;
+            hasher.write(&out as *const _ as *const u8, size_of_val(&out));
         }
+
+        return;
     }
 }
+
+#[cfg(not(any(target_arch = "x86", target_arch = "x86_64")))]
+pub fn seed_hardware_slow(_hasher: &mut Sha512) {}
 
 #[cfg(test)]
 mod seed_hardware_spec {

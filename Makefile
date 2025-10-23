@@ -37,12 +37,11 @@ FEATURES :=
 #-------------------------------[active-below]
 
 #ACTIVE := bitcoin-get-json-token # note that this one has a failing test
-ACTIVE := bitcoin-fees
 ACTIVE := bitcoin-settings
-ACTIVE := bitcoin-remote
 
 ACTIVE := bitcoin-top
 ACTIVE := bitcoin-random
+#ACTIVE := bitcoin-block
 #ACTIVE := bitcoin-network
 #ACTIVE := bitcoin-remote
 #ACTIVE := bitcoin-db
@@ -105,7 +104,6 @@ ACTIVE := bitcoin-random
 #ACTIVE := bitcoin-argsman
 #ACTIVE := bitcoin-banman
 #ACTIVE := bitcoin-bench
-#ACTIVE := bitcoin-block
 #ACTIVE := bitcoin-blockencoding
 #ACTIVE := bitcoin-blockfilter
 #ACTIVE := bitcoin-blockman
