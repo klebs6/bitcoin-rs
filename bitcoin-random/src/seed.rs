@@ -206,3 +206,38 @@ pub fn seed_startup(
       */
     seed_strengthen(hasher, rng, 100000);
 }
+
+#[cfg(test)]
+mod seed_spec {
+    use super::*;
+
+    #[traced_test]
+    fn seed_timestamp_and_fast_add_entropy() {
+        let mut h = Sha512::default();
+        let before = h.size();
+        seed_timestamp(&mut h);
+        seed_fast(&mut h);
+        assert!(h.size() > before);
+    }
+
+    #[traced_test]
+    fn seed_slow_mixes_os_and_events() {
+        let mut h = Sha512::default();
+        let before = h.size();
+        let mut rng = RNGState::default();
+        seed_slow(&mut h, &mut rng);
+        assert!(h.size() > before);
+    }
+
+    #[traced_test]
+    fn seed_strengthen_with_zero_time_still_adds_data() {
+        let mut h = Sha512::default();
+        let mut rng = RNGState::default();
+        let before = h.size();
+        seed_strengthen(&mut h, &mut rng, 0);
+        assert!(h.size() > before);
+    }
+
+    // NOTE: seed_periodic() and seed_startup() call rand_add_dynamic_env()/rand_add_static_env(),
+    // which are currently TODO. Once implemented, add tests here to cover them.
+}

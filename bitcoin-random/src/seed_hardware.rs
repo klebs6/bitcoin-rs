@@ -68,3 +68,18 @@ pub fn seed_hardware_slow(hasher: &mut Sha512)  {
         }
     }
 }
+
+#[cfg(test)]
+mod seed_hardware_spec {
+    use super::*;
+
+    #[traced_test]
+    fn calling_seed_hardware_functions_is_safe_under_all_cfgs() {
+        let mut h = Sha512::default();
+        let before = h.size();
+        seed_hardware_fast(&mut h);
+        seed_hardware_slow(&mut h);
+        // Not asserting size increased (depends on HW support); just ensure no panic.
+        let _ = (before, h.size());
+    }
+}

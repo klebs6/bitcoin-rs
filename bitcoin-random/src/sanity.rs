@@ -109,3 +109,13 @@ pub fn random_sanity_check() -> bool {
 
     true
 }
+
+#[cfg(test)]
+mod sanity_spec {
+    use super::*;
+
+    #[traced_test]
+    fn random_sanity_check_passes() {
+        assert!(random_sanity_check(), "OS RNG sanity check failed on this system");
+    }
+}

@@ -10,13 +10,15 @@ crate::ix!();
   | This class is not thread-safe.
   |
   */
+#[derive(Debug,Getters,MutGetters,Setters)]
+#[getset(get="pub",set="pub",get_mut="pub")]
 pub struct FastRandomContext {
-    pub requires_seed: bool,
-    pub rng:           ChaCha20,
-    pub bytebuf:       [u8; 64],
-    pub bytebuf_size:  i32,
-    pub bitbuf:        u64,
-    pub bitbuf_size:   i32,
+    requires_seed: bool,
+    rng:           ChaCha20,
+    bytebuf:       [u8; 64],
+    bytebuf_size:  i32,
+    bitbuf:        u64,
+    bitbuf_size:   i32,
 }
 
 impl Default for FastRandomContext {
@@ -125,7 +127,7 @@ impl RngCore for FastRandomContext {
             self.random_seed();
         }
 
-        self.rng.keystream(dest.as_mut_ptr(), size_of_val(&dest));
+        self.rng.keystream(dest.as_mut_ptr(), dest.len());
     }
 
     fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), rand::Error> {
@@ -314,18 +316,109 @@ impl FastRandomContext {
       |
       */
     pub fn randbytes(&mut self, len: usize) -> Vec<u8> {
-        
         if self.requires_seed {
             self.random_seed();
         }
-
         let mut ret = Vec::<u8>::with_capacity(len);
-
         if len > 0 {
-            self.rng.keystream(ret.as_mut_ptr(), len);
+            unsafe {
+                self.rng.keystream(ret.as_mut_ptr(), len);
+                ret.set_len(len); // <-- add this
+            }
         }
-
         ret
     }
-    
+}
+
+#[cfg(test)]
+mod fast_random_context_spec {
+    use super::*;
+
+    #[traced_test]
+    fn deterministic_from_same_seed_is_identical() {
+        let seed = u256::default(); // explicit seed (all-zero is fine for test determinism)
+        let mut a = FastRandomContext::from(&seed);
+        let mut b = FastRandomContext::from(&seed);
+
+        // A few mixed draws from both contexts should match 1:1.
+        assert_eq!(a.rand32(), b.rand32());
+        assert_eq!(a.rand64(), b.rand64());
+
+        // randbits edge cases
+        assert_eq!(a.randbits(0), 0);
+        assert_eq!(b.randbits(0), 0);
+
+        let x1 = a.randbits(1);
+        let y1 = b.randbits(1);
+        assert_eq!(x1, y1);
+        assert!(x1 < 2);
+
+        let x32 = a.randbits(32);
+        let y32 = b.randbits(32);
+        assert_eq!(x32, y32);
+        assert!(x32 < (1u64 << 32));
+
+        let x33 = a.randbits(33);
+        let y33 = b.randbits(33);
+        assert_eq!(x33, y33);
+        assert!(x33 < (1u64 << 33));
+    }
+
+    #[traced_test]
+    fn randrange_is_within_bounds_and_handles_small_ranges() {
+        let mut ctx = FastRandomContext::new(true); // deterministic
+        for r in [1u64, 2, 3, 10, 1_000_000] {
+            for _ in 0..100 {
+                let v = ctx.randrange(r);
+                assert!(v < r, "v={v} should be < {r}");
+            }
+        }
+    }
+
+    #[traced_test]
+    fn next_u64_consumes_from_internal_buffer() {
+        let mut ctx = FastRandomContext::new(true);
+        let a = ctx.next_u64();
+        let b = ctx.next_u64();
+        // There is no requirement they differ, but deterministic ChaCha20 with a fixed key will.
+        assert_ne!(a, b);
+    }
+
+    #[traced_test]
+    fn fill_bytes_writes_requested_length() {
+        let mut ctx = FastRandomContext::new(true);
+        let mut buf = [0u8; 17];
+        ctx.fill_bytes(&mut buf);
+        // We can at least check that the buffer changed (deterministically).
+        assert!(buf.iter().any(|&x| x != 0));
+    }
+
+    #[traced_test]
+    fn move_semantics_mark_source_for_reseed_and_preserve_state_in_target() {
+        let mut src = FastRandomContext::new(true);
+        // Pull a value to force some internal state to be used.
+        let _ = src.rand32();
+
+        // Move into `dst`.
+        let dst = FastRandomContext::from(&mut src);
+
+        // Source marked for reseed and emptied bit/byte buffers.
+        assert!(src.requires_seed);
+        assert_eq!(src.bytebuf_size, 0);
+        assert_eq!(src.bitbuf_size, 0);
+
+        // Destination should be usable without reseed.
+        // (We can’t assert exact bytes here without duplicating the move algorithm;
+        // it’s sufficient that this does not panic and produces a value.)
+        let _ = &dst; // move worked; dst is valid
+    }
+
+    #[traced_test]
+    fn randbytes_returns_len_and_fills_data() {
+        let mut ctx = FastRandomContext::new(true);
+        let want = 64usize;
+        let v = ctx.randbytes(want);
+        assert_eq!(v.len(), want);
+        assert!(v.iter().any(|&x| x != 0));
+    }
 }

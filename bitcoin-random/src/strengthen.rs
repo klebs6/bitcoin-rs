@@ -50,3 +50,17 @@ pub fn strengthen(
 
     memory_cleanse(buffer.as_mut_ptr() as *mut c_void, size_of_val(&buffer));
 }
+
+#[cfg(test)]
+mod strengthen_spec {
+    use super::*;
+
+    #[traced_test]
+    fn strengthen_adds_material_to_hasher_even_for_short_durations() {
+        let mut h = Sha512::default();
+        let before = h.size();
+        let seed = [0u8; 32];
+        strengthen(&seed, 1, &mut h);
+        assert!(h.size() > before);
+    }
+}

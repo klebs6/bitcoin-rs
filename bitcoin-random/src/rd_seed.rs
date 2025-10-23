@@ -72,3 +72,16 @@ pub fn get_rd_seed() -> u64 {
 
     panic!{"RdSeed is only supported on x86 and x86_64"}
 }
+
+#[cfg(test)]
+mod rd_seed_spec {
+    use super::*;
+
+    #[traced_test]
+    #[cfg(have_getcpuid)]
+    fn rd_seed_callable_if_supported() {
+        if G_RDSEED_SUPPORTED.load(core::sync::atomic::Ordering::Relaxed) {
+            let _ = get_rd_seed(); // loops until it succeeds; should not panic on supported HW
+        }
+    }
+}

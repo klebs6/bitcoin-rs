@@ -74,3 +74,17 @@ pub fn get_rd_rand() -> u64 {
 
     panic!{"RdRand is only supported on x86 and x86_64"};
 }
+
+#[cfg(test)]
+mod rd_rand_spec {
+    use super::*;
+
+    #[traced_test]
+    #[cfg(have_getcpuid)]
+    fn rd_rand_callable_if_supported() {
+        // Only invoke if the flag says it’s supported; otherwise, skip.
+        if G_RDRAND_SUPPORTED.load(core::sync::atomic::Ordering::Relaxed) {
+            let _ = get_rd_rand(); // no assertion beyond successful call
+        }
+    }
+}

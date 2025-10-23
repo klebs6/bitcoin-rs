@@ -50,3 +50,16 @@ crate::ix!();
 
     quanta::Instant::now().as_u64().try_into().unwrap()
 }
+
+#[cfg(test)]
+mod performance_counter_spec {
+    use super::*;
+
+    #[traced_test]
+    fn counter_changes_over_time() {
+        let a = get_performance_counter();
+        std::thread::sleep(std::time::Duration::from_millis(1));
+        let b = get_performance_counter();
+        assert_ne!(a, b, "performance counter did not change across 1ms sleep");
+    }
+}

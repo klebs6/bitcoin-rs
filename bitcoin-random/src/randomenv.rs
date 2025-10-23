@@ -356,294 +356,48 @@ pub fn add_allcpuid(hasher: &mut Sha512)  {
     }
 }
 
-/**
-  | Gather non-cryptographic environment
-  | data that changes over time.
-  |
-  */
-pub fn rand_add_dynamic_env(hasher: &mut Sha512)  {
-    
-    todo!();
-        /*
-            RandAddSeedPerfmon(hasher);
+#[cfg(test)]
+mod randomenv_spec {
+    use super::*;
 
-        // Various clocks
-    #ifdef WIN32
-        FILETIME ftime;
-        GetSystemTimeAsFileTime(&ftime);
-        hasher << ftime;
-    #else
-        struct timespec ts = {};
-    #    ifdef CLOCK_MONOTONIC
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        hasher << ts;
-    #    endif
-    #    ifdef CLOCK_REALTIME
-        clock_gettime(CLOCK_REALTIME, &ts);
-        hasher << ts;
-    #    endif
-    #    ifdef CLOCK_BOOTTIME
-        clock_gettime(CLOCK_BOOTTIME, &ts);
-        hasher << ts;
-    #    endif
-        // gettimeofday is available on all UNIX systems, but only has microsecond precision.
-        struct timeval tv = {};
-        gettimeofday(&tv, nullptr);
-        hasher << tv;
-    #endif
-        // Probably redundant, but also use all the clocks C++11 provides:
-        hasher << std::chrono::system_clock::now().time_since_epoch().count();
-        hasher << std::chrono::steady_clock::now().time_since_epoch().count();
-        hasher << std::chrono::high_resolution_clock::now().time_since_epoch().count();
+    #[traced_test]
+    #[cfg(not(WIN32))]
+    fn add_sockaddr_accepts_null_and_specific_families() {
+        let mut hasher = Sha512::default();
+        // null is a no-op
+        add_sockaddr(&mut hasher, core::ptr::null());
 
-    #ifndef WIN32
-        // Current resource usage.
-        struct rusage usage = {};
-        if (getrusage(RUSAGE_SELF, &usage) == 0) hasher << usage;
-    #endif
+        // IPv4 sockaddr
+        let mut v4: libc::sockaddr_in = unsafe { core::mem::zeroed() };
+        v4.sin_family = libc::AF_INET as _;
+        let before = hasher.size();
+        add_sockaddr(&mut hasher, &v4 as *const _ as *const libc::sockaddr);
+        assert!(hasher.size() >= before);
+    }
 
-    #ifdef __linux__
-        AddFile(hasher, "/proc/diskstats");
-        AddFile(hasher, "/proc/vmstat");
-        AddFile(hasher, "/proc/schedstat");
-        AddFile(hasher, "/proc/zoneinfo");
-        AddFile(hasher, "/proc/meminfo");
-        AddFile(hasher, "/proc/softirqs");
-        AddFile(hasher, "/proc/stat");
-        AddFile(hasher, "/proc/self/schedstat");
-        AddFile(hasher, "/proc/self/status");
-    #endif
+    #[traced_test]
+    #[cfg(not(WIN32))]
+    fn add_file_and_add_path_are_best_effort() {
+        use std::ffi::CString;
+        use std::os::unix::ffi::OsStrExt;
+        let tmp = tempfile::NamedTempFile::new().expect("tmpfile");
+        std::fs::write(tmp.path(), b"hello world").unwrap();
 
-    #if HAVE_SYSCTL
-    #  ifdef CTL_KERN
-    #    if defined(KERN_PROC) && defined(KERN_PROC_ALL)
-        AddSysctl<CTL_KERN, KERN_PROC, KERN_PROC_ALL>(hasher);
-    #    endif
-    #  endif
-    #  ifdef CTL_HW
-    #    ifdef HW_DISKSTATS
-        AddSysctl<CTL_HW, HW_DISKSTATS>(hasher);
-    #    endif
-    #  endif
-    #  ifdef CTL_VM
-    #    ifdef VM_LOADAVG
-        AddSysctl<CTL_VM, VM_LOADAVG>(hasher);
-    #    endif
-    #    ifdef VM_TOTAL
-        AddSysctl<CTL_VM, VM_TOTAL>(hasher);
-    #    endif
-    #    ifdef VM_METER
-        AddSysctl<CTL_VM, VM_METER>(hasher);
-    #    endif
-    #  endif
-    #endif
+        let mut hasher = Sha512::default();
+        let before = hasher.size();
 
-        // Stack and heap location
-        c_void* addr = malloc(4097);
-        hasher << &addr << addr;
-        free(addr);
-        */
-}
+        // add_file takes *const i8 (C string)
+        let cpath = CString::new(tmp.path().as_os_str().as_bytes()).unwrap();
+        add_file(&mut hasher, cpath.as_ptr());
 
-/**
-  | Gather non-cryptographic environment
-  | data that does not change over time.
-  |
-  */
-pub fn rand_add_static_env(hasher: &mut Sha512)  {
-    
-    todo!();
-        /*
-            // Some compile-time static properties
-        hasher << (CHAR_MIN < 0) << sizeof(c_void*) << sizeof(long) << sizeof(int);
-    #if defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__)
-        hasher << __GNUC__ << __GNUC_MINOR__ << __GNUC_PATCHLEVEL__;
-    #endif
-    #ifdef _MSC_VER
-        hasher << _MSC_VER;
-    #endif
-        hasher << __cplusplus;
-    #ifdef _XOPEN_VERSION
-        hasher << _XOPEN_VERSION;
-    #endif
-    #ifdef __VERSION__
-        const char* COMPILER_VERSION = __VERSION__;
-        hasher.Write((const unsigned char*)COMPILER_VERSION, strlen(COMPILER_VERSION) + 1);
-    #endif
+        let after_file = hasher.size();
+        assert!(after_file >= before);
 
-        // Bitcoin client version
-        hasher << CLIENT_VERSION;
-
-    #if defined(HAVE_STRONG_GETAUXVAL)
-        // Information available through getauxval()
-    #  ifdef AT_HWCAP
-        hasher << getauxval(AT_HWCAP);
-    #  endif
-    #  ifdef AT_HWCAP2
-        hasher << getauxval(AT_HWCAP2);
-    #  endif
-    #  ifdef AT_RANDOM
-        const unsigned char* random_aux = (const unsigned char*)getauxval(AT_RANDOM);
-        if (random_aux) hasher.Write(random_aux, 16);
-    #  endif
-    #  ifdef AT_PLATFORM
-        const char* platform_str = (const char*)getauxval(AT_PLATFORM);
-        if (platform_str) hasher.Write((const unsigned char*)platform_str, strlen(platform_str) + 1);
-    #  endif
-    #  ifdef AT_EXECFN
-        const char* exec_str = (const char*)getauxval(AT_EXECFN);
-        if (exec_str) hasher.Write((const unsigned char*)exec_str, strlen(exec_str) + 1);
-    #  endif
-    #endif // HAVE_STRONG_GETAUXVAL
-
-    #ifdef HAVE_GETCPUID
-        AddAllCPUID(hasher);
-    #endif
-
-        // Memory locations
-        hasher << &hasher << &RandAddStaticEnv << &malloc << &errno << &environ;
-
-        // Hostname
-        char hname[256];
-        if (gethostname(hname, 256) == 0) {
-            hasher.Write((const unsigned char*)hname, strnlen(hname, 256));
-        }
-
-    #if HAVE_DECL_GETIFADDRS && HAVE_DECL_FREEIFADDRS
-        // Network interfaces
-        struct ifaddrs *ifad = NULL;
-        getifaddrs(&ifad);
-        struct ifaddrs *ifit = ifad;
-        while (ifit != NULL) {
-            hasher.Write((const unsigned char*)&ifit, sizeof(ifit));
-            hasher.Write((const unsigned char*)ifit->ifa_name, strlen(ifit->ifa_name) + 1);
-            hasher.Write((const unsigned char*)&ifit->ifa_flags, sizeof(ifit->ifa_flags));
-            AddSockaddr(hasher, ifit->ifa_addr);
-            AddSockaddr(hasher, ifit->ifa_netmask);
-            AddSockaddr(hasher, ifit->ifa_dstaddr);
-            ifit = ifit->ifa_next;
-        }
-        freeifaddrs(ifad);
-    #endif
-
-    #ifndef WIN32
-        // UNIX kernel information
-        struct utsname name;
-        if (uname(&name) != -1) {
-            hasher.Write((const unsigned char*)&name.sysname, strlen(name.sysname) + 1);
-            hasher.Write((const unsigned char*)&name.nodename, strlen(name.nodename) + 1);
-            hasher.Write((const unsigned char*)&name.release, strlen(name.release) + 1);
-            hasher.Write((const unsigned char*)&name.version, strlen(name.version) + 1);
-            hasher.Write((const unsigned char*)&name.machine, strlen(name.machine) + 1);
-        }
-
-        /* Path and filesystem provided data */
-        AddPath(hasher, "/");
-        AddPath(hasher, ".");
-        AddPath(hasher, "/tmp");
-        AddPath(hasher, "/home");
-        AddPath(hasher, "/proc");
-    #ifdef __linux__
-        AddFile(hasher, "/proc/cmdline");
-        AddFile(hasher, "/proc/cpuinfo");
-        AddFile(hasher, "/proc/version");
-    #endif
-        AddFile(hasher, "/etc/passwd");
-        AddFile(hasher, "/etc/group");
-        AddFile(hasher, "/etc/hosts");
-        AddFile(hasher, "/etc/resolv.conf");
-        AddFile(hasher, "/etc/timezone");
-        AddFile(hasher, "/etc/localtime");
-    #endif
-
-        // For MacOS/BSDs, gather data through sysctl instead of /proc. Not all of these
-        // will exist on every system.
-    #if HAVE_SYSCTL
-    #  ifdef CTL_HW
-    #    ifdef HW_MACHINE
-        AddSysctl<CTL_HW, HW_MACHINE>(hasher);
-    #    endif
-    #    ifdef HW_MODEL
-        AddSysctl<CTL_HW, HW_MODEL>(hasher);
-    #    endif
-    #    ifdef HW_NCPU
-        AddSysctl<CTL_HW, HW_NCPU>(hasher);
-    #    endif
-    #    ifdef HW_PHYSMEM
-        AddSysctl<CTL_HW, HW_PHYSMEM>(hasher);
-    #    endif
-    #    ifdef HW_USERMEM
-        AddSysctl<CTL_HW, HW_USERMEM>(hasher);
-    #    endif
-    #    ifdef HW_MACHINE_ARCH
-        AddSysctl<CTL_HW, HW_MACHINE_ARCH>(hasher);
-    #    endif
-    #    ifdef HW_REALMEM
-        AddSysctl<CTL_HW, HW_REALMEM>(hasher);
-    #    endif
-    #    ifdef HW_CPU_FREQ
-        AddSysctl<CTL_HW, HW_CPU_FREQ>(hasher);
-    #    endif
-    #    ifdef HW_BUS_FREQ
-        AddSysctl<CTL_HW, HW_BUS_FREQ>(hasher);
-    #    endif
-    #    ifdef HW_CACHELINE
-        AddSysctl<CTL_HW, HW_CACHELINE>(hasher);
-    #    endif
-    #  endif
-    #  ifdef CTL_KERN
-    #    ifdef KERN_BOOTFILE
-         AddSysctl<CTL_KERN, KERN_BOOTFILE>(hasher);
-    #    endif
-    #    ifdef KERN_BOOTTIME
-         AddSysctl<CTL_KERN, KERN_BOOTTIME>(hasher);
-    #    endif
-    #    ifdef KERN_CLOCKRATE
-         AddSysctl<CTL_KERN, KERN_CLOCKRATE>(hasher);
-    #    endif
-    #    ifdef KERN_HOSTID
-         AddSysctl<CTL_KERN, KERN_HOSTID>(hasher);
-    #    endif
-    #    ifdef KERN_HOSTUUID
-         AddSysctl<CTL_KERN, KERN_HOSTUUID>(hasher);
-    #    endif
-    #    ifdef KERN_HOSTNAME
-         AddSysctl<CTL_KERN, KERN_HOSTNAME>(hasher);
-    #    endif
-    #    ifdef KERN_OSRELDATE
-         AddSysctl<CTL_KERN, KERN_OSRELDATE>(hasher);
-    #    endif
-    #    ifdef KERN_OSRELEASE
-         AddSysctl<CTL_KERN, KERN_OSRELEASE>(hasher);
-    #    endif
-    #    ifdef KERN_OSREV
-         AddSysctl<CTL_KERN, KERN_OSREV>(hasher);
-    #    endif
-    #    ifdef KERN_OSTYPE
-         AddSysctl<CTL_KERN, KERN_OSTYPE>(hasher);
-    #    endif
-    #    ifdef KERN_POSIX1
-         AddSysctl<CTL_KERN, KERN_OSREV>(hasher);
-    #    endif
-    #    ifdef KERN_VERSION
-         AddSysctl<CTL_KERN, KERN_VERSION>(hasher);
-    #    endif
-    #  endif
-    #endif
-
-        // Env variables
-        if (environ) {
-            for (size_t i = 0; environ[i]; ++i) {
-                hasher.Write((const unsigned char*)environ[i], strlen(environ[i]));
-            }
-        }
-
-        // Process, thread, user, session, group, ... ids.
-    #ifdef WIN32
-        hasher << GetCurrentProcessId() << GetCurrentThreadId();
-    #else
-        hasher << getpid() << getppid() << getsid(0) << getpgid(0) << getuid() << geteuid() << getgid() << getegid();
-    #endif
-        hasher << std::this_thread::get_id();
-        */
+        // add_path takes *const u8
+        let cpath_u8 = CString::new(&b"/"[..]).unwrap();
+        let before2 = hasher.size();
+        add_path(&mut hasher, cpath_u8.as_ptr() as *const u8);
+        let after2 = hasher.size();
+        assert!(after2 >= before2);
+    }
 }

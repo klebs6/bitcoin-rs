@@ -9,17 +9,28 @@ impl TxConfirmStats {
         max_bucket: usize,
         mut tx_sum: f64,
     ) -> f64 {
+        // No transactions in this range => no median
+        if tx_sum == 0.0 {
+            return 0.0;
+        }
+
         tx_sum /= 2.0;
         for j in min_bucket..=max_bucket {
-            if self.tx_ct_avg()[j] < tx_sum {
-                tx_sum -= self.tx_ct_avg()[j];
+            let tx_ct = self.tx_ct_avg()[j];
+            if tx_ct < tx_sum {
+                // Consume this bucket and keep searching
+                tx_sum -= tx_ct;
             } else {
-                // we're in the right bucket
-                return self.feerate_avg()[j] / self.tx_ct_avg()[j];
+                // We're in the median-containing bucket; avoid div-by-zero just in case
+                if tx_ct == 0.0 {
+                    continue;
+                }
+                return self.feerate_avg()[j] / tx_ct;
             }
         }
         0.0
     }
+
 }
 
 #[cfg(test)]

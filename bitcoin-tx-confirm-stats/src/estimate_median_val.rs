@@ -72,11 +72,11 @@ impl TxConfirmStats {
 
         if *st.found_answer() && tx_sum != 0.0 {
             median = self.find_median_feerate(min_bucket, max_bucket, tx_sum);
-            st.set_pass_range(&self.buckets(), min_bucket, max_bucket);
+            st.set_pass_range(&self.buckets()[..], min_bucket, max_bucket);
         }
 
         // If we were passing until we ran out of data, record the trailing failing range
-        st.finalize_trailing_failure(&self.buckets());
+        st.finalize_trailing_failure(&self.buckets()[..]);
 
         // (Optional) logging — identical content/ordering to Core
         let passed_within_target_perc = st.pass_bucket().calc_within_target_percentage();

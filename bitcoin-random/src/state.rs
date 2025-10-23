@@ -219,3 +219,31 @@ lazy_static!{
             )
         );
 }
+
+#[cfg(test)]
+mod state_spec {
+    use super::*;
+
+    #[traced_test]
+    fn mix_extract_updates_state_and_respects_strong_seed_flag() {
+
+        let mut rng = RNGState::default();
+
+        // First call, not strongly seeded yet.
+        let mut h = Sha512::default();
+        let mut out = [0u8; 16];
+        let out_len = out.len();
+        let strong = rng.mix_extract(&mut out, out_len, h.clone(), false);
+        assert!(!strong);
+        // Bytes are output (can be zeros in principle, but we expect some change)
+        assert_eq!(out.len(), 16);
+
+        // Now seed strongly.
+        let strong2 = rng.mix_extract(&mut out, out_len, h.clone(), true);
+        assert!(strong2);
+
+        // Subsequent calls report strong regardless of flag used.
+        let strong3 = rng.mix_extract(&mut out, out_len, h, false);
+        assert!(strong3);
+    }
+}

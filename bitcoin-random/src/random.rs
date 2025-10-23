@@ -91,3 +91,23 @@ pub enum RNGLevel {
 lazy_static!{
     pub static ref G_MOCK_DETERMINISTIC_TESTS: AtomicBool = AtomicBool::new(false);
 }
+
+#[cfg(test)]
+mod random_spec {
+    use super::*;
+
+    #[traced_test]
+    fn get_random_duration_is_within_max() {
+        let max = Duration::seconds(10_000); // reasonably large
+        let d = get_random_duration(max);
+        assert!(d >= Duration::ZERO);
+        assert!(d < max);
+    }
+
+    #[traced_test]
+    fn globals_can_be_constructed() {
+        // Accessing these ensures they are constructed.
+        let _ = &*GET_RAND_MICROS;
+        let _ = &*GET_RAND_MILLIS;
+    }
+}

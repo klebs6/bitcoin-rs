@@ -305,10 +305,10 @@ mod tx_confirm_stats_spec {
     fn update_moving_averages_decays_all_components() {
         let buckets = vec![1.0, 2.0];
         let mut s = TxConfirmStats::new(&buckets, &Default::default(), 2, 0.5, 1);
-        s.conf_avg = vec![vec![2.0, 4.0], vec![6.0, 8.0]];
-        s.fail_avg = vec![vec![1.0, 3.0], vec![5.0, 7.0]];
+        s.conf_avg    = vec![vec![2.0, 4.0], vec![6.0, 8.0]];
+        s.fail_avg    = vec![vec![1.0, 3.0], vec![5.0, 7.0]];
         s.feerate_avg = vec![10.0, 20.0];
-        s.tx_ct_avg = vec![4.0, 8.0];
+        s.tx_ct_avg   = vec![4.0, 8.0];
 
         s.update_moving_averages();
 

@@ -2,6 +2,9 @@
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/policy/fees.h]
+//-------------------------------------------[.cpp/bitcoin/src/policy/fees.cpp]
+//-------------------------------------------[.cpp/bitcoin/src/util/fees.h]
+//-------------------------------------------[.cpp/bitcoin/src/util/fees.cpp]
 
 /**
   | Enumeration of reason for returned
@@ -40,28 +43,4 @@ pub fn string_for_fee_reason(reason: FeeReason) -> String {
         FeeReason::FALLBACK       => "Fallback fee",
         FeeReason::REQUIRED       => "Minimum Required Fee",
     }.to_string()
-}
-
-//-------------------------------------------[.cpp/bitcoin/src/policy/fees.cpp]
-//-------------------------------------------[.cpp/bitcoin/src/util/fees.h]
-//-------------------------------------------[.cpp/bitcoin/src/util/fees.cpp]
-pub fn fee_mode_map() -> &'static Vec<(String,FeeEstimateMode)> {
-    
-    todo!();
-        /*
-            static const std::vector<std::pair<std::string, FeeEstimateMode>> FEE_MODES = {
-            {"unset", FeeEstimateMode::UNSET},
-            {"economical", FeeEstimateMode::ECONOMICAL},
-            {"conservative", FeeEstimateMode::CONSERVATIVE},
-        };
-        return FEE_MODES;
-        */
-}
-
-pub fn fee_modes(delimiter: &str) -> String {
-    
-    todo!();
-        /*
-            return Join(FeeModeMap(), delimiter, [&](const std::pair<std::string, FeeEstimateMode>& i) { return i.first; });
-        */
 }

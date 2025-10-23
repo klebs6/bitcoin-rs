@@ -112,3 +112,5 @@ x!{seed_hardware}
 x!{shuffle}
 x!{state}
 x!{strengthen}
+x!{rand_add_dynamic_env}
+x!{rand_add_static_env}

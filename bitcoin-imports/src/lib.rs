@@ -264,6 +264,7 @@ pub use tracing::{trace,info,debug,warn,error,instrument};
 pub use std::fmt::Debug;
 pub use traced_test::traced_test;
 pub use tracing_setup::*;
+pub use disable_macro::disable;
 
 pub use serde_big_array::BigArray;
 

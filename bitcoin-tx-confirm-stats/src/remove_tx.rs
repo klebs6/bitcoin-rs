@@ -101,14 +101,13 @@ mod remove_tx_spec {
         let idx = (entry_height as usize) % bins;
         s.unconf_txs_mut()[idx][b] = 1;
 
-        // not in block; blocks_ago >= scale => periods_ago = blocks_ago/scale
-        // scale = 2 from mk_stats(); choose best=entry+6 => blocks_ago=6 => periods_ago=3
-        s.remove_tx(entry_height, entry_height + 6, b as u32, false);
+        // Use blocks_ago = 4 (< bins=6) to stay in the ring; with scale=2 => periods_ago=2
+        s.remove_tx(entry_height, entry_height + 4, b as u32, false);
 
         assert_eq!(s.unconf_txs()[idx][b], 0);
-        // fail_avg[i][b] incremented for i = 0..min(periods_ago, fail_avg.len())
+        // fail_avg[i][b] incremented for i = 0..periods_ago (i.e., rows 0 and 1)
         assert_eq!(s.fail_avg()[0][b], 1.0);
         assert_eq!(s.fail_avg()[1][b], 1.0);
-        assert_eq!(s.fail_avg()[2][b], 1.0);
+        assert_eq!(s.fail_avg()[2][b], 0.0);
     }
 }

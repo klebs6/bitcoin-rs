@@ -32,7 +32,7 @@ impl TxConfirmStats {
 
                 if cur_pct < success_break_point {
                     if st.is_passing() {
-                        st.on_first_failure(&self.buckets());
+                        st.on_first_failure(&self.buckets()[..]);
                     }
                     continue;
                 } else {

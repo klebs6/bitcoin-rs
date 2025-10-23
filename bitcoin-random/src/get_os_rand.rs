@@ -159,3 +159,22 @@ pub fn get_os_rand(ent32: *mut u8)  {
 
     get_dev_urandom(ent32);
 }
+
+#[cfg(test)]
+mod get_os_rand_spec {
+    use super::*;
+
+    #[traced_test]
+    #[cfg(not(windows))]
+    fn get_os_rand_produces_32_bytes_and_varies() {
+        let mut a = [0u8; NUM_OS_RANDOM_BYTES as usize];
+        let mut b = [0u8; NUM_OS_RANDOM_BYTES as usize];
+
+        get_os_rand(a.as_mut_ptr());
+        get_os_rand(b.as_mut_ptr());
+
+        assert_eq!(a.len(), 32);
+        assert_ne!(a, [0u8; 32], "first OS rand draw was all zeros");
+        assert_ne!(a, b, "two OS rand draws were identical (extremely unlikely)");
+    }
+}

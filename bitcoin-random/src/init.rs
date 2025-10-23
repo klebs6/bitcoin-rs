@@ -47,3 +47,15 @@ pub fn rand_add_event(event_info: u32)  {
     
     G_RNG.lock().add_event(event_info);
 }
+
+#[cfg(test)]
+mod init_spec {
+    use super::*;
+
+    #[traced_test]
+    fn random_init_and_periodic_and_event_succeed() {
+        random_init();           // triggers lazy init and logging
+        rand_add_periodic();     // periodic seeding is safe
+        rand_add_event(0xDEADBEEF);
+    }
+}

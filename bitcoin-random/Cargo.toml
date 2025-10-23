@@ -1,3 +1,12 @@
+[dependencies]
+tracing.workspace        = true
+getset.workspace         = true
+derive_builder.workspace = true
+disable_macro.workspace  = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"

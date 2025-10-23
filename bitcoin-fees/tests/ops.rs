@@ -1,34 +1,29 @@
 // ---------------- [ File: bitcoin-fees/tests/ops.rs ]
-#[test] fn binary_operator_test() {
-    todo!();
-    /*
-    
-        CFeeRate a, b;
-        a = CFeeRate(1);
-        b = CFeeRate(2);
-        BOOST_CHECK(a < b);
-        BOOST_CHECK(b > a);
-        BOOST_CHECK(a == a);
-        BOOST_CHECK(a <= b);
-        BOOST_CHECK(a <= a);
-        BOOST_CHECK(b >= a);
-        BOOST_CHECK(b >= b);
-        // a should be 0.00000002 BTC/kvB now
-        a += a;
-        BOOST_CHECK(a == b);
+use bitcoin_fees::*;
+use bitcoin_imports::*;
 
-    */
+#[traced_test]
+fn binary_operator_test() {
+    let mut a = FeeRate::new(1);
+    let b = FeeRate::new(2);
+    assert!(a < b);
+    assert!(b > a);
+    assert_eq!(a, a);
+    assert!(a <= b);
+    assert!(a <= a);
+    assert!(b >= a);
+    assert!(b >= b);
+
+    // a should be 0.00000002 BTC/kvB now
+    let a_copy = a;
+    a += &a_copy;
+    assert_eq!(a, b);
 }
 
-#[test] fn to_string_test() {
-    todo!();
-    /*
-    
-        CFeeRate feeRate;
-        feeRate = CFeeRate(1);
-        BOOST_CHECK_EQUAL(feeRate.ToString(), "0.00000001 BTC/kvB");
-        BOOST_CHECK_EQUAL(feeRate.ToString(FeeEstimateMode::BTC_KVB), "0.00000001 BTC/kvB");
-        BOOST_CHECK_EQUAL(feeRate.ToString(FeeEstimateMode::SAT_VB), "0.001 sat/vB");
-
-    */
+#[traced_test]
+fn to_string_test() {
+    let fee_rate = FeeRate::new(1);
+    assert_eq!(fee_rate.to_string(None), "0.00000001 BTC/kvB");
+    assert_eq!(fee_rate.to_string(Some(&FeeEstimateMode::BTC_KVB)), "0.00000001 BTC/kvB");
+    assert_eq!(fee_rate.to_string(Some(&FeeEstimateMode::SAT_VB)),  "0.001 sat/vB");
 }

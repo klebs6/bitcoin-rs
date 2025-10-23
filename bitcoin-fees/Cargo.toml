@@ -29,7 +29,9 @@ getset.workspace            = true
 derive_builder.workspace    = true
 lazy_static.workspace       = true
 static_assertions.workspace = true
+float-ord.workspace = true
 export-magic.workspace      = true
+bitcoin-tx-confirm-stats = { path = "../bitcoin-tx-confirm-stats" }
 
 [package]
 authors = ["klebs <none>"]

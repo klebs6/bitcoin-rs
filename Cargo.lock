@@ -1186,8 +1186,10 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-random",
+ "bitcoin-tx-confirm-stats",
  "derive_builder",
  "export-magic",
+ "float-ord",
  "getset",
  "lazy_static",
  "serde",
@@ -1384,6 +1386,7 @@ dependencies = [
  "delegate 0.7.0",
  "derivative",
  "derive_builder",
+ "disable_macro",
  "errno 0.2.8",
  "export-magic",
  "float-ord",
@@ -2124,6 +2127,11 @@ dependencies = [
  "bitcoin-support",
  "bitcoin-time",
  "bitcoin-u256",
+ "derive_builder",
+ "disable_macro",
+ "getset",
+ "tempfile",
+ "tracing",
 ]
 
 [[package]]

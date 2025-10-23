@@ -59,3 +59,15 @@ pub fn report_hardware_rand()  {
 
 #[cfg(not(have_getcpuid))]
 pub fn report_hardware_rand()  { }
+
+#[cfg(test)]
+mod hardware_rand_spec {
+    use super::*;
+
+    #[traced_test]
+    fn init_and_report_are_safe_to_call() {
+        // Just make sure these don't panic under any cfg.
+        init_hardware_rand();
+        report_hardware_rand();
+    }
+}
