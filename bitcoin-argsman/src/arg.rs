@@ -29,3 +29,17 @@ impl ArgsManagerArg {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn args_manager_arg_new_sets_fields() {
+        let a = ArgsManagerArg::new("=<x>", "help here", ArgsManagerFlags::ALLOW_INT | ArgsManagerFlags::SENSITIVE);
+        assert_eq!(a.help_param, "=<x>");
+        assert_eq!(a.help_text, "help here");
+        assert_eq!(a.flags, (ArgsManagerFlags::ALLOW_INT | ArgsManagerFlags::SENSITIVE).bits());
+    }
+}
+

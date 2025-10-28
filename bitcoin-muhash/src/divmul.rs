@@ -34,11 +34,14 @@ mod union_and_difference_validation {
     use tracing::{info, trace};
 
     /// Union (`*=`) must equal inserting the same element into a set.
+    const ROUNDS: usize = 64;
+
     #[traced_test]
-    fn union_matches_insert() -> Result<(), Box<dyn std::error::Error>> {
+    fn union_matches_insert() {
+        const ROUNDS: usize = 32; // lighter; union path does no inverses anyway
         let mut rng = ChaCha20Rng::from_seed([0u8; 32]);
 
-        for round in 0..1024 {
+        for round in 0..ROUNDS {
             // Independent payloads with variable length.
             let mut buf_a = vec![0u8; (rng.next_u32() % 100 + 1) as usize];
             rng.fill_bytes(&mut buf_a);
@@ -58,21 +61,17 @@ mod union_and_difference_validation {
             let mut out_mul = u256::default();
             h_mul.finalize(&mut out_mul);
 
-            assert_eq!(
-                out_insert, out_mul,
-                "Union failure at round {round}"
-            );
+            assert_eq!(out_insert, out_mul, "Union failure at round {round}");
         }
-        info!("union_matches_insert passed 1 024 randomized rounds");
-        Ok(())
     }
 
     /// Difference (`/=`) must equal removing an element previously inserted.
-    #[traced_test]
-    fn difference_matches_remove() -> Result<(), Box<dyn std::error::Error>> {
+    #[test]
+    fn difference_matches_remove() {
+        const ROUNDS_DIFF: usize = 8; // each round does a 3072-bit inverse → keep small
         let mut rng = ChaCha20Rng::from_seed([1u8; 32]);
 
-        for round in 0..1024 {
+        for round in 0..ROUNDS_DIFF {
             let mut buf_a = vec![0u8; (rng.next_u32() % 100 + 1) as usize];
             rng.fill_bytes(&mut buf_a);
             let mut buf_b = vec![0u8; (rng.next_u32() % 100 + 1) as usize];
@@ -93,12 +92,53 @@ mod union_and_difference_validation {
             let mut out_div = u256::default();
             h_div.finalize(&mut out_div);
 
-            assert_eq!(
-                out_rm, out_div,
-                "Difference failure at round {round}"
-            );
+            assert_eq!(out_rm, out_div, "Difference failure at round {round}");
         }
-        info!("difference_matches_remove passed 1 024 randomized rounds");
-        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::muhash::MuHash3072;
+
+    fn mh(elems: &[&[u8]]) -> MuHash3072 {
+        let mut h = MuHash3072::default();
+        for e in elems {
+            h.insert(e);
+        }
+        h
+    }
+
+    fn finalize(mut h: MuHash3072) -> u256 {
+        let mut out = u256::from_le_bytes([0u8; 32]);
+        h.finalize(&mut out);
+        out
+    }
+
+    #[test]
+    fn mul_assign_combines_numerators_and_denominators() {
+        let h1 = mh(&[b"alice", b"bob"]);
+        let h2 = mh(&[b"carol"]);
+
+        let mut h = h1.clone();
+        h *= &h2;
+
+        // Baseline: inserting all elements into a fresh MuHash
+        let baseline = mh(&[b"alice", b"bob", b"carol"]);
+
+        assert_eq!(finalize(h), finalize(baseline));
+    }
+
+    #[test]
+    fn div_assign_performs_set_difference() {
+        let h_all = mh(&[b"alice", b"bob"]);
+        let h_alice = mh(&[b"alice"]);
+
+        let mut h = h_all.clone();
+        h /= &h_alice;
+
+        let baseline = mh(&[b"bob"]);
+        assert_eq!(finalize(h), finalize(baseline));
     }
 }

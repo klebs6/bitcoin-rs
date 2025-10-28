@@ -1,68 +1,104 @@
 // ---------------- [ File: bitcoin-base58/src/decode_check.rs ]
 crate::ix!();
 
-pub fn decode_base_58check_raw(
-        psz:         *const u8,
-        vch_ret:     &mut Vec<u8>,
-        max_ret_len: i32) -> bool {
-    
-    let b = match max_ret_len > i32::MAX - 4
-    {
-        true  => i32::MAX,
-        false => max_ret_len + 4,
-    };
+/// Return the **first 4 bytes (big‑endian)** of SHA256(SHA256(`payload`)).
+#[inline]
+pub fn checksum4_sha256d(payload: &[u8]) -> [u8; 4] {
+    trace!(len = payload.len(), "computing Base58Check checksum (SHA256d, big-endian)");
+    let h1: u256 = hash1(payload);
+    let mut h1_be = [0u8; 32];
+    h1_be.copy_from_slice(h1.as_ref());
+    h1_be.reverse(); // canonical big‑endian ordering
 
-    if !unsafe { decode_base58_raw(psz, vch_ret, b) } 
-        || vch_ret.len() < 4
-    {
-        vch_ret.clear();
-        return false;
-    }
+    let h2: u256 = hash1(&h1_be);
+    let mut h2_be = [0u8; 32];
+    h2_be.copy_from_slice(h2.as_ref());
+    h2_be.reverse(); // canonical big‑endian ordering
 
-    // re-calculate the checksum, ensure it
-    // matches the included 4-byte checksum
-    let hash: u256 
-        = hash1(&vch_ret[0..vch_ret.len() - 4]);
+    let out = [h2_be[0], h2_be[1], h2_be[2], h2_be[3]];
+    debug!(checksum = %hex::encode(out), "computed checksum (first 4 bytes)");
+    out
 
-    if unsafe { 
-        libc::memcmp(
-            &hash as *const _ as *const libc::c_void, 
-            &vch_ret[vch_ret.len() - 4] as *const _ as *const libc::c_void, 
-            4) 
-    } != 0 
-    {
-        vch_ret.clear();
-        return false;
-    }
-
-
-    vch_ret.resize(vch_ret.len() - 4, 0);
-    return true
 }
 
-/// Decode a base58-encoded string (str) that includes a checksum into a byte
-/// vector (vchRet), return true if decoding is successful
-/// 
-pub fn decode_base_58check(input: &str, vch_ret: &mut Vec<u8>, max_ret_len: usize) -> bool {
-    if max_ret_len > usize::MAX - 4 {
+/// Decode a base58-encoded string (psz) that includes a checksum into a byte
+/// vector (vchRet). Return `true` if decoding is successful.
+pub unsafe fn decode_base_58check_raw(
+    mut psz:     *const u8,
+    vch_ret:     &mut Vec<u8>,
+    max_ret_len: i32
+) -> bool {
+    let budget = if max_ret_len > i32::MAX - 4 { i32::MAX } else { max_ret_len + 4 };
+    debug!(max_ret_len, budget, "decode_base_58check_raw: starting");
+
+    if !decode_base58_raw(psz, vch_ret, budget) {
+        warn!("decode_base_58check_raw: underlying Base‑58 decode failed");
+        vch_ret.clear();
         return false;
     }
-
-    if !decode_base58(input, vch_ret, max_ret_len + 4) || vch_ret.len() < 4 {
+    if vch_ret.len() < 4 {
+        warn!(decoded_len = vch_ret.len(), "decode_base_58check_raw: insufficient length for checksum");
         vch_ret.clear();
         return false;
     }
 
     let payload_len = vch_ret.len() - 4;
-    let hash = hash1(&vch_ret[0..payload_len]);
+    trace!(payload_len, total = vch_ret.len(), "decode_base_58check_raw: verifying checksum");
+    let expected = checksum4_sha256d(&vch_ret[..payload_len]);
 
-    if &hash.as_ref()[..4] != &vch_ret[payload_len..] {
+    if vch_ret[payload_len..] != expected {
+        error!(
+            found = %hex::encode(&vch_ret[payload_len..]),
+            expected = %hex::encode(expected),
+            "decode_base_58check_raw: checksum mismatch"
+        );
         vch_ret.clear();
         return false;
     }
 
-    vch_ret.resize(payload_len, 0);
+    vch_ret.truncate(payload_len);
+    info!(payload_len, "decode_base_58check_raw: success");
     true
+
+}
+
+/// Decode a base58-encoded string (str) that includes a checksum into a byte
+/// vector (vchRet). Return `true` if decoding is successful.
+pub fn decode_base_58check(input: &str, vch_ret: &mut Vec<u8>, max_ret_len: usize) -> bool {
+    debug!(input_len = input.len(), max_ret_len, "decode_base_58check: starting");
+    if max_ret_len > usize::MAX - 4 {
+        warn!("decode_base_58check: max_ret_len overflow guard triggered");
+        return false;
+    }
+    if !decode_base58(input, vch_ret, max_ret_len + 4) {
+        warn!("decode_base_58check: underlying Base‑58 decode failed");
+        vch_ret.clear();
+        return false;
+    }
+    if vch_ret.len() < 4 {
+        warn!(decoded_len = vch_ret.len(), "decode_base_58check: insufficient length for checksum");
+        vch_ret.clear();
+        return false;
+    }
+
+    let payload_len = vch_ret.len() - 4;
+    trace!(payload_len, total = vch_ret.len(), "decode_base_58check: verifying checksum");
+    let expected = checksum4_sha256d(&vch_ret[..payload_len]);
+
+    if vch_ret[payload_len..] != expected {
+        error!(
+            found = %hex::encode(&vch_ret[payload_len..]),
+            expected = %hex::encode(expected),
+            "decode_base_58check: checksum mismatch"
+        );
+        vch_ret.clear();
+        return false;
+    }
+
+    vch_ret.truncate(payload_len);
+    info!(payload_len, "decode_base_58check: success");
+    true
+
 }
 
 #[cfg(test)]

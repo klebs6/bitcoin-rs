@@ -43,3 +43,22 @@ bitflags!{
         const COMMAND   = 0x800;
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn allow_any_is_union_of_components() {
+        assert_eq!(
+            ArgsManagerFlags::ALLOW_ANY.bits(),
+            (ArgsManagerFlags::ALLOW_BOOL | ArgsManagerFlags::ALLOW_INT | ArgsManagerFlags::ALLOW_STRING).bits()
+        );
+    }
+
+    #[test]
+    fn flags_independent_bits() {
+        assert_ne!(ArgsManagerFlags::NETWORK_ONLY.bits() & ArgsManagerFlags::SENSITIVE.bits(), 0);
+        assert_ne!(ArgsManagerFlags::ALLOW_INT.bits(), 0);
+    }
+}

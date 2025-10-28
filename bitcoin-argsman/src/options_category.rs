@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoin-argsman/src/options_category.rs ]
 crate::ix!();
 
-#[derive(PartialEq,Eq,PartialOrd,Ord,Hash)]
+#[derive(Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]
 pub enum OptionsCategory {
     OPTIONS,
     CONNECTION,
@@ -23,4 +23,22 @@ pub enum OptionsCategory {
       |
       */
     HIDDEN, 
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn categories_are_orderable() {
+        // Just make sure Ord/Eq compile and behave deterministically
+        let mut v = vec![
+            OptionsCategory::RPC,
+            OptionsCategory::OPTIONS,
+            OptionsCategory::CHAINPARAMS,
+        ];
+        v.sort();
+        assert_eq!(v[0], OptionsCategory::OPTIONS);
+        assert_eq!(v[1], OptionsCategory::CHAINPARAMS);
+    }
 }

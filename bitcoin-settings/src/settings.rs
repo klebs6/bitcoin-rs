@@ -9,7 +9,7 @@ crate::ix!();
   */
 #[derive(Builder,Getters,MutGetters,Default)]
 #[builder(setter(into))]
-#[getset(get="pub")]
+#[getset(get="pub",get_mut="pub")]
 pub struct Settings {
 
     /**

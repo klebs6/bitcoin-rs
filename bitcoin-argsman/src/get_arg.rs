@@ -130,3 +130,47 @@ impl ArgsManagerInner {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    fn inner_with_options_map() -> ArgsManagerInner {
+        let mut inner = ArgsManagerInner::default();
+        inner.available_args.insert(OptionsCategory::OPTIONS, HashMap::new());
+        inner
+    }
+
+    #[test]
+    fn get_arg_int_and_bool_from_forced_settings() {
+        let mut inner = inner_with_options_map();
+
+        // Force-set a string numeric value
+        inner.force_set_arg("-blocks", "42");
+        assert_eq!(inner.get_int_arg("-blocks", 0), 42);
+        assert_eq!(inner.get_arg("-blocks", "x"), "42");
+
+        // Boolean handling: empty string => true (matches interpret_bool)
+        inner.force_set_arg("-fast", "");
+        assert!(inner.get_bool_arg("-fast", false));
+        inner.force_set_arg("-fast", "0");
+        assert!(!inner.get_bool_arg("-fast", true));
+        inner.force_set_arg("-fast", "1");
+        assert!(inner.get_bool_arg("-fast", false));
+    }
+
+    #[test]
+    fn get_arg_flags_sees_inserted_args() {
+        let mut inner = inner_with_options_map();
+        // Register an option
+        let d = ArgDescriptor {
+            name:     "-try=<n>",
+            help:     "count".into(),
+            flags:    ArgsManagerFlags::ALLOW_INT,
+            category: OptionsCategory::OPTIONS
+        };
+        inner.add_arg(&d);
+        assert_eq!(inner.get_arg_flags("-try"), Some(ArgsManagerFlags::ALLOW_INT.bits()));
+    }
+}

@@ -80,3 +80,19 @@ impl ArgsManagerInner {
         )
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+
+    #[test]
+    fn get_settings_path_respects_nosettings() {
+        let mut inner = ArgsManagerInner::default();
+        // Simulate -nosettings by setting -settings=false
+        inner.force_set_arg("-settings", "0");
+        let mut out: Option<Box<Path>> = None;
+        let ok = inner.get_settings_path(out.as_mut(), None);
+        assert!(!ok, "should return false when -nosettings is in effect");
+    }
+}

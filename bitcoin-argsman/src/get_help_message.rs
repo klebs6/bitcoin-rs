@@ -278,3 +278,63 @@ impl ArgsManagerInner {
         usage
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    fn inner_with_two_options(show_debug_only: bool) -> ArgsManagerInner {
+        let mut inner = ArgsManagerInner::default();
+        inner.available_args.insert(OptionsCategory::OPTIONS, HashMap::new());
+
+        // Option visible always
+        let a = ArgDescriptor {
+            name:     "-alpha=<n>",
+            help:     "Alpha opt".into(),
+            flags:    ArgsManagerFlags::ALLOW_INT,
+            category: OptionsCategory::OPTIONS,
+        };
+        inner.add_arg(&a);
+
+        // Debug-only
+        let b = ArgDescriptor {
+            name:     "-bravo",
+            help:     "Bravo opt".into(),
+            flags:    ArgsManagerFlags::ALLOW_ANY | ArgsManagerFlags::DEBUG_ONLY,
+            category: OptionsCategory::OPTIONS,
+        };
+        inner.add_arg(&b);
+
+        if show_debug_only {
+            inner.force_set_arg("-help-debug", "1");
+        }
+        inner
+    }
+
+    #[test]
+    fn help_message_hides_debug_by_default() {
+        let inner = inner_with_two_options(false);
+        let s = inner.get_help_message();
+        assert!(s.contains("-alpha=<n>"));
+        assert!(!s.contains("-bravo"), "debug-only should be hidden");
+    }
+
+    #[test]
+    fn help_message_shows_debug_when_requested() {
+        let inner = inner_with_two_options(true);
+        let s = inner.get_help_message();
+        assert!(s.contains("-alpha=<n>"));
+        assert!(s.contains("-bravo"));
+    }
+
+    #[test]
+    fn formatting_helpers_behave() {
+        let group = help_message_group("Group:");
+        assert!(group.starts_with("Group:"));
+
+        let opt = help_message_opt("-x", "Some message goes here");
+        assert!(opt.contains("-x"));
+        assert!(opt.contains("Some message goes here"));
+    }
+}

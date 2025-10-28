@@ -150,3 +150,38 @@ pub fn select_base_params(chain: &str)  {
 
     inner.select_config_network(chain);
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::{Mutex, OnceLock};
+
+    static M: OnceLock<Mutex<()>> = OnceLock::new();
+    fn lock() -> std::sync::MutexGuard<'static,()> { M.get_or_init(|| Mutex::new(())).lock().unwrap() }
+
+    #[test]
+    fn create_base_params_returns_expected_ports_and_dirs() {
+        let _g = lock();
+        let main = create_base_chain_params(base_chain_params::MAIN).unwrap();
+        assert_eq!(main.rpc_port(), 8332);
+        assert_eq!(main.onion_service_target_port(), 8334);
+        assert_eq!(main.data_dir(), "");
+
+        let test = create_base_chain_params(base_chain_params::TESTNET).unwrap();
+        assert_eq!(test.rpc_port(), 18332);
+        assert_eq!(test.data_dir(), "testnet3");
+    }
+
+    #[test]
+    fn select_base_params_sets_globals_and_network() {
+        let _g = lock();
+        select_base_params(base_chain_params::REGTEST);
+        assert_eq!(base_params().data_dir(), "regtest");
+
+        // Also ensure ArgsManagerInner.network is set by select_base_params
+        let am = G_ARGS.lock();
+        let inner = am.cs_args.lock();
+        assert_eq!(inner.network.as_deref(), Some(base_chain_params::REGTEST));
+    }
+}
+

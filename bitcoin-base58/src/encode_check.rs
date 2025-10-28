@@ -1,23 +1,20 @@
 // ---------------- [ File: bitcoin-base58/src/encode_check.rs ]
 crate::ix!();
 
-/**
-  | Encode a byte span into a base58-encoded
-  | string, including checksum
-  |
-  */
+/// Encode a byte span into a base58-encoded string, **including checksum** (double SHA‑256).
 pub fn encode_base_58check(input: &[u8]) -> String {
-    
-    // add 4-byte hash check to the end
-    let mut vch: Vec::<u8> = input.to_vec();
+    trace!(payload_len = input.len(), "encode_base_58check: starting");
+    let mut vch: Vec<u8> = Vec::with_capacity(input.len() + 4);
+    vch.extend_from_slice(input);
 
-    let hash: u256 = hash1(&vch);
+    // Canonical checksum: first 4 **big‑endian** bytes of SHA256(SHA256(payload))
+    let chk = checksum4_sha256d(input);
+    vch.extend_from_slice(&chk);
 
-    for byte in &hash.blob().data()[0..4] {
-        vch.push(*byte);
-    }
+    let out = encode_base58(&vch);
+    info!(encoded_len = out.len(), "encode_base_58check: success");
+    out
 
-    encode_base58(&vch)
 }
 
 #[cfg(test)]

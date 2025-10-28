@@ -49,3 +49,26 @@ impl ArgsManager {
         unsuitables
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    #[test]
+    fn unsuitable_empty_when_no_network_set_or_mainnet() {
+        let mut am = ArgsManager::default();
+
+        // No network selected yet
+        let set = am.get_unsuitable_section_only_args();
+        assert!(set.is_empty());
+
+        // Now select mainnet
+        select_base_params(base_chain_params::MAIN);
+        let set = am.get_unsuitable_section_only_args();
+        assert!(set.is_empty());
+    }
+
+    // A fully realistic test here would need the concrete bitcoin_settings::only_has_default_section_setting
+    // behavior. We limit ourselves to asserting the MAIN/None short-circuits for isolation.
+}

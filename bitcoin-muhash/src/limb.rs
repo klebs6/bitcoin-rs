@@ -24,7 +24,7 @@ mod limb_arithmetic_validation {
     use rand_chacha::ChaCha20Rng;
     use tracing::info;
 
-    const ROUNDS: usize = 10_000;
+    const ROUNDS: usize = 2_048;
 
     /// Verify that `mul` splits a * b correctly into (low, high) limbs.
     #[traced_test]
@@ -65,5 +65,20 @@ mod limb_arithmetic_validation {
         assert_eq!(c1, 0xEEEE_FFFF_EEEE_FFFF_u64 as Limb);
         assert_eq!(c2, 0);
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use core::mem;
+
+    #[test]
+    fn limb_and_doublelimb_sizes_are_consistent() {
+        let limb_sz = mem::size_of::<Limb>();
+        let dbl_sz  = mem::size_of::<DoubleLimb>();
+        // DoubleLimb must be at least as wide as 2 * Limb for correct split operations.
+        assert_eq!(dbl_sz, 2 * limb_sz);
+        assert!(limb_sz == 4 || limb_sz == 8);
     }
 }

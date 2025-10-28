@@ -44,3 +44,59 @@ impl Num3072 {
         out
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::muhash::MuHash3072;
+
+    fn num(b: &[u8]) -> Num3072 { MuHash3072::to_num3072(b) }
+
+    #[test]
+    fn inverse_of_one_is_one() {
+        let one = Num3072::default();
+        let inv = one.get_inverse();
+        assert!(inv.is_one());
+    }
+
+    #[test]
+    fn inverse_correctness_x_times_inv_is_one() {
+        let candidates = [b"alice".as_ref(), b"bob".as_ref(), b"carol".as_ref()];
+        for m in candidates {
+            let x = num(m);
+            // Avoid the (extremely unlikely) zero element—if it happened, pick another.
+            if x.limbs().iter().any(|&v| v != 0) {
+                let mut prod = x;
+                let inv = prod.get_inverse();
+                prod.multiply(&inv);
+
+                if prod.is_overflow() {
+                    prod.full_reduce();
+                }
+
+                assert!(prod.is_one(), "x * inv(x) must be 1");
+            }
+        }
+    }
+
+    #[test]
+    fn inverse_is_two_sided() {
+        let x = num(b"dave");
+
+        let inv = x.get_inverse();
+
+        let mut left = inv;
+        left.multiply(&x);
+
+        let mut right = x;
+        right.multiply(&inv);
+
+        if left.is_overflow() {
+            left.full_reduce();
+        }
+        if right.is_overflow() {
+            right.full_reduce();
+        }
+        assert!(left.is_one() && right.is_one());
+    }
+}

@@ -535,6 +535,7 @@ dependencies = [
  "bitcoin-settings",
  "bitcoin-string",
  "bitcoin-univalue",
+ "tempfile",
  "thiserror 1.0.69",
 ]
 
@@ -591,6 +592,7 @@ dependencies = [
  "bitcoin-imports",
  "bitcoin-string",
  "bitcoin-u256",
+ "hex",
  "lazy_static",
  "libc",
  "nom 5.1.3",

@@ -38,3 +38,22 @@ impl ArgsManagerInner {
             .collect()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn unrecognized_sections_filtered() {
+        let mut inner = ArgsManagerInner::default();
+        inner.config_sections.push_back(SectionInfo::new("foo", "conf", 1));
+        inner.config_sections.push_back(SectionInfo::new("main", "conf", 2));
+        inner.config_sections.push_back(SectionInfo::new("bar", "conf", 3));
+
+        let list = inner.get_unrecognized_sections();
+        let names: Vec<_> = list.into_iter().map(|s| s.name).collect();
+        assert!(names.contains(&"foo".to_string()));
+        assert!(names.contains(&"bar".to_string()));
+        assert!(!names.contains(&"main".to_string()));
+    }
+}

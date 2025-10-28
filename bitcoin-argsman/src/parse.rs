@@ -12,7 +12,7 @@ impl ArgsManagerInner {
 
         //LOCK(cs_args);
         
-        self.settings.command_line_options.clear();
+        self.settings.command_line_options_mut().clear();
 
         for mut i in 1..argc {
 
@@ -40,11 +40,10 @@ impl ArgsManagerInner {
 
             let mut val = String::default();
 
-            if let Some(is_index) = key.find('=') {
-
-                val = key[is_index + 1..].to_string();
-
-                key.remove(is_index);
+            if let Some(eq_index) = key.find('=') {
+                // Split into key and value (drop the '=')
+                val = key[eq_index + 1..].to_string();
+                key.truncate(eq_index);
             }
 
             #[cfg(WIN32)]
@@ -118,7 +117,7 @@ impl ArgsManagerInner {
             }
 
             self.settings
-                .command_line_options
+                .command_line_options_mut()
                 .get_mut(&key)
                 .unwrap()
                 .push(value);
@@ -126,7 +125,7 @@ impl ArgsManagerInner {
 
         // we do not allow -includeconf from
         // command line, only -noincludeconf
-        let includes = self.settings.command_line_options.get( "includeconf");
+        let includes = self.settings.command_line_options().get( "includeconf");
 
         if includes.is_some() {
 
@@ -146,5 +145,43 @@ impl ArgsManagerInner {
         }
 
         true
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    fn inner_with_known_option() -> ArgsManagerInner {
+        let mut inner = ArgsManagerInner::default();
+        inner.available_args.insert(OptionsCategory::OPTIONS, HashMap::<String,ArgsManagerArg>::new());
+        let d = ArgDescriptor {
+            name:     "-foo=<n>",
+            help:     "an int".into(),
+            flags:    ArgsManagerFlags::ALLOW_INT,
+            category: OptionsCategory::OPTIONS,
+        };
+        inner.add_arg(&d);
+        inner
+    }
+
+    #[test]
+    fn parse_unknown_option_is_error() {
+        let mut inner = ArgsManagerInner::default();
+        let argv = vec!["prog".into(), "-unknown=1".into()];
+        let mut err = String::new();
+        assert!(!inner.parse_parameters(&argv, &mut err));
+        assert!(err.contains("Invalid parameter"));
+    }
+
+    #[test]
+    fn parse_valid_option_with_equals_succeeds() {
+        let mut inner = inner_with_known_option();
+        let argv = vec!["prog".into(), "-foo=2".into()];
+        let mut err = String::new();
+        // This will work after the tiny '=' split fix in parse.rs
+        let ok = inner.parse_parameters(&argv, &mut err);
+        assert!(ok, "err: {}", err);
     }
 }

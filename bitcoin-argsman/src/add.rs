@@ -64,7 +64,9 @@ impl ArgsManagerInner {
         let ret = arg_map.insert(
             arg_name.clone(), 
             ArgsManagerArg::new(
-                &name[eq_index..name.len() - eq_index].to_string(),
+                // Help parameter (e.g. "=<chain>") should be the suffix starting at '='
+                // or empty if there is no '='.
+                &(if eq_index < name.len() { name[eq_index..].to_string() } else { "".to_string() }),
                 help,
                 *flags
             )
@@ -125,5 +127,93 @@ impl ArgsManagerInner {
         self.add_arg(&ARG_STDIN);
         self.add_arg(&ARG_STDINRPCPASS);
         self.add_arg(&ARG_STDINWALLETPASSPHRASE);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+    use std::sync::{Mutex, OnceLock};
+
+    static M: OnceLock<Mutex<()>> = OnceLock::new();
+    fn lock() -> std::sync::MutexGuard<'static,()> { M.get_or_init(|| Mutex::new(())).lock().unwrap() }
+
+    fn empty_inner() -> ArgsManagerInner {
+        let mut inner = ArgsManagerInner::default();
+        // Pre-populate categories we’ll use
+        for cat in [
+            OptionsCategory::OPTIONS,
+            OptionsCategory::COMMANDS,
+            OptionsCategory::REGISTER_COMMANDS,
+            OptionsCategory::CHAINPARAMS,
+            OptionsCategory::HIDDEN,
+        ] {
+            inner.available_args.insert(cat, HashMap::<String,ArgsManagerArg>::new());
+        }
+        inner
+    }
+
+    #[test]
+    fn add_command_works_and_rejects_dupes() {
+        let _g = lock();
+        let mut inner = empty_inner();
+        // Accept-any should be turned off after first add_command
+        assert!(inner.accept_any_command, "default should be true");
+        inner.add_command("delin", "Delete input");
+        assert!(!inner.accept_any_command);
+
+        // Duplicate should assert
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            inner.add_command("delin", "Duplicate");
+        }));
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn add_arg_splits_help_param_and_marks_network_only() {
+        let _g = lock();
+        let mut inner = empty_inner();
+
+        let d = ArgDescriptor {
+            name:     "-foo=<bar>",
+            help:     "help text".into(),
+            flags:    ArgsManagerFlags::ALLOW_ANY | ArgsManagerFlags::NETWORK_ONLY,
+            category: OptionsCategory::OPTIONS,
+        };
+        inner.add_arg(&d);
+
+        let m = inner.available_args.get(&OptionsCategory::OPTIONS).unwrap();
+        let a = m.get("-foo").expect("arg inserted");
+        assert_eq!(a.help_param, "=<bar>");
+        assert_eq!(a.help_text, "help text");
+        assert!(inner.network_only_args.contains("-foo"));
+    }
+
+    #[test]
+    fn add_hidden_args_inserts_as_hidden() {
+        let _g = lock();
+        let mut inner = empty_inner();
+        inner.add_hidden_args(&vec!["-h", "-help"]);
+        let m = inner.available_args.get(&OptionsCategory::HIDDEN).unwrap();
+        assert!(m.contains_key("-h"));
+        assert!(m.contains_key("-help"));
+    }
+
+    #[test]
+    fn setup_cli_args_registers_core_options() {
+        let _g = lock();
+        let mut inner = empty_inner();
+        inner.setup_cli_args();
+        let opts = inner.available_args.get(&OptionsCategory::OPTIONS).unwrap();
+        for k in ["-version", "-conf", "-datadir", "-generate", "-getinfo", "-netinfo", "-stdin"] {
+            assert!(opts.contains_key(k), "expected option {}", k);
+        }
+        let chain = inner.available_args.get(&OptionsCategory::CHAINPARAMS).unwrap();
+        for k in ["-chain", "-regtest", "-testnet", "-signet"] {
+            // "-chain" stored internally as "-chain" even if descriptor contains "=<chain>"
+            let key = if k == "-chain" { "-chain" } else { k };
+            assert!(chain.contains_key(key), "expected chain option {}", k);
+        }
     }
 }

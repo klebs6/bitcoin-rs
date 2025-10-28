@@ -143,7 +143,6 @@ mod writer_shl_spec {
     }
 
     #[test]
-    #[should_panic] // expected because SHA‑256 back‑end is still a stub
     fn constructing_tagged_hash_does_not_panic() {
         let _ = tagged_hash("TapLeaf"); // should reach SHA panic
     }

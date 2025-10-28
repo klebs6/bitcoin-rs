@@ -37,19 +37,13 @@ FEATURES :=
 #-------------------------------[active-below]
 
 #ACTIVE := bitcoin-get-json-token # note that this one has a failing test
-ACTIVE := bitcoin-settings
 
 ACTIVE := bitcoin-top
-ACTIVE := bitcoin-random
-#ACTIVE := bitcoin-block
-#ACTIVE := bitcoin-network
-#ACTIVE := bitcoin-remote
-#ACTIVE := bitcoin-db
-#ACTIVE := bitcoin-argsman
-
-#ACTIVE := bitcoin-base58
-#ACTIVE := bitcoin-muhash
-#ACTIVE := bitcoin-hash
+ACTIVE := bitcoin-network
+ACTIVE := bitcoin-remote
+ACTIVE := bitcoin-settings
+ACTIVE := bitcoin-base58
+ACTIVE := bitcoin-argsman
 
 #-------------------------------[next]
 #ACTIVE := bitcoinleveldb-arena
@@ -94,6 +88,8 @@ ACTIVE := bitcoin-random
 #ACTIVE := bitcoinleveldb-versionedit
 
 #-------------------------------[future]
+#ACTIVE := bitcoin-block
+#ACTIVE := bitcoin-db
 #ACTIVE := bitcoin-portmap
 #ACTIVE := bitcoinsecp256k1-keys
 #ACTIVE := bitcoin-scripting
@@ -175,6 +171,7 @@ ACTIVE := bitcoin-random
 #ACTIVE := bitcoin-txmempoolentry
 #ACTIVE := bitcoin-validation
 #ACTIVE := bitcoin-walletdb
+#-----------------------------------
 #ACTIVE := bitcoinchain-client
 #ACTIVE := bitcoinchain-interface
 #ACTIVE := bitcoinchain-notifications
@@ -317,3 +314,6 @@ bench:
 #ACTIVE := bitcoin-sock
 #ACTIVE := bitcoin-tx-confirm-stats
 #ACTIVE := bitcoin-fees
+#ACTIVE := bitcoin-random
+#ACTIVE := bitcoin-hash
+#ACTIVE := bitcoin-muhash

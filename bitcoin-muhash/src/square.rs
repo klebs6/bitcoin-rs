@@ -101,3 +101,33 @@ impl Num3072 {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::muhash::MuHash3072;
+
+    fn num(b: &[u8]) -> Num3072 { MuHash3072::to_num3072(b) }
+
+    #[test]
+    fn square_matches_multiply_by_self() {
+        let mut x1 = num(b"delta");
+        let mut x2 = x1;
+
+        let x2_clone = x2.clone();
+
+        x1.square();
+        x2.multiply(&x2_clone);
+        assert_eq!(x1.limbs(), x2.limbs());
+    }
+
+    #[test]
+    fn square_then_reduce_is_stable() {
+        let mut x = num(b"epsilon");
+        x.square();
+        if x.is_overflow() {
+            x.full_reduce();
+            assert!(!x.is_overflow(), "full_reduce must clear overflow when present");
+        }
+    }
+}

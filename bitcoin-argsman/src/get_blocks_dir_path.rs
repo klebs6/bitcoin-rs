@@ -83,3 +83,35 @@ impl ArgsManagerInner {
         buf.into_boxed_path()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+    use std::fs;
+    use std::sync::{Mutex, OnceLock};
+
+    static M: OnceLock<Mutex<()>> = OnceLock::new();
+    fn lock() -> std::sync::MutexGuard<'static,()> { M.get_or_init(|| Mutex::new(())).lock().unwrap() }
+
+    #[test]
+    fn blocks_dir_derived_from_datadir() {
+        let _g = lock();
+
+        // temp datadir
+        let tmp = tempfile::tempdir().unwrap();
+        let datadir = tmp.path().join("data");
+        fs::create_dir_all(&datadir).unwrap();
+
+        // Prepare inner
+        let mut inner = ArgsManagerInner::default();
+        inner.force_set_arg("-datadir", datadir.to_str().unwrap());
+        // Ensure base params are set (MAIN)
+        select_base_params(base_chain_params::MAIN);
+
+        let blocks = inner.get_blocks_dir_path();
+        // MAIN has empty subdir; expect <datadir>/blocks
+        assert!(blocks.ends_with("blocks"), "{:?}", blocks);
+        assert!(blocks.as_ref().exists());
+    }
+}

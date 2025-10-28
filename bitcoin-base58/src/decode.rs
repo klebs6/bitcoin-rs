@@ -26,11 +26,14 @@ pub fn decode_base58(input: &str, vch_ret: &mut Vec<u8>, max_ret_len: usize) -> 
 
     let base58_map = MAP_BASE58;
 
-    let mut b256: Vec<u8> = vec![0];
+    // Start empty; seeding with 0 would make "" decode to [0] instead of [].
+    let mut b256: Vec<u8> = Vec::new();
 
     while let Some(c) = chars.next() {
+
         if is_space(c as u8) {
-            break;
+            // Keep this variant strict: any whitespace is invalid.
+            return false;
         }
 
         let carry = {
@@ -101,8 +104,8 @@ pub unsafe fn decode_base58_raw(
 
     // log(58) / log(256), rounded up.
     let size: usize = libc::strlen(psz as *const i8) * 733 / 1000 + 1;
-
-    let mut b256: Vec::<u8> = Vec::<u8>::with_capacity(size);
+    // length-initialized buffer
+    let mut b256: Vec<u8> = vec![0; size];
 
     // Process the characters.
     //
@@ -170,9 +173,15 @@ pub unsafe fn decode_base58_raw(
 
     vch[0..zeroes as usize].fill(0);
 
-    while let Some(val) = it.next() {
-        vch.push(*val);
+    // Skip leading zeroes in b256.
+    let mut idx = size - length as usize;
+    while idx < b256.len() && b256[idx] == 0 {
+        idx += 1;
     }
+    // Copy result into output vector.
+    vch.clear();
+    vch.resize(zeroes as usize, 0);
+    vch.extend_from_slice(&b256[idx..]);
 
     return true
 }

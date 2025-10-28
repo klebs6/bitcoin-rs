@@ -96,3 +96,41 @@ pub fn interpret_option(
 
     SettingsValue(UniValue::from(value.as_str()))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn interpret_bool_rules() {
+        assert!(interpret_bool(""));     // empty => true
+        assert!(interpret_bool("1"));
+        assert!(!interpret_bool("0"));
+        assert!(!interpret_bool("foo")); // atoi("foo") => 0
+    }
+
+    #[test]
+    fn interpret_option_handles_no_and_double_negative() {
+        let mut section = "".to_string();
+        let mut key = "nofoo".to_string();
+        let v = interpret_option(&mut section, &mut key, &"1".to_string());
+        assert_eq!(key, "foo");
+        assert!(v.0.is_false());
+
+        let mut section = "".to_string();
+        let mut key = "nobar".to_string();
+        let v = interpret_option(&mut section, &mut key, &"0".to_string()); // double negative
+        assert_eq!(key, "bar");
+        assert!(v.0.is_true());
+    }
+
+    #[test]
+    fn interpret_option_splits_section_dot_key() {
+        let mut section = "".to_string();
+        let mut key = "testnet.rpcport".to_string();
+        let v = interpret_option(&mut section, &mut key, &"18332".to_string());
+        assert_eq!(section, "testnet");
+        assert_eq!(key, "rpcport");
+        assert_eq!(v.0.get_str(), "18332");
+    }
+}

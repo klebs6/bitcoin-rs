@@ -359,3 +359,26 @@ lazy_static!{
         category: OptionsCategory::OPTIONS
     };
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use super::base_options::*;
+
+    #[test]
+    fn base_option_descriptors_have_expected_names_and_flags() {
+        assert_eq!(ARG_SET_CHAIN.name, "-chain=<chain>");
+        assert!(ARG_SET_CHAIN.flags.contains(ArgsManagerFlags::ALLOW_ANY));
+        assert_eq!(ARG_TESTNET.name, "-testnet");
+        assert!(ARG_TESTNET.flags.contains(ArgsManagerFlags::ALLOW_ANY));
+        assert_eq!(ARG_SIGNET.name, "-signet");
+        assert!(ARG_SIGNET.flags.contains(ArgsManagerFlags::ALLOW_ANY));
+    }
+
+    #[test]
+    fn general_option_descriptors_are_present() {
+        assert_eq!(ARG_HELP.name, "-?");
+        assert!(ARG_NAMED.flags.contains(ArgsManagerFlags::ALLOW_ANY));
+        assert!(ARG_SET_RPC_PORT.flags.contains(ArgsManagerFlags::NETWORK_ONLY));
+    }
+}

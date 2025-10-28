@@ -8,11 +8,14 @@ impl u160 {
     /// and simply forwards to the existing `from_bytes_20` constructor,
     /// emitting a `trace!` for observability.
     #[inline]
-    pub fn from_le_bytes(bytes: [u8; 20]) -> Self {
+    pub fn from_le_bytes(mut bytes: [u8; 20]) -> Self {
         tracing::trace!(
             "u160::from_le_bytes ⇒ {:02X?}",
             bytes
         );
+        // Convert caller-provided little-endian bytes into the blob's
+        // canonical big-endian representation (match u256 behavior).
+        bytes.reverse();
         Self::from_bytes_20(bytes)
     }
 }

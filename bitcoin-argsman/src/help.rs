@@ -37,3 +37,15 @@ impl ArgsManagerInner {
         self.add_hidden_args(&vec!{"-h", "-help"});
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn setting_name_strips_single_leading_dash() {
+        assert_eq!(setting_name("-foo"), "foo");
+        assert_eq!(setting_name("bar"), "bar");
+        assert_eq!(setting_name(""), "");
+    }
+}

@@ -157,3 +157,43 @@ impl ArgsManagerInner {
         buf
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+    use std::fs;
+    use std::sync::{Mutex, OnceLock};
+
+    static M: OnceLock<Mutex<()>> = OnceLock::new();
+    fn lock() -> std::sync::MutexGuard<'static,()> { M.get_or_init(|| Mutex::new(())).lock().unwrap() }
+
+    #[test]
+    #[cfg(not(any(target_os = "windows", target_os = "macos")))]
+    fn default_data_dir_is_in_home_bitcoin_on_unix() {
+        let _g = lock();
+        let tmp = tempfile::tempdir().unwrap();
+        env::set_var("HOME", tmp.path());
+        let d = get_default_data_dir();
+        assert!(d.ends_with(".bitcoin"));
+    }
+
+    #[test]
+    fn get_data_dir_uses_datadir_and_creates_subdirs() {
+        let _g = lock();
+        let tmp = tempfile::tempdir().unwrap();
+        let datadir = tmp.path().join("dd");
+        fs::create_dir_all(&datadir).unwrap();
+
+        let mut inner = ArgsManagerInner::default();
+        inner.force_set_arg("-datadir", datadir.to_str().unwrap());
+        select_base_params(base_chain_params::TESTNET);
+
+        let base = inner.get_data_dir_base();
+        assert_eq!(base, datadir);
+
+        let net = inner.get_data_dir_net();
+        assert!(net.ends_with("testnet3"));
+        assert!(net.join("wallets").exists(), "wallets/ should be created on first run");
+    }
+}

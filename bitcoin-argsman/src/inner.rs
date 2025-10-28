@@ -14,3 +14,17 @@ pub struct ArgsManagerInner {
     pub cached_datadir_path:         Option<Box<Path>>,
     pub cached_network_datadir_path: Option<Box<Path>>,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn defaults_are_empty() {
+        let i = ArgsManagerInner::default();
+        assert!(i.command.is_empty());
+        assert!(i.available_args.is_empty());
+        assert!(i.network.is_none());
+        assert!(i.cached_blocks_path.is_none());
+    }
+}

@@ -19,3 +19,16 @@ impl SectionInfo {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn section_info_new_sets_fields() {
+        let s = SectionInfo::new("abc", "file", 7);
+        assert_eq!(s.name, "abc");
+        assert_eq!(s.file, "file");
+        assert_eq!(s.line, 7);
+    }
+}

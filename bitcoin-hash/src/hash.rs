@@ -84,7 +84,6 @@ mod hash_primitives_spec {
     }
 
     #[test]
-    #[should_panic] // expected until `bitcoin‑sha256` is fully ported
     fn serialize_hash_matches_hash1() {
         let data = b"payload";
         assert_eq!(serialize_hash(&data[..], None, None), hash1(data));

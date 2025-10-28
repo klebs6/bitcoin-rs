@@ -24,9 +24,12 @@ pub fn encode_base58(mut input: &[u8]) -> String {
       */
 
     // log(256) / log(58), rounded up.
-    let mut size: i32 = (input.len() * 138 / 100 + 1).try_into().unwrap();
-
-    let mut b58: Vec::<u8> = Vec::<u8>::with_capacity(size.try_into().unwrap());
+    
+    // Allocate enough space in big-endian base58 representation.
+    // log(256) / log(58), rounded up.
+    let size: usize = input.len() * 138 / 100 + 1;
+    // IMPORTANT: we need a length-initialized buffer, not just capacity.
+    let mut b58: Vec<u8> = vec![0; size];
 
     // Process the bytes.
     while input.len() > 0 {
@@ -59,20 +62,17 @@ pub fn encode_base58(mut input: &[u8]) -> String {
     }
 
     // Skip leading zeroes in base58 result.
-    let mut it = b58.iter();
-
-    it.advance_by((size - length).try_into().unwrap());
-
-    while it.next() == Some(&0) {}
+    let mut idx = (size as i32 - length) as usize;
+    while idx < b58.len() && b58[idx] == 0 {
+        idx += 1;
+    }
 
     // Translate the result into a string.
-    let mut s: String = 
-        String::with_capacity((zeroes as usize) + it.len());
-
-    s += &"1".repeat(zeroes);
-
-    while let Some(val) = it.next() {
-        s += &String::from(PSZ_BASE58.chars().nth(*val as usize).unwrap());
+    let mut s = String::with_capacity(zeroes + (b58.len() - idx));
+    s.push_str(&"1".repeat(zeroes));
+    let alphabet = PSZ_BASE58.as_bytes();
+    for &val in &b58[idx..] {
+        s.push(alphabet[val as usize] as char);
     }
 
     s
@@ -104,7 +104,8 @@ mod encode_spec {
         ("00", "1"),
         ("61", "2g"),
         ("626262", "a3gV"),
-        ("73696d706c652e", "2cFupjhnEsSn"),
+        ("73696d706c652e", "5Nfm5YkXu7"), // "simple." (plain Base‑58, no checksum)
+        ("73696d706c792061206c6f6e6720737472696e67", "2cFupjhnEsSn59qHXstmK2ffpLv2"),
     ];
 
     /// Ensure `encode_base58` matches known vectors.

@@ -225,3 +225,33 @@ impl ArgsManager {
 
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashMap;
+
+    #[test]
+    fn wrappers_delegate_to_inner() {
+        let mut am = ArgsManager::default();
+
+        // prime categories used by our calls
+        {
+            let mut inner = am.cs_args.lock();
+            for cat in [OptionsCategory::COMMANDS, OptionsCategory::OPTIONS, OptionsCategory::CHAINPARAMS] {
+                inner.available_args.insert(cat, HashMap::new());
+            }
+        }
+
+        am.add_command("delin", "Delete input");
+        am.add_arg(&crate::args::ARG_VERSION);
+        am.setup_chain_params_base_options();
+
+        {
+            let inner = am.cs_args.lock();
+            assert!(inner.available_args.get(&OptionsCategory::COMMANDS).unwrap().contains_key("delin"));
+            assert!(inner.available_args.get(&OptionsCategory::OPTIONS).unwrap().contains_key("-version"));
+            assert!(inner.available_args.get(&OptionsCategory::CHAINPARAMS).unwrap().contains_key("-chain"));
+        }
+    }
+}

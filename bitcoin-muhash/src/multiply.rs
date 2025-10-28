@@ -93,3 +93,63 @@ impl Num3072 {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::muhash::MuHash3072;
+
+    fn num(b: &[u8]) -> Num3072 { MuHash3072::to_num3072(b) }
+
+    #[test]
+    fn multiply_by_one_is_noop() {
+        let mut x = num(b"alice");
+        let one = Num3072::default(); // 1
+        let mut y = x;
+        y.multiply(&one);
+        assert_eq!(x.limbs(), y.limbs(), "x * 1 = x");
+
+        let mut y2 = one;
+        y2.multiply(&x);
+        assert_eq!(x.limbs(), y2.limbs(), "1 * x = x");
+    }
+
+    #[test]
+    fn multiply_commutes_and_is_stable_under_full_reduce() {
+        let a = num(b"alice");
+        let b = num(b"bob");
+
+        let mut ab = a;
+        ab.multiply(&b);
+
+        let mut ba = b;
+        ba.multiply(&a);
+
+        assert_eq!(ab.limbs(), ba.limbs(), "commutativity");
+
+        // Only require that, if it's overflowing, full_reduce makes it non-overflowing.
+        let mut r = ab;
+        if r.is_overflow() {
+            r.full_reduce();
+            assert!(!r.is_overflow(), "full_reduce must clear overflow when present");
+        }
+    }
+
+    #[test]
+    fn multiply_associativity_three_operands() {
+        let a = num(b"alice");
+        let b = num(b"bob");
+        let c = num(b"carol");
+
+        let mut left = a;
+        left.multiply(&b);
+        left.multiply(&c);
+
+        let mut right = b;
+        right.multiply(&c);
+        let mut right2 = a;
+        right2.multiply(&right);
+
+        assert_eq!(left.limbs(), right2.limbs());
+    }
+}

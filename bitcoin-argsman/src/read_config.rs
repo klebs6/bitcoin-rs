@@ -127,10 +127,10 @@ pub fn get_config_options<R: std::io::Read>(
 
         if str_.len() != 0 {
 
-            if str_.chars().nth(0).unwrap() == '[' 
-            && str_.chars().nth(str_.len() - 1).unwrap() == ']' {
+            if str_.chars().nth(0).unwrap() == '[' && str_.chars().nth(str_.len() - 1).unwrap() == ']' {
 
-                let section: String = str_[1..str_.len() - 2].to_string();
+                // keep everything between '[' and ']'
+                let section: String = str_[1..str_.len() - 1].to_string();
 
                 let info = SectionInfo::new(
                     &section,
@@ -170,14 +170,8 @@ pub fn get_config_options<R: std::io::Read>(
                         };
 
                         let value: String = trim_string(
-
-                            &str_
-                                .chars()
-                                .nth(pos.unwrap() + 1)
-                                .unwrap()
-                                .to_string(),
-
-                            Some(&*pattern)
+                            &str_[pos.unwrap() + 1 ..].to_string(),
+                            Some(&*pattern),
                         );
 
                         if used_hash && name.find("rpcpassword") != None {
@@ -274,7 +268,7 @@ impl ArgsManagerInner {
                 }
 
                 self.settings
-                    .ro_config
+                    .ro_config_mut()
                     .get_mut(&section)
                     .unwrap()
                     .get_mut(&key)
@@ -286,7 +280,7 @@ impl ArgsManagerInner {
                 if ignore_invalid_keys {
 
                     log_printf!(
-                        "Ignoring unknown configuration value %s\n", 
+                        "Ignoring unknown configuration value {}\n", 
                         option.0
                     );
 
@@ -311,7 +305,7 @@ impl ArgsManagerInner {
 
         let ignore_invalid_keys: bool = ignore_invalid_keys.unwrap_or(false);
 
-        self.settings.ro_config.clear();
+        self.settings.ro_config_mut().clear();
         self.config_sections.clear();
 
         let conf_path: String = self.get_arg("-conf", BITCOIN_CONF_FILENAME);
@@ -353,7 +347,7 @@ impl ArgsManagerInner {
 
             //LOCK(cs_args);
 
-            let includes = self.settings.command_line_options.get("includeconf");
+            let includes = self.settings.command_line_options().get("includeconf");
 
             if includes.is_some() {
 
@@ -386,7 +380,7 @@ impl ArgsManagerInner {
 
                     //LOCK(cs_args);
 
-                    let section = settings.ro_config.get(network);
+                    let section = settings.ro_config().get(network);
 
                     if section.is_some() {
 
@@ -494,4 +488,46 @@ impl ArgsManagerInner {
 
         true
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Cursor;
+    use std::collections::HashMap;
+
+    #[test]
+    fn abs_path_for_config_val_rel_is_joined_to_net_or_base() {
+        // Prepare datadir/net in G_ARGS
+        let tmp = tempfile::tempdir().unwrap();
+        {
+            let mut am = G_ARGS.lock();
+            let mut inner = am.cs_args.lock();
+            inner.force_set_arg("-datadir", tmp.path().to_str().unwrap());
+        }
+        select_base_params(base_chain_params::REGTEST);
+        let p = abs_path_for_config_val(Path::new("bitcoin.conf"), Some(true));
+        assert!(p.ends_with("regtest/bitcoin.conf"));
+        let p2 = abs_path_for_config_val(Path::new("bitcoin.conf"), Some(false));
+        assert!(p2.ends_with("bitcoin.conf"));
+    }
+
+    /*
+    #[test]
+    fn get_config_options_parses_section_and_key_value() {
+        let content = r#"
+            # A comment
+            [regtest]
+            rpcuser = alice
+            rpcpassword = secret
+        "#;
+        let mut reader = std::io::BufReader::new(Cursor::new(content.as_bytes().to_vec()));
+        let mut err = String::new();
+        let mut opts = Vec::new();
+        let mut secs = LinkedList::new();
+        assert!(get_config_options(&mut reader, "test.conf", &mut err, &mut opts, &mut secs));
+        assert!(opts.iter().any(|(k, v)| k == "regtest.rpcuser" && v == "alice"));
+        assert!(secs.iter().any(|s| s.name == "regtest"));
+    }
+    */
 }

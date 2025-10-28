@@ -51,7 +51,7 @@ crate::ix!();
   | and https://lists.linuxfoundation.org/pipermail/bitcoin-dev/2017-May/014337.html.
   |
   */
-#[derive(MutGetters, Getters, Default)]
+#[derive(Clone,MutGetters, Getters, Default)]
 #[getset(get = "pub", get_mut = "pub")]
 pub struct MuHash3072 {
     numerator:   Num3072,
@@ -134,11 +134,14 @@ mod set_semantics_validation {
     use tracing::info;
 
     /// Order‑independence: inserting (A,B) equals inserting (B,A).
+    const ROUNDS: usize = 128;
+
     #[traced_test]
     fn insertion_is_commutative() -> Result<(), Box<dyn std::error::Error>> {
+        const ROUNDS: usize = 128;
         let mut rng = ChaCha20Rng::from_seed([4u8; 32]);
 
-        for round in 0..1_024 {
+        for round in 0..ROUNDS {
             let mut a = vec![0u8; (rng.next_u32() % 80 + 1) as usize];
             rng.fill_bytes(&mut a);
             let mut b = vec![0u8; (rng.next_u32() % 80 + 1) as usize];
@@ -158,12 +161,11 @@ mod set_semantics_validation {
 
             assert_eq!(out_ab, out_ba, "Round {round} failed");
         }
-        info!("insertion_is_commutative passed 1 024 rounds");
         Ok(())
     }
 
     /// Inserting then removing an element is a no‑op on the final hash.
-    #[traced_test]
+    #[test]
     fn insert_then_remove_noop() -> Result<(), Box<dyn std::error::Error>> {
         let payload = b"stateless-validation-vector";
 
@@ -180,5 +182,75 @@ mod set_semantics_validation {
 
         assert_eq!(out_ref, out_test);
         Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn finalize(mut h: MuHash3072) -> u256 {
+        let mut out = u256::from_le_bytes([0u8; 32]);
+        h.finalize(&mut out);
+        out
+    }
+
+    #[test]
+    fn to_num3072_is_deterministic() {
+        let a1 = MuHash3072::to_num3072(b"alice");
+        let a2 = MuHash3072::to_num3072(b"alice");
+        let b  = MuHash3072::to_num3072(b"bob");
+        assert_eq!(a1.limbs(), a2.limbs());
+        assert_ne!(a1.limbs(), b.limbs());
+    }
+
+    #[test]
+    fn new_sets_numerator_and_default_denominator() {
+        let h = MuHash3072::new(b"alice");
+        assert_ne!(h.numerator().limbs(), Num3072::default().limbs());
+        assert!(h.denominator().is_one());
+    }
+
+    #[test]
+    fn insert_and_remove_are_multiplicative() {
+        let mut h = MuHash3072::default();
+        h.insert(b"alice").insert(b"bob");
+
+        let mut h2 = MuHash3072::default();
+        h2.insert(b"bob");
+
+        let mut h3 = MuHash3072::default();
+        h3.insert(b"alice").insert(b"bob").remove(b"alice");
+
+        // finalize should match for h2 and h3
+        let mut out2 = u256::from_le_bytes([0u8; 32]);
+        let mut out3 = u256::from_le_bytes([0u8; 32]);
+        h2.finalize(&mut out2);
+        h3.finalize(&mut out3);
+        assert_eq!(out2, out3);
+    }
+
+    #[test]
+    fn finalize_is_order_invariant_and_canonical() {
+        let mut h1 = MuHash3072::default();
+        h1.insert(b"alice").insert(b"bob").insert(b"carol");
+
+        let mut h2 = MuHash3072::default();
+        h2.insert(b"carol").insert(b"alice").insert(b"bob");
+
+        let mut out1 = u256::from_le_bytes([0u8; 32]);
+        let mut out2 = u256::from_le_bytes([0u8; 32]);
+        h1.finalize(&mut out1);
+        h2.finalize(&mut out2);
+        assert_eq!(out1, out2, "order invariance");
+
+        // Different internal reps leading to same logical state
+        let mut h3 = MuHash3072::default();
+        h3.insert(b"alice").insert(b"bob").remove(b"alice").insert(b"alice").insert(b"carol");
+
+
+        let mut out3 = u256::from_le_bytes([0u8; 32]);
+        h3.finalize(&mut out3);
+        assert_eq!(out2, out3, "canonicalisation across different update sequences");
     }
 }

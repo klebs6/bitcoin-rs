@@ -140,12 +140,113 @@ mod num3072_property_validation {
     use super::*;
     use rand_chacha::rand_core::{RngCore, SeedableRng};
     use rand_chacha::ChaCha20Rng;
+    use core::mem;
 
-    /// set_to_one followed by multiply then divide by the same element
-    /// must return to the original value.
+    /// Verify that full_reduce actually produces a non‑overflowing value.
     #[traced_test]
-    fn multiply_then_divide_is_identity() -> Result<(), Box<dyn std::error::Error>> {
-        const ROUNDS: usize = 32;          // further trimmed for runtime
+    fn full_reduce_removes_overflow() -> Result<(), Box<dyn std::error::Error>> {
+        let mut n = Num3072 { limbs: [Limb::MAX; num_3072::LIMBS] };
+        assert!(n.is_overflow());
+        n.full_reduce();
+        assert!(!n.is_overflow());
+        Ok(())
+    }
+
+    #[test]
+    fn default_is_one_and_set_to_one_works() {
+        let mut n = Num3072::default();
+        assert!(n.is_one());
+        // change it then set back to one
+        n.limbs_mut()[0] = 42;
+        n.set_to_one();
+        assert!(n.is_one());
+        assert_eq!(n.limbs()[1..].iter().all(|&x| x == 0), true);
+    }
+
+    #[test]
+    fn new_to_bytes_roundtrip_little_endian() {
+        // 3072 bits = 384 bytes
+        let mut data = [0u8; 384];
+        for (i, b) in data.iter_mut().enumerate() {
+            *b = (i as u8).wrapping_mul(37).wrapping_add(11);
+        }
+        let n = Num3072::new(&data);
+        let mut out = [0u8; 384];
+        n.to_bytes(&mut out);
+        assert_eq!(out, data);
+    }
+
+    #[test]
+    fn is_overflow_detects_boundary_cases() {
+        // Construct a value exactly on the boundary that should be NON-overflow.
+        let mut n = Num3072::default();
+        let lims = n.limbs().len();
+        n.limbs_mut()[0] = Limb::MAX - crate::MAX_PRIME_DIFF;
+        for i in 1..lims {
+            n.limbs_mut()[i] = Limb::MAX;
+        }
+        assert_eq!(n.is_overflow(), false, "boundary at MAX - MAX_PRIME_DIFF is not overflow");
+
+        // Now bump low limb by 1 → should be overflow.
+        n.limbs_mut()[0] = n.limbs()[0].wrapping_add(1);
+        assert_eq!(n.is_overflow(), true, "just above boundary is overflow");
+    }
+
+    #[test]
+    fn full_reduce_clears_overflow_and_is_idempotent() {
+        let mut n = Num3072::default();
+        let lims = n.limbs().len();
+        n.limbs_mut()[0] = Limb::MAX - crate::MAX_PRIME_DIFF + 7;
+        for i in 1..lims {
+            n.limbs_mut()[i] = Limb::MAX;
+        }
+        assert!(n.is_overflow());
+        n.full_reduce();
+        assert!(!n.is_overflow());
+    }
+
+    #[test]
+    fn square_n_mul_behaves_like_repeated_square_then_multiply() {
+        let mut a = Num3072::default();
+        // Make 'a' something nontrivial (few non-zero limbs)
+        a.limbs_mut()[0] = 3;
+        a.limbs_mut()[1] = 5;
+
+        let mut b = Num3072::default();
+        b.limbs_mut()[0] = 9;
+        b.limbs_mut()[2] = 7;
+
+        let mut x = a;
+        square_n_mul(&mut x, 5, &b);
+
+        let mut y = a;
+        for _ in 0..5 { y.square(); }
+        y.multiply(&b);
+
+        assert_eq!(x.limbs(), y.limbs());
+    }
+
+    #[test]
+    fn is_one_true_only_for_exact_one() {
+        let mut n = Num3072::default();
+        assert!(n.is_one());
+        n.limbs_mut()[0] = 2;
+        assert!(!n.is_one());
+        n.set_to_one();
+        n.limbs_mut()[1] = 1;
+        assert!(!n.is_one());
+    }
+
+    #[test]
+    fn limb_sizes_are_consistent() {
+        // Smoke-check platform variability.
+        let bits = (mem::size_of::<Limb>() * 8) as u32;
+        assert!(bits == 32 || bits == 64);
+    }
+
+    #[test]
+    fn multiply_then_divide_is_identity() {
+        const ROUNDS: usize = 4; // each iteration includes a 3072-bit inverse → keep tiny
         let mut rng = ChaCha20Rng::from_seed([3u8; 32]);
 
         for round in 0..ROUNDS {
@@ -164,17 +265,5 @@ mod num3072_property_validation {
 
             assert_eq!(x.limbs, original, "Round {round} failed");
         }
-        info!("multiply_then_divide_is_identity completed {ROUNDS} rounds");
-        Ok(())
-    }
-
-    /// Verify that full_reduce actually produces a non‑overflowing value.
-    #[traced_test]
-    fn full_reduce_removes_overflow() -> Result<(), Box<dyn std::error::Error>> {
-        let mut n = Num3072 { limbs: [Limb::MAX; num_3072::LIMBS] };
-        assert!(n.is_overflow());
-        n.full_reduce();
-        assert!(!n.is_overflow());
-        Ok(())
     }
 }

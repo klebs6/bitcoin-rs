@@ -35,3 +35,16 @@ pub const DEFAULT_COLOR_SETTING: &'static str = "auto";
   |
   */
 pub const DEFAULT_MAX_TRIES: u64 = 1000000;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn default_constants_are_sane() {
+        assert_eq!(DEFAULT_RPCCONNECT, "127.0.0.1");
+        assert_eq!(DEFAULT_COLOR_SETTING, "auto");
+        assert_eq!(DEFAULT_NBLOCKS, "1");
+        assert!(DEFAULT_MAX_TRIES >= 1000);
+    }
+}

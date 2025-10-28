@@ -37,6 +37,9 @@ version = "1.1.0"
 [dependencies.tracing]
 workspace = true
 
+[dependencies.hex]
+workspace = true
+
 [package]
 authors = ["klebs <none>"]
 description = "base58 encoding contians some useful properties -- especially for disallowing certain characters which look the same in some fonts"
