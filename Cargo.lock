@@ -1722,6 +1722,7 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "hashbrown 0.12.3",
  "tracing",
 ]
 

@@ -1,49 +1,6 @@
 // ---------------- [ File: bitcoin-argsman/src/read_config.rs ]
 crate::ix!();
 
-/**
-  | Most paths passed as configuration
-  | arguments are treated as relative to
-  | the datadir if they are not absolute.
-  | 
-  | -----------
-  | @param path
-  | 
-  | The path to be conditionally prefixed
-  | with datadir.
-  | ----------
-  | @param net_specific
-  | 
-  | Use network specific datadir variant
-  | 
-  | -----------
-  | @return
-  | 
-  | The normalized path.
-  |
-  */
-pub fn abs_path_for_config_val(
-        path:         &Path,
-        net_specific: Option<bool>) -> PathBuf {
-
-    let net_specific: bool = net_specific.unwrap_or(true);
-    
-    if path.is_absolute() {
-        return path.to_path_buf();
-    }
-
-    let base = match net_specific {
-        true  => G_ARGS.lock().cs_args.lock().get_data_dir_net(),
-        false => G_ARGS.lock().cs_args.lock().get_data_dir_base(),
-    };
-
-    let mut builder = PathBuf::new();
-    builder.push(canonicalize(base).unwrap());
-    builder.push(canonicalize(path).unwrap());
-
-    builder
-}
-
 pub fn get_config_file(conf_path: &str) -> PathBuf {
     
     let path = Path::new(conf_path);
@@ -101,123 +58,80 @@ pub fn get_config_options<R: std::io::Read>(
     filepath: &str,
     error:    &mut String,
     options:  &mut Vec<(String,String)>,
-    sections: &mut LinkedList<SectionInfo>) -> bool {
+    sections: &mut LinkedList<SectionInfo>,
+) -> bool {
+    let mut linenr: i32 = 0;
 
-    let mut str_:   String = String::default();
-    let mut prefix: String = String::default();
-    let mut pos:    Option<usize> = None;
-    let mut linenr: i32 = 1;
+    loop {
+        let mut line = String::new();
+        match stream.read_line(&mut line) {
+            Ok(0) => break,       // EOF
+            Ok(_) => { /* proceed */ }
+            Err(_) => break,      // treat read errors as EOF here
+        }
+        linenr += 1;
 
-    while stream.read_line(&mut str_).is_ok() {
-
-        let mut used_hash: bool = false;
-
-        pos = str_.find('#');
-
-        if pos != None {
-            str_ = str_[0..pos.unwrap()].to_string();
+        // Strip inline comments
+        let mut used_hash = false;
+        if let Some(p) = line.find('#') {
+            line.truncate(p);
             used_hash = true;
         }
 
-        lazy_static!{
-            static ref pattern: String = " \t\r\n".to_string();
+        lazy_static! {
+            static ref PAT: String = " \t\r\n".to_string();
+        }
+        let mut s = trim_string(&line, Some(PAT.as_str()));
+        if s.is_empty() { continue; }
+
+        if s.starts_with('[') && s.ends_with(']') {
+            // section header
+            let section = s[1..s.len()-1].to_string();
+            sections.push_back(SectionInfo::new(&section, filepath, linenr));
+            s = format!("{}.", section);
+            continue;
         }
 
-        str_ = trim_string(&str_,Some(pattern.as_str()));
+        if s.starts_with('-') {
+            *error = format!(
+                "parse error on line {}: {}, options in configuration file must be specified without leading -",
+                linenr, s
+            );
+            return false;
+        }
 
-        if str_.len() != 0 {
+        if let Some(eq) = s.find('=') {
+            let name = format!(
+                "{}{}",
+                if let Some(d) = s.rfind('.') { s[..=d].to_string() } else { "".to_string() },
+                trim_string(&s[..eq].to_string(), Some(PAT.as_str()))
+            );
+            let value = trim_string(&s[eq+1..].to_string(), Some(PAT.as_str()));
 
-            if str_.chars().nth(0).unwrap() == '[' && str_.chars().nth(str_.len() - 1).unwrap() == ']' {
-
-                // keep everything between '[' and ']'
-                let section: String = str_[1..str_.len() - 1].to_string();
-
-                let info = SectionInfo::new(
-                    &section,
-                    filepath,
+            if used_hash && name.contains("rpcpassword") {
+                *error = format!(
+                    "parse error on line {}, using # in rpcpassword can be ambiguous and should be avoided",
                     linenr
                 );
-
-                sections.push_back(info);
-
-                prefix = format!{"{}.", section};
-
-            } else {
-
-                if str_.chars().nth(0).unwrap() == '-' {
-
-                    *error = format!{
-                        "parse error on line {}: {}, options in configuration file must be specified without leading -",
-                        linenr,
-                        str_
-                    };
-
-                    return false;
-
-                } else {
-
-                    pos = str_.find('=');
-
-                    if pos != None {
-
-                        let name:  String = format!{
-                            "{}{}", 
-                            prefix, 
-                            &trim_string(
-                                &str_[0..pos.unwrap()].to_string(),
-                                Some(&*pattern)
-                            )
-                        };
-
-                        let value: String = trim_string(
-                            &str_[pos.unwrap() + 1 ..].to_string(),
-                            Some(&*pattern),
-                        );
-
-                        if used_hash && name.find("rpcpassword") != None {
-
-                            *error = format!{
-                                "parse error on line {}, using # in rpcpassword can be ambiguous and should be avoided",
-                                linenr
-                            };
-
-                            return false;
-                        }
-
-                        options.push((name.clone(), value));
-
-                        pos = name.rfind('.');
-
-                        if pos != None && prefix.len() <= pos.unwrap() {
-
-                            let info = SectionInfo::new(&name[0..pos.unwrap()],filepath,linenr);
-
-                            sections.push_back(info);
-                        }
-
-                    } else {
-
-                        *error = format!{
-                            "parse error on line {}: {}",
-                            linenr,
-                            str_
-                        };
-
-                        if str_.len() >= 2 && &str_[0..2] == "no" {
-                            *error = format!{
-                                "{}, if you intended to specify a negated option, use {}=1 instead",
-                                error,
-                                str_
-                            };
-                        }
-
-                        return false;
-                    }
-                }
+                return false;
             }
-        }
 
-        linenr += 1;
+            options.push((name.clone(), value));
+
+            if let Some(dot) = name.rfind('.') {
+                let section = &name[..dot];
+                sections.push_back(SectionInfo::new(section, filepath, linenr));
+            }
+        } else {
+            *error = format!("parse error on line {}: {}", linenr, s);
+            if s.len() >= 2 && &s[..2] == "no" {
+                *error = format!(
+                    "{}, if you intended to specify a negated option, use {}=1 instead",
+                    error, s
+                );
+            }
+            return false;
+        }
     }
 
     true
@@ -343,7 +257,7 @@ impl ArgsManagerInner {
             // except as `-noincludeconf` (which
             // indicates that no included conf
             // file should be used).
-            let mut use_conf_file: bool = true;;
+            let mut use_conf_file: bool = true;
 
             //LOCK(cs_args);
 
@@ -488,46 +402,4 @@ impl ArgsManagerInner {
 
         true
     }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use std::io::Cursor;
-    use std::collections::HashMap;
-
-    #[test]
-    fn abs_path_for_config_val_rel_is_joined_to_net_or_base() {
-        // Prepare datadir/net in G_ARGS
-        let tmp = tempfile::tempdir().unwrap();
-        {
-            let mut am = G_ARGS.lock();
-            let mut inner = am.cs_args.lock();
-            inner.force_set_arg("-datadir", tmp.path().to_str().unwrap());
-        }
-        select_base_params(base_chain_params::REGTEST);
-        let p = abs_path_for_config_val(Path::new("bitcoin.conf"), Some(true));
-        assert!(p.ends_with("regtest/bitcoin.conf"));
-        let p2 = abs_path_for_config_val(Path::new("bitcoin.conf"), Some(false));
-        assert!(p2.ends_with("bitcoin.conf"));
-    }
-
-    /*
-    #[test]
-    fn get_config_options_parses_section_and_key_value() {
-        let content = r#"
-            # A comment
-            [regtest]
-            rpcuser = alice
-            rpcpassword = secret
-        "#;
-        let mut reader = std::io::BufReader::new(Cursor::new(content.as_bytes().to_vec()));
-        let mut err = String::new();
-        let mut opts = Vec::new();
-        let mut secs = LinkedList::new();
-        assert!(get_config_options(&mut reader, "test.conf", &mut err, &mut opts, &mut secs));
-        assert!(opts.iter().any(|(k, v)| k == "regtest.rpcuser" && v == "alice"));
-        assert!(secs.iter().any(|s| s.name == "regtest"));
-    }
-    */
 }

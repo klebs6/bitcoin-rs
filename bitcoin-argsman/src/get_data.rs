@@ -105,34 +105,25 @@ impl ArgsManagerInner {
       |
       */
     pub fn get_data_dir(&self, net_specific: bool) -> PathBuf {
-        
         let maybe_cached = match net_specific {
             true   => self.cached_network_datadir_path.as_ref(),
             false  => self.cached_datadir_path.as_ref()
         };
-
-        // Cache the path to avoid calling
-        // create_directories on every call of
-        // this function
         if let Some(path) = maybe_cached {
             return path.to_path_buf();
         }
 
         let mut buf: PathBuf = PathBuf::new();
-
         let datadir: String = self.get_arg("-datadir","");
 
-        if datadir.len() != 0 {
-
-            let arg_path = std::fs::canonicalize(Path::new(&datadir)).unwrap();
-
-            buf.push(arg_path);
+        if !datadir.is_empty() {
+            // Keep exactly what the user passed (matches Core expectations/tests).
+            buf.push(Path::new(&datadir));
 
             if !buf.as_path().is_dir() {
                 buf.clear();
-                return buf.to_path_buf();
+                return buf;
             }
-
         } else {
             buf.push(get_default_data_dir());
         }
@@ -141,19 +132,14 @@ impl ArgsManagerInner {
             buf.push(base_params().data_dir());
         }
 
-        if let Ok(result) = std::fs::create_dir_all(buf.as_path()) {
-
+        // Create datadir and wallets/ on first run
+        if std::fs::create_dir_all(&buf).is_ok() {
             let mut subdir = buf.clone();
-
             subdir.push("wallets");
-
-            // This is the first run, create
-            // wallets subdirectory too
-            std::fs::create_dir_all(subdir);
+            let _ = std::fs::create_dir_all(subdir);
         }
 
         strip_redundant_last_elements_of_path(&mut buf);
-
         buf
     }
 }

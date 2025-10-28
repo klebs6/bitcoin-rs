@@ -54,16 +54,22 @@ impl ArgsManagerInner {
       |
       */
     pub fn get_setting(&self, arg: &str) -> SettingsValue {
+        let key = setting_name(arg);
 
-        let get_chain_name = false;
+        // 1) Command-line options (last value wins, consistent with Core’s behavior).
+        if let Some(values) = self.settings.command_line_options().get(&key) {
+            if let Some(last) = values.last() {
+                return last.clone();
+            }
+        }
 
-        get_setting(
-            &self.settings,
-            self.network.as_ref().unwrap(),
-            &setting_name(arg),
-            !self.use_default_section(arg),
-            get_chain_name
-        )
+        // 2) Forced settings (used by force_set_arg). Prefer last-like behavior if present.
+        if let Some(v) = self.settings.forced_settings().get(&key) {
+            return v.clone();
+        }
+
+        // 3) Nothing set => null
+        SettingsValue(UniValue::default()) // default is a null UniValue
     }
 
     /**
@@ -71,13 +77,15 @@ impl ArgsManagerInner {
       |
       */
     pub fn get_settings_list(&self, arg: &str) -> Vec<SettingsValue> {
-        
-        get_settings_list(
-            &self.settings,
-            self.network.as_ref().unwrap(),
-            &setting_name(arg),
-            !self.use_default_section(arg)
-        )
+        let key = setting_name(arg);
+
+        if let Some(values) = self.settings.command_line_options().get(&key) {
+            return values.clone();
+        }
+        if let Some(v) = self.settings.forced_settings().get(&key) {
+            return vec![v.clone()];
+        }
+        Vec::new()
     }
 }
 

@@ -1,7 +1,8 @@
 // ---------------- [ File: bitcoin-argsman/src/options_category.rs ]
 crate::ix!();
 
-#[derive(Debug,PartialEq,Eq,PartialOrd,Ord,Hash)]
+#[derive(Debug,PartialEq,Eq,PartialOrd,Ord,Hash,Clone,Copy)]
+#[allow(non_camel_case_types)]
 pub enum OptionsCategory {
     OPTIONS,
     CONNECTION,
@@ -16,14 +17,10 @@ pub enum OptionsCategory {
     GUI,
     COMMANDS,
     REGISTER_COMMANDS,
-
-    /**
-      | Always the last option to avoid printing
-      | these in the help
-      |
-      */
-    HIDDEN, 
+    // Always the last option to avoid printing these in the help
+    HIDDEN,
 }
+
 
 #[cfg(test)]
 mod tests {

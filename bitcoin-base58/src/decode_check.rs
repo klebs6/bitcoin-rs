@@ -1,22 +1,24 @@
 // ---------------- [ File: bitcoin-base58/src/decode_check.rs ]
 crate::ix!();
 
-/// Return the **first 4 bytes (big‑endian)** of SHA256(SHA256(`payload`)).
+/// Return the **first 4 bytes** of `SHA256(SHA256(payload))` in digest order
+/// (no endianness flips, no integer reinterpretation).
 #[inline]
 pub fn checksum4_sha256d(payload: &[u8]) -> [u8; 4] {
-    trace!(len = payload.len(), "computing Base58Check checksum (SHA256d, big-endian)");
-    let h1: u256 = hash1(payload);
-    let mut h1_be = [0u8; 32];
-    h1_be.copy_from_slice(h1.as_ref());
-    h1_be.reverse(); // canonical big‑endian ordering
+    trace!(
+        payload_len = payload.len(),
+        "Base58Check checksum: computing SHA256d and taking first 4 bytes"
+    );
+    // Use the bitcoin-hash crate's one-pass double‑SHA256 hasher directly to
+    // avoid any u256 endianness concerns.
+    let mut hasher = Hash256::default();
+    hasher.write(payload);
 
-    let h2: u256 = hash1(&h1_be);
-    let mut h2_be = [0u8; 32];
-    h2_be.copy_from_slice(h2.as_ref());
-    h2_be.reverse(); // canonical big‑endian ordering
+    let mut digest = [0u8; Hash256::OUTPUT_SIZE];
+    hasher.finalize(&mut digest); // digest = SHA256(SHA256(payload))
 
-    let out = [h2_be[0], h2_be[1], h2_be[2], h2_be[3]];
-    debug!(checksum = %hex::encode(out), "computed checksum (first 4 bytes)");
+    let out = [digest[0], digest[1], digest[2], digest[3]];
+    debug!(checksum = %hex::encode(out), "Base58Check checksum computed");
     out
 
 }

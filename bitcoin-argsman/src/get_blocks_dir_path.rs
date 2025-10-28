@@ -1,19 +1,6 @@
 // ---------------- [ File: bitcoin-argsman/src/get_blocks_dir_path.rs ]
 crate::ix!();
 
-pub fn strip_redundant_last_elements_of_path(path: &mut PathBuf) {
-    
-    let mut result = path.clone();
-
-    while result.file_name() == Some(OsStr::new(".")) {
-        result.pop();
-    }
-
-    assert!(is_same_file(&result,&path).unwrap());
-
-    *path = result;
-}
-
 impl ArgsManagerInner {
 
     /**
@@ -56,18 +43,17 @@ impl ArgsManagerInner {
         let mut buf: PathBuf = PathBuf::new();
 
         if self.is_arg_set("-blocksdir") {
-
             let arg = self.get_arg("-blocksdir","");
+            let arg_path = Path::new(&arg);
+            // Canonicalize if it exists; otherwise use it as provided.
+            let abs = std::fs::canonicalize(arg_path).unwrap_or_else(|_| arg_path.to_path_buf());
 
-            let arg_path = std::fs::canonicalize(Path::new(&arg)).unwrap();
-
-            buf.push(arg_path);
+            buf.push(abs);
 
             if !buf.as_path().is_dir() {
                 buf.clear();
                 return buf.into_boxed_path();
             }
-
         } else {
             buf.push(self.get_data_dir_base());
         }

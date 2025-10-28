@@ -3,38 +3,28 @@ crate::ix!();
 
 impl ArgsManagerInner {
 
-    /**
-      | Add subcommand
-      |
-      */
-    pub fn add_command(&mut self, 
-        cmd:  &str,
-        help: &str)  {
-
+    /// Add subcommand
+    pub fn add_command(&mut self, cmd: &str, help: &str) {
         assert!(cmd.find('=') == None);
         assert!(cmd.chars().nth(0) != Some('-'));
 
-        //LOCK(cs_args);
-        
-        //  latch to false
+        // latch to false
         self.accept_any_command = false;
 
-        let arg_map: &mut HashMap::<String,ArgsManagerArg> 
-        = self.available_args.get_mut(&OptionsCategory::COMMANDS).unwrap();
+        let arg_map = self
+            .available_args
+            .entry(OptionsCategory::COMMANDS)
+            .or_insert_with(HashMap::new);
 
         let ret = arg_map.insert(
-            cmd.to_string(), 
-            ArgsManagerArg::new(
-                "",
-                help,
-                ArgsManagerFlags::COMMAND
-            )
+            cmd.to_string(),
+            ArgsManagerArg::new("", help, ArgsManagerFlags::COMMAND),
         );
 
-        //  Fail on duplicate commands
+        // Fail on duplicate commands
         assert!(ret.is_none());
     }
-    
+
     /**
       | Add argument
       |
@@ -58,8 +48,11 @@ impl ArgsManagerInner {
 
         //LOCK(cs_args);
 
-        let arg_map: &mut HashMap::<String,ArgsManagerArg> 
-        = self.available_args.get_mut(category).unwrap();
+        let arg_map = self
+            .available_args
+            .entry(*category) // requires OptionsCategory: Copy
+            .or_insert_with(HashMap::new);
+
 
         let ret = arg_map.insert(
             arg_name.clone(), 

@@ -45,90 +45,51 @@ pub enum FormatParagraphError {
   |
   */
 pub fn format_paragraph(
-        in_:    &str,
-        width:  Option<usize>,
-        indent: Option<usize>) -> Result<String,FormatParagraphError> {
+    in_:    &str,
+    width:  Option<usize>,
+    indent: Option<usize>,
+) -> Result<String,FormatParagraphError> {
+    let width  = width.unwrap_or(79);
+    let indent = indent.unwrap_or(0);
 
-    let width:  usize = width.unwrap_or(79);
-    let indent: usize = indent.unwrap_or(0);
-    
-    let mut out = BufWriter::new(Vec::new());
-    let mut ptr:      usize = 0;
-    let mut indented: usize = 0;
+    let mut out = String::new();
+    let mut start = 0;
 
-    while ptr < in_.len() {
+    while start < in_.len() {
+        // Handle explicit newlines as hard breaks
+        let nl = in_[start..].find('\n').map(|i| start + i).unwrap_or(in_.len());
+        let mut line_start = start;
 
-        let mut lineend: Option<usize> = in_[ptr..].find('\n');
+        while line_start < nl {
+            let line_end_limit = (line_start + width).min(nl);
+            let segment = &in_[line_start..line_end_limit];
 
-        if lineend == None {
-            lineend = Some(in_.len());
+            let break_at = segment.rfind(' ').or_else(|| segment.rfind('\t'));
+
+            let cut = if line_end_limit == nl || break_at.is_none() {
+                line_end_limit
+            } else {
+                line_start + break_at.unwrap()
+            };
+
+            out.push_str(&in_[line_start..cut]);
+            out.push('\n');
+
+            if cut < nl {
+                if indent > 0 { out.push_str(&" ".repeat(indent)); }
+                line_start = cut + 1; // skip the space
+            } else {
+                line_start = cut;
+            }
         }
 
-        let linelen:   usize = lineend.unwrap() - ptr;
-        let rem_width: usize = width - indented;
-
-        if linelen <= rem_width {
-
-            out.write(in_[ptr..linelen + 1].as_bytes())?;
-
-            ptr = lineend.unwrap() + 1;
-
-            indented = 0;
-
-        } else {
-
-            let mut finalspace: Option<usize> = in_[..=ptr + rem_width].rfind(" \n");
-
-            if finalspace == None || finalspace.unwrap() < ptr {
-
-                // No place to break; just include
-                // the entire word and move on
-                finalspace = in_[ptr..].find("\n ");
-
-                if finalspace == None {
-
-                    let c: char = in_
-                        .chars()
-                        .nth(ptr)
-                        .unwrap();
-
-                    let s = format!{"{}",c};
-
-                    // End of the string, just add
-                    // it and break
-                    out.write(s.as_bytes())?;
-
-                    break;
-                }
-            }
-
-            out.write(
-                format!{
-                    "{}\n", 
-                    in_[ptr..finalspace.unwrap() - ptr].to_string()
-                }.as_bytes()
-            )?;
-
-            if in_.chars().nth(finalspace.unwrap()).unwrap() == '\n' {
-
-                indented = 0;
-
-            } else {
-
-                if indent != 0 {
-                    out.write(" ".repeat(indent).as_bytes())?;
-                    indented = indent;
-                }
-            }
-
-            ptr = finalspace.unwrap() + 1;
+        start = if nl < in_.len() { nl + 1 } else { nl };
+        if start == in_.len() && !out.ends_with('\n') {
+            out.push('\n');
         }
     }
 
-    let bytes = out.into_inner()?;
-    let result = String::from_utf8(bytes)?;
-
-    Ok(result)
+    Ok(out)
 }
 
 /**

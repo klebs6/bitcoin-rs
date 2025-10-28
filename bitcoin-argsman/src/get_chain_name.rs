@@ -23,21 +23,14 @@ impl ArgsManagerInner {
         let section = "";
 
         let mut get_net = |arg: &str| {
-
-            let value: SettingsValue = get_setting(
-                &self.settings,
-                section,
-                &setting_name(arg),
-                ignore_default_section_config,
-                get_chain_name
-            );
-
-            match value.0.is_null() {
-                true   => false,
-                false  => match value.0.is_bool() {
-                    true   => value.0.get_bool(),
-                    false  => interpret_bool(value.0.get_str())
-                }
+            // Use local resolver
+            let value = self.get_setting(arg);
+            if value.0.is_null() {
+                false
+            } else if value.0.is_bool() {
+                value.0.get_bool()
+            } else {
+                interpret_bool(value.0.get_str())
             }
         };
 

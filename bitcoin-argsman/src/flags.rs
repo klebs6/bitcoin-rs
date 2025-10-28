@@ -58,7 +58,7 @@ mod tests {
 
     #[test]
     fn flags_independent_bits() {
-        assert_ne!(ArgsManagerFlags::NETWORK_ONLY.bits() & ArgsManagerFlags::SENSITIVE.bits(), 0);
+        assert_eq!(ArgsManagerFlags::NETWORK_ONLY.bits() & ArgsManagerFlags::SENSITIVE.bits(), 0);
         assert_ne!(ArgsManagerFlags::ALLOW_INT.bits(), 0);
     }
 }

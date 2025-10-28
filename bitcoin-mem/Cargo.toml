@@ -13,6 +13,9 @@ version = "0.1.18"
 [dependencies.tracing]
 workspace = true
 
+[dependencies.hashbrown]
+workspace = true
+
 [package]
 authors = ["klebs <none>"]
 description = "traits for tracking dynamic and recursive memory usage"

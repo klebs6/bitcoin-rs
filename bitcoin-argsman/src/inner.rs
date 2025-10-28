@@ -1,7 +1,6 @@
 // ---------------- [ File: bitcoin-argsman/src/inner.rs ]
 crate::ix!();
 
-#[derive(Default)]
 pub struct ArgsManagerInner {
     pub settings:                    Settings,
     pub command:                     Vec<String>,
@@ -13,6 +12,23 @@ pub struct ArgsManagerInner {
     pub cached_blocks_path:          Option<Box<Path>>,
     pub cached_datadir_path:         Option<Box<Path>>,
     pub cached_network_datadir_path: Option<Box<Path>>,
+}
+
+impl Default for ArgsManagerInner {
+    fn default() -> Self {
+        Self {
+            settings:                    Settings::default(),
+            command:                     Vec::new(),
+            network:                     None,
+            network_only_args:           HashSet::new(),
+            available_args:              HashMap::new(),
+            accept_any_command:          true,     // <-- important
+            config_sections:             LinkedList::new(),
+            cached_blocks_path:          None,
+            cached_datadir_path:         None,
+            cached_network_datadir_path: None,
+        }
+    }
 }
 
 #[cfg(test)]

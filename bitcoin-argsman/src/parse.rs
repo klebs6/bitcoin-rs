@@ -107,10 +107,13 @@ impl ArgsManagerInner {
             // characters (which are returned from
             // InterpretOption with nonempty
             // section strings) are not valid.
-            if flags.is_none() || section.is_empty() {
-                *error = format!{"Invalid parameter {:?}",argv[i as usize]};
+            //
+            // was: if flags.is_none() || section.is_empty()
+            if flags.is_none() || !section.is_empty() {
+                *error = format!("Invalid parameter {:?}", argv[i as usize]);
                 return false;
             }
+
 
             if !check_valid(&key,&value,flags.unwrap(),error) {
                 return false;
@@ -118,8 +121,8 @@ impl ArgsManagerInner {
 
             self.settings
                 .command_line_options_mut()
-                .get_mut(&key)
-                .unwrap()
+                .entry(key.clone())
+                .or_insert_with(Vec::new)
                 .push(value);
         }
 

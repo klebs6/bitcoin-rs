@@ -35,3 +35,5 @@ x!{select_network}
 x!{settings}
 x!{set}
 x!{use_default_section}
+x!{strip_redundant_last_elements_of_path}
+x!{abs_path_for_config_val}

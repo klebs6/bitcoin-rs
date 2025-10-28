@@ -151,14 +151,12 @@ pub fn setup_bitcoin_tx_args(argsman: &mut ArgsManager)  {
         }
     );
 
-    argsman.add_arg(&
-        ArgDescriptor {
-            name:     "replaceable(=N)",
-            help:     "Set RBF opt-in sequence number for input N (if not provided, opt-in all available inputs)".to_string(),
-            flags:    ArgsManagerFlags::ALLOW_ANY,
-            category: OptionsCategory::COMMANDS,
-        }
-    );
+    argsman.add_arg(&ArgDescriptor {
+        name:     "replaceable=<N>",
+        help:     "Set RBF opt-in sequence number for input N (if not provided, opt-in all available inputs)".to_string(),
+        flags:    ArgsManagerFlags::ALLOW_ANY,
+        category: OptionsCategory::COMMANDS,
+    });
 
     argsman.add_arg(&
         ArgDescriptor {

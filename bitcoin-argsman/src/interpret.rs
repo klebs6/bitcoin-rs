@@ -73,12 +73,12 @@ pub fn interpret_option(
     // like "testnet.foo" or "regtest.bar"
     if let Some(option_index) = key.find('.') {
         *section = key[0..option_index].to_string();
-        key.replace_range((0..option_index + 1), "");
+        key.replace_range(0..option_index + 1, "");
     }
 
     if &key[0..2] == "no" {
 
-        key.replace_range((0..2), "");
+        key.replace_range(0..2, "");
 
         // Double negatives like -nofoo=0 are
         // supported (but discouraged)

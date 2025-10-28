@@ -43,16 +43,30 @@ impl ArgsManagerInner {
       | been set. Also called directly in testing.
       |
       */
-    pub fn force_set_arg(&mut self, 
-        str_arg:   &str,
-        str_value: &str)  {
-        
-        self.settings.forced_settings_mut().insert(
-            setting_name(str_arg), 
-            SettingsValue(UniValue::from(str_value))
-        );
+    pub fn force_set_arg(&mut self, str_arg: &str, str_value: &str)  {
+        let key = setting_name(str_arg);
+
+        let uni = match str_value {
+            "0" => UniValue::from(false),
+            "1" => UniValue::from(true),
+            _   => UniValue::from(str_value),
+        };
+        let val = SettingsValue(uni);
+
+        // Keep forced map
+        self.settings
+            .forced_settings_mut()
+            .insert(key.clone(), val.clone());
+
+        // Mirror into CLI options so local resolver sees it
+        self.settings
+            .command_line_options_mut()
+            .entry(key)
+            .or_insert_with(Vec::new)
+            .push(val);
     }
-    
+
+
     /**
       | Set a boolean argument if it doesn't
       | already have a value
