@@ -24,7 +24,7 @@ pub fn get_auth_cookie_file(temp: Option<bool>) -> Box<Path> {
     let mut name: String = {
         // Honour `-rpccookiefile=<path>` if provided, otherwise
         // fall back to the default.
-        let g_args = G_ARGS.lock().expect("ArgsManager poisoned");
+        let g_args = G_ARGS.lock();
         g_args.get_arg("-rpccookiefile", COOKIEAUTH_FILE)
     };
 
@@ -51,7 +51,7 @@ mod tests_auth_cookie {
         let _guard = SERIAL.lock().unwrap();
         let dir = TempDir::new().expect("tempdir");
         {
-            let mut g = G_ARGS.lock().unwrap();
+            let mut g = G_ARGS.lock();
             g.force_set_arg("-rpccookiefile", dir.path().join("test.cookie").to_str().unwrap());
         }
         f();

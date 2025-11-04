@@ -40,3 +40,16 @@ pub const ADDR_CJDNS_SIZE: usize = 16;
   |
   */
 pub const ADDR_INTERNAL_SIZE: usize = 10;
+
+#[cfg(test)]
+mod bip155_wrong_size_panics_test {
+    use super::*;
+
+    #[traced_test]
+    #[should_panic(expected = "IPv4 address with length")]
+    fn wrong_size_panics() {
+        let mut addr = NetAddr::default();
+        // Founding id with wrong length must panic.
+        addr.set_net_from_bip155network(BIP155Network::IPV4 as u8, 15);
+    }
+}

@@ -21,22 +21,20 @@ impl NetAddr {
       |
       */
     pub fn set_special(&mut self, addr: &String) -> bool {
-        
-        todo!();
-        /*
-            if (!ValidAsCString(addr)) {
+        trace!(target: "netaddr", address = addr, "SetSpecial");
+        if !valid_as_cstring(addr) {
+            debug!(target: "netaddr", "SetSpecial: not a valid C string");
             return false;
         }
 
-        if (SetTor(addr)) {
+        if self.set_tor(addr) {
             return true;
         }
 
-        if (SetI2P(addr)) {
+        if self.seti2p(addr) {
             return true;
         }
 
-        return false;
-        */
+        false
     }
 }

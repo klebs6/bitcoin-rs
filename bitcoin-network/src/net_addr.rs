@@ -116,40 +116,49 @@ impl From<&InAddr> for NetAddr {
 
 impl NetAddr {
     
-    pub fn new(
-        ipv_6addr: &In6Addr,
-        scope:     Option<u32>) -> Self {
+    pub fn new(ipv_6addr: &In6Addr, scope: Option<u32>) -> Self {
+        trace!(target: "netaddr", scope = scope.unwrap_or(0), "Constructing NetAddr from legacy IPv6");
+        // Safety: In6Addr is exactly 16 bytes.
+        let bytes = unsafe {
+            std::slice::from_raw_parts(ipv_6addr as *const _ as *const u8, ADDR_IPV6_SIZE)
+        };
 
-        let scope: u32 = scope.unwrap_or(0);
-    
-        todo!();
-        /*
-        SetLegacyIPv6(Span<const uint8_t>(reinterpret_cast<const uint8_t*>(&ipv6Addr), sizeof(ipv6Addr)));
-        m_scope_id = scope;
-        */
+        let mut out = NetAddr::default();
+        out.set_legacy_ipv6(bytes);
+        *out.scope_id_mut() = scope.unwrap_or(0);
+        debug!(target: "netaddr", net = ?out.get_net_class(), "Constructed NetAddr from IPv6 input");
+        out
     }
 
     pub fn get_addr_bytes(&self) -> Vec<u8> {
-        
-        todo!();
-        /*
-            if (IsAddrV1Compatible()) {
-            uint8_t serialized[NET_ADDR_V1_SERIALIZATION_SIZE];
-            SerializeV1Array(serialized);
-            return {std::begin(serialized), std::end(serialized)};
+        trace!(target: "netaddr", net = ?self.get_net_class(), "Computing NetAddr::get_addr_bytes");
+        if self.is_addr_v1compatible() {
+            let mut serialized = [0u8; NET_ADDR_V1_SERIALIZATION_SIZE];
+            self.serialize_v1array(&mut serialized);
+            debug!(target: "netaddr", "Serialized in legacy (v1) ADDR format");
+            serialized.to_vec()
+        } else {
+            debug!(target: "netaddr", len = self.addr().len(), "Returning raw address bytes");
+            self.addr().as_slice().to_vec()
         }
-        return std::vector<unsigned char>(m_addr.begin(), m_addr.end());
-        */
     }
 
     pub fn get_hash(&self) -> u64 {
-        
-        todo!();
-        /*
-            uint256 hash = Hash(m_addr);
-        uint64_t nRet;
-        memcpy(&nRet, &hash, sizeof(nRet));
-        return nRet;
-        */
+
+        trace!(target: "netaddr", "Computing NetAddr::get_hash (Core-compatible double-SHA256)");
+
+        // Compute the 256-bit double-SHA256 of the raw address bytes.
+        let hash: u256 = bitcoin_hash::hash1(self.addr().as_slice());
+
+        // Reinterpret the first 8 bytes of the hash as a little-endian u64.
+        let bytes = hash.as_ref();
+        assert!(bytes.len() >= 8, "u256 must contain at least eight bytes");
+
+        let mut tmp = [0u8; 8];
+        tmp.copy_from_slice(&bytes[..8]);
+        let nret = u64::from_le_bytes(tmp);
+
+        debug!(target: "netaddr", hash = ?hash, hash64 = nret, "Derived 64-bit NetAddr hash");
+        nret
     }
 }

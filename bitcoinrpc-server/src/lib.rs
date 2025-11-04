@@ -2,3 +2,4 @@
 #[macro_use] mod imports; use imports::*;
 
 x!{server}
+x!{register}

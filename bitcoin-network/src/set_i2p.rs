@@ -21,33 +21,37 @@ impl NetAddr {
       |
       */
     pub fn seti2p(&mut self, addr: &String) -> bool {
-        
-        todo!();
-        /*
-            // I2P addresses that we support consist of 52 base32 characters + ".b32.i2p".
-        static constexpr size_t b32_len{52};
-        static const char* suffix{".b32.i2p"};
-        static constexpr size_t suffix_len{8};
+        trace!(target: "netaddr", address = addr, "SetI2P");
+        // I2P addresses that we support consist of 52 base32 characters + ".b32.i2p".
+        const B32_LEN: usize = 52;
+        const SUFFIX: &str = ".b32.i2p";
+        const SUFFIX_LEN: usize = 8;
 
-        if (addr.size() != b32_len + suffix_len || ToLower(addr.substr(b32_len)) != suffix) {
+        if addr.len() != B32_LEN + SUFFIX_LEN
+            || addr[B32_LEN..].to_ascii_lowercase() != SUFFIX
+        {
+            debug!(target: "netaddr", "SetI2P: length/suffix check failed");
             return false;
         }
 
         // Remove the ".b32.i2p" suffix and pad to a multiple of 8 chars, so DecodeBase32()
         // can decode it.
-        const std::string b32_padded = addr.substr(0, b32_len) + "====";
+        let mut b32_padded = String::with_capacity(B32_LEN + 4);
+        b32_padded.push_str(&addr[..B32_LEN]);
+        b32_padded.push_str("====");
 
-        bool invalid;
-        const auto& address_bytes = DecodeBase32(b32_padded.c_str(), &invalid);
+        let address_bytes: Vec<u8> = match decode_base32(&b32_padded) {
+            Ok(bytes) => bytes,
+            Err(_) => return false,
+        };
 
-        if (invalid || address_bytes.size() != ADDR_I2P_SIZE) {
+        if address_bytes.len() != ADDR_I2P_SIZE {
             return false;
         }
 
-        m_net = NET_I2P;
-        m_addr.assign(address_bytes.begin(), address_bytes.end());
-
-        return true;
-        */
+        *self.net_mut() = Network::NET_I2P;
+        *self.addr_mut() = PreVector::from(address_bytes.as_slice());
+        debug!(target: "netaddr", "SetI2P: parsed destination successfully");
+        true
     }
 }

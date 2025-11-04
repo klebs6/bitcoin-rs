@@ -2154,12 +2154,15 @@ dependencies = [
 name = "bitcoin-remote"
 version = "0.1.18"
 dependencies = [
+ "bitcoin-argsman",
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoin-random",
  "bitcoin-univalue",
  "derive_builder",
  "getset",
+ "tempfile",
  "tracing",
 ]
 

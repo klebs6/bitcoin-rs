@@ -28,7 +28,6 @@ lazy_static!{
     /*
     extern RecursiveMutex cs_mapLocalHost;
     extern std::map<CNetAddr, LocalServiceInfo> mapLocalHost GUARDED_BY(cs_mapLocalHost);
-
     extern const std::string NET_MESSAGE_COMMAND_OTHER;
     */
 }

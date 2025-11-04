@@ -12,37 +12,48 @@ impl NetAddr {
       | constructed.
       */
     pub fn get_mappedas(&self, asmap: &Vec<bool>) -> u32 {
-        
-        todo!();
-        /*
-            uint32_t net_class = GetNetClass();
-        if (asmap.size() == 0 || (net_class != NET_IPV4 && net_class != NET_IPV6)) {
-            return 0; // Indicates not found, safe because AS0 is reserved per RFC7607.
+
+        trace!(
+            target: "netaddr", 
+            asmap_len = asmap.len(), 
+            net = ?self.get_net_class(), 
+            "Deriving mapped AS number"
+        );
+
+        let net_class = self.get_net_class();
+
+        if asmap.is_empty() || (net_class != Network::NET_IPV4 && net_class != Network::NET_IPV6) {
+            // Indicates not found, safe because AS0 is reserved per RFC7607.
+            debug!(target: "netaddr", "No asmap or non-IPv4/IPv6 address → returning AS0");
+            return 0;
         }
-        std::vector<bool> ip_bits(128);
-        if (HasLinkedIPv4()) {
-            // For lookup, treat as if it was just an IPv4 address (IPV4_IN_IPV6_PREFIX + IPv4 bits)
-            for (int8_t byte_i = 0; byte_i < 12; ++byte_i) {
-                for (uint8_t bit_i = 0; bit_i < 8; ++bit_i) {
-                    ip_bits[byte_i * 8 + bit_i] = (IPV4_IN_IPV6_PREFIX[byte_i] >> (7 - bit_i)) & 1;
+
+        // Build 128-bit view of the IP per Bitcoin Core's Interpret() convention.
+        let mut ip_bits = vec![false; 128];
+
+        if self.has_linked_ipv4() {
+            // Treat as if it was just an IPv4 address (IPV4_IN_IPV6_PREFIX + IPv4 bits)
+            for (byte_i, b) in IPV4_IN_IPV6_PREFIX.iter().enumerate() {
+                for bit_i in 0..8 {
+                    ip_bits[byte_i * 8 + bit_i] = ((b >> (7 - bit_i)) & 1) == 1;
                 }
             }
-            uint32_t ipv4 = GetLinkedIPv4();
-            for (int i = 0; i < 32; ++i) {
-                ip_bits[96 + i] = (ipv4 >> (31 - i)) & 1;
+            let ipv4 = self.get_linked_ipv4();
+            for i in 0..32 {
+                ip_bits[96 + i] = ((ipv4 >> (31 - i)) & 1) == 1;
             }
         } else {
             // Use all 128 bits of the IPv6 address otherwise
-            assert(IsIPv6());
-            for (int8_t byte_i = 0; byte_i < 16; ++byte_i) {
-                uint8_t cur_byte = m_addr[byte_i];
-                for (uint8_t bit_i = 0; bit_i < 8; ++bit_i) {
-                    ip_bits[byte_i * 8 + bit_i] = (cur_byte >> (7 - bit_i)) & 1;
+            assert!(self.is_ipv6(), "Expected IPv6 address when no linked IPv4 is present");
+            for byte_i in 0..16 {
+                let cur = self.addr().as_slice()[byte_i];
+                for bit_i in 0..8 {
+                    ip_bits[byte_i * 8 + bit_i] = ((cur >> (7 - bit_i)) & 1) == 1;
                 }
             }
         }
-        uint32_t mapped_as = Interpret(asmap, ip_bits);
-        return mapped_as;
-        */
+
+        let mapped_as: u32 = interpret(asmap, ip_bits);
+        mapped_as
     }
 }

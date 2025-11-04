@@ -9,4 +9,3 @@ x!{error_code}
 x!{generate_auth_cookie}
 x!{get_auth_cookie}
 x!{json_request}
-x!{register}

@@ -20,16 +20,18 @@ impl NetAddr {
       */
     pub fn set_internal(&mut self, name: &str) -> bool {
         
-        todo!();
-        /*
-            if (name.empty()) {
+        if name.is_empty() {
             return false;
         }
-        m_net = NET_INTERNAL;
-        unsigned char hash[32] = {};
-        CSHA256().Write((const unsigned char*)name.data(), name.size()).Finalize(hash);
-        m_addr.assign(hash, hash + ADDR_INTERNAL_SIZE);
-        return true;
-        */
+        *self.net_mut() = Network::NET_INTERNAL;
+
+        let mut digest = [0u8; 32];
+        let mut sha = Sha256::new();
+        sha.write(name.as_bytes());
+        sha.finalize(&mut digest);
+
+        *self.addr_mut() = PreVector::from(&digest[..ADDR_INTERNAL_SIZE]);
+        debug!(target: "netaddr", "SetInternal: derived INTERNAL address from name hash");
+        true
     }
 }

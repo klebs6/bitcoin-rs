@@ -7,74 +7,76 @@ impl NetAddr {
       | Serialize to a stream.
       |
       */
-    pub fn serialize<Stream>(&self, s: &mut Stream)  {
-    
-        todo!();
-        /*
-            if (s.GetVersion() & ADDRV2_FORMAT) {
-                SerializeV2Stream(s);
-            } else {
-                SerializeV1Stream(s);
-            }
-        */
+    pub fn serialize<Stream>(&self, s: &mut Stream) {
+        trace!(target: "netaddr", "NetAddr::serialize entry");
+        // Preserve Core's feature-bit gate for ADDRv2 (BIP155).
+        let ver = s.get_version();
+        if (ver & ADDRV2_FORMAT) != 0 {
+            debug!(target: "netaddr", version = ver, "Using ADDRv2 (BIP155) serialization");
+            self.serialize_v2stream(s);
+        } else {
+            debug!(target: "netaddr", version = ver, "Using legacy ADDRv1 serialization");
+            self.serialize_v1stream(s);
+        }
     }
 
     /**
       | Unserialize from a stream.
       |
       */
-    pub fn unserialize<Stream>(&mut self, s: &mut Stream)  {
-    
-        todo!();
-        /*
-            if (s.GetVersion() & ADDRV2_FORMAT) {
-                UnserializeV2Stream(s);
-            } else {
-                UnserializeV1Stream(s);
-            }
-        */
+    pub fn unserialize<Stream>(&mut self, s: &mut Stream) {
+        trace!(target: "netaddr", "NetAddr::unserialize entry");
+        let ver = s.get_version();
+        if (ver & ADDRV2_FORMAT) != 0 {
+            debug!(target: "netaddr", version = ver, "Using ADDRv2 (BIP155) unserialization");
+            self.unserialize_v2stream(s);
+        } else {
+            debug!(target: "netaddr", version = ver, "Using legacy ADDRv1 unserialization");
+            self.unserialize_v1stream(s);
+        }
     }
-    
+
     /**
       | Serialize in pre-ADDRv2/BIP155 format
       | to an array.
       |
       */
-    pub fn serialize_v1array(&self, arr: &mut [u8; NET_ADDR_V1_SERIALIZATION_SIZE])  {
-        
-        todo!();
-        /*
-            size_t prefix_size;
+    pub fn serialize_v1array(&self, arr: &mut [u8; NET_ADDR_V1_SERIALIZATION_SIZE]) {
+        trace!(target: "netaddr", net = ?self.get_net_class(), "SerializeV1Array");
+        match *self.net() {
+            Network::NET_IPV6 => {
+                assert_eq!(self.addr().len(), NET_ADDR_V1_SERIALIZATION_SIZE, "IPv6 must be 16 bytes");
+                arr.copy_from_slice(self.addr().as_slice());
+                debug!(target: "netaddr", "V1 array: wrote bare IPv6");
+                return;
+            }
+            Network::NET_IPV4 => {
+                let prefix_size = IPV4_IN_IPV6_PREFIX.len();
+                assert_eq!(prefix_size + self.addr().len(), NET_ADDR_V1_SERIALIZATION_SIZE, "IPv4-in-IPv6 size mismatch");
+                arr[..prefix_size].copy_from_slice(&IPV4_IN_IPV6_PREFIX);
+                arr[prefix_size..].copy_from_slice(self.addr().as_slice());
+                debug!(target: "netaddr", "V1 array: wrote IPv4-in-IPv6");
+                return;
+            }
+            Network::NET_INTERNAL => {
+                let prefix_size = INTERNAL_IN_IPV6_PREFIX.len();
+                assert_eq!(prefix_size + self.addr().len(), NET_ADDR_V1_SERIALIZATION_SIZE, "INTERNAL-in-IPv6 size mismatch");
+                arr[..prefix_size].copy_from_slice(&INTERNAL_IN_IPV6_PREFIX);
+                arr[prefix_size..].copy_from_slice(self.addr().as_slice());
+                debug!(target: "netaddr", "V1 array: wrote INTERNAL-in-IPv6");
+                return;
+            }
+            Network::NET_ONION | Network::NET_I2P | Network::NET_CJDNS => {
+                // fall-through to zero-fill below
+            }
+            Network::NET_UNROUTABLE | Network::NET_MAX => {
+                panic!("m_net is never and should not be set to NET_UNROUTABLE/NET_MAX");
+            }
+        }
 
-            switch (m_net) {
-            case NET_IPV6:
-                assert(m_addr.size() == sizeof(arr));
-                memcpy(arr, m_addr.data(), m_addr.size());
-                return;
-            case NET_IPV4:
-                prefix_size = sizeof(IPV4_IN_IPV6_PREFIX);
-                assert(prefix_size + m_addr.size() == sizeof(arr));
-                memcpy(arr, IPV4_IN_IPV6_PREFIX.data(), prefix_size);
-                memcpy(arr + prefix_size, m_addr.data(), m_addr.size());
-                return;
-            case NET_INTERNAL:
-                prefix_size = sizeof(INTERNAL_IN_IPV6_PREFIX);
-                assert(prefix_size + m_addr.size() == sizeof(arr));
-                memcpy(arr, INTERNAL_IN_IPV6_PREFIX.data(), prefix_size);
-                memcpy(arr + prefix_size, m_addr.data(), m_addr.size());
-                return;
-            case NET_ONION:
-            case NET_I2P:
-            case NET_CJDNS:
-                break;
-            case NET_UNROUTABLE:
-            case NET_MAX:
-                assert(false);
-            } // no default case, so the compiler can warn about missing cases
-
-            // Serialize ONION, I2P and CJDNS as all-zeros.
-            memset(arr, 0x0, NET_ADDR_V1_SERIALIZATION_SIZE);
-        */
+        // Serialize ONION, I2P and CJDNS as all-zeros.
+        arr.fill(0u8);
+        debug!(target: "netaddr", "V1 array: wrote all-zeros for ONION/I2P/CJDNS");
     }
 
     /**
@@ -82,38 +84,33 @@ impl NetAddr {
       | to a stream.
       |
       */
-    pub fn serialize_v1stream<Stream>(&self, s: &mut Stream)  {
-    
-        todo!();
-        /*
-            uint8_t serialized[NET_ADDR_V1_SERIALIZATION_SIZE];
-
-            SerializeV1Array(serialized);
-
-            s << serialized;
-        */
+    pub fn serialize_v1stream<Stream>(&self, s: &mut Stream) {
+        trace!(target: "netaddr", "SerializeV1Stream");
+        let mut serialized = [0u8; NET_ADDR_V1_SERIALIZATION_SIZE];
+        self.serialize_v1array(&mut serialized);
+        *s << &serialized[..];
+        debug!(target: "netaddr", "Wrote V1 array (16 bytes) to stream");
     }
 
     /**
       | Serialize as ADDRv2 / BIP155.
       |
       */
-    pub fn serialize_v2stream<Stream>(&self, s: &mut Stream)  {
-    
-        todo!();
-        /*
-            if (IsInternal()) {
-                // Serialize NET_INTERNAL as embedded in IPv6. We need to
-                // serialize such addresses from addrman.
-                s << static_cast<uint8_t>(BIP155Network::IPV6);
-                s << COMPACTSIZE(ADDR_IPV6_SIZE);
-                SerializeV1Stream(s);
-                return;
-            }
+    pub fn serialize_v2stream<Stream>(&self, s: &mut Stream) {
+        trace!(target: "netaddr", net = ?self.get_net_class(), "SerializeV2Stream");
+        if self.is_internal() {
+            // Serialize NET_INTERNAL as embedded in IPv6. We need to
+            // serialize such addresses from addrman.
+            *s << (BIP155Network::IPV6 as u8);
+            *s << (ADDR_IPV6_SIZE as usize); // COMPACTSIZE(ADDR_IPV6_SIZE)
+            self.serialize_v1stream(s);
+            debug!(target: "netaddr", "ADDRv2: wrote INTERNAL embedded as IPv6");
+            return;
+        }
 
-            s << static_cast<uint8_t>(GetBIP155Network());
-            s << m_addr;
-        */
+        *s << (self.get_bip155network() as u8);
+        *s << self.addr(); // PreVector serializes as CompactSize length + bytes
+        debug!(target: "netaddr", addr_len = self.addr().len(), "ADDRv2: wrote (network id + varbytes)");
     }
 
     /**
@@ -121,14 +118,12 @@ impl NetAddr {
       | format from an array.
       |
       */
-    pub fn unserialize_v1array(&mut self, arr: &mut [u8; NET_ADDR_V1_SERIALIZATION_SIZE])  {
-        
-        todo!();
-        /*
-            // Use SetLegacyIPv6() so that m_net is set correctly. For example
-            // ::FFFF:0102:0304 should be set as m_net=NET_IPV4 (1.2.3.4).
-            SetLegacyIPv6(arr);
-        */
+    pub fn unserialize_v1array(&mut self, arr: &mut [u8; NET_ADDR_V1_SERIALIZATION_SIZE]) {
+        trace!(target: "netaddr", "UnserializeV1Array");
+        // Use SetLegacyIPv6() so that m_net is set correctly. For example
+        // ::FFFF:0102:0304 should be set as m_net=NET_IPV4 (1.2.3.4).
+        self.set_legacy_ipv6(arr);
+        debug!(target: "netaddr", net = ?self.get_net_class(), "V1 array parsed via legacy IPv6 rules");
     }
 
     /**
@@ -136,16 +131,12 @@ impl NetAddr {
       | format from a stream.
       |
       */
-    pub fn unserialize_v1stream<Stream>(&mut self, s: &mut Stream)  {
-    
-        todo!();
-        /*
-            uint8_t serialized[NET_ADDR_V1_SERIALIZATION_SIZE];
-
-            s >> serialized;
-
-            UnserializeV1Array(serialized);
-        */
+    pub fn unserialize_v1stream<Stream>(&mut self, s: &mut Stream) {
+        trace!(target: "netaddr", "UnserializeV1Stream");
+        let mut serialized = [0u8; NET_ADDR_V1_SERIALIZATION_SIZE];
+        *s >> &mut serialized[..];
+        self.unserialize_v1array(&mut serialized);
+        debug!(target: "netaddr", net = ?self.get_net_class(), "V1 stream parsed");
     }
 
     /**
@@ -154,59 +145,80 @@ impl NetAddr {
       */
     pub fn unserialize_v2stream<Stream>(&mut self, s: &mut Stream)  {
     
-        todo!();
-        /*
-            uint8_t bip155_net;
-            s >> bip155_net;
+        trace!(target: "netaddr", "UnserializeV2Stream");
+        // Read network id (BIP155).
+        let mut bip155_net: u8 = 0;
+        *s >> &mut bip155_net;
 
-            size_t address_size;
-            s >> COMPACTSIZE(address_size);
+        // Read CompactSize length into a native usize.
+        let mut address_size_usize: usize = 0;
+        *s >> &mut address_size_usize;
 
-            if (address_size > BIP155_MAX_ADDRV2_SIZE) {
-                throw std::ios_base::failure(strprintf(
-                    "Address too long: %u > %u", address_size, BIP155_MAX_ADDRV2_SIZE));
+        if address_size_usize > BIP155_MAX_ADDRV2_SIZE {
+            error!(
+                target: "netaddr",
+                got = address_size_usize,
+                max = BIP155_MAX_ADDRV2_SIZE,
+                "ADDRv2 address too long"
+            );
+            panic!(
+                "Address too long: {} > {}",
+                address_size_usize, BIP155_MAX_ADDRV2_SIZE
+            );
+        }
+
+        *self.scope_id_mut() = 0;
+
+        if self.set_net_from_bip155network(bip155_net, address_size_usize) {
+            // Read exactly address_size bytes into m_addr.
+            let mut tmp = vec![0u8; address_size_usize];
+            *s >> &mut tmp[..];
+            *self.addr_mut() = PreVector::from(tmp.as_slice());
+
+            if *self.net() != Network::NET_IPV6 {
+                debug!(target: "netaddr", net = ?self.get_net_class(), "Parsed non-IPv6 ADDRv2 address");
+                return;
             }
 
-            m_scope_id = 0;
+            // Do some special checks on IPv6 addresses.
 
-            if (SetNetFromBIP155Network(bip155_net, address_size)) {
-                m_addr.resize(address_size);
-                s >> MakeSpan(m_addr);
+            // Recognize NET_INTERNAL embedded in IPv6, such addresses are not
+            // gossiped but could be coming from addrman, when unserializing from
+            // disk.
+            if has_prefix(self.addr().as_slice(), &INTERNAL_IN_IPV6_PREFIX) {
+                *self.net_mut() = Network::NET_INTERNAL;
 
-                if (m_net != NET_IPV6) {
-                    return;
-                }
+                let prefix = INTERNAL_IN_IPV6_PREFIX.len();
+                let mut shrunk = [0u8; ADDR_INTERNAL_SIZE];
+                shrunk.copy_from_slice(&self.addr().as_slice()[prefix..prefix + ADDR_INTERNAL_SIZE]);
+                *self.addr_mut() = PreVector::from(&shrunk[..]);
 
-                // Do some special checks on IPv6 addresses.
-
-                // Recognize NET_INTERNAL embedded in IPv6, such addresses are not
-                // gossiped but could be coming from addrman, when unserializing from
-                // disk.
-                if (HasPrefix(m_addr, INTERNAL_IN_IPV6_PREFIX)) {
-                    m_net = NET_INTERNAL;
-                    memmove(m_addr.data(), m_addr.data() + INTERNAL_IN_IPV6_PREFIX.size(),
-                            ADDR_INTERNAL_SIZE);
-                    m_addr.resize(ADDR_INTERNAL_SIZE);
-                    return;
-                }
-
-                if (!HasPrefix(m_addr, IPV4_IN_IPV6_PREFIX) &&
-                    !HasPrefix(m_addr, TORV2_IN_IPV6_PREFIX)) {
-                    return;
-                }
-
-                // IPv4 and TORv2 are not supposed to be embedded in IPv6 (like in V1
-                // encoding). Unserialize as !IsValid(), thus ignoring them.
-            } else {
-                // If we receive an unknown BIP155 network id (from the future?) then
-                // ignore the address - unserialize as !IsValid().
-                s.ignore(address_size);
+                debug!(target: "netaddr", "Detected INTERNAL-in-IPv6 and re-mapped to NET_INTERNAL");
+                return;
             }
 
-            // Mimic a default-constructed CNetAddr object which is !IsValid() and thus
-            // will not be gossiped, but continue reading next addresses from the stream.
-            m_net = NET_IPV6;
-            m_addr.assign(ADDR_IPV6_SIZE, 0x0);
-        */
+            if !has_prefix(self.addr().as_slice(), &IPV4_IN_IPV6_PREFIX)
+                && !has_prefix(self.addr().as_slice(), &TORV2_IN_IPV6_PREFIX)
+            {
+                // Normal IPv6; keep as-is.
+                debug!(target: "netaddr", "Parsed ordinary IPv6 ADDRv2 address");
+                return;
+            }
+
+            // IPv4 and TORv2 are not supposed to be embedded in IPv6 (like in V1
+            // encoding). Unserialize as !IsValid(), thus ignoring them.
+            warn!(target: "netaddr", "Found forbidden IPv4/TORv2 embedding in ADDRv2 IPv6 payload; marking invalid");
+        } else {
+            // If we receive an unknown BIP155 network id (from the future?) then
+            // ignore the address - unserialize as !IsValid().
+            debug!(target: "netaddr", id = bip155_net, size = address_size_usize, "Unknown BIP155 network id; skipping payload");
+            s.ignore(address_size_usize).expect("stream ignore failed");
+        }
+
+        // Mimic a default-constructed CNetAddr object which is !IsValid() and thus
+        // will not be gossiped, but continue reading next addresses from the stream.
+        *self.net_mut() = Network::NET_IPV6;
+        *self.addr_mut() = PreVector::from(&[0u8; ADDR_IPV6_SIZE][..]);
+        debug!(target: "netaddr", "Set NetAddr to !IsValid() placeholder (::)");
     }
 }

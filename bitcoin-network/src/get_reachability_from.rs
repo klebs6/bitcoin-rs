@@ -9,68 +9,95 @@ impl NetAddr {
       |
       */
     pub fn get_reachability_from(&self, paddr_partner: *const NetAddr) -> i32 {
-        
-        todo!();
-        /*
-            enum Reachability {
-            REACH_UNREACHABLE,
-            REACH_DEFAULT,
-            REACH_TEREDO,
-            REACH_IPV6_WEAK,
-            REACH_IPV4,
-            REACH_IPV6_STRONG,
-            REACH_PRIVATE
+
+        trace!(
+            target: "netaddr", 
+            ours_net = ?self.get_net_class(), 
+            "Computing reachability score from peer"
+        );
+
+        // Reachability categories (kept as integers to mirror the original control flow)
+        const REACH_UNREACHABLE: i32 = 0;
+        const REACH_DEFAULT:     i32 = 1;
+        const REACH_TEREDO:      i32 = 2;
+        const REACH_IPV6_WEAK:   i32 = 3;
+        const REACH_IPV4:        i32 = 4;
+        const REACH_IPV6_STRONG: i32 = 5;
+        const REACH_PRIVATE:     i32 = 6;
+
+        if !self.is_routable() || self.is_internal() {
+            debug!(target: "netaddr", "Our address is not routable or is internal → unreachable");
+            return REACH_UNREACHABLE;
+        }
+
+        let our_net  = get_ext_network(Some(self));
+
+        let their_net = unsafe {
+            if paddr_partner.is_null() {
+                get_ext_network(None)
+            } else {
+                get_ext_network(Some(&*paddr_partner))
+            }
         };
 
-        if (!IsRoutable() || IsInternal())
-            return REACH_UNREACHABLE;
+        let f_tunnel = self.isrfc3964() || self.isrfc6052() || self.isrfc6145();
 
-        int ourNet = GetExtNetwork(this);
-        int theirNet = GetExtNetwork(paddrPartner);
-        bool fTunnel = IsRFC3964() || IsRFC6052() || IsRFC6145();
+        debug!(
+            target: "netaddr", 
+            our_net, 
+            their_net, 
+            f_tunnel, 
+            "Extended networks and tunnel status"
+        );
 
-        switch(theirNet) {
-        case NET_IPV4:
-            switch(ourNet) {
-            default:       return REACH_DEFAULT;
-            case NET_IPV4: return REACH_IPV4;
+        match their_net {
+            x if x == Network::NET_IPV4 as i32 => {
+                match our_net {
+                    y if y == Network::NET_IPV4 as i32 => REACH_IPV4,
+                    _ => REACH_DEFAULT,
+                }
             }
-        case NET_IPV6:
-            switch(ourNet) {
-            default:         return REACH_DEFAULT;
-            case NET_TEREDO: return REACH_TEREDO;
-            case NET_IPV4:   return REACH_IPV4;
-            case NET_IPV6:   return fTunnel ? REACH_IPV6_WEAK : REACH_IPV6_STRONG; // only prefer giving our IPv6 address if it's not tunnelled
+            x if x == Network::NET_IPV6 as i32 => {
+                match our_net {
+                    y if y == NET_TEREDO => REACH_TEREDO,
+                    y if y == Network::NET_IPV4 as i32 => REACH_IPV4,
+                    y if y == Network::NET_IPV6 as i32 => {
+                        if f_tunnel { REACH_IPV6_WEAK } else { REACH_IPV6_STRONG }
+                    }
+                    _ => REACH_DEFAULT,
+                }
             }
-        case NET_ONION:
-            switch(ourNet) {
-            default:         return REACH_DEFAULT;
-            case NET_IPV4:   return REACH_IPV4; // Tor users can connect to IPv4 as well
-            case NET_ONION:    return REACH_PRIVATE;
+            x if x == Network::NET_ONION as i32 => {
+                match our_net {
+                    y if y == Network::NET_IPV4 as i32 => REACH_IPV4, // Tor users can connect to IPv4 as well
+                    y if y == Network::NET_ONION as i32 => REACH_PRIVATE,
+                    _ => REACH_DEFAULT,
+                }
             }
-        case NET_I2P:
-            switch (ourNet) {
-            case NET_I2P: return REACH_PRIVATE;
-            default: return REACH_DEFAULT;
+            x if x == Network::NET_I2P as i32 => {
+                match our_net {
+                    y if y == Network::NET_I2P as i32 => REACH_PRIVATE,
+                    _ => REACH_DEFAULT,
+                }
             }
-        case NET_TEREDO:
-            switch(ourNet) {
-            default:          return REACH_DEFAULT;
-            case NET_TEREDO:  return REACH_TEREDO;
-            case NET_IPV6:    return REACH_IPV6_WEAK;
-            case NET_IPV4:    return REACH_IPV4;
+            x if x == NET_TEREDO => {
+                match our_net {
+                    y if y == NET_TEREDO => REACH_TEREDO,
+                    y if y == Network::NET_IPV6 as i32 => REACH_IPV6_WEAK,
+                    y if y == Network::NET_IPV4 as i32 => REACH_IPV4,
+                    _ => REACH_DEFAULT,
+                }
             }
-        case NET_UNKNOWN:
-        case NET_UNROUTABLE:
-        default:
-            switch(ourNet) {
-            default:          return REACH_DEFAULT;
-            case NET_TEREDO:  return REACH_TEREDO;
-            case NET_IPV6:    return REACH_IPV6_WEAK;
-            case NET_IPV4:    return REACH_IPV4;
-            case NET_ONION:     return REACH_PRIVATE; // either from Tor, or don't care about our address
+            _ => {
+                // NET_UNKNOWN or NET_UNROUTABLE or any other
+                match our_net {
+                    y if y == NET_TEREDO => REACH_TEREDO,
+                    y if y == Network::NET_IPV6 as i32 => REACH_IPV6_WEAK,
+                    y if y == Network::NET_IPV4 as i32 => REACH_IPV4,
+                    y if y == Network::NET_ONION as i32 => REACH_PRIVATE, // either from Tor, or don't care about our address
+                    _ => REACH_DEFAULT,
+                }
             }
         }
-        */
     }
 }

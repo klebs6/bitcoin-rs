@@ -15,34 +15,38 @@ impl NetAddr {
       |
       */
     pub fn set_legacy_ipv6(&mut self, ipv6: &[u8])  {
+
+        trace!(target: "netaddr", input_len = ipv6.len(), "Setting from legacy IPv6");
+
+        assert_eq!(ipv6.len(), ADDR_IPV6_SIZE, "Legacy IPv6 input must be 16 bytes");
         
-        todo!();
-        /*
-            assert(ipv6.size() == ADDR_IPV6_SIZE);
+        let mut skip: usize = 0;
 
-        size_t skip{0};
-
-        if (HasPrefix(ipv6, IPV4_IN_IPV6_PREFIX)) {
+        if has_prefix(ipv6, &IPV4_IN_IPV6_PREFIX) {
             // IPv4-in-IPv6
-            m_net = NET_IPV4;
-            skip = sizeof(IPV4_IN_IPV6_PREFIX);
-        } else if (HasPrefix(ipv6, TORV2_IN_IPV6_PREFIX)) {
+            *self.net_mut() = Network::NET_IPV4;
+            skip = IPV4_IN_IPV6_PREFIX.len();
+            debug!(target: "netaddr", "Detected IPv4-in-IPv6 mapping");
+        } else if has_prefix(ipv6, &TORV2_IN_IPV6_PREFIX) {
             // TORv2-in-IPv6 (unsupported). Unserialize as !IsValid(), thus ignoring them.
             // Mimic a default-constructed CNetAddr object which is !IsValid() and thus
             // will not be gossiped, but continue reading next addresses from the stream.
-            m_net = NET_IPV6;
-            m_addr.assign(ADDR_IPV6_SIZE, 0x0);
+            *self.net_mut() = Network::NET_IPV6;
+            *self.addr_mut() = PreVector::from(&[0u8; ADDR_IPV6_SIZE][..]);
+            warn!(target: "netaddr", "Detected deprecated TORv2-in-IPv6; setting to invalid IPv6 (::)");
             return;
-        } else if (HasPrefix(ipv6, INTERNAL_IN_IPV6_PREFIX)) {
+        } else if has_prefix(ipv6, &INTERNAL_IN_IPV6_PREFIX) {
             // Internal-in-IPv6
-            m_net = NET_INTERNAL;
-            skip = sizeof(INTERNAL_IN_IPV6_PREFIX);
+            *self.net_mut() = Network::NET_INTERNAL;
+            skip = INTERNAL_IN_IPV6_PREFIX.len();
+            debug!(target: "netaddr", "Detected INTERNAL-in-IPv6 mapping");
         } else {
             // IPv6
-            m_net = NET_IPV6;
+            *self.net_mut() = Network::NET_IPV6;
+            debug!(target: "netaddr", "Detected plain IPv6 address");
         }
 
-        m_addr.assign(ipv6.begin() + skip, ipv6.end());
-        */
+        *self.addr_mut() = PreVector::from(&ipv6[skip..]);
+        debug!(target: "netaddr", net = ?self.get_net_class(), addr_len = self.addr().len(), "Legacy IPv6 set complete");
     }
 }

@@ -17,10 +17,10 @@ impl CheckIsReachable for Network {
     fn is_reachable(&self) -> bool {
         
         todo!();
-            /*
-                LOCK(cs_mapLocalHost);
-            return !vfLimited[net];
-            */
+        /*
+        LOCK(cs_mapLocalHost);
+        return !vfLimited[net];
+        */
     }
 }
 

@@ -4,36 +4,45 @@ crate::ix!();
 impl NetAddr {
 
     pub fn to_stringip(&self) -> String {
-        
-        todo!();
-        /*
-            switch (m_net) {
-        case NET_IPV4:
-            return IPv4ToString(m_addr);
-        case NET_IPV6:
-            return IPv6ToString(m_addr, m_scope_id);
-        case NET_ONION:
-            return OnionToString(m_addr);
-        case NET_I2P:
-            return EncodeBase32(m_addr, false /* don't pad with = */) + ".b32.i2p";
-        case NET_CJDNS:
-            return IPv6ToString(m_addr, 0);
-        case NET_INTERNAL:
-            return EncodeBase32(m_addr) + ".internal";
-        case NET_UNROUTABLE: // m_net is never and should not be set to NET_UNROUTABLE
-        case NET_MAX:        // m_net is never and should not be set to NET_MAX
-            assert(false);
-        } // no default case, so the compiler can warn about missing cases
-
-        assert(false);
-        */
+        trace!(target: "netaddr", net = ?self.get_net_class(), "Formatting address as string (IP-style)");
+        match *self.net() {
+            Network::NET_IPV4 => {
+                assert_eq!(self.addr().len(), ADDR_IPV4_SIZE, "IPv4 address must be 4 bytes");
+                ipv4_to_string(self.addr().as_slice())
+            }
+            Network::NET_IPV6 => {
+                assert_eq!(self.addr().len(), ADDR_IPV6_SIZE, "IPv6 address must be 16 bytes");
+                ipv6_to_string(self.addr().as_slice(), *self.scope_id())
+            }
+            Network::NET_ONION => {
+                assert_eq!(self.addr().len(), ADDR_TORV3_SIZE, "TORv3 address must be 32 bytes");
+                onion_to_string(self.addr().as_slice())
+            }
+            Network::NET_I2P => {
+                assert_eq!(self.addr().len(), ADDR_I2P_SIZE, "I2P address must be 32 bytes");
+                // Do not pad with '=' (encoding helper uses no padding when second arg is None).
+                let mut s = encode_base32(self.addr().as_slice(), None);
+                s.push_str(".b32.i2p");
+                s
+            }
+            Network::NET_CJDNS => {
+                assert_eq!(self.addr().len(), ADDR_CJDNS_SIZE, "CJDNS address must be 16 bytes");
+                ipv6_to_string(self.addr().as_slice(), 0)
+            }
+            Network::NET_INTERNAL => {
+                assert_eq!(self.addr().len(), ADDR_INTERNAL_SIZE, "INTERNAL address must be 10 bytes");
+                let mut s = encode_base32(self.addr().as_slice(), None);
+                s.push_str(".internal");
+                s
+            }
+            Network::NET_UNROUTABLE | Network::NET_MAX => {
+                panic!("m_net is never and should not be set to NET_UNROUTABLE/NET_MAX");
+            }
+        }
     }
     
     pub fn to_string(&self) -> String {
-        
-        todo!();
-        /*
-            return ToStringIP();
-        */
+        trace!(target: "netaddr", "Converting NetAddr to string");
+        self.to_stringip()
     }
 }

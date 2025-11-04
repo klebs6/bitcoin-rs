@@ -21,45 +21,52 @@ impl NetAddr {
       |
       */
     pub fn set_tor(&mut self, addr: &String) -> bool {
-        
-        todo!();
-        /*
-            static const char* suffix{".onion"};
-        static constexpr size_t suffix_len{6};
+        const SUFFIX: &str = ".onion";
+        let suffix_len = SUFFIX.len();
 
-        if (addr.size() <= suffix_len || addr.substr(addr.size() - suffix_len) != suffix) {
+        if addr.len() <= suffix_len || !addr.ends_with(SUFFIX) {
+            debug!(target: "netaddr", "SetTor: suffix check failed");
             return false;
         }
 
-        bool invalid;
-        const auto& input = DecodeBase32(addr.substr(0, addr.size() - suffix_len).c_str(), &invalid);
+        let b32 = &addr[..addr.len() - suffix_len];
 
-        if (invalid) {
-            return false;
-        }
+        // Decode base32; reject invalid encodings.
+        let input: Vec<u8> = match decode_base32(b32) {
+            Ok(bytes) => bytes,
+            Err(_) => return false,
+        };
 
-        if (input.size() == torv3::TOTAL_LEN) {
-            Span<const uint8_t> input_pubkey{input.data(), ADDR_TORV3_SIZE};
-            Span<const uint8_t> input_checksum{input.data() + ADDR_TORV3_SIZE, torv3::CHECKSUM_LEN};
-            Span<const uint8_t> input_version{input.data() + ADDR_TORV3_SIZE + torv3::CHECKSUM_LEN, sizeof(torv3::VERSION)};
+        if input.len() == TORV3_TOTAL_LEN {
+            let pk_end = ADDR_TORV3_SIZE;
+            let cks_end = pk_end + TORV3_CHECKSUM_LEN;
+            let ver_end = cks_end + TORV3_VERSION.len();
 
-            if (input_version != torv3::VERSION) {
+            if ver_end != input.len() {
                 return false;
             }
 
-            uint8_t calculated_checksum[torv3::CHECKSUM_LEN];
-            torv3::Checksum(input_pubkey, calculated_checksum);
+            let input_pubkey = &input[..pk_end];
+            let input_checksum = &input[pk_end..cks_end];
+            let input_version  = &input[cks_end..ver_end];
 
-            if (input_checksum != calculated_checksum) {
+            if input_version != TORV3_VERSION {
                 return false;
             }
 
-            m_net = NET_ONION;
-            m_addr.assign(input_pubkey.begin(), input_pubkey.end());
+            let mut calculated = [0u8; TORV3_CHECKSUM_LEN];
+            torv3_checksum(input_pubkey, &mut calculated);
+
+            if input_checksum != calculated {
+                return false;
+            }
+
+            *self.net_mut() = Network::NET_ONION;
+            *self.addr_mut() = PreVector::from(input_pubkey);
+            debug!(target: "netaddr", "SetTor: parsed TORv3 address");
             return true;
         }
 
-        return false;
-        */
+        false
     }
 }

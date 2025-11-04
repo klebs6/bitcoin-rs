@@ -6,10 +6,10 @@ crate::ix!();
 /// Returns **true** on success and populates `cookie_out` with the newly‑minted value.
 ///
 pub fn generate_auth_cookie(cookie_out: &mut String) -> bool {
-    const COOKIE_SIZE: usize = 32;
+    const COOKIE_SIZE: i32 = 32;
 
     // 1. Create random password
-    let mut rand_pwd = [0u8; COOKIE_SIZE];
+    let mut rand_pwd = [0u8; COOKIE_SIZE as usize];
     get_rand_bytes(&mut rand_pwd.as_slice(), COOKIE_SIZE);
 
     let cookie: String = format!(
@@ -27,7 +27,7 @@ pub fn generate_auth_cookie(cookie_out: &mut String) -> bool {
                 return false;
             }
         }
-        let mut file = match OpenOptions::new()
+        let mut file = match std::fs::OpenOptions::new()
             .write(true)
             .create(true)
             .truncate(true)

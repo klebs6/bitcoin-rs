@@ -39,10 +39,11 @@ FEATURES :=
 #ACTIVE := bitcoin-get-json-token # note that this one has a failing test
 
 ACTIVE := bitcoin-top
-ACTIVE := bitcoin-network
-ACTIVE := bitcoin-remote
+
 ACTIVE := bitcoin-base58
 ACTIVE := bitcoin-settings
+ACTIVE := bitcoin-remote
+ACTIVE := bitcoin-network
 
 #-------------------------------[next]
 #ACTIVE := bitcoinleveldb-arena
@@ -265,7 +266,6 @@ bench:
 	RUSTFLAGS="-Awarnings -C target-cpu=native" $(CARGO) $(BENCH) -p $(ACTIVE)
 
 #-------------------------------[done-below]
-
 #ACTIVE := bitcoin-amt
 #ACTIVE := bitcoin-arena
 #ACTIVE := bitcoin-autofile
