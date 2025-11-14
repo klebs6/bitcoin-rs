@@ -268,6 +268,7 @@ scan-crate-for-typedefs = "0.6.0"
 serde                   = { version = "1.0.152", features   = [ "derive", "serde_derive", "rc" ]  }
 serde-big-array         = "0.4.1"
 serde_test              = "1.0.177"
+serde_json              = "*"
 shared-mutex            = "0.3.1"
 socket2                 = "0.4.4"
 sqlite                  = "0.25.3"

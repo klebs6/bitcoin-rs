@@ -148,3 +148,64 @@ mod settings_span_spec {
         }
     }
 }
+
+#[cfg(test)]
+mod settings_span_more_edges_spec {
+    use super::*;
+
+    #[traced_test]
+    fn empty_span_reports_empty_and_has_valid_iterators() {
+        info!("Empty span should be empty with begin==end");
+        let span = SettingsSpan::default();
+        assert!(span.empty());
+        unsafe {
+            assert_eq!(span.begin(), span.end());
+        }
+    }
+
+    #[traced_test]
+    fn multiple_trailing_negations_consume_entire_span() {
+        info!("Multiple trailing negations should render the span entirely ineffective");
+        let v = vec![
+            SettingsValue::from(true),
+            SettingsValue::from(false),
+            SettingsValue::from(false),
+        ];
+        let span = SettingsSpan::from(&v);
+        debug!("negated count = {}", span.negated());
+        assert!(span.empty());
+        assert!(span.last_negated());
+        unsafe {
+            assert_eq!(span.begin().offset_from(span.end()), 0);
+        }
+    }
+
+    #[traced_test]
+    fn interior_negation_masks_all_earlier_values_per_spec() {
+        info!("Per spec: the last `false` and all earlier values are considered negated, even if followed by non-negated values");
+        let v = vec![
+            SettingsValue::from(true),   // idx 0
+            SettingsValue::from(false),  // idx 1  ← last negation
+            SettingsValue::from(true),   // idx 2  ← effective (only one)
+        ];
+        let span = SettingsSpan::from(&v);
+
+        // With the semantics "last false masks all earlier", begin must skip the first two.
+        assert_eq!(span.negated(), 2, "negated should equal index_of_last_false + 1");
+        assert!(!span.empty());
+        assert!(!span.last_negated());
+
+        unsafe {
+            assert_eq!(
+                span.begin().offset_from(*span.data()),
+                2,
+                "begin should point past the last negation"
+            );
+            assert_eq!(
+                span.end().offset_from(*span.data()),
+                3,
+                "end should be at len==3"
+            );
+        }
+    }
+}

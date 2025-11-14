@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/strip_redundant_last_elements_of_path.rs ]
 crate::ix!();
 
 pub fn strip_redundant_last_elements_of_path(path: &mut PathBuf) {

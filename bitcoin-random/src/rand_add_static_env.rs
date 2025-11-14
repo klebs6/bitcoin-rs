@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-random/src/rand_add_static_env.rs ]
 crate::ix!();
 
 pub fn rand_add_static_env(hasher: &mut Sha512) {

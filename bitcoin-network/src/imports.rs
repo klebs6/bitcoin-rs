@@ -4,3 +4,6 @@ pub(crate) use bitcoin_imports::*;
 pub(crate) use bitcoin_sha3::*;
 pub(crate) use bitcoin_string::*;
 pub(crate) use bitcoin_bitstream::*;
+pub(crate) use bitcoin_u256::*;
+pub(crate) use bitcoin_asmap::*;
+pub(crate) use bitcoin_hash::*;

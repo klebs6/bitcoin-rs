@@ -45,3 +45,53 @@ pub const TORV2_IN_IPV6_PREFIX: [u8; 6] = [
 pub const INTERNAL_IN_IPV6_PREFIX: [u8; 6] = [
     0xFD, 0x6B, 0x88, 0xC0, 0x87, 0x24 // 0xFD + sha256("bitcoin")[0:5].
 ];
+
+#[cfg(test)]
+mod embedded_prefix_values_spec {
+    use super::*;
+
+    #[traced_test]
+    fn ipv4_in_ipv6_prefix_value_and_length() {
+        assert_eq!(IPV4_IN_IPV6_PREFIX.len(), 12);
+        assert_eq!(
+                IPV4_IN_IPV6_PREFIX,
+                [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF]
+                );
+        info!("IPv4‑in‑IPv6 prefix matches expected RFC mapping");
+    }
+
+    #[traced_test]
+    fn torv2_and_internal_prefixes_are_unique_local() {
+        // Both should fall under fc00::/7
+        debug!("Ensuring TORv2/INTERNAL prefixes are within fc00::/7");
+        assert_eq!(TORV2_IN_IPV6_PREFIX[0] & 0xFE, 0xFC);
+        assert_eq!(INTERNAL_IN_IPV6_PREFIX[0] & 0xFE, 0xFC);
+        assert_eq!(TORV2_IN_IPV6_PREFIX.len(), 6);
+        assert_eq!(INTERNAL_IN_IPV6_PREFIX.len(), 6);
+        debug!("TORv2 and INTERNAL prefixes are within ULA space (fc00::/7)");
+    }
+
+    #[traced_test]
+    fn prefixes_are_distinct_and_non_overlapping() {
+        // Ensure we don't accidentally collide on leading segments
+        assert_ne!(&TORV2_IN_IPV6_PREFIX[..], &INTERNAL_IN_IPV6_PREFIX[..]);
+        assert_ne!(
+                &IPV4_IN_IPV6_PREFIX[..6],
+                &TORV2_IN_IPV6_PREFIX[..]
+                );
+        assert_ne!(
+                &IPV4_IN_IPV6_PREFIX[..6],
+                &INTERNAL_IN_IPV6_PREFIX[..]
+                );
+        info!("All embedded prefixes are distinct");
+    }
+
+    #[traced_test]
+    fn ipv4_in_ipv6_prefix_shape() {
+        info!(len = IPV4_IN_IPV6_PREFIX.len(), "Checking IPv4‑in‑IPv6 prefix shape");
+        assert_eq!(IPV4_IN_IPV6_PREFIX.len(), 12);
+        assert!(IPV4_IN_IPV6_PREFIX[..10].iter().all(|&b| b == 0));
+        assert_eq!(IPV4_IN_IPV6_PREFIX[10], 0xFF);
+        assert_eq!(IPV4_IN_IPV6_PREFIX[11], 0xFF);
+    }
+}

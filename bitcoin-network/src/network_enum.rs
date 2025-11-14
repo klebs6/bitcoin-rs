@@ -84,3 +84,17 @@ impl Default for Network {
         Self::NET_UNROUTABLE
     }
 }
+
+#[cfg(test)]
+mod network_enum_sanity_spec {
+    use super::*;
+
+    #[traced_test]
+    fn enum_order_and_default_are_stable() {
+        assert_eq!(Network::default(), Network::NET_UNROUTABLE);
+        assert!((Network::NET_UNROUTABLE as u8) < (Network::NET_IPV4 as u8));
+        assert!((Network::NET_IPV4 as u8) < (Network::NET_IPV6 as u8));
+        assert!((Network::NET_CJDNS as u8) < (Network::NET_INTERNAL as u8));
+        assert!((Network::NET_INTERNAL as u8) < (Network::NET_MAX as u8));
+    }
+}

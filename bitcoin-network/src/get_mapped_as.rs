@@ -53,7 +53,36 @@ impl NetAddr {
             }
         }
 
-        let mapped_as: u32 = interpret(asmap, ip_bits);
+        // Use the asmap interpreter from bitcoin-asmap.
+        let mapped_as: u32 = bitcoin_asmap::interpret(asmap.as_slice(), &ip_bits);
+        debug!(target: "netaddr", mapped_as, "Mapped AS computed");
         mapped_as
+    }
+}
+
+
+#[cfg(test)]
+mod mapped_as_observation_spec {
+    use super::*;
+
+    #[traced_test]
+    fn empty_asmap_or_non_ip_returns_zero() {
+        // IPv4 with empty asmap -> 0
+        let v4 = NetAddrBuilder::default()
+            .addr(PreVector::from(&[8u8, 8, 8, 8][..]))
+            .net(Network::NET_IPV4)
+            .scope_id(0u32)
+            .build()
+            .unwrap();
+        assert_eq!(v4.get_mappedas(&vec![]), 0);
+
+        // Non‑IPv4/IPv6 with non‑empty asmap still returns 0
+        let onion = NetAddrBuilder::default()
+            .addr(PreVector::from(&[0x42u8; ADDR_TORV3_SIZE][..]))
+            .net(Network::NET_ONION)
+            .scope_id(0u32)
+            .build()
+            .unwrap();
+        assert_eq!(onion.get_mappedas(&vec![true, false, true]), 0);
     }
 }

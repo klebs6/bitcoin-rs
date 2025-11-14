@@ -6,4 +6,3 @@ pub(crate) use bitcoin_settings::*;
 pub(crate) use bitcoin_string::*;
 pub(crate) use bitcoin_univalue::*;
 pub(crate) use std::collections::HashMap;
-

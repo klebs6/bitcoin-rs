@@ -42,4 +42,3 @@ mod tests {
         assert_eq!(a.flags, (ArgsManagerFlags::ALLOW_INT | ArgsManagerFlags::SENSITIVE).bits());
     }
 }
-

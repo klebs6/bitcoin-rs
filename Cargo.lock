@@ -1875,12 +1875,15 @@ dependencies = [
 name = "bitcoin-network"
 version = "0.1.18"
 dependencies = [
+ "bitcoin-asmap",
  "bitcoin-bitstream",
  "bitcoin-cfg",
  "bitcoin-derive",
+ "bitcoin-hash",
  "bitcoin-imports",
  "bitcoin-sha3",
  "bitcoin-string",
+ "bitcoin-u256",
  "derive_builder",
  "getset",
  "serde",
@@ -2162,6 +2165,8 @@ dependencies = [
  "bitcoin-univalue",
  "derive_builder",
  "getset",
+ "hex",
+ "serde_json",
  "tempfile",
  "tracing",
 ]

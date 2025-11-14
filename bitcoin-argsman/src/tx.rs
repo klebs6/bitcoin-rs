@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/src/tx.rs ]
 crate::ix!();
 
 pub fn setup_bitcoin_tx_args(argsman: &mut ArgsManager)  {

@@ -37,6 +37,13 @@ pub mod uni_value {
 impl Default for UniValue {
     /// A default `UniValue` is the JSON literal **null**.
     fn default() -> Self {
+        Self::null() 
+    }
+}
+
+impl UniValue {
+
+    pub fn null() -> Self { 
         Self {
             typ:    uni_value::VType::VNULL,
             val:    String::new(),
@@ -44,9 +51,15 @@ impl Default for UniValue {
             values: Vec::new(),
         }
     }
-}
 
-impl UniValue {
+    pub fn empty_array() -> Self {
+        Self {
+            typ:    uni_value::VType::VARR,
+            val:    String::new(),
+            keys:   Vec::new(),
+            values: Vec::new(),
+        }
+    }
 
     /// Create a new `UniValue` with the provided type
     /// and (optionally) initial string value.

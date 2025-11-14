@@ -103,3 +103,85 @@ mod linked_ipv4_tests {
         assert_eq!(ip.get_linked_ipv4(), 0x08080808);
     }
 }
+
+#[cfg(test)]
+mod linked_ipv4_additional_spec {
+    use super::*;
+
+    fn v6(bytes: [u8; 16]) -> NetAddr {
+        NetAddrBuilder::default()
+            .addr(PreVector::from(&bytes[..]))
+            .net(Network::NET_IPV6)
+            .scope_id(0u32)
+            .build()
+            .unwrap()
+    }
+
+    #[traced_test]
+    fn rfc6145_translated_ipv4_is_last_four_bytes() {
+        // ::ffff:0:0/96 (RFC6145) + 203.0.113.6
+        let mut b = [0u8; 16];
+        b[..12].copy_from_slice(&[0, 0, 0, 0, 0, 0, 0, 0, 0xFF, 0xFF, 0x00, 0x00]);
+        b[12..].copy_from_slice(&[203, 0, 113, 6]);
+        let a = v6(b);
+        assert!(a.has_linked_ipv4());
+        let got = a.get_linked_ipv4();
+        info!(got_hex = format_args!("{:#010x}", got), "RFC6145 mapped IPv4");
+        assert_eq!(got, 0xCB007106);
+    }
+
+    #[traced_test]
+    fn rfc3964_6to4_extracts_middle_bytes() {
+        // 6to4: 2002:0102:0304:: → embedded IPv4 1.2.3.4
+        let mut b = [0u8; 16];
+        b[0] = 0x20;
+        b[1] = 0x02;
+        b[2..6].copy_from_slice(&[1, 2, 3, 4]);
+        let a = v6(b);
+        assert!(a.has_linked_ipv4());
+        let got = a.get_linked_ipv4();
+        info!(got_hex = format_args!("{:#010x}", got), "RFC3964 6to4 embedded IPv4");
+        assert_eq!(got, 0x01020304);
+    }
+
+    #[traced_test]
+    fn rfc4380_teredo_last_four_bytes_bitflipped() {
+        // Teredo: 2001::/32, last 4 bytes are NOT of the IPv4 address
+        // Target IPv4 = 9.8.7.6 → embed as bitwise NOT: [246, 247, 248, 249]
+        let mut b = [0u8; 16];
+        b[..4].copy_from_slice(&[0x20, 0x01, 0x00, 0x00]);
+        b[12..].copy_from_slice(&[!9u8, !8u8, !7u8, !6u8]);
+        let a = v6(b);
+        assert!(a.has_linked_ipv4());
+        let got = a.get_linked_ipv4();
+        info!(got_hex = format_args!("{:#010x}", got), "RFC4380 Teredo IPv4 (bit‑flipped)");
+        assert_eq!(got, 0x09080706);
+    }
+
+    #[traced_test]
+    fn rfc3964_6to4_extracts_embedded_ipv4() {
+        // 6to4: 2002:0102:0304:: -> embeds 1.2.3.4 in bytes 2..6
+        let mut b = [0u8; 16];
+        b[0..2].copy_from_slice(&[0x20, 0x02]);
+        b[2..6].copy_from_slice(&[1, 2, 3, 4]);
+        let ip = v6(b);
+        assert!(ip.has_linked_ipv4());
+        let linked = ip.get_linked_ipv4();
+        info!(linked_hex = format_args!("{:#x}", linked), "Linked IPv4 from 6to4");
+        assert_eq!(linked, 0x01020304);
+    }
+
+    #[traced_test]
+    fn teredo_extracts_inverted_tail_ipv4() {
+        // Teredo: 2001::/32 with last 4 bytes bit‑flipped
+        let mut b = [0u8; 16];
+        b[0..4].copy_from_slice(&[0x20, 0x01, 0x00, 0x00]);
+        // tail is NOT(1.2.3.4) = FE FD FC FB
+        b[12..16].copy_from_slice(&[0xFE, 0xFD, 0xFC, 0xFB]);
+        let ip = v6(b);
+        assert!(ip.has_linked_ipv4());
+        let linked = ip.get_linked_ipv4();
+        debug!(linked_hex = format_args!("{:#x}", linked), "Linked IPv4 from Teredo");
+        assert_eq!(linked, 0x01020304);
+    }
+}

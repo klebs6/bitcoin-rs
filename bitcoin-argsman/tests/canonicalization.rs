@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoin-argsman/tests/canonicalization.rs ]
 use bitcoin_argsman::*;
 use bitcoin_imports::*;
 
@@ -34,4 +35,3 @@ fn blocksdir_nonexistent_is_handled_gracefully() {
     let p = inner.get_blocks_dir_path();
     assert!(p.as_ref().as_os_str().is_empty());
 }
-

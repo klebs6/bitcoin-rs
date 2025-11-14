@@ -37,3 +37,20 @@ impl CheckIsReachable for NetAddr {
         self.get_network().is_reachable()
     }
 }
+
+#[cfg(test)]
+mod reachability_trait_conformance_spec {
+    use super::*;
+
+    // Compile‑time conformance check: these functions will fail to compile if
+    // Network or NetAddr stop implementing the trait.
+    fn _assert_impl_check_is_reachable<T: CheckIsReachable>() {}
+    #[traced_test]
+    fn trait_is_implemented_for_network_and_netaddr() {
+        _assert_impl_check_is_reachable::<Network>();
+        _assert_impl_check_is_reachable::<NetAddr>();
+        info!("CheckIsReachable is implemented for Network and NetAddr (compile‑time assertion)");
+        assert!(true);
+    }
+}
+

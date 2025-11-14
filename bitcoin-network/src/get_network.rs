@@ -37,4 +37,20 @@ mod get_network_tests {
             .unwrap();
         assert_eq!(priv_v4.get_network(), Network::NET_UNROUTABLE);
     }
+
+    #[traced_test]
+    fn internal_beats_routability_and_default_is_unroutable() {
+        // Default constructed (:: placeholder) is not routable -> NET_UNROUTABLE
+        let a = NetAddr::default();
+        let n = a.get_network();
+        info!(?n, "Default NetAddr get_network()");
+        assert_eq!(n, Network::NET_UNROUTABLE);
+
+        // Internal always maps to NET_INTERNAL regardless of byte content
+        let mut b = NetAddr::default();
+        assert!(b.set_internal("dnsseed.example"));
+        let n2 = b.get_network();
+        info!(?n2, "Internal NetAddr get_network()");
+        assert_eq!(n2, Network::NET_INTERNAL);
+    }
 }

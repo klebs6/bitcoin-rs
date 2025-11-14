@@ -104,3 +104,93 @@ impl NetAddr {
         vch_ret
     }
 }
+
+#[cfg(test)]
+mod grouping_rules_spec {
+    use super::*;
+
+    fn v4(a: [u8; 4]) -> NetAddr {
+        NetAddrBuilder::default()
+            .addr(PreVector::from(&a[..]))
+            .net(Network::NET_IPV4)
+            .scope_id(0u32)
+            .build()
+            .unwrap()
+    }
+
+    fn v6(bytes: [u8; 16]) -> NetAddr {
+        NetAddrBuilder::default()
+            .addr(PreVector::from(&bytes[..]))
+            .net(Network::NET_IPV6)
+            .scope_id(0u32)
+            .build()
+            .unwrap()
+    }
+
+    fn onion_with(bytes: [u8; ADDR_TORV3_SIZE]) -> NetAddr {
+        NetAddrBuilder::default()
+            .addr(PreVector::from(&bytes[..]))
+            .net(Network::NET_ONION)
+            .scope_id(0u32)
+            .build()
+            .unwrap()
+    }
+
+    #[traced_test]
+    fn local_and_unroutable_addresses_share_single_group() {
+        let mut loopback_v4 = v4([127, 0, 0, 1]);
+        let g1 = loopback_v4.get_group(&vec![]);
+        assert_eq!(g1.len(), 1);
+        assert_eq!(g1[0], Network::NET_UNROUTABLE as u8);
+
+        let priv_v4 = v4([10, 0, 0, 1]);
+        let g2 = priv_v4.get_group(&vec![]);
+        assert_eq!(g2.len(), 1);
+        assert_eq!(g2[0], Network::NET_UNROUTABLE as u8);
+    }
+
+    #[traced_test]
+    fn internal_addresses_include_full_payload() {
+        let mut a = NetAddr::default();
+        assert!(a.set_internal("seed.bitcoin.example"));
+        let g = a.get_group(&vec![]);
+        assert_eq!(g[0], Network::NET_INTERNAL as u8);
+        assert_eq!(g.len(), 1 + ADDR_INTERNAL_SIZE);
+    }
+
+    #[traced_test]
+    fn ipv4_grouping_is_slash16() {
+        let g = v4([8, 8, 8, 8]).get_group(&vec![]);
+        assert_eq!(g, vec![Network::NET_IPV4 as u8, 8, 8]);
+    }
+
+    #[traced_test]
+    fn overlay_networks_bucket_on_first_nibble() {
+        let addr_bytes = [0xABu8; ADDR_TORV3_SIZE];
+        let g = onion_with(addr_bytes).get_group(&vec![]);
+        assert_eq!(g[0], Network::NET_ONION as u8);
+        assert_eq!(g.len(), 2);
+        assert_eq!(g[1] & 0x0F, 0x0F, "low nibble must be all ones");
+    }
+
+    #[traced_test]
+    fn he_net_ipv6_grouping_is_slash36() {
+        let mut bytes = [0u8; 16];
+        bytes[..4].copy_from_slice(&[0x20, 0x01, 0x04, 0x70]); // 2001:0470::/36
+        bytes[4] = 0xAA; // arbitrary
+        let g = v6(bytes).get_group(&vec![]);
+        assert_eq!(g[0], Network::NET_IPV6 as u8);
+        assert_eq!(&g[1..5], &[0x20, 0x01, 0x04, 0x70]);
+        assert_eq!(g[5] & 0x0F, 0x0F, "low nibble must be all ones");
+    }
+
+    #[traced_test]
+    fn generic_ipv6_grouping_is_slash32() {
+        let mut bytes = [0u8; 16];
+        bytes[..4].copy_from_slice(&[0x20, 0x01, 0xDB, 0x8A]); // some routable /32 (not special)
+        let g = v6(bytes).get_group(&vec![]);
+        assert_eq!(g[0], Network::NET_IPV6 as u8);
+        assert_eq!(g.len(), 1 + 4);
+        assert_eq!(&g[1..], &[0x20, 0x01, 0xDB, 0x8A]);
+    }
+}

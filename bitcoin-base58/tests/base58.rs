@@ -179,149 +179,174 @@ fn base58_decode_reference_vectors_and_edge_cases_diagnostic() {
     use core::cmp::min;
     use tracing::{debug, error, info, trace, warn};
 
-    // Reference vector from the Bitcoin Wiki:
-    // Base58Check("Hello World") == "3vQB7B6MrGQZaxCuFg4oh"
+    // Reference vector from the Bitcoin Wiki and multiple independent implementations:
+    // Base58Check("hello world") == "3vQB7B6MrGQZaxCuFg4oh"
     let reference_b58 = "3vQB7B6MrGQZaxCuFg4oh";
-    let mut out_payload = Vec::with_capacity(100);
+    let expected_payload: &[u8] = b"hello world";
 
     info!(
         target: "base58",
+        reference_b58 = %reference_b58,
         "===== BEGIN_TEST: base58_decode_reference_vectors_and_edge_cases_diagnostic ====="
     );
 
-    // Step 1: Exercise the public interface that is failing.
+    // Step 1: Exercise the public Base58Check decoding interface.
+    let mut out_payload = Vec::with_capacity(100);
     let ok = decode_base_58check(reference_b58, &mut out_payload, 100);
+
     info!(
         target: "base58",
         input_len = reference_b58.len(),
         ok,
         out_len = out_payload.len(),
-        "decode_base_58check return observed"
+        payload_hex = %hex::encode(&out_payload),
+        "decode_base_58check completed for reference vector"
     );
 
-    // If it worked, verify the decoded payload is exactly "Hello World" and return early.
-    if ok {
+    // Fast path: if everything matches the spec example, assert and exit early.
+    if ok && out_payload.as_slice() == expected_payload {
+        info!(
+            target: "base58",
+            payload_hex = %hex::encode(&out_payload),
+            "Base58Check reference vector decoded exactly to \"hello world\"."
+        );
+        info!(
+            target: "base58",
+            "===== END_TEST: base58_decode_reference_vectors_and_edge_cases_diagnostic ====="
+        );
         assert_eq!(
             out_payload,
-            b"Hello World".to_vec(),
+            expected_payload.to_vec(),
             "payload mismatch for Base58Check reference vector"
         );
-        info!(target: "base58", "Reference vector decoded successfully.");
         return;
     }
 
-    // Step 2: Decode *without* checksum to inspect raw bytes (payload || checksum).
-    // We test only via public interfaces here.
-    let mut raw = Vec::with_capacity(100);
-    let decoded = decode_base58(reference_b58, &mut raw, 100);
+    // If we are here, something is off; run detailed diagnostics using only public APIs.
+
+    warn!(
+        target: "base58",
+        ok,
+        decoded_payload_hex = %hex::encode(&out_payload),
+        expected_payload_hex = %hex::encode(expected_payload),
+        "Base58Check reference vector did not decode as expected; beginning diagnostic steps."
+    );
+
+    // Step 2: Decode without checksum to inspect raw bytes (payload || checksum).
+    let mut raw_ref = Vec::with_capacity(100);
+    let raw_ok = decode_base58(reference_b58, &mut raw_ref, 100);
     assert!(
-        decoded,
+        raw_ok,
         "raw base58 decode of the reference string failed; cannot diagnose checksum"
     );
     assert!(
-        raw.len() >= 4,
-        "decoded byte length < 4: cannot contain checksum (len = {})",
-        raw.len()
+        raw_ref.len() >= 4,
+        "decoded reference byte length < 4: cannot contain checksum (len = {})",
+        raw_ref.len()
     );
 
-    let split = raw.len() - 4;
-    let (payload_ref, checksum_ref) = raw.split_at(split);
+    let split_ref = raw_ref.len() - 4;
+    let (payload_ref, checksum_ref) = raw_ref.split_at(split_ref);
 
     debug!(
         target: "base58",
+        raw_len = raw_ref.len(),
         payload_len = payload_ref.len(),
-        checksum_len = 4usize,
+        checksum_len = checksum_ref.len(),
         payload_hex = %hex::encode(payload_ref),
         checksum_hex = %hex::encode(checksum_ref),
-        "Split reference bytes into payload and checksum."
+        "Reference Base58 decoded to payload || checksum."
     );
 
-    // Step 3: Ask the library to produce its own Base58Check string for *the same payload*,
-    // then decode it (without check) to extract the library's checksum bytes. This pins down
-    // whether the mismatch is due to byte-ordering or an entirely different checksum.
+    // Step 3: Use the library to produce its own Base58Check string for the decoded payload,
+    // then decode it (without check) to inspect the library's checksum bytes.
     let lib_b58 = encode_base_58check(payload_ref);
     info!(
         target: "base58",
         lib_b58_len = lib_b58.len(),
         lib_b58_preview = %lib_b58,
-        "Library Base58Check encoding for the same payload."
+        "Library Base58Check encoding of the decoded payload."
     );
 
     let mut raw_lib = Vec::with_capacity(100);
-    let decoded_lib = decode_base58(&lib_b58, &mut raw_lib, 100);
+    let lib_raw_ok = decode_base58(&lib_b58, &mut raw_lib, 100);
     assert!(
-        decoded_lib && raw_lib.len() >= 4,
-        "library Base58Check output failed to decode back to bytes"
+        lib_raw_ok && raw_lib.len() >= 4,
+        "library Base58Check output could not be decoded back into payload || checksum"
     );
-    let lib_split = raw_lib.len() - 4;
-    let (_payload_lib, checksum_lib) = raw_lib.split_at(lib_split);
+
+    let split_lib = raw_lib.len() - 4;
+    let (payload_lib, checksum_lib) = raw_lib.split_at(split_lib);
 
     trace!(
         target: "base58",
         lib_raw_len = raw_lib.len(),
-        lib_payload_len = _payload_lib.len(),
+        lib_payload_len = payload_lib.len(),
+        lib_checksum_len = checksum_lib.len(),
+        lib_payload_hex = %hex::encode(payload_lib),
         lib_checksum_hex = %hex::encode(checksum_lib),
-        "Decoded library Base58Check back to raw to inspect checksum bytes."
+        "Decoded library Base58Check back into payload || checksum."
     );
 
-    // Step 4: Compare checksums in several ways to precisely identify the failure mode.
+    // Step 4: Compare checksums (direct and reversed) to detect byte-order issues.
     let eq_direct = checksum_ref == checksum_lib;
-    let mut lib_rev = [0u8; 4];
-    lib_rev.copy_from_slice(checksum_lib);
-    lib_rev.reverse();
-    let eq_reversed = checksum_ref == lib_rev;
+    let mut checksum_lib_reversed = checksum_lib.to_vec();
+    checksum_lib_reversed.reverse();
+    let eq_reversed = checksum_ref == checksum_lib_reversed.as_slice();
 
     warn!(
         target: "base58",
         ref_checksum = %hex::encode(checksum_ref),
         lib_checksum = %hex::encode(checksum_lib),
-        lib_checksum_reversed = %hex::encode(lib_rev),
+        lib_checksum_reversed = %hex::encode(&checksum_lib_reversed),
         eq_direct,
         eq_reversed,
-        ref_b58 = %reference_b58,
-        lib_b58 = %lib_b58,
-        "Checksum comparison across reference and library encodings."
+        "Comparing reference checksum with checksum derived from library Base58Check."
     );
 
-    // Step 5: Provide a crisp assertion that explains exactly what's wrong.
-    // If the reversed comparison matches, we flag a byte-order/endianness defect.
     if eq_reversed && !eq_direct {
         error!(
             target: "base58",
             "Checksum mismatch is consistent with byte-order (endianness) error: \
-             reference checksum matches the library checksum when reversed."
+            reference checksum matches reversed library checksum."
         );
-        assert!(
-            eq_direct,
-            "Base58Check verification failed: checksum byte-order mismatch detected \
-             (reference == reverse(library))."
-        );
-    }
+    } else if !eq_direct && !eq_reversed {
+        let diff_len = min(checksum_ref.len(), checksum_lib.len());
+        let mut diff_bytes = Vec::with_capacity(diff_len);
+        for i in 0..diff_len {
+            diff_bytes.push(checksum_ref[i] ^ checksum_lib[i]);
+        }
 
-    // If neither direct nor reversed matches, the algorithm used to form the checksum
-    // does not match the Base58Check spec (double-SHA256 of the payload, take the first 4 bytes as-is).
-    if !eq_direct && !eq_reversed {
-        // Show a short hex diff to make it easy to see where things diverge.
-        let n = min(4usize, checksum_ref.len());
-        let ref_bytes = &checksum_ref[..n];
-        let lib_bytes = &checksum_lib[..n];
+        warn!(
+            target: "base58",
+            checksum_xor = %hex::encode(&diff_bytes),
+            "Checksum bytes differ in a non-trivial way (not just reversal)."
+        );
+
         error!(
             target: "base58",
-            ref_first4 = %hex::encode(ref_bytes),
-            lib_first4 = %hex::encode(lib_bytes),
-            "Checksum bytes differ even after endianness check — likely wrong hashing procedure \
-             (not SHA256d over payload, or extra/missing bytes hashed)."
-        );
-        assert!(
-            eq_direct,
-            "Base58Check verification failed: library checksum does not match reference, and does \
-             not match in reverse order either (suspect wrong SHA256d computation or hashed region)."
+            "Checksum mismatch suggests a divergence from the Base58Check specification \
+            (double-SHA256 of payload, first 4 bytes)."
         );
     }
 
-    // Final, explicit failure mirroring the original expectation but after detailed diagnostics.
-    assert!(
+    // Step 5: Final assertion – this test should only ever fail with rich diagnostics emitted above.
+    error!(
+        target: "base58",
         ok,
-        "decode_base_58check(\"{reference_b58}\") should succeed but returned false (see tracing output above for diagnostics)."
+        final_decoded_payload_hex = %hex::encode(&out_payload),
+        expected_payload_hex = %hex::encode(expected_payload),
+        "Base58Check reference vector did not round-trip to \"hello world\"."
+    );
+
+    info!(
+        target: "base58",
+        "===== END_TEST: base58_decode_reference_vectors_and_edge_cases_diagnostic ====="
+    );
+
+    assert!(
+        ok && out_payload.as_slice() == expected_payload,
+        "Base58Check reference vector did not decode to the expected payload \"hello world\"; \
+        see tracing output for detailed diagnostics."
     );
 }

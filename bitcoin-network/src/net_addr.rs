@@ -144,16 +144,15 @@ impl NetAddr {
     }
 
     pub fn get_hash(&self) -> u64 {
-
         trace!(target: "netaddr", "Computing NetAddr::get_hash (Core-compatible double-SHA256)");
 
         // Compute the 256-bit double-SHA256 of the raw address bytes.
         let hash: u256 = bitcoin_hash::hash1(self.addr().as_slice());
 
-        // Reinterpret the first 8 bytes of the hash as a little-endian u64.
-        let bytes = hash.as_ref();
-        assert!(bytes.len() >= 8, "u256 must contain at least eight bytes");
+        // Disambiguate the AsRef target so the compiler knows we're after the raw 32 bytes.
+        let bytes: &[u8; 32] = hash.as_ref();
 
+        // Interpret the first 8 bytes of the hash as a little-endian u64.
         let mut tmp = [0u8; 8];
         tmp.copy_from_slice(&bytes[..8]);
         let nret = u64::from_le_bytes(tmp);

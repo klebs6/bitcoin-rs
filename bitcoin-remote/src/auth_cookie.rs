@@ -15,45 +15,33 @@ pub const COOKIEAUTH_USER: &'static str = "__cookie__";
   */
 pub const COOKIEAUTH_FILE: &'static str = ".cookie";
 
-/// Resolve the absolute path for the *RPC‑auth* cookie file.
-///
-/// If `temp == true` the function appends **`.tmp`** to the
-/// filename, mirroring Core’s strategy of writing to a
-/// temporary file first and then renaming atomically.
-pub fn get_auth_cookie_file(temp: Option<bool>) -> Box<Path> {
-    let mut name: String = {
-        // Honour `-rpccookiefile=<path>` if provided, otherwise
-        // fall back to the default.
-        let g_args = G_ARGS.lock();
-        g_args.get_arg("-rpccookiefile", COOKIEAUTH_FILE)
-    };
-
-    if temp.unwrap_or(false) {
-        name.push_str(".tmp");
-    }
-
-    let path = abs_path_for_config_val(&PathBuf::from(&name));
-
-    trace!(path = ?path, "Computed auth‑cookie path");
-    path.into_boxed_path()
+#[cfg(test)]
+lazy_static! {
+    /// Global serialiser for tests that manipulate the shared `G_ARGS` state.
+    /// This prevents inter-test races across *all* modules in this crate.
+    pub static ref GLOBAL_TEST_SERIAL: std::sync::Mutex<()> = std::sync::Mutex::new(());
 }
 
 #[cfg(test)]
 mod tests_auth_cookie {
     use super::*;
-    use std::sync::Mutex;
     use tempfile::TempDir;
 
-    /// Serialise tests that manipulate the global `G_ARGS`.
-    static SERIAL: Mutex<()> = Mutex::new(());
-
     fn with_temp_cookie<F: FnOnce()>(f: F) {
-        let _guard = SERIAL.lock().unwrap();
+        // Global serialisation across the entire crate's test suite.
+        let _guard = crate::auth_cookie::GLOBAL_TEST_SERIAL
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+
         let dir = TempDir::new().expect("tempdir");
         {
             let mut g = G_ARGS.lock();
-            g.force_set_arg("-rpccookiefile", dir.path().join("test.cookie").to_str().unwrap());
+            g.force_set_arg(
+                "-rpccookiefile",
+                dir.path().join("test.cookie").to_str().unwrap(),
+            );
         }
+        debug!(path = ?dir.path(), "Configured -rpccookiefile for test");
         f();
         // tempdir dropped -> files removed
     }
@@ -72,10 +60,7 @@ mod tests_auth_cookie {
             );
 
             let mut read_back = String::new();
-            assert!(
-                get_auth_cookie(&mut read_back),
-                "cookie read‑back failed"
-            );
+            assert!(get_auth_cookie(&mut read_back), "cookie read‑back failed");
             assert_eq!(cookie, read_back, "mismatching cookie contents");
         });
     }

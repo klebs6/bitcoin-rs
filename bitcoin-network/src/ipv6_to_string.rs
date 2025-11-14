@@ -41,3 +41,19 @@ mod ipv6_fmt_tests {
         assert_eq!(ipv6_to_string(&ip, 4), "fe80::1234%4");
     }
 }
+
+#[cfg(test)]
+mod ipv6_prefix_constants_spec {
+    use super::*;
+
+    #[traced_test]
+    fn prefixes_have_expected_lengths_and_properties() {
+        assert_eq!(IPV4_IN_IPV6_PREFIX.len(), 12);
+        assert_eq!(TORV2_IN_IPV6_PREFIX.len(), 6);
+        assert_eq!(INTERNAL_IN_IPV6_PREFIX.len(), 6);
+
+        // TORv2 / Internal prefixes are within fc00::/7
+        assert_eq!(TORV2_IN_IPV6_PREFIX[0] & 0xFE, 0xFC);
+        assert_eq!(INTERNAL_IN_IPV6_PREFIX[0] & 0xFE, 0xFC);
+    }
+}

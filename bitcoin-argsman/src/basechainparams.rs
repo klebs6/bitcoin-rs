@@ -184,4 +184,3 @@ mod tests {
         assert_eq!(inner.network.as_deref(), Some(base_chain_params::REGTEST));
     }
 }
-

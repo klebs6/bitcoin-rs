@@ -38,3 +38,35 @@ impl NetAddr {
         false
     }
 }
+
+#[cfg(test)]
+mod special_address_parser_spec {
+    use super::*;
+
+    #[traced_test]
+    fn set_special_accepts_tor_and_i2p() {
+        // TOR
+        let pk = [0x33u8; ADDR_TORV3_SIZE];
+        let tor = onion_to_string(&pk);
+        let mut a = NetAddr::default();
+        assert!(a.set_special(&tor));
+        assert!(a.is_tor());
+        assert_eq!(a.addr().as_slice(), &pk);
+
+        // I2P
+        let raw = [0x44u8; ADDR_I2P_SIZE];
+        let i2p = format!("{}.b32.i2p", encode_base32(&raw, Some(false)));
+        let mut b = NetAddr::default();
+        assert!(b.set_special(&i2p));
+        assert!(b.isi2p());
+        assert_eq!(b.addr().as_slice(), &raw);
+    }
+
+    #[traced_test]
+    fn set_special_rejects_non_cstring() {
+        // contains '\0' -> invalid C string
+        let s = "abc\0def.onion".to_string();
+        let mut a = NetAddr::default();
+        assert!(!a.set_special(&s));
+    }
+}

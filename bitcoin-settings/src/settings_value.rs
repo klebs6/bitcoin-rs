@@ -30,6 +30,14 @@ impl SettingsValue {
     }
 }
 
+pub fn sv_json(j: &str) -> SettingsValue {
+    // (get_setting_behavior_spec) helper
+    let mut u = UniValue::null();
+    let raw = j.as_bytes();
+    assert!(u.read(raw.as_ptr(), raw.len()), "Invalid JSON literal for UniValue");
+    SettingsValue(u)
+}
+
 impl From<bool> for SettingsValue {
     fn from(val: bool) -> Self {
         Self(UniValue::from(val))
@@ -55,5 +63,31 @@ impl fmt::Display for SettingsValue {
         let written = self.0.write(None, None);  // ← specify both options
         trace!("Formatting SettingsValue: '{written}'");
         write!(f, "{written}")
+    }
+}
+
+
+#[cfg(test)]
+mod settings_value_equality_semantics_spec {
+    use super::*;
+
+    #[traced_test]
+    fn equality_is_based_on_serialized_json() {
+        info!("Two values with identical serialized JSON should be equal");
+        let a = sv_json("1"); // parsed as numeric JSON
+        let mut u = UniValue::default();
+        u.set_int(1i64);
+        let b = SettingsValue(u);
+        assert_eq!(a, b);
+
+        info!("Different JSON serializations are not equal, even if numerically similar");
+        let one        = sv_json("1");
+        let one_point0 = sv_json("1.0");
+        assert_ne!(one, one_point0);
+
+        info!("Structural equality for arrays/objects is based on write(None, None)");
+        let arr1 = sv_json("[1,true,\"x\"]");
+        let arr2 = sv_json("[1,true,\"x\"]");
+        assert_eq!(arr1, arr2);
     }
 }

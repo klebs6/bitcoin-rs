@@ -40,10 +40,6 @@ FEATURES :=
 
 ACTIVE := bitcoin-top
 
-ACTIVE := bitcoin-base58
-ACTIVE := bitcoin-settings
-ACTIVE := bitcoin-remote
-ACTIVE := bitcoin-network
 
 #-------------------------------[next]
 #ACTIVE := bitcoinleveldb-arena
@@ -317,3 +313,7 @@ bench:
 #ACTIVE := bitcoin-hash
 #ACTIVE := bitcoin-muhash
 #ACTIVE := bitcoin-argsman
+#ACTIVE := bitcoin-settings
+#ACTIVE := bitcoin-remote
+#ACTIVE := bitcoin-network
+#ACTIVE := bitcoin-base58
