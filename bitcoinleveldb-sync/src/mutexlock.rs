@@ -27,12 +27,11 @@ pub struct MutexLock {
 
 impl Drop for MutexLock {
 
-    #[UNLOCK_FUNCTION()]
+    #[UNLOCK_FUNCTION]
     fn drop(&mut self) {
-        todo!();
-        /*
-            this->mu_->Unlock();
-        */
+        if !self.mu.is_null() {
+            unsafe { (*self.mu).unlock(); }
+        }
     }
 }
 
@@ -40,12 +39,15 @@ impl MutexLock {
 
     #[EXCLUSIVE_LOCK_FUNCTION(mu)]
     pub fn new(mu: *mut parking_lot::RawMutex) -> Self {
-    
-        todo!();
-        /*
-        : mu(mu),
 
-            this->mu_->Lock();
-        */
+        if mu.is_null() {
+            panic!("must provide valid pointer to this constructor");
+        }
+
+        let mut x = Self { mu };
+
+        unsafe { (*x.mu).lock(); }
+
+        x
     }
 }

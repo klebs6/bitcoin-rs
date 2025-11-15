@@ -46,3 +46,4 @@ pub trait SliceComparator:
     /// The pointer is valid for the program lifetime.
     fn bytewise_comparator(&self) -> *const dyn SliceComparator;
 }
+

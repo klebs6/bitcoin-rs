@@ -1,153 +1,5 @@
 // ---------------- [ File: bitcoinleveldb-cache/src/cache.rs ]
-/*!
-  | A Cache is an interface that maps keys to
-  | values.  It has internal synchronization and
-  | may be safely accessed concurrently from
-  | multiple threads.  It may automatically evict
-  | entries to make room for new entries.  Values
-  | have a specified charge against the cache
-  | capacity.  For example, a cache where the
-  | values are variable length strings, may use the
-  | length of the string as the charge for the
-  | string.
-  |
-  | A builtin cache implementation with
-  | a least-recently-used eviction policy is
-  | provided.  Clients may use their own
-  | implementations if they want something more
-  | sophisticated (like scan-resistance, a custom
-  | eviction policy, variable cache sizing, etc.)
-  */
-
 crate::ix!();
-
-pub trait CacheInterface:
-CacheInsert
-+ CacheLookup
-+ CacheRelease
-+ CacheValue
-+ CacheErase
-+ CacheNewId
-+ CachePrune
-+ CacheTotalCharge {}
-
-pub trait CacheInsert {
-
-    /**
-      | Insert a mapping from key->value into the
-      | cache and assign it the specified charge
-      | against the total cache capacity.
-      |
-      | Returns a handle that corresponds to the
-      | mapping.  The caller must call
-      | this->Release(handle) when the returned
-      | mapping is no longer needed.
-      |
-      | When the inserted entry is no longer needed,
-      | the key and value will be passed to
-      | "deleter".
-      */
-    fn insert(&mut self, 
-            key_:     &Slice,
-            value:   *mut c_void,
-            charge:  usize,
-            deleter: fn(key_: &Slice, value: *mut c_void) -> c_void) -> *mut CacheHandle;
-}
-
-pub trait CacheLookup {
-
-    /**
-      | If the cache has no mapping for "key",
-      | returns nullptr.
-      |
-      | Else return a handle that corresponds to the
-      | mapping.  The caller must call
-      | this->Release(handle) when the returned
-      | mapping is no longer needed.
-      */
-    fn lookup(&mut self, key_: &Slice) -> *mut CacheHandle;
-}
-
-pub trait CacheRelease {
-
-    /**
-      | Release a mapping returned by a previous
-      | Lookup().
-      | 
-      | REQUIRES: handle must not have been
-      | released yet.
-      | 
-      | REQUIRES: handle must have been returned
-      | by a method on *this.
-      |
-      */
-    fn release(&mut self, handle: *mut CacheHandle);
-}
-
-pub trait CacheValue {
-
-    /**
-      | Return the value encapsulated in a handle
-      | returned by a successful Lookup().
-      |
-      | REQUIRES: handle must not have been released
-      | yet.
-      |
-      | REQUIRES: handle must have been returned by
-      | a method on *this.
-      */
-    fn value(&mut self, handle: *mut CacheHandle);
-}
-
-pub trait CacheErase {
-
-    /**
-      | If the cache contains entry for key, erase
-      | it.  Note that the underlying entry will be
-      | kept around until all existing handles to it
-      | have been released.
-      */
-    fn erase(&mut self, key_: &Slice);
-}
-
-pub trait CacheNewId {
-
-    /**
-      | Return a new numeric id.  May be used by
-      | multiple clients who are sharing the same
-      | cache to partition the key space.  Typically
-      | the client will allocate a new id at startup
-      | and prepend the id to its cache keys.
-      */
-    fn new_id(&mut self) -> u64;
-}
-
-pub trait CachePrune {
-
-    /**
-      | Remove all cache entries that are not
-      | actively in use.  Memory-constrained
-      | applications may wish to call this method to
-      | reduce memory usage.
-      |
-      | Default implementation of Prune() does
-      | nothing.  Subclasses are strongly encouraged
-      | to override the default implementation.
-      | A future release of leveldb may change
-      | Prune() to a pure abstract method.
-      */
-    fn prune(&mut self);
-}
-
-pub trait CacheTotalCharge {
-
-    /**
-      | Return an estimate of the combined charges
-      | of all elements stored in the cache.
-      |
-      */
-    fn total_charge(&self) -> usize;
-}
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/include/leveldb/cache.h]
 
@@ -159,22 +11,14 @@ pub trait CacheTotalCharge {
   |
   */
 pub fn new_lru_cache(capacity: usize) -> *mut Cache {
-    
-    todo!();
-        /*
-        
-        */
+    info!("new_lru_cache: creating cache with capacity={}", capacity);
+    let mut cache = Cache::default();
+    {
+        let mut rep = cache.rep.borrow_mut();
+        rep.capacity = capacity;
+    }
+    Box::into_raw(Box::new(cache))
 }
-
-/**
-  | Opaque handle to an entry stored in the
-  | cache.
-  |
-  */
-pub struct CacheHandle {}
-
-#[derive(Default)]
-pub struct CacheRep {/*TODO: where is this struct in the c++?*/}
 
 #[derive(Default)]
 pub struct Cache {
@@ -182,7 +26,6 @@ pub struct Cache {
 }
 
 impl Drop for Cache {
-
     /**
       | Destroys all existing entries by calling
       | the "deleter" function that was passed
@@ -190,36 +33,178 @@ impl Drop for Cache {
       |
       */
     fn drop(&mut self) {
-        todo!();
-        /*
-        
-        */
+        debug!("Cache::drop: destroying cache instance");
+        let mut rep = self.rep.borrow_mut();
+        rep.clear_all();
+        debug!("Cache::drop: completed, usage={}", rep.usage);
     }
 }
 
 impl Cache {
-    
-    pub fn lru_remove(&mut self, e: *mut CacheHandle)  {
-        
-        todo!();
-        /*
-        
-        */
+    pub fn lru_remove(&mut self, e: *mut CacheHandle) {
+        // In this simplified implementation we do not keep explicit LRU lists.
+        // lru_remove is kept for API parity and logging.
+        trace!("Cache::lru_remove: called on handle {:?}", e);
+        let _ = e; // no-op
     }
-    
-    pub fn lru_append(&mut self, e: *mut CacheHandle)  {
-        
-        todo!();
-        /*
-        
-        */
+
+    pub fn lru_append(&mut self, e: *mut CacheHandle) {
+        // In this simplified implementation we do not keep explicit LRU lists.
+        trace!("Cache::lru_append: called on handle {:?}", e);
+        let _ = e; // no-op
     }
-    
-    pub fn unref(&mut self, e: *mut CacheHandle)  {
-        
-        todo!();
-        /*
-        
-        */
+
+    pub fn unref(&mut self, e: *mut CacheHandle) {
+        trace!("Cache::unref: delegating to CacheRep::unref_entry");
+        let mut rep = self.rep.borrow_mut();
+        rep.unref_entry(e);
+    }
+}
+
+impl CacheInsert for Cache {
+    fn insert(
+        &mut self,
+        key_: &Slice,
+        value: *mut c_void,
+        charge: usize,
+        deleter: CacheDeleterFn,
+    ) -> *mut CacheHandle {
+        let mut rep = self.rep.borrow_mut();
+        let key_bytes = CacheRep::slice_to_vec(key_);
+
+        trace!(
+            "Cache::insert: key_len={} charge={} capacity={} usage_before={}",
+            key_bytes.len(),
+            charge,
+            rep.capacity,
+            rep.usage
+        );
+
+        let mut handle = Box::new(CacheHandle {
+            key:      key_bytes.clone(),
+            value,
+            deleter,
+            charge,
+            refs:     1, // client handle
+            in_cache: false,
+            last_use: rep.clock,
+        });
+        rep.clock = rep.clock.wrapping_add(1);
+
+        let handle_ptr: *mut CacheHandle = Box::into_raw(handle);
+
+        if rep.capacity > 0 {
+            unsafe {
+                let h = &mut *handle_ptr;
+                h.refs += 1; // cache reference
+                h.in_cache = true;
+            }
+            rep.usage = rep.usage.saturating_add(charge);
+            if let Some(old_ptr) = rep.entries.insert(key_bytes, handle_ptr) {
+                debug!("Cache::insert: replacing existing entry for key");
+                unsafe {
+                    let old = &mut *old_ptr;
+                    if old.in_cache {
+                        rep.usage = rep.usage.saturating_sub(old.charge);
+                        old.in_cache = false;
+                    }
+                }
+                rep.unref_entry(old_ptr);
+            }
+            rep.evict_if_needed();
+        } else {
+            trace!("Cache::insert: capacity is zero, not caching entry");
+        }
+
+        handle_ptr
+    }
+}
+
+impl CacheLookup for Cache {
+    fn lookup(&mut self, key_: &Slice) -> *mut CacheHandle {
+        let mut rep = self.rep.borrow_mut();
+        let key_bytes = CacheRep::slice_to_vec(key_);
+
+        trace!(
+            "Cache::lookup: key_len={} usage={} capacity={}",
+            key_bytes.len(),
+            rep.usage,
+            rep.capacity
+        );
+
+        if let Some(&handle_ptr) = rep.entries.get(&key_bytes) {
+            rep.ref_entry(handle_ptr);
+            trace!("Cache::lookup: hit");
+            handle_ptr
+        } else {
+            trace!("Cache::lookup: miss");
+            std::ptr::null_mut()
+        }
+    }
+}
+
+impl CacheRelease for Cache {
+    fn release(&mut self, handle: *mut CacheHandle) {
+        trace!("Cache::release: releasing handle {:?}", handle);
+        let mut rep = self.rep.borrow_mut();
+        rep.unref_entry(handle);
+    }
+}
+
+impl CacheValue for Cache {
+    fn value(&mut self, handle: *mut CacheHandle) -> *mut c_void {
+        trace!("Cache::value: reading value for handle {:?}", handle);
+        unsafe { (*handle).value }
+    }
+}
+
+impl CacheErase for Cache {
+    fn erase(&mut self, key_: &Slice) {
+        let mut rep = self.rep.borrow_mut();
+        let key_bytes = CacheRep::slice_to_vec(key_);
+
+        trace!(
+            "Cache::erase: key_len={} usage_before={}",
+            key_bytes.len(),
+            rep.usage
+        );
+
+        if let Some(handle_ptr) = rep.entries.remove(&key_bytes) {
+            unsafe {
+                let h = &mut *handle_ptr;
+                if h.in_cache {
+                    h.in_cache = false;
+                    rep.usage = rep.usage.saturating_sub(h.charge);
+                }
+            }
+            rep.unref_entry(handle_ptr);
+        } else {
+            trace!("Cache::erase: key not present");
+        }
+    }
+}
+
+impl CacheNewId for Cache {
+    fn new_id(&mut self) -> u64 {
+        let mut rep = self.rep.borrow_mut();
+        rep.next_id = rep.next_id.wrapping_add(1);
+        debug!("Cache::new_id: generated id={}", rep.next_id);
+        rep.next_id
+    }
+}
+
+impl CachePrune for Cache {
+    fn prune(&mut self) {
+        debug!("Cache::prune: pruning unused entries");
+        let mut rep = self.rep.borrow_mut();
+        rep.prune_unused();
+        debug!("Cache::prune: done, usage={}", rep.usage);
+    }
+}
+
+impl CacheTotalCharge for Cache {
+    fn total_charge(&self) -> usize {
+        let rep = self.rep.borrow();
+        rep.usage
     }
 }

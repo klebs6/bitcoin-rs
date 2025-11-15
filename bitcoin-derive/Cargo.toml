@@ -1,9 +1,13 @@
+[dependencies]
+tracing.workspace = true
+quote = "1.0"
+syn = "1.0"
+proc-macro2 = "1.0"
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"
-[dependencies]
-quote = "1.0"
-syn = "1.0"
+
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
 version = "0.1.18"

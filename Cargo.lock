@@ -1123,9 +1123,11 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-imports",
  "lazy_static",
+ "proc-macro2",
  "quote 1.0.40",
  "static_assertions",
  "syn 1.0.109",
+ "tracing",
 ]
 
 [[package]]
@@ -3138,6 +3140,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinleveldb-slice",
+ "tracing",
 ]
 
 [[package]]
@@ -3316,6 +3319,8 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "derive_builder",
+ "tracing",
 ]
 
 [[package]]
@@ -3446,6 +3451,7 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "tracing",
 ]
 
 [[package]]

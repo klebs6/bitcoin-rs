@@ -38,26 +38,15 @@ FEATURES :=
 
 ACTIVE := bitcoin-top
 
-# ------------------------------- [leveldb-layer-01]
-ACTIVE := bitcoinleveldb-limiter
-#ACTIVE := bitcoinleveldb-rand
-#ACTIVE := bitcoinleveldb-sync
-
 # ------------------------------- [leveldb-layer-02]
-#ACTIVE := bitcoinleveldb-cache
-#ACTIVE := bitcoinleveldb-coding
-#ACTIVE := bitcoinleveldb-status
+ACTIVE := bitcoinleveldb-cache
 
 # ------------------------------- [leveldb-layer-03]
 #ACTIVE := bitcoinleveldb-lru
 #ACTIVE := bitcoinleveldb-util
 
-# ------------------------------- [leveldb-layer-04]
-#ACTIVE := bitcoinleveldb-comparator
-#ACTIVE := bitcoinleveldb-filter
-
 # ------------------------------- [leveldb-layer-05]
-#ACTIVE := bitcoinleveldb-bloom
+ACTIVE := bitcoinleveldb-bloom
 #ACTIVE := bitcoinleveldb-key
 
 # ------------------------------- [leveldb-layer-06]
@@ -344,3 +333,10 @@ bench:
 #ACTIVE := bitcoinleveldb-crc32
 #ACTIVE := bitcoinleveldb-hash
 #ACTIVE := bitcoinleveldb-histogram
+#ACTIVE := bitcoinleveldb-limiter
+#ACTIVE := bitcoinleveldb-rand
+#ACTIVE := bitcoinleveldb-sync
+#ACTIVE := bitcoinleveldb-status
+#ACTIVE := bitcoinleveldb-coding
+#ACTIVE := bitcoinleveldb-comparator
+#ACTIVE := bitcoinleveldb-filter
