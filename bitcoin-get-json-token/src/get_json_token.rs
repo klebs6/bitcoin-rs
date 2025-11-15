@@ -12,46 +12,75 @@ pub fn get_json_token(
         token_val.clear();
         *consumed = 0;
 
-        /* ---------- 1 / 5  skip leading whitespace ---------- */
-        let mut p        = skip_ws_nul(raw, end);
-        let raw_start    = p;
+        /* ---------- 1 / 5  skip leading whitespace / NUL ---------- */
+        let mut p     = skip_ws_nul(raw, end);
+        let raw_start = p;
 
-        /* ---------- 2 / 5  try structural ---------- */
-        /* record how many bytes were skipped */
+        // number of bytes skipped before seeing the token
         let skipped = (raw_start as usize - raw as usize) as u32;
+        if skipped > 0 {
+            trace!(
+                skipped,
+                "get_json_token: skipped leading JSON whitespace / NUL padding"
+            );
+        }
 
         /* ---------- 2 / 5  try structural ---------- */
-        if let Some((tok, after, _)) = lex_structural(p, end) {
-            *consumed = bytes_consumed(raw, after);          // <── NEW
+        if let Some((tok, after, n)) = lex_structural(p, end) {
+            *consumed = n; // count only the token itself, not leading whitespace
+            trace!(
+                ?tok,
+                consumed = *consumed,
+                "get_json_token: structural token recognised"
+            );
             return tok;
         }
 
         /* ---------- 3 / 5  try keyword ---------- */
         if let Some((tok, after, n)) = lex_keyword(p, end) {
             *consumed = n;
+            trace!(
+                ?tok,
+                consumed = *consumed,
+                "get_json_token: keyword token recognised"
+            );
             return tok;
         }
 
         /* ---------- 4 / 5  try number ---------- */
         if let Some((tok, after, n)) = lex_number(token_val, p, end) {
             *consumed = n;
+            trace!(
+                ?tok,
+                consumed = *consumed,
+                value = %token_val,
+                "get_json_token: number token recognised"
+            );
             return tok;
         }
 
         /* ---------- 5 / 5  try string ---------- */
         if let Some((tok, after, n)) = lex_string(token_val, p, end) {
             *consumed = n;
+            trace!(
+                ?tok,
+                consumed = *consumed,
+                value = %token_val,
+                "get_json_token: string token recognised"
+            );
             return tok;
         }
 
         /* ---------- no match ⇒ error / eof ---------- */
         if p >= end {
+            trace!("get_json_token: reached end of input ⇒ JTOK_NONE");
             JTokenType::JTOK_NONE
         } else {
-            trace!(byte = *p, "unrecognised input ⇒ JTOK_ERR");
+            trace!(byte = *p, "get_json_token: unrecognised input ⇒ JTOK_ERR");
             JTokenType::JTOK_ERR
         }
     }
+
 }
 
 #[cfg(test)]

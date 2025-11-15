@@ -31,57 +31,81 @@ DEFAULT := test_active
 #DEFAULT := test_ignored
 #DEFAULT := test_one_ignored
 
-FEATURES := --features "natpmp"
 FEATURES := 
+FEATURES := --features "leveldb_snappy"
 
 #-------------------------------[active-below]
 
-#ACTIVE := bitcoin-get-json-token # note that this one has a failing test
-
 ACTIVE := bitcoin-top
 
-
-#-------------------------------[next]
-#ACTIVE := bitcoinleveldb-arena
-#ACTIVE := bitcoinleveldb-batch
-#ACTIVE := bitcoinleveldb-bench
-#ACTIVE := bitcoinleveldb-bloom
-#ACTIVE := bitcoinleveldb-cache
-#ACTIVE := bitcoinleveldb-cfg
-#ACTIVE := bitcoinleveldb-coding
-#ACTIVE := bitcoinleveldb-comparator
-#ACTIVE := bitcoinleveldb-compat
+# ------------------------------- [leveldb-layer-01]
+ACTIVE := bitcoinleveldb-compat
 #ACTIVE := bitcoinleveldb-crc32
-#ACTIVE := bitcoinleveldb-db
-#ACTIVE := bitcoinleveldb-dumpfile
-#ACTIVE := bitcoinleveldb-duplex
-#ACTIVE := bitcoinleveldb-env
-#ACTIVE := bitcoinleveldb-file
-#ACTIVE := bitcoinleveldb-filter
 #ACTIVE := bitcoinleveldb-hash
 #ACTIVE := bitcoinleveldb-histogram
-#ACTIVE := bitcoinleveldb-key
 #ACTIVE := bitcoinleveldb-limiter
-#ACTIVE := bitcoinleveldb-log
+#ACTIVE := bitcoinleveldb-rand
+#ACTIVE := bitcoinleveldb-slice
+#ACTIVE := bitcoinleveldb-sync
+
+# ------------------------------- [leveldb-layer-02]
+#ACTIVE := bitcoinleveldb-cache
+#ACTIVE := bitcoinleveldb-coding
+#ACTIVE := bitcoinleveldb-status
+
+# ------------------------------- [leveldb-layer-03]
 #ACTIVE := bitcoinleveldb-lru
+#ACTIVE := bitcoinleveldb-util
+
+# ------------------------------- [leveldb-layer-04]
+#ACTIVE := bitcoinleveldb-comparator
+#ACTIVE := bitcoinleveldb-filter
+
+# ------------------------------- [leveldb-layer-05]
+#ACTIVE := bitcoinleveldb-bloom
+#ACTIVE := bitcoinleveldb-key
+
+# ------------------------------- [leveldb-layer-06]
+#ACTIVE := bitcoinleveldb-file
+#ACTIVE := bitcoinleveldb-skiplist
+#ACTIVE := bitcoinleveldb-snapshot
+
+# ------------------------------- [leveldb-layer-07]
+#ACTIVE := bitcoinleveldb-log
+#ACTIVE := bitcoinleveldb-versionedit
+
+# ------------------------------- [leveldb-layer-08]
+#ACTIVE := bitcoinleveldb-env
+
+# ------------------------------- [leveldb-layer-09]
 #ACTIVE := bitcoinleveldb-memenv
+#ACTIVE := bitcoinleveldb-options
+#ACTIVE := bitcoinleveldb-posix
+
+# ------------------------------- [leveldb-layer-10]
+#ACTIVE := bitcoinleveldb-table
+
+# ------------------------------- [leveldb-layer-11]
+#ACTIVE := bitcoinleveldb-duplex
 #ACTIVE := bitcoinleveldb-memtable
 #ACTIVE := bitcoinleveldb-merger
 #ACTIVE := bitcoinleveldb-meta
-#ACTIVE := bitcoinleveldb-options
-#ACTIVE := bitcoinleveldb-posix
-#ACTIVE := bitcoinleveldb-rand
-#ACTIVE := bitcoinleveldb-repair
-#ACTIVE := bitcoinleveldb-skiplist
-#ACTIVE := bitcoinleveldb-slice
-#ACTIVE := bitcoinleveldb-snapshot
-#ACTIVE := bitcoinleveldb-status
-#ACTIVE := bitcoinleveldb-sync
-#ACTIVE := bitcoinleveldb-table
-#ACTIVE := bitcoinleveldb-test
-#ACTIVE := bitcoinleveldb-util
 #ACTIVE := bitcoinleveldb-version
-#ACTIVE := bitcoinleveldb-versionedit
+
+# ------------------------------- [leveldb-layer-12]
+#ACTIVE := bitcoinleveldb-batch
+#ACTIVE := bitcoinleveldb-repair
+
+# ------------------------------- [leveldb-layer-13]
+#ACTIVE := bitcoinleveldb-db
+#ACTIVE := bitcoinleveldb-dumpfile
+
+# ------------------------------- [leveldb-layer-14]
+#ACTIVE := bitcoinleveldb-bench
+#ACTIVE := bitcoinleveldb-test
+
+# ------------------------------- [leveldb-layer-15]
+#ACTIVE := bitcoin-leveldb
 
 #-------------------------------[future]
 #ACTIVE := bitcoin-block
@@ -317,3 +341,6 @@ bench:
 #ACTIVE := bitcoin-remote
 #ACTIVE := bitcoin-network
 #ACTIVE := bitcoin-base58
+#ACTIVE := bitcoin-get-json-token # note that this one has a failing test
+#ACTIVE := bitcoinleveldb-arena
+#ACTIVE := bitcoinleveldb-cfg

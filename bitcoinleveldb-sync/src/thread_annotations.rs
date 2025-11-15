@@ -8,10 +8,10 @@
   */
 crate::ix!();
 
-//-------------------------------------------[.cpp/bitcoin/src/leveldb/port/thread_annotations.h]
 
 lazy_static!{
     /*
+//-------------------------------------------[.cpp/bitcoin/src/leveldb/port/thread_annotations.h]
     #if !defined(THREAD_ANNOTATION_ATTRIBUTE__)
 
     #if defined(__clang__)
