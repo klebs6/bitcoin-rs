@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-cache/src/cache_interface.rs ]
 crate::ix!();
 
-/*!
+/**
   | A Cache is an interface that maps keys to
   | values.  It has internal synchronization and
   | may be safely accessed concurrently from

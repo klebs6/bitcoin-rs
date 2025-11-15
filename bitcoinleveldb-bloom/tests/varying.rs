@@ -2,12 +2,11 @@
 use bitcoinleveldb_bloom::*;
 use bitcoin_imports::*;
 
-
 #[traced_test]
-fn bloom_test_varying_lengths() {
-    info!("bloom_test_varying_lengths: start");
+fn bloom_filter_varying_lengths_meet_false_positive_requirements() {
+    info!("bloom_filter_varying_lengths_meet_false_positive_requirements: start");
 
-      // Count number of filters that significantly exceed the false positive rate
+    // Count number of filters that significantly exceed the false positive rate
     let mut mediocre_filters: usize = 0;
     let mut good_filters:     usize = 0;
 
@@ -16,8 +15,9 @@ fn bloom_test_varying_lengths() {
         let mut test = BloomTest::default();
 
         for i in 0..length {
-            let encoded = encode_fixed32_to_bytes(i as u32);
-            test.add_key_slice(&encoded);
+            let mut buffer = [0u8; 4];
+            encode_fixed32_into(i as u32, &mut buffer);
+            test.add_key_slice(&buffer);
         }
 
         test.build();
@@ -30,7 +30,7 @@ fn bloom_test_varying_lengths() {
             length,
             actual_size,
             max_allowed,
-            "bloom_test_varying_lengths: checking filter size bound"
+            "bloom_filter_varying_lengths_meet_false_positive_requirements: checking filter size bound"
         );
 
         assert!(
@@ -42,8 +42,8 @@ fn bloom_test_varying_lengths() {
         );
 
         // All added keys must match.
-        let mut buffer = [0u8; 4];
         for i in 0..length {
+            let mut buffer = [0u8; 4];
             encode_fixed32_into(i as u32, &mut buffer);
             assert!(
                 test.matches_slice(&buffer),
@@ -61,7 +61,7 @@ fn bloom_test_varying_lengths() {
                 rate_percent = rate * 100.0,
                 length,
                 bytes = test.filter_size(),
-                "bloom_test_varying_lengths: false positive statistics"
+                "bloom_filter_varying_lengths_meet_false_positive_requirements: false positive statistics"
             );
         }
 
@@ -86,7 +86,7 @@ fn bloom_test_varying_lengths() {
         info!(
             good_filters,
             mediocre_filters,
-            "bloom_test_varying_lengths: final filter quality summary"
+            "bloom_filter_varying_lengths_meet_false_positive_requirements: final filter quality summary"
         );
     }
 
@@ -97,5 +97,5 @@ fn bloom_test_varying_lengths() {
         mediocre_filters
     );
 
-    info!("bloom_test_varying_lengths: done");
+    info!("bloom_filter_varying_lengths_meet_false_positive_requirements: done");
 }

@@ -3,8 +3,8 @@ use bitcoinleveldb_bloom::*;
 use bitcoin_imports::*;
 
 #[traced_test]
-fn bloom_test_small() {
-    info!("bloom_test_small: start");
+fn bloom_filter_small_set_behaves_correctly() {
+    info!("bloom_filter_small_set_behaves_correctly: start");
 
     let mut test = BloomTest::default();
     test.add_key_str("hello");
@@ -28,6 +28,5 @@ fn bloom_test_small() {
         "filter should not match 'foo'"
     );
 
-    info!("bloom_test_small: done");
+    info!("bloom_filter_small_set_behaves_correctly: done");
 }
-

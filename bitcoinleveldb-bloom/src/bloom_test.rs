@@ -2,6 +2,7 @@
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/bloom_test.cc]
+#[cfg(test)]
 #[derive(
     Debug,
     Getters,
@@ -15,6 +16,7 @@ pub struct BloomTest {
     keys:   Vec<Vec<u8>>,
 }
 
+#[cfg(test)]
 impl Default for BloomTest {
     fn default() -> Self {
         info!(
@@ -23,26 +25,27 @@ impl Default for BloomTest {
         BloomTest {
             policy: BloomFilterPolicy::new(10),
             filter: Vec::new(),
-            keys: Vec::new(),
+            keys:   Vec::new(),
         }
     }
 }
 
+#[cfg(test)]
 impl Drop for BloomTest {
     fn drop(&mut self) {
         debug!(
             remaining_keys = self.keys.len(),
-            filter_size = self.filter.len(),
+            filter_size    = self.filter.len(),
             "Dropping BloomTest fixture"
         );
     }
 }
 
+#[cfg(test)]
 impl BloomTest {
-
-     pub fn reset(&mut self) {
+    pub fn reset(&mut self) {
         debug!(
-            existing_keys = self.keys.len(),
+            existing_keys        = self.keys.len(),
             existing_filter_size = self.filter.len(),
             "BloomTest::reset called"
         );
@@ -50,17 +53,17 @@ impl BloomTest {
         self.filter.clear();
     }
 
-     pub fn add_key_slice(&mut self, key: &[u8]) {
-         trace!(
-             key_len = key.len(),
-             "BloomTest::add_key_slice: adding raw key bytes"
-         );
-         self.keys.push(key.to_vec());
-     }
+    pub fn add_key_slice(&mut self, key: &[u8]) {
+        trace!(
+            key_len = key.len(),
+            "BloomTest::add_key_slice: adding raw key bytes"
+        );
+        self.keys.push(key.to_vec());
+    }
 
-     pub fn add_key_str(&mut self, key: &str) {
-         trace!(
-             key,
+    pub fn add_key_str(&mut self, key: &str) {
+        trace!(
+            key,
             "BloomTest::add_key_str: adding string key"
         );
         self.add_key_slice(key.as_bytes());
@@ -68,7 +71,7 @@ impl BloomTest {
 
     pub fn add_key_slice_object(&mut self, s: &Slice) {
         let data_ptr = s.data();
-        let len = s.size();
+        let len      = s.size();
 
         if data_ptr.is_null() || len == 0 {
             trace!(
@@ -81,11 +84,11 @@ impl BloomTest {
             self.keys.push(bytes.to_vec());
         }
     }
-  
-    pub fn add(&mut self, s: &Slice)  {
+
+    pub fn add(&mut self, s: &Slice) {
         self.add_key_slice_object(s);
     }
-    
+
     pub fn build(&mut self) {
         debug!(
             num_keys = self.keys.len(),
@@ -102,8 +105,12 @@ impl BloomTest {
             .create_filter_from_bytes(&key_refs, &mut self.filter);
         self.keys.clear();
 
-        if VERBOSE >= 2 {
-            self.dump_filter();
+        #[cfg(test)]
+        {
+            use crate::bloom_test_key::VERBOSE;
+            if VERBOSE >= 2 {
+                self.dump_filter();
+            }
         }
 
         debug!(
@@ -111,7 +118,7 @@ impl BloomTest {
             "BloomTest::build finished"
         );
     }
-    
+
     pub fn filter_size(&self) -> usize {
         self.filter.len()
     }
@@ -151,7 +158,7 @@ impl BloomTest {
             "BloomTest::dump_filter: current bloom filter layout"
         );
     }
-   
+
     pub fn matches_slice(&mut self, key: &[u8]) -> bool {
         if !self.keys.is_empty() {
             self.build();
@@ -171,7 +178,7 @@ impl BloomTest {
     pub fn matches_str(&mut self, key: &str) -> bool {
         self.matches_slice(key.as_bytes())
     }
-   
+
     pub fn false_positive_rate(&mut self) -> f64 {
         let mut buffer = [0u8; 4];
         let mut result_count: usize = 0;

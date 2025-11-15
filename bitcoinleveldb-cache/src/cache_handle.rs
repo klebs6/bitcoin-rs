@@ -5,23 +5,27 @@ crate::ix!();
   | Opaque handle to an entry stored in the
   | cache.
   |
+  | Fields are private; access is via the
+  | generated getters/setters from `getset`
+  | and the builder from `derive_builder`.
   */
+#[derive(Getters, Setters, Builder, Default)]
+#[getset(get = "pub(crate)", set = "pub(crate)")]
 pub struct CacheHandle {
-    key:        Vec<u8>,
-    value:      *mut c_void,
-    deleter:    CacheDeleterFn,
-    charge:     usize,
+    key:      String,
+    value:    *mut c_void,
+    deleter:  CacheDeleterFn,
+    charge:   usize,
     /// total references (cache reference + client handles)
-    refs:       u32,
+    refs:     u32,
     /// true iff this entry currently counts against cache usage
-    in_cache:   bool,
+    in_cache: bool,
     /// simple logical clock for LRU decisions
-    last_use:   u64,
+    last_use: u64,
 }
 
 impl CacheHandle {
-    fn as_key_slice(&self) -> Slice {
-        // We assume bitcoinleveldb_slice::Slice implements From<&[u8]>
-        (&self.key[..]).into()
+    pub(crate) fn as_key_slice(&self) -> Slice {
+        Slice::from(self.key())
     }
 }

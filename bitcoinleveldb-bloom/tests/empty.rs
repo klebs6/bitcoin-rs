@@ -3,8 +3,8 @@ use bitcoinleveldb_bloom::*;
 use bitcoin_imports::*;
 
 #[traced_test]
-fn bloom_test_empty_filter() {
-    info!("bloom_test_empty_filter: start");
+fn bloom_filter_empty_filter_has_no_matches() {
+    info!("bloom_filter_empty_filter_has_no_matches: start");
 
     let mut test = BloomTest::default();
 
@@ -17,5 +17,5 @@ fn bloom_test_empty_filter() {
         "empty filter should not match 'world'"
     );
 
-    info!("bloom_test_empty_filter: done");
+    info!("bloom_filter_empty_filter_has_no_matches: done");
 }

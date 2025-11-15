@@ -2,7 +2,7 @@
 crate::ix!();
 
 #[cfg(test)]
-const VERBOSE: i32 = 1;
+pub(crate) const VERBOSE: i32 = 1;
 
 #[cfg(test)]
 fn encode_fixed32_to_bytes(value: u32) -> [u8; 4] {
@@ -33,11 +33,11 @@ pub(crate) fn key(i: i32, buffer: *mut u8) -> Slice {
         error!(
             "key(): buffer pointer is null; returning empty Slice via null pointer/zero length"
         );
-        unsafe { Slice::new(std::ptr::null(), 0) }
+        unsafe { Slice::from_ptr_len(std::ptr::null(), 0) }
     } else {
         unsafe {
             std::ptr::copy_nonoverlapping(encoded.as_ptr(), buffer, encoded.len());
-            Slice::new(buffer as *const u8, encoded.len())
+            Slice::from_ptr_len(buffer as *const u8, encoded.len())
         }
     }
 }
