@@ -31,21 +31,16 @@ DEFAULT := test_active
 #DEFAULT := test_ignored
 #DEFAULT := test_one_ignored
 
-FEATURES := 
 FEATURES := --features "leveldb_snappy"
+FEATURES := 
 
 #-------------------------------[active-below]
 
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-01]
-ACTIVE := bitcoinleveldb-compat
-#ACTIVE := bitcoinleveldb-crc32
-#ACTIVE := bitcoinleveldb-hash
-#ACTIVE := bitcoinleveldb-histogram
-#ACTIVE := bitcoinleveldb-limiter
+ACTIVE := bitcoinleveldb-limiter
 #ACTIVE := bitcoinleveldb-rand
-#ACTIVE := bitcoinleveldb-slice
 #ACTIVE := bitcoinleveldb-sync
 
 # ------------------------------- [leveldb-layer-02]
@@ -344,3 +339,8 @@ bench:
 #ACTIVE := bitcoin-get-json-token # note that this one has a failing test
 #ACTIVE := bitcoinleveldb-arena
 #ACTIVE := bitcoinleveldb-cfg
+#ACTIVE := bitcoinleveldb-compat
+#ACTIVE := bitcoinleveldb-slice
+#ACTIVE := bitcoinleveldb-crc32
+#ACTIVE := bitcoinleveldb-hash
+#ACTIVE := bitcoinleveldb-histogram

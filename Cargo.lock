@@ -3172,6 +3172,8 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoinleveldb-compat",
+ "tracing",
 ]
 
 [[package]]
@@ -3281,6 +3283,7 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "tracing",
 ]
 
 [[package]]
@@ -3290,6 +3293,7 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "tracing",
 ]
 
 [[package]]

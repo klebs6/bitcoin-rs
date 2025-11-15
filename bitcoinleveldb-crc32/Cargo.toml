@@ -1,3 +1,7 @@
+[dependencies]
+tracing.workspace = true
+bitcoinleveldb-compat = { path = "../bitcoinleveldb-compat" }
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"

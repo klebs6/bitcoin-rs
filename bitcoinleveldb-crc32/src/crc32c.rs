@@ -13,14 +13,12 @@ crate::ix!();
   | Return the crc32c of data[0,n-1]
   |
   */
-#[inline] pub fn crc32c_value(
-        data: *const u8,
-        n:    usize) -> u32 {
-    
-    todo!();
-        /*
-            return Extend(0, data, n);
-        */
+#[inline]
+#[instrument(level = "trace", skip_all)]
+pub fn crc32c_value(data: *const u8, n: usize) -> u32 {
+    let crc = crc32c_extend(0, data, n);
+    trace!(len = n, crc, "crc32c_value computed");
+    crc
 }
 
 pub const MASK_DELTA: u32 = 0xa282ead8;
@@ -34,13 +32,14 @@ pub const MASK_DELTA: u32 = 0xa282ead8;
   | somewhere (e.g., in files) should be masked
   | before being stored.
   */
-#[inline] pub fn crc32c_mask(crc: u32) -> u32 {
-    
-    todo!();
-        /*
-      // Rotate right by 15 bits and add a constant.
-      return ((crc >> 15) | (crc << 17)) + kMaskDelta;
-        */
+#[inline]
+#[instrument(level = "trace", skip_all)]
+pub fn crc32c_mask(crc: u32) -> u32 {
+    // Rotate right by 15 bits and add the mask delta (with wrapping semantics).
+    let rotated = (crc >> 15) | (crc << 17);
+    let masked  = rotated.wrapping_add(MASK_DELTA);
+    trace!(orig = crc, rotated, masked, "crc32c_mask applied");
+    masked
 }
 
 /**
@@ -48,13 +47,14 @@ pub const MASK_DELTA: u32 = 0xa282ead8;
   | is masked_crc.
   |
   */
-#[inline] pub fn crc32c_unmask(masked_crc: u32) -> u32 {
-    
-    todo!();
-        /*
-      uint32_t rot = masked_crc - kMaskDelta;
-      return ((rot >> 17) | (rot << 15));
-        */
+#[inline]
+#[instrument(level = "trace", skip_all)]
+pub fn crc32c_unmask(masked_crc: u32) -> u32 {
+    // Inverse of crc32c_mask: subtract the delta, then rotate left by 15.
+    let rot = masked_crc.wrapping_sub(MASK_DELTA);
+    let unmasked = (rot >> 17) | (rot << 15);
+    trace!(masked = masked_crc, rot, unmasked, "crc32c_unmask applied");
+    unmasked
 }
 
 pub const BYTE_EXTENSION_TABLE: [u32; 256] = [
@@ -294,12 +294,16 @@ pub const CRC32XOR: u32 = 0xffffffff as u32;
   | from a 32-bit-aligned buffer.
   |
   */
-#[inline] pub fn crc32c_read_uint32le(buffer: *const u8) -> u32 {
-    
-    todo!();
-        /*
-            return DecodeFixed32(reinterpret_cast<const char*>(buffer));
-        */
+#[inline]
+#[instrument(level = "trace", skip_all)]
+pub fn crc32c_read_uint32le(buffer: *const u8) -> u32 {
+    unsafe {
+        let mut bytes = [0u8; 4];
+        core::ptr::copy_nonoverlapping(buffer, bytes.as_mut_ptr(), 4);
+        let value = u32::from_le_bytes(bytes);
+        trace!(ptr = ?buffer, value, "crc32c_read_uint32le loaded");
+        value
+    }
 }
 
 /**
@@ -308,14 +312,20 @@ pub const CRC32XOR: u32 = 0xffffffff as u32;
   |
   | N must be a power of two.
   */
-#[inline] pub fn crc32c_round_up<const N: i32>(pointer: *const u8) -> *mut u8 {
-
-    todo!();
-        /*
-            return reinterpret_cast<uint8_t*>(
-          (reinterpret_cast<uintptr_t>(pointer) + (N - 1)) &
-          ~static_cast<uintptr_t>(N - 1));
-        */
+#[inline]
+#[instrument(level = "trace", skip_all)]
+pub fn crc32c_round_up<const N: usize>(pointer: *const u8) -> *mut u8 {
+    debug_assert!(N.is_power_of_two(), "N must be a power of two");
+    let addr   = pointer as usize;
+    let rounded = (addr.wrapping_add(N - 1)) & !(N - 1);
+    let aligned_ptr = rounded as *mut u8;
+    trace!(
+        orig_addr    = addr,
+        rounded_addr = rounded,
+        alignment    = N,
+        "crc32c_round_up computed aligned pointer"
+    );
+    aligned_ptr
 }
 
 /**
@@ -323,17 +333,81 @@ pub const CRC32XOR: u32 = 0xffffffff as u32;
   | can accelerate the CRC32C calculation.
   |
   */
+#[instrument(level = "trace", skip_all)]
 pub fn crc32c_can_accelerate() -> bool {
-    
-    todo!();
-        /*
-      // AcceleretedCRC32C returns zero when unable to accelerate.
-      static const char kTestCRCBuffer[] = "TestCRCBuffer";
-      static const char kBufSize = sizeof(kTestCRCBuffer) - 1;
-      static const uint32_t kTestCRCValue = 0xdcbc59fa;
+    // The original C++ logic:
+    //   AcceleratedCRC32C(0, "TestCRCBuffer", 14) == 0xdcbc59fa
+    //
+    // We mirror *exactly* the same test, including:
+    //  - initial CRC seed of 0
+    //  - same byte string
+    //  - same expected CRC32C value
+    //
+    // If our accelerated backend is active and correct,
+    // the computed CRC must match this constant.
+    //
+    // If not, we return false (no acceleration).
 
-      return AcceleratedCRC32C(0, kTestCRCBuffer, kBufSize) == kTestCRCValue;
-        */
+    const TEST_DATA: &[u8] = b"TestCRCBuffer";
+    const EXPECTED: u32 = 0xdcbc59fa;
+
+    unsafe {
+        let computed = acceleratedcrc32c(
+            0,
+            TEST_DATA.as_ptr(),
+            TEST_DATA.len(),
+        );
+
+        let ok = computed == EXPECTED;
+
+        trace!(
+            computed_crc = computed,
+            expected_crc = EXPECTED,
+            data_len = TEST_DATA.len(),
+            accelerate = ok,
+            "crc32c_can_accelerate probe completed"
+        );
+
+        ok
+    }
+}
+
+#[inline]
+unsafe fn crc32c_step1(mut l: u32, p: &mut *const u8) -> u32 {
+    let byte = **p;
+    let idx  = ((l as u8) ^ byte) as usize;
+    l = BYTE_EXTENSION_TABLE[idx] ^ (l >> 8);
+    *p = (*p).add(1);
+    l
+}
+
+#[inline]
+unsafe fn crc32c_step4(crc: &mut u32, p: *const u8) {
+    let v = *crc;
+    let b0 = (v & 0xff) as usize;
+    let b1 = ((v >> 8) & 0xff) as usize;
+    let b2 = ((v >> 16) & 0xff) as usize;
+    let b3 = ((v >> 24) & 0xff) as usize;
+
+    let loaded = crc32c_read_uint32le(p);
+
+    let combined = loaded
+        ^ STRIDE_EXTENSION_TABLE3[b0]
+        ^ STRIDE_EXTENSION_TABLE2[b1]
+        ^ STRIDE_EXTENSION_TABLE1[b2]
+        ^ STRIDE_EXTENSION_TABLE0[b3];
+
+    *crc = combined;
+}
+
+#[inline]
+unsafe fn crc32c_step4w(l: &mut u32, w: &mut u32) {
+    *w ^= *l;
+    for _ in 0..4 {
+        let idx = (*w & 0xff) as usize;
+        *w = (*w >> 8) ^ BYTE_EXTENSION_TABLE[idx];
+    }
+    *l = *w;
 }
 
 /**
@@ -342,112 +416,83 @@ pub fn crc32c_can_accelerate() -> bool {
   | Extend() is often used to maintain the crc32c
   | of a stream of data.
   */
-pub fn crc32c_extend(
-        crc:  u32,
-        data: *const u8,
-        n:    usize) -> u32 {
-    
-    todo!();
-        /*
-            static bool accelerate = CanAccelerateCRC32C();
-      if (accelerate) {
-        return AcceleratedCRC32C(crc, data, n);
-      }
+#[instrument(level = "trace", skip_all)]
+pub fn crc32c_extend(crc: u32, data: *const u8, n: usize) -> u32 {
+    unsafe {
+        let final_crc = crc32c_extend_portable(crc, data, n);
+        trace!(
+            initial_crc = crc,
+            len         = n,
+            final_crc,
+            "crc32c_extend completed (portable)"
+        );
+        final_crc
+    }
+}
 
-      const uint8_t* p = reinterpret_cast<const uint8_t*>(data);
-      const uint8_t* e = p + n;
-      uint32_t l = crc ^ kCRC32Xor;
+#[inline]
+unsafe fn crc32c_extend_portable(mut crc: u32, data: *const u8, n: usize) -> u32 {
+    let mut p = data;
+    let e     = data.add(n);
 
-    // Process one byte at a time.
-    #define STEP1                              \
-      do {                                     \
-        int c = (l & 0xff) ^ *p++;             \
-        l = kByteExtensionTable[c] ^ (l >> 8); \
-      } while (0)
+    // Pre-condition CRC with the standard XOR.
+    let mut l = crc ^ CRC32XOR;
 
-    // Process one of the 4 strides of 4-byte data.
-    #define STEP4(s)                                                               \
-      do {                                                                         \
-        crc##s = ReadUint32LE(p + s * 4) ^ kStrideExtensionTable3[crc##s & 0xff] ^ \
-                 kStrideExtensionTable2[(crc##s >> 8) & 0xff] ^                    \
-                 kStrideExtensionTable1[(crc##s >> 16) & 0xff] ^                   \
-                 kStrideExtensionTable0[crc##s >> 24];                             \
-      } while (0)
-
-    // Process a 16-byte swath of 4 strides, each of which has 4 bytes of data.
-    #define STEP16 \
-      do {         \
-        STEP4(0);  \
-        STEP4(1);  \
-        STEP4(2);  \
-        STEP4(3);  \
-        p += 16;   \
-      } while (0)
-
-    // Process 4 bytes that were already loaded into a word.
-    #define STEP4W(w)                                   \
-      do {                                              \
-        w ^= l;                                         \
-        for (size_t i = 0; i < 4; ++i) {                \
-          w = (w >> 8) ^ kByteExtensionTable[w & 0xff]; \
-        }                                               \
-        l = w;                                          \
-      } while (0)
-
-      // Point x at first 4-byte aligned byte in the buffer. This might be past the
-      // end of the buffer.
-      const uint8_t* x = RoundUp<4>(p);
-      if (x <= e) {
-        // Process bytes p is 4-byte aligned.
-        while (p != x) {
-          STEP1;
+    // Align to 4-byte boundary using byte-at-a-time processing.
+    let x = crc32c_round_up::<4>(p) as *const u8;
+    if x <= e {
+        while p != x {
+            l = crc32c_step1(l, &mut p);
         }
-      }
+    }
 
-      if ((e - p) >= 16) {
-        // Load a 16-byte swath into the stride partial results.
-        uint32_t crc0 = ReadUint32LE(p + 0 * 4) ^ l;
-        uint32_t crc1 = ReadUint32LE(p + 1 * 4);
-        uint32_t crc2 = ReadUint32LE(p + 2 * 4);
-        uint32_t crc3 = ReadUint32LE(p + 3 * 4);
-        p += 16;
+    // Process in large 16-byte strides where possible.
+    let mut remaining = e.offset_from(p);
+    if remaining >= 16 {
+        let mut crc0 = crc32c_read_uint32le(p.add(0 * 4)) ^ l;
+        let mut crc1 = crc32c_read_uint32le(p.add(1 * 4));
+        let mut crc2 = crc32c_read_uint32le(p.add(2 * 4));
+        let mut crc3 = crc32c_read_uint32le(p.add(3 * 4));
+        p = p.add(16);
 
-        // It is possible to get better speeds (at least on x86) by interleaving
-        // prefetching 256 bytes ahead with processing 64 bytes at a time. See the
-        // portable implementation in https://github.com/google/crc32c/.
-
-        // Process one 16-byte swath at a time.
-        while ((e - p) >= 16) {
-          STEP16;
+        // Process full 16-byte swaths.
+        remaining = e.offset_from(p);
+        while remaining >= 16 {
+            crc32c_step4(&mut crc0, p.add(0 * 4));
+            crc32c_step4(&mut crc1, p.add(1 * 4));
+            crc32c_step4(&mut crc2, p.add(2 * 4));
+            crc32c_step4(&mut crc3, p.add(3 * 4));
+            p = p.add(16);
+            remaining = e.offset_from(p);
         }
 
-        // Advance one word at a time as far as possible.
-        while ((e - p) >= 4) {
-          STEP4(0);
-          uint32_t tmp = crc0;
-          crc0 = crc1;
-          crc1 = crc2;
-          crc2 = crc3;
-          crc3 = tmp;
-          p += 4;
+        // Process any remaining 4-byte words.
+        remaining = e.offset_from(p);
+        while remaining >= 4 {
+            crc32c_step4(&mut crc0, p);
+            let tmp = crc0;
+            crc0    = crc1;
+            crc1    = crc2;
+            crc2    = crc3;
+            crc3    = tmp;
+            p       = p.add(4);
+            remaining = e.offset_from(p);
         }
 
-        // Combine the 4 partial stride results.
+        // Combine the four partial CRCs back into l.
         l = 0;
-        STEP4W(crc0);
-        STEP4W(crc1);
-        STEP4W(crc2);
-        STEP4W(crc3);
-      }
+        crc32c_step4w(&mut l, &mut crc0);
+        crc32c_step4w(&mut l, &mut crc1);
+        crc32c_step4w(&mut l, &mut crc2);
+        crc32c_step4w(&mut l, &mut crc3);
+    }
 
-      // Process the last few bytes.
-      while (p != e) {
-        STEP1;
-      }
-    #undef STEP4W
-    #undef STEP16
-    #undef STEP4
-    #undef STEP1
-      return l ^ kCRC32Xor;
-        */
+    // Process remaining tail bytes one-by-one.
+    while p != e {
+        l = crc32c_step1(l, &mut p);
+    }
+
+    // Post-condition XOR.
+    crc = l ^ CRC32XOR;
+    crc
 }
