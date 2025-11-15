@@ -30,7 +30,7 @@ pub trait FilterPolicy:
   | incompatible filters may be passed to methods
   | of this type.
   */
-Name 
+Named 
 
 + CreateFilter 
 + KeyMayMatch { }

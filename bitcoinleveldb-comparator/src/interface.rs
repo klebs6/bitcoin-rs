@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-comparator/src/traits.rs ]
+// ---------------- [ File: bitcoinleveldb-comparator/src/interface.rs ]
 crate::ix!();
 
 /// A trait for three-way comparison of slices.
@@ -46,4 +46,3 @@ pub trait SliceComparator:
     /// The pointer is valid for the program lifetime.
     fn bytewise_comparator(&self) -> *const dyn SliceComparator;
 }
-

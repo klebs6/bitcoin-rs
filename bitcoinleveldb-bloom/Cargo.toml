@@ -1,3 +1,9 @@
+[dependencies]
+tracing.workspace        = true
+derive_builder.workspace = true
+getset.workspace         = true
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"
@@ -12,6 +18,9 @@ path = "../bitcoinleveldb-filter"
 version = "0.1.18"
 [dependencies.bitcoinleveldb-slice]
 path = "../bitcoinleveldb-slice"
+version = "0.1.18"
+[dependencies.bitcoinleveldb-hash]
+path = "../bitcoinleveldb-hash"
 version = "0.1.18"
 [package]
 authors = [ "klebs <none>" ]

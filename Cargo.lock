@@ -1410,6 +1410,7 @@ dependencies = [
  "modular-bitfield-impl",
  "multimap",
  "multiset",
+ "named-item",
  "nix",
  "num",
  "once_cell",
@@ -3108,8 +3109,13 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoinleveldb-coding",
  "bitcoinleveldb-filter",
+ "bitcoinleveldb-hash",
  "bitcoinleveldb-slice",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]

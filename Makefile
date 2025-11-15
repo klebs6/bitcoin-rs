@@ -39,15 +39,13 @@ FEATURES :=
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-02]
-ACTIVE := bitcoinleveldb-cache
+#ACTIVE := bitcoinleveldb-cache
+#ACTIVE := bitcoinleveldb-key
+ACTIVE := bitcoinleveldb-bloom
 
 # ------------------------------- [leveldb-layer-03]
 #ACTIVE := bitcoinleveldb-lru
 #ACTIVE := bitcoinleveldb-util
-
-# ------------------------------- [leveldb-layer-05]
-ACTIVE := bitcoinleveldb-bloom
-#ACTIVE := bitcoinleveldb-key
 
 # ------------------------------- [leveldb-layer-06]
 #ACTIVE := bitcoinleveldb-file
