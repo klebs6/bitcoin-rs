@@ -28,11 +28,10 @@ impl SliceComparator for BytewiseComparatorImpl {
 // -------------------------------------
 // Name trait implementation
 // -------------------------------------
-impl Name for BytewiseComparatorImpl {
-    fn name(&self) -> *const u8 {
+impl Named for BytewiseComparatorImpl {
+    fn name(&self) -> std::borrow::Cow<'_,str> {
         info!("Returning the name of BytewiseComparatorImpl");
-        static NAME: &str = "leveldb.BytewiseComparator";
-        NAME.as_ptr()
+        std::borrow::Cow::Borrowed("leveldb.BytewiseComparator")
     }
 }
 

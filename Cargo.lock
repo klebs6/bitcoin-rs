@@ -3319,6 +3319,7 @@ dependencies = [
  "bitcoinleveldb-filter",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-util",
+ "tracing",
 ]
 
 [[package]]
@@ -3354,7 +3355,11 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinleveldb-cache",
+ "bitcoinleveldb-hash",
  "bitcoinleveldb-slice",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]

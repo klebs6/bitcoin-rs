@@ -39,7 +39,7 @@ pub trait FindShortSuccessor {
 /// A unifying trait for a full "SliceComparator,"
 /// combining the previous traits.
 pub trait SliceComparator:
-    Compare + Name + FindShortestSeparator + FindShortSuccessor
+    Compare + Named + FindShortestSeparator + FindShortSuccessor
 {
     /// Return a pointer to a built-in comparator
     /// that uses lexicographic byte-wise ordering.

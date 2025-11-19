@@ -66,3 +66,39 @@ impl BloomFilterPolicy {
         true
     }
 }
+
+#[cfg(test)]
+mod bloom_filter_policy_key_may_match_bytes_suite {
+    use super::*;
+
+    #[traced_test]
+    fn key_may_match_bytes_returns_false_for_too_short_filters() {
+        let policy = BloomFilterPolicy::new(10);
+        let key    = b"short-filter-key";
+
+        assert!(
+            !policy.key_may_match_bytes(key, &[]),
+            "empty bloom filter must never match"
+        );
+        assert!(
+            !policy.key_may_match_bytes(key, &[0u8]),
+            "length-1 bloom filter must never match"
+        );
+    }
+
+    #[traced_test]
+    fn key_may_match_bytes_reports_match_for_inserted_keys() {
+        let policy = BloomFilterPolicy::new(10);
+
+        let key1 = b"alpha";
+        let key2 = b"beta";
+
+        let keys: [&[u8]; 2] = [key1.as_ref(), key2.as_ref()];
+
+        let mut filter = Vec::new();
+        policy.create_filter_from_bytes(&keys, &mut filter);
+
+        assert!(policy.key_may_match_bytes(key1, &filter));
+        assert!(policy.key_may_match_bytes(key2, &filter));
+    }
+}

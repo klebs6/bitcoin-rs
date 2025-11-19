@@ -98,6 +98,43 @@ impl From<*const u8> for Slice {
     }
 }
 
+impl From<&[u8]> for Slice {
+
+    /// Create a slice referencing the given byte slice.
+    ///
+    /// This does **not** copy data. The caller must ensure
+    /// the referenced bytes remain valid for the duration
+    /// of the Slice.
+    fn from(bytes: &[u8]) -> Self {
+        info!(
+            "Creating a Slice from &[u8] (len = {})",
+            bytes.len()
+        );
+
+        if bytes.is_empty() {
+            trace!("Received empty byte slice; returning empty Slice");
+            return Slice {
+                data: b"".as_ptr(),
+                size: 0,
+            };
+        }
+
+        let ptr = bytes.as_ptr();
+        let len = bytes.len();
+
+        trace!(
+            "Slice::from(&[u8]) -> data={:p}, size={}",
+            ptr,
+            len
+        );
+
+        Slice {
+            data: ptr,
+            size: len,
+        }
+    }
+}
+
 impl Slice {
 
     /// Create a slice that refers to `d[0..n-1]`.

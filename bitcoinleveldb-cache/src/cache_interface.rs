@@ -42,7 +42,7 @@ impl<T> CacheInterface for T where
 {
 }
 
-pub type CacheDeleterFn = fn(key_: &Slice, value: *mut c_void) -> c_void;
+pub type CacheDeleterFn = fn(key_: &Slice, value: *mut c_void);
 
 pub trait CacheInsert {
     /**
@@ -110,7 +110,7 @@ pub trait CacheValue {
       | REQUIRES: handle must have been returned by
       | a method on *this.
       */
-    fn value(&mut self, handle: *mut CacheHandle);
+    fn value(&mut self, handle: *mut CacheHandle) -> *mut c_void;
 }
 
 pub trait CacheErase {

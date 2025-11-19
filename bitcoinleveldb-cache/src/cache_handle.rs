@@ -9,10 +9,10 @@ crate::ix!();
   | generated getters/setters from `getset`
   | and the builder from `derive_builder`.
   */
-#[derive(Getters, Setters, Builder, Default)]
+#[derive(Getters, Setters, Builder)]
 #[getset(get = "pub(crate)", set = "pub(crate)")]
 pub struct CacheHandle {
-    key:      String,
+    key:      Vec<u8>,
     value:    *mut c_void,
     deleter:  CacheDeleterFn,
     charge:   usize,
@@ -26,6 +26,11 @@ pub struct CacheHandle {
 
 impl CacheHandle {
     pub(crate) fn as_key_slice(&self) -> Slice {
-        Slice::from(self.key())
+        let key = self.key();
+        if key.is_empty() {
+            Slice::from_ptr_len(std::ptr::null(), 0)
+        } else {
+            Slice::from_ptr_len(key.as_ptr(), key.len())
+        }
     }
 }

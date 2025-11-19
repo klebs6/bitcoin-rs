@@ -2,7 +2,7 @@
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/bloom_test.cc]
-#[cfg(test)]
+
 #[derive(
     Debug,
     Getters,
@@ -16,7 +16,6 @@ pub struct BloomTest {
     keys:   Vec<Vec<u8>>,
 }
 
-#[cfg(test)]
 impl Default for BloomTest {
     fn default() -> Self {
         info!(
@@ -30,7 +29,6 @@ impl Default for BloomTest {
     }
 }
 
-#[cfg(test)]
 impl Drop for BloomTest {
     fn drop(&mut self) {
         debug!(
@@ -41,7 +39,6 @@ impl Drop for BloomTest {
     }
 }
 
-#[cfg(test)]
 impl BloomTest {
     pub fn reset(&mut self) {
         debug!(
@@ -70,8 +67,8 @@ impl BloomTest {
     }
 
     pub fn add_key_slice_object(&mut self, s: &Slice) {
-        let data_ptr = s.data();
-        let len      = s.size();
+        let data_ptr: *const u8 = *s.data();
+        let len: usize          = *s.size();
 
         if data_ptr.is_null() || len == 0 {
             trace!(
@@ -184,7 +181,10 @@ impl BloomTest {
         let mut result_count: usize = 0;
 
         for i in 0..10_000_i32 {
-            encode_fixed32_into((i + 1_000_000_000) as u32, &mut buffer);
+            crate::bloom_test_key::encode_fixed32_into(
+                (i + 1_000_000_000) as u32,
+                &mut buffer,
+            );
             if self.matches_slice(&buffer) {
                 result_count += 1;
             }
@@ -199,5 +199,53 @@ impl BloomTest {
         );
 
         rate
+    }
+}
+
+#[cfg(test)]
+mod bloom_test_fixture_suite {
+    use super::*;
+
+    #[traced_test]
+    fn bloom_test_default_initializes_empty_keys_and_filter() {
+        let test = BloomTest::default();
+
+        info!(
+            policy_bits_per_key = *test.policy().bits_per_key(),
+            policy_k = *test.policy().k(),
+            "bloom_test_default_initializes_empty_keys_and_filter"
+        );
+
+        assert!(test.keys().is_empty());
+        assert!(test.filter().is_empty());
+        assert_eq!(*test.policy().bits_per_key(), 10);
+    }
+
+    #[traced_test]
+    fn bloom_test_reset_clears_keys_and_filter() {
+        let mut test = BloomTest::default();
+
+        test.add_key_str("hello");
+        test.add_key_str("world");
+
+        assert!(!test.keys().is_empty());
+        assert!(test.filter().is_empty());
+
+        test.reset();
+
+        assert!(test.keys().is_empty());
+        assert!(test.filter().is_empty());
+    }
+
+    #[traced_test]
+    fn bloom_test_matches_str_reports_matches_for_inserted_keys() {
+        let mut test = BloomTest::default();
+
+        test.add_key_str("alpha");
+        test.add_key_str("beta");
+        test.build();
+
+        assert!(test.matches_str("alpha"));
+        assert!(test.matches_str("beta"));
     }
 }

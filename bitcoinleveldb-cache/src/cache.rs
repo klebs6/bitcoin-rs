@@ -39,6 +39,7 @@ impl Drop for Cache {
 }
 
 impl Cache {
+
     pub fn lru_remove(&mut self, e: *mut CacheHandle) {
         trace!("Cache::lru_remove: called on handle {:?}", e);
         let _ = e;

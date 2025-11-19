@@ -1,4 +1,3 @@
-// ---------------- [ File: bitcoinleveldb-lru/src/lru_cache.rs ]
 /*!
   | LRU cache implementation
   |
@@ -31,219 +30,19 @@
   | reference.
   */
 
+// ---------------- [ File: bitcoinleveldb-lru/src/lru_cache.rs ]
+
 crate::ix!();
 
 pub const NUM_SHARD_BITS: usize = 4;
 pub const NUM_SHARDS:     usize = 1 << NUM_SHARD_BITS;
 
+pub fn lru_noop_deleter(_key: &Slice, _value: *mut c_void) -> c_void {
+    trace!("lru_noop_deleter invoked");
+    unsafe { core::mem::zeroed() }
+}
+
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/cache.cc]
-
-/**
-  | An entry is a variable length heap-allocated
-  | structure. Entries are kept in a circular
-  | doubly linked list ordered by access
-  | time.
-  |
-  */
-pub struct LRUHandle {
-
-    value:      *mut c_void,
-
-    deleter:    fn(_0: &Slice, value: *mut c_void) -> c_void,
-
-    next_hash:  *mut LRUHandle,
-    next:       *mut LRUHandle,
-    prev:       *mut LRUHandle,
-
-    /**
-       TODO(opt): Only allow uint32_t?
-      */
-    charge:     usize,
-
-    key_length: usize,
-
-    /**
-       Whether entry is in the cache.
-      */
-    in_cache:   bool,
-
-    /**
-       References, including cache reference, if
-       present.
-      */
-    refs:       u32,
-
-    /**
-       Hash of key(); used for fast sharding and
-       comparisons
-      */
-    hash:       u32,
-
-    /**
-       Beginning of key
-      */
-    key_data:   [u8; 1],
-}
-
-impl LRUHandle {
-
-    pub fn key(&self) -> Slice {
-        
-        todo!();
-        /*
-            // next_ is only equal to this if the LRU handle is the list head of an
-        // empty list. List heads never have meaningful keys.
-        assert(next != this);
-
-        return Slice(key_data, key_length);
-        */
-    }
-}
-
-/**
-  | We provide our own simple hash table since it
-  | removes a whole bunch of porting hacks and is
-  | also faster than some of the built-in hash
-  | table implementations in some of the
-  | compiler/runtime combinations we have tested.
-  | E.g., readrandom speeds up by ~5% over the g++
-  | 4.4.3's builtin hashtable.
-  */
-pub struct HandleTable {
-
-    /**
-      | The table consists of an array of buckets
-      | where each bucket is a linked list of
-      | cache entries that hash into the bucket.
-      |
-      */
-    length: u32,
-    elems:  u32,
-    list:   *mut *mut LRUHandle,
-}
-
-impl Default for HandleTable {
-    
-    fn default() -> Self {
-        todo!();
-        /*
-        : length(0),
-        : elems(0),
-        : list(nullptr),
-
-            Resize();
-        */
-    }
-}
-
-impl Drop for HandleTable {
-    fn drop(&mut self) {
-        todo!();
-        /*
-            delete[] list_;
-        */
-    }
-}
-
-impl HandleTable {
-
-    pub fn lookup(&mut self, 
-        key_:  &Slice,
-        hash_: u32) -> *mut LRUHandle {
-        
-        todo!();
-        /*
-            return *FindPointer(key, hash);
-        */
-    }
-    
-    pub fn insert(&mut self, h: *mut LRUHandle) -> *mut LRUHandle {
-        
-        todo!();
-        /*
-            LRUHandle** ptr = FindPointer(h->key(), h->hash);
-        LRUHandle* old = *ptr;
-        h->next_hash = (old == nullptr ? nullptr : old->next_hash);
-        *ptr = h;
-        if (old == nullptr) {
-          ++elems_;
-          if (elems_ > length_) {
-            // Since each cache entry is fairly large, we aim for a small
-            // average linked list length (<= 1).
-            Resize();
-          }
-        }
-        return old;
-        */
-    }
-    
-    pub fn remove(&mut self, 
-        key_:  &Slice,
-        hash_: u32) -> *mut LRUHandle {
-        
-        todo!();
-        /*
-            LRUHandle** ptr = FindPointer(key, hash);
-        LRUHandle* result = *ptr;
-        if (result != nullptr) {
-          *ptr = result->next_hash;
-          --elems_;
-        }
-        return result;
-        */
-    }
-
-    /**
-      | Return a pointer to slot that points to
-      | a cache entry that matches key/hash.  If
-      | there is no such cache entry, return
-      | a pointer to the trailing slot in the
-      | corresponding linked list.
-      */
-    pub fn find_pointer(&mut self, 
-        key_:  &Slice,
-        hash_: u32) -> *mut *mut LRUHandle {
-        
-        todo!();
-        /*
-            LRUHandle** ptr = &list_[hash & (length_ - 1)];
-        while (*ptr != nullptr && ((*ptr)->hash != hash || key != (*ptr)->key())) {
-          ptr = &(*ptr)->next_hash;
-        }
-        return ptr;
-        */
-    }
-    
-    pub fn resize(&mut self)  {
-        
-        todo!();
-        /*
-            uint32_t new_length = 4;
-        while (new_length < elems_) {
-          new_length *= 2;
-        }
-        LRUHandle** new_list = new LRUHandle*[new_length];
-        memset(new_list, 0, sizeof(new_list[0]) * new_length);
-        uint32_t count = 0;
-        for (uint32_t i = 0; i < length_; i++) {
-          LRUHandle* h = list_[i];
-          while (h != nullptr) {
-            LRUHandle* next = h->next_hash;
-            uint32_t hash = h->hash;
-            LRUHandle** ptr = &new_list[hash & (new_length - 1)];
-            h->next_hash = *ptr;
-            *ptr = h;
-            h = next;
-            count++;
-          }
-        }
-        assert(elems_ == count);
-        delete[] list_;
-        list_ = new_list;
-        length_ = new_length;
-        */
-    }
-}
 
 /**
    A single shard of sharded cache.
@@ -262,386 +61,626 @@ pub struct LRUCache {
     mutex:    RefCell<Mutex<LRUCacheInner>>,
 }
 
-pub struct LRUCacheInner {
-    usage:    usize,
-
-    /**
-      | Dummy head of LRU list.
-      |
-      | lru.prev is newest entry, lru.next is
-      | oldest entry.
-      |
-      | Entries have refs==1 and in_cache==true.
-      */
-    lru:      LRUHandle,
-
-    /**
-      | Dummy head of in-use list. 
-      |
-      | Entries are in use by clients, and have
-      | refs >= 2 and in_cache==true.
-      |
-      */
-    in_use:   LRUHandle,
-
-    table:    HandleTable,
-}
-
 impl Drop for LRUCache {
+
     fn drop(&mut self) {
-        todo!();
-        /*
-            assert(in_use_.next == &in_use_);  // Error if caller has an unreleased handle
-      for (LRUHandle* e = lru_.next; e != &lru_;) {
-        LRUHandle* next = e->next;
-        assert(e->in_cache);
-        e->in_cache = false;
-        assert(e->refs == 1);  // Invariant of lru_ list.
-        Unref(e);
-        e = next;
-      }
-        */
+        trace!("LRUCache::drop: starting destruction");
+
+        let mut guard = self.mutex.borrow_mut();
+        let mut inner = guard.lock();
+
+        unsafe {
+            // in_use_ list should normally be empty (no unreleased handles),
+            // but we do not panic here; instead we log loudly and continue
+            // best-effort cleanup. This mirrors LevelDB's behavior where
+            // assertions are debug-only.
+            let in_use_head: *mut LRUHandle = inner.in_use_head_mut();
+            let in_use_next = (*in_use_head).next_ptr();
+            if !core::ptr::eq(in_use_next, in_use_head) {
+                warn!(
+                    "LRUCache::drop: in_use_ list not empty during destruction; \
+                     unreleased handles may leak (head={:p}, next={:p})",
+                    in_use_head,
+                    in_use_next
+                );
+            }
+
+            // Walk lru_ list and unref entries that are still in the cache.
+            let lru_head: *mut LRUHandle = inner.lru_head_mut();
+            let mut e = (*lru_head).next_ptr();
+
+            while !core::ptr::eq(e, lru_head) {
+                let next = (*e).next_ptr();
+
+                if !(*e).is_in_cache() {
+                    debug!(
+                        "LRUCache::drop: skipping non-cached entry e={:p} during destruction",
+                        e
+                    );
+                    e = next;
+                    continue;
+                }
+
+                (*e).set_in_cache(false);
+
+                // We expect refs == 1 here in the normal case, but do not
+                // assert; instead we log whenever invariants are violated.
+                if (*e).refs() != 1 {
+                    warn!(
+                        "LRUCache::drop: lru_ entry has unexpected refs={} (expected 1); e={:p}",
+                        (*e).refs(),
+                        e
+                    );
+                }
+
+                trace!(
+                    "LRUCache::drop: unref_inner on lru_ entry e={:p}, refs={}",
+                    e,
+                    (*e).refs()
+                );
+
+                unref_inner(&mut inner, e);
+                e = next;
+            }
+        }
+
+        trace!("LRUCache::drop: completed destruction");
     }
 }
 
 impl LRUCache {
 
-    /**
-      | Separate from constructor so caller
-      | can easily make an array of LRUCache
-      |
-      */
-    pub fn set_capacity(&mut self, capacity: usize)  {
-        
-        todo!();
-        /*
-            capacity_ = capacity;
-        */
+    /// Separate from constructor so caller can easily make an array of LRUCache.
+    pub fn set_capacity(&mut self, capacity: usize) {
+        trace!("LRUCache::set_capacity: capacity={}", capacity);
+        self.capacity = capacity;
     }
 
     pub fn total_charge(&self) -> usize {
-        
-        todo!();
-        /*
-            MutexLock l(&mutex_);
-        return usage_;
-        */
-    }
-    
-    pub fn new() -> Self {
-    
-        todo!();
-        /*
-        : capacity(0),
-        : usage(0),
+        trace!("LRUCache::total_charge");
 
-            // Make empty circular linked lists.
-      lru_.next = &lru_;
-      lru_.prev = &lru_;
-      in_use_.next = &in_use_;
-      in_use_.prev = &in_use_;
-        */
+        let mut guard = self.mutex.borrow_mut();
+        let inner = guard.lock();
+        inner.usage()
     }
-    
-    pub fn ref_(&mut self, e: *mut LRUHandle)  {
-        
-        todo!();
-        /*
-          if (e->refs == 1 && e->in_cache) {  // If on lru_ list, move to in_use_ list.
-            LRU_Remove(e);
-            LRU_Append(&in_use_, e);
-          }
-          e->refs++;
-        */
+
+    pub fn new() -> Self {
+        trace!("LRUCache::new");
+
+        // Use the canonical inner constructor so that sentinels are always
+        // correctly initialized in one place.
+        let inner = LRUCacheInner::new_with_sentinels();
+
+        LRUCache {
+            capacity: 0,
+            mutex:    RefCell::new(Mutex::new(inner)),
+        }
     }
-    
-    pub fn unref(&mut self, e: *mut LRUHandle)  {
-        
-        todo!();
-        /*
-      assert(e->refs > 0);
-      e->refs--;
-      if (e->refs == 0) {  // Deallocate.
-        assert(!e->in_cache);
-        (*e->deleter)(e->key(), e->value);
-        free(e);
-      } else if (e->in_cache && e->refs == 1) {
-        // No longer in use; move to lru_ list.
-        LRU_Remove(e);
-        LRU_Append(&lru_, e);
-      }
-        */
+
+    pub fn ref_(&mut self, e: *mut LRUHandle) {
+        trace!("LRUCache::ref_: e={:p}", e);
+
+        let mut guard = self.mutex.borrow_mut();
+        let mut inner = guard.lock();
+
+        unsafe {
+            ref_inner(&mut inner, e);
+        }
     }
-    
-    pub fn lru_remove(&mut self, e: *mut LRUHandle)  {
-        
-        todo!();
-        /*
-           e->next->prev = e->prev;
-           e->prev->next = e->next;
-           */
+
+    pub fn unref(&mut self, e: *mut LRUHandle) {
+        trace!("LRUCache::unref: e={:p}", e);
+
+        let mut guard = self.mutex.borrow_mut();
+        let mut inner = guard.lock();
+
+        unsafe {
+            unref_inner(&mut inner, e);
+        }
     }
-    
-    pub fn lru_append(&mut self, 
-        list: *mut LRUHandle,
-        e:    *mut LRUHandle)  {
-        
-        todo!();
-        /*
-        // Make "e" newest entry by inserting just before *list
-        e->next = list;
-        e->prev = list->prev;
-        e->prev->next = e;
-        e->next->prev = e;
-        */
+
+    pub fn lru_remove(&mut self, e: *mut LRUHandle) {
+        trace!("LRUCache::lru_remove: e={:p}", e);
+        unsafe { lru_remove_node(e); }
     }
-    
-    pub fn lookup(&mut self, 
-        key_:  &Slice,
-        hash_: u32) -> *mut CacheHandle {
-        
-        todo!();
-        /*
-          MutexLock l(&mutex_);
-          LRUHandle* e = table_.Lookup(key, hash);
-          if (e != nullptr) {
-            Ref(e);
-          }
-          return reinterpret_cast<Cache::Handle*>(e);
-        */
+
+    pub fn lru_append(&mut self, list: *mut LRUHandle, e: *mut LRUHandle) {
+        trace!("LRUCache::lru_append: list={:p}, e={:p}", list, e);
+        unsafe { lru_append_node(list, e); }
     }
-    
-    pub fn release(&mut self, handle: *mut CacheHandle)  {
-        
-        todo!();
-        /*
-           MutexLock l(&mutex_);
-           Unref(reinterpret_cast<LRUHandle*>(handle));
-           */
+ 
+    pub fn lookup(&mut self, key_: &Slice, hash_: u32) -> *mut CacheHandle {
+        trace!("LRUCache::lookup: hash={}", hash_);
+
+        let mut guard = self.mutex.borrow_mut();
+        let mut inner = guard.lock();
+
+        unsafe {
+            let e = inner.table_mut().lookup(key_, hash_);
+            if !e.is_null() {
+                ref_inner(&mut inner, e);
+            }
+            e as *mut CacheHandle
+        }
+    }
+
+    pub fn release(&mut self, handle: *mut CacheHandle) {
+        trace!("LRUCache::release: handle={:p}", handle);
+
+        let mut guard = self.mutex.borrow_mut();
+        let mut inner = guard.lock();
+
+        unsafe {
+            let e = handle as *mut LRUHandle;
+            unref_inner(&mut inner, e);
+        }
     }
     
     /**
-      | Like Cache methods, but with an extra
-      | "hash" parameter.
-      |
+      | Like Cache methods, but with an extra "hash" parameter.
       */
-    pub fn insert(&mut self, 
-        key_:     &Slice,
-        hash_:    u32,
+    pub fn insert(
+        &mut self,
+        key_:    &Slice,
+        hash_:   u32,
         value:   *mut c_void,
         charge:  usize,
-        deleter: fn(key_: &Slice, value: *mut c_void) -> c_void) -> *mut CacheHandle {
-        
-        todo!();
-        /*
-            MutexLock l(&mutex_);
+        deleter: fn(key_: &Slice, value: *mut c_void) -> c_void,
+    ) -> *mut CacheHandle {
+        trace!(
+            "LRUCache::insert: hash={}, charge={}, capacity={}",
+            hash_,
+            charge,
+            self.capacity
+        );
 
-      LRUHandle* e =
-          reinterpret_cast<LRUHandle*>(malloc(sizeof(LRUHandle) - 1 + key.size()));
-      e->value = value;
-      e->deleter = deleter;
-      e->charge = charge;
-      e->key_length = key.size();
-      e->hash = hash;
-      e->in_cache = false;
-      e->refs = 1;  // for the returned handle.
-      memcpy(e->key_data, key.data(), key.size());
+        let mut guard = self.mutex.borrow_mut();
+        let mut inner = guard.lock();
 
-      if (capacity_ > 0) {
-        e->refs++;  // for the cache's reference.
-        e->in_cache = true;
-        LRU_Append(&in_use_, e);
-        usage_ += charge;
-        FinishErase(table_.Insert(e));
-      } else {  // don't cache. (capacity_==0 is supported and turns off caching.)
-        // next is read by key() in an assert, so it must be initialized
-        e->next = nullptr;
-      }
-      while (usage_ > capacity_ && lru_.next != &lru_) {
-        LRUHandle* old = lru_.next;
-        assert(old->refs == 1);
-        bool erased = FinishErase(table_.Remove(old->key(), old->hash));
-        if (!erased) {  // to avoid unused variable when compiled NDEBUG
-          assert(erased);
+        unsafe {
+            let key_size = key_.size();
+
+            let alloc_size =
+                core::mem::size_of::<LRUHandle>() - 1 + key_size;
+            let e = libc::malloc(alloc_size) as *mut LRUHandle;
+
+            if e.is_null() {
+                error!(
+                    "LRUCache::insert: malloc failed, size={}",
+                    alloc_size
+                );
+                return core::ptr::null_mut();
+            }
+
+            (*e).set_value_ptr(value);
+            (*e).set_deleter_fn(deleter);
+            (*e).set_charge_value(charge);
+            (*e).set_key_length(*key_size);
+            (*e).set_hash_value(hash_);
+            (*e).set_in_cache(false);
+            (*e).set_refs(1); // for the returned handle.
+
+            // copy key bytes into inlined key_data
+            core::ptr::copy_nonoverlapping(
+                *key_.data(),
+                (*e).key_data_mut(),
+                *key_size,
+            );
+
+            if self.capacity > 0 {
+                // cache enabled
+                (*e).increment_refs(); // for the cache's reference.
+                (*e).set_in_cache(true);
+
+                let in_use_head: *mut LRUHandle = inner.in_use_head_mut();
+                lru_append_node(in_use_head, e);
+
+                inner.add_usage(charge);
+
+                let old = inner.table_mut().insert(e);
+                let _ = finish_erase_inner(&mut inner, old);
+            } else {
+                // don't cache; capacity == 0 turns off caching.
+                // next is read by key() in an assert, so it must be initialized.
+                (*e).set_next_ptr(core::ptr::null_mut());
+            }
+
+            // Evict from LRU while over capacity.
+            while inner.usage() > self.capacity {
+                let lru_head: *mut LRUHandle = inner.lru_head_mut();
+                let old = (*lru_head).next_ptr();
+
+                if core::ptr::eq(old, lru_head) {
+                    warn!(
+                        "LRUCache::insert: usage={} > capacity={} but lru_ list is empty; \
+                         cannot evict further entries",
+                        inner.usage(),
+                        self.capacity
+                    );
+                    break;
+                }
+
+                let old_refs = (*old).refs();
+                if old_refs != 1 {
+                    // In the ideal invariant, all entries on lru_ have refs == 1.
+                    // If that is violated, we still behave safely by evicting the
+                    // entry from the cache, leaving any external references alive.
+                    warn!(
+                        "LRUCache::insert: LRU entry has refs={} during eviction (expected 1); e={:p}",
+                        old_refs,
+                        old
+                    );
+                }
+
+                trace!(
+                    "LRUCache::insert: evicting old LRU entry e={:p}, refs={}, hash={}",
+                    old,
+                    old_refs,
+                    (*old).hash_value()
+                );
+
+                let removed = inner
+                    .table_mut()
+                    .remove(&(*old).key(), (*old).hash_value());
+
+                let erased = finish_erase_inner(&mut inner, removed);
+                if !erased {
+                    debug!(
+                        "LRUCache::insert: FinishErase returned false during eviction (e={:p})",
+                        old
+                    );
+                    // finish_erase_inner only returns false when the pointer is
+                    // null; logging is sufficient here.
+                }
+            }
+
+            e as *mut CacheHandle
         }
-      }
-
-      return reinterpret_cast<Cache::Handle*>(e);
-        */
     }
 
     /**
-      | If e != nullptr, finish removing *e from
-      | the cache; it has already been removed from
-      | the hash table.  Return whether e !=
-      | nullptr.
+      | If e != nullptr, finish removing *e from the cache; it has already been
+      | removed from the hash table. Return whether e != nullptr.
       */
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
     pub fn finish_erase(&mut self, e: *mut LRUHandle) -> bool {
-        
-        todo!();
-        /*
-          if (e != nullptr) {
-            assert(e->in_cache);
-            LRU_Remove(e);
-            e->in_cache = false;
-            usage_ -= e->charge;
-            Unref(e);
-          }
-          return e != nullptr;
-        */
+        trace!("LRUCache::finish_erase: e={:p}", e);
+
+        let mut guard = self.mutex.borrow_mut();
+        let mut inner = guard.lock();
+
+        unsafe { finish_erase_inner(&mut inner, e) }
     }
-    
-    pub fn erase(&mut self, 
-        key_:  &Slice,
-        hash_: u32)  {
-        
-        todo!();
-        /*
-            MutexLock l(&mutex_);
-      FinishErase(table_.Remove(key, hash));
-        */
-    }
-    
-    pub fn prune(&mut self)  {
-        
-        todo!();
-        /*
-            MutexLock l(&mutex_);
-      while (lru_.next != &lru_) {
-        LRUHandle* e = lru_.next;
-        assert(e->refs == 1);
-        bool erased = FinishErase(table_.Remove(e->key(), e->hash));
-        if (!erased) {  // to avoid unused variable when compiled NDEBUG
-          assert(erased);
+
+    pub fn erase(&mut self, key_: &Slice, hash_: u32) {
+        trace!("LRUCache::erase: hash={}", hash_);
+
+        let mut guard = self.mutex.borrow_mut();
+        let mut inner = guard.lock();
+
+        unsafe {
+            let e = inner.table_mut().remove(key_, hash_);
+            let _ = finish_erase_inner(&mut inner, e);
         }
-      }
-        */
+    }
+
+    pub fn prune(&mut self) {
+        trace!("LRUCache::prune");
+
+        let mut guard = self.mutex.borrow_mut();
+        let mut inner = guard.lock();
+
+        unsafe {
+            let lru_head: *mut LRUHandle = inner.lru_head_mut();
+
+            while !core::ptr::eq((*lru_head).next_ptr(), lru_head) {
+                let e = (*lru_head).next_ptr();
+
+                let refs = (*e).refs();
+                if refs != 1 {
+                    warn!(
+                        "LRUCache::prune: LRU entry has refs={} (expected 1); e={:p}",
+                        refs,
+                        e
+                    );
+                }
+
+                let removed = inner
+                    .table_mut()
+                    .remove(&(*e).key(), (*e).hash_value());
+
+                let erased = finish_erase_inner(&mut inner, removed);
+                if !erased {
+                    debug!(
+                        "LRUCache::prune: FinishErase returned false while pruning (e={:p})",
+                        e
+                    );
+                }
+            }
+        }
     }
 }
 
-pub struct ShardedLRUCache {
-    base:     Cache,
-    shard:    [LRUCache; NUM_SHARDS],
-    id_mutex: parking_lot::RawMutex,
-    last_id:  u64,
-}
+#[cfg(test)]
+mod lru_cache_test_suite {
+    use super::*;
+    use core::ffi::c_void;
+    use core::sync::atomic::{AtomicUsize, Ordering};
 
-impl ShardedLRUCache {
+    static LRU_CACHE_TEST_DELETER_CALLS: AtomicUsize = AtomicUsize::new(0);
 
-    #[inline] pub fn hash_slice(s: &Slice) -> u32 {
-        
-        todo!();
-        /*
-            return Hash(s.data(), s.size(), 0);
-        */
-    }
-    
-    pub fn shard(hash_: u32) -> u32 {
-        
-        todo!();
-        /*
-            return hash >> (32 - kNumShardBits);
-        */
-    }
-    
-    pub fn new(capacity: usize) -> Self {
-    
-        todo!();
-        /*
-        : last_id(0),
-
-        const size_t per_shard = (capacity + (kNumShards - 1)) / kNumShards;
-        for (int s = 0; s < kNumShards; s++) {
-          shard_[s].SetCapacity(per_shard);
+    fn lru_cache_test_deleter(_: &Slice, ptr: *mut c_void) -> c_void {
+        LRU_CACHE_TEST_DELETER_CALLS.fetch_add(1, Ordering::SeqCst);
+        if !ptr.is_null() {
+            unsafe {
+                drop(Box::from_raw(ptr as *mut i32));
+            }
         }
-        */
+        unsafe { core::mem::zeroed() }
     }
-    
-    pub fn insert(&mut self, 
-        key_:     &Slice,
-        value:   *mut c_void,
-        charge:  usize,
-        deleter: fn(key_: &Slice, value: *mut c_void) -> c_void) -> *mut CacheHandle {
-        
-        todo!();
-        /*
-        const uint32_t hash = HashSlice(key);
-        return shard_[Shard(hash)].Insert(key, hash, value, charge, deleter);
-        */
-    }
-    
-    pub fn lookup(&mut self, key_: &Slice) -> *mut CacheHandle {
-        
-        todo!();
-        /*
-        const uint32_t hash = HashSlice(key);
-        return shard_[Shard(hash)].Lookup(key, hash);
-        */
-    }
-    
-    pub fn release(&mut self, handle: *mut CacheHandle)  {
-        
-        todo!();
-        /*
-        LRUHandle* h = reinterpret_cast<LRUHandle*>(handle);
-        shard_[Shard(h->hash)].Release(handle);
-        */
-    }
-    
-    pub fn erase(&mut self, key_: &Slice)  {
-        
-        todo!();
-        /*
-        const uint32_t hash = HashSlice(key);
-        shard_[Shard(hash)].Erase(key, hash);
-        */
-    }
-    
-    pub fn value(&mut self, handle: *mut CacheHandle)  {
-        
-        todo!();
-        /*
-        return reinterpret_cast<LRUHandle*>(handle)->value;
-        */
-    }
-    
-    pub fn new_id(&mut self) -> u64 {
-        
-        todo!();
-        /*
-        MutexLock l(&id_mutex_);
-        return ++(last_id_);
-        */
-    }
-    
-    pub fn prune(&mut self)  {
-        
-        todo!();
-        /*
-        for (int s = 0; s < kNumShards; s++) {
-          shard_[s].Prune();
-        }
-        */
-    }
-    
-    pub fn total_charge(&self) -> usize {
-        
-        todo!();
-        /*
-        size_t total = 0;
-        for (int s = 0; s < kNumShards; s++) {
-          total += shard_[s].TotalCharge();
-        }
-        return total;
-        */
-    }
-}
 
-pub fn new_lru_cache(capacity: usize) -> *mut Cache {
-    
-    todo!();
-    /*
-       return new ShardedLRUCache(capacity);
-       */
+    fn lru_cache_make_slice_from_bytes(bytes: &[u8]) -> Slice {
+        Slice::from_ptr_len(bytes.as_ptr(), bytes.len())
+    }
+
+    #[traced_test]
+    fn lru_cache_insert_lookup_and_release_round_trip() {
+        bitcoin_cfg::setup();
+        LRU_CACHE_TEST_DELETER_CALLS.store(0, Ordering::SeqCst);
+
+        {
+            let mut cache = LRUCache::new();
+            cache.set_capacity(16);
+
+            let key_bytes = b"lc-key-1";
+            let key       = lru_cache_make_slice_from_bytes(key_bytes);
+            let hash      = 0xA1B2_C3D4u32;
+
+            let value_box = Box::new(7i32);
+            let value_ptr = Box::into_raw(value_box) as *mut c_void;
+
+            let handle = cache.insert(&key, hash, value_ptr, 1, lru_cache_test_deleter);
+            assert!(
+                !handle.is_null(),
+                "insert should return a non-null handle"
+            );
+
+            let lookup_handle = cache.lookup(&key, hash);
+            assert!(
+                !lookup_handle.is_null(),
+                "lookup should find the handle that was inserted"
+            );
+            assert_eq!(
+                lookup_handle, handle,
+                "lookup should return the same handle pointer"
+            );
+
+            cache.release(lookup_handle);
+            cache.release(handle);
+
+            let total = cache.total_charge();
+            assert_eq!(
+                total, 1,
+                "total_charge should reflect a single cached entry"
+            );
+        }
+
+        assert_eq!(
+            LRU_CACHE_TEST_DELETER_CALLS.load(Ordering::SeqCst),
+            1,
+            "dropping the cache should trigger exactly one deleter call"
+        );
+    }
+
+    #[traced_test]
+    fn lru_cache_respects_zero_capacity_and_does_not_cache() {
+        bitcoin_cfg::setup();
+        LRU_CACHE_TEST_DELETER_CALLS.store(0, Ordering::SeqCst);
+
+        {
+            let mut cache = LRUCache::new();
+            cache.set_capacity(0);
+
+            let key_bytes = b"lc-no-cache";
+            let key       = lru_cache_make_slice_from_bytes(key_bytes);
+            let hash      = 0x0102_0304u32;
+
+            let value_box = Box::new(11i32);
+            let value_ptr = Box::into_raw(value_box) as *mut c_void;
+
+            let handle = cache.insert(&key, hash, value_ptr, 5, lru_cache_test_deleter);
+            assert!(
+                !handle.is_null(),
+                "insert should still return a handle even with zero capacity"
+            );
+
+            let total = cache.total_charge();
+            assert_eq!(
+                total, 0,
+                "total_charge must remain zero when capacity is zero"
+            );
+
+            cache.release(handle);
+        }
+
+        assert_eq!(
+            LRU_CACHE_TEST_DELETER_CALLS.load(Ordering::SeqCst),
+            1,
+            "deleter should have been called exactly once for zero-capacity cache"
+        );
+    }
+
+    #[traced_test]
+    fn lru_cache_evicts_least_recently_used_when_capacity_exceeded() {
+        bitcoin_cfg::setup();
+        LRU_CACHE_TEST_DELETER_CALLS.store(0, Ordering::SeqCst);
+
+        {
+            let mut cache = LRUCache::new();
+            cache.set_capacity(1);
+
+            let key1_bytes = b"lc-evict-1";
+            let key2_bytes = b"lc-evict-2";
+
+            let key1 = lru_cache_make_slice_from_bytes(key1_bytes);
+            let key2 = lru_cache_make_slice_from_bytes(key2_bytes);
+
+            let hash1 = 0x1111_1111u32;
+            let hash2 = 0x2222_2222u32;
+
+            let v1_box = Box::new(1i32);
+            let v2_box = Box::new(2i32);
+
+            let v1_ptr = Box::into_raw(v1_box) as *mut c_void;
+            let v2_ptr = Box::into_raw(v2_box) as *mut c_void;
+
+            let h1 = cache.insert(&key1, hash1, v1_ptr, 1, lru_cache_test_deleter);
+            assert!(
+                !h1.is_null(),
+                "first insert should succeed"
+            );
+            cache.release(h1);
+
+            assert_eq!(
+                cache.total_charge(),
+                1,
+                "after inserting first entry, usage should equal capacity"
+            );
+
+            let h2 = cache.insert(&key2, hash2, v2_ptr, 1, lru_cache_test_deleter);
+            assert!(
+                !h2.is_null(),
+                "second insert should succeed"
+            );
+
+            assert_eq!(
+                cache.total_charge(),
+                1,
+                "usage should still equal capacity after eviction"
+            );
+
+            assert_eq!(
+                LRU_CACHE_TEST_DELETER_CALLS.load(Ordering::SeqCst),
+                1,
+                "eviction of first entry should trigger exactly one deleter call"
+            );
+
+            let missing = cache.lookup(&key1, hash1);
+            assert!(
+                missing.is_null(),
+                "first key should have been evicted from the cache"
+            );
+
+            let present = cache.lookup(&key2, hash2);
+            assert!(
+                !present.is_null(),
+                "second key should remain in the cache"
+            );
+            cache.release(present);
+            cache.release(h2);
+        }
+
+        assert_eq!(
+            LRU_CACHE_TEST_DELETER_CALLS.load(Ordering::SeqCst),
+            2,
+            "both entries should eventually be destroyed"
+        );
+    }
+
+    #[traced_test]
+    fn lru_cache_erase_removes_entry_and_calls_deleter() {
+        bitcoin_cfg::setup();
+        LRU_CACHE_TEST_DELETER_CALLS.store(0, Ordering::SeqCst);
+
+        {
+            let mut cache = LRUCache::new();
+            cache.set_capacity(4);
+
+            let key_bytes = b"lc-erase";
+            let key       = lru_cache_make_slice_from_bytes(key_bytes);
+            let hash      = 0xFEED_FACEu32;
+
+            let value_box = Box::new(99i32);
+            let value_ptr = Box::into_raw(value_box) as *mut c_void;
+
+            let handle = cache.insert(&key, hash, value_ptr, 1, lru_cache_test_deleter);
+            assert!(
+                !handle.is_null(),
+                "handle should be returned from insert"
+            );
+
+            cache.release(handle);
+
+            assert_eq!(
+                cache.total_charge(),
+                1,
+                "usage should be one prior to erase"
+            );
+
+            cache.erase(&key, hash);
+
+            assert_eq!(
+                cache.total_charge(),
+                0,
+                "usage should drop to zero after erase"
+            );
+        }
+
+        assert_eq!(
+            LRU_CACHE_TEST_DELETER_CALLS.load(Ordering::SeqCst),
+            1,
+            "erase should lead to exactly one deleter invocation"
+        );
+    }
+
+    #[traced_test]
+    fn lru_cache_prune_discards_all_unused_entries() {
+        bitcoin_cfg::setup();
+        LRU_CACHE_TEST_DELETER_CALLS.store(0, Ordering::SeqCst);
+
+        {
+            let mut cache = LRUCache::new();
+            cache.set_capacity(8);
+
+            let key1 = lru_cache_make_slice_from_bytes(b"lc-prune-1");
+            let key2 = lru_cache_make_slice_from_bytes(b"lc-prune-2");
+
+            let hash1 = 0x0A0A_0A0Au32;
+            let hash2 = 0x0B0B_0B0Bu32;
+
+            let v1_ptr = Box::into_raw(Box::new(1i32)) as *mut c_void;
+            let v2_ptr = Box::into_raw(Box::new(2i32)) as *mut c_void;
+
+            let h1 = cache.insert(&key1, hash1, v1_ptr, 1, lru_cache_test_deleter);
+            let h2 = cache.insert(&key2, hash2, v2_ptr, 1, lru_cache_test_deleter);
+
+            assert!(
+                !h1.is_null() && !h2.is_null(),
+                "both inserts should succeed"
+            );
+
+            cache.release(h1);
+            cache.release(h2);
+
+            assert_eq!(
+                cache.total_charge(),
+                2,
+                "usage should equal total charge before prune"
+            );
+
+            cache.prune();
+
+            assert_eq!(
+                cache.total_charge(),
+                0,
+                "prune should remove all LRU entries"
+            );
+        }
+
+        assert_eq!(
+            LRU_CACHE_TEST_DELETER_CALLS.load(Ordering::SeqCst),
+            2,
+            "each pruned entry should have triggered the deleter"
+        );
+    }
 }

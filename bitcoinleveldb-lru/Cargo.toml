@@ -1,6 +1,14 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"
+
+[dependencies]
+derive_builder.workspace = true
+getset.workspace = true
+tracing.workspace = true
+
+bitcoinleveldb-hash = { path = "../bitcoinleveldb-hash" }
+bitcoin-cfg = { path = "../bitcoin-cfg" }
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.18"

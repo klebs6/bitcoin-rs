@@ -6,7 +6,7 @@ crate::ix!();
 pub struct CacheRep {
     capacity: usize,
     usage:    usize,
-    entries:  HashMap<String, *mut CacheHandle>,
+    entries:  HashMap<Vec<u8>, *mut CacheHandle>,
     next_id:  u64,
     clock:    u64,
 }
@@ -54,31 +54,20 @@ impl CacheRep {
 
     pub(crate) fn slice_to_vec(key_: &Slice) -> Vec<u8> {
         unsafe {
-            let size = key_.size() as usize;
-            let data = key_.data();
+            let size_ref = key_.size();
+            let data_ref = key_.data();
+
+            let size = *size_ref as usize;
+            let data = *data_ref;
+
             if data.is_null() {
-                warn!("CacheRep::slice_to_vec called with null data pointer");
+                warn!("CacheRep::slice_to_vec: called with null data pointer");
                 return Vec::new();
             }
+
             let bytes = std::slice::from_raw_parts(data as *const u8, size);
             bytes.to_vec()
         }
-    }
-
-    pub(crate) fn ref_entry(&mut self, handle: *mut CacheHandle) {
-        unsafe {
-            let h = &mut *handle;
-            h.refs = h
-                .refs
-                .checked_add(1)
-                .unwrap_or_else(|| {
-                    error!("CacheRep::ref_entry reference count overflow");
-                    h.refs
-                });
-            h.last_use = self.clock;
-        }
-        self.clock = self.clock.wrapping_add(1);
-        trace!("CacheRep::ref_entry: refs incremented, clock={}", self.clock);
     }
 
     pub(crate) fn ref_entry(&mut self, handle: *mut CacheHandle) {
@@ -88,17 +77,16 @@ impl CacheRep {
             let new_refs = current_refs
                 .checked_add(1)
                 .unwrap_or_else(|| {
-                    error!("CacheRep::ref_entry reference count overflow");
+                    error!("CacheRep::ref_entry: reference count overflow");
                     current_refs
                 });
             h.set_refs(new_refs);
-            h.set_last_use(*self.clock());
+            h.set_last_use(self.clock);
         }
-        let new_clock = self.clock().wrapping_add(1);
-        self.set_clock(new_clock);
+        self.clock = self.clock.wrapping_add(1);
         trace!(
-            "CacheRep::ref_entry: refs incremented, new_clock={}",
-            new_clock
+            "CacheRep::ref_entry: refs incremented, clock={}",
+            self.clock
         );
     }
 
@@ -107,7 +95,7 @@ impl CacheRep {
             let h = &mut *handle;
             let refs_before = *h.refs();
             if refs_before == 0 {
-                error!("CacheRep::unref_entry called with zero refcount");
+                error!("CacheRep::unref_entry: called with zero refcount");
                 return;
             }
 
@@ -144,22 +132,19 @@ impl CacheRep {
     }
 
     pub(crate) fn evict_if_needed(&mut self) {
-        if *self.capacity() == 0 {
+        if self.capacity == 0 {
             trace!("CacheRep::evict_if_needed: capacity is zero, nothing cached");
             return;
         }
 
-        while *self.usage() > *self.capacity() {
-            let mut candidate_key: Option<String> = None;
+        while self.usage > self.capacity {
+            let mut candidate_key: Option<Vec<u8>> = None;
             let mut oldest_clock = u64::MAX;
 
-            for (k, &handle) in self.entries().iter() {
+            for (k, &handle) in self.entries.iter() {
                 unsafe {
                     let h = &*handle;
-                    if *h.in_cache()
-                        && *h.refs() == 1
-                        && *h.last_use() < oldest_clock
-                    {
+                    if *h.in_cache() && *h.refs() == 1 && *h.last_use() < oldest_clock {
                         oldest_clock = *h.last_use();
                         candidate_key = Some(k.clone());
                     }
@@ -171,14 +156,14 @@ impl CacheRep {
                 None => {
                     debug!(
                         "CacheRep::evict_if_needed: usage={} capacity={} but all entries pinned; stopping eviction",
-                        *self.usage(),
-                        *self.capacity()
+                        self.usage,
+                        self.capacity
                     );
                     break;
                 }
             };
 
-            if let Some(handle) = self.entries_mut().remove(&key) {
+            if let Some(handle) = self.entries.remove(&key) {
                 unsafe {
                     let h = &mut *handle;
                     if *h.in_cache() {
@@ -188,10 +173,7 @@ impl CacheRep {
                             *h.charge()
                         );
                         h.set_in_cache(false);
-                        let new_usage = self
-                            .usage()
-                            .saturating_sub(*h.charge());
-                        self.set_usage(new_usage);
+                        self.usage = self.usage.saturating_sub(*h.charge());
                     } else {
                         warn!(
                             "CacheRep::evict_if_needed: entry not marked in_cache during eviction"
@@ -209,8 +191,8 @@ impl CacheRep {
     }
 
     pub(crate) fn prune_unused(&mut self) {
-        let keys: Vec<String> = self
-            .entries()
+        let keys: Vec<Vec<u8>> = self
+            .entries
             .iter()
             .filter_map(|(k, &handle)| unsafe {
                 let h = &*handle;
@@ -223,15 +205,12 @@ impl CacheRep {
             .collect();
 
         for key in keys {
-            if let Some(handle) = self.entries_mut().remove(&key) {
+            if let Some(handle) = self.entries.remove(&key) {
                 unsafe {
                     let h = &mut *handle;
                     if *h.in_cache() {
                         h.set_in_cache(false);
-                        let new_usage = self
-                            .usage()
-                            .saturating_sub(*h.charge());
-                        self.set_usage(new_usage);
+                        self.usage = self.usage.saturating_sub(*h.charge());
                     }
                 }
                 self.unref_entry(handle);
@@ -242,27 +221,23 @@ impl CacheRep {
     pub(crate) fn clear_all(&mut self) {
         debug!(
             "CacheRep::clear_all: destroying {} cached entries",
-            self.entries().len()
+            self.entries.len()
         );
-        let handles: Vec<*mut CacheHandle> =
-            self.entries().values().copied().collect();
-        self.entries_mut().clear();
+        let handles: Vec<*mut CacheHandle> = self.entries.values().copied().collect();
+        self.entries.clear();
 
         for handle in handles {
             unsafe {
                 let h = &mut *handle;
                 if *h.in_cache() {
-                    let new_usage = self
-                        .usage()
-                        .saturating_sub(*h.charge());
-                    self.set_usage(new_usage);
+                    self.usage = self.usage.saturating_sub(*h.charge());
                     h.set_in_cache(false);
                 }
             }
             self.unref_entry(handle);
         }
 
-        self.set_usage(0);
+        self.usage = 0;
     }
 
     pub(crate) fn insert_entry(
@@ -272,32 +247,31 @@ impl CacheRep {
         charge: usize,
         deleter: CacheDeleterFn,
     ) -> *mut CacheHandle {
-        let key_string = Self::slice_to_string(key_);
-        let key_len = key_string.len();
+        let key_bytes = Self::slice_to_vec(key_);
+        let key_len = key_bytes.len();
 
         trace!(
             "CacheRep::insert_entry: key_len={} charge={} capacity={} usage_before={}",
             key_len,
             charge,
-            *self.capacity(),
-            *self.usage()
+            self.capacity,
+            self.usage
         );
 
-        let last_use = *self.clock();
         let handle_struct = CacheHandleBuilder::default()
-            .key(key_string.clone())
+            .key(key_bytes.clone())
             .value(value)
             .deleter(deleter)
             .charge(charge)
             .refs(1)
             .in_cache(false)
-            .last_use(last_use)
+            .last_use(self.clock)
             .build()
             .expect("CacheHandleBuilder should be fully initialized");
 
         let handle_ptr: *mut CacheHandle = Box::into_raw(Box::new(handle_struct));
 
-        if *self.capacity() > 0 {
+        if self.capacity > 0 {
             unsafe {
                 let h = &mut *handle_ptr;
                 let current_refs = *h.refs();
@@ -313,20 +287,14 @@ impl CacheRep {
                 h.set_in_cache(true);
             }
 
-            let new_usage = self
-                .usage()
-                .saturating_add(charge);
-            self.set_usage(new_usage);
+            self.usage = self.usage.saturating_add(charge);
 
-            if let Some(old_ptr) = self.entries_mut().insert(key_string, handle_ptr) {
+            if let Some(old_ptr) = self.entries.insert(key_bytes, handle_ptr) {
                 debug!("CacheRep::insert_entry: replacing existing entry for key");
                 unsafe {
                     let old = &mut *old_ptr;
                     if *old.in_cache() {
-                        let new_usage = self
-                            .usage()
-                            .saturating_sub(*old.charge());
-                        self.set_usage(new_usage);
+                        self.usage = self.usage.saturating_sub(*old.charge());
                         old.set_in_cache(false);
                     }
                 }
@@ -338,23 +306,22 @@ impl CacheRep {
             trace!("CacheRep::insert_entry: capacity is zero, not caching entry");
         }
 
-        let new_clock = self.clock().wrapping_add(1);
-        self.set_clock(new_clock);
+        self.clock = self.clock.wrapping_add(1);
 
         handle_ptr
     }
 
     pub(crate) fn lookup_entry(&mut self, key_: &Slice) -> *mut CacheHandle {
-        let key_string = Self::slice_to_string(key_);
+        let key_bytes = Self::slice_to_vec(key_);
 
         trace!(
             "CacheRep::lookup_entry: key_len={} usage={} capacity={}",
-            key_string.len(),
-            *self.usage(),
-            *self.capacity()
+            key_bytes.len(),
+            self.usage,
+            self.capacity
         );
 
-        if let Some(&handle_ptr) = self.entries().get(&key_string) {
+        if let Some(&handle_ptr) = self.entries.get(&key_bytes) {
             self.ref_entry(handle_ptr);
             trace!("CacheRep::lookup_entry: hit");
             handle_ptr
@@ -365,23 +332,20 @@ impl CacheRep {
     }
 
     pub(crate) fn erase_entry(&mut self, key_: &Slice) {
-        let key_string = Self::slice_to_string(key_);
+        let key_bytes = Self::slice_to_vec(key_);
 
         trace!(
             "CacheRep::erase_entry: key_len={} usage_before={}",
-            key_string.len(),
-            *self.usage()
+            key_bytes.len(),
+            self.usage
         );
 
-        if let Some(handle_ptr) = self.entries_mut().remove(&key_string) {
+        if let Some(handle_ptr) = self.entries.remove(&key_bytes) {
             unsafe {
                 let h = &mut *handle_ptr;
                 if *h.in_cache() {
                     h.set_in_cache(false);
-                    let new_usage = self
-                        .usage()
-                        .saturating_sub(*h.charge());
-                    self.set_usage(new_usage);
+                    self.usage = self.usage.saturating_sub(*h.charge());
                 }
             }
             self.unref_entry(handle_ptr);
