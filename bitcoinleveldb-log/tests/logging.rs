@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-log/src/logging_test.rs ]
+// ---------------- [ File: bitcoinleveldb-log/tests/logging.rs ]
 crate::ix!();
 
 

@@ -8,6 +8,7 @@ crate::ix!();
   | use string comparisons instead of an
   | InternalKeyComparator.
   */
+#[derive(Clone,Debug)]
 pub struct InternalKey {
     rep: String,
 }

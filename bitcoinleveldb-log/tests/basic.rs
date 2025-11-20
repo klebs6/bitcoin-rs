@@ -1,5 +1,6 @@
-// ---------------- [ File: bitcoinleveldb-log/src/test.rs ]
-crate::ix!();
+// ---------------- [ File: bitcoinleveldb-log/tests/basic.rs ]
+use bitcoinleveldb_log::*;
+use bitcoin_imports::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/log_test.cc]
 
@@ -982,14 +983,4 @@ impl LogTest {
     /*
          CheckOffsetPastEndReturnsNoRecords(5); 
     */
-}
-
-fn logtest_main (
-        argc: i32,
-        argv: *mut *mut u8) -> i32 {
-    
-    todo!();
-        /*
-            return leveldb::test::RunAllTests();
-        */
 }

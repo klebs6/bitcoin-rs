@@ -1,3 +1,8 @@
+[dependencies]
+getset.workspace = true
+tracing.workspace = true
+bitcoinleveldb-hash = { path = "../bitcoinleveldb-hash" }
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"

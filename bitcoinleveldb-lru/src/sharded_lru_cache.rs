@@ -174,10 +174,52 @@ mod sharded_lru_cache_test_suite {
         unsafe { core::mem::zeroed() }
     }
 
+    // Per-test deleter counters to avoid cross-test interference when tests run in parallel.
+    static SHARDED_CACHE_DELETER_CALLS_ROUND_TRIP: AtomicUsize =
+        AtomicUsize::new(0);
+    static SHARDED_CACHE_DELETER_CALLS_ERASE_PRUNE: AtomicUsize =
+        AtomicUsize::new(0);
+
+    fn sharded_cache_round_trip_test_deleter(
+        _: &Slice,
+        ptr: *mut c_void,
+    ) -> c_void {
+        trace!(
+            "sharded_cache_round_trip_test_deleter: ptr={:p}",
+            ptr
+        );
+
+        SHARDED_CACHE_DELETER_CALLS_ROUND_TRIP.fetch_add(1, Ordering::SeqCst);
+        if !ptr.is_null() {
+            unsafe {
+                drop(Box::from_raw(ptr as *mut i32));
+            }
+        }
+        unsafe { core::mem::zeroed() }
+    }
+
+    fn sharded_cache_erase_prune_test_deleter(
+        _: &Slice,
+        ptr: *mut c_void,
+    ) -> c_void {
+        trace!(
+            "sharded_cache_erase_prune_test_deleter: ptr={:p}",
+            ptr
+        );
+
+        SHARDED_CACHE_DELETER_CALLS_ERASE_PRUNE.fetch_add(1, Ordering::SeqCst);
+        if !ptr.is_null() {
+            unsafe {
+                drop(Box::from_raw(ptr as *mut i32));
+            }
+        }
+        unsafe { core::mem::zeroed() }
+    }
+
     #[traced_test]
     fn sharded_lru_cache_insert_lookup_value_and_release() {
         bitcoin_cfg::setup();
-        SHARDED_CACHE_TEST_DELETER_CALLS.store(0, Ordering::SeqCst);
+        SHARDED_CACHE_DELETER_CALLS_ROUND_TRIP.store(0, Ordering::SeqCst);
 
         {
             let mut cache = ShardedLRUCache::new(64);
@@ -188,7 +230,12 @@ mod sharded_lru_cache_test_suite {
             let value_box = Box::new(123i32);
             let value_ptr = Box::into_raw(value_box) as *mut c_void;
 
-            let handle = cache.insert(&key, value_ptr, 1, sharded_cache_test_deleter);
+            let handle = cache.insert(
+                &key,
+                value_ptr,
+                1,
+                sharded_cache_round_trip_test_deleter,
+            );
             assert!(
                 !handle.is_null(),
                 "insert into sharded cache should return non-null handle"
@@ -225,7 +272,7 @@ mod sharded_lru_cache_test_suite {
         }
 
         assert_eq!(
-            SHARDED_CACHE_TEST_DELETER_CALLS.load(Ordering::SeqCst),
+            SHARDED_CACHE_DELETER_CALLS_ROUND_TRIP.load(Ordering::SeqCst),
             1,
             "dropping sharded cache should destroy stored value exactly once"
         );
@@ -234,7 +281,7 @@ mod sharded_lru_cache_test_suite {
     #[traced_test]
     fn sharded_lru_cache_erase_and_prune_release_entries_across_shards() {
         bitcoin_cfg::setup();
-        SHARDED_CACHE_TEST_DELETER_CALLS.store(0, Ordering::SeqCst);
+        SHARDED_CACHE_DELETER_CALLS_ERASE_PRUNE.store(0, Ordering::SeqCst);
 
         {
             let mut cache = ShardedLRUCache::new(128);
@@ -248,8 +295,18 @@ mod sharded_lru_cache_test_suite {
             let v1_ptr = Box::into_raw(Box::new(10i32)) as *mut c_void;
             let v2_ptr = Box::into_raw(Box::new(20i32)) as *mut c_void;
 
-            let h1 = cache.insert(&key1, v1_ptr, 1, sharded_cache_test_deleter);
-            let h2 = cache.insert(&key2, v2_ptr, 1, sharded_cache_test_deleter);
+            let h1 = cache.insert(
+                &key1,
+                v1_ptr,
+                1,
+                sharded_cache_erase_prune_test_deleter,
+            );
+            let h2 = cache.insert(
+                &key2,
+                v2_ptr,
+                1,
+                sharded_cache_erase_prune_test_deleter,
+            );
 
             assert!(
                 !h1.is_null() && !h2.is_null(),
@@ -283,7 +340,7 @@ mod sharded_lru_cache_test_suite {
         }
 
         assert_eq!(
-            SHARDED_CACHE_TEST_DELETER_CALLS.load(Ordering::SeqCst),
+            SHARDED_CACHE_DELETER_CALLS_ERASE_PRUNE.load(Ordering::SeqCst),
             2,
             "each stored value should have been destroyed exactly once"
         );

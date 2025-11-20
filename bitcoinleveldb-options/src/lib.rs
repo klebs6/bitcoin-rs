@@ -2,3 +2,6 @@
 #[macro_use] mod imports; use imports::*;
 
 x!{options}
+x!{read_options}
+x!{write_options}
+x!{compression_type}

@@ -1,5 +1,6 @@
 [dependencies]
 tracing.workspace = true
+libc-stdhandle.workspace = true
 bitcoin-support = { path = "../bitcoin-support" }
 
 [build-dependencies.bitcoin-cfg]

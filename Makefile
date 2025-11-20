@@ -38,22 +38,17 @@ FEATURES :=
 
 ACTIVE := bitcoin-top
 
-# ------------------------------- [leveldb-layer-06]
-ACTIVE := bitcoinleveldb-skiplist
-ACTIVE := bitcoinleveldb-lru
-ACTIVE := bitcoinleveldb-file
-
 # ------------------------------- [leveldb-layer-07]
-#ACTIVE := bitcoinleveldb-log
-#ACTIVE := bitcoinleveldb-versionedit
+ACTIVE := bitcoinleveldb-versionedit
+ACTIVE := bitcoinleveldb-log
 
 # ------------------------------- [leveldb-layer-08]
 #ACTIVE := bitcoinleveldb-env
 
 # ------------------------------- [leveldb-layer-09]
 #ACTIVE := bitcoinleveldb-memenv
-#ACTIVE := bitcoinleveldb-options
 #ACTIVE := bitcoinleveldb-posix
+#ACTIVE := bitcoinleveldb-options
 
 # ------------------------------- [leveldb-layer-10]
 #ACTIVE := bitcoinleveldb-table
@@ -334,3 +329,6 @@ bench:
 #ACTIVE := bitcoinleveldb-bloom
 #ACTIVE := bitcoinleveldb-key
 #ACTIVE := bitcoinleveldb-snapshot
+#ACTIVE := bitcoinleveldb-file
+#ACTIVE := bitcoinleveldb-lru
+#ACTIVE := bitcoinleveldb-skiplist

@@ -1,32 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-options/src/options.rs ]
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/options.cc]
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/include/leveldb/options.h]
-
-/**
-  | DB contents are stored in a set of blocks, each
-  | of which holds a sequence of key,value pairs.
-  | Each block may be compressed before being
-  | stored in a file.  The following enum describes
-  | which compression method (if any) is used to
-  | compress a block.
-  */
-pub enum CompressionType {
-
-    /**
-      | @note
-      | 
-      | do not change the values of existing
-      | entries, as these are part of the persistent
-      | format on disk.
-      |
-      */
-    NoCompression     = 0x0,
-    SnappyCompression = 0x1
-}
 
 /**
   | Options to control the behavior of a
@@ -57,14 +33,14 @@ pub struct Options {
       | if it is missing.
       |
       */
-    create_if_missing: bool, // default = false
+    create_if_missing: bool,
 
     /**
       | If true, an error is raised if the database
       | already exists.
       |
       */
-    error_if_exists:   bool, // default = false
+    error_if_exists:   bool,
 
     /**
       | If true, the implementation will do
@@ -76,7 +52,7 @@ pub struct Options {
       | entries to become unreadable or for the
       | entire DB to become unopenable.
       */
-    paranoid_checks:   bool, // default = false
+    paranoid_checks:   bool,
 
     /**
       | Use the specified object to interact with the
@@ -94,7 +70,7 @@ pub struct Options {
       | stored in the same directory as the DB
       | contents if info_log is null.
       */
-    info_log:          *mut dyn Logger, // default = nullptr
+    info_log:          *mut dyn Logger,
 
     /* ------ Parameters that affect performance  ------ */
 
@@ -114,7 +90,7 @@ pub struct Options {
       | a longer recovery time the next time the
       | database is opened.
       */
-    write_buffer_size:      usize, // default = 4 * 1024 * 1024
+    write_buffer_size:      usize,
 
     /**
       | Number of open files that can be used by the
@@ -122,7 +98,7 @@ pub struct Options {
       | database has a large working set (budget one
       | open file per 2MB of working set).
       */
-    max_open_files:         i32, // default = 1000
+    max_open_files:         i32,
 
     /**
       | Control over blocks (user data is stored in
@@ -134,7 +110,7 @@ pub struct Options {
       | If null, leveldb will automatically create
       | and use an 8MB internal cache.
       */
-    block_cache:            *mut Cache, // default = nullptr
+    block_cache:            *mut Cache,
 
     /**
       | Approximate size of user data packed per
@@ -144,7 +120,7 @@ pub struct Options {
       | smaller if compression is enabled.  This
       | parameter can be changed dynamically.
       */
-    block_size:             usize, // default = 4 * 1024
+    block_size:             usize,
 
     /**
       | Number of keys between restart points for
@@ -154,7 +130,7 @@ pub struct Options {
       | Most clients should leave this parameter
       | alone.
       */
-    block_restart_interval: i32, // default = 16
+    block_restart_interval: i32,
 
     /**
       | Leveldb will write up to this amount of bytes
@@ -171,7 +147,7 @@ pub struct Options {
       | might be when you are initially populating
       | a large database.
       */
-    max_file_size:          usize, // default = 2 * 1024 * 1024
+    max_file_size:          usize,
 
     /**
       | Compress blocks using the specified
@@ -196,7 +172,7 @@ pub struct Options {
       | efficiently detect that and will switch to
       | uncompressed mode.
       */
-    compression: CompressionType, // default = kSnappyCompression
+    compression: CompressionType,
 
     /**
       | EXPERIMENTAL: If true, append to existing
@@ -207,7 +183,7 @@ pub struct Options {
       | Default: currently false, but may become true
       | later.
       */
-    reuse_logs:    bool, // default = false
+    reuse_logs:    bool,
 
     /**
       | If non-null, use the specified filter policy
@@ -216,81 +192,36 @@ pub struct Options {
       | Many applications will benefit from passing
       | the result of NewBloomFilterPolicy() here.
       */
-    filter_policy: Box<dyn FilterPolicy>, // default = nullptr
+    filter_policy: Box<dyn FilterPolicy>,
 }
 
 impl Default for Options {
-    
+
     fn default() -> Self {
-    
-        todo!();
-        /*
+        trace!("Options::default: initializing default database options");
 
+        Options {
+            // -------- Behavior parameters --------
+            comparator:        Box::new(BytewiseComparator::default()),
+            create_if_missing: false,
+            error_if_exists:   false,
+            paranoid_checks:   false,
+            env:               Rc::new(RefCell::new(Env::default())),
+            info_log:          core::ptr::null_mut(),
 
-            : comparator(BytewiseComparator()), env(Env::Default())
-        */
+            // -------- Performance parameters --------
+            write_buffer_size:      4 * 1024 * 1024,
+            max_open_files:         1000,
+            block_cache:            core::ptr::null_mut(),
+            block_size:             4 * 1024,
+            block_restart_interval: 16,
+            max_file_size:          2 * 1024 * 1024,
+            compression:            CompressionType::Snappy,
+            reuse_logs:             false,
+
+            // LevelDB uses nullptr here; we must supply *some* policy.
+            // A no-op / pass-through filter is the closest semantic match.
+            filter_policy: Box::new(NullFilterPolicy::default()),
+        }
     }
-}
-
-/**
-  | Options that control read operations
-  |
-  */
-#[derive(Default)]
-pub struct ReadOptions {
-
-    /**
-      | If true, all data read from underlying
-      | storage will be verified against corresponding
-      | checksums.
-      |
-      */
-    verify_checksums: bool, // default = false
-
-    /**
-      | Should the data read for this iteration
-      | be cached in memory? Callers may wish
-      | to set this field to false for bulk scans.
-      |
-      */
-    fill_cache:       bool, // default = true
-
-    /**
-      | If "snapshot" is non-null, read as of the
-      | supplied snapshot (which must belong to the
-      | DB that is being read and which must not have
-      | been released).  If "snapshot" is null, use
-      | an implicit snapshot of the state at the
-      | beginning of this read operation.
-      */
-    snapshot:         Option<Box<dyn Snapshot>>, // default = nullptr
-}
-
-/**
-  | Options that control write operations
-  |
-  */
-#[derive(Default)]
-pub struct WriteOptions {
-
-    /**
-      | If true, the write will be flushed from the
-      | operating system buffer cache (by calling
-      | WritableFile::Sync()) before the write is
-      | considered complete.  If this flag is true,
-      | writes will be slower.
-      |
-      | If this flag is false, and the machine
-      | crashes, some recent writes may be lost.
-      | Note that if it is just the process that
-      | crashes (i.e., the machine does not reboot),
-      | no writes will be lost even if sync==false.
-      |
-      | In other words, a DB write with sync==false
-      | has similar crash semantics as the "write()"
-      | system call.  A DB write with sync==true has
-      | similar crash semantics to a "write()" system
-      | call followed by "fsync()".
-      */
-    sync: bool, // default = false
 }

@@ -3271,6 +3271,7 @@ dependencies = [
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-util",
+ "libc-stdhandle",
  "tracing",
 ]
 
@@ -3500,8 +3501,11 @@ dependencies = [
  "bitcoin-imports",
  "bitcoinleveldb-arena",
  "bitcoinleveldb-comparator",
+ "bitcoinleveldb-hash",
  "bitcoinleveldb-key",
  "bitcoinleveldb-rand",
+ "getset",
+ "tracing",
 ]
 
 [[package]]
@@ -3637,6 +3641,7 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoinleveldb-coding",
  "bitcoinleveldb-file",
  "bitcoinleveldb-key",
  "bitcoinleveldb-slice",
