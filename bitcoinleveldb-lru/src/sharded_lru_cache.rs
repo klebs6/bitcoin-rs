@@ -174,10 +174,6 @@ mod sharded_lru_cache_test_suite {
         unsafe { core::mem::zeroed() }
     }
 
-    fn sharded_cache_make_slice_from_bytes(bytes: &[u8]) -> Slice {
-        Slice::from_ptr_len(bytes.as_ptr(), bytes.len())
-    }
-
     #[traced_test]
     fn sharded_lru_cache_insert_lookup_value_and_release() {
         bitcoin_cfg::setup();
@@ -187,7 +183,7 @@ mod sharded_lru_cache_test_suite {
             let mut cache = ShardedLRUCache::new(64);
 
             let key_bytes = b"shard-key-1";
-            let key       = sharded_cache_make_slice_from_bytes(key_bytes);
+            let key       = Slice::from(key_bytes.as_slice());
 
             let value_box = Box::new(123i32);
             let value_ptr = Box::into_raw(value_box) as *mut c_void;
@@ -243,8 +239,11 @@ mod sharded_lru_cache_test_suite {
         {
             let mut cache = ShardedLRUCache::new(128);
 
-            let key1 = sharded_cache_make_slice_from_bytes(b"shard-erase-1");
-            let key2 = sharded_cache_make_slice_from_bytes(b"shard-erase-2");
+            let key1_bytes = b"shard-erase-1";
+            let key2_bytes = b"shard-erase-2";
+
+            let key1 = Slice::from(key1_bytes.as_slice());
+            let key2 = Slice::from(key2_bytes.as_slice());
 
             let v1_ptr = Box::into_raw(Box::new(10i32)) as *mut c_void;
             let v2_ptr = Box::into_raw(Box::new(20i32)) as *mut c_void;

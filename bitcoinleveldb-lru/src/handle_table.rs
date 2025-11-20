@@ -1,23 +1,20 @@
 // ---------------- [ File: bitcoinleveldb-lru/src/handle_table.rs ]
 crate::ix!();
 
-/**
-  | We provide our own simple hash table since it
-  | removes a whole bunch of porting hacks and is
-  | also faster than some of the built-in hash
-  | table implementations in some of the
-  | compiler/runtime combinations we have tested.
-  | E.g., readrandom speeds up by ~5% over the g++
-  | 4.4.3's builtin hashtable.
-  */
+/// We provide our own simple hash table since it removes a whole bunch of
+/// porting hacks and is also faster than some of the built-in hash table
+/// implementations in some of the compiler/runtime combinations we have tested.
+///
+/// E.g., readrandom speeds up by ~5% over the g++
+/// 4.4.3's builtin hashtable.
+///
+#[derive(Getters,Setters)]
+#[getset(get="pub",set="pub")]
 pub struct HandleTable {
 
-    /**
-      | The table consists of an array of buckets
-      | where each bucket is a linked list of
-      | cache entries that hash into the bucket.
-      |
-      */
+    /// The table consists of an array of buckets where each bucket is a linked
+    /// list of cache entries that hash into the bucket.
+    /// 
     length: u32,
     elems:  u32,
     list:   *mut *mut LRUHandle,
@@ -53,179 +50,6 @@ impl Drop for HandleTable {
                 libc::free(self.list as *mut libc::c_void);
                 self.list = core::ptr::null_mut();
             }
-        }
-    }
-}
-
-impl HandleTable {
-
-    pub fn lookup(&mut self, key_: &Slice, hash_: u32) -> *mut LRUHandle {
-        trace!("HandleTable::lookup: hash={}", hash_);
-        unsafe { *self.find_pointer(key_, hash_) }
-    }
-
-    pub fn insert(&mut self, h: *mut LRUHandle) -> *mut LRUHandle {
-        unsafe {
-            let hash = (*h).hash_value();
-            let key  = (*h).key();
-
-            trace!(
-                "HandleTable::insert: handle={:p}, hash={}, elems={}, length={}",
-                h,
-                hash,
-                self.elems,
-                self.length
-            );
-
-            let ptr = self.find_pointer(&key, hash);
-            let old = *ptr;
-
-            if old.is_null() {
-                (*h).set_next_hash_ptr(core::ptr::null_mut());
-            } else {
-                let next_hash = (*old).next_hash_ptr();
-                (*h).set_next_hash_ptr(next_hash);
-            }
-
-            *ptr = h;
-
-            if old.is_null() {
-                self.elems = self.elems.wrapping_add(1);
-                if self.elems > self.length {
-                    debug!(
-                        "HandleTable::insert: resizing (elems={}, length={})",
-                        self.elems,
-                        self.length
-                    );
-                    self.resize();
-                }
-            }
-
-            old
-        }
-    }
-
-    pub fn remove(&mut self, key_: &Slice, hash_: u32) -> *mut LRUHandle {
-        trace!("HandleTable::remove: hash={}", hash_);
-        unsafe {
-            let ptr    = self.find_pointer(key_, hash_);
-            let result = *ptr;
-            if !result.is_null() {
-                let next_hash = (*result).next_hash_ptr();
-                *ptr = next_hash;
-                self.elems = self.elems.wrapping_sub(1);
-            }
-            result
-        }
-    }
- 
-    /**
-      | Return a pointer to slot that points to
-      | a cache entry that matches key/hash.  If
-      | there is no such cache entry, return
-      | a pointer to the trailing slot in the
-      | corresponding linked list.
-      */
-    pub fn find_pointer(&mut self, key_: &Slice, hash_: u32) -> *mut *mut LRUHandle {
-        trace!("HandleTable::find_pointer: hash={}", hash_);
-
-        unsafe {
-            debug_assert!(
-                self.length != 0,
-                "HandleTable::find_pointer: length is zero"
-            );
-
-            let mask = self.length.wrapping_sub(1);
-            let mut ptr: *mut *mut LRUHandle =
-                self.list.add((hash_ & mask) as usize);
-
-            loop {
-                let entry = *ptr;
-                if entry.is_null() {
-                    break;
-                }
-
-                if (*entry).hash_value() == hash_ && *key_ == (*entry).key() {
-                    break;
-                }
-
-                let next_hash_ref: &mut *mut LRUHandle = (*entry).next_hash_link();
-                ptr = next_hash_ref as *mut *mut LRUHandle;
-            }
-
-            ptr
-        }
-    }
-   
-    pub fn resize(&mut self) {
-        trace!(
-            "HandleTable::resize: current length={}, elems={}",
-            self.length,
-            self.elems
-        );
-
-        unsafe {
-            let mut new_length: u32 = 4;
-            while new_length < self.elems {
-                new_length = new_length.wrapping_mul(2);
-            }
-
-            let bytes = (new_length as usize) * core::mem::size_of::<*mut LRUHandle>();
-            let new_list = if bytes == 0 {
-                core::ptr::null_mut()
-            } else {
-                let ptr = libc::malloc(bytes) as *mut *mut LRUHandle;
-                if !ptr.is_null() {
-                    core::ptr::write_bytes(ptr as *mut u8, 0u8, bytes);
-                }
-                ptr
-            };
-
-            if new_list.is_null() {
-                error!(
-                    "HandleTable::resize: allocation failed for {} bytes; leaving table unchanged",
-                    bytes
-                );
-                return;
-            }
-
-            let old_length = self.length;
-            let old_list   = self.list;
-            let mut count: u32 = 0;
-
-            for i in 0..old_length {
-                let mut h = *old_list.add(i as usize);
-                while !h.is_null() {
-                    let next = (*h).next_hash_ptr();
-                    let hash = (*h).hash_value();
-                    let bucket = (hash & (new_length - 1)) as usize;
-                    let ptr = new_list.add(bucket);
-                    let prev_head = *ptr;
-                    (*h).set_next_hash_ptr(prev_head);
-                    *ptr = h;
-                    h = next;
-                    count = count.wrapping_add(1);
-                }
-            }
-
-            assert_eq!(
-                self.elems, count,
-                "HandleTable::resize: element count mismatch (elems_={}, counted={})",
-                self.elems, count
-            );
-
-            if !old_list.is_null() {
-                libc::free(old_list as *mut libc::c_void);
-            }
-
-            self.list   = new_list;
-            self.length = new_length;
-
-            debug!(
-                "HandleTable::resize: new length={}, elems={}",
-                self.length,
-                self.elems
-            );
         }
     }
 }

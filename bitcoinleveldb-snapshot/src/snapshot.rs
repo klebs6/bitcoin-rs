@@ -13,154 +13,37 @@ pub trait Snapshot {
 }
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/snapshot.h]
+#[cfg(test)]
+mod snapshot_trait_contract_spec {
+    use super::*;
 
-/**
-  | Snapshots are kept in a doubly-linked list in
-  | the DB.
-  |
-  | Each SnapshotImpl corresponds to a particular
-  | sequence number.
-  */
-pub struct SnapshotImpl {
+    #[traced_test]
+    fn snapshot_impl_converts_to_trait_object_and_is_stable() {
+        debug!("verifying SnapshotImpl conforms to Snapshot trait object contract");
 
-    /**
-      | SnapshotImpl is kept in a doubly-linked
-      | circular list. The SnapshotList
-      | implementation operates on the
-      | next/previous fields direcly.
-      */
-    prev:            *mut SnapshotImpl,
+        let impl_obj = SnapshotImpl::new(42 as SequenceNumber);
+        let dyn_view: &dyn Snapshot = &impl_obj;
 
-    next:            *mut SnapshotImpl,
-    sequence_number: SequenceNumber,
+        trace!(
+            impl_addr = ?(&impl_obj as *const SnapshotImpl),
+            dyn_addr  = ?(dyn_view as *const dyn Snapshot as *const ()),
+            "constructed &dyn Snapshot view over SnapshotImpl"
+        );
 
-    #[cfg(not(NDEBUG))]
-    list:            *mut SnapshotList, // default = nullptr
-}
-
-impl Snapshot for SnapshotImpl {
-
-}
-
-impl SnapshotImpl {
-    
-    pub fn new(sequence_number: SequenceNumber) -> Self {
-    
-        todo!();
-        /*
-        : sequence_number(sequence_number),
-
-        
-        */
-    }
-    
-    pub fn sequence_number(&self) -> SequenceNumber {
-        
-        todo!();
-        /*
-            return sequence_number_;
-        */
-    }
-}
-
-///---------------------
-pub struct SnapshotList {
-
-    /**
-      | Dummy head of doubly-linked list of
-      | snapshots
-      |
-      */
-    head: SnapshotImpl,
-}
-
-impl Default for SnapshotList {
-    
-    fn default() -> Self {
-        todo!();
-        /*
-        : head(0),
-
-            head_.prev_ = &head_;
-        head_.next_ = &head_;
-        */
-    }
-}
-
-impl SnapshotList {
-    
-    pub fn empty(&self) -> bool {
-        
-        todo!();
-        /*
-            return head_.next_ == &head_;
-        */
-    }
-    
-    pub fn oldest(&self) -> *mut SnapshotImpl {
-        
-        todo!();
-        /*
-            assert(!empty());
-        return head_.next_;
-        */
-    }
-    
-    pub fn newest(&self) -> *mut SnapshotImpl {
-        
-        todo!();
-        /*
-            assert(!empty());
-        return head_.prev_;
-        */
+        assert_eq!(
+            *impl_obj.sequence_number(),
+            42,
+            "sequence_number getter must expose the value passed to new()"
+        );
     }
 
-    /**
-      | Creates a SnapshotImpl and appends
-      | it to the end of the list.
-      |
-      */
-    pub fn new(&mut self, sequence_number: SequenceNumber) -> *mut SnapshotImpl {
-        
-        todo!();
-        /*
-            assert(empty() || newest()->sequence_number_ <= sequence_number);
-
-        SnapshotImpl* snapshot = new SnapshotImpl(sequence_number);
-
-    #if !defined(NDEBUG)
-        snapshot->list_ = this;
-    #endif  // !defined(NDEBUG)
-        snapshot->next_ = &head_;
-        snapshot->prev_ = head_.prev_;
-        snapshot->prev_->next_ = snapshot;
-        snapshot->next_->prev_ = snapshot;
-        return snapshot;
-        */
-    }
-
-    /**
-      | Removes a SnapshotImpl from this list.
-      |
-      | The snapshot must have been created by
-      | calling New() on this list.
-      |
-      | The snapshot pointer should not be const,
-      | because its memory is deallocated. However,
-      | that would force us to change
-      | DB::ReleaseSnapshot(), which is in the API,
-      | and currently takes a const Snapshot.
-      */
-    pub fn delete(&mut self, snapshot: *const SnapshotImpl)  {
-        
-        todo!();
-        /*
-            #if !defined(NDEBUG)
-        assert(snapshot->list_ == this);
-    #endif  // !defined(NDEBUG)
-        snapshot->prev_->next_ = snapshot->next_;
-        snapshot->next_->prev_ = snapshot->prev_;
-        delete snapshot;
-        */
+    #[allow(dead_code)]
+    fn _compile_time_assert_impl<T: Snapshot>() {}
+    
+    #[traced_test]
+    fn snapshot_impl_satisfies_snapshot_bound() {
+        debug!("ensuring SnapshotImpl satisfies Snapshot via generic bound");
+        _compile_time_assert_impl::<SnapshotImpl>();
+        info!("SnapshotImpl satisfies Snapshot");
     }
 }

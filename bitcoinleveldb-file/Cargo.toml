@@ -1,6 +1,11 @@
+[dependencies]
+tracing.workspace = true
+bitcoin-support = { path = "../bitcoin-support" }
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.18"

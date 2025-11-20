@@ -33,12 +33,17 @@ pub struct FileMetaData {
 }
 
 impl Default for FileMetaData {
-    
     fn default() -> Self {
-        todo!();
-        /*
-
-            : refs(0), allowed_seeks(1 << 30), file_size(0)
-        */
+        use tracing::trace;
+        trace!("FileMetaData::default");
+        Self {
+            refs: 0,
+            allowed_seeks: 1 << 30,
+            number: 0,
+            file_size: 0,
+            smallest: Default::default(),
+            largest: Default::default(),
+        }
     }
 }
+

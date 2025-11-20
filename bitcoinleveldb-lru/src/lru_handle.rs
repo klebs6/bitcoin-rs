@@ -1,72 +1,54 @@
 // ---------------- [ File: bitcoinleveldb-lru/src/lru_handle.rs ]
 crate::ix!();
 
-pub fn lru_make_sentinel() -> LRUHandle {
-    trace!("lru_make_sentinel: constructing LRUHandle sentinel");
-
-    LRUHandle {
-        value:      core::ptr::null_mut(),
-        deleter:    lru_noop_deleter,
-        next_hash:  core::ptr::null_mut(),
-        next:       core::ptr::null_mut(), // will be set to self in LRUCacheInner::new_with_sentinels
-        prev:       core::ptr::null_mut(), // will be set to self in LRUCacheInner::new_with_sentinels
-        charge:     0,
-        key_length: 0,
-        in_cache:   false,
-        refs:       0,
-        hash:       0,
-        key_data:   [0u8; 1],
-    }
-}
-
-/**
-  | An entry is a variable length heap-allocated
-  | structure. Entries are kept in a circular
-  | doubly linked list ordered by access
-  | time.
-  |
-  */
+/// An entry is a variable length heap-allocated structure. 
+///
+/// Entries are kept in a circular doubly linked list ordered by access time.
+/// 
+#[repr(C)]
 pub struct LRUHandle {
-
     value:      *mut c_void,
-
     deleter:    fn(_0: &Slice, value: *mut c_void) -> c_void,
-
     next_hash:  *mut LRUHandle,
     next:       *mut LRUHandle,
     prev:       *mut LRUHandle,
 
-    /**
-       TODO(opt): Only allow uint32_t?
-      */
+    /// TODO(opt): Only allow uint32_t?
     charge:     usize,
-
     key_length: usize,
 
-    /**
-       Whether entry is in the cache.
-      */
+    /// Whether entry is in the cache.
     in_cache:   bool,
 
-    /**
-       References, including cache reference, if
-       present.
-      */
+    /// References, including cache reference, if present.
     refs:       u32,
 
-    /**
-       Hash of key(); used for fast sharding and
-       comparisons
-      */
+    /// Hash of key(); used for fast sharding and comparisons
     hash:       u32,
 
-    /**
-       Beginning of key
-      */
+    /// Beginning of key
     key_data:   [u8; 1],
 }
 
 impl LRUHandle {
+
+    pub fn make_sentinel() -> LRUHandle {
+        trace!("LRUHandle::make_sentinel: constructing LRUHandle sentinel");
+
+        LRUHandle {
+            value:      core::ptr::null_mut(),
+            deleter:    lru_noop_deleter,
+            next_hash:  core::ptr::null_mut(),
+            next:       core::ptr::null_mut(), // will be set to self in LRUCacheInner::new
+            prev:       core::ptr::null_mut(), // will be set to self in LRUCacheInner::new
+            charge:     0,
+            key_length: 0,
+            in_cache:   false,
+            refs:       0,
+            hash:       0,
+            key_data:   [0u8; 1],
+        }
+    }
 
     pub fn key(&self) -> Slice {
         trace!("LRUHandle::key: key_length={}", self.key_length);
@@ -80,11 +62,13 @@ impl LRUHandle {
                 "LRUHandle::key called on list head / sentinel"
             );
 
-            let data_ptr = self.key_data.as_ptr();
-            let len      = self.key_length;
-            let bytes: &[u8] = core::slice::from_raw_parts(data_ptr, len);
-            Slice::from(bytes)
+            Slice::from_ptr_len(self.key_data_ptr(), self.key_length)
         }
+    }
+
+    /// Pointer to the beginning of the inlined key bytes.
+    pub fn key_data_ptr(&self) -> *const u8 {
+        self.key_data.as_ptr()
     }
 
     // ----- value / deleter -----
@@ -188,7 +172,7 @@ impl LRUHandle {
         self.hash = hash;
     }
 
-    /// Pointer to the beginning of the inlined key bytes.
+    /// Pointer to the beginning of the inlined key bytes (mutable).
     pub fn key_data_mut(&mut self) -> *mut u8 {
         self.key_data.as_mut_ptr()
     }
@@ -308,6 +292,7 @@ mod lru_handle_test_suite {
                 "decrement_refs should lower refcount"
             );
 
+            // Clean up heap-allocated test value.
             let reclaimed = Box::from_raw((*handle).value_ptr() as *mut i32);
             assert_eq!(
                 *reclaimed, 42,

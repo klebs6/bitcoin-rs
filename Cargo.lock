@@ -3266,10 +3266,12 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoin-support",
  "bitcoinleveldb-key",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-util",
+ "tracing",
 ]
 
 [[package]]
@@ -3358,6 +3360,7 @@ dependencies = [
  "bitcoinleveldb-hash",
  "bitcoinleveldb-slice",
  "derive_builder",
+ "disable_macro",
  "getset",
  "tracing",
 ]
@@ -3523,6 +3526,9 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinleveldb-key",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]
