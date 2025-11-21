@@ -3,6 +3,9 @@ tracing.workspace = true
 libc-stdhandle.workspace = true
 bitcoin-support = { path = "../bitcoin-support" }
 
+derive_builder.workspace = true
+getset.workspace         = true
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"

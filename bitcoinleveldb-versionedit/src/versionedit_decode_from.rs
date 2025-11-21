@@ -5,31 +5,32 @@ impl VersionEdit {
 
     pub fn decode_from(&mut self, src: &Slice) -> Status {
         trace!("VersionEdit::decode_from: decoding from manifest record");
-        self.clear();
+
+        self.reset_core_state();
 
         // Working copy of the input Slice.
-        let mut input = Slice::from_ptr_len(src.data(), src.size());
+        let mut input = unsafe {
+            Slice::from_ptr_len(*src.data(), *src.size())
+        };
 
         let mut msg: Option<&'static str> = None;
         let mut tag: u32 = 0;
 
         // Temporary storage for parsing
-        let mut level: i32 = 0;
-        let mut number: u64 = 0;
-        let mut f = FileMetaData::default();
-        let mut str_slice = Slice::default();
-        let mut key = InternalKey::default();
+        let mut level: i32      = 0;
+        let mut number: u64     = 0;
+        let mut str_slice       = Slice::default();
+        let mut key             = InternalKey::default();
 
         while msg.is_none() && get_varint32(&mut input, &mut tag) {
             match tag {
                 1 => {
                     // kComparator
                     if get_length_prefixed_slice(&mut input, &mut str_slice) {
-                        self.comparator = str_slice.to_string();
-                        self.has_comparator = true;
+                        self.set_comparator_name(&str_slice);
                         debug!(
                             "VersionEdit::decode_from: parsed comparator '{}'",
-                            self.comparator
+                            str_slice.to_string()
                         );
                     } else {
                         msg = Some("comparator name");
@@ -37,11 +38,12 @@ impl VersionEdit {
                 }
                 2 => {
                     // kLogNumber
-                    if get_varint64(&mut input, &mut self.log_number) {
-                        self.has_log_number = true;
+                    let mut log_num: u64 = 0;
+                    if get_varint64(&mut input, &mut log_num) {
+                        self.set_log_number(log_num);
                         debug!(
                             "VersionEdit::decode_from: parsed log_number={}",
-                            self.log_number
+                            self.log_number()
                         );
                     } else {
                         msg = Some("log number");
@@ -49,11 +51,12 @@ impl VersionEdit {
                 }
                 9 => {
                     // kPrevLogNumber
-                    if get_varint64(&mut input, &mut self.prev_log_number) {
-                        self.has_prev_log_number = true;
+                    let mut prev_log: u64 = 0;
+                    if get_varint64(&mut input, &mut prev_log) {
+                        self.set_prev_log_number(prev_log);
                         debug!(
                             "VersionEdit::decode_from: parsed prev_log_number={}",
-                            self.prev_log_number
+                            self.prev_log_number()
                         );
                     } else {
                         msg = Some("previous log number");
@@ -61,11 +64,12 @@ impl VersionEdit {
                 }
                 3 => {
                     // kNextFileNumber
-                    if get_varint64(&mut input, &mut self.next_file_number) {
-                        self.has_next_file_number = true;
+                    let mut next_file: u64 = 0;
+                    if get_varint64(&mut input, &mut next_file) {
+                        self.set_next_file(next_file);
                         debug!(
                             "VersionEdit::decode_from: parsed next_file_number={}",
-                            self.next_file_number
+                            self.next_file_number()
                         );
                     } else {
                         msg = Some("next file number");
@@ -75,11 +79,10 @@ impl VersionEdit {
                     // kLastSequence
                     let mut seq: u64 = 0;
                     if get_varint64(&mut input, &mut seq) {
-                        self.has_last_sequence = true;
-                        self.last_sequence = seq as SequenceNumber;
+                        self.set_last_sequence(seq as SequenceNumber);
                         debug!(
                             "VersionEdit::decode_from: parsed last_sequence={}",
-                            self.last_sequence
+                            self.last_sequence()
                         );
                     } else {
                         msg = Some("last sequence number");
@@ -87,43 +90,62 @@ impl VersionEdit {
                 }
                 5 => {
                     // kCompactPointer
-                    if get_level(&mut input, &mut level) && get_internal_key(&mut input, &mut key)
+                    if get_level(&mut input, &mut level)
+                        && get_internal_key(&mut input, &mut key)
                     {
                         debug!(
                             "VersionEdit::decode_from: parsed compact pointer level={} key={:?}",
-                            level, key
+                            level,
+                            key
                         );
-                        self.compact_pointers.push((level, key.clone()));
+                        self.set_compact_pointer(level, &key);
                     } else {
                         msg = Some("compaction pointer");
                     }
                 }
                 6 => {
                     // kDeletedFile
-                    if get_level(&mut input, &mut level) && get_varint64(&mut input, &mut number) {
+                    if get_level(&mut input, &mut level)
+                        && get_varint64(&mut input, &mut number)
+                    {
                         debug!(
                             "VersionEdit::decode_from: parsed deleted file level={} file={}",
-                            level, number
+                            level,
+                            number
                         );
-                        self.deleted_files.insert((level, number));
+                        self.delete_file(level, number);
                     } else {
                         msg = Some("deleted file");
                     }
                 }
                 7 => {
                     // kNewFile
-                    f = FileMetaData::default();
-                    if get_level(&mut input, &mut level)
-                        && get_varint64(&mut input, &mut f.number)
-                        && get_varint64(&mut input, &mut f.file_size)
-                        && get_internal_key(&mut input, &mut f.smallest)
-                        && get_internal_key(&mut input, &mut f.largest)
+                    let mut file_level:  i32 = 0;
+                    let mut file_number: u64 = 0;
+                    let mut file_size:   u64 = 0;
+                    let mut smallest_key      = InternalKey::default();
+                    let mut largest_key       = InternalKey::default();
+
+                    if get_level(&mut input, &mut file_level)
+                        && get_varint64(&mut input, &mut file_number)
+                        && get_varint64(&mut input, &mut file_size)
+                        && get_internal_key(&mut input, &mut smallest_key)
+                        && get_internal_key(&mut input, &mut largest_key)
                     {
+                        let mut meta = FileMetaData::default();
+                        meta.set_number(file_number);
+                        meta.set_file_size(file_size);
+                        meta.set_smallest(smallest_key.clone());
+                        meta.set_largest(largest_key.clone());
+
                         debug!(
                             "VersionEdit::decode_from: parsed new file level={} number={} size={}",
-                            level, f.number, f.file_size
+                            file_level,
+                            file_number,
+                            file_size
                         );
-                        self.new_files.push((level, f));
+
+                        self.new_files_mut().push((file_level, meta));
                     } else {
                         msg = Some("new-file entry");
                     }
@@ -143,12 +165,65 @@ impl VersionEdit {
                 "VersionEdit::decode_from: manifest record corruption: {}",
                 reason
             );
-            // TODO: When bitcoinleveldb-status exposes a specific constructor
-            // for corruption statuses, return that here instead of default.
+            let context_slice = Slice::from("manifest parse error".as_bytes());
+            let reason_slice  = Slice::from(reason.as_bytes());
+            Status::corruption(&context_slice, Some(&reason_slice))
         } else {
             trace!("VersionEdit::decode_from: decode completed successfully");
+            Status::ok()
         }
+    }
 
-        Status::default()
+}
+
+#[cfg(test)]
+mod version_edit_decode_from_tests {
+    use super::*;
+
+    #[traced_test]
+    fn decode_from_reports_corruption_for_truncated_comparator_name() {
+        trace!(
+            "decode_from_reports_corruption_for_truncated_comparator_name: start"
+        );
+
+        // Tag 1 (kComparator) followed by length=3 but only 2 bytes payload.
+        let mut bytes = Vec::new();
+        bytes.push(1u8);  // tag kComparator
+        bytes.push(3u8);  // length = 3
+        bytes.push(b'a');
+        bytes.push(b'b');
+
+        let slice = unsafe { Slice::from_ptr_len(bytes.as_ptr(), bytes.len()) };
+        let mut edit = VersionEdit::default();
+
+        let status = edit.decode_from(&slice);
+
+        assert!(
+            status.is_corruption(),
+            "DecodeFrom should return Corruption for truncated comparator payload, got: {}",
+            status.to_string()
+        );
+    }
+
+    #[traced_test]
+    fn decode_from_reports_corruption_for_invalid_varint_tag_encoding() {
+        trace!(
+            "decode_from_reports_corruption_for_invalid_varint_tag_encoding: start"
+        );
+
+        // A single byte 0x80 encodes a varint with continuation bit set but no
+        // following byte. get_varint32 will fail and we should surface Corruption.
+        let bytes = vec![0x80u8];
+
+        let slice = unsafe { Slice::from_ptr_len(bytes.as_ptr(), bytes.len()) };
+        let mut edit = VersionEdit::default();
+
+        let status = edit.decode_from(&slice);
+
+        assert!(
+            status.is_corruption(),
+            "DecodeFrom should return Corruption for invalid varint tag encoding, got: {}",
+            status.to_string()
+        );
     }
 }

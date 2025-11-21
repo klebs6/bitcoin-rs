@@ -393,6 +393,7 @@ pub use std::net::{
     SocketAddr,
 };
 
+pub use std::ffi::CString;
 pub use named_item::*;
 pub use std::ops::*;
 pub use std::env;

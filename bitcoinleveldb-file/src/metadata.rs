@@ -1,6 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-file/src/metadata.rs ]
 crate::ix!();
 
+#[derive(Debug, Getters, Setters, Builder, Clone)]
+#[getset(get = "pub", set = "pub")]
 pub struct FileMetaData {
 
     refs:          i32,

@@ -1,6 +1,17 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"
+
+[dependencies]
+tracing.workspace = true
+getset.workspace = true
+bitcoinleveldb-crc32 = { path = "../bitcoinleveldb-crc32" }
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
+bitcoinleveldb-logtools = { path = "../bitcoinleveldb-logtools" }
+bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader" }
+bitcoinleveldb-logwriter = { path = "../bitcoinleveldb-logwriter" }
+bitcoinleveldb-posixlogger = { path = "../bitcoinleveldb-posixlogger" }
+bitcoin-support = { path = "../bitcoin-support" }
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.18"

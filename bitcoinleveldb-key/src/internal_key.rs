@@ -8,7 +8,7 @@ crate::ix!();
   | use string comparisons instead of an
   | InternalKeyComparator.
   */
-#[derive(Clone,Debug)]
+#[derive(Clone)]
 pub struct InternalKey {
     rep: String,
 }
@@ -26,6 +26,22 @@ impl Default for InternalKey {
         }
     }
 }
+
+impl core::fmt::Debug for InternalKey {
+
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        trace!(
+            "InternalKey::fmt(Debug): rep_len={}",
+            self.rep.len()
+        );
+        // Use the safe, structured debug representation instead of raw bytes-as-UTF8.
+        let repr = self.debug_string();
+        f.debug_struct("InternalKey")
+            .field("repr", &repr)
+            .finish()
+    }
+}
+
 
 impl InternalKey {
 
@@ -48,13 +64,15 @@ impl InternalKey {
             *s.size()
         );
         unsafe {
-            let len = *s.size();
+            let len  = *s.size();
             let data = *s.data();
             if len == 0 {
                 self.rep.clear();
                 return false;
             }
             let bytes = std::slice::from_raw_parts(data, len);
+            // NOTE: bytes here are LevelDB internal-key bytes; we preserve them as-is.
+            // This is a faithful port of the C++ "string of bytes" representation.
             self.rep = String::from_utf8_unchecked(bytes.to_vec());
         }
         !self.rep.is_empty()
@@ -102,7 +120,7 @@ impl InternalKey {
             } else {
                 self.rep.as_ptr()
             };
-            let len = self.rep.len();
+            let len   = self.rep.len();
             let slice = Slice::from_ptr_len(data, len);
             parse_internal_key(&slice, &mut parsed as *mut ParsedInternalKey)
         };
@@ -166,6 +184,26 @@ mod internal_key_tests {
             debug_str.starts_with("(bad)"),
             "debug_string should report bad after clear; got {}",
             debug_str
+        );
+    }
+
+    #[traced_test]
+    fn internal_key_debug_does_not_panic_for_binary_representation() {
+        trace!(
+            "internal_key_debug_does_not_panic_for_binary_representation: start"
+        );
+
+        let user = Slice::from("x".as_bytes());
+        let key  = InternalKey::new(&user, 123 as SequenceNumber, ValueType::TypeValue);
+
+        // This used to panic because Debug tried to print raw internal bytes as UTF-8.
+        let debug_str = format!("{:?}", key);
+
+        debug!(%debug_str, "internal_key_debug_does_not_panic_for_binary_representation: Debug output");
+
+        assert!(
+            debug_str.contains("InternalKey"),
+            "Debug output for InternalKey should contain type name"
         );
     }
 }

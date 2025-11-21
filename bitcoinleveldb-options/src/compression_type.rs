@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-options/src/compression_type.rs ]
 crate::ix!();
 
 /**

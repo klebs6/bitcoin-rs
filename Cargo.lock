@@ -3271,6 +3271,8 @@ dependencies = [
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-util",
+ "derive_builder",
+ "getset",
  "libc-stdhandle",
  "tracing",
 ]
@@ -3343,11 +3345,79 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoin-support",
+ "bitcoinleveldb-coding",
+ "bitcoinleveldb-crc32",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-logreader",
+ "bitcoinleveldb-logtools",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-posixlogger",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "getset",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldb-logreader"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-support",
+ "bitcoinleveldb-coding",
+ "bitcoinleveldb-crc32",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-logtools",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "derive_builder",
+ "getset",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldb-logtools"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-coding",
+ "bitcoinleveldb-crc32",
  "bitcoinleveldb-file",
  "bitcoinleveldb-rand",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-util",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldb-logwriter"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-support",
+ "bitcoinleveldb-coding",
+ "bitcoinleveldb-crc32",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-logtools",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]
@@ -3460,6 +3530,25 @@ dependencies = [
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-util",
+]
+
+[[package]]
+name = "bitcoinleveldb-posixlogger"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-coding",
+ "bitcoinleveldb-crc32",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-logtools",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "getset",
+ "tracing",
 ]
 
 [[package]]
@@ -3646,6 +3735,9 @@ dependencies = [
  "bitcoinleveldb-key",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]

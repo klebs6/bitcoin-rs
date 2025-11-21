@@ -20,7 +20,7 @@ pub unsafe fn decode_fixed64_le(ptr: *const u8) -> u64 {
     result
 }
 
-pub fn put_varint32(dst: &mut Vec<u8>, mut v: u32) {
+pub fn put_varint32_vec(dst: &mut Vec<u8>, mut v: u32) {
     while v >= 0x80 {
         dst.push(((v & 0x7f) as u8) | 0x80);
         v >>= 7;
@@ -199,7 +199,7 @@ mod encode_tests {
         for &v in &values {
             trace!("put_varint32 case: v={}", v);
             let mut buf = Vec::new();
-            put_varint32(&mut buf, v);
+            put_varint32_vec(&mut buf, v);
 
             let (decoded, consumed) = decode_varint32(&buf);
             assert_eq!(decoded, v, "varint32 roundtrip mismatch for {}", v);

@@ -59,7 +59,7 @@ impl LookupKey {
 
         // Encode length of internal key as varint32
         let key_len = (usize + 8) as u32;
-        put_varint32(&mut buf, key_len);
+        put_varint32_vec(&mut buf, key_len);
         let kstart_index = buf.len();
 
         unsafe {
