@@ -20,7 +20,11 @@ impl UnlockFile for PosixEnv {
             let filelock_ref: &dyn FileLock = lock_ref.as_ref();
 
             // Upcast the trait object to `Any` so we can recover the concrete type.
-            let any_ref: &dyn std::any::Any = &filelock_ref as &dyn std::any::Any;
+            // NOTE: It is crucial that we upcast *the trait object itself* rather
+            // than a reference to it; otherwise the concrete type seen by `Any`
+            // would be `&dyn FileLock` instead of `PosixFileLock`, and the
+            // subsequent `downcast_ref` would always fail.
+            let any_ref: &dyn std::any::Any = filelock_ref as &dyn std::any::Any;
 
             let posix_lock = any_ref
                 .downcast_ref::<PosixFileLock>()
@@ -28,7 +32,7 @@ impl UnlockFile for PosixEnv {
                     "PosixEnv::unlock_file: underlying FileLock is not PosixFileLock",
                 );
 
-            let fd = posix_lock.fd();
+            let fd   = posix_lock.fd();
             let name = posix_lock.filename().clone();
 
             (fd, name)
