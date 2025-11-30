@@ -15,15 +15,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust crate for managing Bitcoin amounts at the satoshi level with support for ownership categorization and caching."
+description = "Low-level Bitcoin amount and wallet ownership flag primitives mirroring Bitcoin Core IsMine semantics, including satoshi amounts, money range validation, and cachable per-flag balances."
 documentation = "https://docs.rs/bitcoin-amt"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-amt"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "satoshi", "cryptocurrency", "wallet", "ownership"]
-categories = ["finance", "cryptography", "data-structures"]
+keywords = ["bitcoin", "wallet", "amount", "ismine", "satoshis"]
+categories = ["cryptography", "finance", "network-programming"]
 
 [package.metadata]
 cpp-authors = [

@@ -18,10 +18,10 @@ workspace = true
 
 [package]
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
-categories = ["memory-management", "data-structures", "development-tools"]
-description = "A high-performance arena allocator crate providing efficient memory management with minimal fragmentation for predictable allocation patterns."
+categories = ["memory-management", "algorithms", "cryptography", "science"]
+description = "Low-level best-fit arena allocator over caller-supplied memory, with coalescing free lists, allocation statistics, and pointer-based interfaces suitable for high-performance Bitcoin and blockchain infrastructure."
 edition = "2024"
-keywords = ["arena", "allocator", "memory", "performance", "fragmentation"]
+keywords = ["arenaallocator", "memorypool", "bitcoin", "blockchain", "allocator"]
 license = "MIT"
 name = "bitcoin-arena"
 version = "0.1.3"
