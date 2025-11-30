@@ -24,7 +24,7 @@ impl UnlockFile for PosixEnv {
             // than a reference to it; otherwise the concrete type seen by `Any`
             // would be `&dyn FileLock` instead of `PosixFileLock`, and the
             // subsequent `downcast_ref` would always fail.
-            let any_ref: &dyn std::any::Any = filelock_ref as &dyn std::any::Any;
+            let any_ref: &dyn std::any::Any = &filelock_ref as &dyn std::any::Any;
 
             let posix_lock = any_ref
                 .downcast_ref::<PosixFileLock>()
