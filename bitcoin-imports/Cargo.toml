@@ -1,191 +1,69 @@
 [build-dependencies.scan-crate-for-typedefs]
 workspace = true
 
-[dependencies.atomic]
-workspace = true
-
-[dependencies.atomic-take]
-workspace = true
-
-[dependencies.atomic_float]
-workspace = true
-
-[dependencies.bincode]
-workspace = true
-
-[dependencies.bitflags]
-workspace = true
-
-[dependencies.bitset]
-workspace = true
-
-[dependencies.chrono]
-workspace = true
-
-[dependencies.comparator]
-workspace = true
-
-[dependencies.const-default]
-workspace = true
-
-[dependencies.crossbeam]
-workspace = true
-
-[dependencies.delegate]
-workspace = true
-
-[dependencies.derivative]
-workspace = true
-
-[dependencies.derive_builder]
-workspace = true
-
-[dependencies.disable_macro]
-workspace = true
-
-[dependencies.errno]
-workspace = true
-
-[dependencies.export-magic]
-workspace = true
-
-[dependencies.float-ord]
-workspace = true
-
-[dependencies.fs2]
-workspace = true
-
-[dependencies.getset]
-workspace = true
-
-[dependencies.hashbrown]
-workspace = true
-
-[dependencies.indoc]
-workspace = true
-
-[dependencies.integer-encoding]
-workspace = true
-
-[dependencies.lazy_static]
-workspace = true
-
-[dependencies.libc]
-workspace = true
-
-[dependencies.libc-stdhandle]
-workspace = true
-
-[dependencies.libevent]
-workspace = true
-
-[dependencies.libevent-sys]
-workspace = true
-
-[dependencies.lock_api]
-workspace = true
-
-[dependencies.maplit]
-workspace = true
-
-[dependencies.modular-bitfield]
-workspace = true
-
-[dependencies.modular-bitfield-impl]
-workspace = true
-
-[dependencies.multimap]
-workspace = true
-
-[dependencies.multiset]
-workspace = true
-
-[dependencies.named-item]
-workspace = true
-
-[dependencies.nix]
-workspace = true
-
-[dependencies.num]
-workspace = true
-
-[dependencies.once_cell]
-workspace = true
-
-[dependencies.parking_lot]
-workspace = true
-
-[dependencies.phf]
-workspace = true
-
-[dependencies.pnet_sys]
-workspace = true
-
-[dependencies.priority-queue]
-workspace = true
-
-[dependencies.quanta]
-workspace = true
-
-[dependencies.rand]
-workspace = true
-
-[dependencies.same-file]
-workspace = true
-
-[dependencies.serde]
-workspace = true
-
-[dependencies.serde-big-array]
-workspace = true
-
-[dependencies.serde_test]
-workspace = true
-
-[dependencies.shared-mutex]
-workspace = true
-
-[dependencies.socket2]
-workspace = true
-
-[dependencies.sqlite]
-workspace = true
-
-[dependencies.sqlite3]
-workspace = true
-
-[dependencies.static_assertions]
-workspace = true
-
-[dependencies.thiserror]
-workspace = true
-
-[dependencies.time]
-workspace = true
-
-[dependencies.time-point]
-workspace = true
-
-[dependencies.tinyvec]
-workspace = true
-
-[dependencies.traced-test]
-workspace = true
-
-[dependencies.tracing]
-workspace = true
-
-[dependencies.tracing-setup]
-workspace = true
-
-[dependencies.tracing-subscriber]
-workspace = true
-
-[dependencies.try-catch]
-workspace = true
-
-[dependencies.winapi]
-workspace = true
+[dependencies]
+atomic-take.workspace           = true
+atomic.workspace                = true
+atomic_float.workspace          = true
+bincode.workspace               = true
+bitflags.workspace              = true
+bitset.workspace                = true
+chrono.workspace                = true
+comparator.workspace            = true
+const-default.workspace         = true
+crossbeam.workspace             = true
+delegate.workspace              = true
+derivative.workspace            = true
+derive_builder.workspace        = true
+disable_macro.workspace         = true
+errno.workspace                 = true
+export-magic.workspace          = true
+float-ord.workspace             = true
+fs2.workspace                   = true
+getset.workspace                = true
+hashbrown.workspace             = true
+indoc.workspace                 = true
+integer-encoding.workspace      = true
+lazy_static.workspace           = true
+libc-stdhandle.workspace        = true
+libc.workspace                  = true
+libevent-sys.workspace          = true
+libevent.workspace              = true
+lock_api.workspace              = true
+maplit.workspace                = true
+modular-bitfield-impl.workspace = true
+modular-bitfield.workspace      = true
+multimap.workspace              = true
+multiset.workspace              = true
+named-item.workspace            = true
+nix.workspace                   = true
+num.workspace                   = true
+once_cell.workspace             = true
+parking_lot.workspace           = true
+phf.workspace                   = true
+pnet_sys.workspace              = true
+priority-queue.workspace        = true
+quanta.workspace                = true
+rand.workspace                  = true
+same-file.workspace             = true
+serde-big-array.workspace       = true
+serde.workspace                 = true
+serde_test.workspace            = true
+shared-mutex.workspace          = true
+socket2.workspace               = true
+sqlite.workspace                = true
+sqlite3.workspace               = true
+static_assertions.workspace     = true
+thiserror.workspace             = true
+time-point.workspace            = true
+time.workspace                  = true
+tinyvec.workspace               = true
+traced-test.workspace           = true
+tracing-setup.workspace         = true
+tracing-subscriber.workspace    = true
+tracing.workspace               = true
+try-catch.workspace             = true
+winapi.workspace                = true
 
 [package]
 authors = ["klebs <none>"]
