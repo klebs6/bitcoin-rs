@@ -1,12 +1,3 @@
-[dependencies]
-tracing.workspace        = true
-getset.workspace         = true
-derive_builder.workspace = true
-disable_macro.workspace  = true
-
-[dev-dependencies]
-tempfile.workspace = true
-
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"
@@ -33,7 +24,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-log]
 path = "../bitcoin-log"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-sha256]
 path = "../bitcoin-sha256"
@@ -55,6 +46,21 @@ version = "0.1.18"
 path = "../bitcoin-u256"
 version = "0.1.18"
 
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.disable_macro]
+workspace = true
+
+[dependencies.getset]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+
+[dev-dependencies.tempfile]
+workspace = true
+
 [package]
 authors = ["klebs <none>"]
 description = "random numbers in bitcoin"
@@ -63,7 +69,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-random"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

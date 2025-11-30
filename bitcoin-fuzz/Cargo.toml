@@ -4,11 +4,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-addr]
 path = "../bitcoin-addr"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-addrman]
 path = "../bitcoin-addrman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
@@ -16,7 +16,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-autofile]
 path = "../bitcoin-autofile"
@@ -24,7 +24,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-banman]
 path = "../bitcoin-banman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
@@ -32,15 +32,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-chain-consensus]
 path = "../bitcoin-chain-consensus"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-coinsview]
 path = "../bitcoin-coinsview"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -52,7 +52,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-http]
 path = "../bitcoin-http"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
@@ -60,15 +60,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-index]
 path = "../bitcoin-index"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
@@ -76,15 +76,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-node]
 path = "../bitcoin-node"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-peerman]
 path = "../bitcoin-peerman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
@@ -100,7 +100,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-service]
 path = "../bitcoin-service"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-sock]
 path = "../bitcoin-sock"
@@ -116,11 +116,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-test]
 path = "../bitcoin-test"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-tor]
 path = "../bitcoin-tor"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
@@ -128,11 +128,11 @@ version = "0.1.20"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-txmempoolentry]
 path = "../bitcoin-txmempoolentry"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
@@ -152,7 +152,7 @@ version = "0.1.18"
 
 [dependencies.bitcoinchain-notifications]
 path = "../bitcoinchain-notifications"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinsecp256k1-ec]
 path = "../bitcoinsecp256k1-ec"
@@ -191,7 +191,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-fuzz"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.20"
+version = "0.1.21"
 
 [package.metadata]
 cpp-authors = [

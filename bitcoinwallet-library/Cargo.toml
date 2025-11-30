@@ -4,7 +4,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
@@ -12,11 +12,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-coinsview]
 path = "../bitcoin-coinsview"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-crypter]
 path = "../bitcoin-crypter"
@@ -28,7 +28,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-fees]
 path = "../bitcoin-fees"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-hash]
 path = "../bitcoin-hash"
@@ -44,7 +44,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
@@ -52,11 +52,11 @@ version = "0.1.19"
 
 [dependencies.bitcoin-psbt]
 path = "../bitcoin-psbt"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-sam]
 path = "../bitcoin-sam"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
@@ -64,11 +64,11 @@ version = "0.1.20"
 
 [dependencies.bitcoin-scriptpubkeyman]
 path = "../bitcoin-scriptpubkeyman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-signingprovider]
 path = "../bitcoin-signingprovider"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
@@ -84,7 +84,7 @@ version = "0.1.20"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
@@ -96,27 +96,27 @@ version = "0.1.18"
 
 [dependencies.bitcoin-walletdb]
 path = "../bitcoin-walletdb"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinchain-interface]
 path = "../bitcoinchain-interface"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinchain-notifications]
 path = "../bitcoinchain-notifications"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinwallet-context]
 path = "../bitcoinwallet-context"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinwallet-feature]
 path = "../bitcoinwallet-feature"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.20"
+version = "0.1.21"
 
 [package]
 authors = ["klebs <none>"]
@@ -126,7 +126,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-library"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.20"
+version = "0.1.21"
 
 [package.metadata]
 cpp-authors = [

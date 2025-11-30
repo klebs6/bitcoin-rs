@@ -8,7 +8,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-coincontrol]
 path = "../bitcoin-coincontrol"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -20,7 +20,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
@@ -28,7 +28,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-remote]
 path = "../bitcoin-remote"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
@@ -36,11 +36,11 @@ version = "0.1.20"
 
 [dependencies.bitcoin-scriptpubkeyman]
 path = "../bitcoin-scriptpubkeyman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-signingprovider]
 path = "../bitcoin-signingprovider"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
@@ -60,23 +60,23 @@ version = "0.1.19"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinrpc-util]
 path = "../bitcoinrpc-util"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinwallet-context]
 path = "../bitcoinwallet-context"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoinwallet-library]
 path = "../bitcoinwallet-library"
-version = "0.1.20"
+version = "0.1.21"
 
 [package]
 authors = ["klebs <none>"]
@@ -86,7 +86,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinrpc-wallet"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.20"
+version = "0.1.21"
 
 [package.metadata]
 cpp-authors = [

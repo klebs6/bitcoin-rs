@@ -8,11 +8,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-db]
 path = "../bitcoin-db"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -32,7 +32,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-index]
 path = "../bitcoin-index"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
@@ -44,7 +44,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
@@ -58,7 +58,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-blockfilter"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.20"
+version = "0.1.21"
 
 [package.metadata]
 cpp-authors = [

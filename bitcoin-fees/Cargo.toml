@@ -20,18 +20,34 @@ version = "0.1.18"
 
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
-version = "0.1.19"
+version = "0.1.20"
 
-[dependencies]
-tracing.workspace           = true
-serde.workspace             = true
-getset.workspace            = true
-derive_builder.workspace    = true
-lazy_static.workspace       = true
-static_assertions.workspace = true
-float-ord.workspace = true
-export-magic.workspace      = true
-bitcoin-tx-confirm-stats = { path = "../bitcoin-tx-confirm-stats" }
+[dependencies.bitcoin-tx-confirm-stats]
+path = "../bitcoin-tx-confirm-stats"
+
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.export-magic]
+workspace = true
+
+[dependencies.float-ord]
+workspace = true
+
+[dependencies.getset]
+workspace = true
+
+[dependencies.lazy_static]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+
+[dependencies.static_assertions]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
 
 [package]
 authors = ["klebs <none>"]
@@ -41,7 +57,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-fees"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [
