@@ -4,11 +4,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-bloom]
 path = "../bitcoin-bloom"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-client-ui]
 path = "../bitcoin-client-ui"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-dns]
 path = "../bitcoin-dns"
@@ -24,7 +24,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
@@ -32,7 +32,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-settings]
 path = "../bitcoin-settings"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-subnet]
 path = "../bitcoin-subnet"
@@ -44,7 +44,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
@@ -67,7 +67,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-banman"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

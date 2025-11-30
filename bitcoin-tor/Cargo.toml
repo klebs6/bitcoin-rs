@@ -12,7 +12,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-service]
 path = "../bitcoin-service"
@@ -40,7 +40,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-tor"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

@@ -4,15 +4,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-chain-consensus]
 path = "../bitcoin-chain-consensus"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-coinsview]
 path = "../bitcoin-coinsview"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-db]
 path = "../bitcoin-db"
@@ -28,7 +28,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
@@ -44,7 +44,7 @@ version = "0.1.18"
 
 [dependencies.bitcoinchain-params]
 path = "../bitcoinchain-params"
-version = "0.1.18"
+version = "0.1.20"
 
 [package]
 authors = ["klebs <none>"]
@@ -54,7 +54,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-blockman"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

@@ -8,27 +8,27 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-blockman]
 path = "../bitcoin-blockman"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-blockpolicy]
 path = "../bitcoin-blockpolicy"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-chain-consensus]
 path = "../bitcoin-chain-consensus"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-coinsview]
 path = "../bitcoin-coinsview"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-db]
 path = "../bitcoin-db"
@@ -60,15 +60,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-packages]
 path = "../bitcoin-packages"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-rbf]
 path = "../bitcoin-rbf"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-sam]
 path = "../bitcoin-sam"
@@ -80,11 +80,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-settings]
 path = "../bitcoin-settings"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
@@ -96,11 +96,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-txmempoolentry]
 path = "../bitcoin-txmempoolentry"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
@@ -108,7 +108,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-validation]
 path = "../bitcoin-validation"
@@ -143,7 +143,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-txmempool"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

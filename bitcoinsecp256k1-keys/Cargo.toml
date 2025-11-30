@@ -12,15 +12,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-secp256k1]
 path = "../bitcoin-secp256k1"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoinsecp256k1-ec]
 path = "../bitcoinsecp256k1-ec"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoinsecp256k1-group]
 path = "../bitcoinsecp256k1-group"
@@ -38,7 +38,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinsecp256k1-keys"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

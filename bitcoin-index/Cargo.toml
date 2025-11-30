@@ -15,7 +15,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-db]
 path = "../bitcoin-db"
@@ -39,11 +39,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
@@ -55,19 +55,19 @@ version = "0.1.18"
 
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinchain-interface]
 path = "../bitcoinchain-interface"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoinchain-notifications]
 path = "../bitcoinchain-notifications"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -83,7 +83,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-index"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

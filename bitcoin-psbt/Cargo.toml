@@ -28,11 +28,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
@@ -40,7 +40,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-signingprovider]
 path = "../bitcoin-signingprovider"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
@@ -48,7 +48,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
@@ -60,7 +60,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
@@ -83,7 +83,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-psbt"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

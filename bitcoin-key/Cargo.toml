@@ -28,7 +28,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoinleveldb-table]
 path = "../bitcoinleveldb-table"
@@ -42,7 +42,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-key"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

@@ -4,7 +4,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-addrman]
 path = "../bitcoin-addrman"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
@@ -12,15 +12,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-coinselect]
 path = "../bitcoin-coinselect"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -32,11 +32,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
@@ -44,19 +44,19 @@ version = "0.1.18"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-test]
 path = "../bitcoin-test"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
@@ -64,15 +64,15 @@ version = "0.1.18"
 
 [dependencies.bitcoinnode-interface]
 path = "../bitcoinnode-interface"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinwallet-library]
 path = "../bitcoinwallet-library"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -88,7 +88,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-bench"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

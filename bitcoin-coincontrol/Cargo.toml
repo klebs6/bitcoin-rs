@@ -12,15 +12,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-blockman]
 path = "../bitcoin-blockman"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-coinsview]
 path = "../bitcoin-coinsview"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -40,7 +40,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-index]
 path = "../bitcoin-index"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-muhash]
 path = "../bitcoin-muhash"
@@ -48,15 +48,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-signingprovider]
 path = "../bitcoin-signingprovider"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
@@ -70,7 +70,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-coincontrol"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

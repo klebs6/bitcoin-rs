@@ -24,7 +24,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-mem]
 path = "../bitcoin-mem"
@@ -32,7 +32,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-secp256k1]
 path = "../bitcoin-secp256k1"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
@@ -60,7 +60,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
@@ -68,7 +68,7 @@ version = "0.1.18"
 
 [dependencies.bitcoinsecp256k1-keys]
 path = "../bitcoinsecp256k1-keys"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.modular-bitfield]
 version = "0.11.2"
@@ -89,7 +89,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-scripting"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

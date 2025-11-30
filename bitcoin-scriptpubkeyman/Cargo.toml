@@ -4,11 +4,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-coinsview]
 path = "../bitcoin-coinsview"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-crypter]
 path = "../bitcoin-crypter"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -20,7 +20,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-hdchain]
 path = "../bitcoin-hdchain"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
@@ -28,19 +28,19 @@ version = "0.1.18"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-psbt]
 path = "../bitcoin-psbt"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-signingprovider]
 path = "../bitcoin-signingprovider"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
@@ -52,7 +52,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
@@ -60,11 +60,11 @@ version = "0.1.18"
 
 [dependencies.bitcoinwallet-feature]
 path = "../bitcoinwallet-feature"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.19"
+version = "0.1.20"
 
 [package]
 authors = ["klebs <none>"]
@@ -74,7 +74,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-scriptpubkeyman"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

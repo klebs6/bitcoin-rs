@@ -8,11 +8,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-banman]
 path = "../bitcoin-banman"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
@@ -20,11 +20,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-client-ui]
 path = "../bitcoin-client-ui"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -36,15 +36,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-index]
 path = "../bitcoin-index"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
@@ -52,15 +52,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-node]
 path = "../bitcoin-node"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-peerman]
 path = "../bitcoin-peerman"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-psbt]
 path = "../bitcoin-psbt"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-sam]
 path = "../bitcoin-sam"
@@ -68,11 +68,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-signingprovider]
 path = "../bitcoin-signingprovider"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
@@ -88,11 +88,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
@@ -100,31 +100,31 @@ version = "0.1.18"
 
 [dependencies.bitcoinchain-params]
 path = "../bitcoinchain-params"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinnode-interface]
 path = "../bitcoinnode-interface"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinnode-stats]
 path = "../bitcoinnode-stats"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinrpc-util]
 path = "../bitcoinrpc-util"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoinwallet-library]
 path = "../bitcoinwallet-library"
-version = "0.1.18"
+version = "0.1.20"
 
 [package]
 authors = ["klebs <none>"]
@@ -134,7 +134,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-qt"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

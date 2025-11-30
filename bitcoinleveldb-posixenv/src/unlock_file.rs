@@ -14,17 +14,19 @@ impl UnlockFile for PosixEnv {
             "PosixEnv::unlock_file: lock pointer must not be null"
         );
 
-        // Extract the fd and filename from the underlying PosixFileLock without
-        // taking ownership yet.
+        // Inspect the underlying PosixFileLock without taking ownership yet.
         let (fd, filename) = unsafe {
             let lock_ref: &Box<dyn FileLock> = &*lock;
             let filelock_ref: &dyn FileLock = lock_ref.as_ref();
 
-            let any_ref = &filelock_ref as &dyn std::any::Any;
+            // Upcast the trait object to `Any` so we can recover the concrete type.
+            let any_ref: &dyn std::any::Any = &filelock_ref as &dyn std::any::Any;
 
             let posix_lock = any_ref
                 .downcast_ref::<PosixFileLock>()
-                .expect("PosixEnv::unlock_file: underlying FileLock is not PosixFileLock");
+                .expect(
+                    "PosixEnv::unlock_file: underlying FileLock is not PosixFileLock",
+                );
 
             let fd = posix_lock.fd();
             let name = posix_lock.filename().clone();
@@ -53,13 +55,18 @@ impl UnlockFile for PosixEnv {
             return status;
         }
 
+        // Remove from the process-local lock table first so we never re-use this
+        // filename entry after the OS-level lock and descriptor are gone.
         self.locks_mut().remove(&filename);
 
         unsafe {
+            // Best-effort close; the Status we already returned reflects the
+            // fcntl() result, which is what leveldb cares about for locking.
             libc::close(fd);
 
-            // Reconstruct the Box<Box<dyn FileLock>> that we previously created
-            // in lock_file() and drop it to release all heap allocations.
+            // Reconstruct the Box<Box<dyn FileLock>> that was allocated by
+            // store_posix_env_boxed_result in lock_file(), then drop it to
+            // release all heap allocations associated with this lock handle.
             let outer: Box<Box<dyn FileLock>> = Box::from_raw(lock);
             drop(outer);
         }
