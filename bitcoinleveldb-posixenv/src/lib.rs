@@ -1,7 +1,6 @@
 // ---------------- [ File: bitcoinleveldb-posixenv/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-
 x!{background_thread_entry_point}
 x!{background_thread_main}
 x!{background_work}
@@ -30,3 +29,4 @@ x!{start_thread}
 x!{store_posix_env_boxed_result}
 x!{unlock_file}
 x!{test_util}
+x!{perform_posix_file_lock_operation}

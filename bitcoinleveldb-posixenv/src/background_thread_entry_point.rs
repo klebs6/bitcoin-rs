@@ -33,3 +33,20 @@ impl PosixEnv {
         );
     }
 }
+
+#[cfg(test)]
+mod background_thread_entry_point_tests {
+    use super::*;
+
+    #[traced_test]
+    fn background_thread_entry_point_panics_on_null_env_pointer() {
+        let result = std::panic::catch_unwind(|| {
+            PosixEnv::background_thread_entry_point(std::ptr::null_mut());
+        });
+
+        assert!(
+            result.is_err(),
+            "background_thread_entry_point should panic when invoked with a null env pointer"
+        );
+    }
+}

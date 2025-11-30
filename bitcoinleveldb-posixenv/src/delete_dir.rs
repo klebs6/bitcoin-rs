@@ -29,3 +29,56 @@ impl DeleteDir for PosixEnv {
         }
     }
 }
+
+#[cfg(test)]
+mod posix_env_delete_dir_tests {
+    use super::*;
+
+    fn unique_directory_for_deletion() -> String {
+        let base = std::env::temp_dir();
+        let name = format!(
+            "bitcoinleveldb-posixenv-delete-dir-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos(),
+        );
+        base.join(name).to_string_lossy().to_string()
+    }
+
+    #[traced_test]
+    fn delete_dir_removes_empty_directory() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let dirname = unique_directory_for_deletion();
+
+        std::fs::create_dir(&dirname)
+            .expect("precondition: create_dir should succeed");
+
+        let status = env.delete_dir(&dirname);
+
+        assert!(
+            status.is_ok(),
+            "delete_dir should succeed for an empty directory: {}",
+            status.to_string()
+        );
+
+        assert!(
+            std::fs::metadata(&dirname).is_err(),
+            "directory should no longer exist after successful delete_dir"
+        );
+    }
+
+    #[traced_test]
+    fn delete_dir_on_nonexistent_directory_reports_error() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+
+        let dirname = unique_directory_for_deletion();
+
+        let status = env.delete_dir(&dirname);
+
+        assert!(
+            !status.is_ok(),
+            "delete_dir on a non-existent directory should return non-OK Status"
+        );
+    }
+}

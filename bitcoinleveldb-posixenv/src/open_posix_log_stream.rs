@@ -57,3 +57,56 @@ pub fn open_posix_log_stream(
 
     Ok(fp)
 }
+
+#[cfg(test)]
+mod open_posix_log_stream_tests {
+    use super::*;
+
+    fn unique_log_stream_file_path() -> String {
+        let base = std::env::temp_dir();
+        let name = format!(
+            "bitcoinleveldb-posixenv-open-posix-log-stream-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos(),
+        );
+        base.join(name).to_string_lossy().to_string()
+    }
+
+    #[traced_test]
+    fn open_posix_log_stream_wraps_file_descriptor_in_libc_file() {
+        let filename = unique_log_stream_file_path();
+
+        let flags = libc::O_APPEND | libc::O_WRONLY | libc::O_CREAT | OPEN_BASE_FLAGS;
+        let mode: libc::mode_t = 0o644;
+
+        let fd = open_posix_file_descriptor(
+            "open_posix_log_stream_tests::open_fd",
+            &filename,
+            flags,
+            mode,
+        )
+        .expect("precondition: open_posix_file_descriptor must succeed");
+
+        let fp = open_posix_log_stream(
+            "open_posix_log_stream_tests::fdopen",
+            &filename,
+            fd,
+            "w",
+        )
+        .expect("open_posix_log_stream must succeed for valid fd and mode string");
+
+        assert!(
+            !fp.is_null(),
+            "open_posix_log_stream must return a non-null FILE* on success"
+        );
+
+        unsafe {
+            libc::fclose(fp);
+        }
+
+        let _ = std::fs::remove_file(&filename);
+    }
+}
+

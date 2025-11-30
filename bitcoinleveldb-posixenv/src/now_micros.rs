@@ -59,3 +59,22 @@ impl NowMicros for PosixEnv {
         micros
     }
 }
+
+#[cfg(test)]
+mod posix_env_now_micros_tests {
+    use super::*;
+
+    #[traced_test]
+    fn now_micros_returns_monotonic_non_decreasing_values() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+
+        let t1 = env.now_micros();
+        std::thread::sleep(std::time::Duration::from_millis(10));
+        let t2 = env.now_micros();
+
+        assert!(
+            t2 >= t1,
+            "now_micros should be monotonic non-decreasing; t1 = {t1}, t2 = {t2}"
+        );
+    }
+}

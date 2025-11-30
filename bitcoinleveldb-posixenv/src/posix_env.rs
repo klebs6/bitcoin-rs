@@ -79,3 +79,28 @@ impl Drop for PosixEnv {
         std::process::abort();
     }
 }
+
+#[cfg(test)]
+mod posix_env_core_tests {
+    use super::*;
+
+    #[traced_test]
+    fn posix_env_default_constructs_usable_limiters_and_background_mutex() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+
+        {
+            let _guard = env.background_work_mutex_mut().lock();
+        }
+
+        let acquired_mmap = env.mmap_limiter_mut().acquire();
+        if acquired_mmap {
+            env.mmap_limiter_mut().release();
+        }
+
+        let acquired_fd = env.fd_limiter_mut().acquire();
+        if acquired_fd {
+            env.fd_limiter_mut().release();
+        }
+    }
+}
+

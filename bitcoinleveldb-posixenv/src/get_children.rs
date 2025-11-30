@@ -69,3 +69,76 @@ impl GetChildren for PosixEnv {
         crate::Status::ok()
     }
 }
+
+#[cfg(test)]
+mod posix_env_get_children_tests {
+    use super::*;
+
+    fn unique_directory_for_children() -> String {
+        let base = std::env::temp_dir();
+        let name = format!(
+            "bitcoinleveldb-posixenv-get-children-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos(),
+        );
+        base.join(name).to_string_lossy().to_string()
+    }
+
+    #[traced_test]
+    fn get_children_lists_directory_entries() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let dirname = unique_directory_for_children();
+
+        std::fs::create_dir(&dirname)
+            .expect("precondition: create_dir should succeed");
+
+        let file_a = format!("{}/child_a.txt", dirname);
+        let file_b = format!("{}/child_b.txt", dirname);
+
+        std::fs::write(&file_a, b"a").expect("precondition: write child_a");
+        std::fs::write(&file_b, b"b").expect("precondition: write child_b");
+
+        let mut entries = Vec::<String>::new();
+
+        let status = env.get_children(&dirname, &mut entries as *mut Vec<String>);
+
+        assert!(
+            status.is_ok(),
+            "get_children should succeed for a valid directory: {}",
+            status.to_string()
+        );
+
+        entries.sort();
+
+        assert!(
+            entries.contains(&"child_a.txt".to_owned()),
+            "get_children results should include child_a.txt; got: {:?}",
+            entries
+        );
+        assert!(
+            entries.contains(&"child_b.txt".to_owned()),
+            "get_children results should include child_b.txt; got: {:?}",
+            entries
+        );
+
+        let _ = std::fs::remove_file(&file_a);
+        let _ = std::fs::remove_file(&file_b);
+        let _ = std::fs::remove_dir(&dirname);
+    }
+
+    #[traced_test]
+    fn get_children_returns_error_for_missing_directory() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let dirname = unique_directory_for_children();
+        let mut entries = Vec::<String>::new();
+
+        let status = env.get_children(&dirname, &mut entries as *mut Vec<String>);
+
+        assert!(
+            !status.is_ok(),
+            "get_children should fail for non-existent directory"
+        );
+    }
+}

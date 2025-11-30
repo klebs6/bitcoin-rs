@@ -52,3 +52,33 @@ impl GetTestDirectory for PosixEnv {
         crate::Status::ok()
     }
 }
+
+#[cfg(test)]
+mod posix_env_get_test_directory_tests {
+    use super::*;
+
+    #[traced_test]
+    fn get_test_directory_returns_non_empty_path_and_is_creatable() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let mut path = String::new();
+
+        let status =
+            env.get_test_directory(&mut path as *mut String);
+
+        assert!(
+            status.is_ok(),
+            "get_test_directory should succeed: {}",
+            status.to_string()
+        );
+
+        assert!(
+            !path.is_empty(),
+            "get_test_directory must store a non-empty path in the out parameter"
+        );
+
+        if std::fs::metadata(&path).is_err() {
+            std::fs::create_dir_all(&path)
+                .expect("get_test_directory must return a path that is creatable");
+        }
+    }
+}

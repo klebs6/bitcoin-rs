@@ -99,3 +99,58 @@ impl PosixEnv {
         }
     }
 }
+
+#[cfg(test)]
+mod background_thread_main_tests {
+    use super::*;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::time::{Duration, Instant};
+
+    fn background_counter_task(arg: *mut c_void) -> c_void {
+        trace!(?arg, "background_counter_task: invoked");
+
+        assert!(
+            !arg.is_null(),
+            "background_counter_task: expected non-null argument"
+        );
+
+        unsafe {
+            let counter = &*(arg as *const AtomicUsize);
+            let prev    = counter.fetch_add(1, Ordering::SeqCst);
+
+            debug!(
+                previous = prev,
+                current  = prev + 1,
+                "background_counter_task: incremented counter"
+            );
+        }
+
+        unsafe { std::mem::zeroed() }
+    }
+
+    #[traced_test]
+    fn background_thread_main_executes_scheduled_work_items() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+
+        let counter: &'static AtomicUsize =
+            Box::leak(Box::new(AtomicUsize::new(0)));
+
+        let counter_ptr = counter as *const AtomicUsize as *mut c_void;
+
+        env.schedule(background_counter_task, counter_ptr);
+
+        let deadline = Instant::now() + Duration::from_secs(2);
+
+        while counter.load(Ordering::SeqCst) == 0 && Instant::now() < deadline {
+            std::thread::sleep(Duration::from_millis(10));
+        }
+
+        let final_value = counter.load(Ordering::SeqCst);
+
+        assert!(
+            final_value >= 1,
+            "expected background worker to execute at least one scheduled task, \
+             final counter value was {final_value}"
+        );
+    }
+}

@@ -45,23 +45,4 @@ NewSequentialFile
 + GetTestDirectory
 + NewLogger
 + NowMicros
-+ SleepForMicroseconds {
-
-    fn new_appendable_file(
-        &mut self,
-        fname:  &String,
-        _result: *mut *mut Box<dyn WritableFile>,
-    ) -> Status {
-        trace!(
-            file = %fname,
-            "Env::new_appendable_file default: returning Status::not_supported"
-        );
-
-        let op_name  = "NewAppendableFile".to_string();
-        let msg1     = Slice::from(&op_name);
-        let msg2     = Slice::from(fname);
-
-        Status::not_supported(&msg1, Some(&msg2))
-    }
-
-}
++ SleepForMicroseconds { }

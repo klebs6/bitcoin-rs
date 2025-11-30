@@ -9,7 +9,6 @@ use bitcoin_imports::*;
 #[traced_test]
 fn env_test_reopen_appendable_file() {
     use std::cmp;
-    use std::ptr;
 
     trace!("env_test_reopen_appendable_file: start");
 
@@ -48,14 +47,10 @@ fn env_test_reopen_appendable_file() {
     }
 
     // ---- First creation: appendable, write "hello world!", close. ----
-    let mut appendable_file_ptr: *mut Box<dyn WritableFile> = ptr::null_mut();
+    let mut appendable_file_ptr: *mut Box<dyn WritableFile> = std::ptr::null_mut();
     {
         let mut env = env_rc.borrow_mut();
-        let status = bitcoinleveldb_env::Env::new_appendable_file(
-            &mut *env,
-            &test_file_name,
-            &mut appendable_file_ptr,
-        );
+        let status = env.new_appendable_file(&test_file_name, &mut appendable_file_ptr);
         assert!(
             status.is_ok(),
             "NewAppendableFile (first open) failed: {}",
@@ -90,14 +85,10 @@ fn env_test_reopen_appendable_file() {
     drop(appendable_holder);
 
     // ---- Second creation: appendable, write "42" (appends), close. ----
-    let mut appendable_file_ptr2: *mut Box<dyn WritableFile> = ptr::null_mut();
+    let mut appendable_file_ptr2: *mut Box<dyn WritableFile> = std::ptr::null_mut();
     {
         let mut env = env_rc.borrow_mut();
-        let status = bitcoinleveldb_env::Env::new_appendable_file(
-            &mut *env,
-            &test_file_name,
-            &mut appendable_file_ptr2,
-        );
+        let status = env.new_appendable_file(&test_file_name, &mut appendable_file_ptr2);
         assert!(
             status.is_ok(),
             "NewAppendableFile (second open) failed: {}",
@@ -148,7 +139,7 @@ fn env_test_reopen_appendable_file() {
         "env_test_reopen_appendable_file: reading back contents"
     );
 
-    let mut sequential_file_ptr: *mut Box<dyn SequentialFile> = ptr::null_mut();
+    let mut sequential_file_ptr: *mut Box<dyn SequentialFile> = std::ptr::null_mut();
     {
         let mut env = env_rc.borrow_mut();
         let status = env.new_sequential_file(&test_file_name, &mut sequential_file_ptr);

@@ -46,3 +46,65 @@ impl GetFileSize for PosixEnv {
         }
     }
 }
+
+#[cfg(test)]
+mod posix_env_get_file_size_tests {
+    use super::*;
+
+    fn unique_file_for_size_check() -> String {
+        let base = std::env::temp_dir();
+        let name = format!(
+            "bitcoinleveldb-posixenv-get-file-size-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos(),
+        );
+        base.join(name).to_string_lossy().to_string()
+    }
+
+    #[traced_test]
+    fn get_file_size_returns_exact_size_of_existing_file() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let filename = unique_file_for_size_check();
+
+        let payload = b"0123456789abcdef";
+        std::fs::write(&filename, payload)
+            .expect("precondition: write should succeed");
+
+        let mut size: u64 = 0;
+        let status = env.get_file_size(&filename, &mut size as *mut u64);
+
+        assert!(
+            status.is_ok(),
+            "get_file_size should succeed for existing file: {}",
+            status.to_string()
+        );
+
+        assert_eq!(
+            size,
+            payload.len() as u64,
+            "get_file_size should report exact number of bytes written"
+        );
+
+        let _ = std::fs::remove_file(&filename);
+    }
+
+    #[traced_test]
+    fn get_file_size_sets_zero_and_reports_error_for_missing_file() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let filename = unique_file_for_size_check();
+
+        let mut size: u64 = 12345;
+        let status = env.get_file_size(&filename, &mut size as *mut u64);
+
+        assert!(
+            !status.is_ok(),
+            "get_file_size should fail for a missing file"
+        );
+        assert_eq!(
+            size, 0,
+            "get_file_size must set the out-parameter size to zero on failure"
+        );
+    }
+}

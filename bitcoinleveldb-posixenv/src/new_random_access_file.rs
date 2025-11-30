@@ -152,3 +152,54 @@ impl NewRandomAccessFile for PosixEnv {
         store_posix_env_boxed_result::<dyn RandomAccessFile>(CALLER, result, inner)
     }
 }
+
+#[cfg(test)]
+mod posix_env_new_random_access_file_tests {
+    use super::*;
+
+    fn unique_random_access_file_path() -> String {
+        let base = std::env::temp_dir();
+        let name = format!(
+            "bitcoinleveldb-posixenv-new-random-access-file-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos(),
+        );
+        base.join(name).to_string_lossy().to_string()
+    }
+
+    #[traced_test]
+    fn new_random_access_file_opens_existing_file() {
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let filename = unique_random_access_file_path();
+
+        let contents = b"random-access-payload";
+        std::fs::write(&filename, contents)
+            .expect("precondition: write should succeed");
+
+        let mut handle: *mut Box<dyn RandomAccessFile> = std::ptr::null_mut();
+
+        let status = env.new_random_access_file(
+            &filename,
+            &mut handle as *mut *mut Box<dyn RandomAccessFile>,
+        );
+
+        assert!(
+            status.is_ok(),
+            "new_random_access_file should succeed for an existing file: {}",
+            status.to_string()
+        );
+        assert!(
+            !handle.is_null(),
+            "new_random_access_file must populate the out-parameter with a non-null handle"
+        );
+
+        unsafe {
+            let boxed: Box<Box<dyn RandomAccessFile>> = Box::from_raw(handle);
+            drop(boxed);
+        }
+
+        let _ = std::fs::remove_file(&filename);
+    }
+}
