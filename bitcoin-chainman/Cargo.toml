@@ -8,7 +8,7 @@ version = "0.1.21"
 
 [dependencies.bitcoin-blockman]
 path = "../bitcoin-blockman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -24,7 +24,7 @@ version = "0.1.20"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
@@ -32,11 +32,11 @@ version = "0.1.18"
 
 [dependencies.bitcoinchain-interface]
 path = "../bitcoinchain-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinchain-params]
 path = "../bitcoinchain-params"
-version = "0.1.21"
+version = "0.1.22"
 
 [package]
 authors = ["klebs <none>"]
@@ -46,7 +46,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-chainman"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

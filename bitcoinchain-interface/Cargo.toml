@@ -44,7 +44,7 @@ version = "0.1.20"
 
 [dependencies.bitcoin-settings]
 path = "../bitcoin-settings"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
@@ -60,11 +60,11 @@ version = "0.1.18"
 
 [dependencies.bitcoinchain-notifications]
 path = "../bitcoinchain-notifications"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.21"
+version = "0.1.22"
 
 [package]
 authors = ["klebs <none>"]
@@ -74,7 +74,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinchain-interface"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

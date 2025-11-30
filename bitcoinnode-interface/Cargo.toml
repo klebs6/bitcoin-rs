@@ -4,7 +4,7 @@ version = "0.1.20"
 
 [dependencies.bitcoin-banman]
 path = "../bitcoin-banman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
@@ -36,7 +36,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-netmsg]
 path = "../bitcoin-netmsg"
@@ -92,7 +92,7 @@ version = "0.1.19"
 
 [dependencies.bitcoinnode-stats]
 path = "../bitcoinnode-stats"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinnode-txrelay]
 path = "../bitcoinnode-txrelay"
@@ -100,15 +100,15 @@ version = "0.1.21"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-client]
 path = "../bitcoinwallet-client"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [package]
 authors = ["klebs <none>"]
@@ -118,7 +118,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinnode-interface"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

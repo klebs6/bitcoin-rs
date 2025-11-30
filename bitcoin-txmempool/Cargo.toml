@@ -8,7 +8,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
@@ -16,7 +16,7 @@ version = "0.1.21"
 
 [dependencies.bitcoin-blockman]
 path = "../bitcoin-blockman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-blockpolicy]
 path = "../bitcoin-blockpolicy"
@@ -60,7 +60,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-packages]
 path = "../bitcoin-packages"
@@ -84,7 +84,7 @@ version = "0.1.20"
 
 [dependencies.bitcoin-settings]
 path = "../bitcoin-settings"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
@@ -143,7 +143,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-txmempool"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

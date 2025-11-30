@@ -20,7 +20,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-netmsg]
 path = "../bitcoin-netmsg"
@@ -46,7 +46,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinnode-stats"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

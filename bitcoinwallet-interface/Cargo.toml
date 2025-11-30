@@ -8,11 +8,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-banman]
 path = "../bitcoin-banman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
@@ -64,7 +64,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
@@ -136,11 +136,11 @@ version = "0.1.18"
 
 [dependencies.bitcoinnode-stats]
 path = "../bitcoinnode-stats"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-feature]
 path = "../bitcoinwallet-feature"
@@ -154,7 +154,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-interface"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

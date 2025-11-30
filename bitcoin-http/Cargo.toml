@@ -12,7 +12,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
@@ -20,7 +20,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-node]
 path = "../bitcoin-node"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-service]
 path = "../bitcoin-service"
@@ -36,7 +36,7 @@ version = "0.1.19"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -65,7 +65,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-http"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

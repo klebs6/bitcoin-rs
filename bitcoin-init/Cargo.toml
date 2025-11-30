@@ -4,7 +4,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
@@ -20,15 +20,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-index]
 path = "../bitcoin-index"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-sam]
 path = "../bitcoin-sam"
@@ -36,23 +36,23 @@ version = "0.1.20"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinchain-interface]
 path = "../bitcoinchain-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinnode-interface]
 path = "../bitcoinnode-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-client]
 path = "../bitcoinwallet-client"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -68,7 +68,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-init"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

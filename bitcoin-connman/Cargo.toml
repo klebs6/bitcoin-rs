@@ -11,7 +11,7 @@ version = "0.1.20"
 
 [dependencies.bitcoin-addrman]
 path = "../bitcoin-addrman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
@@ -19,11 +19,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-banman]
 path = "../bitcoin-banman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-client-ui]
 path = "../bitcoin-client-ui"
@@ -51,7 +51,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-netmsg]
 path = "../bitcoin-netmsg"
@@ -115,15 +115,15 @@ version = "0.1.18"
 
 [dependencies.bitcoinchain-params]
 path = "../bitcoinchain-params"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinnode-interface]
 path = "../bitcoinnode-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinnode-stats]
 path = "../bitcoinnode-stats"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.parking_lot]
 version = "0.12.1"
@@ -144,7 +144,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-connman"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

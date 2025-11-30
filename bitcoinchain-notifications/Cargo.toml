@@ -20,11 +20,11 @@ version = "0.1.20"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.21"
+version = "0.1.22"
 
 [package]
 authors = ["klebs <none>"]
@@ -34,7 +34,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinchain-notifications"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

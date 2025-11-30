@@ -8,11 +8,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-coincontrol]
 path = "../bitcoin-coincontrol"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-coinselect]
 path = "../bitcoin-coinselect"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -28,7 +28,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
@@ -52,15 +52,15 @@ version = "0.1.18"
 
 [dependencies.bitcoinchain-interface]
 path = "../bitcoinchain-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-library]
 path = "../bitcoinwallet-library"
-version = "0.1.21"
+version = "0.1.22"
 
 [package]
 authors = ["klebs <none>"]
@@ -70,7 +70,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-spend"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

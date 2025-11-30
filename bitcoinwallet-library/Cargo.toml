@@ -4,7 +4,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
@@ -44,7 +44,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
@@ -64,7 +64,7 @@ version = "0.1.20"
 
 [dependencies.bitcoin-scriptpubkeyman]
 path = "../bitcoin-scriptpubkeyman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-signingprovider]
 path = "../bitcoin-signingprovider"
@@ -84,7 +84,7 @@ version = "0.1.20"
 
 [dependencies.bitcoin-txmempool]
 path = "../bitcoin-txmempool"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
@@ -96,19 +96,19 @@ version = "0.1.18"
 
 [dependencies.bitcoin-walletdb]
 path = "../bitcoin-walletdb"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinchain-interface]
 path = "../bitcoinchain-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinchain-notifications]
 path = "../bitcoinchain-notifications"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-context]
 path = "../bitcoinwallet-context"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-feature]
 path = "../bitcoinwallet-feature"
@@ -116,7 +116,7 @@ version = "0.1.21"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [package]
 authors = ["klebs <none>"]
@@ -126,7 +126,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-library"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

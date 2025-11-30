@@ -8,7 +8,7 @@ version = "0.1.18"
 
 [dependencies.bitcoin-cli]
 path = "../bitcoin-cli"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -20,15 +20,15 @@ version = "0.1.18"
 
 [dependencies.bitcoin-index]
 path = "../bitcoin-index"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-init]
 path = "../bitcoin-init"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -47,7 +47,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-daemon"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

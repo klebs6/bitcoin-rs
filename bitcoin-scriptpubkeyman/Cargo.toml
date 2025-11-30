@@ -64,7 +64,7 @@ version = "0.1.21"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [package]
 authors = ["klebs <none>"]
@@ -74,7 +74,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-scriptpubkeyman"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

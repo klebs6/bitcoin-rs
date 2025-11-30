@@ -20,11 +20,11 @@ version = "0.1.18"
 
 [dependencies.bitcoin-walletdb]
 path = "../bitcoin-walletdb"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.sqlite]
 version = "0.25.3"
@@ -40,7 +40,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-sqlite"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [
