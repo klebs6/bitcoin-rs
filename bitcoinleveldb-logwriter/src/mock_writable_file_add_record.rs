@@ -36,9 +36,9 @@ impl MockWritableFileAddRecord {
     }
 }
 
-impl GetName for MockWritableFileAddRecord {
-    fn get_name(&self) -> &'static str {
-        "mock_writable_file_add_record"
+impl Named for MockWritableFileAddRecord {
+    fn name(&self) -> Cow<'_,str> {
+        Cow::Owned("mock_writable_file_add_record".to_string())
     }
 }
 

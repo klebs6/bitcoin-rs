@@ -8,7 +8,7 @@ crate::ix!();
   */
 pub trait RandomAccessFile: 
 RandomAccessFileRead 
-+ GetName {}
++ Named {}
 
 pub trait RandomAccessFileRead {
 

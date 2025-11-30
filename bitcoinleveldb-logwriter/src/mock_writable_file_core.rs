@@ -17,9 +17,9 @@ impl MockWritableFileCore {
     }
 }
 
-impl GetName for MockWritableFileCore {
-    fn get_name(&self) -> &'static str {
-        "mock_writable_file_core"
+impl Named for MockWritableFileCore {
+    fn name(&self) -> Cow<'_,str> {
+        Cow::Owned("mock_writable_file_core".to_string())
     }
 }
 

@@ -1,0 +1,45 @@
+[package]
+name = "bitcoinleveldb-posixseqfile"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+tracing.workspace        = true
+getset.workspace         = true
+derive_builder.workspace = true
+bitcoin-support = { path = "../bitcoin-support" }
+
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+version = "0.1.18"
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.18"
+[dependencies.bitcoinleveldb-env]
+path = "../bitcoinleveldb-env"
+version = "0.1.18"
+[dependencies.bitcoinleveldb-file]
+path = "../bitcoinleveldb-file"
+version = "0.1.18"
+[dependencies.bitcoinleveldb-limiter]
+path = "../bitcoinleveldb-limiter"
+version = "0.1.18"
+[dependencies.bitcoinleveldb-log]
+path = "../bitcoinleveldb-log"
+version = "0.1.18"
+[dependencies.bitcoinleveldb-slice]
+path = "../bitcoinleveldb-slice"
+version = "0.1.18"
+[dependencies.bitcoinleveldb-status]
+path = "../bitcoinleveldb-status"
+version = "0.1.18"
+[dependencies.bitcoinleveldb-util]
+path = "../bitcoinleveldb-util"
+version = "0.1.18"
+

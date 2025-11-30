@@ -9,7 +9,7 @@ crate::ix!();
 pub trait SequentialFile: 
 SequentialFileRead 
 + SequentialFileSkip 
-+ GetName { }
++ Named { }
 
 pub trait SequentialFileRead {
 

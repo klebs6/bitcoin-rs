@@ -126,14 +126,10 @@ impl RPCTimerInterface for HTTPRPCTimerInterface {
 
 }
 
-impl GetName for HTTPRPCTimerInterface {
+impl Name for HTTPRPCTimerInterface {
 
-    fn get_name(&self) -> &'static str {
-        
-        todo!();
-        /*
-            return "HTTP";
-        */
+    fn name(&self) -> Cow<'_,str> {
+        Cow::Owned("HTTP".to_string())
     }
 }
 

@@ -21,6 +21,20 @@ pub fn dump_file(
     
     todo!();
         /*
-        
+            FileType ftype;
+      if (!GuessType(fname, &ftype)) {
+        return Status::InvalidArgument(fname + ": unknown file type");
+      }
+      switch (ftype) {
+        case kLogFile:
+          return DumpLog(env, fname, dst);
+        case kDescriptorFile:
+          return DumpDescriptor(env, fname, dst);
+        case kTableFile:
+          return DumpTable(env, fname, dst);
+        default:
+          break;
+      }
+      return Status::InvalidArgument(fname + ": not a dump-able file type");
         */
 }

@@ -9,5 +9,5 @@ pub trait NewLogger {
       */
     fn new_logger(&mut self, 
             fname:  &String,
-            result: *mut *mut Box<dyn Logger>) -> crate::Status;
+            result: *mut *mut Box<dyn Logger>) -> Status;
 }

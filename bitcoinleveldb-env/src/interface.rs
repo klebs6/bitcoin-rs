@@ -47,22 +47,21 @@ NewSequentialFile
 + NowMicros
 + SleepForMicroseconds {
 
-    fn new_appendable_file(&mut self, 
+    fn new_appendable_file(
+        &mut self,
         fname:  &String,
-        result: *mut *mut Box<dyn WritableFile>) -> crate::Status {
-        
-        todo!();
-        /*
-            return crate::Status::NotSupported("NewAppendableFile", fname);
-        */
+        _result: *mut *mut Box<dyn WritableFile>,
+    ) -> Status {
+        trace!(
+            file = %fname,
+            "Env::new_appendable_file default: returning Status::not_supported"
+        );
+
+        let op_name  = "NewAppendableFile".to_string();
+        let msg1     = Slice::from(&op_name);
+        let msg2     = Slice::from(fname);
+
+        Status::not_supported(&msg1, Some(&msg2))
     }
 
-    fn posix_default(&mut self) -> Rc<RefCell<dyn Env>> {
-        
-        todo!();
-        /*
-            static PosixDefaultEnv env_container;
-      return env_container.env();
-        */
-    }
 }

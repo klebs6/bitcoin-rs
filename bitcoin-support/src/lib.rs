@@ -13,8 +13,3 @@ x!{align_up}
 x!{getuniquepath}
 
 pub struct Signal<T> { p: std::marker::PhantomData<T> }
-
-pub trait GetName {
-
-    fn get_name(&self) -> &'static str;
-}

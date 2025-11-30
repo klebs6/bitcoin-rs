@@ -32,9 +32,9 @@ mod log_reader_report_drop_tests {
 
     struct DropSequentialFile;
 
-    impl bitcoin_support::GetName for DropSequentialFile {
-        fn get_name(&self) -> &'static str {
-            "drop_sequential_file"
+    impl Named for DropSequentialFile {
+        fn name(&self) -> Cow<'_,str> {
+            Cow::Owned("drop_sequential_file".to_string())
         }
     }
 

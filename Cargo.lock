@@ -3153,6 +3153,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitcoinleveldb-compaction"
+version = "0.1.0"
+
+[[package]]
 name = "bitcoinleveldb-comparator"
 version = "0.1.18"
 dependencies = [
@@ -3253,10 +3257,12 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoin-support",
  "bitcoinleveldb-file",
  "bitcoinleveldb-log",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
+ "tracing",
 ]
 
 [[package]]
@@ -3527,9 +3533,38 @@ dependencies = [
  "bitcoinleveldb-file",
  "bitcoinleveldb-limiter",
  "bitcoinleveldb-log",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-posixmmaprfile",
+ "bitcoinleveldb-posixrafile",
+ "bitcoinleveldb-posixseqfile",
+ "bitcoinleveldb-posixtools",
+ "bitcoinleveldb-posixwfile",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-util",
+]
+
+[[package]]
+name = "bitcoinleveldb-posixenv"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-limiter",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-posixmmaprfile",
+ "bitcoinleveldb-posixrafile",
+ "bitcoinleveldb-posixseqfile",
+ "bitcoinleveldb-posixtools",
+ "bitcoinleveldb-posixwfile",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]
@@ -3548,6 +3583,99 @@ dependencies = [
  "bitcoinleveldb-status",
  "bitcoinleveldb-util",
  "getset",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldb-posixmmaprfile"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-support",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-limiter",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-posixtools",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "derive_builder",
+ "getset",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldb-posixrafile"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-limiter",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-posixtools",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "derive_builder",
+ "getset",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldb-posixseqfile"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-support",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-limiter",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "derive_builder",
+ "getset",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldb-posixtools"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-support",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-limiter",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldb-posixwfile"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-support",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-limiter",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-posixtools",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
  "tracing",
 ]
 
@@ -3739,6 +3867,10 @@ dependencies = [
  "getset",
  "tracing",
 ]
+
+[[package]]
+name = "bitcoinleveldb-versionset"
+version = "0.1.0"
 
 [[package]]
 name = "bitcoinnode-interface"

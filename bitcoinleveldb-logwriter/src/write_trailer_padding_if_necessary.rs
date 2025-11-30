@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-logwriter/src/write_trialer_padding_if_necessary.rs ]
+// ---------------- [ File: bitcoinleveldb-logwriter/src/write_trailer_padding_if_necessary.rs ]
 crate::ix!();
 
 impl LogWriter {

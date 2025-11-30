@@ -36,9 +36,9 @@ impl MockWritableFileEmit {
     }
 }
 
-impl GetName for MockWritableFileEmit {
-    fn get_name(&self) -> &'static str {
-        "mock_writable_file_emit"
+impl Named for MockWritableFileEmit {
+    fn name(&self) -> Cow<'_,str> {
+        Cow::Owned("mock_writable_file_emit".to_string())
     }
 }
 

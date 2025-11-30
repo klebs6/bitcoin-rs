@@ -66,9 +66,9 @@ mod log_reader_read_into_buffer_from_file_tests {
         }
     }
 
-    impl bitcoin_support::GetName for BufferTestSequentialFile {
-        fn get_name(&self) -> &'static str {
-            "buffer_test_sequential_file"
+    impl Named for BufferTestSequentialFile {
+        fn name(&self) -> Cow<'_,str> {
+            Cow::Owned("buffer_test_sequential_file".to_string())
         }
     }
 

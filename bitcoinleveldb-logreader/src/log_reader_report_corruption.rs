@@ -40,9 +40,9 @@ mod log_reader_report_corruption_tests {
 
     struct CorruptionSequentialFile;
 
-    impl bitcoin_support::GetName for CorruptionSequentialFile {
-        fn get_name(&self) -> &'static str {
-            "corruption_sequential_file"
+    impl Named for CorruptionSequentialFile {
+        fn name(&self) -> Cow<'_,str> {
+            Cow::Owned("corruption_sequential_file".to_string())
         }
     }
 

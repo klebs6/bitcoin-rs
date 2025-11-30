@@ -1,5 +1,9 @@
 // ---------------- [ File: bitcoinleveldb-memenv/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{leveldb_helpers_memenv_memenv_test}
-x!{memenv}
+x!{file_state}
+x!{in_memory_env}
+x!{no_op_logger}
+x!{random_access_file}
+x!{sequential_file}
+x!{writable_file}

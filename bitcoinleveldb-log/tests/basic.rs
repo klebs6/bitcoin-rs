@@ -124,9 +124,9 @@ mod log_test {
         }
     }
 
-    impl GetName for StringDest {
-        fn get_name(&self) -> &'static str {
-            "log_test_string_dest"
+    impl Named for StringDest {
+        fn name(&self) -> Cow<'_,str> {
+            Cow::Owned("log_test_string_dest".to_string())
         }
     }
 
@@ -265,9 +265,9 @@ mod log_test {
         }
     }
 
-    impl GetName for StringSource {
-        fn get_name(&self) -> &'static str {
-            "log_test_string_source"
+    impl Named for StringSource {
+        fn name(&self) -> Cow<'_,str> {
+            Cow::Owned("log_test_string_source".to_string())
         }
     }
 

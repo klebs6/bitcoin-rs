@@ -173,13 +173,9 @@ impl WritableFileAppend for StringSink {
     }
 }
     
-impl GetName for StringSink {
-    fn get_name(&self) -> &'static str {
-        
-        todo!();
-        /*
-            return "";
-        */
+impl Named for StringSink {
+    fn name(&self) -> Cow<'_,str> {
+        Cow::Owned("".to_string())
     }
 }
 
@@ -215,14 +211,10 @@ impl RandomAccessFileRead for StringSource {
     }
 }
 
-impl GetName for StringSource {
+impl Named for StringSource {
 
-    fn get_name(&self) -> &'static str {
-        
-        todo!();
-        /*
-            return "";
-        */
+    fn name(&self) -> Cow<'_,str> {
+        Cow::Owned("".to_string())
     }
 }
 

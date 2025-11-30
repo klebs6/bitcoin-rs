@@ -53,9 +53,9 @@ mod log_reader_create_tests {
 
     struct CreateTestSequentialFile;
 
-    impl bitcoin_support::GetName for CreateTestSequentialFile {
-        fn get_name(&self) -> &'static str {
-            "create_test_sequential_file"
+    impl Named for CreateTestSequentialFile {
+        fn name(&self) -> Cow<'_,str> {
+            Cow::Owned("create_test_sequential_file".to_string())
         }
     }
 

@@ -1,6 +1,15 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.18"
+
+[dependencies]
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
+bitcoinleveldb-posixmmaprfile = { path = "../bitcoinleveldb-posixmmaprfile" }
+bitcoinleveldb-posixrafile = { path = "../bitcoinleveldb-posixrafile" }
+bitcoinleveldb-posixseqfile = { path = "../bitcoinleveldb-posixseqfile" }
+bitcoinleveldb-posixtools = { path = "../bitcoinleveldb-posixtools" }
+bitcoinleveldb-posixwfile = { path = "../bitcoinleveldb-posixwfile" }
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.18"

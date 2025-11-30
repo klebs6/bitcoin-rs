@@ -145,14 +145,10 @@ impl WritableFile for TestWritableFile {
 
 }
 
-impl GetName for TestWritableFile {
+impl Named for TestWritableFile {
     
-    fn get_name(&self) -> &'static str {
-        
-        todo!();
-        /*
-            return "";
-        */
+    fn name(&self) -> Cow<'_,str> {
+        Cow::Owned("".to_string())
     }
 }
 

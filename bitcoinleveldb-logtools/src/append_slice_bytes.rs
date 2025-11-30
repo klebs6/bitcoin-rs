@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-logtools/src/append_slice_bytes.rs ]
 crate::ix!();
 
 /// Append the bytes referenced by `source` into `destination`,
@@ -32,5 +33,3 @@ pub fn append_slice_bytes(source: &Slice, destination: &mut Vec<u8>) {
         "append_slice_bytes: appended slice bytes to destination Vec"
     );
 }
-
-

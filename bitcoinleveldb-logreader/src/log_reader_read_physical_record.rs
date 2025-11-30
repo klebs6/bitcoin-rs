@@ -194,8 +194,8 @@ mod log_reader_read_physical_record_tests {
         }
     }
 
-    impl bitcoin_support::GetName for PhysicalSequentialFile {
-        fn get_name(&self) -> &'static str {
+    impl Named for PhysicalSequentialFile {
+        fn name(&self) -> Cow<'_,str> {
             "physical_sequential_file"
         }
     }

@@ -37,16 +37,19 @@ DEFAULT := test_active
 FEATURES := --features "leveldb_snappy"
 FEATURES := 
 
+NO_FAIL_FAST := --no-fail-fast
+
 #-------------------------------[active-below]
 
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-08]
-ACTIVE := bitcoinleveldb-env
+#ACTIVE := bitcoinleveldb-posix
+ACTIVE := bitcoinleveldb-posixenv
 
 # ------------------------------- [leveldb-layer-09]
+
 #ACTIVE := bitcoinleveldb-memenv
-#ACTIVE := bitcoinleveldb-posix
 #ACTIVE := bitcoinleveldb-options
 
 # ------------------------------- [leveldb-layer-10]
@@ -223,7 +226,7 @@ build_active:
 	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(BUILD) -p $(ACTIVE) --verbose
 
 test_active:
-	$(HACK_CLANG) RUST_LOG=$(RUST_LOG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) -p $(ACTIVE) --verbose $(FEATURES)
+	$(HACK_CLANG) RUST_LOG=$(RUST_LOG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) -p $(ACTIVE) --verbose $(FEATURES) $(NO_FAIL_FAST)
 
 test_ignored:
 	$(HACK_CLANG) RUSTFLAGS=$(RUSTFLAGS) $(CARGO) $(TEST) --release -p $(ACTIVE) --verbose $(FEATURES) -- --ignored
@@ -337,3 +340,10 @@ bench:
 #ACTIVE := bitcoinleveldb-logreader
 #ACTIVE := bitcoinleveldb-log
 #ACTIVE := bitcoinleveldb-versionedit
+#ACTIVE := bitcoinleveldb-env
+#ACTIVE := bitcoinleveldb-posixtools
+#ACTIVE := bitcoinleveldb-posixwfile
+#ACTIVE := bitcoinleveldb-posixseqfile
+#ACTIVE := bitcoinleveldb-posixrafile
+#ACTIVE := bitcoinleveldb-posixlogger
+#ACTIVE := bitcoinleveldb-posixmmaprfile

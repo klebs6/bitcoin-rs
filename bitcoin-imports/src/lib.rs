@@ -436,6 +436,8 @@ pub use std::iter::{
     Enumerate,
 };
 
+pub use std::borrow::Cow;
+
 /*
 pub use qt_core::{
     QSize,

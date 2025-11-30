@@ -39,7 +39,7 @@ pub trait RPCTimerBase { }
   | RPC timer "driver".
   |
   */
-pub trait RPCTimerInterface: GetName {
+pub trait RPCTimerInterface: Named {
 
 }
 

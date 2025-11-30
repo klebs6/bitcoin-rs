@@ -147,9 +147,9 @@ mod log_reader_core_tests {
         }
     }
 
-    impl bitcoin_support::GetName for CoreTestSequentialFile {
-        fn get_name(&self) -> &'static str {
-            "core_test_sequential_file"
+    impl Named for CoreTestSequentialFile {
+        fn name(&self) -> Cow<'_,str> {
+            Cow::Owned("core_test_sequential_file".to_string())
         }
     }
 
@@ -318,4 +318,3 @@ mod log_reader_core_tests {
         assert_eq!(events_guard.as_slice(), &[17usize]);
     }
 }
-

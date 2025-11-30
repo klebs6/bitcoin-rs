@@ -58,8 +58,8 @@ impl WritableFileSync for StdoutPrinter {
     }
 }
 
-impl GetName for StdoutPrinter {
-    fn get_name(&self) -> &'static str {
-        "[stdout]"
+impl Named for StdoutPrinter {
+    fn name(&self) -> Cow<'_,str> {
+        Cow::Owned("[stdout]".to_string())
     }
 }

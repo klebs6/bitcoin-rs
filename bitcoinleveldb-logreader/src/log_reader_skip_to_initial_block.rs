@@ -72,9 +72,9 @@ mod log_reader_skip_to_initial_block_tests {
         }
     }
 
-    impl bitcoin_support::GetName for SkipSequentialFile {
-        fn get_name(&self) -> &'static str {
-            "skip_sequential_file"
+    impl Named for SkipSequentialFile {
+        fn name(&self) -> Cow<'_,str> {
+            Cow::Owned("skip_sequential_file".to_string())
         }
     }
 

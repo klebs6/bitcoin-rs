@@ -18,7 +18,7 @@ WritableFileAppend
    | reporting
    |
    */
-+ GetName {}
++ Named {}
 
 pub trait WritableFileAppend {
     fn append(&mut self, data: &Slice) -> crate::Status;

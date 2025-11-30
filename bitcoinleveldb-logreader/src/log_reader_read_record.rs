@@ -294,9 +294,9 @@ mod log_reader_read_record_tests {
         }
     }
 
-    impl bitcoin_support::GetName for RecordSequentialFile {
-        fn get_name(&self) -> &'static str {
-            "record_sequential_file"
+    impl Named for RecordSequentialFile {
+        fn name(&self) -> Cow<'_,str> {
+            Cow::Owned("record_sequential_file".to_string())
         }
     }
 
@@ -546,4 +546,3 @@ mod log_reader_read_record_tests {
         );
     }
 }
-
