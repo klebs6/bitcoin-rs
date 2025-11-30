@@ -1,41 +1,41 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
-[dependencies]
-bitcoin-cuckoo-cache = { path = "../bitcoin-cuckoo-cache" }
+[dependencies.bitcoin-cuckoo-cache]
+path = "../bitcoin-cuckoo-cache"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-mem]
 path = "../bitcoin-mem"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-ripemd]
 path = "../bitcoin-ripemd"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-sha256]
 path = "../bitcoin-sha256"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.serde]
 features = [
@@ -56,7 +56,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-hash"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

@@ -1,14 +1,14 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.getset]
 workspace = true
@@ -24,15 +24,25 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
+categories = [
+    "cryptography",
+    "data-structures",
+    "development-tools",
+]
 description = "Rust library for defining and manipulating fixed-size opaque byte blobs with serialization, deserialization, hex conversion, and byte iteration capability."
 documentation = "https://docs.rs/bitcoin-blob"
 edition = "2021"
+keywords = [
+    "bitcoin",
+    "blob",
+    "serialization",
+    "hexadecimal",
+    "macros",
+]
 license = "MIT"
 name = "bitcoin-blob"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
-keywords = ["bitcoin", "blob", "serialization", "hexadecimal", "macros"]
-categories = ["cryptography", "data-structures", "development-tools"]
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

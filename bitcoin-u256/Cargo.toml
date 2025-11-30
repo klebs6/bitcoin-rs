@@ -1,25 +1,25 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bincode]
 workspace = true
 
 [dependencies.bitcoin-bigint]
 path = "../bitcoin-bigint"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-blob]
 path = "../bitcoin-blob"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.once_cell]
 workspace = true
@@ -41,19 +41,31 @@ workspace = true
 
 [dev-dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
-version = "0.1.18"
+version = "0.1.19"
 
 [package]
 authors = ["klebs <none>"]
+categories = [
+    "cryptography",
+    "finance",
+    "mathematics",
+    "data-structures",
+    "encoding",
+]
 description = "A Rust crate for handling 256-bit unsigned integers, optimized for blockchain computations, offering arithmetic operations and compact representation conversions."
 documentation = "https://docs.rs/bitcoin-u256"
 edition = "2021"
+keywords = [
+    "bitcoin",
+    "u256",
+    "blockchain",
+    "cryptography",
+    "arithmetic",
+]
 license = "MIT"
 name = "bitcoin-u256"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
-keywords = ["bitcoin", "u256", "blockchain", "cryptography", "arithmetic"]
-categories = ["cryptography", "finance", "mathematics", "data-structures", "encoding"]
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

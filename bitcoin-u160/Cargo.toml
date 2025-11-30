@@ -1,18 +1,18 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-blob]
 path = "../bitcoin-blob"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.traced-test]
 workspace = true
@@ -28,15 +28,27 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
+categories = [
+    "cryptography",
+    "data-structures",
+    "network-programming",
+    "finance",
+    "science",
+]
 description = "A Rust crate for efficiently handling 160-bit opaque blobs, commonly used in cryptographic and Bitcoin-related contexts, with support for conversion from strings and byte arrays."
 documentation = "https://docs.rs/bitcoin-u160"
 edition = "2021"
+keywords = [
+    "bitcoin",
+    "cryptography",
+    "datastructure",
+    "hexadecimal",
+    "u160",
+]
 license = "MIT"
 name = "bitcoin-u160"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
-keywords = ["bitcoin", "cryptography", "datastructure", "hexadecimal", "u160"]
-categories = ["cryptography", "data-structures", "network-programming", "finance", "science"]
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

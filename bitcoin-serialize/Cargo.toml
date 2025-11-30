@@ -1,22 +1,22 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-compat]
 path = "../bitcoin-compat"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.hashbrown]
 version = "0.12.1"
@@ -44,7 +44,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-serialize"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

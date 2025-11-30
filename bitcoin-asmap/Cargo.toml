@@ -1,10 +1,10 @@
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.tracing]
 workspace = true
@@ -17,7 +17,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-asmap"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.18"
+version = "0.1.19"
 
 [package.metadata]
 cpp-authors = [

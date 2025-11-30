@@ -1,38 +1,38 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoinleveldb-table]
 path = "../bitcoinleveldb-table"
-version = "0.1.18"
+version = "0.1.19"
 
 [package]
 authors = ["klebs <none>"]
@@ -42,7 +42,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-key"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

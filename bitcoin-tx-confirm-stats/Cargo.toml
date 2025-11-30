@@ -1,20 +1,31 @@
+[dependencies.bitcoin-autofile]
+path = "../bitcoin-autofile"
+
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+
+[dependencies.bitcoin-serialize]
+path = "../bitcoin-serialize"
+
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.export-magic]
+workspace = true
+
+[dependencies.getset]
+workspace = true
+
+[dependencies.serde]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+
 [package]
-name = "bitcoin-tx-confirm-stats"
-version = "0.1.0"
 authors = ["YourName <you@example.com>"]
-license = "MIT"
-edition = "2024"
 description = "todo: write a description here"
-
-# keywords = []
-# categories = []
-
-[dependencies]
-tracing.workspace        = true
-serde.workspace          = true
-getset.workspace         = true
-derive_builder.workspace = true
-export-magic.workspace   = true
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoin-autofile = { path = "../bitcoin-autofile" }
-bitcoin-serialize = { path = "../bitcoin-serialize" }
+edition = "2024"
+license = "MIT"
+name = "bitcoin-tx-confirm-stats"
+version = "0.1.1"

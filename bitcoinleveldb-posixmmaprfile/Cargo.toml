@@ -1,46 +1,58 @@
-[package]
-name = "bitcoinleveldb-posixmmaprfile"
-version = "0.1.0"
-authors = ["YourName <you@example.com>"]
-license = "MIT"
-edition = "2024"
-description = "todo: write a description here"
-
-# keywords = []
-# categories = []
-
-[dependencies]
-derive_builder.workspace = true
-getset.workspace         = true
-tracing.workspace        = true
-bitcoinleveldb-posixtools = { path = "../bitcoinleveldb-posixtools" }
-bitcoin-support = { path = "../bitcoin-support" }
-
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
+
+[dependencies.bitcoin-support]
+path = "../bitcoin-support"
+
 [dependencies.bitcoinleveldb-env]
 path = "../bitcoinleveldb-env"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-file]
 path = "../bitcoinleveldb-file"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-limiter]
 path = "../bitcoinleveldb-limiter"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-log]
 path = "../bitcoinleveldb-log"
-version = "0.1.18"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-posixtools]
+path = "../bitcoinleveldb-posixtools"
+
 [dependencies.bitcoinleveldb-slice]
 path = "../bitcoinleveldb-slice"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-status]
 path = "../bitcoinleveldb-status"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-util]
 path = "../bitcoinleveldb-util"
-version = "0.1.18"
+version = "0.1.19"
 
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.getset]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+
+[package]
+authors = ["YourName <you@example.com>"]
+description = "todo: write a description here"
+edition = "2024"
+license = "MIT"
+name = "bitcoinleveldb-posixmmaprfile"
+version = "0.1.1"

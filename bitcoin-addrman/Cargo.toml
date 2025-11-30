@@ -1,74 +1,74 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-addr]
 path = "../bitcoin-addr"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-hash]
 path = "../bitcoin-hash"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-log]
 path = "../bitcoin-log"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-service]
 path = "../bitcoin-service"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-service-flags]
 path = "../bitcoin-service-flags"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-time]
 path = "../bitcoin-time"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -88,7 +88,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-addrman"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.22"
+version = "0.1.23"
 
 [package.metadata]
 cpp-authors = [

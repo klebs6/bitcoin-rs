@@ -1,42 +1,42 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-db]
 path = "../bitcoin-db"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-hash]
 path = "../bitcoin-hash"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-tx]
 path = "../bitcoin-tx"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.modular-bitfield]
 version = "0.11.2"
@@ -57,7 +57,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-coinsview"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

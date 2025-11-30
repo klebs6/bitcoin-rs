@@ -1,50 +1,50 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-chacha]
 path = "../bitcoin-chacha"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-compat]
 path = "../bitcoin-compat"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-log]
 path = "../bitcoin-log"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-sha256]
 path = "../bitcoin-sha256"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-sha512]
 path = "../bitcoin-sha512"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-time]
 path = "../bitcoin-time"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.derive_builder]
 workspace = true
@@ -69,7 +69,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-random"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.20"
+version = "0.1.21"
 
 [package.metadata]
 cpp-authors = [

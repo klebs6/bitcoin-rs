@@ -1,13 +1,13 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [build-dependencies.usdt]
 workspace = true
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.derive_builder]
 workspace = true
@@ -47,7 +47,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-log"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

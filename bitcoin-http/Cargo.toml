@@ -1,42 +1,42 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-node]
 path = "../bitcoin-node"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoin-service]
 path = "../bitcoin-service"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -65,7 +65,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-http"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.22"
+version = "0.1.23"
 
 [package.metadata]
 cpp-authors = [

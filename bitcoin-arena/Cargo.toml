@@ -1,14 +1,14 @@
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.derive_builder]
 workspace = true
@@ -35,4 +35,4 @@ keywords = [
 ]
 license = "MIT"
 name = "bitcoin-arena"
-version = "0.1.2"
+version = "0.1.3"

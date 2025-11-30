@@ -1,74 +1,74 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-cuckoo-cache]
 path = "../bitcoin-cuckoo-cache"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-hash]
 path = "../bitcoin-hash"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-mem]
 path = "../bitcoin-mem"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-secp256k1]
 path = "../bitcoin-secp256k1"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-sha256]
 path = "../bitcoin-sha256"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-u160]
 path = "../bitcoin-u160"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-version]
 path = "../bitcoin-version"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoinsecp256k1-keys]
 path = "../bitcoinsecp256k1-keys"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.modular-bitfield]
 version = "0.11.2"
@@ -89,7 +89,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-scripting"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.20"
+version = "0.1.21"
 
 [package.metadata]
 cpp-authors = [

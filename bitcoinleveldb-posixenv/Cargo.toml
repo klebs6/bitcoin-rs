@@ -1,47 +1,67 @@
-[package]
-name = "bitcoinleveldb-posixenv"
-version = "0.1.0"
-authors = ["YourName <you@example.com>"]
-license = "MIT"
-edition = "2024"
-description = "todo: write a description here"
-
-[dependencies]
-bitcoinleveldb-posixtools = { path = "../bitcoinleveldb-posixtools" }
-
-tracing.workspace        = true
-derive_builder.workspace = true
-getset.workspace         = true
-bitcoinleveldb-posixmmaprfile = { path = "../bitcoinleveldb-posixmmaprfile" }
-bitcoinleveldb-posixwfile = { path = "../bitcoinleveldb-posixwfile" }
-bitcoinleveldb-posixrafile = { path = "../bitcoinleveldb-posixrafile" }
-bitcoinleveldb-posixseqfile = { path = "../bitcoinleveldb-posixseqfile" }
-
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-env]
 path = "../bitcoinleveldb-env"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-file]
 path = "../bitcoinleveldb-file"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-limiter]
 path = "../bitcoinleveldb-limiter"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-log]
 path = "../bitcoinleveldb-log"
-version = "0.1.18"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-posixmmaprfile]
+path = "../bitcoinleveldb-posixmmaprfile"
+
+[dependencies.bitcoinleveldb-posixrafile]
+path = "../bitcoinleveldb-posixrafile"
+
+[dependencies.bitcoinleveldb-posixseqfile]
+path = "../bitcoinleveldb-posixseqfile"
+
+[dependencies.bitcoinleveldb-posixtools]
+path = "../bitcoinleveldb-posixtools"
+
+[dependencies.bitcoinleveldb-posixwfile]
+path = "../bitcoinleveldb-posixwfile"
+
 [dependencies.bitcoinleveldb-slice]
 path = "../bitcoinleveldb-slice"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-status]
 path = "../bitcoinleveldb-status"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-util]
 path = "../bitcoinleveldb-util"
-version = "0.1.18"
+version = "0.1.19"
 
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.getset]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+
+[package]
+authors = ["YourName <you@example.com>"]
+description = "todo: write a description here"
+edition = "2024"
+license = "MIT"
+name = "bitcoinleveldb-posixenv"
+version = "0.1.1"

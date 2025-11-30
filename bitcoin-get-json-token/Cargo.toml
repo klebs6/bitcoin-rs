@@ -1,18 +1,33 @@
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.19"
+
+[dependencies.ryu]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+
+[dependencies.zerocopy]
+workspace = true
+
 [package]
-name = "bitcoin-get-json-token"
-version = "0.1.0"
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
-license = "MIT"
-edition = "2024"
+categories = [
+    "cryptography",
+    "parsing",
+    "finance",
+    "algorithms",
+]
 description = "A comprehensive Rust library for parsing and tokenizing JSON data, optimized for Bitcoin applications."
-keywords = ["json", "bitcoin", "tokenization", "parsing", "cryptocurrency"]
-categories = ["cryptography", "parsing", "finance", "algorithms"]
-
-# keywords = []
-# categories = []
-
-[dependencies]
-tracing.workspace  = true
-ryu.workspace      = true
-zerocopy.workspace = true
-bitcoin-imports    = { path = "../bitcoin-imports" , version = "0.1.18" }
+edition = "2024"
+keywords = [
+    "json",
+    "bitcoin",
+    "tokenization",
+    "parsing",
+    "cryptocurrency",
+]
+license = "MIT"
+name = "bitcoin-get-json-token"
+version = "0.1.1"

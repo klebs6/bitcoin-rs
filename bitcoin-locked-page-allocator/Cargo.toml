@@ -1,20 +1,31 @@
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.derive_builder]
 workspace = true
 
 [package]
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
+categories = [
+    "os",
+    "memory-management",
+    "cryptography",
+    "concurrency",
+]
+description = "Provides OS-dependent allocation of locked memory pages, minimizing paging out of sensitive data."
 edition = "2024"
+keywords = [
+    "allocator",
+    "memory",
+    "cryptography",
+    "secure",
+    "pinned",
+]
 license = "MIT"
 name = "bitcoin-locked-page-allocator"
-version = "0.1.18"
-description = "Provides OS-dependent allocation of locked memory pages, minimizing paging out of sensitive data."
-keywords = ["allocator", "memory", "cryptography", "secure", "pinned"]
-categories = ["os", "memory-management", "cryptography", "concurrency"]
+version = "0.1.19"

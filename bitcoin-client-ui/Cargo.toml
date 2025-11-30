@@ -1,22 +1,22 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
-version = "0.1.18"
+version = "0.1.19"
 
 [package]
 authors = ["klebs <none>"]
@@ -26,7 +26,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-client-ui"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

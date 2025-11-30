@@ -1,46 +1,60 @@
-[package]
-name = "bitcoinleveldb-logwriter"
-version = "0.1.0"
-authors = ["YourName <you@example.com>"]
-license = "MIT"
-edition = "2024"
-description = "todo: write a description here"
-
-# keywords = []
-# categories = []
-
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
-
-[dependencies]
-bitcoinleveldb-crc32     = { path = "../bitcoinleveldb-crc32" }
-bitcoinleveldb-coding    = { path = "../bitcoinleveldb-coding" }
-bitcoinleveldb-logtools  = { path = "../bitcoinleveldb-logtools" }
-tracing.workspace        = true
-getset.workspace         = true
-derive_builder.workspace = true
-bitcoin-support          = { path = "../bitcoin-support" }
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
+
+[dependencies.bitcoin-support]
+path = "../bitcoin-support"
+
+[dependencies.bitcoinleveldb-coding]
+path = "../bitcoinleveldb-coding"
+
+[dependencies.bitcoinleveldb-crc32]
+path = "../bitcoinleveldb-crc32"
+
 [dependencies.bitcoinleveldb-file]
 path = "../bitcoinleveldb-file"
-version = "0.1.18"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-logtools]
+path = "../bitcoinleveldb-logtools"
+
 [dependencies.bitcoinleveldb-rand]
 path = "../bitcoinleveldb-rand"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-slice]
 path = "../bitcoinleveldb-slice"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-status]
 path = "../bitcoinleveldb-status"
-version = "0.1.18"
+version = "0.1.19"
+
 [dependencies.bitcoinleveldb-util]
 path = "../bitcoinleveldb-util"
-version = "0.1.18"
+version = "0.1.19"
 
+[dependencies.derive_builder]
+workspace = true
+
+[dependencies.getset]
+workspace = true
+
+[dependencies.tracing]
+workspace = true
+
+[package]
+authors = ["YourName <you@example.com>"]
+description = "todo: write a description here"
+edition = "2024"
+license = "MIT"
+name = "bitcoinleveldb-logwriter"
+version = "0.1.1"

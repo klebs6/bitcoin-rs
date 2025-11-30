@@ -1,6 +1,6 @@
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.derive_builder]
 workspace = true
@@ -16,4 +16,4 @@ authors = ["klebs6 <tpk3.mx@gmail.com>"]
 edition = "2024"
 license = "MIT"
 name = "bitcoin-syscall"
-version = "0.1.1"
+version = "0.1.2"

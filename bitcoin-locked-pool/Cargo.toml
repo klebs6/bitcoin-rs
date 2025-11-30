@@ -1,22 +1,22 @@
 [dependencies.bitcoin-arena]
 path = "../bitcoin-arena"
-version = "0.1.2"
+version = "0.1.3"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-locked-page-allocator]
 path = "../bitcoin-locked-page-allocator"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.derive_builder]
 workspace = true
@@ -42,4 +42,4 @@ keywords = [
 ]
 license = "MIT"
 name = "bitcoin-locked-pool"
-version = "0.1.2"
+version = "0.1.3"

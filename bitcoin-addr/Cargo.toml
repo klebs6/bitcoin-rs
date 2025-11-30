@@ -1,34 +1,34 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-service]
 path = "../bitcoin-service"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-service-flags]
 path = "../bitcoin-service-flags"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-time]
 path = "../bitcoin-time"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.serde]
 features = ["derive"]
@@ -42,7 +42,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-addr"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.20"
+version = "0.1.21"
 
 [package.metadata]
 cpp-authors = [

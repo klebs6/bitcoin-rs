@@ -1,22 +1,22 @@
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-bloom]
 path = "../bitcoin-bloom"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
-version = "0.1.18"
+version = "0.1.19"
 
 [package]
 authors = ["klebs <none>"]
@@ -26,7 +26,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinnode-txrelay"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.21"
+version = "0.1.22"
 
 [package.metadata]
 cpp-authors = [

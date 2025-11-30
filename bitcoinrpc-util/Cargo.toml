@@ -1,50 +1,50 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-amt]
 path = "../bitcoin-amt"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-remote]
 path = "../bitcoin-remote"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-secp256k1]
 path = "../bitcoin-secp256k1"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-service-flags]
 path = "../bitcoin-service-flags"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-signingprovider]
 path = "../bitcoin-signingprovider"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.19"
+version = "0.1.20"
 
 [package]
 authors = ["klebs <none>"]
@@ -54,7 +54,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinrpc-util"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.22"
+version = "0.1.23"
 
 [package.metadata]
 cpp-authors = [

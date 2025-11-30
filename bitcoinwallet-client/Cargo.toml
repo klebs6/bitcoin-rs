@@ -1,50 +1,50 @@
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-sam]
 path = "../bitcoin-sam"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-scheduler]
 path = "../bitcoin-scheduler"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoinchain-client]
 path = "../bitcoinchain-client"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoinchain-interface]
 path = "../bitcoinchain-interface"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoinwallet-context]
 path = "../bitcoinwallet-context"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.22"
+version = "0.1.23"
 
 [package]
 authors = ["klebs <none>"]
@@ -54,7 +54,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-client"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.22"
+version = "0.1.23"
 
 [package.metadata]
 cpp-authors = [

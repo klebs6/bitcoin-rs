@@ -1,26 +1,26 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-key]
 path = "../bitcoin-key"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-scripting]
 path = "../bitcoin-scripting"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-support]
 path = "../bitcoin-support"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -36,7 +36,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-compressor"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.20"
+version = "0.1.21"
 
 [package.metadata]
 cpp-authors = [

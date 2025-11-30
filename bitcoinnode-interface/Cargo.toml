@@ -1,114 +1,114 @@
 [dependencies.bitcoin-addr]
 path = "../bitcoin-addr"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-banman]
 path = "../bitcoin-banman"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoin-block]
 path = "../bitcoin-block"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-client-ui]
 path = "../bitcoin-client-ui"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-coinsview]
 path = "../bitcoin-coinsview"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-fees]
 path = "../bitcoin-fees"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-hash]
 path = "../bitcoin-hash"
-version = "0.1.18"
+version = "0.1.20"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-net]
 path = "../bitcoin-net"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoin-netmsg]
 path = "../bitcoin-netmsg"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-netpermissions]
 path = "../bitcoin-netpermissions"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-network]
 path = "../bitcoin-network"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-proxy]
 path = "../bitcoin-proxy"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-psbt]
 path = "../bitcoin-psbt"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-sam]
 path = "../bitcoin-sam"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-service]
 path = "../bitcoin-service"
-version = "0.1.20"
+version = "0.1.21"
 
 [dependencies.bitcoin-service-flags]
 path = "../bitcoin-service-flags"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-string]
 path = "../bitcoin-string"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-subnet]
 path = "../bitcoin-subnet"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-sync]
 path = "../bitcoin-sync"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoinnode-stats]
 path = "../bitcoinnode-stats"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoinnode-txrelay]
 path = "../bitcoinnode-txrelay"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoinrpc-server]
 path = "../bitcoinrpc-server"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoinwallet-client]
 path = "../bitcoinwallet-client"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoinwallet-interface]
 path = "../bitcoinwallet-interface"
-version = "0.1.22"
+version = "0.1.23"
 
 [package]
 authors = ["klebs <none>"]
@@ -118,7 +118,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinnode-interface"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.22"
+version = "0.1.23"
 
 [package.metadata]
 cpp-authors = [

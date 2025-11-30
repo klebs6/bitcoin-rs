@@ -1,34 +1,34 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
-version = "0.1.21"
+version = "0.1.22"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-indexed-chain]
 path = "../bitcoin-indexed-chain"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoin-scheduler]
 path = "../bitcoin-scheduler"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoinwallet-context]
 path = "../bitcoinwallet-context"
-version = "0.1.22"
+version = "0.1.23"
 
 [dependencies.bitcoinwallet-library]
 path = "../bitcoinwallet-library"
-version = "0.1.22"
+version = "0.1.23"
 
 [package]
 authors = ["klebs <none>"]
@@ -38,7 +38,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoinwallet-init"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.22"
+version = "0.1.23"
 
 [package.metadata]
 cpp-authors = [

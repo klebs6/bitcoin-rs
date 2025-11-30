@@ -1,14 +1,14 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-get-json-token]
 path = "../bitcoin-get-json-token"
-version = "0.1.0"
+version = "0.1.1"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -39,7 +39,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-univalue"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [

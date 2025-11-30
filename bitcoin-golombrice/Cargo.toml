@@ -1,26 +1,26 @@
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-hash]
 path = "../bitcoin-hash"
-version = "0.1.19"
+version = "0.1.20"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.bitcoin-vectorstream]
 path = "../bitcoin-vectorstream"
-version = "0.1.18"
+version = "0.1.19"
 
 [dependencies.derive_builder]
 workspace = true
@@ -42,7 +42,7 @@ edition = "2021"
 license = "MIT"
 name = "bitcoin-golombrice"
 repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+version = "0.1.20"
 
 [package.metadata]
 cpp-authors = [
