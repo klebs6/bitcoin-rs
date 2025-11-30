@@ -20,6 +20,7 @@ version = "0.1.19"
 
 [dependencies.bitcoinleveldb-hash]
 path = "../bitcoinleveldb-hash"
+version = "0.1.19"
 
 [dependencies.bitcoinleveldb-key]
 path = "../bitcoinleveldb-key"

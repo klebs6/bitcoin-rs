@@ -24,18 +24,23 @@ version = "0.1.19"
 
 [dependencies.bitcoinleveldb-posixmmaprfile]
 path = "../bitcoinleveldb-posixmmaprfile"
+version = "0.1.1"
 
 [dependencies.bitcoinleveldb-posixrafile]
 path = "../bitcoinleveldb-posixrafile"
+version = "0.1.1"
 
 [dependencies.bitcoinleveldb-posixseqfile]
 path = "../bitcoinleveldb-posixseqfile"
+version = "0.1.1"
 
 [dependencies.bitcoinleveldb-posixtools]
 path = "../bitcoinleveldb-posixtools"
+version = "0.1.1"
 
 [dependencies.bitcoinleveldb-posixwfile]
 path = "../bitcoinleveldb-posixwfile"
+version = "0.1.1"
 
 [dependencies.bitcoinleveldb-slice]
 path = "../bitcoinleveldb-slice"

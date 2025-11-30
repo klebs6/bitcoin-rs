@@ -4,6 +4,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-cuckoo-cache]
 path = "../bitcoin-cuckoo-cache"
+version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"

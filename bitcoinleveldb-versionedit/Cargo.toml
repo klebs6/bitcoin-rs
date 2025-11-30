@@ -12,6 +12,7 @@ version = "0.1.19"
 
 [dependencies.bitcoinleveldb-coding]
 path = "../bitcoinleveldb-coding"
+version = "0.1.19"
 
 [dependencies.bitcoinleveldb-file]
 path = "../bitcoinleveldb-file"

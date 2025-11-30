@@ -1,11 +1,14 @@
 [dependencies.bitcoin-autofile]
 path = "../bitcoin-autofile"
+version = "0.1.20"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
+version = "0.1.19"
 
 [dependencies.bitcoin-serialize]
 path = "../bitcoin-serialize"
+version = "0.1.19"
 
 [dependencies.derive_builder]
 workspace = true

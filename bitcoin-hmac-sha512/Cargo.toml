@@ -1,8 +1,10 @@
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
+version = "0.1.19"
 
 [dependencies.bitcoin-sha512]
 path = "../bitcoin-sha512"
+version = "0.1.19"
 
 [dependencies.getset]
 workspace = true

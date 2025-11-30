@@ -4,6 +4,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-argsman]
 path = "../bitcoin-argsman"
+version = "0.1.22"
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -15,6 +16,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-random]
 path = "../bitcoin-random"
+version = "0.1.21"
 
 [dependencies.bitcoin-univalue]
 path = "../bitcoin-univalue"

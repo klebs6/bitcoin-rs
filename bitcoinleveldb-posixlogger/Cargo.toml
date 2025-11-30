@@ -12,9 +12,11 @@ version = "0.1.19"
 
 [dependencies.bitcoinleveldb-coding]
 path = "../bitcoinleveldb-coding"
+version = "0.1.19"
 
 [dependencies.bitcoinleveldb-crc32]
 path = "../bitcoinleveldb-crc32"
+version = "0.1.19"
 
 [dependencies.bitcoinleveldb-file]
 path = "../bitcoinleveldb-file"
@@ -22,6 +24,7 @@ version = "0.1.19"
 
 [dependencies.bitcoinleveldb-logtools]
 path = "../bitcoinleveldb-logtools"
+version = "0.1.1"
 
 [dependencies.bitcoinleveldb-rand]
 path = "../bitcoinleveldb-rand"

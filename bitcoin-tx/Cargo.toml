@@ -36,6 +36,7 @@ version = "0.1.21"
 
 [dependencies.bitcoin-tx-confirm-stats]
 path = "../bitcoin-tx-confirm-stats"
+version = "0.1.1"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"

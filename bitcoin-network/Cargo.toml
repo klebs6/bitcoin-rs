@@ -4,6 +4,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-asmap]
 path = "../bitcoin-asmap"
+version = "0.1.19"
 
 [dependencies.bitcoin-bitstream]
 path = "../bitcoin-bitstream"
@@ -15,6 +16,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-hash]
 path = "../bitcoin-hash"
+version = "0.1.20"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
@@ -30,6 +32,7 @@ version = "0.1.19"
 
 [dependencies.bitcoin-u256]
 path = "../bitcoin-u256"
+version = "0.1.19"
 
 [dependencies.derive_builder]
 workspace = true

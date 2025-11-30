@@ -12,6 +12,7 @@ version = "0.1.19"
 
 [dependencies.bitcoinleveldb-compat]
 path = "../bitcoinleveldb-compat"
+version = "0.1.19"
 
 [dependencies.tracing]
 workspace = true
