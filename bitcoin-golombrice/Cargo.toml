@@ -36,13 +36,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "implements a golomb coded set as defined in BIP 158 -- provides encoding/decoding"
+description = "Implements Golomb-coded sets as per BIP-158, efficient for probabilistic data structures and cryptographic applications in Rust."
 documentation = "https://docs.rs/bitcoin-golombrice"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-golombrice"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
+keywords = ["bitcoin", "bip158", "cryptography", "golombcoding", "probabilistic"]
+categories = ["cryptography", "data-structures", "encoding", "network-programming", "compression"]
 
 [package.metadata]
 cpp-authors = [

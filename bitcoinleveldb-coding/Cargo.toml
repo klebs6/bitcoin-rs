@@ -19,13 +19,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "endian-neutral encodings for the bitcoin leveldb -- fixed-length numbers are encoded LSB first.  Strings are encoded prefixed by their length in varint format"
+description = "Provides lower-level routines for fixed-size and variable-length integer encoding/decoding, essential for LevelDB-like database operations."
 documentation = "https://docs.rs/bitcoinleveldb-coding"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-coding"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["rust", "leveldb", "database", "encoding", "serialization"]
+categories = ["data-structures", "database", "encoding", "filesystem", "memory-management"]
 
 [package.metadata]
 cpp-authors = [

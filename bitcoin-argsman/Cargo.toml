@@ -34,13 +34,15 @@ tempfile = "3"
 
 [package]
 authors = ["klebs <none>"]
-description = "a manager for config and environment arguments"
+description = "Advanced Rust crate providing comprehensive management of Bitcoin command-line arguments and configuration settings for node operations."
 documentation = "https://docs.rs/bitcoin-argsman"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-argsman"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.22"
+keywords = ["bitcoin", "args", "cli", "config", "network"]
+categories = ["network-programming", "cryptography", "config", "parsing", "command-line-utilities"]
 
 [package.metadata]
 cpp-authors = [

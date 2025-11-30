@@ -53,8 +53,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "Implements thread-safe, random read access in a file using mmap, adhering to the RandomAccessFile API."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixmmaprfile"
 version = "0.1.1"
+keywords = ["mmap", "randomaccess", "threadsafe", "memorymapped", "filesystem"]
+categories = ["filesystem", "concurrency", "compilers", "os", "data-structures"]

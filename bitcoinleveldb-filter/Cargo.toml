@@ -35,13 +35,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "a filter block is stored near the end of a table file.  It contains filters (eg blooms) for all data blocks in the table combined into a single filter block."
+description = "The bitcoinleveldb-filter crate implements FilterPolicy, FilterBlockBuilder, and FilterBlockReader to manage and query filter blocks for efficient data retrieval in LevelDB."
 documentation = "https://docs.rs/bitcoinleveldb-filter"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-filter"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "leveldb", "bloomfilter", "database", "filtering"]
+categories = ["algorithms", "database", "data-structures", "memory-management", "network-programming"]
 
 [package.metadata]
 cpp-authors = [

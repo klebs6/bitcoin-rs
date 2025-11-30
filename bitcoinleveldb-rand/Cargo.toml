@@ -15,13 +15,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "a very simple random number generator.  Not especially good at generating truly random bits, but good for basic usage in leveldb"
+description = "A simple pseudorandom number generator tailored for use in LevelDB and similar environments, capable of generating consistent random sequences."
 documentation = "https://docs.rs/bitcoinleveldb-rand"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-rand"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["random", "leveldb", "generator", "pseudorandom", "seed"]
+categories = ["algorithms", "data-structures"]
 
 [package.metadata]
 cpp-authors = [

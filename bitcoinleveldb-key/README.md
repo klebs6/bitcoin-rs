@@ -1,247 +1,47 @@
 # bitcoinleveldb-key
 
-This Rust crate is a direct translation of the
-Bitcoin Core C++ codebase for the key-related
-components used in LevelDB.
+`bitcoinleveldb-key` is a Rust crate that provides key management utilities for the implementation of LevelDB compatible databases in the context of Bitcoin systems. It specifically focuses on internal key representations and operations that enhance performance by ensuring correct key comparisons and encoding strategies fundamental to efficient database operations.
 
-Notice: This crate is part of a direct translation
-from C++ to Rust of the bitcoin core. As such,
-some of the function bodies may still be in the
-process of translation. Please note that this
-system will become testable once the translation
-process is complete.
+## Features
 
-## Tokens
+- **Internal Key Management**: Encoding, decoding, and manipulation of internal keys is supported, ensuring efficient data retrieval and storage.
+- **ValueType Handling**: Enumerations for value types, crucial for internal data differentiation, are embedded directly in the on-disk format.
+- **Comparator Implementations**: Provides internal key comparators that account for sequence numbers and user-specified comparators, ensuring logical consistency and correct ordering in key operations.
+- **Filter Policies**: Converts and manages filters from internal to user-level keys, utilizing customizable filter policies.
+- **Efficient Serialization**: Supports serialization and packing of internal key information allowing compact, efficient data storage.
 
-### InternalFilterPolicy
+## Mathematical Considerations
+The crate implements efficient bit-level manipulations and custom encoding functions. For example, sequence numbers and value types are packed into a 64-bit integer using bitwise operations. This design minimizes storage requirements and optimizes retrieval speed by leveraging high-performance numerical operations.
 
-This is an internal filter policy used in LevelDB.
+## Installation
+Add the following to your `Cargo.toml`:
 
-### InternalKey
+```toml
+[dependencies]
+bitcoinleveldb-key = "0.1.19"
+```
 
-This is an internal key used for sorting keys in
-LevelDB.
+## Example Usage
+Here's a basic usage example demonstrating the encoding and decoding of internal keys:
 
-### InternalKeyComparator
+```rust
+use bitcoinleveldb_key::{ParsedInternalKey, ValueType, pack_sequence_and_type};
 
-This is an internal comparator used for sorting
-internal keys in LevelDB.
+let sequence: u64 = 42;
+let value_type = ValueType::TypeValue;
+let packed = pack_sequence_and_type(sequence, value_type);
 
-### KVMap
+println!("Packed Sequence and Type: {}", packed);
 
-This is a map of key-value pairs used in LevelDB.
+let mut internal_key = ParsedInternalKey::new(&user_key, &sequence, value_type);
+println!("Internal Key Debug String: {}", internal_key.debug_string());
+```
 
-### KVMapConstIterator
+Note: When using this crate, ensure to adhere to API contracts especially regarding data integrity rules for `ParsedInternalKey` and `InternalKey`, as changing certain enum values or internal structures can corrupt the database state.
 
-This is a constant iterator for a key-value map
-used in LevelDB.
+## Contributing
+Contributions to `bitcoinleveldb-key` are welcome. Please file an issue or submit a pull request to the [GitHub repository](https://github.com/klebs6/bitcoin-rs).
 
-### LookupKey
+---
 
-This is a lookup key used for searching in
-LevelDB.
-
-### ParsedInternalKey
-
-This is a parsed internal key used for sorting
-internal keys in LevelDB.
-
-### SequenceNumber
-
-This is a sequence number used in LevelDB.
-
-### TLLessThan
-
-This is a comparator used for sorting internal
-keys in LevelDB.
-
-### ValueType
-
-This is the value type used in LevelDB.
-
-### and
-
-This is a logical AND operator used in LevelDB.
-
-### append_internal_key
-
-This function is used to append an internal key to
-a buffer.
-
-### clear
-
-This function is used to clear an internal key.
-
-### compare
-
-This function is used to compare two slices.
-
-### compare_internal_key
-
-This function is used to compare two internal
-keys.
-
-### compare_slices
-
-This function is used to compare two slices.
-
-### create_filter
-
-This function is used to create a filter.
-
-### debug_string
-
-This function is used to create a debug string for
-an internal key.
-
-### decode_from
-
-This function is used to decode an internal key
-from a slice.
-
-### default
-
-This function is used to create a default internal
-key comparator.
-
-### drop
-
-This function is used to drop an internal key.
-
-### encode
-
-This function is used to encode an internal key to
-a buffer.
-
-### extract_user_key
-
-This function is used to extract the user key from
-an internal key.
-
-### find_short_successor
-
-This function is used to find the shortest
-separator for two internal keys.
-
-### find_shortest_separator
-
-This function is used to find the short successor
-for an internal key.
-
-### internal_key
-
-This function is used to create an internal key.
-
-### internal_key_encoding_length
-
-This function is used to compute the encoding
-length of an internal key.
-
-### invoke
-
-This function is used to invoke an internal key.
-
-### is
-
-This function is used to determine if a value type
-is valid.
-
-### key
-
-This function is is used to create a key.
-
-### key_may_match
-
-This function is used to determine if a key may
-match a filter.
-
-### memtable_key
-
-This function is used to create a memtable key.
-
-### name
-
-This function is used to get the name of an
-internal filter policy.
-
-### pack_sequence_and_type
-
-This function is used to pack a sequence number
-and a value type.
-
-### parse_internal_key
-
-This function is used to parse an internal key
-from a slice.
-
-### set_from
-
-This function is used to set the value of an
-internal key.
-
-### user_comparator
-
-This function is used to get the user comparator
-from an internal key.
-
-### user_key
-
-This function is used to get the user key from an
-internal key.
-
-### value
-
-This function is used to create a value.
-
-### FormatTest
-
-This is a test suite for formatting keys in
-LevelDB.
-
-### dbdbformat_test_main
-
-This is the main test function for formatting keys
-in LevelDB.
-
-###
-
-34> how does this interface apply to leveldb?
-
-The `bitcoinleveldb-key` crate provides Rust
-implementations of data structures and functions
-used in the LevelDB key-value store. Specifically,
-it includes implementations of internal keys,
-parsed internal keys, and lookup keys used for
-accessing data in LevelDB. These structures are
-used to represent and manipulate keys and values
-stored in the database, as well as to define
-ordering and comparison functions used to sort
-keys in the database.
-
-The `InternalKey` struct represents a key stored
-in the database, and contains both user data (the
-user key) as well as metadata used by LevelDB
-(such as a sequence number and value type). The
-`ParsedInternalKey` struct is used to parse an
-`InternalKey` into its constituent parts,
-including the user key, sequence number, and value
-type. `LookupKey` is a convenience struct that
-wraps an `InternalKey` and provides methods for
-efficiently searching the database for a key.
-
-The `InternalKeyComparator` struct provides
-a comparison function for `InternalKey` objects
-that takes into account their sequence numbers and
-value types. The `TLLessThan` struct provides
-a comparison function for user keys that ignores
-any sequence numbers or value types.
-
-The `create_filter` function generates a bloom
-filter from a set of keys, which can be used to
-efficiently test whether a key exists in the
-database without having to do a disk lookup.
-
-Overall, these data structures and functions form
-the backbone of the LevelDB database, allowing for
-efficient storage and retrieval of key-value
-pairs.
+*This README.md was generated by an AI model and may not be 100% accurate; however, it should be useful and insightful.*

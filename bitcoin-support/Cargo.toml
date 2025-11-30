@@ -43,13 +43,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "allocators, memory cleansing, events, locked pools, memory arenas, etc"
+description = "Bitcoin-support is a Rust crate providing secure memory management with a focus on cryptographic security for Bitcoin-related operations."
 documentation = "https://docs.rs/bitcoin-support"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-support"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "cryptography", "securememory", "eventdriven", "networking"]
+categories = ["cryptography", "network-programming", "data-structures", "memory-management"]
 
 [package.metadata]
 cpp-authors = [

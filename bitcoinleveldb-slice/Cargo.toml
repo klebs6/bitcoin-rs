@@ -27,13 +27,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "slices contain a pointer into some external storage and a size.  The user of a slice must ensure that the slice is not used after the corresponding external storage has been deallocated"
+description = "A Rust library providing efficient byte slice management through zero-copy data access, emphasizing performance and memory usage."
 documentation = "https://docs.rs/bitcoinleveldb-slice"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-slice"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["slice", "zerocopy", "memory", "performance", "byte"]
+categories = ["data-structures", "memory-management"]
 
 [package.metadata]
 cpp-authors = [

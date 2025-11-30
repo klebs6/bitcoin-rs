@@ -21,13 +21,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "an interprocess or interthread pipe for sending tokens (one byte values) over"
+description = "A Rust crate for token-based interprocess and interthread communication through pipes, supporting both POSIX and Windows systems."
 documentation = "https://docs.rs/bitcoin-tokenpipe"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-tokenpipe"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["ipc", "token", "pipe", "interprocess", "communication"]
+categories = ["asynchronous", "concurrency", "network-programming", "os"]
 
 [package.metadata]
 cpp-authors = [

@@ -15,13 +15,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "time utilities"
+description = "A Rust library for advanced time manipulation functions, including conversions between time units, mock time settings, and ISO-8601 formatting/parsing, specialized for blockchain and cryptocurrency ecosystems."
 documentation = "https://docs.rs/bitcoin-time"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-time"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["time", "blockchain", "cryptocurrency", "datetime", "conversion"]
+categories = ["algorithms", "cryptography", "date-and-time", "finance", "network-programming"]
 
 [package.metadata]
 cpp-authors = [

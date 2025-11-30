@@ -1,135 +1,57 @@
-# bitcoin-bitstream
+# Bitcoin Bitstream
 
-bitcoin-bitstream provides a set of utilities for reading and writing bitstreams. This crate includes BitStreamReader, BitStreamWriter, and additional utilities for handling bit-level data operations.
+`bitcoin-bitstream` is a Rust crate designed for efficient handling of bitwise streams, primarily in the context of Bitcoin serialization and deserialization. This crate provides utilities to manipulate data streams at the bit level, supporting both big-endian and little-endian operations which are essential in numerous financial and blockchain applications.
+
+## Features
+
+- **Bitstream Handling**: Provides `BitStreamReader` and `BitStreamWriter` structs for reading from and writing to bit-oriented streams, allowing precise control over individual bits.
+- **Stream Serialization**: Offers `DataStream` handling that allows seamless serialization and deserialization, mimicking typical C++ stream behavior.
+- **Endian-Aware Functions**: Implements functions like `writebe16`, `writele64`, `readbe32`, and `readle64` for endianness-specific operations crucial for network programming and data interchange.
+- **OverrideStream Abstraction**: Facilitates customized stream processing via traits like `Backend`, `StreamItems`, and `StreamInto`.
+- **Traceable Operations**: Extensive use of Rust's `tracing` capabilities to monitor function calls, aiding in debugging and performance analysis.
+
+## Usage
+
+Add `bitcoin-bitstream` as a dependency in your `Cargo.toml`:
+
+```toml
+[dependencies]
+bitcoin-bitstream = "0.1.19"
+```
+
+Use the crate in your Rust project:
+
+```rust
+use bitcoin_bitstream::{BitStreamReader, BitStreamWriter};
+
+fn main() {
+    // Example usage of BitStreamReader
+    let reader = BitStreamReader::new(/*...*/);
+    let bits = reader.read(8);
+    println!("Read bits: {}", bits);
+
+    // Example usage of BitStreamWriter
+    let mut writer = BitStreamWriter::new(/*...*/);
+    writer.write(10, 8);
+    writer.flush();
+}
+```
 
 ## Structures
 
-`BitStreamReader`
+### `OverrideStream`
+Defines stream operations, leveraging internal pointers for in-place reading and writing.
 
-The BitStreamReader structure is designed to read bits from an input stream.
+### `BitStreamReader` and `BitStreamWriter`
+Facilitate reading and writing streams bit-by-bit, crucial for custom protocol implementations.
 
-```rust
-pub struct BitStreamReader<IStream> {
-    istream: Rc<RefCell<IStream>>,
-    buffer: u8,   // Buffered byte read in from the input stream
-    offset: i32,  // Number of high order bits in buffer already returned by previous Read() calls
-}
+### `DataStream`
+Encapsulates a data buffer with read and write capabilities, often used in serialization.
 
-impl<IStream> BitStreamReader<IStream> {
-    pub fn new(istream: &mut IStream) -> Self {
-        // Initialize a new BitStreamReader
-    }
+## Contributing
+To contribute to `bitcoin-bitstream`, visit our [GitHub repository](https://github.com/klebs6/bitcoin-rs).
 
-    pub fn read(&mut self, nbits: i32) -> u64 {
-        // Read the specified number of bits from the stream
-    }
-}
-```
+## Licenses
+This crate is licensed under the MIT License. See LICENSE file for details.
 
-`BitStreamWriter`
-
-The BitStreamWriter structure is designed to write bits to an output stream.
-
-```rust
-pub struct BitStreamWriter<OStream> {
-    ostream: Rc<RefCell<OStream>>,
-    buffer: u8,   // Buffered byte waiting to be written to the output stream
-    offset: i32,  // Number of high order bits in buffer already written by previous Write() calls
-}
-
-impl<OStream> Drop for BitStreamWriter<OStream> {
-    fn drop(&mut self) {
-        // Flush the buffer on drop
-    }
-}
-
-impl<OStream> BitStreamWriter<OStream> {
-    pub fn new(ostream: &mut OStream) -> Self {
-        // Initialize a new BitStreamWriter
-    }
-
-    pub fn write(&mut self, data: u64, nbits: i32) {
-        // Write the nbits least significant bits of data to the output stream
-    }
-
-    pub fn flush(&mut self) {
-        // Flush any unwritten bits to the output stream
-    }
-}
-```
-
-## Utilities
-
-`count_bits`
-
-Returns the smallest number n such that (x >> n) == 0.
-
-```rust
-#[inline] pub fn count_bits(x: u64) -> u64 {
-    // Implementation of count_bits
-}
-```
-
-`DataStream`
-
-A double-ended buffer combining vector and stream-like interfaces.
-
-```rust
-pub struct DataStream {
-    vch: SerializeData,
-    n_read_pos: u32,
-    n_type: i32,
-    n_version: i32,
-}
-
-// Various methods for DataStream...
-```
-
-## Endianness Handling
-
-Functions to read and write integers in little-endian and big-endian formats.
-
-```rust
-#[inline] pub fn readle16(ptr: *const u8) -> u16 { /*...*/ }
-#[inline] pub fn readle32(ptr: *const u8) -> u32 { /*...*/ }
-#[inline] pub fn readle64(ptr: *const u8) -> u64 { /*...*/ }
-#[inline] pub fn readbe16(ptr: *const u8) -> u16 { /*...*/ }
-#[inline] pub fn readbe32(ptr: *const u8) -> u32 { /*...*/ }
-#[inline] pub fn readbe64(ptr: *const u8) -> u64 { /*...*/ }
-
-#[inline] pub fn writele16(ptr: *mut u8, x: u16) { /*...*/ }
-#[inline] pub fn writele32(ptr: *mut u8, x: u32) { /*...*/ }
-#[inline] pub fn writele64(ptr: *mut u8, x: u64) { /*...*/ }
-#[inline] pub fn writebe32(ptr: *mut u8, x: u32) { /*...*/ }
-#[inline] pub fn writebe64(ptr: *mut u8, x: u64) { /*...*/ }
-```
-
-## Traits
-
-`GetType` and `GetVersion`
-
-Traits to retrieve type and version information from a stream.
-
-```rust
-pub trait GetType {
-    fn get_type(&self) -> i32;
-}
-
-pub trait GetVersion {
-    fn get_version(&self) -> i32;
-}
-```
-
-`StreamItems` and `StreamInto`
-
-Traits for streaming items into and from a stream.
-
-```rust
-pub trait StreamItems {
-    fn stream<Item>(&mut self, x: Item);
-}
-
-pub trait StreamInto {
-    fn stream_into<Item>(&self, x: &mut Item);
-}
-```
+**Disclaimer**: This README was generated by an AI model and may not be 100% accurate. However, it should provide a good foundation for understanding the crate.

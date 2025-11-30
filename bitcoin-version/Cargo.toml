@@ -20,13 +20,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "tools related to versioning"
+description = "A Rust crate to facilitate version management and formatting according to Bitcoin Improvement Proposal BIP 14, providing metadata for build and sub-version formatting."
 documentation = "https://docs.rs/bitcoin-version"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-version"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "versioning", "bip14", "metadata", "cryptocurrency"]
+categories = ["api-bindings", "cryptography", "finance", "network-programming", "parsing"]
 
 [package.metadata]
 cpp-authors = [

@@ -27,8 +27,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "Sophisticated toolset for analyzing Bitcoin transaction confirmation statistics, optimizing fee strategies, and estimating transaction confirmation times using historical data."
 edition = "2024"
 license = "MIT"
 name = "bitcoin-tx-confirm-stats"
 version = "0.1.1"
+keywords = ["bitcoin", "transaction", "confirmation", "feerate", "statistics"]
+categories = ["finance", "algorithms", "cryptography", "data-structures", "network-programming"]

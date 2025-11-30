@@ -1,117 +1,47 @@
-# bitcoinleveldb-status
+# `bitcoinleveldb-status`
 
-This Rust crate is a direct translation from the
-C++ code of the Bitcoin Core. The
-`bitcoinleveldb-status` crate is a subcomponent of
-the Bitcoin system that provides a status code and
-a status message for errors that may occur during
-its operation.
+`bitcoinleveldb-status` is a Rust crate providing an implementation of status codes inspired by C++ conventions. It encapsulates the result of operations in a manner akin to LevelDB's status handling, supporting a range of result states including success and various types of errors such as NotFound, Corruption, NotSupported, InvalidArgument, and IOError. This is particularly useful in systems that require precise indication and communication of operational outcomes.
 
-Notice: This crate is part of a direct translation
-from C++ to Rust of the bitcoin core. As such,
-some of the function bodies may still be in the
-process of translation. Please note that this
-system will become testable once the translation
-process is complete.
+## Features
+- Mimics LevelDB status handling.
+- Move semantics parallels C++ concepts through ownership transfers.
+- Provides a structured way to handle operation results.
+- Includes convenience methods for common status and message handling patterns.
 
-## Status and StatusCode
+## Usage
+The crate defines a `Status` struct that represents an operation's outcome and a `StatusCode` enum to capture specific error types. It allows seamless creation and evaluation of these statuses.
 
-The `Status` struct represents the status of
-a Bitcoin system operation, with a `StatusCode`
-indicating the type of error that occurred. These
-codes are assigned with a corresponding error
-message and can be checked programmatically to
-handle errors in the system's operation.
+```rust
+// Example of usage.
+use bitcoinleveldb_status::{Status, StatusCode};
 
-## Error Handling
+let ok_status = Status::ok();
+assert!(ok_status.is_ok());
 
-The Bitcoin system is designed to be highly
-reliable and robust, and the
-`bitcoinleveldb-status` crate contributes to this
-by providing error handling mechanisms through the
-use of the `Status` and `StatusCode`
-structs. These mechanisms ensure that errors are
-detected and handled gracefully, which can help
-prevent system crashes and data loss.
+let not_found_status = Status::not_found("Resource missing", None);
+assert!(not_found_status.is_not_found());
+assert_eq!(not_found_status.to_string(), "NotFound: Resource missing");
+```
 
-## Mathematical Ideas
+### StatusCode Enum Values
+- `Ok`: Represents success.
+- `NotFound`: Resource not found.
+- `Corruption`: Data corruption.
+- `NotSupported`: Operation unsupported.
+- `InvalidArgument`: Invalid input arguments.
+- `IOError`: Input/output failure.
 
-There are no mathematical ideas associated with
-the tokens in this crate.
+### Constructors
+- `Status::ok()` - Creates a status representing success.
+- `Status::not_found(msg, msg2)` - Helps in reporting not found errors.
+- `Status::corruption(msg, msg2)` - Used for signaling data corruption.
+- `Status::not_supported(msg, msg2)` - Indicates unsupported operations.
+- `Status::invalid_argument(msg, msg2)` - Deals with failed preconditions.
+- `Status::io_error(msg, msg2)` - Errors arising from IO operations.
 
-73> which status codes do we have in leveldb?
+### Advanced Features
+Rust move semantics are utilized to optimize memory and resource management, providing constructor and assignment functions that parallel similar C++ pattern paradigms.
 
-In LevelDB, the `StatusCode` enum defines the
-following status codes:
+---
 
-- `Ok`: No error occurred.
-
-- `NotFound`: The specified key was not found in
-  the database.
-
-- `Corruption`: Data corruption occurred in the
-  database.
-
-- `NotSupported`: An unsupported operation was
-  attempted.
-
-- `InvalidArgument`: An invalid argument was
-  provided.
-
-- `IOError`: An I/O error occurred while accessing
-  the database.
-
-- `MergeInProgress`: A merge operation is already
-  in progress.
-
-- `Incomplete`: An operation was not completed
-  successfully.
-
-- `ShutdownInProgress`: The database is shutting
-  down.
-
-- `TimedOut`: A timed out error occurred.
-
-- `Aborted`: The operation was aborted.
-
-- `Busy`: The database is busy.
-
-- `Expired`: The requested key has expired.
-
-- `TryAgain`: A transient error occurred, and the
-  operation should be retried.
-
-- `CompactionTooLarge`: The requested compaction
-  is too large.
-
-- `CompactionAborted`: The requested compaction
-  was aborted.
-
-- `IteratorError`: An error occurred while
-  iterating over the database.
-
-- `DatabaseDropped`: The database was dropped.
-
-- `BatchTooLarge`: The batch is too large.
-
-- `WriteBatchAborted`: The write batch was
-  aborted.
-
-74> which operations require a status to be
-returned?
-
-In general, any operation that can result in an
-error or unexpected behavior may require a status
-to be returned. In the case of leveldb, this
-includes operations such as opening a database,
-reading or writing data, and managing database
-resources.
-
-For example, when reading or writing data, the
-status may indicate whether the operation was
-successful or whether there was an error such as
-a corruption in the database file. When managing
-database resources, the status may indicate
-whether the database was successfully opened or
-closed, or whether there was an error such as an
-I/O error.
+This README.md file was generated by an AI model and may not be 100% accurate; however, it should be pretty good.

@@ -38,13 +38,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "skiplist datastructure implementation and iterators"
+description = "Arena-backed skip list implementation in Rust, facilitating efficient in-memory storage and retrieval, inspired by LevelDB's architecture."
 documentation = "https://docs.rs/bitcoinleveldb-skiplist"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-skiplist"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["skiplist", "leveldb", "datastructure", "memorymanagement", "rust"]
+categories = ["data-structures", "database", "memory-management", "concurrency", "algorithms"]
 
 [package.metadata]
 cpp-authors = [

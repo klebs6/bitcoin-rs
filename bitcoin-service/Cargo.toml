@@ -24,13 +24,15 @@ version = "1.0.152"
 
 [package]
 authors = ["klebs <none>"]
-description = "a service is a combination of a network address and a TCP port"
+description = "A Rust crate providing essential network service functionalities for Bitcoin applications with support for IPv4 and IPv6."
 documentation = "https://docs.rs/bitcoin-service"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-service"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.21"
+keywords = ["bitcoin", "network", "service", "tcp", "hashing"]
+categories = ["network-programming", "cryptography", "data-structures"]
 
 [package.metadata]
 cpp-authors = [

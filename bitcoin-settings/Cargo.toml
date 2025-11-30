@@ -31,13 +31,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "represents a settings value type"
+description = "bitcoin-settings manages and merges Bitcoin configuration from command-line, read-only, and writable sources with support for string, integer, and boolean types."
 documentation = "https://docs.rs/bitcoin-settings"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-settings"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.21"
+keywords = ["bitcoin", "settings", "configuration", "runtime", "merge"]
+categories = ["cryptography", "network-programming", "data-structures"]
 
 [package.metadata]
 cpp-authors = [

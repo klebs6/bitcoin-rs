@@ -29,13 +29,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "comparator for bitcoin leveldb"
+description = "Provides comparator traits and implementations for LevelDB-compatible byte slice comparison and key modification."
 documentation = "https://docs.rs/bitcoinleveldb-comparator"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-comparator"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["leveldb", "comparator", "slice", "bytewise", "database"]
+categories = ["database", "algorithms", "data-structures", "rust-patterns", "parsing"]
 
 [package.metadata]
 cpp-authors = [

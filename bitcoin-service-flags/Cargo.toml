@@ -18,13 +18,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "these are the flags which are required for a peer to support for them to be interesting to us -- ie, for us to wish to use one of our few outbound connection slots for or for us to wish to prioritize keeping their connection around."
+description = "Provides service flags for managing Bitcoin network capabilities, including network, bloom, witness, and compact filters functionality."
 documentation = "https://docs.rs/bitcoin-service-flags"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-service-flags"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "serviceflags", "network", "bitflags", "cryptocurrency"]
+categories = ["cryptography", "network-programming", "data-structures", "api-bindings"]
 
 [package.metadata]
 cpp-authors = [

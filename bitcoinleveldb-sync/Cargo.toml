@@ -12,13 +12,15 @@ version = "0.1.19"
 
 [package]
 authors = ["klebs <none>"]
-description = "helper classes for synchronization"
+description = "Rust crate for efficient, scoped synchronization using 'parking_lot' raw mutexes."
 documentation = "https://docs.rs/bitcoinleveldb-sync"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-sync"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["rust", "synchronization", "mutex", "concurrency", "parkinglot"]
+categories = ["concurrency", "rust-patterns", "data-structures", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

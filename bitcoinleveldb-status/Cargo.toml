@@ -31,13 +31,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "a status encapsulates the result of an operation.  It may indicate success, or it may indicate an error with an associated error message"
+description = "A crate to encapsulate operation outcomes using LevelDB-style status codes, providing specific error-type handling in Rust."
 documentation = "https://docs.rs/bitcoinleveldb-status"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-status"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["status", "leveldb", "errorhandling", "statuscode", "cinterface"]
+categories = ["data-structures", "database", "parsing", "development-tools", "cryptography"]
 
 [package.metadata]
 cpp-authors = [

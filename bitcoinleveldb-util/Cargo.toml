@@ -31,13 +31,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "basic utilities used throughout leveldb"
+description = "A Rust crate for managing objects whose destructors should never be executed, utilizing advanced memory management strategies like MaybeUninit."
 documentation = "https://docs.rs/bitcoinleveldb-util"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-util"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["rust", "destructor", "memorymanagement", "nodrop", "maybeuninit"]
+categories = ["memory-management", "development-tools", "data-structures"]
 
 [package.metadata]
 cpp-authors = [

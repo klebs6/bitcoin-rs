@@ -22,13 +22,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A non-refcounted RAII wrapper for `FILE*`. It is designed to manage the lifecycle of file pointers, ensuring that files are automatically closed when they go out of scope."
+description = "Provides a non-refcounted RAII wrapper for a C `FILE*`, ensuring safe and automatic file management."
 documentation = "https://docs.rs/bitcoin-autofile"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-autofile"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
+keywords = ["file", "raii", "serialization", "c", "bitcoin"]
+categories = ["data-structures", "filesystem", "network-programming", "cryptography", "api-bindings"]
 
 [package.metadata]
 cpp-authors = [

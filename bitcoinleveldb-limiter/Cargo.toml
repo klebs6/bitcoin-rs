@@ -18,13 +18,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "helper abstractions used to limit resource usage to avoid exhaustion"
+description = "A Rust crate to limit resource usage, specifically file descriptors and mmap files, ensuring optimal kernel performance and preventing exhaustion."
 documentation = "https://docs.rs/bitcoinleveldb-limiter"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-limiter"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["resource", "limiter", "filedescriptors", "mmap", "performance"]
+categories = ["data-structures", "development-tools", "filesystem", "memory-management", "os"]
 
 [package.metadata]
 cpp-authors = [

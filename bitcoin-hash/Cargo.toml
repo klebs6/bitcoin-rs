@@ -51,13 +51,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "tools and context for hashing bytes"
+description = "Cryptographic hash functions specialized for Bitcoin and blockchain, implementing SHA-256, RIPEMD-160, and SipHash."
 documentation = "https://docs.rs/bitcoin-hash"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-hash"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
+keywords = ["bitcoin", "crypto", "hashing", "blockchain", "siphash"]
+categories = ["cryptography"]
 
 [package.metadata]
 cpp-authors = [

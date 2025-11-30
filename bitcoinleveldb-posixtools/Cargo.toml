@@ -43,8 +43,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "A Rust library for managing POSIX environment configurations, file locks, and resource limits tailored for Bitcoin-leveldb interoperations."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixtools"
 version = "0.1.1"
+keywords = ["posix", "environment", "concurrency", "filelocking", "bitcoinleveldb"]
+categories = ["filesystem", "concurrency", "network-programming", "data-structures"]

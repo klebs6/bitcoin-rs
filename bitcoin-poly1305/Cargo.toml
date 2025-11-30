@@ -27,13 +27,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Poly1305 is a universal hash function suitable for use as a one-time authenticator and, when combined with a cipher, a message authentication code (MAC). It takes a 32-byte one-time key and a message and produces a 16-byte tag, which can be used to authenticate the message."
+description = "Implements the Poly1305 message authentication code used in Bitcoin Core, ensuring constant-time execution and preventing tampering with messages by authenticating their integrity."
 documentation = "https://docs.rs/bitcoin-poly1305"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-poly1305"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "poly1305", "cryptography", "authentication", "constanttime"]
+categories = ["cryptography", "algorithms", "network-programming"]
 
 [package.metadata]
 cpp-authors = [

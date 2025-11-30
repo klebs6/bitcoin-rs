@@ -18,13 +18,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "a non-refcounted RAII wrapper around a `FILE*` that implements a ring buffer for deserialization. It ensures the ability to rewind a given number of bytes and guarantees proper file closure when the object goes out of scope."
+description = "A Rust crate for buffered file reads with rewind capabilities and file-based stream operations."
 documentation = "https://docs.rs/bitcoin-bufferedfile"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-bufferedfile"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["buffered", "file", "stream", "rewind", "raii"]
+categories = ["algorithms", "data-structures", "filesystem", "network-programming"]
 
 [package.metadata]
 cpp-authors = [

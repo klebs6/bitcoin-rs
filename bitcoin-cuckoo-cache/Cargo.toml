@@ -23,13 +23,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "high performance cache primitives"
+description = "A Rust implementation of a concurrent cuckoo cache with synchronized memory and efficient hash functions."
 documentation = "https://docs.rs/bitcoin-cuckoo-cache"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-cuckoo-cache"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["cuckoo", "cache", "rust", "concurrency", "memory"]
+categories = ["algorithms", "data-structures", "memory-management", "concurrency", "cryptography"]
 
 [package.metadata]
 cpp-authors = [

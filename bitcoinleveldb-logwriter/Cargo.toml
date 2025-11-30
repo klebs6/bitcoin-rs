@@ -57,8 +57,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "A logging writer for LevelDB-style storage systems in Rust enabling efficient append operations with robust CRC32C integrity checks."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-logwriter"
 version = "0.1.1"
+keywords = ["logging", "leveldb", "rust", "crc32c", "filewriting"]
+categories = ["data-structures", "database", "development-tools"]

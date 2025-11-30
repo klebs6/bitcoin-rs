@@ -22,13 +22,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "minimal stream for reading from an existing vector by reference. It is designed for scenarios where efficient deserialization from a byte vector is required."
+description = "A Rust crate providing minimal byte vector reading and writing capabilities, optimized for Bitcoin protocol serialization operations."
 documentation = "https://docs.rs/bitcoin-vetorstream"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-vectorstream"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "serialization", "vector", "stream", "rust"]
+categories = ["data-structures", "finance", "network-programming", "algorithms"]
 
 [package.metadata]
 cpp-authors = [

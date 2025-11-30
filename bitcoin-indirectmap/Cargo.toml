@@ -25,13 +25,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "map whose keys are pointers, but are compared by their dereferenced values"
+description = "Efficient map structure where keys are Arc pointers, compared by dereferenced value, leveraging total ordering for cryptographic use-cases."
 documentation = "https://docs.rs/bitcoin-indirectmap"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-indirectmap"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "indirectmap", "cryptography", "datastructures", "arcpointers"]
+categories = ["data-structures", "cryptography", "memory-management", "concurrency"]
 
 [package.metadata]
 cpp-authors = [

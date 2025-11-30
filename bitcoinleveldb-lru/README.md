@@ -1,125 +1,42 @@
-## bitcoinleveldb-lru
+# bitcoinleveldb-lru
 
-The bitcoinleveldb-lru crate is a Rust
-implementation of the least recently used (LRU)
-cache, which is used to store a limited number of
-items that have been accessed most recently. This
-crate includes several types of LRU cache
-implementations, such as LRUCache,
-ShardedLRUCache, and LRUCacheInner.
+The `bitcoinleveldb-lru` crate provides an implementation of an LRU (Least Recently Used) caching system specifically designed for integration with LevelDB, facilitating cached storage of variable-length data entries.
 
-This LRU cache is part of a direct translation
-from C++ to Rust of the bitcoin core. As such,
-some of the function bodies may still be in the
-process of translation. Please note that this
-system will become testable once the translation
-process is complete.
+## Features
 
-LRU cache is a useful data structure for cache
-management in many applications, including
-databases like LevelDB. It is used to cache
-frequently used items to improve performance,
-while also limiting the memory usage of the
-cache. The LRU cache works by keeping track of the
-order in which items are accessed, and evicting
-the least recently used item when the cache is
-full.
+- **Sharded Caching**: Utilizes sharded caches for enhanced concurrent access and lock distribution across shards.
+- **Custom Hash Table**: Implements a custom hash table delivering performance improvements of up to 5% over common compilers' built-in solutions.
+- **Sentinel Nodes**: Utilizes sentinel nodes for managing entry lists, ordered by recency of access.
+- **Flexible Memory Management**: Provides intrinsic memory management functions for handling heap-allocated list entries, maintaining the integrity of data structures.
 
-The crate provides several methods for cache
-management, including insert, lookup, remove, and
-prune. It also includes functions for resizing the
-cache, setting the cache capacity, and releasing
-cache entries.
+## Technical Details
 
-There are no specific mathematical ideas
-associated with the tokens in this crate.
+The `LRUCache` holds cache entries in a circular, doubly linked list to dynamically accommodate varying entry sizes. Entries are implemented using `LRUHandle` structures, characterized by their heap-allocated nature and variable-length keys. The core mechanism is implemented using Rust's `RefCell` and `Mutex`, orchestrating thread-safe access and state transitions with fine-grained control.
 
-40> thanks -- could you teach me more about LRU
-caches?
+## Integration
 
-Sure! LRU stands for "Least Recently Used" and it
-is a common technique used in computer science to
-manage cache memory.
+This crate can be seamlessly integrated into Rust applications that require efficient caching mechanisms, leveraging its design optimized for high-performance data retrieval typical in blockchain applications like Bitcoin. 
 
-The basic idea behind an LRU cache is that when
-a cache becomes full, the least recently used
-items are the first ones to be evicted. This means
-that when the cache is full and a new item needs
-to be added, the cache looks at the usage history
-of all the items and evicts the one that was used
-the least recently.
+## Usage Example
 
-LRU caches are useful because they take advantage
-of locality of reference, which is a common
-property of many computer programs. Locality of
-reference means that when a program accesses
-a particular memory address, it is likely to
-access nearby memory addresses in the near
-future. By evicting the least recently used items
-from the cache, an LRU cache is more likely to
-keep the most frequently accessed items in the
-cache.
+To utilize `LRUCache`, create a new cache with specified capacity and use the provided methods for cache manipulation:
 
-There are several ways to implement an LRU cache,
-but one common technique is to use a doubly linked
-list to keep track of the order in which items
-were accessed. Each time an item is accessed, it
-is moved to the front of the list. When the cache
-becomes full, the item at the back of the list is
-evicted.
+```rust
+use bitcoinleveldb_lru::{new_lru_cache, LRUCache};
 
-LRU caches can be very effective at improving the
-performance of many types of computer programs,
-especially those that exhibit locality of
-reference. However, they do require some overhead
-to maintain the cache and the order of access. In
-addition, the performance of an LRU cache can
-depend on the specific characteristics of the
-program and the memory access patterns it
-exhibits.
+let cache_capacity = 1024;
+let lru_cache = unsafe { new_lru_cache(cache_capacity) };
+// Perform insertions, lookups, etc.
+```
 
-41> how is the algorithm customized?
+## License
 
-LRU cache algorithm can be customized in different
-ways based on the specific requirements of the
-application. Here are a few ways in which the
-algorithm can be customized:
+Licensed under the MIT License. See [LICENSE](https://github.com/klebs6/bitcoin-rs/blob/main/LICENSE) file for details.
 
-1. Capacity: The capacity of the cache can be set
-   based on the memory available and the size of
-   the cache required.
+## Repository
 
-2. Eviction policy: The policy for evicting items
-   from the cache can be customized. The least
-   recently used item can be evicted, or other
-   policies like least frequently used, most
-   frequently used, or a combination of policies
-   can be used.
+The repository for the crate is hosted at: [github.com/klebs6/bitcoin-rs](https://github.com/klebs6/bitcoin-rs)
 
-3. Object size: The size of the objects being
-   cached can be taken into account while evicting
-   items. For example, if the size of the cached
-   objects is large, fewer objects can be cached
-   compared to smaller objects.
+---
 
-4. Time-to-live (TTL): The time-to-live of cached
-   items can be customized. If a cached item has
-   not been accessed for a certain period, it can
-   be evicted from the cache.
-
-5. Pre-fetching: The algorithm can be customized
-   to pre-fetch items that are likely to be
-   accessed in the future. This can help reduce
-   cache misses and improve the overall
-   performance.
-
-6. Multi-level caching: The LRU cache can be used
-   as a first-level cache, and a larger but slower
-   cache can be used as a second-level cache. This
-   can help improve the hit rate and reduce the
-   overall cache miss rate.
-
-Overall, the customization of the LRU cache
-algorithm depends on the specific requirements of
-the application and the characteristics of the
-data being cached.
+*This README.md was generated by an AI model and may not be 100% accurate; however, it should be quite comprehensive.*

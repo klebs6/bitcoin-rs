@@ -60,13 +60,15 @@ version = "0.10"
 
 [package]
 authors = ["klebs <none>"]
-description = "SHA-256 and SHA-512 are novel hash functions computed with eight 32-bit and 64-bit words, respectively. They use different shift amounts and additive constants, but their structures are otherwise virtually identical, differing only in the number of rounds. (from wikipedia)"
+description = "A Rust crate providing SHA-256 and double SHA-256 (SHA-256d) computations optimized for Bitcoin applications with automatic backend detection."
 documentation = "https://docs.rs/bitcoin-sha256"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-sha256"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
+keywords = ["sha256", "bitcoin", "cryptographic", "hash", "backend"]
+categories = ["cryptography", "encoding"]
 
 [package.metadata]
 cpp-authors = [

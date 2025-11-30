@@ -1,90 +1,37 @@
 # bitcoin-argsman
 
-A Rust crate for managing command-line arguments
-and configurations for the Bitcoin system. This
-crate is in the process of being translated from
-C++ to Rust, and some of the function bodies are
-still in the process of translation.
+`bitcoin-argsman` is a Rust crate designed for advanced management of command-line arguments within the context of Bitcoin-based software systems. The crate provides a comprehensive set of utilities to parse, interpret, and manage various command-line arguments and configurations used by Bitcoin nodes and applications. This crate enables flexible and robust management of node configurations and command invocations, particularly in environments where precise argument handling is paramount.
 
-This crate provides a set of tools for parsing and
-interpreting command-line arguments and
-configuration files, as well as managing and
-validating settings for the Bitcoin system. The
-crate contains a number of types and functions
-that allow for easy management of various
-configuration options and parameters.
+## Features
 
-Some of the key features of this crate include:
+- **Comprehensive Argument Parsing**: Supports standard argument types including Boolean, integer, and string options, with structured handling of network-specific configurations.
+- **Command Management**: Facilitates the addition, parsing, and execution of command-style arguments, tailored for Bitcoin node and application operations.
+- **Network-aware Settings**: Ensures configuration parameters are correctly applied across different network types (e.g., mainnet, testnet).
+- **Config File Integration**: Reads and applies settings from configuration files, with support for dynamic inclusion of additional config files.
+- **Error Handling**: Provides detailed error reporting mechanisms for configurations, enhancing debugging and runtime stability.
 
-- `ArgsManager`: A struct for managing
-  command-line arguments and configuration files.
+## Technical Overview
 
-- `ArgDescriptor`: A struct for describing
-  a single argument or option.
+The crate is centered around the `ArgsManager` and `ArgsManagerInner` types, which manage command-line arguments and configurations. These structures handle setting validation, argument caching, and provide interfaces for querying the current settings and execution context. You can customize and expand settings dynamically while adhering to network-specific rules, preventing cross-contamination across network environments.
 
-- `OptionsCategory`: A struct for grouping related
-  command-line arguments.
+The crate also defines various enumerations such as `OptionsCategory` that categorize command-line options and settings based on functionality (e.g., CONNECTION, WALLET, BLOCK_CREATION). This organization aids in structured parameter management and efficient command execution.
 
-- `BaseChainParams`: A struct for managing
-  settings related to the Bitcoin blockchain.
+## Usage
 
-- `SectionInfo`: A struct for managing information
-  about a configuration file section.
+To use `bitcoin-argsman`, incorporate it into your project by adding it to your `Cargo.toml`. Then, use the provided utilities to add and manage arguments within your Bitcoin applications. Define command-line interfaces that suit your project's needs, and leverage network-aware capabilities to ensure consistent behavior across different blockchain environments.
 
-- `ArgsManagerFlags`: A set of bitflags for
-  controlling various aspects of `ArgsManager`.
+```rust
+use bitcoin_argsman::ArgsManager;
 
-- `ArgsManagerCommand`: A struct for defining
-  a subcommand of the `bitcoin-argsman`
-  command-line tool.
+let mut args_manager = ArgsManager::default();
+args_manager.setup_cli_args();
 
-Some of the mathematical ideas behind this crate
-include the use of bitflags for efficient storage
-and manipulation of Boolean flags, as well as the
-use of structs and functions for managing and
-manipulating various types of data.
+if args_manager.help_requested() {
+    println!("{}", args_manager.get_help_message());
+}
+// Further configuration and execution logic follows...
+```
 
-The following are some of the key functions and
-methods provided by this crate:
+## Disclaimer
 
-- `get_data_dir()`: Returns the path to the
-  Bitcoin data directory.
-
-- `get_data_dir_base()`: Returns the base path of
-  the data directory.
-
-- `get_data_dir_net()`: Returns the path to the
-  data directory for a specific Bitcoin network.
-
-- `get_default_data_dir()`: Returns the default
-  path to the Bitcoin data directory.
-
-- `get_home_dir()`: Returns the path to the user's
-  home directory.
-
-- `strip_redundant_last_elements_of_path()`:
-  Removes redundant elements from the end of
-  a path.
-
-- `parse_parameters()`: Parses command-line
-  arguments into a set of `ArgDescriptor` objects.
-
-- `read_config_files()`: Reads configuration files
-  into memory and returns them as a vector of
-  `SectionInfo` objects.
-
-- `read_config_stream()`: Reads a single
-  configuration file stream into memory and
-  returns it as a `SectionInfo` object.
-
-- `select_config_network()`: Selects the
-  appropriate configuration network based on the
-  command-line arguments.
-
-- `write_settings_file()`: Writes the current
-  settings to a configuration file.
-
-Overall, `bitcoin-argsman` provides a powerful and
-flexible set of tools for managing and
-interpreting command-line arguments and
-configuration files for the Bitcoin system.
+This README was generated by an AI model and may not be 100% accurate. However, it should provide a solid introduction to the capabilities of the `bitcoin-argsman` crate.

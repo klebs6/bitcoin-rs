@@ -35,13 +35,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "an Env is an interface used by the leveldb implementation to access operating system functionality like the filesystem etc."
+description = "Rust environment management for LevelDB, providing file operations and environment-specific functionality."
 documentation = "https://docs.rs/bitcoinleveldb-env"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-env"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["rust", "leveldb", "environment", "filesystem", "bitcoin"]
+categories = ["algorithms", "filesystem", "data-structures", "network-programming", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

@@ -50,8 +50,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "A Rust crate providing a POSIX-compatible logging utility for efficient logging and buffer management."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixlogger"
 version = "0.1.1"
+keywords = ["posix", "logger", "buffer", "file", "performance"]
+categories = ["filesystem"]

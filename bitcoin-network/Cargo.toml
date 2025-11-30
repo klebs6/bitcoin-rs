@@ -49,13 +49,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "an abstraction representing a Network -- an address may belong to more than one Network"
+description = "The bitcoin-network crate facilitates robust handling of network addresses and types within Bitcoin environments via BIP155 network support."
 documentation = "https://docs.rs/bitcoin-network"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-network"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "network", "addresses", "bip155", "serialization"]
+categories = ["network-programming", "cryptography", "parsing", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

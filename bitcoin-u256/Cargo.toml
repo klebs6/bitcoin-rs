@@ -45,23 +45,11 @@ version = "0.1.19"
 
 [package]
 authors = ["klebs <none>"]
-categories = [
-    "cryptography",
-    "finance",
-    "mathematics",
-    "data-structures",
-    "encoding",
-]
-description = "A Rust crate for handling 256-bit unsigned integers, optimized for blockchain computations, offering arithmetic operations and compact representation conversions."
+categories = ["cryptography", "algorithms", "data-structures", "finance", "network-programming"]
+description = "Efficient 256-bit unsigned integer manipulation for Bitcoin and related blockchain applications, featuring conversions, bitwise, and arithmetic operations."
 documentation = "https://docs.rs/bitcoin-u256"
 edition = "2021"
-keywords = [
-    "bitcoin",
-    "u256",
-    "blockchain",
-    "cryptography",
-    "arithmetic",
-]
+keywords = ["bitcoin", "u256", "blockchain", "cryptography", "arithmetic"]
 license = "MIT"
 name = "bitcoin-u256"
 repository = "https://github.com/klebs6/bitcoin-rs"

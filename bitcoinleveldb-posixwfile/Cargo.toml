@@ -47,8 +47,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "A Rust library for handling POSIX-compliant writable files with strong data durability guarantees."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixwfile"
 version = "0.1.1"
+keywords = ["posix", "file", "filesystem", "durability", "asynchronous"]
+categories = ["asynchronous", "filesystem", "network-programming", "data-structures", "development-tools"]

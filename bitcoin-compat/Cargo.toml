@@ -17,13 +17,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "platform specific code and constant assertions for certain assumptions"
+description = "Cross-platform compatibility utilities for bitcoin-related projects, abstracting platform-specific behavior into consistent implementations."
 documentation = "https://docs.rs/bitcoin-compat"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-compat"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "crossplatform", "endianconversion", "terminalcontrol", "networking"]
+categories = ["cryptography", "authentication", "network-programming", "external-ffi-bindings", "os"]
 
 [package.metadata]
 cpp-authors = [

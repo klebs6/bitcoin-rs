@@ -19,13 +19,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Although designed for use as a hash function to ensure security, SipHash is fundamentally different from cryptographic hash functions like SHA in that it is only suitable as a message authentication code: a keyed hash function like HMAC. That is, SHA is designed so that it is difficult for an attacker to find two messages X and Y such that SHA(X) = SHA(Y), even though anyone may compute SHA(X). SipHash instead guarantees that, having seen Xi and SipHash(Xi, k), an attacker who does not know the key k cannot find (any information about) k or SipHash(Y, k) for any message Y ∉ {Xi} which they have not seen before. (from wikipedia)"
+description = "Bitcoin Core-compatible SipHash-2-4 implementation optimized for cryptographic hashing of 256-bit values with an extra 32-bit tag."
 documentation = "https://docs.rs/bitcoin-siphash"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-siphash"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["siphash", "bitcoin", "hashing", "cryptography", "rust"]
+categories = ["cryptography", "finance", "algorithms", "science", "data-structures"]
 
 [package.metadata]
 cpp-authors = [

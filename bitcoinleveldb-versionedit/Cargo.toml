@@ -41,13 +41,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "abstraction representing an edit on a particular version"
+description = "Utilities for manipulating version edits in a LevelDB-inspired storage engine, focusing on Bitcoin ecosystem requirements."
 documentation = "https://docs.rs/bitcoinleveldb-versionedit"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-versionedit"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "leveldb", "version", "storage", "serialization"]
+categories = ["database", "data-structures", "encoding", "filesystem", "parsing"]
 
 [package.metadata]
 cpp-authors = [

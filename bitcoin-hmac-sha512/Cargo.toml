@@ -26,8 +26,10 @@ sha2 = "0.10"
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "A rust library providing HMAC-SHA-512 message authentication for secure Bitcoin operations."
 edition = "2024"
 license = "MIT"
 name = "bitcoin-hmac-sha512"
 version = "0.1.1"
+keywords = ["hmac", "sha512", "cryptography", "bitcoin", "hashing"]
+categories = ["cryptography", "algorithms", "finance"]

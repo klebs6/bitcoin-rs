@@ -11,21 +11,10 @@ workspace = true
 
 [package]
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
-categories = [
-    "os",
-    "memory-management",
-    "cryptography",
-    "concurrency",
-]
-description = "Provides OS-dependent allocation of locked memory pages, minimizing paging out of sensitive data."
+categories = ["memory-management", "os", "cryptography", "development-tools", "data-structures"]
+description = "OS-dependent allocation and deallocation of locked/pinned memory pages for enhanced security and memory management."
 edition = "2024"
-keywords = [
-    "allocator",
-    "memory",
-    "cryptography",
-    "secure",
-    "pinned",
-]
+keywords = ["memory", "allocation", "locked", "security", "osspecific"]
 license = "MIT"
 name = "bitcoin-locked-page-allocator"
 version = "0.1.19"

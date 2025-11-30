@@ -13,21 +13,10 @@ workspace = true
 
 [package]
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
-categories = [
-    "cryptography",
-    "parsing",
-    "finance",
-    "algorithms",
-]
-description = "A comprehensive Rust library for parsing and tokenizing JSON data, optimized for Bitcoin applications."
+categories = ["algorithms", "parsing", "data-structures", "cryptography", "network-programming"]
+description = "Efficient JSON token parsing and manipulation for Bitcoin-related applications, supporting standard JSON structures and hexadecimal conversions."
 edition = "2024"
-keywords = [
-    "json",
-    "bitcoin",
-    "tokenization",
-    "parsing",
-    "cryptocurrency",
-]
+keywords = ["json", "bitcoin", "parsing", "token", "hexadecimal"]
 license = "MIT"
 name = "bitcoin-get-json-token"
 version = "0.1.1"

@@ -18,13 +18,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "traits for tracking dynamic and recursive memory usage"
+description = "Precise crate for evaluating memory usage of data structures with support for dynamic, recursive, and incremental measurement."
 documentation = "https://docs.rs/bitcoin-mem"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-mem"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["memory", "dynamicusage", "recursive", "incremental", "performance"]
+categories = ["algorithms", "data-structures", "mathematics", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

@@ -63,13 +63,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "random numbers in bitcoin"
+description = "A robust RNG library for cryptographic and non-cryptographic applications, offering multiple RNG strategies and hardware entropy support."
 documentation = "https://docs.rs/bitcoin-random"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-random"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.21"
+keywords = ["rng", "cryptography", "entropy", "random", "hardware"]
+categories = ["cryptography", "algorithms", "asynchronous", "data-structures", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

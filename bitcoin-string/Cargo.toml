@@ -24,13 +24,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "string utilities for the bitcoin system -- BilingualStr, strings representing money"
+description = "A collection of string utilities for Bitcoin applications, offering sanitation, parsing, and conversion functionalities with a focus on security and precision."
 documentation = "https://docs.rs/bitcoin-string"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-string"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "string", "parse", "cryptography", "sanitize"]
+categories = ["cryptography", "data-structures"]
 
 [package.metadata]
 cpp-authors = [

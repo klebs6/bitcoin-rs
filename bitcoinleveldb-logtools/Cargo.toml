@@ -43,8 +43,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "bitcoinleveldb-logtools provides utilities for LevelDB log management, focusing on Bitcoin data integrity and manipulation. It offers log record enumeration, extended record types for error handling, and functions for memory and string management."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-logtools"
 version = "0.1.1"
+keywords = ["leveldb", "logs", "bitcoin", "crcs", "pointers"]
+categories = ["algorithms", "data-structures", "database", "parsing"]

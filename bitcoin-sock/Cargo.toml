@@ -42,13 +42,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "RAII-helper class to manage a socket.  closes the socket automatically on drop"
+description = "Provides a comprehensive library for managing network sockets with advanced features and cross-platform support."
 documentation = "https://docs.rs/bitcoin-sock"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-sock"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["sockets", "network", "rust", "bitcoin", "crossplatform"]
+categories = ["network-programming", "cryptography", "algorithms", "asynchronous", "data-structures"]
 
 [package.metadata]
 cpp-authors = [

@@ -40,13 +40,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "LRU cache implementation"
+description = "An advanced sharded LRU cache implementation designed for fast LevelDB integrations in bandwidth-sensitive systems."
 documentation = "https://docs.rs/bitcoinleveldb-lru"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-lru"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["lrucache", "leveldb", "shardedcache", "customhashtable", "performance"]
+categories = ["data-structures", "memory-management", "network-programming", "cryptography", "database"]
 
 [package.metadata]
 cpp-authors = [

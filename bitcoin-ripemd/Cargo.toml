@@ -19,13 +19,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "RIPEMD-160 -- made up of 80 stages made up of 5 blocks that run 16 times each"
+description = "bitcoin-ripemd provides a Rust implementation of the RIPEMD-160 hash function, used in cryptographic applications like blockchain."
 documentation = "https://docs.rs/bitcoin-ripemd"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-ripemd"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["ripemd160", "cryptography", "hash", "blockchain", "bitcoin"]
+categories = ["cryptography", "algorithms", "data-structures"]
 
 [package.metadata]
 cpp-authors = [

@@ -38,13 +38,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "tools for serialization"
+description = "A Rust crate providing efficient serialization and deserialization interfaces for Bitcoin data structures with support for VarInt encoding and various formatters."
 documentation = "https://docs.rs/bitcoin-serialize"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-serialize"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "serialization", "varint", "cryptography", "encoding"]
+categories = ["cryptography", "network-programming", "data-structures", "encoding"]
 
 [package.metadata]
 cpp-authors = [

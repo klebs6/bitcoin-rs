@@ -17,3 +17,6 @@ edition = "2024"
 license = "MIT"
 name = "bitcoin-syscall"
 version = "0.1.2"
+description = "Provides a syscall sandboxing solution for enhancing security in Bitcoin-Core environments using seccomp-bpf on Linux x86_64."
+keywords = ["bitcoin", "syscall", "sandbox", "security", "seccomp"]
+categories = ["cryptography", "network-programming", "development-tools", "os"]

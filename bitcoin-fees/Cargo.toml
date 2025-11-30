@@ -52,13 +52,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "provides tools for working with and estimating bitcoin fees"
+description = "Robust utilities for Bitcoin transaction fee estimation, featuring diverse modes and precision."
 documentation = "https://docs.rs/bitcoin-fees"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-fees"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.21"
+keywords = ["bitcoin", "transaction", "fees", "cryptocurrency", "estimation"]
+categories = ["cryptography", "finance", "algorithms"]
 
 [package.metadata]
 cpp-authors = [

@@ -19,13 +19,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "a portable implementation of crc32c used in bitcoin leveldb"
+description = "Efficient CRC32C checksum computation and transformation utilities, with support for hardware acceleration detection."
 documentation = "https://docs.rs/bitcoinleveldb-crc32"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-crc32"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["crc32c", "checksum", "crypto", "dataintegrity", "performance"]
+categories = ["cryptography", "data-structures", "filesystem", "network-programming", "os"]
 
 [package.metadata]
 cpp-authors = [

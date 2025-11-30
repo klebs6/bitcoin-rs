@@ -15,13 +15,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "structs representing amounts in satoshis (which can be negative)"
+description = "A Rust crate for managing Bitcoin amounts at the satoshi level with support for ownership categorization and caching."
 documentation = "https://docs.rs/bitcoin-amt"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-amt"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "satoshi", "cryptocurrency", "wallet", "ownership"]
+categories = ["finance", "cryptography", "data-structures"]
 
 [package.metadata]
 cpp-authors = [

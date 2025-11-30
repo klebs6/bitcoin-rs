@@ -28,23 +28,11 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-categories = [
-    "cryptography",
-    "data-structures",
-    "network-programming",
-    "finance",
-    "science",
-]
-description = "A Rust crate for efficiently handling 160-bit opaque blobs, commonly used in cryptographic and Bitcoin-related contexts, with support for conversion from strings and byte arrays."
+categories = ["cryptography", "data-structures", "parsing", "finance", "development-tools"]
+description = "Provides a 160-bit opaque blob type, `u160`, ideal for cryptographic and blockchain applications. Implements core traits and supports parsing from hexadecimal strings and byte arrays."
 documentation = "https://docs.rs/bitcoin-u160"
 edition = "2021"
-keywords = [
-    "bitcoin",
-    "cryptography",
-    "datastructure",
-    "hexadecimal",
-    "u160",
-]
+keywords = ["bitcoin", "cryptography", "digitalsignature", "u160", "blockchain"]
 license = "MIT"
 name = "bitcoin-u160"
 repository = "https://github.com/klebs6/bitcoin-rs"

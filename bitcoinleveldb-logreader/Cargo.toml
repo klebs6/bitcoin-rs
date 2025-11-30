@@ -57,8 +57,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "A Rust crate for reading log records from files using LevelDB protocols, providing error handling, customizable corruption reporting, and optional checksum verification."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-logreader"
 version = "0.1.1"
+keywords = ["leveldb", "logreader", "bitcoin", "files", "errorhandling"]
+categories = ["data-structures", "network-programming", "parsing", "mathematics"]

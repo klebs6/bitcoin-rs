@@ -27,13 +27,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "RAII-style guard for using epoch-based graph traversal algorithms"
+description = "A Rust crate for epoch-based transaction graph traversal in mempools, optimizing deduplication while reducing traversal cost."
 documentation = "https://docs.rs/bitcoin-epoch"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-epoch"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["epoch", "bitcoin", "mempool", "traversal", "deduplication"]
+categories = ["algorithms", "data-structures", "cryptography", "science"]
 
 [package.metadata]
 cpp-authors = [
