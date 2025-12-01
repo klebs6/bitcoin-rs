@@ -40,40 +40,33 @@ FEATURES :=
 NO_FAIL_FAST := --no-fail-fast
 
 #-------------------------------[active-below]
-
 ACTIVE := bitcoin-top
 
-# ------------------------------- [leveldb-layer-08]
+# ------------------------------- [leveldb-layer-7]
 ACTIVE := bitcoinleveldb-posix
+ACTIVE := bitcoinleveldb-memenv
+ACTIVE := bitcoinleveldb-table
 
-# ------------------------------- [leveldb-layer-09]
-
-#ACTIVE := bitcoinleveldb-memenv
-#ACTIVE := bitcoinleveldb-options
-
-# ------------------------------- [leveldb-layer-10]
-#ACTIVE := bitcoinleveldb-table
-
-# ------------------------------- [leveldb-layer-11]
+# ------------------------------- [leveldb-layer-8]
 #ACTIVE := bitcoinleveldb-duplex
 #ACTIVE := bitcoinleveldb-memtable
 #ACTIVE := bitcoinleveldb-merger
 #ACTIVE := bitcoinleveldb-meta
 #ACTIVE := bitcoinleveldb-version
 
-# ------------------------------- [leveldb-layer-12]
+# ------------------------------- [leveldb-layer-9]
 #ACTIVE := bitcoinleveldb-batch
 #ACTIVE := bitcoinleveldb-repair
 
-# ------------------------------- [leveldb-layer-13]
+# ------------------------------- [leveldb-layer-10]
 #ACTIVE := bitcoinleveldb-db
 #ACTIVE := bitcoinleveldb-dumpfile
 
-# ------------------------------- [leveldb-layer-14]
+# ------------------------------- [leveldb-layer-11]
 #ACTIVE := bitcoinleveldb-bench
 #ACTIVE := bitcoinleveldb-test
 
-# ------------------------------- [leveldb-layer-15]
+# ------------------------------- [leveldb-layer-12]
 #ACTIVE := bitcoin-leveldb
 
 #-------------------------------[future]
@@ -308,7 +301,7 @@ bench:
 #ACTIVE := bitcoin-sha512
 #ACTIVE := bitcoin-hmac-sha512
 #ACTIVE := bitcoin-hmac-sha256
-ACTIVE := bitcoin-sock
+#ACTIVE := bitcoin-sock
 #ACTIVE := bitcoin-fees
 #ACTIVE := bitcoin-muhash
 #ACTIVE := bitcoin-remote
@@ -350,3 +343,4 @@ ACTIVE := bitcoin-sock
 #ACTIVE := bitcoinleveldb-posixmmaprfile
 
 #ACTIVE := bitcoinleveldb-posixenv
+#ACTIVE := bitcoinleveldb-options
