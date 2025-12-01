@@ -44,8 +44,8 @@ ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-7]
 ACTIVE := bitcoinleveldb-posix
-ACTIVE := bitcoinleveldb-memenv
-ACTIVE := bitcoinleveldb-table
+#ACTIVE := bitcoinleveldb-memenv
+#ACTIVE := bitcoinleveldb-table
 
 # ------------------------------- [leveldb-layer-8]
 #ACTIVE := bitcoinleveldb-duplex

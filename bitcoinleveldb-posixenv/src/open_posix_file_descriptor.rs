@@ -51,6 +51,11 @@ pub fn open_posix_file_descriptor(
         return Err(posix_error(filename, errno));
     }
 
+    // *** CRITICAL INTEGRATION ***
+    // Mark fd as close-on-exec for all POSIX-leveldb tests.
+    //
+    enforce_fd_cloexec(fd, caller);
+
     debug!(
         caller = caller,
         file   = %filename,

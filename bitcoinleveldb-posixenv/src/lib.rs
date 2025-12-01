@@ -30,3 +30,4 @@ x!{store_posix_env_boxed_result}
 x!{unlock_file}
 x!{test_util}
 x!{perform_posix_file_lock_operation}
+x!{enforce_fd_cloexec}
