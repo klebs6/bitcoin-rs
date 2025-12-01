@@ -32,64 +32,125 @@ unsafe impl Sync for Block {}
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/table/block.cc]
 impl Drop for Block {
+
     fn drop(&mut self) {
-        todo!();
-        /*
-            if (owned_) {
-        delete[] data_;
-      }
-        */
+        if self.owned {
+            tracing::debug!(
+                "Block::drop: owned block dropped without explicit deallocation (size = {}, ptr = {:p})",
+                self.size,
+                self.data
+            );
+        } else {
+            tracing::trace!(
+                "Block::drop: non‑owned block dropped (size = {}, ptr = {:p})",
+                self.size,
+                self.data
+            );
+        }
     }
 }
 
 impl Block {
 
-    pub fn size(&self) -> usize {
-        
-        todo!();
-        /*
-            return size_;
-        */
-    }
-    
-    #[inline] pub fn num_restarts(&self) -> u32 {
-        
-        todo!();
-        /*
-            assert(size_ >= sizeof(uint32_t));
-      return DecodeFixed32(data_ + size_ - sizeof(uint32_t));
-        */
-    }
-    
     /**
       | Initialize the block with the specified
       | contents.
       |
       */
     pub fn new(contents: &BlockContents) -> Self {
-    
-        todo!();
-        /*
-        : data(contents.data.data()),
-        : size(contents.data.size()),
-        : owned(contents.heap_allocated),
+        let data_ptr = contents.data().data();
+        let mut size = contents.data().size();
+        let mut restart_offset: u32 = 0;
 
-            if (size_ < sizeof(uint32_t)) {
-        size_ = 0;  // Error marker
-      } else {
-        size_t max_restarts_allowed = (size_ - sizeof(uint32_t)) / sizeof(uint32_t);
-        if (NumRestarts() > max_restarts_allowed) {
-          // The size is too small for NumRestarts()
-          size_ = 0;
+        tracing::trace!(
+            "Block::new: initializing from contents: ptr={:p}, size={}, heap_allocated={}, cachable={}",
+            data_ptr,
+            size,
+            contents.heap_allocated,
+            contents.cachable
+        );
+
+        let trailer_len = core::mem::size_of::<u32>();
+
+        if size < trailer_len {
+            tracing::error!(
+                "Block::new: contents too small ({}) for restart array; marking block as error",
+                size
+            );
+            size = 0;
         } else {
-          restart_offset_ = size_ - (1 + NumRestarts()) * sizeof(uint32_t);
+            let max_restarts_allowed =
+                (size - trailer_len) / trailer_len;
+
+            // Compute actual restart count from the trailer.
+            let tmp_block = Block {
+                data: data_ptr,
+                size,
+                restart_offset: 0,
+                owned: contents.heap_allocated,
+            };
+
+            let num_restarts = tmp_block.num_restarts() as usize;
+            if num_restarts > max_restarts_allowed {
+                tracing::error!(
+                    "Block::new: NumRestarts ({}) exceeds maximum allowed ({}); marking block as error",
+                    num_restarts,
+                    max_restarts_allowed
+                );
+                size = 0;
+            } else {
+                let off = size
+                    - (1 + num_restarts) * trailer_len;
+                restart_offset = off as u32;
+                tracing::trace!(
+                    "Block::new: restart_offset={} (num_restarts={})",
+                    restart_offset,
+                    num_restarts
+                );
+            }
         }
-      }
-        */
+
+        Block {
+            data: data_ptr,
+            size,
+            restart_offset,
+            owned: contents.heap_allocated,
+        }
     }
-    
+
+    pub fn size(&self) -> usize {
+        trace!("Block::size called; size={}", self.size);
+        self.size
+    }
+
+    #[inline]
+    pub fn num_restarts(&self) -> u32 {
+        trace!(
+            "Block::num_restarts called; size={}, data={:p}",
+            self.size,
+            self.data
+        );
+
+        let trailer_len = core::mem::size_of::<u32>();
+        if self.size < trailer_len {
+            error!(
+                "Block::num_restarts called on block smaller than trailer (size={})",
+                self.size
+            );
+            return 0;
+        }
+
+        unsafe {
+            let offset = self.size - trailer_len;
+            let ptr = self.data.add(offset);
+            let bytes = core::slice::from_raw_parts(ptr, trailer_len);
+            let num = decode_fixed32(bytes);
+            trace!("Block::num_restarts decoded num_restarts={}", num);
+            num
+        }
+    }
+
     pub fn new_iterator(&mut self, comparator: Box<dyn SliceComparator>) -> *mut LevelDBIterator {
-        
         todo!();
         /*
             if (size_ < sizeof(uint32_t)) {

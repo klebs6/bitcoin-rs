@@ -43,9 +43,9 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-7]
-ACTIVE := bitcoinleveldb-posix
-#ACTIVE := bitcoinleveldb-memenv
-#ACTIVE := bitcoinleveldb-table
+ACTIVE := bitcoinleveldb-memenv
+ACTIVE := bitcoinleveldb-table
+ACTIVE := bitcoinleveldb-options
 
 # ------------------------------- [leveldb-layer-8]
 #ACTIVE := bitcoinleveldb-duplex
@@ -343,4 +343,4 @@ bench:
 #ACTIVE := bitcoinleveldb-posixmmaprfile
 
 #ACTIVE := bitcoinleveldb-posixenv
-#ACTIVE := bitcoinleveldb-options
+#ACTIVE := bitcoinleveldb-posix

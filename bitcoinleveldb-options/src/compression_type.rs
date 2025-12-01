@@ -14,6 +14,6 @@ pub enum CompressionType {
     /// do not change the values of existing entries, as these are part of the
     /// persistent format on disk.
     /// 
-    NoCompression     = 0x0,
-    SnappyCompression = 0x1
+    None   = 0x0,
+    Snappy = 0x1
 }

@@ -45,10 +45,17 @@ fn env_posix_test_close_on_exec_lock_file() {
     {
         let mut env = env_rc.borrow_mut();
 
-        let mut out_ptr: *mut Box<dyn FileLock> = std::ptr::null_mut();
+        debug!(
+            "env_posix_test_close_on_exec_lock_file: acquiring file lock for {}",
+            file_path
+        );
+
+        // Opaque handle that PosixEnv allocates and owns.
+        let mut lock_handle: *mut Box<dyn FileLock> = std::ptr::null_mut();
+
         let status = env.lock_file(
             &file_path,
-            &mut out_ptr as *mut *mut Box<dyn FileLock>,
+            &mut lock_handle as *mut *mut Box<dyn FileLock>,
         );
         assert!(
             status.is_ok(),
@@ -56,23 +63,38 @@ fn env_posix_test_close_on_exec_lock_file() {
             status
         );
         assert!(
-            !out_ptr.is_null(),
-            "env_posix_test_close_on_exec_lock_file: \
-             env.lock_file returned Ok but null pointer"
+            !lock_handle.is_null(),
+            "env_posix_test_close_on_exec_lock_file: env.lock_file returned Ok but null lock_handle"
         );
 
-        let mut lock_box: Box<dyn FileLock> = unsafe { std::ptr::read(out_ptr) };
+        debug!(
+            "env_posix_test_close_on_exec_lock_file: acquired lock handle {:p}",
+            lock_handle
+        );
 
+        // Verify that the newly opened FD has FD_CLOEXEC set.
         check_close_on_exec_does_not_leak_fds(&baseline_open_fds);
 
-        let status = env.unlock_file(&mut lock_box as *mut Box<dyn FileLock>);
+        debug!(
+            "env_posix_test_close_on_exec_lock_file: unlocking file {}; lock_handle={:p}",
+            file_path, lock_handle
+        );
+
+        // IMPORTANT:
+        // - We do NOT wrap `lock_handle` in a Box.
+        // - We do NOT drop it ourselves.
+        // PosixEnv::unlock_file takes ownership of the handle and frees it.
+        let status = env.unlock_file(lock_handle);
         assert!(
             status.is_ok(),
             "env_posix_test_close_on_exec_lock_file: unlock_file failed: {:?}",
             status
         );
 
-        drop(lock_box);
+        debug!(
+            "env_posix_test_close_on_exec_lock_file: unlock_file completed successfully; lock_handle={:p}",
+            lock_handle
+        );
     }
 
     if let Err(err) = std::fs::remove_file(&file_path) {
