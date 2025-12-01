@@ -15,31 +15,76 @@ crate::ix!();
   */
 #[cfg(HAVE_O_CLOEXEC)]
 pub fn test_close_on_exec_helper_main(pid_arg: *mut u8) -> i32 {
-    
-    todo!();
-        /*
-            int fd = std::atoi(pid_arg);
-      // When given the same file descriptor twice, dup2() returns -1 if the
-      // file descriptor is closed, or the given file descriptor if it is open.
-      if (::dup2(fd, fd) == fd) {
-        std::fprintf(stderr, "Unexpected open fd %d\n", fd);
-        return kTextCloseOnExecHelperFoundOpenFdCode;
-      }
-      // Double-check that dup2() is saying the file descriptor is closed.
-      if (errno != EBADF) {
-        std::fprintf(stderr, "Unexpected errno after calling dup2 on fd %d: %s\n",
-                     fd, std::strerror(errno));
-        return kTextCloseOnExecHelperDup2FailedCode;
-      }
-      return 0;
-        */
+    use std::ffi::CStr;
+    use std::os::raw::c_char;
+
+    unsafe {
+        if pid_arg.is_null() {
+            error!(
+                "test_close_on_exec_helper_main: received null pid_arg pointer; \
+                 treating as exec failure"
+            );
+            return crate::TEXT_CLOSE_ON_EXEC_HELPER_EXEC_FAILED_CODE;
+        }
+
+        let cstr = CStr::from_ptr(pid_arg as *const c_char);
+        let arg_bytes = cstr.to_bytes();
+
+        let arg_str = match std::str::from_utf8(arg_bytes) {
+            Ok(s) => s,
+            Err(err) => {
+                error!(
+                    "test_close_on_exec_helper_main: pid_arg contains invalid UTF-8: {:?}",
+                    err
+                );
+                return crate::TEXT_CLOSE_ON_EXEC_HELPER_EXEC_FAILED_CODE;
+            }
+        };
+
+        let fd: i32 = match arg_str.parse() {
+            Ok(value) => value,
+            Err(err) => {
+                error!(
+                    "test_close_on_exec_helper_main: failed to parse file descriptor from '{}': {:?}",
+                    arg_str,
+                    err
+                );
+                return crate::TEXT_CLOSE_ON_EXEC_HELPER_EXEC_FAILED_CODE;
+            }
+        };
+
+        debug!(
+            "test_close_on_exec_helper_main: probing file descriptor {} via dup2",
+            fd
+        );
+
+        let dup_result = libc::dup2(fd, fd);
+
+        if dup_result == fd {
+            error!(
+                "test_close_on_exec_helper_main: unexpected open fd {} \
+                 (dup2 returned same fd)",
+                fd
+            );
+            return crate::TEXT_CLOSE_ON_EXEC_HELPER_FOUND_OPEN_FD_CODE;
+        }
+
+        if dup_result != -1 {
+            error!(
+                "test_close_on_exec_helper_main: dup2 returned unexpected value {} for fd {}; \
+                 expected -1 or the same fd",
+                dup_result,
+                fd
+            );
+            return crate::TEXT_CLOSE_ON_EXEC_HELPER_DUP_2FAILED_CODE;
+        }
+
+        debug!(
+            "test_close_on_exec_helper_main: dup2 indicates fd {} is closed; returning success",
+            fd
+        );
+
+        0
+    }
 }
 
-#[cfg(HAVE_O_CLOEXEC)]
-pub fn test_close_on_exec_helper_main(_pid_arg: *mut u8) -> i32 {
-    debug!(
-        "test_close_on_exec_helper_main: unused in Rust test harness; \
-         returning success status"
-    );
-    0
-}

@@ -7,15 +7,39 @@ pub struct EnvPosixTest;
 impl EnvPosixTest {
     pub fn set_file_limits(read_only_file_limit: i32, mmap_limit: i32) {
         info!(
-            "EnvPosixTest::set_file_limits: read_only_file_limit={}, mmap_limit={} \
-             (no-op in Rust port; limits are configured elsewhere)",
-            read_only_file_limit, mmap_limit
+            "EnvPosixTest::set_file_limits: read_only_file_limit={}, mmap_limit={}",
+            read_only_file_limit,
+            mmap_limit
         );
+
+        EnvPosixTestHelper::set_read_only_fd_limit(read_only_file_limit);
+        EnvPosixTestHelper::set_read_only_mmap_limit(mmap_limit);
     }
 }
 
 pub fn make_posix_env_for_tests() -> Rc<RefCell<dyn Env>> {
-    info!("make_posix_env_for_tests: constructing shared Env instance");
+    use std::cell::RefCell;
+    use std::rc::Rc;
+    use std::sync::Once;
+
+    static INIT_LIMITS: Once = Once::new();
+
+    trace!("make_posix_env_for_tests: start");
+
+    INIT_LIMITS.call_once(|| {
+        use crate::{TEST_MMAP_LIMIT, TEST_READ_ONLY_FILE_LIMIT};
+
+        info!(
+            "make_posix_env_for_tests: configuring POSIX Env file limits \
+             (read_only_file_limit={}, mmap_limit={})",
+            TEST_READ_ONLY_FILE_LIMIT,
+            TEST_MMAP_LIMIT
+        );
+
+        EnvPosixTest::set_file_limits(TEST_READ_ONLY_FILE_LIMIT, TEST_MMAP_LIMIT);
+    });
+
+    info!("make_posix_env_for_tests: constructing EnvTest and shared Env instance");
 
     let env_test = EnvTest::default();
     let env_rc = env_test.env().clone();
@@ -24,67 +48,94 @@ pub fn make_posix_env_for_tests() -> Rc<RefCell<dyn Env>> {
     env_rc
 }
 
-pub struct EnvPosixTest {
-    env: Rc<RefCell<dyn Env>>,
-}
+pub fn testenv_posix_test_main(argc: i32, argv: *mut *mut u8) -> i32 {
+    use std::ffi::CStr;
+    use std::os::raw::c_char;
 
-impl Default for EnvPosixTest {
-    
-    fn default() -> Self {
-        todo!();
-        /*
-
-
-            : env_(Env::Default())
-        */
-    }
-}
-
-impl EnvPosixTest {
-    
-    pub fn set_file_limits(
-        read_only_file_limit: i32,
-        mmap_limit:           i32)  {
-        
-        todo!();
-        /*
-            EnvPosixTestHelper::SetReadOnlyFDLimit(read_only_file_limit);
-        EnvPosixTestHelper::SetReadOnlyMMapLimit(mmap_limit);
-        */
-    }
-}
-
-pub fn testenv_posix_test_main(_argc: i32, _argv: *mut *mut u8) -> i32 {
     info!(
-        "testenv_posix_test_main: invoked in Rust test port; \
-         configuring file limits and returning success"
+        "testenv_posix_test_main: entry with argc={}",
+        argc
     );
 
-    EnvPosixTest::set_file_limits(TEST_READ_ONLY_FILE_LIMIT, TEST_MMAP_LIMIT);
-    0
-}
+    #[cfg(HAVE_O_CLOEXEC)]
+    unsafe {
+        if argv.is_null() {
+            warn!(
+                "testenv_posix_test_main: argv pointer is null; \
+                 skipping helper dispatch and argv[0] capture"
+            );
+        } else {
+            // First, check whether we are invoked as a helper process.
+            for i in 1..argc {
+                let arg_ptr = *argv.add(i as usize);
+                if arg_ptr.is_null() {
+                    continue;
+                }
 
-pub fn testenv_posix_test_main (
-        argc: i32,
-        argv: *mut *mut u8) -> i32 {
-    
-    todo!();
-        /*
-            #if HAVE_O_CLOEXEC
-      // Check if we're invoked as a helper program, or as the test suite.
-      for (int i = 1; i < argc; ++i) {
-        if (!std::strcmp(argv[i], kTestCloseOnExecSwitch)) {
-          return TestCloseOnExecHelperMain(argv[i + 1]);
+                let arg_cstr = CStr::from_ptr(arg_ptr as *const c_char);
+                let arg_bytes = arg_cstr.to_bytes();
+
+                if arg_bytes == crate::TEST_CLOSE_ON_EXEC_SWITCH.as_bytes() {
+                    let helper_arg_ptr = if i + 1 < argc {
+                        *argv.add((i + 1) as usize)
+                    } else {
+                        std::ptr::null_mut()
+                    };
+
+                    info!(
+                        "testenv_posix_test_main: detected helper invocation \
+                         with switch {}; delegating to test_close_on_exec_helper_main",
+                        crate::TEST_CLOSE_ON_EXEC_SWITCH
+                    );
+
+                    return crate::test_close_on_exec_helper_main(helper_arg_ptr);
+                }
+            }
+
+            // Not a helper invocation; cache argv[0] for potential debugging use.
+            let argv0_ptr = *argv;
+            if argv0_ptr.is_null() {
+                warn!(
+                    "testenv_posix_test_main: argv[0] is null; \
+                     not caching program name"
+                );
+            } else {
+                let argv0_cstr = CStr::from_ptr(argv0_ptr as *const c_char);
+                let argv0_bytes = argv0_cstr.to_bytes();
+
+                let argv0_display = String::from_utf8_lossy(argv0_bytes);
+                debug!(
+                    "testenv_posix_test_main: caching argv[0] value '{}'",
+                    argv0_display
+                );
+
+                let argv0_buf_ptr = crate::get_argv_zero();
+                let argv0_buf = &mut *argv0_buf_ptr;
+
+                argv0_buf.clear();
+                argv0_buf.extend_from_slice(argv0_bytes);
+                argv0_buf.push(0);
+            }
         }
-      }
+    }
 
-      // Save argv[0] early, because googletest may modify argv.
-      GetArgvZero()->assign(argv[0], argv[0] + std::strlen(argv[0]) + 1);
-    #endif  // HAVE_O_CLOEXEC
+    {
+        use crate::{TEST_MMAP_LIMIT, TEST_READ_ONLY_FILE_LIMIT};
 
-      // All tests currently run with the same read-only file limits.
-      leveldb::EnvPosixTest::SetFileLimits(leveldb::kReadOnlyFileLimit,
-                                           leveldb::kMMapLimit);
-      return leveldb::test::RunAllTests();
-        */
+        info!(
+            "testenv_posix_test_main: configuring file limits \
+             read_only={}, mmap={}",
+            TEST_READ_ONLY_FILE_LIMIT,
+            TEST_MMAP_LIMIT
+        );
+
+        EnvPosixTest::set_file_limits(TEST_READ_ONLY_FILE_LIMIT, TEST_MMAP_LIMIT);
+    }
+
+    info!(
+        "testenv_posix_test_main: returning success; \
+         Rust tests are executed via the standard test harness"
+    );
+
+    0
 }

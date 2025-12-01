@@ -283,7 +283,7 @@ bench:
 #ACTIVE := bitcoin-poly1305
 #ACTIVE := bitcoin-locked-pool
 #ACTIVE := bitcoin-chacha
-#ACTIVE := bitcoin-sync
+ACTIVE := bitcoin-sync
 #ACTIVE := bitcoin-compat
 #ACTIVE := bitcoin-ripemd
 #ACTIVE := bitcoin-siphash

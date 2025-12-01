@@ -16,7 +16,7 @@ pub type RecursiveMutex<T> = AnnotatedMixin<parking_lot::ReentrantMutex<T>>;
   | not recursive locking
   |
   */
-pub type Mutex = AnnotatedMixin<parking_lot::RawMutex>;
+pub type WrappedMutex = AnnotatedMixin<parking_lot::RawMutex>;
 
 pub type DebugLock<'a, MutexArg> =
     UniqueLock<'a, RemoveReference<RemovePointer<MutexArg>>>;
