@@ -19,15 +19,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Bitcoin Core-compatible SipHash-2-4 implementation optimized for cryptographic hashing of 256-bit values with an extra 32-bit tag."
+description = "Bitcoin-Core-compatible SipHash-2-4 implementation in Rust, including low-level SIPROUND/ROTL macros, a streaming BitcoinSipHasher, and optimized helpers for hashing 256-bit values with optional 32-bit tags."
 documentation = "https://docs.rs/bitcoin-siphash"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-siphash"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["siphash", "bitcoin", "hashing", "cryptography", "rust"]
-categories = ["cryptography", "finance", "algorithms", "science", "data-structures"]
+keywords = ["bitcoin", "siphash", "hashing", "cryptography", "uint256"]
+categories = ["cryptography", "algorithms", "network-programming", "development-tools", "science"]
 
 [package.metadata]
 cpp-authors = [

@@ -136,10 +136,33 @@ impl LockFile for PosixEnv {
             return status;
         }
 
+        // At this point the caller owns a stable handle pointer. Record the
+        // metadata we will need to unlock the file later without relying on
+        // downcasting the trait object.
+        let handle_ptr: *mut Box<dyn FileLock> = unsafe { *lock };
+
+        {
+            let mut registry_guard = self.file_lock_registry_mut().lock();
+            let previous = registry_guard.insert(
+                handle_ptr as usize,
+                PosixEnvFileLockInfo::new(fd, filename.clone()),
+            );
+
+            if previous.is_some() {
+                warn!(
+                    file       = %filename,
+                    fd,
+                    handle_ptr = ?handle_ptr,
+                    "PosixEnv::lock_file: file_lock_registry already contained \
+                     an entry for this handle pointer; overwriting"
+                );
+            }
+        }
+
         trace!(
-            file     = %filename,
+            file       = %filename,
             fd,
-            lock_ptr = ?unsafe { *lock },
+            lock_ptr   = ?handle_ptr,
             "PosixEnv::lock_file: lock handle installed into output pointer"
         );
 
@@ -244,4 +267,3 @@ mod posix_env_file_locking_tests {
         let _ = std::fs::remove_file(&filename);
     }
 }
-

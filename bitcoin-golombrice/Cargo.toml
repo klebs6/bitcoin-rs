@@ -36,15 +36,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Implements Golomb-coded sets as per BIP-158, efficient for probabilistic data structures and cryptographic applications in Rust."
+description = "BIP-158 compatible Golomb-Rice encoder/decoder and Golomb-coded set (GCS) implementation for Bitcoin compact block filters, with keyed SipHash-based hashing and bit-precise serialization."
 documentation = "https://docs.rs/bitcoin-golombrice"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-golombrice"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
-keywords = ["bitcoin", "bip158", "cryptography", "golombcoding", "probabilistic"]
-categories = ["cryptography", "data-structures", "encoding", "network-programming", "compression"]
+keywords = ["bitcoin", "golombrice", "bip158", "compactfilters", "gcs"]
+categories = ["cryptography", "algorithms", "network-programming", "science"]
 
 [package.metadata]
 cpp-authors = [

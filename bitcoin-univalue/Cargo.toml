@@ -33,13 +33,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "univalues and various token utilities"
+description = "Rust transcription of Bitcoin Core's UniValue JSON subsystem, providing a Bitcoin-compatible dynamic JSON value type, parser, and canonical number/UTF-8 handling for consensus- and RPC-related tooling."
 documentation = "https://docs.rs/bitcoin-univalue"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-univalue"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
+keywords = ["bitcoin", "json", "univalue", "rpc", "serialization"]
+categories = ["cryptography", "network-programming", "parsing", "development-tools", "finance"]
 
 [package.metadata]
 cpp-authors = [

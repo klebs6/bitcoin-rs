@@ -22,15 +22,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Provides a non-refcounted RAII wrapper for a C `FILE*`, ensuring safe and automatic file management."
+description = "RAII wrapper around a C FILE* used by bitcoin-rs, providing Drop-based fclose, explicit ownership transfer, panic-on-error low-level read/write helpers, and integration with custom Bitcoin (de)serialization while implementing std::io::Read and std::io::Write using libc."
 documentation = "https://docs.rs/bitcoin-autofile"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-autofile"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
-keywords = ["file", "raii", "serialization", "c", "bitcoin"]
-categories = ["data-structures", "filesystem", "network-programming", "cryptography", "api-bindings"]
+keywords = ["bitcoin", "file", "ffi", "serialization", "libc"]
+categories = ["filesystem", "network-programming", "encoding", "parsing", "rust-patterns"]
 
 [package.metadata]
 cpp-authors = [

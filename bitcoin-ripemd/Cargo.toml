@@ -19,15 +19,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "bitcoin-ripemd provides a Rust implementation of the RIPEMD-160 hash function, used in cryptographic applications like blockchain."
+description = "Low-level, auditable RIPEMD-160 implementation used by bitcoin-rs, providing a streaming hasher and explicit compression function suitable for Bitcoin HASH160 and interoperability use cases."
 documentation = "https://docs.rs/bitcoin-ripemd"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-ripemd"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["ripemd160", "cryptography", "hash", "blockchain", "bitcoin"]
-categories = ["cryptography", "algorithms", "data-structures"]
+keywords = ["ripemd160", "bitcoin", "hash", "cryptography", "digest"]
+categories = ["cryptography", "algorithms", "science"]
 
 [package.metadata]
 cpp-authors = [

@@ -5,27 +5,56 @@ pub type PosixDefaultEnv = SingletonEnv<PosixEnv>;
 
 #[derive(Getters,MutGetters)]
 #[getset(get="pub",get_mut="pub")]
+pub struct PosixEnvFileLockInfo {
+    fd:       libc::c_int,
+    filename: String,
+}
+
+impl PosixEnvFileLockInfo {
+    pub fn new(fd: libc::c_int, filename: String) -> Self {
+        trace!(
+            fd,
+            file = %filename,
+            "PosixEnvFileLockInfo::new: creating registry entry for file lock"
+        );
+        Self { fd, filename }
+    }
+}
+
+#[derive(Getters,MutGetters)]
+#[getset(get="pub",get_mut="pub")]
 pub struct PosixEnv {
 
-    background_work_mutex:     Mutex<PosixEnvBackgroundWork>,
+    background_work_mutex: Mutex<PosixEnvBackgroundWork>,
 
     /**
       | Thread-safe.
       |
       */
-    locks:                     PosixLockTable,
+    locks: PosixLockTable,
 
     /**
       | Thread-safe.
       |
       */
-    mmap_limiter:              Limiter,
+    mmap_limiter: Limiter,
 
     /**
       | Thread-safe.
       |
       */
-    fd_limiter:                Limiter,
+    fd_limiter: Limiter,
+
+    /**
+      | Per-handle metadata for active file locks.
+      |
+      | This lets `PosixEnv::unlock_file` release the kernel
+      | lock and update the process-local lock table without
+      | relying on downcasting trait objects.
+      |
+      | Thread-safe.
+      */
+    file_lock_registry: Mutex<std::collections::HashMap<usize, PosixEnvFileLockInfo>>,
 }
 
 impl Env for PosixEnv {
@@ -48,11 +77,15 @@ impl Default for PosixEnv {
             "PosixEnv::default: initializing limiters"
         );
 
+        let file_lock_registry =
+            Mutex::new(std::collections::HashMap::<usize, PosixEnvFileLockInfo>::new());
+
         Self {
             background_work_mutex: Mutex::new(background_work_state),
             locks:                 PosixLockTable::default(),
             mmap_limiter:          Limiter::new(mmap_limit),
             fd_limiter:            Limiter::new(fd_limit),
+            file_lock_registry,
         }
     }
 }
@@ -103,4 +136,3 @@ mod posix_env_core_tests {
         }
     }
 }
-

@@ -19,15 +19,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Provides lower-level routines for fixed-size and variable-length integer encoding/decoding, essential for LevelDB-like database operations."
+description = "Low-level LevelDB-compatible binary coding primitives for bitcoin-rs: fixed-width little-endian, varint, and length-prefixed encoding/decoding over raw pointers, Strings, and Slices."
 documentation = "https://docs.rs/bitcoinleveldb-coding"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-coding"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["rust", "leveldb", "database", "encoding", "serialization"]
-categories = ["data-structures", "database", "encoding", "filesystem", "memory-management"]
+keywords = ["leveldb", "bitcoin", "varint", "encoding", "serialization"]
+categories = ["algorithms", "data-structures", "database", "parsing", "science"]
 
 [package.metadata]
 cpp-authors = [

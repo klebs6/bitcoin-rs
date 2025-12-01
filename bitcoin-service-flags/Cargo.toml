@@ -18,15 +18,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Provides service flags for managing Bitcoin network capabilities, including network, bloom, witness, and compact filters functionality."
+description = "Bitcoin P2P nServices flag model and utilities: typed bitflags, desirability evaluation based on IBD state, addrman capability checks, and human-readable rendering matching Bitcoin Core semantics."
 documentation = "https://docs.rs/bitcoin-service-flags"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-service-flags"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "serviceflags", "network", "bitflags", "cryptocurrency"]
-categories = ["cryptography", "network-programming", "data-structures", "api-bindings"]
+keywords = ["bitcoin", "p2p", "network", "serviceflags", "protocol"]
+categories = ["network-programming", "cryptography", "science", "algorithms", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

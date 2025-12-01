@@ -37,10 +37,10 @@ sha2 = "0.10"
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "High-performance HMAC-SHA-256 hash implementation providing message authentication and RFC6979 deterministic signatures optimization."
+description = "Low-level, allocation-free HMAC-SHA-256 and RFC6979 deterministic nonce generator with FFI-friendly APIs, tailored for Bitcoin-style cryptography."
 edition = "2024"
 license = "MIT"
 name = "bitcoin-hmac-sha256"
 version = "0.1.2"
-keywords = ["bitcoin", "hmac", "sha256", "cryptography", "rfc6979"]
-categories = ["cryptography", "algorithms", "network-programming"]
+keywords = ["hmac", "sha256", "rfc6979", "bitcoin", "ecdsa"]
+categories = ["cryptography", "algorithms", "network-programming", "finance", "no-std"]

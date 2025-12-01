@@ -26,10 +26,10 @@ workspace = true
 
 [package]
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
-categories = ["cryptography", "memory-management", "embedded", "science"]
-description = "A Rust crate for managing locked memory pools, preventing sensitive data like Bitcoin security keys from being swapped to disk."
+categories = ["cryptography", "memory-management", "concurrency", "science"]
+description = "Arena-based, page-locked memory pool and singleton manager for cryptographic secrets, modeled after Bitcoin Core’s secure allocator and backed by pluggable OS-specific locked-page allocators."
 edition = "2024"
-keywords = ["bitcoin", "memorymanagement", "lockedmemory", "security", "allocator"]
+keywords = ["bitcoin", "lockedmemory", "secureallocation", "crypto", "keymanagement"]
 license = "MIT"
 name = "bitcoin-locked-pool"
 version = "0.1.3"

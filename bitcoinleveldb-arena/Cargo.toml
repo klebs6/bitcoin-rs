@@ -27,15 +27,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A memory-managed arena allocator for efficient memory allocation in Rust, inspired by Google's LevelDB."
+description = "Low-level bump-allocating memory arena and LCG-based test harness extracted from a Bitcoin LevelDB port, providing raw-pointer allocation, aligned blocks, and memory-usage instrumentation."
 documentation = "https://docs.rs/bitcoinleveldb-arena"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-arena"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["arena", "allocator", "memory", "random", "aligned"]
-categories = ["algorithms", "data-structures", "memory-management", "development-tools"]
+keywords = ["arena", "allocator", "leveldb", "bitcoin", "memory"]
+categories = ["algorithms", "data-structures", "memory-management", "development-tools", "science"]
 
 [package.metadata]
 cpp-authors = [

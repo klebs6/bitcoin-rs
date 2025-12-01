@@ -51,15 +51,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Cryptographic hash functions specialized for Bitcoin and blockchain, implementing SHA-256, RIPEMD-160, and SipHash."
+description = "Bitcoin-Core compatible hashing primitives and hashers for u256-based types, Taproot tagged hashes, OutPoint keys, signature caches, and AssumeUTXO metadata, designed for consensus-safe use in high-performance Rust Bitcoin implementations."
 documentation = "https://docs.rs/bitcoin-hash"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-hash"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
-keywords = ["bitcoin", "crypto", "hashing", "blockchain", "siphash"]
-categories = ["cryptography"]
+keywords = ["bitcoin", "hashing", "taproot", "siphash", "utxo"]
+categories = ["cryptography", "mathematics", "network-programming", "science", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

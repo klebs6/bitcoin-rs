@@ -31,15 +31,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust crate for managing internal keys in LevelDB implementations within Bitcoin environments. Provides efficient key serialization, compression, and comparison utilities."
+description = "Low-level LevelDB-compatible internal key encoding, comparison, and filter-policy utilities used by bitcoin-rs for on-disk key/value layout and MemTable/SSTable lookups."
 documentation = "https://docs.rs/bitcoinleveldb-key"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-key"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "leveldb", "keymanagement", "serialization", "comparator"]
-categories = ["database", "data-structures", "api-bindings", "algorithms", "parsing"]
+keywords = ["leveldb", "bitcoin", "database", "keyencoding", "comparator"]
+categories = ["database", "database-implementations", "algorithms", "data-structures", "cryptography"]
 
 [package.metadata]
 cpp-authors = [

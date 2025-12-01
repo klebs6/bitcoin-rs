@@ -41,7 +41,6 @@ pub fn map_into_range(x: u64, n: u64) -> u64 {
     upper64
 }
 
-
 #[cfg(test)]
 mod map_into_range_tests {
     use super::*;

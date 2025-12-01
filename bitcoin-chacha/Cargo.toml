@@ -35,13 +35,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "classes for the ChaCha20 256 bitstream cipher"
+description = "Bitcoin-compatible ChaCha20 stream cipher and ChaCha20-Poly1305@bitcoin AEAD, with low-level pointer-based APIs, constant-time tag verification, and explicit control over nonces, counters, and keystream caching."
 documentation = "https://docs.rs/bitcoin-chacha"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-chacha"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "chacha20", "poly1305", "aead", "cryptography"]
+categories = ["cryptography", "network-programming", "algorithms", "science", "no-std"]
 
 [package.metadata]
 cpp-authors = [

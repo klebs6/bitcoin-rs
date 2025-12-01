@@ -50,10 +50,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "A Rust crate providing a POSIX-compatible logging utility for efficient logging and buffer management."
+description = "POSIX-backed logging implementation for bitcoinleveldb-style systems that writes timestamped log lines directly to libc::FILE using two-phase buffering and C-compatible format strings."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixlogger"
 version = "0.1.1"
-keywords = ["posix", "logger", "buffer", "file", "performance"]
-categories = ["filesystem"]
+keywords = ["logging", "posix", "libc", "leveldb", "bitcoin"]
+categories = ["network-programming", "development-tools", "filesystem", "os", "rust-patterns"]

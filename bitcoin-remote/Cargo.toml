@@ -42,15 +42,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Facilitates interactions with remote Bitcoin clients using JSON-RPC, providing error management and secure authentication handling."
+description = "Low-level, Bitcoin Core–compatible JSON-RPC helper crate providing HTTP status mapping, RPC error codes, auth-cookie management, parameter-conversion tables, and UniValue-based request/reply utilities."
 documentation = "https://docs.rs/bitcoin-remote"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-remote"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.22"
-keywords = ["bitcoin", "remote", "jsonrpc", "networking", "cryptography"]
-categories = ["network-programming", "cryptography", "finance", "api-bindings", "asynchronous"]
+keywords = ["bitcoin", "jsonrpc", "rpc", "authcookie", "bitcoind"]
+categories = ["network-programming", "api-bindings", "cryptography", "finance", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

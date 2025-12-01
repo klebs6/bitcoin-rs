@@ -45,11 +45,11 @@ version = "0.1.19"
 
 [package]
 authors = ["klebs <none>"]
-categories = ["cryptography", "algorithms", "data-structures", "finance", "network-programming"]
-description = "Efficient 256-bit unsigned integer manipulation for Bitcoin and related blockchain applications, featuring conversions, bitwise, and arithmetic operations."
+categories = ["cryptography", "algorithms", "mathematics", "science", "development-tools"]
+description = "Bitcoin-core–compatible 256-bit blob (`u256`) and arithmetic integer (`ArithU256`) types with limb-level conversions, compact difficulty (nBits) encoding, checkpoints, and serde integration."
 documentation = "https://docs.rs/bitcoin-u256"
 edition = "2021"
-keywords = ["bitcoin", "u256", "blockchain", "cryptography", "arithmetic"]
+keywords = ["bitcoin", "u256", "bigint", "difficulty", "crypto"]
 license = "MIT"
 name = "bitcoin-u256"
 repository = "https://github.com/klebs6/bitcoin-rs"

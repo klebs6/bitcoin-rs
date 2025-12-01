@@ -28,11 +28,11 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-categories = ["cryptography", "data-structures", "parsing", "finance", "development-tools"]
-description = "Provides a 160-bit opaque blob type, `u160`, ideal for cryptographic and blockchain applications. Implements core traits and supports parsing from hexadecimal strings and byte arrays."
+categories = ["cryptography", "network-programming", "parsing", "data-structures", "development-tools"]
+description = "Opaque 160-bit blob type for Bitcoin-style identifiers, with hex formatting, strict 20-byte constructors, little-endian conversion, and zero-allocation slice access."
 documentation = "https://docs.rs/bitcoin-u160"
 edition = "2021"
-keywords = ["bitcoin", "cryptography", "digitalsignature", "u160", "blockchain"]
+keywords = ["bitcoin", "u160", "hash160", "blob", "cryptography"]
 license = "MIT"
 name = "bitcoin-u160"
 repository = "https://github.com/klebs6/bitcoin-rs"

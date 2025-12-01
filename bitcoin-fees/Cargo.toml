@@ -52,15 +52,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Robust utilities for Bitcoin transaction fee estimation, featuring diverse modes and precision."
+description = "Bitcoin Core–compatible fee-rate primitives, estimation modes, horizons, and fee-filter rounding logic for building nodes, wallets, and fee estimators in Rust."
 documentation = "https://docs.rs/bitcoin-fees"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-fees"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.21"
-keywords = ["bitcoin", "transaction", "fees", "cryptocurrency", "estimation"]
-categories = ["cryptography", "finance", "algorithms"]
+keywords = ["bitcoin", "fees", "feerate", "mempool", "wallet"]
+categories = ["cryptography", "finance", "algorithms", "network-programming", "science"]
 
 [package.metadata]
 cpp-authors = [

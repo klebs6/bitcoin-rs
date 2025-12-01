@@ -22,15 +22,15 @@ leveldb_snappy = ["snap"]
 
 [package]
 authors = ["klebs <none>"]
-description = "Provides LevelDB compatibility functions for compression and thread safety in Bitcoin implementations. Includes Snappy compression and robust concurrency primitives."
+description = "LevelDB-compatible low-level utilities for Bitcoin: Snappy compression shims, accelerated CRC32C, and ported mutex/condvar primitives with tracing, matching the C++ LevelDB/Bitcoin Core interfaces."
 documentation = "https://docs.rs/bitcoinleveldb-compat"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-compat"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["snappy", "compression", "bitcoindb", "concurrency", "leveldb"]
-categories = ["compression", "concurrency", "memory-management", "algorithms", "data-structures"]
+keywords = ["bitcoin", "leveldb", "snappy", "crc32c", "concurrency"]
+categories = ["algorithms", "concurrency", "cryptography", "development-tools", "network-programming"]
 
 [package.metadata]
 cpp-authors = [

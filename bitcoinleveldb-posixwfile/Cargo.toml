@@ -47,10 +47,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "A Rust library for handling POSIX-compliant writable files with strong data durability guarantees."
+description = "POSIX-backed implementation of a buffered, durable LevelDB-style WritableFile for the Bitcoin-leveldb stack, using libc syscalls for append, flush, sync, and close with manifest-aware directory syncing."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixwfile"
 version = "0.1.1"
-keywords = ["posix", "file", "filesystem", "durability", "asynchronous"]
-categories = ["asynchronous", "filesystem", "network-programming", "data-structures", "development-tools"]
+keywords = ["bitcoin", "leveldb", "posix", "filesystem", "storage"]
+categories = ["database", "database-implementations", "filesystem", "science", "development-tools"]

@@ -24,11 +24,11 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-categories = ["cryptography", "data-structures"]
-description = "A Rust crate for defining and manipulating fixed-size byte array blobs, used in Bitcoin-related applications."
+categories = ["cryptography", "data-structures", "network-programming"]
+description = "Fixed-size opaque byte blobs (8–256 bits) with Bitcoin-style semantics: little-endian storage, big-endian hex, total ordering, and explicit binary serialization over std::io streams."
 documentation = "https://docs.rs/bitcoin-blob"
 edition = "2021"
-keywords = ["bitcoin", "blob", "serialization", "bytearray", "hexadecimal"]
+keywords = ["bitcoin", "blob", "hash", "hex", "serialization"]
 license = "MIT"
 name = "bitcoin-blob"
 repository = "https://github.com/klebs6/bitcoin-rs"

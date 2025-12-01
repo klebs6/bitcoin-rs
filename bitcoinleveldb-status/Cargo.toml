@@ -31,15 +31,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A crate to encapsulate operation outcomes using LevelDB-style status codes, providing specific error-type handling in Rust."
+description = "C++-compatible LevelDB-style `Status` and `StatusCode` implementation used by bitcoin-rs for precise error classification, binary layout compatibility, and FFI with the Bitcoin Core LevelDB fork."
 documentation = "https://docs.rs/bitcoinleveldb-status"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-status"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["status", "leveldb", "errorhandling", "statuscode", "cinterface"]
-categories = ["data-structures", "database", "parsing", "development-tools", "cryptography"]
+keywords = ["bitcoin", "leveldb", "status", "ffi", "errorhandling"]
+categories = ["database", "external-ffi-bindings", "parsing", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

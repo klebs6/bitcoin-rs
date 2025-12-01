@@ -12,10 +12,10 @@ version = "0.1.19"
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "Provides a HKDF implementation using HMAC-SHA256 with a fixed output length of 32 bytes, following RFC 5869."
+description = "RFC 5869 HKDF implementation specialized for HMAC-SHA256 with a fixed 32-byte output, designed for Bitcoin-style key derivation workflows."
 edition = "2024"
 license = "MIT"
 name = "bitcoin-sha256-hkdf"
 version = "0.1.1"
-keywords = ["bitcoin", "cryptography", "sha256", "hkdf", "security"]
-categories = ["cryptography", "algorithms", "finance"]
+keywords = ["hkdf", "hmacsha256", "keyderivation", "bitcoin", "cryptography"]
+categories = ["cryptography", "mathematics", "algorithms", "development-tools", "science"]

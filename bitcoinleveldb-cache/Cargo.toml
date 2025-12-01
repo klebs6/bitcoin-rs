@@ -25,15 +25,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "The `bitcoinleveldb-cache` crate provides a thread-safe caching solution with a built-in least-recently-used eviction policy. It supports custom eviction mechanisms and variable entry charges against cache capacity."
+description = "Low-level, Bitcoin Core–compatible in-memory cache for LevelDB-style storage, providing capacity-bounded LRU eviction, explicit charge-based memory accounting, and opaque pointer values with custom deleters for FFI-heavy systems."
 documentation = "https://docs.rs/bitcoinleveldb-cache"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-cache"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["cache", "lru", "concurrency", "threadsafe", "rust"]
-categories = ["algorithms", "concurrency", "memory-management", "data-structures", "development-tools"]
+keywords = ["bitcoin", "leveldb", "cache", "lru", "storage"]
+categories = ["algorithms", "caching", "data-structures", "development-tools", "network-programming"]
 
 [package.metadata]
 cpp-authors = [

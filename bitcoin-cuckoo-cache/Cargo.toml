@@ -23,15 +23,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust implementation of a concurrent cuckoo cache with synchronized memory and efficient hash functions."
+description = "Safe Rust port of Bitcoin Core's 8-way cuckoo-style eviction cache, providing a bounded-size, hash-based probabilistic cache with lazy reclamation for high-performance blockchain and systems workloads."
 documentation = "https://docs.rs/bitcoin-cuckoo-cache"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-cuckoo-cache"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["cuckoo", "cache", "rust", "concurrency", "memory"]
-categories = ["algorithms", "data-structures", "memory-management", "concurrency", "cryptography"]
+keywords = ["bitcoin", "cuckoohashing", "cache", "eviction", "blockchain"]
+categories = ["algorithms", "data-structures", "concurrency", "cryptography", "finance"]
 
 [package.metadata]
 cpp-authors = [

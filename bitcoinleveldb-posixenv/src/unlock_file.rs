@@ -14,28 +14,46 @@ impl UnlockFile for PosixEnv {
             "PosixEnv::unlock_file: lock pointer must not be null"
         );
 
-        // Inspect the underlying PosixFileLock without taking ownership yet.
-        let (fd, filename) = unsafe {
-            let lock_ref: &Box<dyn FileLock> = &*lock;
-            let filelock_ref: &dyn FileLock = lock_ref.as_ref();
+        // Look up and remove the metadata associated with this handle from the
+        // registry. This gives us the file descriptor and filename needed to
+        // mirror leveldb's POSIX unlock semantics.
+        let (fd, filename) = {
+            let handle_key = lock as usize;
 
-            // Upcast the trait object to `Any` so we can recover the concrete type.
-            // NOTE: It is crucial that we upcast *the trait object itself* rather
-            // than a reference to it; otherwise the concrete type seen by `Any`
-            // would be `&dyn FileLock` instead of `PosixFileLock`, and the
-            // subsequent `downcast_ref` would always fail.
-            let any_ref: &dyn std::any::Any = &filelock_ref as &dyn std::any::Any;
+            let mut registry_guard = self.file_lock_registry_mut().lock();
 
-            let posix_lock = any_ref
-                .downcast_ref::<PosixFileLock>()
-                .expect(
-                    "PosixEnv::unlock_file: underlying FileLock is not PosixFileLock",
-                );
+            match registry_guard.remove(&handle_key) {
+                Some(info) => {
+                    let fd_value       = *info.fd();
+                    let filename_value = info.filename().clone();
 
-            let fd   = posix_lock.fd();
-            let name = posix_lock.filename().clone();
+                    debug!(
+                        fd         = fd_value,
+                        file       = %filename_value,
+                        handle_key,
+                        "PosixEnv::unlock_file: resolved lock handle in registry"
+                    );
 
-            (fd, name)
+                    (fd_value, filename_value)
+                }
+                None => {
+                    warn!(
+                        handle_key,
+                        "PosixEnv::unlock_file: lock handle not found in registry; \
+                         assuming it has already been unlocked and dropping handle"
+                    );
+
+                    unsafe {
+                        // Even though we do not know the underlying concrete
+                        // lock type here, we can still reclaim the heap
+                        // allocation for the outer Box<Box<dyn FileLock>>.
+                        let outer: Box<Box<dyn FileLock>> = Box::from_raw(lock);
+                        drop(outer);
+                    }
+
+                    return crate::Status::ok();
+                }
+            }
         };
 
         debug!(

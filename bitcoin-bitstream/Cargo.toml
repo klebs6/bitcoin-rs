@@ -31,15 +31,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Rust crate for bitwise stream handling, focusing on Bitcoin serialization, offering endian-aware operations and stream manipulation."
+description = "Low-level Bitcoin-style bit and byte stream utilities providing bit-level readers/writers, a CDataStream-like buffer with secure allocation semantics, and fixed-endian integer accessors for protocol serialization."
 documentation = "https://docs.rs/bitcoin-bitstream"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-bitstream"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "bitstream", "serialization", "endian", "datastream"]
-categories = ["cryptography", "data-structures", "network-programming"]
+keywords = ["bitcoin", "bitstream", "serialization", "endianness", "protocol"]
+categories = ["cryptography", "network-programming", "algorithms", "parsing", "science"]
 
 [package.metadata]
 cpp-authors = [

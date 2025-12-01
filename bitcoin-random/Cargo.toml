@@ -63,15 +63,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A robust RNG library for cryptographic and non-cryptographic applications, offering multiple RNG strategies and hardware entropy support."
+description = "Bitcoin Core-style entropy collection and pseudo-random number generation for Rust, including OS entropy backends, x86 hardware RNG integration, a SHA-512-based DRBG, and a ChaCha20 FastRandomContext compatible with Bitcoin Core semantics."
 documentation = "https://docs.rs/bitcoin-random"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-random"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.21"
-keywords = ["rng", "cryptography", "entropy", "random", "hardware"]
-categories = ["cryptography", "algorithms", "asynchronous", "data-structures", "development-tools"]
+keywords = ["bitcoin", "rng", "entropy", "cryptography", "chacha20"]
+categories = ["cryptography", "network-programming", "algorithms", "science", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

@@ -17,15 +17,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Cross-platform compatibility utilities for bitcoin-related projects, abstracting platform-specific behavior into consistent implementations."
+description = "Low-level C/C++ compatibility layer for bitcoin-rs providing cross-platform CPUID, errno, endian and byte-swap helpers, terminal/STDIN control, and compile-time architectural invariants aligned with Bitcoin Core."
 documentation = "https://docs.rs/bitcoin-compat"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-compat"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "crossplatform", "endianconversion", "terminalcontrol", "networking"]
-categories = ["cryptography", "authentication", "network-programming", "external-ffi-bindings", "os"]
+keywords = ["bitcoin", "compatibility", "endian", "cpuid", "errno"]
+categories = ["cryptography", "network-programming", "science", "mathematics", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

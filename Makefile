@@ -44,8 +44,7 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-08]
-#ACTIVE := bitcoinleveldb-posix
-ACTIVE := bitcoinleveldb-posixenv
+ACTIVE := bitcoinleveldb-posix
 
 # ------------------------------- [leveldb-layer-09]
 
@@ -349,3 +348,5 @@ bench:
 #ACTIVE := bitcoinleveldb-posixrafile
 #ACTIVE := bitcoinleveldb-posixlogger
 #ACTIVE := bitcoinleveldb-posixmmaprfile
+
+#ACTIVE := bitcoinleveldb-posixenv

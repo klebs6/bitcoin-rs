@@ -18,15 +18,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust crate for encoding and decoding Bech32 and Bech32m formatted strings, adhering to the BIP-173 and BIP-350 standards. Offers robust checksum calculation and validation features."
+description = "Low-level Rust implementation of Bitcoin Bech32 and Bech32m (BIP-173, BIP-350) encoding/decoding, exposing checksum primitives, HRP expansion, and polynomial BCH code over GF(32) for robust address and protocol string handling."
 documentation = "https://docs.rs/bitcoin-bech32m"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-bech32m"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
-keywords = ["bech32", "bech32mencodingcrypt"]
-categories = []
+keywords = ["bitcoin", "bech32", "bech32m", "checksum", "bip350"]
+categories = ["cryptography", "encoding", "network-programming", "parsing", "mathematics"]
 
 [package.metadata]
 cpp-authors = [

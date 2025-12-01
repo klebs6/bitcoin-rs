@@ -33,15 +33,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Robust Rust synchronization library for Bitcoin apps. Provides RAII-based mutex management and deadlock detection."
+description = "Low-level synchronization, semaphore, lock-order debugging, and interruptible thread utilities modelled after Bitcoin Core, built on parking_lot and tracing."
 documentation = "https://docs.rs/bitcoin-sync"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-sync"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "synchronization", "mutex", "concurrency", "deadlock"]
-categories = ["cryptography", "concurrency", "cryptography"]
+keywords = ["bitcoin", "concurrency", "mutex", "semaphore", "deadlockdetection"]
+categories = ["concurrency", "development-tools", "algorithms", "network-programming", "cryptography"]
 
 [package.metadata]
 cpp-authors = [

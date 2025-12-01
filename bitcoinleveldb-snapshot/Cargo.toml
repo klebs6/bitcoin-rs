@@ -25,15 +25,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Implements a snapshot mechanism for immutable, lock-free database state access adhering to the Snapshot trait for concurrent read-access."
+description = "Internal LevelDB-style snapshot list for bitcoin-rs: a raw-pointer-based doubly-linked list maintaining immutable database snapshots ordered by sequence number."
 documentation = "https://docs.rs/bitcoinleveldb-snapshot"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-snapshot"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["snapshot", "database", "immutable", "threadsafe", "concurrent"]
-categories = ["database", "data-structures", "concurrency", "development-tools"]
+keywords = ["bitcoin", "leveldb", "snapshot", "database", "lsmtree"]
+categories = ["database", "database-implementations", "algorithms", "concurrency", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

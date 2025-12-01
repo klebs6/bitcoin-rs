@@ -24,15 +24,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A performant Rust implementation of the classic SHA-1 hash function for cryptographic applications."
+description = "Low-level, pointer-based SHA-1 implementation used by bitcoin-rs, exposing a streaming hasher and raw compression primitives without extra dependencies."
 documentation = "https://docs.rs/bitcoin-sha1"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-sha1"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["sha1", "bitcoin", "cryptography", "hashing", "securehash"]
-categories = ["cryptography", "algorithms", "encoding", "data-structures", "development-tools"]
+keywords = ["sha1", "bitcoin", "hash", "cryptography", "digest"]
+categories = ["cryptography", "algorithms", "development-tools", "science"]
 
 [package.metadata]
 cpp-authors = [

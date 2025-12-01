@@ -42,15 +42,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust crate for base58 encoding and decoding, popular in Bitcoin applications, with options for checksum inclusion."
+description = "Bitcoin-compatible Base58 and Base58Check encoding/decoding routines with strict validation, length guards, and checksum verification, suitable for wallet and node implementations."
 documentation = "https://docs.rs/bitcoin-base58"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-base58"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
-keywords = ["base58", "encoding", "decoding", "checksum", "cryptography"]
-categories = ["cryptography", "data-structures", "network-programming", "encoding"]
+keywords = ["bitcoin", "base58", "base58check", "encoding", "checksum"]
+categories = ["cryptography", "encoding", "algorithms", "network-programming", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

@@ -27,15 +27,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust library providing efficient byte slice management through zero-copy data access, emphasizing performance and memory usage."
+description = "Low-level, non-owning byte Slice type for LevelDB-style storage in bitcoin-rs, providing pointer-based views, prefix operations, lexicographic comparison, and FFI-friendly interoperability without copying."
 documentation = "https://docs.rs/bitcoinleveldb-slice"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-slice"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["slice", "zerocopy", "memory", "performance", "byte"]
-categories = ["data-structures", "memory-management"]
+keywords = ["bitcoin", "leveldb", "slice", "ffi", "storage"]
+categories = ["algorithms", "data-structures", "network-programming", "encoding", "science"]
 
 [package.metadata]
 cpp-authors = [

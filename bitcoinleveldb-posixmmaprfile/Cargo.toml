@@ -53,10 +53,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "Implements thread-safe, random read access in a file using mmap, adhering to the RandomAccessFile API."
+description = "POSIX mmap(2)-backed implementation of a LevelDB-style RandomAccessFile for read-only random file access with explicit mmap limiting and deterministic resource teardown."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixmmaprfile"
 version = "0.1.1"
-keywords = ["mmap", "randomaccess", "threadsafe", "memorymapped", "filesystem"]
-categories = ["filesystem", "concurrency", "compilers", "os", "data-structures"]
+keywords = ["mmap", "leveldb", "bitcoin", "randomaccess", "filesystem"]
+categories = ["filesystem", "network-programming", "data-structures", "algorithms"]

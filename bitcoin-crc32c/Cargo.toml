@@ -27,15 +27,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A high-performance Rust crate for computing the CRC32C checksum optimized for various CPU architectures."
+description = "High-performance CRC32C (Castagnoli) implementation with runtime-dispatched SSE4.2 and AArch64 backends plus a portable fallback, suitable for streaming integrity checks in Bitcoin and other systems code."
 documentation = "https://docs.rs/bitcoin-crc32c"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-crc32c"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["crc32c", "checksum", "performance", "encoding", "cryptography"]
-categories = ["algorithms", "encoding", "memory-management", "external-ffi-bindings", "cryptography"]
+keywords = ["crc32c", "checksum", "bitcoin", "simd", "streaming"]
+categories = ["cryptography", "algorithms", "network-programming", "database", "science"]
 
 [package.metadata]
 cpp-authors = [

@@ -35,15 +35,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "The bitcoinleveldb-filter crate implements FilterPolicy, FilterBlockBuilder, and FilterBlockReader to manage and query filter blocks for efficient data retrieval in LevelDB."
+description = "LevelDB-compatible filter block (Bloom filter) builder and reader used by bitcoin-rs, exposing low-level traits and utilities for constructing and querying per-block filters over SSTable-style key ranges."
 documentation = "https://docs.rs/bitcoinleveldb-filter"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-filter"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "leveldb", "bloomfilter", "database", "filtering"]
-categories = ["algorithms", "database", "data-structures", "memory-management", "network-programming"]
+keywords = ["leveldb", "bloomfilter", "bitcoin", "filterblock", "sstable"]
+categories = ["database", "database-implementations", "algorithms", "encoding", "science"]
 
 [package.metadata]
 cpp-authors = [

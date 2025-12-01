@@ -21,15 +21,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust crate for token-based interprocess and interthread communication through pipes, supporting both POSIX and Windows systems."
+description = "Low-level token-based pipe abstraction around OS file descriptors, used for inter-thread and inter-process signaling in bitcoin-rs with explicit ownership and deterministic close semantics."
 documentation = "https://docs.rs/bitcoin-tokenpipe"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-tokenpipe"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["ipc", "token", "pipe", "interprocess", "communication"]
-categories = ["asynchronous", "concurrency", "network-programming", "os"]
+keywords = ["bitcoin", "pipe", "ipc", "tokens", "concurrency"]
+categories = ["concurrency", "network-programming", "development-tools", "os"]
 
 [package.metadata]
 cpp-authors = [

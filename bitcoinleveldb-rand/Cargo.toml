@@ -15,15 +15,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A simple pseudorandom number generator tailored for use in LevelDB and similar environments, capable of generating consistent random sequences."
+description = "Deterministic LevelDB-compatible Park–Miller pseudo-random number generator for tests and internal randomized decisions; small, fast, and non-cryptographic."
 documentation = "https://docs.rs/bitcoinleveldb-rand"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-rand"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["random", "leveldb", "generator", "pseudorandom", "seed"]
-categories = ["algorithms", "data-structures"]
+keywords = ["random", "leveldb", "prng", "deterministic", "testing"]
+categories = ["algorithms", "data-structures", "development-tools", "science", "no-std"]
 
 [package.metadata]
 cpp-authors = [

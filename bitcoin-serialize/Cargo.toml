@@ -38,15 +38,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust crate providing efficient serialization and deserialization interfaces for Bitcoin data structures with support for VarInt encoding and various formatters."
+description = "Bitcoin Core–compatible low-level serialization primitives for Rust, including VarInt, CompactSize, fixed-endian integers, IEEE-754 doubles, vector and map codecs, size computation, and formatter-based extensible (de)serialization."
 documentation = "https://docs.rs/bitcoin-serialize"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-serialize"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "serialization", "varint", "cryptography", "encoding"]
-categories = ["cryptography", "network-programming", "data-structures", "encoding"]
+keywords = ["bitcoin", "serialization", "varint", "compactsize", "protocol"]
+categories = ["cryptography", "network-programming", "algorithms", "data-structures", "science"]
 
 [package.metadata]
 cpp-authors = [

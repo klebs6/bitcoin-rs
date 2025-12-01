@@ -49,10 +49,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "A POSIX-compatible sequential file reader for LevelDB, designed for efficient file access and I/O handling using system functions in Rust."
+description = "POSIX-backed implementation of a LevelDB-compatible SequentialFile using read, lseek, and close for efficient sequential file access in Bitcoin-oriented storage engines."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixseqfile"
 version = "0.1.1"
-keywords = ["posix", "sequential", "file", "reading", "bitcoinleveldb"]
-categories = ["filesystem", "algorithms", "os", "development-tools", "data-structures"]
+keywords = ["leveldb", "bitcoin", "posix", "sequentialfile", "storage"]
+categories = ["filesystem", "network-programming", "data-structures"]

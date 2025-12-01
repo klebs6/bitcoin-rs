@@ -42,15 +42,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Provides a comprehensive library for managing network sockets with advanced features and cross-platform support."
+description = "Low-level, cross-platform RAII wrapper and utilities for raw OS sockets, mirroring Bitcoin Core networking semantics (send/recv, timeouts, readiness, error classification)."
 documentation = "https://docs.rs/bitcoin-sock"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-sock"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["sockets", "network", "rust", "bitcoin", "crossplatform"]
-categories = ["network-programming", "cryptography", "algorithms", "asynchronous", "data-structures"]
+keywords = ["bitcoin", "socket", "networking", "p2p", "raii"]
+categories = ["network-programming", "algorithms", "concurrency", "os", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

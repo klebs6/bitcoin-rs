@@ -11,15 +11,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust crate for efficiently parsing and decoding ASMAP files, mimicking the logic of the original Bitcoin C++ implementation with robust structural validation."
+description = "Bit-exact Rust reimplementation of Bitcoin Core's ASMAP decoder, interpreter, and structural validator for mapping IP addresses to autonomous system numbers (ASNs)."
 documentation = "https://docs.rs/bitcoin-asmap"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-asmap"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["asmap", "bitcoin", "iptoasn", "decoding", "derivatives"]
-categories = ["parsing", "network-programming", "cryptography", "filesystem", "algorithms"]
+keywords = ["bitcoin", "asmap", "asn", "network", "routing"]
+categories = ["network-programming", "cryptography", "parsing", "algorithms"]
 
 [package.metadata]
 cpp-authors = [

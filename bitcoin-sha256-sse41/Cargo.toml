@@ -12,10 +12,10 @@ version = "0.1.19"
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "A Rust crate optimized for calculating SHA256d using SSE4.1 instructions for 4-way parallel processing, tailored for cryptographic applications."
+description = "SSE4.1-accelerated 4-way Bitcoin-style double SHA-256 (sha256d) transform on x86-64, exposing low-level SIMD primitives for high-throughput hashing workloads."
 edition = "2024"
 license = "MIT"
 name = "bitcoin-sha256-sse41"
 version = "0.1.1"
-keywords = ["sha256", "sse41", "crypto", "performance", "parallel"]
-categories = ["cryptography", "algorithms", "concurrency", "network-programming"]
+keywords = ["bitcoin", "sha256", "sse41", "simd", "hashing"]
+categories = ["cryptography", "algorithms", "network-programming", "science"]

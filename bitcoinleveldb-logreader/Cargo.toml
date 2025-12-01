@@ -57,10 +57,10 @@ workspace = true
 
 [package]
 authors = ["YourName <you@example.com>"]
-description = "A Rust crate for reading log records from files using LevelDB protocols, providing error handling, customizable corruption reporting, and optional checksum verification."
+description = "Low-level LevelDB-compatible log reader for Rust, reconstructing fragmented WAL records with optional CRC32C checksums, precise corruption reporting, and offset-based resynchronization for Bitcoin-style append-only logs."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-logreader"
 version = "0.1.1"
-keywords = ["leveldb", "logreader", "bitcoin", "files", "errorhandling"]
-categories = ["data-structures", "network-programming", "parsing", "mathematics"]
+keywords = ["leveldb", "bitcoin", "logreader", "wal", "storage"]
+categories = ["database", "database-implementations", "algorithms", "filesystem", "network-programming"]

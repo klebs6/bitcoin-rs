@@ -15,13 +15,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "configuration for the bitcoin leveldb"
+description = "Typed configuration layer for LevelDB-backed Bitcoin data stores, defining network-aware paths, logical database roles, and LevelDB tuning parameters for use within the bitcoin-rs ecosystem."
 documentation = "https://docs.rs/bitcoinleveldb-cfg"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-cfg"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
+keywords = ["bitcoin", "leveldb", "configuration", "database", "blockchain"]
+categories = ["database", "database-implementations", "development-tools", "network-programming"]
 
 [package.metadata]
 cpp-authors = [

@@ -24,15 +24,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A collection of string utilities for Bitcoin applications, offering sanitation, parsing, and conversion functionalities with a focus on security and precision."
+description = "Bitcoin Core–compatible string, integer, hex, Base32/Base64, and fixed-point monetary utilities with locale-independent semantics and timing-resistant comparison."
 documentation = "https://docs.rs/bitcoin-string"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-string"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "string", "parse", "cryptography", "sanitize"]
-categories = ["cryptography", "data-structures"]
+keywords = ["bitcoin", "string", "base32", "base64", "hex"]
+categories = ["cryptography", "encoding", "parsing", "data-structures", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

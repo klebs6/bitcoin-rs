@@ -27,15 +27,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Implements the Poly1305 message authentication code used in Bitcoin Core, ensuring constant-time execution and preventing tampering with messages by authenticating their integrity."
+description = "Constant-time, Donna-compatible Poly1305 authenticator for Bitcoin-related tooling, implemented in Rust with radix-2^26 limb arithmetic and detailed tracing support."
 documentation = "https://docs.rs/bitcoin-poly1305"
 edition = "2021"
 license = "MIT"
 name = "bitcoin-poly1305"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bitcoin", "poly1305", "cryptography", "authentication", "constanttime"]
-categories = ["cryptography", "algorithms", "network-programming"]
+keywords = ["poly1305", "bitcoin", "cryptography", "mac", "authenticator"]
+categories = ["cryptography", "algorithms", "science", "no-std", "development-tools"]
 
 [package.metadata]
 cpp-authors = [

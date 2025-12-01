@@ -35,15 +35,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "Rust environment management for LevelDB, providing file operations and environment-specific functionality."
+description = "Rust implementation of LevelDB's Env abstraction for the bitcoinleveldb port, providing environment traits, delegating wrappers, file utilities, and logging helpers closely matching the original C++ API."
 documentation = "https://docs.rs/bitcoinleveldb-env"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-env"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["rust", "leveldb", "environment", "filesystem", "bitcoin"]
-categories = ["algorithms", "filesystem", "data-structures", "network-programming", "development-tools"]
+keywords = ["leveldb", "bitcoin", "environment", "filesystem", "logging"]
+categories = ["database", "database-implementations", "network-programming", "development-tools", "filesystem"]
 
 [package.metadata]
 cpp-authors = [

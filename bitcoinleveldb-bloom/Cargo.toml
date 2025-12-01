@@ -37,15 +37,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A Rust library providing a Bloom filter policy for LevelDB, supporting efficient probabilistic membership tests with adjustable false-positive rates."
+description = "LevelDB-compatible Bloom filter policy and test harness for the bitcoin-rs LevelDB port, implementing Kirsch–Mitzenmacher double hashing over byte slices."
 documentation = "https://docs.rs/bitcoinleveldb-bloom"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-bloom"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["bloom", "leveldb", "filter", "hashing", "probabilistic"]
-categories = ["algorithms", "compression", "database", "data-structures"]
+keywords = ["bloomfilter", "leveldb", "bitcoin", "database", "probabilistic"]
+categories = ["algorithms", "data-structures", "cryptography", "database", "science"]
 
 [package.metadata]
 cpp-authors = [

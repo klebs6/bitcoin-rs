@@ -15,15 +15,15 @@ workspace = true
 
 [package]
 authors = ["klebs <none>"]
-description = "A rust implementation of a LevelDB-compatible hashing algorithm used in Bitcoin-level database interactions, allowing efficient and optimized data integrity verifications."
+description = "LevelDB-compatible 32-bit non-cryptographic hash function for raw byte buffers, suitable for hash tables, Bloom filters, and database internals."
 documentation = "https://docs.rs/bitcoinleveldb-hash"
 edition = "2021"
 license = "MIT"
 name = "bitcoinleveldb-hash"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"
-keywords = ["rust", "leveldb", "hash", "cryptography", "bitcoin"]
-categories = ["cryptography", "data-structures", "external-ffi-bindings", "network-programming", "database"]
+keywords = ["leveldb", "hash", "bloomfilter", "database", "bitcoin"]
+categories = ["algorithms", "data-structures", "database", "parsing", "science"]
 
 [package.metadata]
 cpp-authors = [

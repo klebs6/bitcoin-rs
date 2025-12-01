@@ -13,10 +13,10 @@ workspace = true
 
 [package]
 authors = ["klebs6 <tpk3.mx@gmail.com>"]
-categories = ["algorithms", "parsing", "data-structures", "cryptography", "network-programming"]
-description = "Efficient JSON token parsing and manipulation for Bitcoin-related applications, supporting standard JSON structures and hexadecimal conversions."
+categories = ["parsing", "parser-implementations", "algorithms", "network-programming", "development-tools"]
+description = "Low-level, Bitcoin-inspired JSON lexer/tokeniser for strict RFC-compliant number, string, and structural token parsing over raw byte buffers, with tracing instrumentation and minimal allocations."
 edition = "2024"
-keywords = ["json", "bitcoin", "parsing", "token", "hexadecimal"]
+keywords = ["json", "lexer", "bitcoin", "parsing", "tokenizer"]
 license = "MIT"
 name = "bitcoin-get-json-token"
 version = "0.1.1"
