@@ -1,8 +1,10 @@
 // ---------------- [ File: bitcoinleveldb-posix/tests/close_on_exec_appendable.rs ]
 use bitcoinleveldb_posix::*;
+use bitcoinleveldb_file::*;
+use bitcoinleveldb_log::*;
 use bitcoin_imports::*;
 
-#[cfg(HAVE_O_CLOEXEC)]
+#[cfg(have_o_cloexec)]
 #[traced_test]
 fn env_posix_test_close_on_exec_appendable_file() {
     use std::collections::HashSet;
@@ -42,22 +44,28 @@ fn env_posix_test_close_on_exec_appendable_file() {
 
     {
         let mut env = env_rc.borrow_mut();
-        let mut file: Option<Box<dyn WritableFile>> = None;
-        let status = env.new_appendable_file(&file_path, &mut file);
+
+        let mut out_ptr: *mut Box<dyn WritableFile> = std::ptr::null_mut();
+        let status = env.new_appendable_file(
+            &file_path,
+            &mut out_ptr as *mut *mut Box<dyn WritableFile>,
+        );
         assert!(
             status.is_ok(),
             "env_posix_test_close_on_exec_appendable_file: new_appendable_file failed: {:?}",
             status
         );
         assert!(
-            file.is_some(),
+            !out_ptr.is_null(),
             "env_posix_test_close_on_exec_appendable_file: \
-             env.new_appendable_file returned Ok but no file"
+             env.new_appendable_file returned Ok but null pointer"
         );
+
+        let file_box: Box<dyn WritableFile> = unsafe { std::ptr::read(out_ptr) };
 
         check_close_on_exec_does_not_leak_fds(&baseline_open_fds);
 
-        drop(file);
+        drop(file_box);
     }
 
     if let Err(err) = std::fs::remove_file(&file_path) {

@@ -1,8 +1,10 @@
 // ---------------- [ File: bitcoinleveldb-posix/tests/close_on_exec_lock_file.rs ]
 use bitcoinleveldb_posix::*;
+use bitcoinleveldb_file::*;
+use bitcoinleveldb_log::*;
 use bitcoin_imports::*;
 
-#[cfg(HAVE_O_CLOEXEC)]
+#[cfg(have_o_cloexec)]
 #[traced_test]
 fn env_posix_test_close_on_exec_lock_file() {
     use std::collections::HashSet;
@@ -42,25 +44,35 @@ fn env_posix_test_close_on_exec_lock_file() {
 
     {
         let mut env = env_rc.borrow_mut();
-        let mut lock: Option<Box<dyn FileLock>> = None;
-        let status = env.lock_file(&file_path, &mut lock);
+
+        let mut out_ptr: *mut Box<dyn FileLock> = std::ptr::null_mut();
+        let status = env.lock_file(
+            &file_path,
+            &mut out_ptr as *mut *mut Box<dyn FileLock>,
+        );
         assert!(
             status.is_ok(),
             "env_posix_test_close_on_exec_lock_file: lock_file failed: {:?}",
             status
         );
-        let mut lock = lock.expect(
-            "env_posix_test_close_on_exec_lock_file: env.lock_file returned Ok but no lock",
+        assert!(
+            !out_ptr.is_null(),
+            "env_posix_test_close_on_exec_lock_file: \
+             env.lock_file returned Ok but null pointer"
         );
+
+        let mut lock_box: Box<dyn FileLock> = unsafe { std::ptr::read(out_ptr) };
 
         check_close_on_exec_does_not_leak_fds(&baseline_open_fds);
 
-        let status = env.unlock_file(lock.as_mut());
+        let status = env.unlock_file(&mut lock_box as *mut Box<dyn FileLock>);
         assert!(
             status.is_ok(),
             "env_posix_test_close_on_exec_lock_file: unlock_file failed: {:?}",
             status
         );
+
+        drop(lock_box);
     }
 
     if let Err(err) = std::fs::remove_file(&file_path) {

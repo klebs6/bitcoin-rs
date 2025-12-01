@@ -27,7 +27,7 @@ mod sock_lifetime_spec {
             let mut sock = Sock::from(a);
 
             sock.reset();
-            assert_eq!(sock.get(), crate::compat::INVALID_SOCKET);
+            assert_eq!(sock.get(), INVALID_SOCKET);
 
             // The peer must now see EOF immediately.
             let mut buf = [0u8; 1];
@@ -49,8 +49,8 @@ mod sock_lifetime_spec {
             let mut sock = Sock::from(a);
 
             let raw = sock.release();
-            assert_eq!(sock.get(), crate::compat::INVALID_SOCKET);
-            assert_ne!(raw, crate::compat::INVALID_SOCKET);
+            assert_eq!(sock.get(), INVALID_SOCKET);
+            assert_ne!(raw, INVALID_SOCKET);
 
             let ret = unsafe { fcntl(raw, F_GETFD) };
             assert_ne!(ret, -1, "descriptor should still be open");

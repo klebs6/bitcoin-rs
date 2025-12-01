@@ -1,8 +1,10 @@
 // ---------------- [ File: bitcoinleveldb-posix/tests/close_on_exec_random_access.rs ]
 use bitcoinleveldb_posix::*;
+use bitcoinleveldb_file::*;
+use bitcoinleveldb_log::*;
 use bitcoin_imports::*;
 
-#[cfg(HAVE_O_CLOEXEC)]
+#[cfg(have_o_cloexec)]
 #[traced_test]
 fn env_posix_test_close_on_exec_random_access_file() {
     use std::collections::HashSet;
@@ -44,11 +46,14 @@ fn env_posix_test_close_on_exec_random_access_file() {
         let mut env = env_rc.borrow_mut();
 
         let mut warmup_files: Vec<Box<dyn RandomAccessFile>> =
-            Vec::with_capacity(READ_ONLY_FILE_LIMIT as usize);
+            Vec::with_capacity(TEST_READ_ONLY_FILE_LIMIT as usize);
 
-        for i in 0..READ_ONLY_FILE_LIMIT {
-            let mut handle: Option<Box<dyn RandomAccessFile>> = None;
-            let status = env.new_random_access_file(&file_path, &mut handle);
+        for i in 0..TEST_READ_ONLY_FILE_LIMIT {
+            let mut out_ptr: *mut Box<dyn RandomAccessFile> = std::ptr::null_mut();
+            let status = env.new_random_access_file(
+                &file_path,
+                &mut out_ptr as *mut *mut Box<dyn RandomAccessFile>,
+            );
             assert!(
                 status.is_ok(),
                 "env_posix_test_close_on_exec_random_access_file: \
@@ -56,19 +61,24 @@ fn env_posix_test_close_on_exec_random_access_file() {
                 i,
                 status
             );
-            if let Some(h) = handle {
-                warmup_files.push(h);
-            } else {
+
+            if out_ptr.is_null() {
                 warn!(
                     "env_posix_test_close_on_exec_random_access_file: \
-                     warmup new_random_access_file returned Ok but no file at index {}",
+                     warmup new_random_access_file returned Ok but null pointer at index {}",
                     i
                 );
+            } else {
+                let handle: Box<dyn RandomAccessFile> = unsafe { std::ptr::read(out_ptr) };
+                warmup_files.push(handle);
             }
         }
 
-        let mut probed_file: Option<Box<dyn RandomAccessFile>> = None;
-        let status = env.new_random_access_file(&file_path, &mut probed_file);
+        let mut probed_ptr: *mut Box<dyn RandomAccessFile> = std::ptr::null_mut();
+        let status = env.new_random_access_file(
+            &file_path,
+            &mut probed_ptr as *mut *mut Box<dyn RandomAccessFile>,
+        );
         assert!(
             status.is_ok(),
             "env_posix_test_close_on_exec_random_access_file: \
@@ -76,10 +86,12 @@ fn env_posix_test_close_on_exec_random_access_file() {
             status
         );
         assert!(
-            probed_file.is_some(),
+            !probed_ptr.is_null(),
             "env_posix_test_close_on_exec_random_access_file: \
-             probed new_random_access_file returned Ok but no file"
+             probed new_random_access_file returned Ok but null pointer"
         );
+
+        let probed_file: Box<dyn RandomAccessFile> = unsafe { std::ptr::read(probed_ptr) };
 
         check_close_on_exec_does_not_leak_fds(&baseline_open_fds);
 

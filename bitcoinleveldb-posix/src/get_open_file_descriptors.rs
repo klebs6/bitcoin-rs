@@ -8,7 +8,7 @@ crate::ix!();
   | Returns c_void so the implementation can use
   | ASSERT_EQ.
   */
-#[cfg(HAVE_O_CLOEXEC)]
+#[cfg(have_o_cloexec)]
 pub fn get_open_file_descriptors(open_fds: *mut std::collections::HashSet<i32>) {
     use std::collections::HashSet;
 

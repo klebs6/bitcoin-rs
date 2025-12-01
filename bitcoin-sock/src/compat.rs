@@ -4,8 +4,6 @@ crate::ix!();
 #[cfg(not(target_os = "windows"))] 
 pub const WSAENOTSOCK: libc::c_int = libc::EBADF;
 
-#[cfg(not(target_os = "windows"))] 
-pub const INVALID_SOCKET: CSocket = !0;
 
 #[cfg(not(target_os = "windows"))] 
 pub const SOCKET_ERROR: libc::c_int = -1;
@@ -29,6 +27,10 @@ pub type sockopt_arg_type = *mut u8;
 #[cfg(__linux__)]
 pub const USE_POLL: bool = true;
 
+/*
+#[cfg(not(target_os = "windows"))] 
+pub const INVALID_SOCKET: CSocket = !0;
+
 /// Native Windows `SOCKET` handle (always `usize`‑sized).
 #[cfg(target_os = "windows")]
 pub type CSocket = usize;
@@ -36,6 +38,7 @@ pub type CSocket = usize;
 /// POSIX file‑descriptor representing a socket.
 #[cfg(not(target_os = "windows"))]
 pub type CSocket = libc::c_int;
+*/
 
 /// Determine whether the socket `s` can safely be
 /// used with `select(2)` on the current platform.

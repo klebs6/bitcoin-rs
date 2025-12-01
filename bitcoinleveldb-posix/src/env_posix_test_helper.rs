@@ -26,17 +26,17 @@ impl EnvPosixTestHelper {
                 "EnvPosixTestHelper::set_read_only_fd_limit: \
                  asserting PosixDefaultEnv has not been initialized yet"
             );
-            PosixDefaultEnv::AssertEnvNotInitialized();
+            PosixDefaultEnv::assert_env_not_initialized();
         }
 
         unsafe {
             debug!(
                 "EnvPosixTestHelper::set_read_only_fd_limit: \
-                 updating g_open_read_only_file_limit from {} to {}",
-                g_open_read_only_file_limit,
+                 updating OPEN_READ_ONLY_FILE_LIMIT from {} to {}",
+                OPEN_READ_ONLY_FILE_LIMIT.load(atomic::Ordering::SeqCst),
                 limit
             );
-            g_open_read_only_file_limit = limit;
+            OPEN_READ_ONLY_FILE_LIMIT.store(limit.into(),atomic::Ordering::SeqCst);
         }
     }
 
@@ -57,17 +57,17 @@ impl EnvPosixTestHelper {
                 "EnvPosixTestHelper::set_read_only_mmap_limit: \
                  asserting PosixDefaultEnv has not been initialized yet"
             );
-            PosixDefaultEnv::AssertEnvNotInitialized();
+            PosixDefaultEnv::assert_env_not_initialized();
         }
 
         unsafe {
             debug!(
                 "EnvPosixTestHelper::set_read_only_mmap_limit: \
-                 updating g_mmap_limit from {} to {}",
-                g_mmap_limit,
+                 updating mmap_limit from {} to {}",
+                MMAP_LIMIT.load(atomic::Ordering::SeqCst),
                 limit
             );
-            g_mmap_limit = limit;
+            MMAP_LIMIT.store(limit.into(),atomic::Ordering::SeqCst);
         }
     }
 }

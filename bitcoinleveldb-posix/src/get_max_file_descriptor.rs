@@ -8,7 +8,7 @@ crate::ix!();
   | Returns c_void so the implementation can use
   | ASSERT_EQ.
   */
-#[cfg(HAVE_O_CLOEXEC)]
+#[cfg(have_o_cloexec)]
 pub fn get_max_file_descriptor(result_fd: *mut i32) {
     trace!("get_max_file_descriptor: start");
 

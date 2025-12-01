@@ -13,7 +13,7 @@ crate::ix!();
   | The vector stores the string pointed to by
   | argv[0], plus the trailing null.
   */
-#[cfg(HAVE_O_CLOEXEC)]
+#[cfg(have_o_cloexec)]
 pub fn get_argv_zero() -> *mut Vec<u8> {
     use std::sync::OnceLock;
 

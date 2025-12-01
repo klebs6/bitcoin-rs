@@ -12,7 +12,7 @@ crate::ix!();
   | Returns c_void so the implementation can use
   | ASSERT_EQ.
   */
-#[cfg(HAVE_O_CLOEXEC)]
+#[cfg(have_o_cloexec)]
 pub fn get_newly_opened_file_descriptor(
     baseline_open_fds: &std::collections::HashSet<i32>,
     result_fd: *mut i32,

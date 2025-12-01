@@ -1,9 +1,12 @@
 // ---------------- [ File: bitcoinleveldb-posix/tests/open_on_read.rs ]
 use bitcoinleveldb_posix::*;
+use bitcoinleveldb_file::*;
+use bitcoinleveldb_log::*;
 use bitcoin_imports::*;
 
 #[traced_test]
 fn env_posix_test_open_on_read() {
+
     info!("env_posix_test_open_on_read: start");
 
     let env_rc = make_posix_env_for_tests();
@@ -38,7 +41,7 @@ fn env_posix_test_open_on_read() {
             .expect("env_posix_test_open_on_read: sync test data");
     }
 
-    let num_files_raw = READ_ONLY_FILE_LIMIT + MMAP_LIMIT + 5;
+    let num_files_raw = TEST_READ_ONLY_FILE_LIMIT + TEST_MMAP_LIMIT + 5;
     assert!(
         num_files_raw > 0,
         "env_posix_test_open_on_read: computed non-positive file count"
@@ -55,22 +58,39 @@ fn env_posix_test_open_on_read() {
 
     {
         let mut env = env_rc.borrow_mut();
+
         for i in 0..num_files {
             debug!(
                 "env_posix_test_open_on_read: creating RandomAccessFile handle {}",
                 i
             );
-            let mut file_handle: Option<Box<dyn RandomAccessFile>> = None;
-            let status = env.new_random_access_file(&test_file, &mut file_handle);
+
+            // -------------------------------------------------------------
+            // CORRECT ABI: prepare a raw *mut *mut Box<dyn RandomAccessFile>
+            // -------------------------------------------------------------
+            let mut out_ptr: *mut Box<dyn RandomAccessFile> = std::ptr::null_mut();
+
+            let status = env.new_random_access_file(
+                &test_file,
+                &mut out_ptr as *mut *mut Box<dyn RandomAccessFile>,
+            );
+
             assert!(
                 status.is_ok(),
                 "env_posix_test_open_on_read: new_random_access_file failed at index {}: {:?}",
                 i,
                 status
             );
-            let handle = file_handle.expect(
-                "env_posix_test_open_on_read: env.new_random_access_file returned Ok but no file",
+
+            assert!(
+                !out_ptr.is_null(),
+                "env_posix_test_open_on_read: new_random_access_file returned Ok but null pointer"
             );
+
+            // -------------------------------------------------------------
+            // Convert raw pointer to owned value
+            // -------------------------------------------------------------
+            let handle: Box<dyn RandomAccessFile> = unsafe { std::ptr::read(out_ptr) };
             random_access_files.push(handle);
         }
     }

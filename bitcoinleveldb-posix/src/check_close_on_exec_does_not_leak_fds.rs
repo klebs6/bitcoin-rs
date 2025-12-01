@@ -6,7 +6,7 @@ crate::ix!();
   | process does not have an extra open FD.
   |
   */
-#[cfg(HAVE_O_CLOEXEC)]
+#[cfg(have_o_cloexec)]
 pub fn check_close_on_exec_does_not_leak_fds(
     baseline_open_fds: &std::collections::HashSet<i32>,
 ) {

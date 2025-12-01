@@ -57,7 +57,7 @@ pub fn testenv_posix_test_main(argc: i32, argv: *mut *mut u8) -> i32 {
         argc
     );
 
-    #[cfg(HAVE_O_CLOEXEC)]
+    #[cfg(have_o_cloexec)]
     unsafe {
         if argv.is_null() {
             warn!(

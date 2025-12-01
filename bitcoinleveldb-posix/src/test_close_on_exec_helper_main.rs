@@ -13,7 +13,7 @@ crate::ix!();
   | is open, and communicates the result via its
   | exit code.
   */
-#[cfg(HAVE_O_CLOEXEC)]
+#[cfg(have_o_cloexec)]
 pub fn test_close_on_exec_helper_main(pid_arg: *mut u8) -> i32 {
     use std::ffi::CStr;
     use std::os::raw::c_char;
