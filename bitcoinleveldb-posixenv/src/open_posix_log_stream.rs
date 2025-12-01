@@ -109,4 +109,3 @@ mod open_posix_log_stream_tests {
         let _ = std::fs::remove_file(&filename);
     }
 }
-

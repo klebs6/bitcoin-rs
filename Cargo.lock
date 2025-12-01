@@ -3534,6 +3534,7 @@ dependencies = [
  "bitcoinleveldb-limiter",
  "bitcoinleveldb-log",
  "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-posixlogger",
  "bitcoinleveldb-posixmmaprfile",
  "bitcoinleveldb-posixrafile",
  "bitcoinleveldb-posixseqfile",

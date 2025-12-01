@@ -90,4 +90,3 @@ mod posix_env_new_writable_file_tests {
         let _ = std::fs::remove_file(&filename);
     }
 }
-

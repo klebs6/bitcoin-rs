@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-posixenv/tests/result_slot_and_fd.rs ]
 use bitcoinleveldb_file::*;
 use bitcoinleveldb_posixtools::*;
 use bitcoinleveldb_posixenv::*;
@@ -229,4 +230,3 @@ fn env_helper_open_posix_log_stream_success() {
 
     info!("env_helper_open_posix_log_stream_success: completed");
 }
-

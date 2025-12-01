@@ -71,4 +71,3 @@ mod store_posix_env_boxed_result_tests {
         }
     }
 }
-
