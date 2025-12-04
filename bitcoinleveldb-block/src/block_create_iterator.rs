@@ -78,41 +78,6 @@ impl Block {
 mod block_new_iterator_tests {
     use super::*;
 
-    #[derive(Clone, Default)]
-    struct DummyComparator;
-
-    impl Compare for DummyComparator {
-        fn compare(&self, a: &Slice, b: &Slice) -> i32 {
-            let a_bytes = unsafe { core::slice::from_raw_parts(*a.data(), *a.size()) };
-            let b_bytes = unsafe { core::slice::from_raw_parts(*b.data(), *b.size()) };
-            for (aa, bb) in a_bytes.iter().zip(b_bytes.iter()) {
-                if aa < bb {
-                    return -1;
-                }
-                if aa > bb {
-                    return 1;
-                }
-            }
-            a_bytes.len().cmp(&b_bytes.len()) as i32
-        }
-    }
-
-    impl Named for DummyComparator {
-        fn name(&self) -> &str {
-            "dummy-comparator"
-        }
-    }
-
-    impl FindShortestSeparator for DummyComparator {
-        fn find_shortest_separator(&self, _start: &mut String, _limit: &Slice) {}
-    }
-
-    impl FindShortSuccessor for DummyComparator {
-        fn find_short_successor(&self, _key: &mut String) {}
-    }
-
-    impl SliceComparator for DummyComparator {}
-
     fn build_minimal_block_with_zero_restarts() -> Block {
         let mut bytes = vec![0u8; 4];
         bytes[..].copy_from_slice(&0u32.to_le_bytes());

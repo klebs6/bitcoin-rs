@@ -13,6 +13,10 @@ description = "todo: write a description here"
 tracing.workspace = true
 bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-blockiter = { path = "../bitcoinleveldb-blockiter" }
+bitcoinleveldb-emptyiterator = { path = "../bitcoinleveldb-emptyiterator" }
+bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator" }
+bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

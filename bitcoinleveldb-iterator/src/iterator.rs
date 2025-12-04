@@ -33,10 +33,11 @@ impl LevelDBIterator {
       */
     pub fn register_cleanup(
         &self,
-        func: LevelDBIteratorCleanupFunction,
-        arg1: *mut c_void,
-        arg2: *mut c_void,
-    ) {
+        func:  LevelDBIteratorCleanupFunction,
+        arg1:  *mut c_void,
+        arg2:  *mut c_void
+    )
+    {
         trace!(
             "LevelDBIterator::register_cleanup: delegating to inner; func={:p}, arg1={:?}, arg2={:?}",
             func as *const (),

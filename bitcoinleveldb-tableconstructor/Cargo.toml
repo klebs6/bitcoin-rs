@@ -1,0 +1,24 @@
+[package]
+name = "bitcoinleveldb-tableconstructor"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[build-dependencies.bitcoin-cfg]
+path = "../bitcoin-cfg"
+version = "0.1.19"
+
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+version = "0.1.19"
+
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.19"
+
+

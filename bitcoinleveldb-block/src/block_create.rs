@@ -3,11 +3,9 @@ crate::ix!();
 
 impl Block {
 
-    /**
-      | Initialize the block with the specified
-      | contents.
-      |
-      */
+    /// Initialize the block with the specified
+    /// contents.
+    /// 
     pub fn new(contents: &BlockContents) -> Self {
         let data_slice  = contents.data();
         let data_ptr    = *data_slice.data();
@@ -18,8 +16,8 @@ impl Block {
             "Block::new: initializing from contents: ptr={:p}, size={}, heap_allocated={}, cachable={}",
             data_ptr,
             size,
-            contents.is_heap_allocated(),
-            contents.is_cachable()
+            contents.heap_allocated(),
+            contents.cachable()
         );
 
         let trailer_len = core::mem::size_of::<u32>();
@@ -34,11 +32,14 @@ impl Block {
             let max_restarts_allowed =
                 (size - trailer_len) / trailer_len;
 
+            // IMPORTANT: this temporary must *not* own the buffer,
+            // otherwise its Drop would free the memory before the
+            // real Block gets returned.
             let tmp_block = Block {
                 data:           data_ptr,
                 size,
                 restart_offset: 0,
-                owned:          contents.is_heap_allocated(),
+                owned:          false,
             };
 
             let num_restarts = tmp_block.num_restarts() as usize;
@@ -65,7 +66,7 @@ impl Block {
             data:           data_ptr,
             size,
             restart_offset,
-            owned: contents.is_heap_allocated(),
+            owned:          *contents.heap_allocated(),
         }
     }
 }

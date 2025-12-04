@@ -3,6 +3,8 @@ crate::ix!();
 
 /// Options that control read operations
 /// 
+#[derive(Getters,MutGetters,Setters)]
+#[getset(get="pub",get_mut="pub",set="pub")]
 pub struct ReadOptions {
 
     /// If true, all data read from underlying storage will be verified against

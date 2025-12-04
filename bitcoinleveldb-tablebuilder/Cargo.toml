@@ -1,0 +1,35 @@
+[package]
+name = "bitcoinleveldb-tablebuilder"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+tracing.workspace = true
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
+bitcoinleveldb-blockbuilder = { path = "../bitcoinleveldb-blockbuilder" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoin-crc32c = { path = "../bitcoin-crc32c" }
+bitcoinleveldb-compat = { path = "../bitcoinleveldb-compat" }
+
+[build-dependencies.bitcoin-cfg]
+path = "../bitcoin-cfg"
+version = "0.1.19"
+
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+version = "0.1.19"
+
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.19"
+
+

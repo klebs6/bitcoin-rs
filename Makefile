@@ -43,9 +43,20 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-1]
-ACTIVE := bitcoinleveldb-block    #loc: 1486
-ACTIVE := bitcoinleveldb-iterator #loc: 1572
-ACTIVE := bitcoinleveldb-table    #loc: 2050
+ACTIVE := bitcoinleveldb-blockconstructor
+ACTIVE := bitcoinleveldb-table
+ACTIVE := bitcoinleveldb-tableconstructor
+ACTIVE := bitcoinleveldb-tablecache
+ACTIVE := bitcoinleveldb-tablerep
+
+ACTIVE := bitcoinleveldb-footer
+ACTIVE := bitcoinleveldb-tablebuilder
+ACTIVE := bitcoinleveldb-versioniterator
+
+ACTIVE := bitcoinleveldb-blockiter
+ACTIVE := bitcoinleveldb-iteratorwrapper
+ACTIVE := bitcoinleveldb-blockhandle
+ACTIVE := bitcoinleveldb-keyconvertingiterator
 
 # ------------------------------- [leveldb-layer-2]
 #ACTIVE := bitcoinleveldb-duplex   #loc: 255
@@ -343,3 +354,12 @@ bench:
 #ACTIVE := bitcoinleveldb-posix          #loc: 632
 #ACTIVE := bitcoinleveldb-options        #loc: 339
 #ACTIVE := bitcoinleveldb-memenv         #loc: 3569
+#ACTIVE := bitcoinleveldb-erroriterator
+#ACTIVE := bitcoinleveldb-emptyiterator
+#ACTIVE := bitcoinleveldb-iterator
+#ACTIVE := bitcoinleveldb-stringsource
+#ACTIVE := bitcoinleveldb-stringsink
+#ACTIVE := bitcoinleveldb-reversekeycomparator
+#ACTIVE := bitcoinleveldb-blockutil
+#ACTIVE := bitcoinleveldb-blockbuilder
+#ACTIVE := bitcoinleveldb-block

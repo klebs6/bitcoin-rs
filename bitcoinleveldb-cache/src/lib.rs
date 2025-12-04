@@ -7,3 +7,5 @@ x!{cache_interface}
 x!{cache_rep}
 x!{cache_test}
 x!{encode_decode}
+x!{release_block}
+x!{unref_entry}

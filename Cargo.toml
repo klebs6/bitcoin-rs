@@ -216,7 +216,7 @@ members = [
     "bitcoin-sha256-hkdf", 
     "bitcoin-hmac-sha512", 
     "bitcoin-hmac-sha256"
-, "bitcoin-tx-confirm-stats", "bitcoinleveldb-logwriter", "bitcoinleveldb-logreader", "bitcoinleveldb-posixlogger", "bitcoinleveldb-logtools", "bitcoinleveldb-versionset", "bitcoinleveldb-compaction", "bitcoinleveldb-posixenv", "bitcoinleveldb-posixwfile", "bitcoinleveldb-posixseqfile", "bitcoinleveldb-posixrafile", "bitcoinleveldb-posixmmaprfile", "bitcoinleveldb-posixtools", "bitcoinleveldb-iterator", "bitcoinleveldb-block"]
+, "bitcoin-tx-confirm-stats", "bitcoinleveldb-logwriter", "bitcoinleveldb-logreader", "bitcoinleveldb-posixlogger", "bitcoinleveldb-logtools", "bitcoinleveldb-versionset", "bitcoinleveldb-compaction", "bitcoinleveldb-posixenv", "bitcoinleveldb-posixwfile", "bitcoinleveldb-posixseqfile", "bitcoinleveldb-posixrafile", "bitcoinleveldb-posixmmaprfile", "bitcoinleveldb-posixtools", "bitcoinleveldb-iterator", "bitcoinleveldb-block", "bitcoinleveldb-blockiter", "bitcoinleveldb-blockbuilder", "bitcoinleveldb-blockconstructor", "bitcoinleveldb-blockhandle", "bitcoinleveldb-tablebuilder", "bitcoinleveldb-tablecache", "bitcoinleveldb-tableconstructor", "bitcoinleveldb-stringsource", "bitcoinleveldb-stringsink", "bitcoinleveldb-reversekeycomparator", "bitcoinleveldb-footer", "bitcoinleveldb-tablerep", "bitcoinleveldb-blockutil", "bitcoinleveldb-iteratorwrapper", "bitcoinleveldb-versioniterator", "bitcoinleveldb-keyconvertingiterator", "bitcoinleveldb-emptyiterator", "bitcoinleveldb-erroriterator", "bitcoinleveldb-blockcontents"]
 
 [workspace.dependencies]
 #qmetaobject            = "0.2.7"

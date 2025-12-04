@@ -3,6 +3,7 @@ tracing.workspace = true
 bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
 bitcoinleveldb-block = { path = "../bitcoinleveldb-block" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-tablerep = { path = "../bitcoinleveldb-tablerep" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

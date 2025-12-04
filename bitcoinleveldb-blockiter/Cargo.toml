@@ -1,0 +1,75 @@
+[package]
+name = "bitcoinleveldb-blockiter"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+tracing.workspace = true
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-blockutil = { path = "../bitcoinleveldb-blockutil" }
+bitcoinleveldb-blockbuilder = { path = "../bitcoinleveldb-blockbuilder" }
+
+[build-dependencies.bitcoin-cfg]
+path = "../bitcoin-cfg"
+version = "0.1.19"
+
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+version = "0.1.19"
+
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-cache]
+path = "../bitcoinleveldb-cache"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-comparator]
+path = "../bitcoinleveldb-comparator"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-env]
+path = "../bitcoinleveldb-env"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-file]
+path = "../bitcoinleveldb-file"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-filter]
+path = "../bitcoinleveldb-filter"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-key]
+path = "../bitcoinleveldb-key"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-options]
+path = "../bitcoinleveldb-options"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-rand]
+path = "../bitcoinleveldb-rand"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-slice]
+path = "../bitcoinleveldb-slice"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-status]
+path = "../bitcoinleveldb-status"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-util]
+path = "../bitcoinleveldb-util"
+version = "0.1.19"
+
+
