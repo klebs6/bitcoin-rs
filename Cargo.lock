@@ -3510,6 +3510,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinleveldb-iterator",
+ "bitcoinleveldb-key",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "tracing",

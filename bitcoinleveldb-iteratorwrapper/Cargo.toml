@@ -18,6 +18,7 @@ tracing.workspace = true
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

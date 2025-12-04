@@ -54,8 +54,6 @@ ACTIVE := bitcoinleveldb-tablebuilder
 ACTIVE := bitcoinleveldb-versioniterator
 
 ACTIVE := bitcoinleveldb-blockiter
-ACTIVE := bitcoinleveldb-iteratorwrapper
-ACTIVE := bitcoinleveldb-blockhandle
 ACTIVE := bitcoinleveldb-keyconvertingiterator
 
 # ------------------------------- [leveldb-layer-2]
@@ -363,3 +361,5 @@ bench:
 #ACTIVE := bitcoinleveldb-blockutil
 #ACTIVE := bitcoinleveldb-blockbuilder
 #ACTIVE := bitcoinleveldb-block
+#ACTIVE := bitcoinleveldb-blockhandle
+#ACTIVE := bitcoinleveldb-iteratorwrapper

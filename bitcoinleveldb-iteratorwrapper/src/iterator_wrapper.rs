@@ -4,30 +4,27 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/table/iterator_wrapper.h]
 
 /**
-  | A internal wrapper class with an interface
-  | similar to Iterator that caches the valid() and
-  | key() results for an underlying iterator.
+  | An internal wrapper class with an interface
+  | similar to Iterator that caches the valid()
+  | and key() results for an underlying iterator.
   |
   | This can help avoid virtual function calls and
   | also gives better cache locality.
   */
-#[derive(Getters,MutGetters,Setters)]
-#[getset(get="pub",get_mut="pub",set="pub")]
 pub struct LevelDBIteratorWrapper {
-    // Raw owning pointer to the polymorphic iterator interface.
-    // Must have been allocated via Box<dyn LevelDBIteratorInterface>.
-    iter:  *mut dyn LevelDBIteratorInterface,
+    iter:  Option<Box<dyn LevelDBIteratorInterface>>,
     valid: bool,
     key_:  Slice,
 }
 
 impl Default for LevelDBIteratorWrapper {
+
     fn default() -> Self {
         trace!(
-            "LevelDBIteratorWrapper::default: initializing with null iterator and invalid state"
+            "LevelDBIteratorWrapper::default: initializing with no iterator and invalid state"
         );
         LevelDBIteratorWrapper {
-            iter:  core::ptr::null_mut(),
+            iter:  None,
             valid: false,
             key_:  Slice::default(),
         }
@@ -35,241 +32,310 @@ impl Default for LevelDBIteratorWrapper {
 }
 
 impl LevelDBIteratorWrapper {
-    pub fn new(iter: *mut dyn LevelDBIteratorInterface) -> Self {
+
+    /**
+      | Construct a wrapper that optionally owns
+      | an iterator. Passing `None` corresponds
+      | to the default C++ constructor with
+      | a null `Iterator*`.
+      */
+    pub fn new(iter: Option<Box<dyn LevelDBIteratorInterface>>) -> Self {
         trace!(
-            "LevelDBIteratorWrapper::new: constructing wrapper for iter={:?}",
-            iter
+            "LevelDBIteratorWrapper::new: constructing wrapper; has_iter={}",
+            iter.is_some()
         );
 
-        let mut wrapper = LevelDBIteratorWrapper {
-            iter:  core::ptr::null_mut(),
-            valid: false,
-            key_:  Slice::default(),
-        };
-
-        wrapper.set(iter);
+        let mut wrapper = LevelDBIteratorWrapper::default();
+        wrapper.reset_iterator(iter);
         wrapper
     }
 
     /**
-      | Methods below require iter() != nullptr
+      | Returns true iff an underlying iterator
+      | is currently attached.
+      */
+    pub fn has_iterator(&self) -> bool {
+        self.iter.is_some()
+    }
+
+    /**
+      | Cached valid() result from the most recent
+      | Update() or positioning call.
+      */
+    pub fn valid(&self) -> bool {
+        trace!(
+            "LevelDBIteratorWrapper::valid: cached_valid={}, has_iter={}",
+            self.valid,
+            self.has_iterator()
+        );
+        self.valid
+    }
+
+    /**
+      | Read‑only access to the underlying iterator,
+      | if present.
+      */
+    pub fn iter(&self) -> Option<&dyn LevelDBIteratorInterface> {
+        self.iter
+            .as_ref()
+            .map(|boxed| boxed.as_ref() as &dyn LevelDBIteratorInterface)
+    }
+
+    /**
+      | Mutable access to the underlying iterator,
+      | if present.
+      */
+    pub fn iter_mut(&mut self) -> Option<&mut dyn LevelDBIteratorInterface> {
+        self.iter
+            .as_mut()
+            .map(|boxed| boxed.as_mut() as &mut dyn LevelDBIteratorInterface)
+    }
+
+    /**
+      | Internal helper used by Drop and reset logic
+      | to take ownership of the iterator box.
+      */
+    pub(crate) fn take_iter(&mut self) -> Option<Box<dyn LevelDBIteratorInterface>> {
+        self.iter.take()
+    }
+
+    /**
+      | Internal helper that installs a new iterator
+      | box and returns the previous one (if any).
+      */
+    pub(crate) fn replace_iter(
+        &mut self,
+        new_iter: Option<Box<dyn LevelDBIteratorInterface>>,
+    ) -> Option<Box<dyn LevelDBIteratorInterface>> {
+        core::mem::replace(&mut self.iter, new_iter)
+    }
+
+    /**
+      | Internal helper to mutate the cached valid flag.
+      */
+    pub(crate) fn set_valid_flag(&mut self, flag: bool) {
+        self.valid = flag;
+    }
+
+    /**
+      | Internal helper to read the cached key slice.
+      */
+    pub(crate) fn cached_key(&self) -> &Slice {
+        &self.key_
+    }
+
+    /**
+      | Internal helper to overwrite the cached key
+      | from another Slice.
+      */
+    pub(crate) fn set_cached_key_from_slice(&mut self, src: &Slice) {
+        let data = src.data();
+        let size = src.size();
+        self.key_ = Slice::from_ptr_len(*data, *size);
+    }
+
+    /**
+      | Iterator status: returns the underlying
+      | iterator's Status.
       |
+      | REQUIRES: an iterator is attached.
       */
     pub fn status(&self) -> crate::Status {
         trace!(
-            "LevelDBIteratorWrapper::status: querying underlying iterator; iter={:?}",
-            self.iter
+            "LevelDBIteratorWrapper::status: querying underlying iterator; has_iter={}",
+            self.has_iterator()
         );
 
-        unsafe {
-            assert!(
-                !self.iter.is_null(),
-                "LevelDBIteratorWrapper::status: underlying iterator pointer is null"
-            );
-            let st = (*self.iter).status();
+        let iter = self
+            .iter()
+            .expect("LevelDBIteratorWrapper::status: underlying iterator is missing");
+
+        let st = iter.status();
+        trace!(
+            "LevelDBIteratorWrapper::status: underlying status_code={:?}",
+            st.code()
+        );
+        st
+    }
+
+    /**
+      | Replace the currently owned iterator with
+      | a new one (or detach it if `None`).
+      |
+      | This matches the C++ semantics of
+      | IteratorWrapper::Set, which deletes the
+      | previous iterator, installs the new one,
+      | and refreshes the cached state.
+      */
+    pub fn reset_iterator(&mut self, iter: Option<Box<dyn LevelDBIteratorInterface>>) {
+        trace!(
+            "LevelDBIteratorWrapper::reset_iterator: replacing iterator; had_iter={}, new_has_iter={}",
+            self.has_iterator(),
+            iter.is_some()
+        );
+
+        if let Some(old_iter) = self.take_iter() {
+            let raw: *const dyn LevelDBIteratorInterface = &*old_iter;
             trace!(
-                "LevelDBIteratorWrapper::status: underlying status_code={:?}",
-                st.code()
+                "LevelDBIteratorWrapper::reset_iterator: deallocating previously owned iterator at {:p}",
+                raw
             );
-            st
+            drop(old_iter);
+        } else {
+            trace!(
+                "LevelDBIteratorWrapper::reset_iterator: no existing iterator to deallocate"
+            );
+        }
+
+        self.replace_iter(iter);
+
+        if !self.has_iterator() {
+            trace!(
+                "LevelDBIteratorWrapper::reset_iterator: new iterator is None; marking wrapper as invalid"
+            );
+            self.set_valid_flag(false);
+        } else {
+            trace!(
+                "LevelDBIteratorWrapper::reset_iterator: new iterator attached; updating cached state"
+            );
+            self.update();
         }
     }
 }
 
 #[cfg(test)]
-mod iterator_wrapper_contract_tests {
+mod iterator_wrapper_behavior_tests {
     use super::*;
-    use core::ptr;
 
     #[traced_test]
-    fn iterator_wrapper_default_state_is_invalid_and_null() {
-        trace!("iterator_wrapper_default_state_is_invalid_and_null: start");
+    fn default_wrapper_starts_without_iterator_and_is_invalid() {
+        trace!("default_wrapper_starts_without_iterator_and_is_invalid: start");
 
         let wrapper = LevelDBIteratorWrapper::default();
 
-        trace!(
-            "iterator_wrapper_default_state_is_invalid_and_null: iter={:?}, valid={}",
-            wrapper.iter(),
-            wrapper.valid()
-        );
-
         assert!(
-            wrapper.iter().is_null(),
-            "default LevelDBIteratorWrapper must start with a null iterator pointer"
+            !wrapper.has_iterator(),
+            "default wrapper must not own an iterator"
         );
         assert!(
             !wrapper.valid(),
-            "default LevelDBIteratorWrapper must start in an invalid state"
+            "default wrapper must start in an invalid state"
         );
     }
 
     #[traced_test]
-    fn iterator_wrapper_new_with_null_produces_invalid_wrapper() {
-        trace!("iterator_wrapper_new_with_null_produces_invalid_wrapper: start");
+    fn wrapper_constructed_with_iterator_starts_invalid_until_positioned() {
+        trace!("wrapper_constructed_with_iterator_starts_invalid_until_positioned: start");
 
-        let default_wrapper = LevelDBIteratorWrapper::default();
-        let new_wrapper     = LevelDBIteratorWrapper::new(ptr::null_mut());
+        let stub = MockStubIterator::new_with_entries(&[(
+            b"key1".as_ref(),
+            b"value1".as_ref(),
+        )]);
 
-        trace!(
-            "iterator_wrapper_new_with_null_produces_invalid_wrapper: default_iter={:?}, new_iter={:?}",
-            default_wrapper.iter(),
-            new_wrapper.iter()
-        );
+        let mut wrapper = LevelDBIteratorWrapper::new(Some(Box::new(stub)));
 
         assert!(
-            new_wrapper.iter().is_null(),
-            "new wrapper constructed with null iterator must hold a null pointer"
+            wrapper.has_iterator(),
+            "wrapper constructed with an iterator must report has_iterator()"
         );
-        assert_eq!(
-            default_wrapper.valid(),
-            new_wrapper.valid(),
-            "new wrapper constructed with null iterator must be invalid, matching Default"
+        assert!(
+            !wrapper.valid(),
+            "wrapper should be invalid until the underlying iterator is positioned"
         );
+
+        wrapper.seek_to_first();
+
+        assert!(
+            wrapper.valid(),
+            "wrapper must become valid after seek_to_first on non-empty iterator"
+        );
+
+        let key = wrapper.key().to_string();
+        let value = wrapper.value().to_string();
+
+        assert_eq!(key, "key1");
+        assert_eq!(value, "value1");
     }
 
     #[test]
     #[should_panic]
-    fn iterator_wrapper_key_panics_when_invalid() {
-        trace!("iterator_wrapper_key_panics_when_invalid: start");
+    fn key_panics_when_wrapper_invalid() {
+        trace!("key_panics_when_wrapper_invalid: start");
 
         let wrapper = LevelDBIteratorWrapper::default();
-
-        trace!(
-            "iterator_wrapper_key_panics_when_invalid: about to call key() with valid={}",
-            wrapper.valid()
-        );
-
-        // Must panic because the iterator is not valid.
         let _ = wrapper.key();
     }
 
     #[test]
     #[should_panic]
-    fn iterator_wrapper_value_panics_when_invalid() {
-        trace!("iterator_wrapper_value_panics_when_invalid: start");
+    fn value_panics_when_wrapper_invalid() {
+        trace!("value_panics_when_wrapper_invalid: start");
 
         let wrapper = LevelDBIteratorWrapper::default();
-
-        trace!(
-            "iterator_wrapper_value_panics_when_invalid: about to call value() with valid={}",
-            wrapper.valid()
-        );
-
-        // Must panic because the iterator is not valid.
         let _ = wrapper.value();
     }
 
     #[test]
     #[should_panic]
-    fn iterator_wrapper_status_panics_when_iter_pointer_is_null() {
-        trace!("iterator_wrapper_status_panics_when_iter_pointer_is_null: start");
+    fn status_panics_when_no_iterator_attached() {
+        trace!("status_panics_when_no_iterator_attached: start");
 
         let wrapper = LevelDBIteratorWrapper::default();
-
-        trace!(
-            "iterator_wrapper_status_panics_when_iter_pointer_is_null: about to call status() with iter={:?}",
-            wrapper.iter()
-        );
-
-        // Must panic because the underlying iterator pointer is null.
         let _ = wrapper.status();
     }
 
     #[test]
     #[should_panic]
-    fn iterator_wrapper_next_panics_when_iter_pointer_is_null() {
-        trace!("iterator_wrapper_next_panics_when_iter_pointer_is_null: start");
+    fn next_panics_when_no_iterator_attached() {
+        trace!("next_panics_when_no_iterator_attached: start");
 
         let mut wrapper = LevelDBIteratorWrapper::default();
-
-        trace!(
-            "iterator_wrapper_next_panics_when_iter_pointer_is_null: about to call next() with iter={:?}",
-            wrapper.iter()
-        );
-
-        // Must panic because the underlying iterator pointer is null.
         wrapper.next();
     }
 
     #[test]
     #[should_panic]
-    fn iterator_wrapper_prev_panics_when_iter_pointer_is_null() {
-        trace!("iterator_wrapper_prev_panics_when_iter_pointer_is_null: start");
+    fn prev_panics_when_no_iterator_attached() {
+        trace!("prev_panics_when_no_iterator_attached: start");
 
         let mut wrapper = LevelDBIteratorWrapper::default();
-
-        trace!(
-            "iterator_wrapper_prev_panics_when_iter_pointer_is_null: about to call prev() with iter={:?}",
-            wrapper.iter()
-        );
-
-        // Must panic because the underlying iterator pointer is null.
         wrapper.prev();
     }
 
     #[test]
     #[should_panic]
-    fn iterator_wrapper_seek_panics_when_iter_pointer_is_null() {
-        trace!("iterator_wrapper_seek_panics_when_iter_pointer_is_null: start");
+    fn seek_panics_when_no_iterator_attached() {
+        trace!("seek_panics_when_no_iterator_attached: start");
 
         let mut wrapper = LevelDBIteratorWrapper::default();
-        let target      = Slice::default();
-
-        trace!(
-            "iterator_wrapper_seek_panics_when_iter_pointer_is_null: about to call seek() with iter={:?}, target={:?}",
-            wrapper.iter(),
-            target
-        );
-
-        // Must panic because the underlying iterator pointer is null.
+        let target = Slice::from("abc");
         wrapper.seek(&target);
     }
 
     #[test]
     #[should_panic]
-    fn iterator_wrapper_seek_to_first_panics_when_iter_pointer_is_null() {
-        trace!("iterator_wrapper_seek_to_first_panics_when_iter_pointer_is_null: start");
+    fn seek_to_first_panics_when_no_iterator_attached() {
+        trace!("seek_to_first_panics_when_no_iterator_attached: start");
 
         let mut wrapper = LevelDBIteratorWrapper::default();
-
-        trace!(
-            "iterator_wrapper_seek_to_first_panics_when_iter_pointer_is_null: about to call seek_to_first() with iter={:?}",
-            wrapper.iter()
-        );
-
-        // Must panic because the underlying iterator pointer is null.
         wrapper.seek_to_first();
     }
 
     #[test]
     #[should_panic]
-    fn iterator_wrapper_seek_to_last_panics_when_iter_pointer_is_null() {
-        trace!("iterator_wrapper_seek_to_last_panics_when_iter_pointer_is_null: start");
+    fn seek_to_last_panics_when_no_iterator_attached() {
+        trace!("seek_to_last_panics_when_no_iterator_attached: start");
 
         let mut wrapper = LevelDBIteratorWrapper::default();
-
-        trace!(
-            "iterator_wrapper_seek_to_last_panics_when_iter_pointer_is_null: about to call seek_to_last() with iter={:?}",
-            wrapper.iter()
-        );
-
-        // Must panic because the underlying iterator pointer is null.
         wrapper.seek_to_last();
     }
 
     #[test]
     #[should_panic]
-    fn iterator_wrapper_update_panics_when_iter_pointer_is_null() {
-        trace!("iterator_wrapper_update_panics_when_iter_pointer_is_null: start");
+    fn update_panics_when_no_iterator_attached() {
+        trace!("update_panics_when_no_iterator_attached: start");
 
         let mut wrapper = LevelDBIteratorWrapper::default();
-
-        trace!(
-            "iterator_wrapper_update_panics_when_iter_pointer_is_null: about to call update() with iter={:?}",
-            wrapper.iter()
-        );
-
-        // Must panic because the underlying iterator pointer is null.
         wrapper.update();
     }
 }
