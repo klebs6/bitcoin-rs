@@ -42,32 +42,30 @@ NO_FAIL_FAST := --no-fail-fast
 #-------------------------------[active-below]
 ACTIVE := bitcoin-top
 
-# ------------------------------- [leveldb-layer-7]
-ACTIVE := bitcoinleveldb-memenv
-ACTIVE := bitcoinleveldb-table
-ACTIVE := bitcoinleveldb-options
+# ------------------------------- [leveldb-layer-1]
+ACTIVE := bitcoinleveldb-block    #loc: 1486
+ACTIVE := bitcoinleveldb-iterator #loc: 1572
+ACTIVE := bitcoinleveldb-table    #loc: 2050
 
-# ------------------------------- [leveldb-layer-8]
-#ACTIVE := bitcoinleveldb-duplex
-#ACTIVE := bitcoinleveldb-memtable
-#ACTIVE := bitcoinleveldb-merger
-#ACTIVE := bitcoinleveldb-meta
-#ACTIVE := bitcoinleveldb-version
+# ------------------------------- [leveldb-layer-2]
+#ACTIVE := bitcoinleveldb-duplex   #loc: 255
+#ACTIVE := bitcoinleveldb-memtable #loc: 476
+#ACTIVE := bitcoinleveldb-merger   #loc: 286
+#ACTIVE := bitcoinleveldb-meta     #loc: 921
+#ACTIVE := bitcoinleveldb-version  #loc: 2298
 
-# ------------------------------- [leveldb-layer-9]
-#ACTIVE := bitcoinleveldb-batch
-#ACTIVE := bitcoinleveldb-repair
+# ------------------------------- [leveldb-layer-3]
+#ACTIVE := bitcoinleveldb-batch    #loc: 547
+#ACTIVE := bitcoinleveldb-repair   #loc: 545
 
-# ------------------------------- [leveldb-layer-10]
-#ACTIVE := bitcoinleveldb-db
-#ACTIVE := bitcoinleveldb-dumpfile
+# ------------------------------- [leveldb-layer-4]
+#ACTIVE := bitcoinleveldb-db       #loc: 7539
+#ACTIVE := bitcoinleveldb-dumpfile #loc: 473
 
-# ------------------------------- [leveldb-layer-11]
-#ACTIVE := bitcoinleveldb-bench
-#ACTIVE := bitcoinleveldb-test
-
-# ------------------------------- [leveldb-layer-12]
-#ACTIVE := bitcoin-leveldb
+# ------------------------------- [leveldb-layer-5]
+#ACTIVE := bitcoinleveldb-bench    #loc: 3003
+#ACTIVE := bitcoinleveldb-test     #loc: 3261
+#ACTIVE := bitcoin-leveldb         #loc: 37
 
 #-------------------------------[future]
 #ACTIVE := bitcoin-block
@@ -306,41 +304,42 @@ bench:
 #ACTIVE := bitcoin-muhash
 #ACTIVE := bitcoin-remote
 #ACTIVE := bitcoin-network
-#ACTIVE := bitcoinleveldb-arena
-#ACTIVE := bitcoinleveldb-cfg
-#ACTIVE := bitcoinleveldb-compat
-#ACTIVE := bitcoinleveldb-slice
-#ACTIVE := bitcoinleveldb-crc32
-#ACTIVE := bitcoinleveldb-hash
-#ACTIVE := bitcoinleveldb-histogram
-#ACTIVE := bitcoinleveldb-limiter
-#ACTIVE := bitcoinleveldb-rand
-#ACTIVE := bitcoinleveldb-sync
-#ACTIVE := bitcoinleveldb-status
-#ACTIVE := bitcoinleveldb-coding
-#ACTIVE := bitcoinleveldb-comparator
-#ACTIVE := bitcoinleveldb-filter
-#ACTIVE := bitcoinleveldb-cache
-#ACTIVE := bitcoinleveldb-util
-#ACTIVE := bitcoinleveldb-bloom
-#ACTIVE := bitcoinleveldb-key
-#ACTIVE := bitcoinleveldb-snapshot
-#ACTIVE := bitcoinleveldb-file
-#ACTIVE := bitcoinleveldb-lru
-#ACTIVE := bitcoinleveldb-skiplist
-#ACTIVE := bitcoinleveldb-logtools
-#ACTIVE := bitcoinleveldb-posixlogger
-#ACTIVE := bitcoinleveldb-logwriter
-#ACTIVE := bitcoinleveldb-logreader
-#ACTIVE := bitcoinleveldb-log
-#ACTIVE := bitcoinleveldb-versionedit
-#ACTIVE := bitcoinleveldb-env
-#ACTIVE := bitcoinleveldb-posixtools
-#ACTIVE := bitcoinleveldb-posixwfile
-#ACTIVE := bitcoinleveldb-posixseqfile
-#ACTIVE := bitcoinleveldb-posixrafile
-#ACTIVE := bitcoinleveldb-posixlogger
-#ACTIVE := bitcoinleveldb-posixmmaprfile
 
-#ACTIVE := bitcoinleveldb-posixenv
-#ACTIVE := bitcoinleveldb-posix
+#ACTIVE := bitcoinleveldb-arena          #loc: 371
+#ACTIVE := bitcoinleveldb-cfg            #loc: 138
+#ACTIVE := bitcoinleveldb-compat         #loc: 852
+#ACTIVE := bitcoinleveldb-slice          #loc: 318
+#ACTIVE := bitcoinleveldb-crc32          #loc: 640
+#ACTIVE := bitcoinleveldb-hash           #loc: 111
+#ACTIVE := bitcoinleveldb-histogram      #loc: 745
+#ACTIVE := bitcoinleveldb-limiter        #loc: 151
+#ACTIVE := bitcoinleveldb-rand           #loc: 179
+#ACTIVE := bitcoinleveldb-sync           #loc: 60
+#ACTIVE := bitcoinleveldb-status         #loc: 390
+#ACTIVE := bitcoinleveldb-coding         #loc: 782
+#ACTIVE := bitcoinleveldb-comparator     #loc: 185
+#ACTIVE := bitcoinleveldb-filter         #loc: 521
+#ACTIVE := bitcoinleveldb-cache          #loc: 999
+#ACTIVE := bitcoinleveldb-util           #loc: 135
+#ACTIVE := bitcoinleveldb-bloom          #loc: 989
+#ACTIVE := bitcoinleveldb-key            #loc: 1953
+#ACTIVE := bitcoinleveldb-snapshot       #loc: 842
+#ACTIVE := bitcoinleveldb-file           #loc: 843
+#ACTIVE := bitcoinleveldb-lru            #loc: 4192
+#ACTIVE := bitcoinleveldb-skiplist       #loc: 1045
+#ACTIVE := bitcoinleveldb-logtools       #loc: 1198
+#ACTIVE := bitcoinleveldb-logwriter      #loc: 1656
+#ACTIVE := bitcoinleveldb-logreader      #loc: 2026
+#ACTIVE := bitcoinleveldb-log            #loc: 8
+#ACTIVE := bitcoinleveldb-versionedit    #loc: 1126
+#ACTIVE := bitcoinleveldb-env            #loc: 853
+#ACTIVE := bitcoinleveldb-posixtools     #loc: 495
+#ACTIVE := bitcoinleveldb-posixwfile     #loc: 607
+#ACTIVE := bitcoinleveldb-posixseqfile   #loc: 224
+#ACTIVE := bitcoinleveldb-posixrafile    #loc: 382
+#ACTIVE := bitcoinleveldb-posixlogger    #loc: 2080
+#ACTIVE := bitcoinleveldb-posixmmaprfile #loc: 223
+#ACTIVE := bitcoinleveldb-posixenv       #loc: 3437
+#ACTIVE := bitcoinleveldb-posix          #loc: 632
+#ACTIVE := bitcoinleveldb-options        #loc: 339
+#ACTIVE := bitcoinleveldb-memenv         #loc: 3569

@@ -1,16 +1,23 @@
 // ---------------- [ File: bitcoinleveldb-memenv/tests/locks.rs ]
 use bitcoinleveldb_memenv::*;
+use bitcoinleveldb_slice::*;
+use bitcoinleveldb_file::*;
 use bitcoin_imports::*;
 
-#[test] fn mem_env_test_locks() {
-    todo!();
-    /*
-    
-      FileLock* lock;
+#[traced_test]
+fn mem_env_test_locks() {
+    let mut env = make_mem_env();
 
-      // These are no-ops, but we test they return success.
-      ASSERT_OK(env_->LockFile("some file", &lock));
-      ASSERT_OK(env_->UnlockFile(lock));
+    let fname = "some file".to_string();
+    let mut lock_ptr: *mut Box<dyn FileLock> = core::ptr::null_mut();
 
-    */
+    // LockFile should succeed.
+    let status =
+        env.lock_file(&fname, &mut lock_ptr as *mut *mut Box<dyn FileLock>);
+    assert!(status.is_ok());
+    assert!(!lock_ptr.is_null());
+
+    // UnlockFile should also succeed and free the lock.
+    let status = env.unlock_file(lock_ptr);
+    assert!(status.is_ok());
 }

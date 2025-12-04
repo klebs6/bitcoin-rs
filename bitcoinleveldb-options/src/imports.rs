@@ -7,3 +7,4 @@ pub(crate) use bitcoinleveldb_env::*;
 pub(crate) use bitcoinleveldb_filter::*;
 pub(crate) use bitcoinleveldb_log::*;
 pub(crate) use bitcoinleveldb_snapshot::*;
+pub(crate) use bitcoinleveldb_slice::*;

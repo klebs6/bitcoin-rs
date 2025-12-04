@@ -39,7 +39,7 @@ impl SequentialFileRead for SequentialFileImpl {
 
             if status.is_ok() {
                 if !result.is_null() {
-                    let bytes_read = (*result).size();
+                    let bytes_read: usize = *(*result).size();
                     self.pos = self.pos.saturating_add(bytes_read as u64);
                     trace!(
                         "SequentialFileImpl::read: advanced pos to {} (read {} bytes)",
@@ -158,5 +158,124 @@ impl SequentialFileImpl {
         }
 
         SequentialFileImpl { file, pos: 0 }
+    }
+}
+
+#[cfg(test)]
+mod sequential_file_impl_tests {
+    use super::*;
+
+    #[traced_test]
+    fn sequential_read_advances_position() {
+        crate::ix!();
+
+        unsafe {
+            let file_box = Box::new(FileState::default());
+            let raw: *mut FileState = Box::into_raw(file_box);
+
+            FileState::ref_raw(raw);
+
+            {
+                let file_mut: &mut FileState = &mut *raw;
+                let payload = b"abcdefg";
+                let slice = Slice::from(&payload[..]);
+                let status = file_mut.append(&slice);
+                assert!(status.is_ok());
+            }
+
+            {
+                let mut seq = SequentialFileImpl::new(raw);
+
+                // First read 3 bytes.
+                let mut result1 = Slice::default();
+                let mut scratch1 = vec![0_u8; 3];
+                let status1 = seq.read(
+                    3,
+                    &mut result1 as *mut Slice,
+                    scratch1.as_mut_ptr(),
+                );
+                assert!(status1.is_ok());
+                assert_eq!(*result1.size(), 3);
+                assert_eq!(&scratch1[..3], &b"abc"[..]);
+
+                // Second read 4 bytes: should yield the remainder.
+                let mut result2 = Slice::default();
+                let mut scratch2 = vec![0_u8; 4];
+                let status2 = seq.read(
+                    4,
+                    &mut result2 as *mut Slice,
+                    scratch2.as_mut_ptr(),
+                );
+                assert!(status2.is_ok());
+                assert_eq!(*result2.size(), 4);
+                assert_eq!(&scratch2[..4], &b"defg"[..]);
+            }
+
+            FileState::unref_raw(raw);
+        }
+    }
+
+    #[traced_test]
+    fn sequential_skip_moves_forward_without_reading() {
+        crate::ix!();
+
+        unsafe {
+            let file_box = Box::new(FileState::default());
+            let raw: *mut FileState = Box::into_raw(file_box);
+
+            FileState::ref_raw(raw);
+
+            {
+                let file_mut: &mut FileState = &mut *raw;
+                let payload = b"0123456789";
+                let slice = Slice::from(&payload[..]);
+                let status = file_mut.append(&slice);
+                assert!(status.is_ok());
+            }
+
+            {
+                let mut seq = SequentialFileImpl::new(raw);
+
+                // Skip first 5 bytes.
+                let status_skip = seq.skip(5);
+                assert!(status_skip.is_ok());
+
+                // Read the next 3 bytes; should be "567".
+                let mut result = Slice::default();
+                let mut scratch = vec![0_u8; 3];
+                let status_read = seq.read(
+                    3,
+                    &mut result as *mut Slice,
+                    scratch.as_mut_ptr(),
+                );
+                assert!(status_read.is_ok());
+                assert_eq!(&scratch[..3], &b"567"[..]);
+            }
+
+            FileState::unref_raw(raw);
+        }
+    }
+
+    #[traced_test]
+    fn sequential_operations_on_null_file_return_io_error() {
+        crate::ix!();
+
+        let mut seq = SequentialFileImpl {
+            file: core::ptr::null_mut(),
+            pos:  0,
+        };
+
+        let mut result = Slice::default();
+        let mut scratch = vec![0_u8; 4];
+
+        let status_read = seq.read(
+            4,
+            &mut result as *mut Slice,
+            scratch.as_mut_ptr(),
+        );
+        assert!(status_read.is_io_error());
+
+        let status_skip = seq.skip(10);
+        assert!(status_skip.is_io_error());
     }
 }

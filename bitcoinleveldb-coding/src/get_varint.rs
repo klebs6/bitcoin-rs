@@ -186,3 +186,92 @@ pub fn get_varint64(input: *mut Slice, value: *mut u64) -> bool {
         true
     }
 }
+
+#[inline]
+pub fn get_varint64_from_slice(input: &mut Slice, result: &mut u64) -> bool {
+    unsafe {
+        let mut p = *input.data();
+        let limit = p.add(*input.size());
+
+        trace!(
+            "get_varint64_from_slice: start ptr={:?}, size={}",
+            p,
+            input.size()
+        );
+
+        let mut shift: u32 = 0;
+        let mut value: u64 = 0;
+        let mut consumed: usize = 0;
+
+        while p < limit && shift <= 63 {
+            let byte = *p;
+            p = p.add(1);
+            consumed += 1;
+
+            value |= ((byte & 0x7F) as u64) << shift;
+            if (byte & 0x80) == 0 {
+                *result = value;
+                input.remove_prefix(consumed);
+                trace!(
+                    "get_varint64_from_slice: decoded value={}, bytes_used={}",
+                    value,
+                    consumed
+                );
+                return true;
+            }
+
+            shift += 7;
+        }
+
+        debug!(
+            "get_varint64_from_slice: failed (consumed={}, shift={}, input_size={})",
+            consumed,
+            shift,
+            input.size()
+        );
+        false
+    }
+}
+
+#[inline]
+pub unsafe fn get_varint32_ptr(
+    mut p: *const u8,
+    limit: *const u8,
+    result: *mut u32,
+) -> *const u8 {
+    trace!(
+        "get_varint32_ptr: start={:?}, limit={:?}",
+        p,
+        limit
+    );
+
+    let mut shift: u32 = 0;
+    let mut value: u32 = 0;
+
+    while p < limit && shift <= 28 {
+        let byte = *p;
+        p = p.add(1);
+
+        value |= ((byte & 0x7F) as u32) << shift;
+        if byte & 0x80 == 0 {
+            *result = value;
+            trace!(
+                "get_varint32_ptr: decoded value={} (bytes_used={}, final_ptr={:?})",
+                value,
+                (shift / 7) + 1,
+                p
+            );
+            return p;
+        }
+
+        shift += 7;
+    }
+
+    debug!(
+        "get_varint32_ptr: failed to decode varint32 (p={:?}, limit={:?}, shift={})",
+        p,
+        limit,
+        shift
+    );
+    core::ptr::null()
+}

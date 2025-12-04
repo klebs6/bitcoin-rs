@@ -3073,6 +3073,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitcoinleveldb-block"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-coding",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-filter",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "tracing",
+]
+
+[[package]]
 name = "bitcoinleveldb-bloom"
 version = "0.1.19"
 dependencies = [
@@ -3290,6 +3313,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitcoinleveldb-iterator"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-coding",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-filter",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-util",
+ "derive_builder",
+ "getset",
+ "tracing",
+]
+
+[[package]]
 name = "bitcoinleveldb-key"
 version = "0.1.19"
 dependencies = [
@@ -3425,6 +3472,7 @@ dependencies = [
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-util",
+ "tracing",
 ]
 
 [[package]]
@@ -3489,6 +3537,7 @@ dependencies = [
  "bitcoinleveldb-env",
  "bitcoinleveldb-filter",
  "bitcoinleveldb-log",
+ "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
 ]
 
@@ -3755,17 +3804,21 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoinleveldb-block",
  "bitcoinleveldb-cache",
+ "bitcoinleveldb-coding",
  "bitcoinleveldb-comparator",
  "bitcoinleveldb-env",
  "bitcoinleveldb-file",
  "bitcoinleveldb-filter",
+ "bitcoinleveldb-iterator",
  "bitcoinleveldb-key",
  "bitcoinleveldb-options",
  "bitcoinleveldb-rand",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-util",
+ "tracing",
 ]
 
 [[package]]

@@ -86,3 +86,74 @@ impl RandomAccessFileImpl {
         RandomAccessFileImpl { file }
     }
 }
+
+#[cfg(test)]
+mod random_access_file_impl_tests {
+    use super::*;
+
+    #[traced_test]
+    fn random_access_read_round_trips_data() {
+        crate::ix!();
+
+        unsafe {
+            // Own the FileState via Box/into_raw and use refcounting as in InMemoryEnv.
+            let file_box = Box::new(FileState::default());
+            let raw: *mut FileState = Box::into_raw(file_box);
+
+            // Simulate "map owner" reference.
+            FileState::ref_raw(raw);
+
+            // Write some data through FileState.
+            {
+                let file_mut: &mut FileState = &mut *raw;
+                let payload = b"random access payload";
+                let slice = Slice::from(&payload[..]);
+                let status = file_mut.append(&slice);
+                assert!(status.is_ok());
+                assert_eq!(file_mut.size(), payload.len() as u64);
+            }
+
+            // Create a RandomAccessFileImpl (adds one reference).
+            {
+                let raf = RandomAccessFileImpl::new(raw);
+
+                let mut result = Slice::default();
+                let mut scratch = vec![0_u8; 6];
+
+                let status = raf.read(
+                    7, // offset into "random "
+                    scratch.len(),
+                    &mut result as *mut Slice,
+                    scratch.as_mut_ptr(),
+                );
+                assert!(status.is_ok());
+                assert_eq!(*result.size(), 6);
+
+                let expected = &b"random access payload"[7..13];
+                assert_eq!(&scratch[..6], expected);
+                // raf dropped here, removing one reference.
+            }
+
+            // Last unref for the "map owner".
+            FileState::unref_raw(raw);
+        }
+    }
+
+    #[traced_test]
+    fn random_access_read_on_null_file_returns_io_error() {
+        crate::ix!();
+
+        let raf = RandomAccessFileImpl { file: core::ptr::null_mut() };
+        let mut result = Slice::default();
+        let mut scratch = vec![0_u8; 4];
+
+        let status = raf.read(
+            0,
+            scratch.len(),
+            &mut result as *mut Slice,
+            scratch.as_mut_ptr(),
+        );
+
+        assert!(status.is_io_error());
+    }
+}

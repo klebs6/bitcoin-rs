@@ -77,6 +77,18 @@ impl From<&String> for Slice {
     }
 }
 
+impl From<&str> for Slice {
+
+    /// Create a slice that refers to the contents of the given `String`.
+    fn from(s: &str) -> Self {
+        info!("Creating a Slice from &str");
+        Self {
+            data: s.as_ptr(),
+            size: s.len(),
+        }
+    }
+}
+
 impl From<*const u8> for Slice {
 
     /// Create a slice that refers to `s[0..strlen(s)-1]`.

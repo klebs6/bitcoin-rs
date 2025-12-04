@@ -87,4 +87,3 @@ pub fn test_close_on_exec_helper_main(pid_arg: *mut u8) -> i32 {
         0
     }
 }
-

@@ -1,29 +1,12 @@
+// ---------------- [ File: bitcoinleveldb-memenv/src/in_memory_env_new_appendable_file.rs ]
 crate::ix!();
 
-impl InMemoryEnv {
-    
-    pub fn new_appendable_file(&mut self, 
-        fname:  &String,
-        result: *mut *mut dyn WritableFile) -> crate::Status {
-        
-        todo!();
-        /*
-            MutexLock lock(&mutex_);
-        FileState** sptr = &file_map_[fname];
-        FileState* file = *sptr;
-        if (file == nullptr) {
-          file = new FileState();
-          file->Ref();
-        }
-        *result = new WritableFileImpl(file);
-        return Status::OK();
-        */
-    }
+impl NewAppendableFile for InMemoryEnv {
 
-    pub fn new_appendable_file(
+    fn new_appendable_file(
         &mut self,
         fname:  &String,
-        result: *mut *mut dyn WritableFile,
+        result: *mut *mut Box<dyn WritableFile>,
     ) -> crate::Status {
         trace!(
             "InMemoryEnv::new_appendable_file: opening '{}' for append",
@@ -32,24 +15,15 @@ impl InMemoryEnv {
 
         use std::collections::hash_map::Entry;
 
-        let guard = self.mutex.lock();
-        let mut inner = match guard {
-            Ok(inner) => inner,
-            Err(poisoned) => {
-                warn!(
-                    "InMemoryEnv::new_appendable_file: mutex poisoned; recovering"
-                );
-                poisoned.into_inner()
-            }
-        };
+        let mut guard = self.inner_mutex().lock();
 
         // C++:
         // FileState** sptr = &file_map_[fname];
         // FileState* file = *sptr;
         // if (file == nullptr) { file = new FileState(); file->Ref(); *sptr = file; }
-        let file_ptr = match inner.file_map.entry(fname.clone()) {
+        let file_ptr: *mut FileState = match guard.file_map_mut().entry(fname.clone()) {
             Entry::Occupied(mut o) => {
-                let mut ptr = *o.get();
+                let mut ptr: *mut FileState = *o.get();
                 if ptr.is_null() {
                     debug!(
                         "InMemoryEnv::new_appendable_file: existing entry with null FileState for '{}'; creating new",
@@ -60,9 +34,9 @@ impl InMemoryEnv {
                     unsafe {
                         FileState::ref_raw(ptr);
                     }
-                    let ptr = Box::into_raw(boxed);
-                    o.insert(ptr);
-                    ptr
+                    let raw = Box::into_raw(boxed);
+                    o.insert(raw);
+                    raw
                 } else {
                     debug!(
                         "InMemoryEnv::new_appendable_file: using existing FileState for '{}'",
@@ -77,13 +51,13 @@ impl InMemoryEnv {
                     fname
                 );
                 let mut boxed = Box::new(FileState::default());
-                let mut_ptr: *mut FileState = &mut *boxed;
+                let ptr: *mut FileState = &mut *boxed;
                 unsafe {
-                    FileState::ref_raw(mut_ptr);
+                    FileState::ref_raw(ptr);
                 }
-                let raw_ptr = Box::into_raw(boxed);
-                v.insert(raw_ptr);
-                raw_ptr
+                let raw = Box::into_raw(boxed);
+                v.insert(raw);
+                raw
             }
         };
 
@@ -95,11 +69,53 @@ impl InMemoryEnv {
                 );
             } else {
                 let wf = WritableFileImpl::new(file_ptr);
-                let boxed: Box<dyn WritableFile> = Box::new(wf);
-                *result = Box::into_raw(boxed);
+                let inner: Box<dyn WritableFile> = Box::new(wf);
+                let outer: Box<Box<dyn WritableFile>> = Box::new(inner);
+                *result = Box::into_raw(outer);
             }
         }
 
         crate::Status::ok()
+    }
+}
+
+#[cfg(test)]
+mod in_memory_env_new_appendable_file_tests {
+    use super::*;
+    use std::cell::RefCell;
+    use std::rc::Rc;
+
+    use crate::{
+        Env,
+        FileExists,
+        NewAppendableFile,
+        WritableFile,
+    };
+    use crate::in_memory_env::in_memory_env_behavior_tests::TestBaseEnv;
+
+    #[traced_test]
+    fn new_appendable_file_creates_file_if_missing() {
+        crate::ix!();
+
+        let base: Rc<RefCell<dyn Env>> =
+            Rc::new(RefCell::new(TestBaseEnv::default()));
+        let mut env = InMemoryEnv::new(base);
+
+        let fname = "appendable.dat".to_string();
+        assert!(!env.file_exists(&fname));
+
+        let mut wf_ptr: *mut Box<dyn WritableFile> = core::ptr::null_mut();
+        let status = env.new_appendable_file(
+            &fname,
+            &mut wf_ptr as *mut *mut Box<dyn WritableFile>,
+        );
+        assert!(status.is_ok());
+        assert!(env.file_exists(&fname));
+
+        unsafe {
+            if !wf_ptr.is_null() {
+                let _outer: Box<Box<dyn WritableFile>> = Box::from_raw(wf_ptr);
+            }
+        }
     }
 }

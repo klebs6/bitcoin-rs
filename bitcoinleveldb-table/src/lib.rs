@@ -1,19 +1,18 @@
 // ---------------- [ File: bitcoinleveldb-table/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{block_builder}
-x!{block}
-x!{builder_alt}
-x!{builder}
-x!{db_iter}
+x!{build_table}
+x!{decode_entry}
+x!{delete_block}
 x!{footer}
-x!{handle}
-x!{iterator_alt}
-x!{iterator_wrapper}
-x!{iterator}
-x!{leveldb_db_table_cache}
-x!{leveldb_table_format}
-x!{table_test}
+x!{read_block}
+x!{reverse_key_comparator}
+x!{string_sink}
+x!{string_source}
 x!{table}
-x!{constructor}
-x!{version_iterator}
+x!{table_and_file}
+x!{table_builder}
+x!{table_builder_rep}
+x!{table_cache}
+x!{table_constructor}
+x!{table_rep}

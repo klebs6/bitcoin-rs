@@ -46,3 +46,24 @@ pub fn put_varint64(dst: *mut String, v: u64) {
         );
     }
 }
+
+#[inline]
+pub fn put_varint64_to_string(dst: &mut String, mut v: u64) {
+    let buf: &mut Vec<u8> = unsafe { dst.as_mut_vec() };
+    trace!(
+        "put_varint64_to_string: initial v={}, dst_len_before={}",
+        v,
+        buf.len()
+    );
+
+    while v >= 0x80 {
+        buf.push(((v & 0x7F) as u8) | 0x80);
+        v >>= 7;
+    }
+    buf.push(v as u8);
+
+    trace!(
+        "put_varint64_to_string: dst_len_after={}",
+        buf.len()
+    );
+}

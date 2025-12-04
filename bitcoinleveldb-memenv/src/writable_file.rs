@@ -59,7 +59,7 @@ impl WritableFileAppend for WritableFileImpl {
     fn append(&mut self, data: &Slice) -> crate::Status {
         trace!(
             "WritableFileImpl::append: appending {} bytes",
-            data.size()
+            *data.size()
         );
 
         unsafe {
@@ -99,5 +99,71 @@ impl WritableFileSync for WritableFileImpl {
     fn sync(&mut self) -> crate::Status {
         trace!("WritableFileImpl::sync: no-op sync for in‑memory file");
         crate::Status::ok()
+    }
+}
+
+#[cfg(test)]
+mod writable_file_impl_tests {
+    use super::*;
+
+    #[traced_test]
+    fn writable_append_writes_to_underlying_file_state() {
+        crate::ix!();
+
+        unsafe {
+            let file_box = Box::new(FileState::default());
+            let raw: *mut FileState = Box::into_raw(file_box);
+
+            // Simulate owner reference.
+            FileState::ref_raw(raw);
+
+            {
+                let mut writable = WritableFileImpl::new(raw);
+
+                let payload = b"hello writable";
+                let slice = Slice::from(&payload[..]);
+                let status = writable.append(&slice);
+                assert!(status.is_ok());
+
+                let status_flush = writable.flush();
+                assert!(status_flush.is_ok());
+                let status_sync = writable.sync();
+                assert!(status_sync.is_ok());
+                let status_close = writable.close();
+                assert!(status_close.is_ok());
+            }
+
+            {
+                let file_ref: &FileState = &*raw;
+                assert_eq!(file_ref.size(), b"hello writable".len() as u64);
+
+                let mut result = Slice::default();
+                let mut scratch = vec![0_u8; b"hello writable".len()];
+                let status = file_ref.read(
+                    0,
+                    scratch.len(),
+                    &mut result as *mut Slice,
+                    scratch.as_mut_ptr(),
+                );
+                assert!(status.is_ok());
+                assert_eq!(&scratch[..], &b"hello writable"[..]);
+            }
+
+            FileState::unref_raw(raw);
+        }
+    }
+
+    #[traced_test]
+    fn writable_on_null_file_returns_io_error() {
+        crate::ix!();
+
+        let mut writable = WritableFileImpl {
+            file: core::ptr::null_mut(),
+        };
+
+        let payload = b"data";
+        let slice = Slice::from(&payload[..]);
+        let status_append = writable.append(&slice);
+        assert!(status_append.is_io_error());
     }
 }

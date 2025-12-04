@@ -51,4 +51,3 @@ pub fn check_close_on_exec_does_not_leak_fds(
         probed_fd
     );
 }
-
