@@ -1,0 +1,22 @@
+[package]
+name = "bitcoinleveldb-dbtest"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+bitcoin-imports = { path = "../bitcoin-imports" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
+bitcoinleveldb-specialenv = { path = "../bitcoinleveldb-specialenv" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-filterpolicy = { path = "../bitcoinleveldb-filterpolicy" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand" }

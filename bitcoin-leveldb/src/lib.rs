@@ -29,7 +29,6 @@ pub use bitcoinleveldb_rand::*;
 pub use bitcoinleveldb_repair::*;
 pub use bitcoinleveldb_skiplist::*;
 pub use bitcoinleveldb_slice::*;
-pub use bitcoinleveldb_snapshot::*;
 pub use bitcoinleveldb_status::*;
 pub use bitcoinleveldb_sync::*;
 pub use bitcoinleveldb_table::*;

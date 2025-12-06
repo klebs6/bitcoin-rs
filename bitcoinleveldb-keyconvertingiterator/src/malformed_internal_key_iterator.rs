@@ -112,3 +112,78 @@ impl LevelDBIteratorStatus for MalformedInternalKeyIterator {
         Status::new_from_other_copy(&self.status)
     }
 }
+
+#[cfg(test)]
+mod malformed_internal_key_iterator_tests {
+    use super::*;
+    use std::cell::RefCell;
+    use std::rc::Rc;
+
+    #[traced_test]
+    fn malformed_iterator_reports_valid_and_exposes_configured_key() {
+        let shared    = Rc::new(RefCell::new(RecordingInternalIteratorState::default()));
+        let drop_flag = Rc::new(RefCell::new(false));
+
+        let payload = b"bad-key".to_vec();
+        let it = MalformedInternalKeyIterator::new(
+            payload.clone(),
+            Status::ok(),
+            shared.clone(),
+            drop_flag.clone(),
+        );
+
+        assert!(
+            it.valid(),
+            "MalformedInternalKeyIterator is constructed as logically valid"
+        );
+
+        let key_slice = it.key();
+        assert_eq!(
+            key_slice.to_string(),
+            String::from_utf8_lossy(&payload),
+            "key() must expose the malformed internal key bytes as-is"
+        );
+
+        drop(it);
+        assert!(
+            *drop_flag.borrow(),
+            "dropping MalformedInternalKeyIterator must flip drop_flag"
+        );
+    }
+
+    #[traced_test]
+    fn malformed_iterator_records_seek_and_next_prev_status_calls() {
+        let shared    = Rc::new(RefCell::new(RecordingInternalIteratorState::default()));
+        let drop_flag = Rc::new(RefCell::new(false));
+
+        let mut it = MalformedInternalKeyIterator::new(
+            b"bad".to_vec(),
+            Status::io_error(&Slice::from("io"), None),
+            shared.clone(),
+            drop_flag.clone(),
+        );
+
+        let target = Slice::from("t");
+        it.seek(&target);
+        it.seek_to_first();
+        it.seek_to_last();
+        it.next();
+        it.prev();
+
+        let _ = <MalformedInternalKeyIterator as crate::LevelDBIteratorStatus>::status(&it);
+
+        let state = shared.borrow();
+        assert_eq!(state.seek_targets().len(), 1);
+        assert_eq!(*state.seek_to_first_calls(), 1);
+        assert_eq!(*state.seek_to_last_calls(), 1);
+        assert_eq!(*state.next_calls(), 1);
+        assert_eq!(*state.prev_calls(), 1);
+        assert_eq!(*state.status_calls(), 1);
+
+        drop(it);
+        assert!(
+            *drop_flag.borrow(),
+            "dropping MalformedInternalKeyIterator in behavior test must flip drop_flag"
+        );
+    }
+}

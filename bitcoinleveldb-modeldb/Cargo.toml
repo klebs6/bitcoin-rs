@@ -1,0 +1,19 @@
+[package]
+name = "bitcoinleveldb-modeldb"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+bitcoin-imports = { path = "../bitcoin-imports" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }

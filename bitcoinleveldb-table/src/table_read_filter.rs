@@ -5,16 +5,17 @@ impl Table {
 
     pub fn read_filter(&mut self, filter_handle_value: &Slice) {
         unsafe {
-            if self.rep.is_null() {
+            let rep_ptr = self.rep_mut_ptr();
+            if rep_ptr.is_null() {
                 debug!(
                     "Table::read_filter: rep pointer is null; skipping filter load"
                 );
                 return;
             }
 
-            let rep = &mut *(self.rep as *mut TableRep);
+            let rep = &mut *rep_ptr;
 
-            if rep.options.filter_policy.is_null() {
+            if rep.options().filter_policy().is_null() {
                 trace!(
                     "Table::read_filter: options.filter_policy is null; no filter will be loaded"
                 );
@@ -36,8 +37,8 @@ impl Table {
             // requiring checksum verification in Table::Open.
             let mut opt = ReadOptions::default();
 
-            if rep.options.paranoid_checks {
-                opt.verify_checksums = true;
+            if *rep.options().paranoid_checks() {
+                *opt.verify_checksums_mut() = true;
             }
 
             let mut block = BlockContents {
@@ -53,7 +54,7 @@ impl Table {
             );
 
             let s = read_block(
-                rep.file.clone(),
+                rep.file().clone(),
                 &opt,
                 &handle,
                 &mut block as *mut BlockContents,
@@ -66,30 +67,30 @@ impl Table {
                 return;
             }
 
-            if block.heap_allocated {
+            if *block.heap_allocated() {
                 // Will need to delete later
-                rep.filter_data = block.data.data() as *mut u8;
-                rep.filter_data_len = block.data.size();
+                rep.set_filter_data(block.data().data() as *mut u8);
+                rep.set_filter_data_len(*block.data().size());
                 trace!(
                     "Table::read_filter: filter data heap_allocated; ptr={:?}, len={}",
-                    rep.filter_data,
-                    rep.filter_data_len
+                    rep.filter_data(),
+                    rep.filter_data_len()
                 );
             } else {
-                rep.filter_data = core::ptr::null_mut();
-                rep.filter_data_len = 0;
+                rep.set_filter_data(core::ptr::null_mut());
+                rep.set_filter_data_len(0);
                 trace!(
                     "Table::read_filter: filter data not heap_allocated; assuming external lifetime"
                 );
             }
 
-            let policy = &*rep.options.filter_policy;
-            let filter_reader = FilterBlockReader::new(policy, &block.data);
-            rep.filter = Box::into_raw(Box::new(filter_reader));
+            let policy = &*rep.options().filter_policy();
+            let filter_reader = FilterBlockReader::new(policy, block.data());
+            rep.set_filter(Box::into_raw(Box::new(filter_reader)));
 
             trace!(
                 "Table::read_filter: FilterBlockReader created @ {:?}",
-                rep.filter
+                rep.filter()
             );
         }
     }

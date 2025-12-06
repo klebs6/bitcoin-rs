@@ -17,6 +17,8 @@ version = "0.1.19"
 tracing.workspace = true
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle" }
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

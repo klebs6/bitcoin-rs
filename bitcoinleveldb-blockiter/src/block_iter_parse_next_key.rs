@@ -89,31 +89,6 @@ impl BlockIter {
 mod block_iter_parse_next_key_tests {
     use super::*;
 
-    #[derive(Clone, Default)]
-    struct DummyComparator;
-
-    impl Compare for DummyComparator {
-        fn compare(&self, a: &Slice, b: &Slice) -> i32 {
-            let a_bytes = unsafe { core::slice::from_raw_parts(*a.data(), *a.size()) };
-            let b_bytes = unsafe { core::slice::from_raw_parts(*b.data(), *b.size()) };
-            for (aa, bb) in a_bytes.iter().zip(b_bytes.iter()) {
-                if aa < bb { return -1; }
-                if aa > bb { return 1; }
-            }
-            a_bytes.len().cmp(&b_bytes.len()) as i32
-        }
-    }
-    impl Named for DummyComparator {
-        fn name(&self) -> &str { "dummy-comparator" }
-    }
-    impl FindShortestSeparator for DummyComparator {
-        fn find_shortest_separator(&self, _start: &mut String, _limit: &Slice) {}
-    }
-    impl FindShortSuccessor for DummyComparator {
-        fn find_short_successor(&self, _key: &mut String) {}
-    }
-    impl SliceComparator for DummyComparator {}
-
     fn build_block_bytes() -> Vec<u8> {
         let opts_box = Box::new(Options::default());
         let opts_ptr: *const Options = &*opts_box;
@@ -138,15 +113,26 @@ mod block_iter_parse_next_key_tests {
 
     #[traced_test]
     fn parse_next_key_iterates_over_all_entries() {
+        trace!("parse_next_key_iterates_over_all_entries: start");
+
         let block_bytes = build_block_bytes();
         let len         = block_bytes.len();
+
+        assert!(
+            len > core::mem::size_of::<u32>(),
+            "block_bytes must be large enough to contain restart metadata"
+        );
+
         let num_restarts =
             u32::from_le_bytes(block_bytes[len - 4..].try_into().unwrap());
-        let restart_offset = (len - (1 + num_restarts as usize) * 4) as u32;
+        let restart_offset =
+            (len - (1 + num_restarts as usize) * core::mem::size_of::<u32>())
+                as u32;
 
         let cmp = bitcoinleveldb_comparator::BytewiseComparatorImpl::default();
         let cmp_ref: &dyn SliceComparator = &cmp;
-        let cmp_ptr: *const dyn SliceComparator = cmp_ref as *const dyn SliceComparator;
+        let cmp_ptr: *const dyn SliceComparator =
+            cmp_ref as *const dyn SliceComparator;
 
         let mut iter = BlockIter::new(
             cmp_ptr,
@@ -155,13 +141,30 @@ mod block_iter_parse_next_key_tests {
             num_restarts,
         );
 
+        trace!(
+            "constructed BlockIter for parse_next_key test: restarts_offset={}, num_restarts={}",
+            iter.restarts_offset(),
+            iter.num_restarts()
+        );
+
         iter.seek_to_restart_point(0);
 
         let mut seen = Vec::<(String, String)>::new();
 
-        while iter.parse_next_key() && iter.next_entry_offset() < iter.restarts_offset()
-        {
+        loop {
+            let parsed = iter.parse_next_key();
+
+            if !parsed {
+                trace!(
+                    "parse_next_key_iterates_over_all_entries: ParseNextKey returned false; breaking"
+                );
+                break;
+            }
+
             if !iter.valid() {
+                trace!(
+                    "parse_next_key_iterates_over_all_entries: iterator reported invalid after ParseNextKey; breaking"
+                );
                 break;
             }
 
@@ -177,13 +180,45 @@ mod block_iter_parse_next_key_tests {
                 core::str::from_utf8_unchecked(bytes).to_string()
             };
 
-            trace!("iterated entry key='{}', value='{}'", k_str, v_str);
+            trace!(
+                "parse_next_key_iterates_over_all_entries: iterated entry key='{}', value='{}'",
+                k_str,
+                v_str
+            );
+
             seen.push((k_str, v_str));
+
+            let next_offset = iter.next_entry_offset();
+            trace!(
+                "parse_next_key_iterates_over_all_entries: next_entry_offset={}, restarts_offset={}",
+                next_offset,
+                iter.restarts_offset()
+            );
+
+            if next_offset >= iter.restarts_offset() {
+                trace!(
+                    "parse_next_key_iterates_over_all_entries: reached end of data region; stopping iteration"
+                );
+                break;
+            }
         }
 
-        debug!("seen entries: {:?}", seen);
-        assert_eq!(seen.len(), 2);
-        assert_eq!(seen[0], ("a".to_string(), "v1".to_string()));
-        assert_eq!(seen[1], ("b".to_string(), "v2".to_string()));
+        debug!("parse_next_key_iterates_over_all_entries: seen entries = {:?}", seen);
+
+        assert_eq!(
+            seen.len(),
+            2,
+            "ParseNextKey must expose exactly two entries for this test block"
+        );
+        assert_eq!(
+            seen[0],
+            ("a".to_string(), "v1".to_string()),
+            "first entry must match the first added key/value"
+        );
+        assert_eq!(
+            seen[1],
+            ("b".to_string(), "v2".to_string()),
+            "second entry must match the second added key/value"
+        );
     }
 }

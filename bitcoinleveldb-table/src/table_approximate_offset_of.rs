@@ -18,22 +18,23 @@ impl Table {
       */
     pub fn approximate_offset_of(&self, key_: &Slice) -> u64 {
         unsafe {
-            if self.rep.is_null() {
+            let rep_ptr = self.rep_mut_ptr();
+            if rep_ptr.is_null() {
                 debug!(
                     "Table::approximate_offset_of: rep pointer is null; returning offset 0"
                 );
                 return 0;
             }
 
-            let rep = &*(self.rep as *mut TableRep);
+            let rep = &mut *rep_ptr;
 
             assert!(
-                !rep.index_block.is_null(),
+                !rep.index_block().is_null(),
                 "Table::approximate_offset_of: index_block pointer is null"
             );
 
-            let index_block = &mut *rep.index_block;
-            let cmp_ptr = rep.options.comparator;
+            let index_block = rep.index_block_mut();
+            let cmp_ptr = rep.options().comparator();
             assert!(
                 !cmp_ptr.is_null(),
                 "Table::approximate_offset_of: comparator pointer is null"
@@ -60,22 +61,22 @@ impl Table {
                 } else {
                     trace!(
                         "Table::approximate_offset_of: failed to decode handle; using metaindex_handle offset={}",
-                        rep.metaindex_handle.offset()
+                        rep.metaindex_handle().offset()
                     );
                     // Strange: we can't decode the block handle in the index block.
                     // We'll just return the offset of the metaindex block, which is
                     // close to the whole file size for this case.
-                    rep.metaindex_handle.offset()
+                    rep.metaindex_handle().offset()
                 }
             } else {
                 trace!(
                     "Table::approximate_offset_of: key past last; using metaindex_handle offset={}",
-                    rep.metaindex_handle.offset()
+                    rep.metaindex_handle().offset()
                 );
                 // key is past the last key in the file.  Approximate the offset
                 // by returning the offset of the metaindex block (which is
                 // right near the end of the file).
-                rep.metaindex_handle.offset()
+                rep.metaindex_handle().offset()
             };
 
             drop(Box::from_raw(index_iter));

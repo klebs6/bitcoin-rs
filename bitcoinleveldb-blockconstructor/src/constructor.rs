@@ -75,7 +75,7 @@ impl Constructor {
 
     /// Finish constructing the data structure with
     /// all the keys that have been added so far.
-    /// 
+    ///
     /// Returns the keys in sorted order in "*keys"
     /// and stores the key/value pairs in "*kvmap"
     ///
@@ -103,21 +103,32 @@ impl Constructor {
             // Copy data out for the caller.
             *kvmap = self.data.clone();
 
-            let keys_vec = &mut *keys;
+            // Prepare the caller's keys vector.
+            let keys_vec: &mut Vec<String> = &mut *keys;
             keys_vec.clear();
-            for (k, _) in self.data.iter() {
-                keys_vec.push(k.clone());
-            }
+
+            // Collect keys from the internal map and sort them to match
+            // LevelDB's std::map-based test harness semantics.
+            let mut collected: Vec<String> = self
+                .data
+                .keys()
+                .cloned()
+                .collect();
+
+            collected.sort();
 
             trace!(
-                "Constructor::finish: collected {} keys",
-                keys_vec.len()
+                "Constructor::finish: collected {} keys (sorted)",
+                collected.len()
             );
+
+            keys_vec.extend(collected.into_iter());
 
             // Clear internal map; from here on, the caller owns kvmap.
             self.data.clear();
         }
     }
+
 
     pub fn data(&self) -> &KVMap {
         &self.data

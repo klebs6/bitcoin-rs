@@ -14,24 +14,25 @@ pub struct Table {
     rep: *const TableRep,
 }
 
-impl Drop for Table {
-    fn drop(&mut self) {
-        unsafe {
-            if !self.rep.is_null() {
-                trace!(
-                    "Table::drop: deleting TableRep @ {:?}",
-                    self.rep
-                );
-                let _rep_box: Box<TableRep> = Box::from_raw(self.rep as *mut TableRep);
-                // Drop happens here.
-            } else {
-                trace!("Table::drop: rep pointer is null; nothing to free");
-            }
-        }
-    }
-}
-
 impl Table {
+
+    #[inline]
+    pub fn rep_ptr(&self) -> *const TableRep {
+        trace!(
+            "Table::rep_ptr: returning rep pointer {:?}",
+            self.rep
+        );
+        self.rep
+    }
+
+    #[inline]
+    pub fn rep_mut_ptr(&mut self) -> *mut TableRep {
+        trace!(
+            "Table::rep_mut_ptr: returning mutable rep pointer {:?}",
+            self.rep as *mut TableRep
+        );
+        self.rep as *mut TableRep
+    }
 
     pub fn new(rep: *mut TableRep) -> Self {
         unsafe {
@@ -49,6 +50,24 @@ impl Table {
 
         Table {
             rep: rep as *const TableRep,
+        }
+    }
+}
+
+impl Drop for Table {
+
+    fn drop(&mut self) {
+        unsafe {
+            let rep_ptr = self.rep_mut_ptr();
+            if !rep_ptr.is_null() {
+                trace!(
+                    "Table::drop: deleting TableRep @ {:?}",
+                    rep_ptr
+                );
+                let _rep_box: Box<TableRep> = Box::from_raw(rep_ptr);
+            } else {
+                trace!("Table::drop: rep pointer is null; nothing to free");
+            }
         }
     }
 }

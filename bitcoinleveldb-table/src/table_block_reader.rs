@@ -23,13 +23,14 @@ impl Table {
 
             let table = &mut *(arg as *mut Table);
 
+            let rep_ptr = table.rep_mut_ptr();
             assert!(
-                !table.rep.is_null(),
+                !rep_ptr.is_null(),
                 "Table::block_reader: table.rep pointer is null"
             );
 
-            let rep = &mut *(table.rep as *mut TableRep);
-            let block_cache: *mut Cache = rep.options.block_cache;
+            let rep = &mut *rep_ptr;
+            let block_cache: *mut Cache = rep.options().block_cache();
 
             let mut block: *mut Block = core::ptr::null_mut();
             let mut cache_handle: *mut CacheHandle = core::ptr::null_mut();
@@ -56,7 +57,7 @@ impl Table {
                 if !block_cache.is_null() {
                     trace!(
                         "Table::block_reader: block cache present; cache_id={}, handle_offset={}, handle_size={}",
-                        rep.cache_id,
+                        rep.cache_id(),
                         handle.offset(),
                         handle.size()
                     );
@@ -65,11 +66,11 @@ impl Table {
                     let mut cache_key_buf = [0u8; 16];
 
                     bitcoinleveldb_coding::encode_fixed64(
-                        &mut cache_key_buf[0..8],
-                        rep.cache_id,
+                        cache_key_buf.as_mut_ptr(),
+                        *rep.cache_id(),
                     );
                     bitcoinleveldb_coding::encode_fixed64(
-                        &mut cache_key_buf[8..16],
+                        cache_key_buf.as_mut_ptr().add(8),
                         handle.offset(),
                     );
 
@@ -98,7 +99,7 @@ impl Table {
                         );
 
                         status = read_block(
-                            rep.file.clone(),
+                            rep.file().clone(),
                             options,
                             &handle,
                             &mut contents as *mut BlockContents,
@@ -108,7 +109,7 @@ impl Table {
                             let block_box = Box::new(Block::new(&contents));
                             block = Box::into_raw(block_box);
 
-                            if contents.cachable && options.fill_cache {
+                            if *contents.cachable() && *options.fill_cache() {
                                 let block_size_bytes =
                                     (&*block).size() as usize;
 
@@ -121,13 +122,13 @@ impl Table {
                                     &key,
                                     block as *mut c_void,
                                     block_size_bytes,
-                                    delete_cached_block,
+                                    delete_cached_block as CacheDeleterFn,
                                 );
                             } else {
                                 trace!(
                                     "Table::block_reader: block not cached (cachable={}, fill_cache={})",
-                                    contents.cachable,
-                                    options.fill_cache
+                                    contents.cachable(),
+                                    options.fill_cache()
                                 );
                             }
                         } else {
@@ -144,7 +145,7 @@ impl Table {
                     );
 
                     status = read_block(
-                        rep.file.clone(),
+                        rep.file().clone(),
                         options,
                         &handle,
                         &mut contents as *mut BlockContents,
@@ -168,12 +169,13 @@ impl Table {
             let iter: *mut LevelDBIterator;
 
             if !block.is_null() {
+                let cmp_ptr = rep.options().comparator();
                 assert!(
-                    !rep.options.comparator.is_null(),
+                    !cmp_ptr.is_null(),
                     "Table::block_reader: comparator pointer is null"
                 );
 
-                let cmp = &*rep.options.comparator;
+                let cmp = &*cmp_ptr;
                 let block_ref = &mut *block;
 
                 trace!(
@@ -188,7 +190,7 @@ impl Table {
                         "Table::block_reader: registering DeleteBlock cleanup for uncached block"
                     );
                     (*iter).register_cleanup(
-                        delete_block,
+                        delete_block as LevelDBIteratorCleanupFunction,
                         block as *mut c_void,
                         core::ptr::null_mut(),
                     );
@@ -198,7 +200,7 @@ impl Table {
                         cache_handle
                     );
                     (*iter).register_cleanup(
-                        release_block,
+                        release_block as LevelDBIteratorCleanupFunction,
                         block_cache as *mut c_void,
                         cache_handle as *mut c_void,
                     );
@@ -208,7 +210,7 @@ impl Table {
                     "Table::block_reader: no block available; returning error iterator (status_ok={})",
                     status.is_ok()
                 );
-                iter = bitcoinleveldb_iterator::new_error_iterator(&status);
+                iter = bitcoinleveldb_erroriterator::new_error_iterator(&status);
             }
 
             iter

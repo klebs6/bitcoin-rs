@@ -122,10 +122,6 @@ version = "0.1.19"
 path = "../bitcoinleveldb-slice"
 version = "0.1.19"
 
-[dependencies.bitcoinleveldb-snapshot]
-path = "../bitcoinleveldb-snapshot"
-version = "0.1.19"
-
 [dependencies.bitcoinleveldb-status]
 path = "../bitcoinleveldb-status"
 version = "0.1.19"

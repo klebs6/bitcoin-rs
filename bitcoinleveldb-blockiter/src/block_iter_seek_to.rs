@@ -33,31 +33,6 @@ impl BlockIter {
 mod block_iter_seek_to_first_last_tests {
     use super::*;
 
-    #[derive(Clone, Default)]
-    struct DummyComparator;
-
-    impl Compare for DummyComparator {
-        fn compare(&self, a: &Slice, b: &Slice) -> i32 {
-            let a_bytes = unsafe { core::slice::from_raw_parts(*a.data(), *a.size()) };
-            let b_bytes = unsafe { core::slice::from_raw_parts(*b.data(), *b.size()) };
-            for (aa, bb) in a_bytes.iter().zip(b_bytes.iter()) {
-                if aa < bb { return -1; }
-                if aa > bb { return 1; }
-            }
-            a_bytes.len().cmp(&b_bytes.len()) as i32
-        }
-    }
-    impl Named for DummyComparator {
-        fn name(&self) -> &str { "dummy-comparator" }
-    }
-    impl FindShortestSeparator for DummyComparator {
-        fn find_shortest_separator(&self, _start: &mut String, _limit: &Slice) {}
-    }
-    impl FindShortSuccessor for DummyComparator {
-        fn find_short_successor(&self, _key: &mut String) {}
-    }
-    impl SliceComparator for DummyComparator {}
-
     fn build_block_bytes() -> Vec<u8> {
         let opts_box = Box::new(Options::default());
         let opts_ptr: *const Options = &*opts_box;
@@ -92,7 +67,7 @@ mod block_iter_seek_to_first_last_tests {
             u32::from_le_bytes(block_bytes[len - 4..].try_into().unwrap());
         let restart_offset = (len - (1 + num_restarts as usize) * 4) as u32;
 
-        let cmp = bitcoinleveldb_comparator::BytewiseComparatorImpl::default();
+        let cmp = BytewiseComparatorImpl::default();
         let cmp_ref: &dyn SliceComparator = &cmp;
         let cmp_ptr: *const dyn SliceComparator = cmp_ref as *const dyn SliceComparator;
 
@@ -123,7 +98,7 @@ mod block_iter_seek_to_first_last_tests {
             u32::from_le_bytes(block_bytes[len - 4..].try_into().unwrap());
         let restart_offset = (len - (1 + num_restarts as usize) * 4) as u32;
 
-        let cmp = bitcoinleveldb_comparator::BytewiseComparatorImpl::default();
+        let cmp = BytewiseComparatorImpl::default();
         let cmp_ref: &dyn SliceComparator = &cmp;
         let cmp_ptr: *const dyn SliceComparator = cmp_ref as *const dyn SliceComparator;
 

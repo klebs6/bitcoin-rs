@@ -7,3 +7,4 @@ pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use bitcoinleveldb_block::*;
 pub(crate) use bitcoinleveldb_blockhandle::*;
 pub(crate) use bitcoinleveldb_filter::*;
+pub(crate) use bitcoinleveldb_slice::*;

@@ -102,8 +102,8 @@ impl Table {
 
         if status.is_ok() {
             let mut opt = ReadOptions::default();
-            if options.paranoid_checks {
-                opt.verify_checksums = true;
+            if *options.paranoid_checks() {
+                *opt.verify_checksums_mut() = true;
             }
 
             trace!(
@@ -128,18 +128,35 @@ impl Table {
             let index_block = Box::new(Block::new(&index_block_contents));
 
             let cache_id = unsafe {
-                if options.block_cache.is_null() {
+                let cache_ptr = options.block_cache();
+                if cache_ptr.is_null() {
                     0
                 } else {
-                    let cache_ref = &mut *options.block_cache;
+                    let cache_ref = &mut *cache_ptr;
                     cache_ref.new_id()
                 }
             };
 
             let rep = TableRep {
-                options: options.clone(),
-                status:  Status::ok(),
-                file:    file.clone(),
+                options:          Options {
+                    comparator:             Box::new(BytewiseComparatorImpl::default()),
+                    create_if_missing:      *options.create_if_missing(),
+                    error_if_exists:        *options.error_if_exists(),
+                    paranoid_checks:        *options.paranoid_checks(),
+                    env:                    options.env().clone(),
+                    info_log:               options.info_log().clone(),
+                    write_buffer_size:      *options.write_buffer_size(),
+                    max_open_files:         *options.max_open_files(),
+                    block_cache:            options.block_cache(),
+                    block_size:             *options.block_size(),
+                    block_restart_interval: *options.block_restart_interval(),
+                    max_file_size:          *options.max_file_size(),
+                    compression:            *options.compression(),
+                    reuse_logs:             *options.reuse_logs(),
+                    filter_policy:          Box::new(NullFilterPolicy::default()),
+                },
+                status:           Status::ok(),
+                file:             file.clone(),
                 cache_id,
                 filter:           core::ptr::null_mut(),
                 filter_data:      core::ptr::null_mut(),

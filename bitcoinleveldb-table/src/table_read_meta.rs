@@ -5,19 +5,18 @@ impl Table {
 
     pub fn read_meta(&mut self, footer: &Footer) {
         unsafe {
-            if self.rep.is_null() {
+            let rep_ptr = self.rep_mut_ptr();
+            if rep_ptr.is_null() {
                 // Do not need any metadata
                 debug!(
                     "Table::read_meta: rep pointer is null; skipping metaindex load"
                 );
                 return;
             }
-        }
 
-        unsafe {
-            let rep = &mut *(self.rep as *mut TableRep);
+            let rep = &mut *rep_ptr;
 
-            if rep.options.filter_policy.is_null() {
+            if rep.options().filter_policy().is_null() {
                 trace!(
                     "Table::read_meta: no filter_policy configured; skipping metaindex"
                 );
@@ -28,8 +27,8 @@ impl Table {
             // it is an empty block.
             let mut opt = ReadOptions::default();
 
-            if rep.options.paranoid_checks {
-                opt.verify_checksums = true;
+            if *rep.options().paranoid_checks() {
+                *opt.verify_checksums_mut() = true;
             }
 
             let mut contents = BlockContents {
@@ -46,7 +45,7 @@ impl Table {
 
             // Do not propagate errors since meta info is not needed for operation
             let s = read_block(
-                rep.file.clone(),
+                rep.file().clone(),
                 &opt,
                 footer.metaindex_handle(),
                 &mut contents as *mut BlockContents,
@@ -62,7 +61,7 @@ impl Table {
             let meta_block = Box::new(Block::new(&contents));
             let meta_block_ptr: *mut Block = Box::into_raw(meta_block);
 
-            let base_cmp = &*bitcoinleveldb_comparator::BytewiseComparator();
+            let base_cmp = &*bitcoinleveldb_comparator::bytewise_comparator();
 
             let iter_ptr = (*meta_block_ptr).new_iterator(base_cmp);
             trace!(
@@ -71,7 +70,7 @@ impl Table {
             );
 
             let mut key = String::from("filter.");
-            let policy = &*rep.options.filter_policy;
+            let policy = &*rep.options().filter_policy();
             let policy_name = policy.name();
             key.push_str(policy_name.as_ref());
 

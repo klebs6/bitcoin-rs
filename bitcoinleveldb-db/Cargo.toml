@@ -2,92 +2,23 @@
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
+[dependencies]
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
+bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-filterpolicy = { path = "../bitcoinleveldb-filterpolicy" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.19"
 
 [dependencies.bitcoin-imports]
 path = "../bitcoin-imports"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-batch]
-path = "../bitcoinleveldb-batch"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-cache]
-path = "../bitcoinleveldb-cache"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-cfg]
-path = "../bitcoinleveldb-cfg"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-comparator]
-path = "../bitcoinleveldb-comparator"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-env]
-path = "../bitcoinleveldb-env"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-file]
-path = "../bitcoinleveldb-file"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-filter]
-path = "../bitcoinleveldb-filter"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-key]
-path = "../bitcoinleveldb-key"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-log]
-path = "../bitcoinleveldb-log"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-memtable]
-path = "../bitcoinleveldb-memtable"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-meta]
-path = "../bitcoinleveldb-meta"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-options]
-path = "../bitcoinleveldb-options"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-rand]
-path = "../bitcoinleveldb-rand"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-slice]
-path = "../bitcoinleveldb-slice"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-snapshot]
-path = "../bitcoinleveldb-snapshot"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-status]
-path = "../bitcoinleveldb-status"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-table]
-path = "../bitcoinleveldb-table"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-util]
-path = "../bitcoinleveldb-util"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-version]
-path = "../bitcoinleveldb-version"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-versionedit]
-path = "../bitcoinleveldb-versionedit"
 version = "0.1.19"
 
 [package]

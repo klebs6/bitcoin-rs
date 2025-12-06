@@ -14,12 +14,14 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
+tracing.workspace = true
 bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
 bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-block = { path = "../bitcoinleveldb-block" }
 bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle" }
 bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

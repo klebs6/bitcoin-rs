@@ -19,6 +19,9 @@ bitcoinleveldb-blockbuilder = { path = "../bitcoinleveldb-blockbuilder" }
 bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
 bitcoin-crc32c = { path = "../bitcoin-crc32c" }
 bitcoinleveldb-compat = { path = "../bitcoinleveldb-compat" }
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
+bitcoinleveldb-footer = { path = "../bitcoinleveldb-footer" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

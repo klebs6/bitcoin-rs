@@ -4,6 +4,11 @@ bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
 bitcoinleveldb-block = { path = "../bitcoinleveldb-block" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-tablerep = { path = "../bitcoinleveldb-tablerep" }
+bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents" }
+bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator" }
+bitcoinleveldb-footer = { path = "../bitcoinleveldb-footer" }
+bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle" }
+bitcoinleveldb-duplex = { path = "../bitcoinleveldb-duplex" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

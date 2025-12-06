@@ -17,7 +17,8 @@ impl Table {
         handle_result: fn(*mut c_void, &Slice, &Slice) -> c_void,
     ) -> Status {
         unsafe {
-            if self.rep.is_null() {
+            let rep_ptr = self.rep_mut_ptr();
+            if rep_ptr.is_null() {
                 let msg = b"table_rep is null in internal_get";
                 let msg_slice = Slice::from(&msg[..]);
                 error!(
@@ -26,15 +27,15 @@ impl Table {
                 return Status::corruption(&msg_slice, None);
             }
 
-            let rep = &mut *(self.rep as *mut TableRep);
+            let rep = &mut *rep_ptr;
 
             assert!(
-                !rep.index_block.is_null(),
+                !rep.index_block().is_null(),
                 "Table::internal_get: index_block pointer is null"
             );
 
-            let index_block = &mut *rep.index_block;
-            let cmp_ptr = rep.options.comparator;
+            let index_block = rep.index_block_mut();
+            let cmp_ptr = rep.options().comparator();
             assert!(
                 !cmp_ptr.is_null(),
                 "Table::internal_get: comparator pointer is null"
@@ -52,7 +53,7 @@ impl Table {
 
             if (*index_iter).valid() {
                 let handle_value = (*index_iter).value();
-                let filter_ptr = rep.filter;
+                let filter_ptr = rep.filter();
                 let mut may_skip = false;
 
                 if !filter_ptr.is_null() {

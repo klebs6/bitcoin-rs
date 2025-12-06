@@ -1,0 +1,17 @@
+[package]
+name = "bitcoinleveldb-specialenv"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+bitcoin-imports = { path = "../bitcoin-imports" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
+bitcoin-derive = { path = "../bitcoin-derive" }

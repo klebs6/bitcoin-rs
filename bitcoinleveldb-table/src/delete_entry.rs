@@ -9,8 +9,8 @@ pub fn delete_entry(_key_: &Slice, value: *mut c_void) {
         }
 
         let tf = &mut *(value as *mut TableAndFile);
-        let table_ptr = tf.table();
-        let file_ptr  = tf.file();
+        let table_ptr = tf.table_ptr();
+        let file_ptr  = tf.file_ptr();
 
         trace!(
             "delete_entry: deleting TableAndFile at {:?} (table={:?}, file={:?})",

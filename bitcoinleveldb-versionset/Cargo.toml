@@ -10,3 +10,9 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
+bitcoin-imports = { path = "../bitcoin-imports" }
+bitcoinleveldb-version = { path = "../bitcoinleveldb-version" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-compaction = { path = "../bitcoinleveldb-compaction" }

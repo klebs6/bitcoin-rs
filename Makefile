@@ -43,32 +43,42 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-1]
-ACTIVE := bitcoinleveldb-blockconstructor
-ACTIVE := bitcoinleveldb-table
-ACTIVE := bitcoinleveldb-tableconstructor
-ACTIVE := bitcoinleveldb-tablecache
-ACTIVE := bitcoinleveldb-tablerep
 
-ACTIVE := bitcoinleveldb-footer
-ACTIVE := bitcoinleveldb-tablebuilder
+ACTIVE := bitcoinleveldb-tablecache
+ACTIVE := bitcoinleveldb-tableconstructor
 ACTIVE := bitcoinleveldb-versioniterator
 
-ACTIVE := bitcoinleveldb-blockiter
-ACTIVE := bitcoinleveldb-keyconvertingiterator
+ACTIVE := bitcoinleveldb-table
+ACTIVE := bitcoinleveldb-db
+ACTIVE := bitcoinleveldb-duplex
+ACTIVE := bitcoinleveldb-tablebuilder
 
 # ------------------------------- [leveldb-layer-2]
-#ACTIVE := bitcoinleveldb-duplex   #loc: 255
 #ACTIVE := bitcoinleveldb-memtable #loc: 476
 #ACTIVE := bitcoinleveldb-merger   #loc: 286
 #ACTIVE := bitcoinleveldb-meta     #loc: 921
-#ACTIVE := bitcoinleveldb-version  #loc: 2298
+#ACTIVE := bitcoinleveldb-version
+#ACTIVE := bitcoinleveldb-versionset
+#ACTIVE := bitcoinleveldb-compaction
+#ACTIVE := bitcoinleveldb-compactionstats
 
 # ------------------------------- [leveldb-layer-3]
 #ACTIVE := bitcoinleveldb-batch    #loc: 547
 #ACTIVE := bitcoinleveldb-repair   #loc: 545
 
 # ------------------------------- [leveldb-layer-4]
-#ACTIVE := bitcoinleveldb-db       #loc: 7539
+#ACTIVE := bitcoinleveldb-db
+#ACTIVE := bitcoinleveldb-dbconstructor
+#ACTIVE := bitcoinleveldb-dbimpl
+#ACTIVE := bitcoinleveldb-dbimplwriter
+#ACTIVE := bitcoinleveldb-dbinterface
+#ACTIVE := bitcoinleveldb-dbtest
+#ACTIVE := bitcoinleveldb-filterpolicy
+#ACTIVE := bitcoinleveldb-harness
+#ACTIVE := bitcoinleveldb-dbiter
+#ACTIVE := bitcoinleveldb-modeldb
+#ACTIVE := bitcoinleveldb-specialenv
+#ACTIVE := bitcoinleveldb-testenv
 #ACTIVE := bitcoinleveldb-dumpfile #loc: 473
 
 # ------------------------------- [leveldb-layer-5]
@@ -363,3 +373,9 @@ bench:
 #ACTIVE := bitcoinleveldb-block
 #ACTIVE := bitcoinleveldb-blockhandle
 #ACTIVE := bitcoinleveldb-iteratorwrapper
+#ACTIVE := bitcoinleveldb-tablerep
+#ACTIVE := bitcoinleveldb-blockconstructor
+#ACTIVE := bitcoinleveldb-blockiter
+#ACTIVE := bitcoinleveldb-footer
+#ACTIVE := bitcoinleveldb-keyconvertingiterator
+#ACTIVE := bitcoinleveldb-snapshot

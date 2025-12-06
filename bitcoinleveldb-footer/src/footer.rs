@@ -7,7 +7,8 @@ crate::ix!();
   | file.
   |
   */
-#[derive(Default)]
+#[derive(Default,Getters,MutGetters,Setters)]
+#[getset(get="pub",set="pub",get_mut="pub")]
 pub struct Footer {
     metaindex_handle: BlockHandle,
     index_handle:     BlockHandle,
@@ -23,51 +24,127 @@ pub struct Footer {
   */
 pub const FOOTER_ENCODED_LENGTH: usize = 2 * BLOCK_HANDLE_MAX_ENCODED_LENGTH + 8;
 
-impl Footer {
+#[cfg(test)]
+mod footer_struct_accessors_and_default_state_tests {
+    use super::*;
 
-    /**
-      | The block handle for the metaindex block
-      | of the table
-      |
-      */
-    pub fn metaindex_handle(&self) -> &BlockHandle {
-        trace!(
-            "Footer::metaindex_handle called (offset={}, size={})",
-            self.metaindex_handle.offset(),
-            self.metaindex_handle.size()
-        );
-        &self.metaindex_handle
+    fn make_block_handle_for_footer_tests(offset: u64, size: u64) -> BlockHandle {
+        let mut h = BlockHandle::default();
+        h.set_offset(offset);
+        h.set_size(size);
+        h
     }
 
-    pub fn set_metaindex_handle(&mut self, h: &BlockHandle) {
-        trace!(
-            "Footer::set_metaindex_handle: offset={} size={}",
-            h.offset(),
-            h.size()
+    #[traced_test]
+    fn footer_default_initializes_block_handles_to_zero() {
+        let footer = Footer::default();
+
+        assert_eq!(
+            footer.metaindex_handle().offset(),
+            0,
+            "footer_default_initializes_block_handles_to_zero: default metaindex offset must be 0"
         );
-        self.metaindex_handle = *h;
+        assert_eq!(
+            footer.metaindex_handle().size(),
+            0,
+            "footer_default_initializes_block_handles_to_zero: default metaindex size must be 0"
+        );
+        assert_eq!(
+            footer.index_handle().offset(),
+            0,
+            "footer_default_initializes_block_handles_to_zero: default index offset must be 0"
+        );
+        assert_eq!(
+            footer.index_handle().size(),
+            0,
+            "footer_default_initializes_block_handles_to_zero: default index size must be 0"
+        );
     }
 
-    /**
-      | The block handle for the index block
-      | of the table
-      |
-      */
-    pub fn index_handle(&self) -> &BlockHandle {
-        trace!(
-            "Footer::index_handle called (offset={}, size={})",
-            self.index_handle.offset(),
-            self.index_handle.size()
+    #[traced_test]
+    fn footer_setting_metaindex_handle_does_not_affect_index_handle() {
+        let metaindex = make_block_handle_for_footer_tests(100, 200);
+        let mut footer = Footer::default();
+
+        footer.set_metaindex_handle(metaindex);
+
+        assert_eq!(
+            footer.metaindex_handle().offset(),
+            metaindex.offset(),
+            "footer_setting_metaindex_handle_does_not_affect_index_handle: metaindex offset must match"
         );
-        &self.index_handle
+        assert_eq!(
+            footer.metaindex_handle().size(),
+            metaindex.size(),
+            "footer_setting_metaindex_handle_does_not_affect_index_handle: metaindex size must match"
+        );
+
+        assert_eq!(
+            footer.index_handle().offset(),
+            0,
+            "footer_setting_metaindex_handle_does_not_affect_index_handle: index offset must remain default 0"
+        );
+        assert_eq!(
+            footer.index_handle().size(),
+            0,
+            "footer_setting_metaindex_handle_does_not_affect_index_handle: index size must remain default 0"
+        );
     }
 
-    pub fn set_index_handle(&mut self, h: &BlockHandle) {
-        trace!(
-            "Footer::set_index_handle: offset={} size={}",
-            h.offset(),
-            h.size()
+    #[traced_test]
+    fn footer_setting_index_handle_does_not_affect_metaindex_handle() {
+        let index = make_block_handle_for_footer_tests(300, 400);
+        let mut footer = Footer::default();
+
+        footer.set_index_handle(index);
+
+        assert_eq!(
+            footer.index_handle().offset(),
+            index.offset(),
+            "footer_setting_index_handle_does_not_affect_metaindex_handle: index offset must match"
         );
-        self.index_handle = *h;
+        assert_eq!(
+            footer.index_handle().size(),
+            index.size(),
+            "footer_setting_index_handle_does_not_affect_metaindex_handle: index size must match"
+        );
+
+        assert_eq!(
+            footer.metaindex_handle().offset(),
+            0,
+            "footer_setting_index_handle_does_not_affect_metaindex_handle: metaindex offset must remain default 0"
+        );
+        assert_eq!(
+            footer.metaindex_handle().size(),
+            0,
+            "footer_setting_index_handle_does_not_affect_metaindex_handle: metaindex size must remain default 0"
+        );
+    }
+
+    #[traced_test]
+    fn footer_setting_both_handles_roundtrip_through_accessors() {
+        let metaindex = make_block_handle_for_footer_tests(1111, 2222);
+        let index     = make_block_handle_for_footer_tests(3333, 4444);
+
+        let mut footer = Footer::default();
+        footer.set_metaindex_handle(metaindex);
+        footer.set_index_handle(index);
+
+        assert_eq!(
+            footer.metaindex_handle().offset(),
+            metaindex.offset()
+        );
+        assert_eq!(
+            footer.metaindex_handle().size(),
+            metaindex.size()
+        );
+        assert_eq!(
+            footer.index_handle().offset(),
+            index.offset()
+        );
+        assert_eq!(
+            footer.index_handle().size(),
+            index.size()
+        );
     }
 }

@@ -33,7 +33,12 @@ impl BlockConstructor {
         let opts_ptr: *const Options = options as *const Options;
         let mut builder = BlockBuilder::new(opts_ptr);
 
-        for (key, value) in data.iter() {
+        // To satisfy BlockBuilder's strictly-increasing key requirement,
+        // iterate over the entries in sorted key order.
+        let mut entries: Vec<(&String, &String)> = data.iter().collect();
+        entries.sort_by(|(k1, _), (k2, _)| k1.cmp(k2));
+
+        for (key, value) in entries.into_iter() {
             let key_bytes:   &[u8] = key.as_bytes();
             let value_bytes: &[u8] = value.as_bytes();
 
@@ -98,57 +103,173 @@ impl BlockConstructor {
     }
 }
 
+
+#[cfg(test)]
+mod constructor_kvmap_and_finish_tests {
+    use super::*;
+
+    fn new_constructor_for_tests() -> Constructor {
+        let cmp_box: Box<dyn SliceComparator> =
+            Box::new(BytewiseComparatorImpl::default());
+
+        trace!(
+            "new_constructor_for_tests: creating Constructor with comparator object"
+        );
+
+        Constructor::new(cmp_box)
+    }
+
+    fn slice_from_str_for_tests(value: &str) -> Slice {
+        Slice::from(value.as_bytes())
+    }
+
+    #[traced_test]
+    fn new_constructor_starts_with_empty_map() {
+        let ctor = new_constructor_for_tests();
+
+        trace!(
+            "new_constructor_starts_with_empty_map: ctor.data().len()={}",
+            ctor.data().len()
+        );
+
+        assert!(ctor.data().is_empty());
+    }
+
+    #[traced_test]
+    fn add_populates_internal_map_with_single_entry() {
+        let mut ctor = new_constructor_for_tests();
+
+        let key          = "k1".to_string();
+        let value_slice  = slice_from_str_for_tests("value-1");
+
+        trace!("add_populates_internal_map_with_single_entry: calling Constructor::add");
+        ctor.add(&key, &value_slice);
+
+        let data = ctor.data();
+        debug!(
+            "add_populates_internal_map_with_single_entry: data_len={}, data={:?}",
+            data.len(),
+            data
+        );
+
+        assert_eq!(data.len(), 1);
+        assert_eq!(data.get("k1").unwrap(), "value-1");
+    }
+
+    #[traced_test]
+    fn add_overwrites_existing_value_for_same_key() {
+        let mut ctor = new_constructor_for_tests();
+
+        let key = "dup".to_string();
+        let v1  = slice_from_str_for_tests("first");
+        let v2  = slice_from_str_for_tests("second");
+
+        trace!("add_overwrites_existing_value_for_same_key: inserting first value");
+        ctor.add(&key, &v1);
+
+        trace!("add_overwrites_existing_value_for_same_key: inserting second value");
+        ctor.add(&key, &v2);
+
+        let data = ctor.data();
+        debug!(
+            "add_overwrites_existing_value_for_same_key: final kvmap={:?}",
+            data
+        );
+
+        assert_eq!(data.len(), 1);
+        assert_eq!(data.get("dup").unwrap(), "second");
+    }
+
+    #[traced_test]
+    fn finish_clones_map_sorts_keys_and_clears_internal_state() {
+        let mut ctor = new_constructor_for_tests();
+
+        let v1 = slice_from_str_for_tests("value1");
+        let v2 = slice_from_str_for_tests("value2");
+
+        ctor.add(&"b".to_string(), &v1);
+        ctor.add(&"a".to_string(), &v2);
+
+        let mut keys  = Vec::<String>::new();
+        let mut kvmap = KVMap::default();
+        let options   = Options::default();
+
+        trace!(
+            "finish_clones_map_sorts_keys_and_clears_internal_state: calling finish; local_entries={}",
+            ctor.data().len()
+        );
+        ctor.finish(
+            &options,
+            &mut keys as *mut Vec<String>,
+            &mut kvmap as *mut KVMap,
+        );
+
+        debug!(
+            "finish_clones_map_sorts_keys_and_clears_internal_state: keys={:?}, kvmap={:?}",
+            keys,
+            kvmap
+        );
+
+        // All key/value pairs must be present in the cloned kvmap.
+        assert_eq!(kvmap.len(), 2);
+        assert_eq!(kvmap.get("a").unwrap(), "value2");
+        assert_eq!(kvmap.get("b").unwrap(), "value1");
+
+        // The returned keys must already be sorted according to the map ordering.
+        let mut sorted_keys = keys.clone();
+        sorted_keys.sort();
+        assert_eq!(keys, sorted_keys);
+
+        // After finish, the Constructor should relinquish ownership of its internal map.
+        assert!(ctor.data().is_empty());
+    }
+
+    #[traced_test]
+    fn finish_on_empty_constructor_produces_empty_outputs() {
+        let mut ctor = new_constructor_for_tests();
+
+        let mut keys  = Vec::<String>::new();
+        let mut kvmap = KVMap::default();
+        let options   = Options::default();
+
+        trace!(
+            "finish_on_empty_constructor_produces_empty_outputs: calling finish on empty Constructor"
+        );
+        ctor.finish(
+            &options,
+            &mut keys as *mut Vec<String>,
+            &mut kvmap as *mut KVMap,
+        );
+
+        debug!(
+            "finish_on_empty_constructor_produces_empty_outputs: keys={:?}, kvmap={:?}",
+            keys,
+            kvmap
+        );
+
+        assert!(keys.is_empty());
+        assert!(kvmap.is_empty());
+        assert!(ctor.data().is_empty());
+    }
+}
+
 #[cfg(test)]
 mod block_constructor_finish_and_block_opening_tests {
     use super::*;
 
-    #[derive(Clone, Default)]
-    struct DummyComparator;
-
-    impl Compare for DummyComparator {
-        fn compare(&self, a: &Slice, b: &Slice) -> i32 {
-            let a_bytes = unsafe {
-                core::slice::from_raw_parts(*a.data(), *a.size())
-            };
-            let b_bytes = unsafe {
-                core::slice::from_raw_parts(*b.data(), *b.size())
-            };
-            for (aa, bb) in a_bytes.iter().zip(b_bytes.iter()) {
-                if aa < bb {
-                    return -1;
-                }
-                if aa > bb {
-                    return 1;
-                }
-            }
-            a_bytes.len().cmp(&b_bytes.len()) as i32
-        }
-    }
-
-    impl Named for DummyComparator {
-        fn name(&self) -> &str {
-            "dummy-comparator"
-        }
-    }
-
-    impl FindShortestSeparator for DummyComparator {
-        fn find_shortest_separator(&self, _start: &mut String, _limit: &Slice) {}
-    }
-
-    impl FindShortSuccessor for DummyComparator {
-        fn find_short_successor(&self, _key: &mut String) {}
-    }
-
-    impl SliceComparator for DummyComparator {}
-
     fn new_block_constructor_for_tests() -> BlockConstructor {
         let cmp_box: Box<dyn SliceComparator> =
-            Box::new(bitcoinleveldb_comparator::BytewiseComparatorImpl::default());
+            Box::new(BytewiseComparatorImpl::default());
+
+        trace!(
+            "new_block_constructor_for_tests: creating BlockConstructor for finish_impl tests"
+        );
+
         BlockConstructor::new(cmp_box)
     }
 
     #[traced_test]
-    fn finish_impl_builds_block_and_populates_data_string() {
+    fn finish_impl_builds_block_and_populates_data_string_for_non_empty_map() {
         let mut constructor = new_block_constructor_for_tests();
         let mut options     = Options::default();
 
@@ -157,7 +278,7 @@ mod block_constructor_finish_and_block_opening_tests {
         kv.insert("b".to_string(), "two".to_string());
 
         trace!(
-            "calling BlockConstructor::finish_impl on KVMap of size {}",
+            "finish_impl_builds_block_and_populates_data_string_for_non_empty_map: calling finish_impl on KVMap of size {}",
             kv.len()
         );
         let status = constructor.finish_impl(&options, &kv);
@@ -166,31 +287,37 @@ mod block_constructor_finish_and_block_opening_tests {
             "finish_impl should succeed for well-formed input"
         );
 
-        let data_len = constructor.data_string().len();
+        let data_len  = constructor.data_string().len();
+        let block_ptr = constructor.block_ptr();
         debug!(
-            "after finish_impl, data_len={}, block_ptr={:?}",
+            "finish_impl_builds_block_and_populates_data_string_for_non_empty_map: data_len={}, block_ptr={:?}",
             data_len,
-            constructor.block_ptr()
+            block_ptr
         );
 
         assert!(data_len > 0);
-        assert!(!constructor.block_ptr().is_null());
+        assert!(!block_ptr.is_null());
     }
 
     #[traced_test]
-    fn finish_impl_replaces_existing_block_without_leaking() {
+    fn finish_impl_replaces_existing_block_without_panicking() {
         let mut constructor = new_block_constructor_for_tests();
         let mut options     = Options::default();
 
         let mut kv1 = KVMap::default();
         kv1.insert("k1".to_string(), "v1".to_string());
+
+        trace!(
+            "finish_impl_replaces_existing_block_without_panicking: first call with kv_count={}",
+            kv1.len()
+        );
         let status1 = constructor.finish_impl(&options, &kv1);
         assert!(status1.is_ok());
 
         let first_block = constructor.block_ptr();
         let first_len   = constructor.data_string().len();
         trace!(
-            "after first finish_impl: block_ptr={:?}, data_len={}",
+            "finish_impl_replaces_existing_block_without_panicking: after first finish_impl: block_ptr={:?}, data_len={}",
             first_block,
             first_len
         );
@@ -199,6 +326,10 @@ mod block_constructor_finish_and_block_opening_tests {
         kv2.insert("k2".to_string(), "v2".to_string());
         kv2.insert("k3".to_string(), "v3".to_string());
 
+        trace!(
+            "finish_impl_replaces_existing_block_without_panicking: second call with kv_count={}",
+            kv2.len()
+        );
         let status2 = constructor.finish_impl(&options, &kv2);
         assert!(status2.is_ok());
 
@@ -206,12 +337,44 @@ mod block_constructor_finish_and_block_opening_tests {
         let second_len   = constructor.data_string().len();
 
         debug!(
-            "after second finish_impl: block_ptr={:?}, data_len={}",
+            "finish_impl_replaces_existing_block_without_panicking: after second finish_impl: block_ptr={:?}, data_len={}",
             second_block,
             second_len
         );
 
         assert!(!second_block.is_null());
         assert!(second_len > 0);
+
+        // Both runs must leave us with a valid block pointer.
+        assert!(!first_block.is_null());
+    }
+
+    #[traced_test]
+    fn finish_impl_with_empty_kvmap_still_produces_valid_block() {
+        let mut constructor = new_block_constructor_for_tests();
+        let mut options     = Options::default();
+
+        let kv = KVMap::default();
+
+        trace!(
+            "finish_impl_with_empty_kvmap_still_produces_valid_block: calling finish_impl with empty KVMap"
+        );
+        let status = constructor.finish_impl(&options, &kv);
+        assert!(
+            status.is_ok(),
+            "finish_impl should succeed even for an empty KVMap"
+        );
+
+        let data_len  = constructor.data_string().len();
+        let block_ptr = constructor.block_ptr();
+
+        debug!(
+            "finish_impl_with_empty_kvmap_still_produces_valid_block: data_len={}, block_ptr={:?}",
+            data_len,
+            block_ptr
+        );
+
+        assert!(data_len > 0);
+        assert!(!block_ptr.is_null());
     }
 }

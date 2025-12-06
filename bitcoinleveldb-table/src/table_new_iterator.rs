@@ -13,21 +13,22 @@ impl Table {
       */
     pub fn new_iterator(&self, options: &ReadOptions) -> *mut LevelDBIterator {
         unsafe {
+            let rep_ptr = self.rep_mut_ptr();
             assert!(
-                !self.rep.is_null(),
+                !rep_ptr.is_null(),
                 "Table::new_iterator: rep pointer is null"
             );
 
-            let rep = &*(self.rep as *mut TableRep);
+            let rep = &mut *rep_ptr;
 
             assert!(
-                !rep.index_block.is_null(),
+                !rep.index_block().is_null(),
                 "Table::new_iterator: index_block pointer is null"
             );
 
-            let index_block = &mut *rep.index_block;
+            let index_block = rep.index_block_mut();
 
-            let cmp_ptr = rep.options.comparator;
+            let cmp_ptr = rep.options().comparator();
             assert!(
                 !cmp_ptr.is_null(),
                 "Table::new_iterator: comparator pointer is null"
@@ -42,11 +43,11 @@ impl Table {
 
             let table_ptr = self as *const Table as *mut c_void;
 
-            bitcoinleveldb_iterator::new_two_level_iterator(
+            bitcoinleveldb_duplex::new_two_level_iterator(
                 index_iter,
-                Table::block_reader,
+                Table::block_reader as fn(*mut c_void, &ReadOptions, &Slice) -> *mut LevelDBIterator,
                 table_ptr,
-                options,
+                *options,
             )
         }
     }

@@ -2,6 +2,11 @@
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
+[dependencies]
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-iteratorwrapper = { path = "../bitcoinleveldb-iteratorwrapper" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.19"
@@ -20,10 +25,6 @@ version = "0.1.19"
 
 [dependencies.bitcoinleveldb-status]
 path = "../bitcoinleveldb-status"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-table]
-path = "../bitcoinleveldb-table"
 version = "0.1.19"
 
 [package]

@@ -100,53 +100,10 @@ impl BlockConstructor {
 mod block_constructor_initialization_tests {
     use super::*;
 
-    #[derive(Clone, Default)]
-    struct DummyComparator;
-
-    impl Compare for DummyComparator {
-        fn compare(&self, a: &Slice, b: &Slice) -> i32 {
-            let a_bytes = unsafe {
-                core::slice::from_raw_parts(*a.data(), *a.size())
-            };
-            let b_bytes = unsafe {
-                core::slice::from_raw_parts(*b.data(), *b.size())
-            };
-            for (aa, bb) in a_bytes.iter().zip(b_bytes.iter()) {
-                if aa < bb {
-                    return -1;
-                }
-                if aa > bb {
-                    return 1;
-                }
-            }
-            a_bytes.len().cmp(&b_bytes.len()) as i32
-        }
-    }
-
-    impl Named for DummyComparator {
-        fn name(&self) -> &str {
-            "dummy-comparator"
-        }
-    }
-
-    impl FindShortestSeparator for DummyComparator {
-        fn find_shortest_separator(&self, _start: &mut String, _limit: &Slice) {
-            // Simple no-op for tests; behavior not relied upon.
-        }
-    }
-
-    impl FindShortSuccessor for DummyComparator {
-        fn find_short_successor(&self, _key: &mut String) {
-            // Simple no-op for tests; behavior not relied upon.
-        }
-    }
-
-    impl SliceComparator for DummyComparator {}
-
     #[traced_test]
     fn block_constructor_new_initializes_fields() {
         let cmp_box: Box<dyn SliceComparator> =
-            Box::new(bitcoinleveldb_comparator::BytewiseComparatorImpl::default());
+            Box::new(BytewiseComparatorImpl::default());
         let raw_cmp: *const dyn SliceComparator = &*cmp_box;
 
         let constructor = BlockConstructor::new(cmp_box);
@@ -162,5 +119,65 @@ mod block_constructor_initialization_tests {
         let base_data = constructor.base().data();
         debug!("base constructor initial kv size={}", base_data.len());
         assert!(base_data.is_empty());
+    }
+
+    fn new_block_constructor_for_tests() -> (BlockConstructor, *const dyn SliceComparator) {
+        let cmp_box: Box<dyn SliceComparator> =
+            Box::new(BytewiseComparatorImpl::default());
+        let raw_cmp: *const dyn SliceComparator = &*cmp_box;
+
+        trace!(
+            "new_block_constructor_for_tests: creating BlockConstructor with comparator={:p}",
+            raw_cmp
+        );
+
+        let constructor = BlockConstructor::new(cmp_box);
+        (constructor, raw_cmp)
+    }
+
+    #[traced_test]
+    fn block_constructor_new_initializes_all_fields_to_empty_state() {
+        let (constructor, raw_cmp) = new_block_constructor_for_tests();
+
+        trace!(
+            "block_constructor_new_initializes_all_fields_to_empty_state: comparator_ptr={:p}",
+            raw_cmp
+        );
+
+        assert!(constructor.data_string().is_empty());
+        assert!(constructor.block_ptr().is_null());
+
+        let base_data = constructor.base().data();
+        debug!(
+            "block_constructor_new_initializes_all_fields_to_empty_state: base constructor initial kv size={}",
+            base_data.len()
+        );
+        assert!(base_data.is_empty());
+    }
+
+    #[traced_test]
+    fn block_constructor_retains_comparator_box_ownership() {
+        let (constructor, original_cmp_ptr) = new_block_constructor_for_tests();
+
+        let cmp_ref: &dyn SliceComparator = constructor.comparator_ref();
+        let cmp_ptr_from_constructor: *const dyn SliceComparator =
+            cmp_ref as *const dyn SliceComparator;
+
+        trace!(
+            "block_constructor_retains_comparator_box_ownership: original_ptr={:p}, ctor_ptr={:p}",
+            original_cmp_ptr,
+            cmp_ptr_from_constructor
+        );
+
+        assert_eq!(cmp_ptr_from_constructor, original_cmp_ptr);
+
+        // Also ensure base_mut can be borrowed mutably without panicking.
+        let mut ctor = constructor;
+        let base_mut_ref: &mut Constructor = ctor.base_mut();
+        debug!(
+            "block_constructor_retains_comparator_box_ownership: base_mut_ref.data_len={}",
+            base_mut_ref.data().len()
+        );
+        assert!(base_mut_ref.data().is_empty());
     }
 }

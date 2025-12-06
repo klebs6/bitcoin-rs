@@ -13,7 +13,7 @@ crate::ix!();
 /// threads accessing the same Iterator must use external synchronization.
 ///
 #[derive(Default)]
-pub(crate) struct LevelDBIteratorInner {
+pub struct LevelDBIteratorInner {
     cleanup_head: Option<LevelDBIteratorCleanupNode>,
 }
 

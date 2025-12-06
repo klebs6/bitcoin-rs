@@ -13,6 +13,15 @@ description = "todo: write a description here"
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
+[dependencies]
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-table = { path = "../bitcoinleveldb-table" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.19"

@@ -1,0 +1,34 @@
+[package]
+name = "bitcoinleveldb-dbimpl"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+bitcoin-imports = { path = "../bitcoin-imports" }
+bitcoin-derive = { path = "../bitcoin-derive" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-compaction = { path = "../bitcoinleveldb-compaction" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
+bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-compactionstats = { path = "../bitcoinleveldb-compactionstats" }
+bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
+bitcoinleveldb-dbimplwriter = { path = "../bitcoinleveldb-dbimplwriter" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
+bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }
+bitcoinleveldb-dbimplinner = { path = "../bitcoinleveldb-dbimplinner" }
+bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
+bitcoinleveldb-logwriter = { path = "../bitcoinleveldb-logwriter" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
+bitcoinleveldb-version = { path = "../bitcoinleveldb-version" }
+bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }

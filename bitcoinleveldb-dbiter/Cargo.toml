@@ -1,0 +1,18 @@
+[package]
+name = "bitcoinleveldb-dbiter"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+bitcoin-imports = { path = "../bitcoin-imports" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }

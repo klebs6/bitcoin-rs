@@ -6,3 +6,5 @@ x!{read_options}
 x!{write_options}
 x!{compression_type}
 x!{null_filter_policy}
+x!{sanitize}
+x!{config}

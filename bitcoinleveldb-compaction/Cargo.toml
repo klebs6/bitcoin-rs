@@ -10,3 +10,4 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
+bitcoin-imports = { path = "../bitcoin-imports" }

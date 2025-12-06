@@ -9,3 +9,6 @@ pub(crate) use bitcoinleveldb_blockbuilder::*;
 pub(crate) use bitcoinleveldb_options::*;
 pub(crate) use bitcoin_crc32c::*;
 pub(crate) use bitcoinleveldb_compat::*;
+pub(crate) use bitcoinleveldb_coding::*;
+pub(crate) use bitcoinleveldb_footer::*;
+pub(crate) use bitcoinleveldb_file::*;

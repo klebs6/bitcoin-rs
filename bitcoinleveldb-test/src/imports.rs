@@ -9,7 +9,6 @@ pub(crate) use bitcoinleveldb_key::*;
 pub(crate) use bitcoinleveldb_options::*;
 pub(crate) use bitcoinleveldb_rand::*;
 pub(crate) use bitcoinleveldb_slice::*;
-pub(crate) use bitcoinleveldb_snapshot::*;
 pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use bitcoinleveldb_table::*;
 pub(crate) use bitcoinleveldb_util::*;
