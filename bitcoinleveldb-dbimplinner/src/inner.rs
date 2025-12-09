@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimplinner/src/inner.rs ]
 crate::ix!();
 
 pub struct DBImplInner {
@@ -50,4 +51,3 @@ pub struct DBImplInner {
     bg_error:                        Status,
     stats:                           [CompactionStats; NUM_LEVELS],
 }
-

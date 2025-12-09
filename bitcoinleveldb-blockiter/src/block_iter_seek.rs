@@ -1,9 +1,9 @@
 // ---------------- [ File: bitcoinleveldb-blockiter/src/block_iter_seek.rs ]
 crate::ix!();
 
-impl BlockIter {
+impl LevelDBIteratorSeek for BlockIter {
 
-    pub fn seek(&mut self, target: &Slice) {
+    fn seek(&mut self, target: &Slice) {
         trace!(
             "BlockIter::seek: target_len={}, restarts_offset={}, num_restarts={}",
             *target.size(),

@@ -78,7 +78,7 @@ impl KeyConvertingIterator {
     #[inline]
     pub(crate) fn new_internal(iter: RawInternalLevelDBIterator) -> Self {
         KeyConvertingIterator {
-            base:   LevelDBIterator::new(),
+            base:   LevelDBIterator::default(),
             status: RefCell::new(Status::ok()),
             iter,
         }
@@ -588,7 +588,7 @@ mod key_converting_iterator_behavior {
 
         let kc = KeyConvertingIterator::new(raw);
 
-        let inner_rc = kc.base().inner();
+        let inner_rc = kc.base().rep();
         assert_eq!(
             Rc::strong_count(&inner_rc),
             2,

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbtest/src/rand.rs ]
 crate::ix!();
 
 pub fn random_string(

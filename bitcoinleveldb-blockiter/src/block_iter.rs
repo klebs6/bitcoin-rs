@@ -58,7 +58,7 @@ impl BlockIter {
         );
 
         BlockIter {
-            base:          LevelDBIterator::new(),
+            base:          LevelDBIterator::default(),
             comparator,
             data,
             restarts,
@@ -82,8 +82,11 @@ impl BlockIter {
             (*self.comparator).compare(a, b)
         }
     }
+}
+
+impl LevelDBIteratorValid for BlockIter {
  
-    pub fn valid(&self) -> bool {
+    fn valid(&self) -> bool {
         let v = self.current < self.restarts;
         trace!(
             "BlockIter::valid called => {} (current={}, restarts={})",
@@ -93,13 +96,19 @@ impl BlockIter {
         );
         v
     }
+}
 
-    pub fn status(&self) -> crate::Status {
+impl LevelDBIteratorStatus for BlockIter {
+
+    fn status(&self) -> crate::Status {
         trace!("BlockIter::status called");
         Status::new_from_other_copy(&self.status)
     }
+}
+
+impl LevelDBIteratorNext for BlockIter {
  
-    pub fn next(&mut self) {
+    fn next(&mut self) {
         assert!(
             self.valid(),
             "BlockIter::next called on invalid iterator"
@@ -107,6 +116,9 @@ impl BlockIter {
         trace!("BlockIter::next: current={}", self.current);
         self.parse_next_key();
     }
+}
+
+impl BlockIter {
 
     #[inline]
     pub fn data_ptr(&self) -> *const u8 {

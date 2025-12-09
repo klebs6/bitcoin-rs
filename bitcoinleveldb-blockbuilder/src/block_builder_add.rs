@@ -3,13 +3,6 @@ crate::ix!();
 
 impl BlockBuilder {
 
-    /**
-      | REQUIRES: Finish() has not been called since
-      | the last call to Reset().
-      |
-      | REQUIRES: key is larger than any previously
-      | added key
-      */
     pub fn add(&mut self, key_: &Slice, value: &Slice) {
         let key_size:   usize = *key_.size();
         let value_size: usize = *value.size();
@@ -37,7 +30,7 @@ impl BlockBuilder {
             &*opts_ptr
         };
 
-        let interval: i32 = *opts.block_restart_interval();
+        let interval: i32 = *self.block_restart_interval();
 
         assert!(
             *self.counter() <= interval,

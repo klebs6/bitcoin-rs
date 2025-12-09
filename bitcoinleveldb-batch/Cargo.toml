@@ -18,10 +18,6 @@ version = "0.1.19"
 path = "../bitcoinleveldb-memtable"
 version = "0.1.19"
 
-[dependencies.bitcoinleveldb-meta]
-path = "../bitcoinleveldb-meta"
-version = "0.1.19"
-
 [dependencies.bitcoinleveldb-slice]
 path = "../bitcoinleveldb-slice"
 version = "0.1.19"

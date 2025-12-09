@@ -506,6 +506,11 @@ x!{stdexcept}
     }
 }
 
+/// Alias used by the test harness to represent
+/// the key/value map.
+/// 
+pub type KVMap = std::collections::HashMap<String, String>;
+
 /**
   | TODO: where else can we put this?
   |
@@ -535,3 +540,5 @@ pub type LockGuard<'a,T> = std::sync::MutexGuard<'a,T>;
 //pub type KVMap      = Elsewhere;
 //pub type Reader     = Elsewhere;
 //pub type WriteBatch = Elsewhere;
+
+

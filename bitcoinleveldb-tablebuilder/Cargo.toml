@@ -22,6 +22,7 @@ bitcoinleveldb-compat = { path = "../bitcoinleveldb-compat" }
 bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
 bitcoinleveldb-footer = { path = "../bitcoinleveldb-footer" }
 bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

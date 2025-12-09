@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/make_room_for_write.rs ]
 crate::ix!();
 
 impl DBImpl {

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/compact_mem_table.rs ]
 crate::ix!();
 
 impl DBImpl {

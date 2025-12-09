@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-comparator/src/mock_comparator.rs ]
 crate::ix!();
 
 #[derive(Clone, Default)]
@@ -36,4 +37,3 @@ impl FindShortSuccessor for MockComparator {
 impl SliceComparator for MockComparator {
     fn bytewise_comparator(&self) -> *const (dyn SliceComparator + 'static) { todo!() }
 }
-

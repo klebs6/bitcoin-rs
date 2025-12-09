@@ -12,3 +12,4 @@ pub(crate) use bitcoinleveldb_compat::*;
 pub(crate) use bitcoinleveldb_coding::*;
 pub(crate) use bitcoinleveldb_footer::*;
 pub(crate) use bitcoinleveldb_file::*;
+pub(crate) use bitcoinleveldb_comparator::*;

@@ -1,11 +1,6 @@
 // ---------------- [ File: bitcoinleveldb-blockconstructor/src/constructor.rs ]
 crate::ix!();
 
-/// Alias used by the test harness to represent
-/// the key/value map.
-/// 
-pub type KVMap = std::collections::HashMap<String, String>;
-
 /// Helper class for tests to unify the interface
 /// between BlockBuilder/TableBuilder
 /// and Block/Table.

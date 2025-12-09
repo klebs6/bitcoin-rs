@@ -10,6 +10,8 @@ crate::ix!();
   | containing the file number and file size, both
   | encoded using EncodeFixed64.
   */
+#[derive(Getters,MutGetters,Setters)]
+#[getset(get="pub",get_mut="pub",set="pub")]
 pub struct VersionLevelFileNumIterator {
     base:      LevelDBIterator,
     icmp:      InternalKeyComparator,
@@ -43,246 +45,161 @@ impl VersionLevelFileNumIterator {
         let initial_index: u32 = unsafe { (*flist).len() as u32 };
 
         VersionLevelFileNumIterator {
-            base:      LevelDBIterator::new(),
+            base:      LevelDBIterator::default(),
             icmp:      InternalKeyComparator::new(icmp.user_comparator()),
             flist,
             index:     initial_index, // Marks as invalid
             value_buf: RefCell::new([0u8; 16]),
         }
     }
+}
+
+impl LevelDBIteratorInterface for VersionLevelFileNumIterator {}
+
+impl LevelDBIteratorStatus for VersionLevelFileNumIterator {
    
-    pub fn valid(&self) -> bool {
-        trace!(
-            "VersionLevelFileNumIterator::valid: index={}, flist_ptr={:?}",
-            self.index,
-            self.flist
-        );
-
-        assert!(
-            !self.flist.is_null(),
-            "VersionLevelFileNumIterator::valid: flist pointer must not be null"
-        );
-
-        unsafe {
-            let len = (*self.flist).len() as u32;
-            let v = self.index < len;
-            trace!(
-                "VersionLevelFileNumIterator::valid: flist_len={}, is_valid={}",
-                len,
-                v
-            );
-            v
-        }
-    }
-   
-    pub fn seek(&mut self, target: &Slice) {
-        trace!(
-            "VersionLevelFileNumIterator::seek: target={:?}, flist_ptr={:?}",
-            target,
-            self.flist
-        );
-
-        assert!(
-            !self.flist.is_null(),
-            "VersionLevelFileNumIterator::seek: flist pointer must not be null"
-        );
-
-        unsafe {
-            let files_ref: &Vec<*mut FileMetaData> = &*self.flist;
-            let idx = find_file(&self.icmp, files_ref, target);
-            self.index = idx as u32;
-
-            trace!(
-                "VersionLevelFileNumIterator::seek: FindFile returned index={}, flist_len={}",
-                self.index,
-                files_ref.len()
-            );
-        }
-    }
- 
-    pub fn seek_to_first(&mut self) {
-        trace!(
-            "VersionLevelFileNumIterator::seek_to_first: flist_ptr={:?}",
-            self.flist
-        );
-        self.index = 0;
-        trace!(
-            "VersionLevelFileNumIterator::seek_to_first: index set to {}",
-            self.index
-        );
-    }
-
-    pub fn seek_to_last(&mut self) {
-        trace!(
-            "VersionLevelFileNumIterator::seek_to_last: flist_ptr={:?}",
-            self.flist
-        );
-
-        assert!(
-            !self.flist.is_null(),
-            "VersionLevelFileNumIterator::seek_to_last: flist pointer must not be null"
-        );
-
-        unsafe {
-            let files_ref: &Vec<*mut FileMetaData> = &*self.flist;
-            if files_ref.is_empty() {
-                self.index = 0;
-                trace!(
-                    "VersionLevelFileNumIterator::seek_to_last: empty file list; index set to 0 (invalid)"
-                );
-            } else {
-                self.index = (files_ref.len() - 1) as u32;
-                trace!(
-                    "VersionLevelFileNumIterator::seek_to_last: flist_len={}, index set to {}",
-                    files_ref.len(),
-                    self.index
-                );
-            }
-        }
-    }
-   
-    pub fn next(&mut self) {
-        trace!(
-            "VersionLevelFileNumIterator::next: current index={}, flist_ptr={:?}",
-            self.index,
-            self.flist
-        );
-
-        assert!(
-            self.valid(),
-            "VersionLevelFileNumIterator::next requires iterator to be valid"
-        );
-
-        self.index = self.index.wrapping_add(1);
-
-        trace!(
-            "VersionLevelFileNumIterator::next: advanced to index={}",
-            self.index
-        );
-    }
-
-    pub fn prev(&mut self) {
-        trace!(
-            "VersionLevelFileNumIterator::prev: current index={}, flist_ptr={:?}",
-            self.index,
-            self.flist
-        );
-
-        assert!(
-            self.valid(),
-            "VersionLevelFileNumIterator::prev requires iterator to be valid"
-        );
-        assert!(
-            !self.flist.is_null(),
-            "VersionLevelFileNumIterator::prev: flist pointer must not be null"
-        );
-
-        unsafe {
-            let files_ref: &Vec<*mut FileMetaData> = &*self.flist;
-            let len = files_ref.len() as u32;
-
-            if self.index == 0 {
-                // Marks as invalid (index == len)
-                self.index = len;
-                trace!(
-                    "VersionLevelFileNumIterator::prev: moved before first; index set to {} (invalid)",
-                    self.index
-                );
-            } else {
-                self.index -= 1;
-                trace!(
-                    "VersionLevelFileNumIterator::prev: decremented index to {}",
-                    self.index
-                );
-            }
-        }
-    }
-   
-    pub fn key(&self) -> Slice {
-        trace!(
-            "VersionLevelFileNumIterator::key: called; index={}, flist_ptr={:?}",
-            self.index,
-            self.flist
-        );
-
-        assert!(
-            self.valid(),
-            "VersionLevelFileNumIterator::key requires iterator to be valid"
-        );
-        assert!(
-            !self.flist.is_null(),
-            "VersionLevelFileNumIterator::key: flist pointer must not be null"
-        );
-
-        unsafe {
-            let files_ref: &Vec<*mut FileMetaData> = &*self.flist;
-            let idx = self.index as usize;
-
-            let meta_ptr: *mut FileMetaData = *files_ref
-                .get(idx)
-                .expect("VersionLevelFileNumIterator::key: index out of range");
-            let meta: &FileMetaData = &*meta_ptr;
-
-            let largest_internal: &InternalKey = meta.largest();
-            let encoded: Slice = largest_internal.encode();
-
-            trace!(
-                "VersionLevelFileNumIterator::key: returning largest key for file_number={}, file_size={}",
-                meta.number(),
-                meta.file_size()
-            );
-
-            encoded
-        }
-    }
-
-    pub fn value(&self) -> Slice {
-        trace!(
-            "VersionLevelFileNumIterator::value: called; index={}, flist_ptr={:?}",
-            self.index,
-            self.flist
-        );
-
-        assert!(
-            self.valid(),
-            "VersionLevelFileNumIterator::value requires iterator to be valid"
-        );
-        assert!(
-            !self.flist.is_null(),
-            "VersionLevelFileNumIterator::value: flist pointer must not be null"
-        );
-
-        unsafe {
-            let files_ref: &Vec<*mut FileMetaData> = &*self.flist;
-            let idx = self.index as usize;
-
-            let meta_ptr: *mut FileMetaData = *files_ref
-                .get(idx)
-                .expect("VersionLevelFileNumIterator::value: index out of range");
-            let meta: &FileMetaData = &*meta_ptr;
-
-            let mut buf = self.value_buf.borrow_mut();
-            let ptr = buf.as_mut_ptr();
-
-            encode_fixed64(ptr, meta.number());
-            encode_fixed64(ptr.add(8), meta.file_size());
-
-            let result = Slice::from_ptr_len(buf.as_ptr(), buf.len());
-
-            trace!(
-                "VersionLevelFileNumIterator::value: encoded (number={}, size={}) into 16-byte buffer",
-                meta.number(),
-                meta.file_size()
-            );
-
-            result
-        }
-    }
-   
-    pub fn status(&self) -> Status {
+    fn status(&self) -> Status {
         trace!(
             "VersionLevelFileNumIterator::status: returning OK (iterator itself does not track errors)"
         );
         Status::ok()
+    }
+}
+
+#[cfg(test)]
+mod version_level_file_num_iterator_constructor_and_status_tests {
+    use super::*;
+
+    fn create_test_file_meta(number: u64, size: u64, user_key: &str) -> FileMetaData {
+        let user_key_slice = Slice::from(user_key);
+        let internal = InternalKey::new(&user_key_slice, 1, ValueType::TypeValue);
+
+        let mut meta = FileMetaData::default();
+        meta.set_number(number);
+        meta.set_file_size(size);
+        meta.set_smallest(internal.clone());
+        meta.set_largest(internal);
+
+        debug!(
+            number = *meta.number(),
+            file_size = *meta.file_size(),
+            "create_test_file_meta: initialized meta"
+        );
+
+        meta
+    }
+
+    fn build_simple_file_list() -> Vec<FileMetaData> {
+        info!("build_simple_file_list: constructing two test FileMetaData entries");
+        vec![
+            create_test_file_meta(1, 100, "a"),
+            create_test_file_meta(2, 200, "k"),
+        ]
+    }
+
+    #[traced_test]
+    fn version_level_file_num_iterator_new_sets_index_to_file_count_and_invalid() {
+        info!("version_level_file_num_iterator_new_sets_index_to_file_count_and_invalid: starting test");
+
+        let comparator = InternalKeyComparator::new(null_slice_comparator());
+        let mut metas = build_simple_file_list();
+
+        let file_ptrs_box: Box<Vec<*mut FileMetaData>> =
+            Box::new(metas.iter_mut().map(|m| m as *mut FileMetaData).collect());
+        let flist_ptr: *const Vec<*mut FileMetaData> = &*file_ptrs_box as *const _;
+
+        let iter = VersionLevelFileNumIterator::new(&comparator, flist_ptr);
+
+        let expected_index = (*file_ptrs_box).len() as u32;
+        debug!(
+            expected_index,
+            actual_index = *iter.index(),
+            "new iterator index vs file count"
+        );
+        assert_eq!(*iter.index(), expected_index);
+
+        let valid = LevelDBIteratorValid::valid(&iter);
+        trace!(valid, "iterator validity immediately after construction");
+        assert!(!valid);
+
+        let input_user_cmp = comparator.user_comparator();
+        let stored_user_cmp = iter.icmp().user_comparator();
+        debug!(
+            ?input_user_cmp,
+            ?stored_user_cmp,
+            "user comparator pointers inside and outside iterator"
+        );
+        assert_eq!(input_user_cmp, stored_user_cmp);
+
+        let stored_flist = iter.flist();
+        debug!(
+            ?flist_ptr,
+            ?stored_flist,
+            "flist pointer equality check in constructor test"
+        );
+        assert_eq!(flist_ptr, *stored_flist);
+
+        drop(iter);
+        drop(file_ptrs_box);
+    }
+
+    #[test]
+    #[should_panic]
+    fn version_level_file_num_iterator_new_panics_on_null_flist_pointer() {
+        info!("version_level_file_num_iterator_new_panics_on_null_flist_pointer: starting test");
+
+        let comparator = InternalKeyComparator::new(null_slice_comparator());
+        let flist_ptr: *const Vec<*mut FileMetaData> = core::ptr::null();
+        let _ = VersionLevelFileNumIterator::new(&comparator, flist_ptr);
+    }
+
+    #[traced_test]
+    fn version_level_file_num_iterator_status_always_ok() {
+        info!("version_level_file_num_iterator_status_always_ok: starting test");
+
+        let comparator = InternalKeyComparator::new(null_slice_comparator());
+        let mut metas = build_simple_file_list();
+
+        let file_ptrs_box: Box<Vec<*mut FileMetaData>> =
+            Box::new(metas.iter_mut().map(|m| m as *mut FileMetaData).collect());
+        let flist_ptr: *const Vec<*mut FileMetaData> = &*file_ptrs_box as *const _;
+
+        let iter = VersionLevelFileNumIterator::new(&comparator, flist_ptr);
+
+        let status = LevelDBIteratorStatus::status(&iter);
+        debug!(code = ?status.code(), "status returned from VersionLevelFileNumIterator::status");
+        assert!(status.is_ok());
+        assert_eq!(status.code(), StatusCode::Ok);
+
+        drop(iter);
+        drop(file_ptrs_box);
+    }
+
+    #[traced_test]
+    fn version_level_file_num_iterator_base_iterator_starts_empty() {
+        info!("version_level_file_num_iterator_base_iterator_starts_empty: starting test");
+
+        let comparator = InternalKeyComparator::new(null_slice_comparator());
+        let mut metas = build_simple_file_list();
+
+        let file_ptrs_box: Box<Vec<*mut FileMetaData>> =
+            Box::new(metas.iter_mut().map(|m| m as *mut FileMetaData).collect());
+        let flist_ptr: *const Vec<*mut FileMetaData> = &*file_ptrs_box as *const _;
+
+        let iter = VersionLevelFileNumIterator::new(&comparator, flist_ptr);
+
+        let base = iter.base();
+        debug!(
+            has_iterator = base.has_iterator(),
+            "base LevelDBIterator state at construction"
+        );
+        assert!(!base.has_iterator());
+
+        let base_valid = LevelDBIteratorValid::valid(base);
+        trace!(base_valid, "base iterator validity");
+        assert!(!base_valid);
+
+        drop(iter);
+        drop(file_ptrs_box);
     }
 }

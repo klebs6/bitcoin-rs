@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/build_batch_group.rs ]
 crate::ix!();
 
 impl DBImpl {

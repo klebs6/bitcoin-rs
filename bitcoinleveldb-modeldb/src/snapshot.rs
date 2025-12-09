@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-modeldb/src/snapshot.rs ]
 crate::ix!();
 
 pub struct ModelSnapshot {
@@ -7,4 +8,3 @@ pub struct ModelSnapshot {
 impl Snapshot for ModelSnapshot {
 
 }
-

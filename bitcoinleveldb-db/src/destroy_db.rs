@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-db/src/destroy_db.rs ]
 crate::ix!();
 
 pub fn destroydb(

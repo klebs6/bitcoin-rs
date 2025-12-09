@@ -86,22 +86,22 @@ impl TableConstructor {
         let source = StringSource::new(&contents_slice);
         let source_box = Box::new(source);
         let source_ptr: *mut StringSource = Box::into_raw(source_box);
-        self.source = source_ptr;
+        self.set_source(source_ptr);
 
         let mut table_options = options.clone();
-        table_options.comparator = options.comparator;
+        table_options.set_comparator(options.comparator().clone());
 
         trace!(
             "TableConstructor::finish_impl: opening Table on in-memory StringSource @ {:?}, file_size={}",
-            self.source,
+            self.source(),
             sink_size
         );
 
-        status = crate::table::Table::open(
+        status = Table::open(
             &table_options,
-            self.source as *mut dyn RandomAccessFile,
+            self.source(),
             sink_size,
-            &mut self.table,
+            self.table_mut(),
         );
 
         if !status.is_ok() {
@@ -111,7 +111,7 @@ impl TableConstructor {
         } else {
             trace!(
                 "TableConstructor::finish_impl: Table opened successfully @ {:?}",
-                self.table
+                self.table()
             );
         }
 

@@ -7,7 +7,7 @@ crate::ix!();
 /// Options to control the behavior of a
 /// database (passed to DB::Open)
 /// 
-#[derive(Getters,MutGetters,Setters)]
+#[derive(Clone,Getters,MutGetters,Setters)]
 #[getset(get="pub",get_mut="pub",set="pub")]
 pub struct Options {
 
@@ -21,7 +21,7 @@ pub struct Options {
     /// the same name and orders keys *exactly* the same as the comparator
     /// provided to previous open calls on the same DB.
     ///
-    comparator:        Box<dyn SliceComparator>,
+    comparator:        Arc<dyn SliceComparator>,
 
     /// If true, the database will be created if it is missing.
     ///
@@ -148,7 +148,7 @@ pub struct Options {
     /// Many applications will benefit from passing the result of
     /// `new_bloom_filter_policy()` here.
     ///
-    filter_policy: Box<dyn FilterPolicy>,
+    filter_policy: Arc<dyn FilterPolicy>,
 }
 
 impl Default for Options {
@@ -158,7 +158,7 @@ impl Default for Options {
 
         Options {
             // -------- Behavior parameters --------
-            comparator:             Box::new(BytewiseComparatorImpl::default()),
+            comparator:             Arc::new(BytewiseComparatorImpl::default()),
             create_if_missing:      false,
             error_if_exists:        false,
             paranoid_checks:        false,
@@ -177,7 +177,7 @@ impl Default for Options {
 
             // LevelDB uses nullptr here; we must supply *some* policy.
             // A no-op / pass-through filter is the closest semantic match.
-            filter_policy:          Box::new(NullFilterPolicy::default()),
+            filter_policy:          Arc::new(NullFilterPolicy::default()),
         }
     }
 }

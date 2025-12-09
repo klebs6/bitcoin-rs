@@ -24,6 +24,23 @@ pub struct BlockContents {
     heap_allocated: bool,
 }
 
+impl Default for BlockContents {
+    fn default() -> Self {
+        let data = Slice::default();
+
+        trace!(
+            "BlockContents::default: creating empty non-cached, non-heap-allocated block (len={})",
+            *data.size()
+        );
+
+        BlockContents {
+            data,
+            cachable:       false,
+            heap_allocated: false,
+        }
+    }
+}
+
 impl BlockContents {
 
     pub fn new(data: Slice, cachable: bool, heap_allocated: bool) -> Self {

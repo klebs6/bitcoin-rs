@@ -2,13 +2,14 @@
 tracing.workspace = true
 bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
 bitcoinleveldb-block = { path = "../bitcoinleveldb-block" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-tablerep = { path = "../bitcoinleveldb-tablerep" }
 bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents" }
 bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator" }
 bitcoinleveldb-footer = { path = "../bitcoinleveldb-footer" }
 bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle" }
 bitcoinleveldb-duplex = { path = "../bitcoinleveldb-duplex" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

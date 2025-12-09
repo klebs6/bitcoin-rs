@@ -43,7 +43,7 @@ impl EmptyIterator {
         );
 
         EmptyIterator {
-            base:   LevelDBIterator::new(),
+            base:   LevelDBIterator::default(),
             status: Status::new_from_other_copy(s),
         }
     }

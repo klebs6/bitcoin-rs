@@ -5,7 +5,7 @@ crate::ix!();
 /// answers queries via `key_may_match`.
 #[derive(Getters, Setters)]
 pub struct FilterBlockReader {
-    policy: Box<dyn FilterPolicy>,
+    policy: Arc<dyn FilterPolicy>,
 
     /// The entire filter block data
     data: Arc<[u8]>,
@@ -22,9 +22,30 @@ pub struct FilterBlockReader {
     valid: bool,
 }
 
+impl Debug for FilterBlockReader {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        trace!("entering Debug::fmt for FilterBlockReader");
+
+        // We *do not* log the internal contents of `data`, only its length,
+        // preserving semantic fidelity and avoiding unintended side effects.
+        let result = f
+            .debug_struct("FilterBlockReader")
+            .field("policy_name", &self.policy.name())
+            .field("data_len", &self.data.len())
+            .field("offset", &self.offset)
+            .field("num", &self.num)
+            .field("base_lg", &self.base_lg)
+            .field("valid", &self.valid)
+            .finish();
+
+        trace!("exiting Debug::fmt for FilterBlockReader");
+        result
+    }
+}
+
 impl FilterBlockReader {
 
-    pub fn new(policy: Box<dyn FilterPolicy>, contents: &Slice) -> Self {
+    pub fn new(policy: Arc<dyn FilterPolicy>, contents: &Slice) -> Self {
 
         info!("FilterBlockReader::new with size={}", *contents.size());
 

@@ -15,6 +15,7 @@ bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-emptyiterator = { path = "../bitcoinleveldb-emptyiterator" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

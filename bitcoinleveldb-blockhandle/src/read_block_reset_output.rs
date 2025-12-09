@@ -60,4 +60,3 @@ mod read_block_output_reset_unit_tests {
         assert!(!result.heap_allocated());
     }
 }
-

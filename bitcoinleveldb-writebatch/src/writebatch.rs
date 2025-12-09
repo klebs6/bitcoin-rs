@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-writebatch/src/writebatch.rs ]
 crate::ix!();
 
 pub struct LevelDBWriteBatch {

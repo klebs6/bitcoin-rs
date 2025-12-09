@@ -1,6 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-tableconstructor/src/table_constructor.rs ]
 crate::ix!();
 
+#[derive(Getters,Setters,MutGetters)]
+#[getset(get="pub",set="pub",get_mut="pub")]
 pub struct TableConstructor {
     base:   Constructor,
     source: *mut StringSource,

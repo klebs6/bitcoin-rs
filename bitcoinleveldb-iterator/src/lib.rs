@@ -1,7 +1,13 @@
 // ---------------- [ File: bitcoinleveldb-iterator/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
+x!{drop}
 x!{iterator}
-x!{iterator_cleanup}
-x!{iterator_inner}
-x!{iterator_interface}
+x!{kv}
+x!{prev_next}
+x!{seek}
+x!{set}
+x!{update}
+x!{mock_stub_iterator}
+x!{mock_counting_kv_iterator}
+x!{mock_tracked_iterator}

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-specialenv/src/atomic_counter.rs ]
 crate::ix!();
 
 pub struct AtomicCounter {

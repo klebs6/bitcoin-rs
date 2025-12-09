@@ -11,6 +11,7 @@ description = "todo: write a description here"
 
 [dependencies]
 tracing.workspace = true
+derive_builder.workspace = true
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 
 [build-dependencies.bitcoin-cfg]

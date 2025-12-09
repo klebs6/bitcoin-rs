@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/write_level0_table.rs ]
 crate::ix!();
 
 impl DBImpl {

@@ -10,3 +10,4 @@ pub(crate) use bitcoinleveldb_emptyiterator::*;
 pub(crate) use bitcoinleveldb_erroriterator::*;
 pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use bitcoinleveldb_blockcontents::*;
+pub(crate) use bitcoinleveldb_iteratorinner::*;

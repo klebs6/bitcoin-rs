@@ -15,6 +15,7 @@ bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-blockutil = { path = "../bitcoinleveldb-blockutil" }
 bitcoinleveldb-blockbuilder = { path = "../bitcoinleveldb-blockbuilder" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

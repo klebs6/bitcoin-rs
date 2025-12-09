@@ -7,6 +7,8 @@ crate::ix!();
 /// Each block may be compressed before being stored in a file.  The following
 /// enum describes which compression method (if any) is used to compress
 /// a block.
+#[repr(u8)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CompressionType {
 
     /// @note

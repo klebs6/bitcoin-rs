@@ -11,7 +11,7 @@ x!{table_builder_finish}
 x!{table_builder_flush}
 x!{table_builder_num_entries}
 x!{table_builder_rep}
-x!{table_builder_rep_create}
 x!{table_builder_status}
 x!{table_builder_write_block}
 x!{table_builder_write_raw_block}
+x!{test_util}

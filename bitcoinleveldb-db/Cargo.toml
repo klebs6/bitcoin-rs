@@ -10,7 +10,6 @@ bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
 bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
 bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-filterpolicy = { path = "../bitcoinleveldb-filterpolicy" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 
 [dependencies.bitcoin-derive]

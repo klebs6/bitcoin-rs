@@ -7,4 +7,4 @@ pub(crate) use bitcoinleveldb_iterator::*;
 pub(crate) use bitcoinleveldb_file::*;
 pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use bitcoinleveldb_coding::*;
-pub(crate) use bitcoinleveldb_meta::*;
+pub(crate) use bitcoinleveldb_iteratorinner::*;

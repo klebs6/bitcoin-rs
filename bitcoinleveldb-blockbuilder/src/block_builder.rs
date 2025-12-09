@@ -66,31 +66,36 @@ pub struct BlockBuilder {
     finished: bool,
 
     last_key: String,
+
+    block_restart_interval: i32,
 }
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/table/block_builder.cc]
 impl BlockBuilder {
 
     pub fn new(options: *const Options) -> Self {
-        unsafe {
+        let interval: i32 = unsafe {
             assert!(
                 !options.is_null(),
                 "BlockBuilder::new: options pointer is null"
             );
 
-            let interval: i32 = *(*options).block_restart_interval();
+            let opts_ref: &Options = &*options;
+            let interval_value: i32 = *opts_ref.block_restart_interval();
 
             assert!(
-                interval >= 1,
+                interval_value >= 1,
                 "BlockBuilder::new: block_restart_interval {} < 1",
-                interval
+                interval_value
             );
 
             trace!(
                 "BlockBuilder::new: block_restart_interval={}",
-                interval
+                interval_value
             );
-        }
+
+            interval_value
+        };
 
         let mut restarts = Vec::<u32>::new();
         restarts.push(0);
@@ -106,18 +111,14 @@ impl BlockBuilder {
             counter:   0,
             finished: false,
             last_key: String::new(),
+            block_restart_interval: interval,
         }
     }
 
-    /**
-      | Return true iff no entries have been
-      | added since the last Reset()
-      |
-      */
     pub fn empty(&self) -> bool {
         trace!(
             "BlockBuilder::empty called; buffer_len={}",
-            self.buffer.len()
+            self.buffer_len()
         );
         self.buffer.is_empty()
     }

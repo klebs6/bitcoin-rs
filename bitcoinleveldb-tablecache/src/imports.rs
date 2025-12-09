@@ -8,3 +8,5 @@ pub(crate) use bitcoinleveldb_file::*;
 pub(crate) use bitcoinleveldb_cache::*;
 pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use bitcoinleveldb_env::*;
+pub(crate) use bitcoinleveldb_iterator::*;
+pub(crate) use bitcoinleveldb_lru::*;

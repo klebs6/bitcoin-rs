@@ -94,10 +94,6 @@ version = "0.1.19"
 path = "../bitcoinleveldb-merger"
 version = "0.1.19"
 
-[dependencies.bitcoinleveldb-meta]
-path = "../bitcoinleveldb-meta"
-version = "0.1.19"
-
 [dependencies.bitcoinleveldb-options]
 path = "../bitcoinleveldb-options"
 version = "0.1.19"

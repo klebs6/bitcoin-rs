@@ -1,9 +1,9 @@
 // ---------------- [ File: bitcoinleveldb-blockiter/src/block_iter_prev.rs ]
 crate::ix!();
 
-impl BlockIter {
+impl LevelDBIteratorPrev for BlockIter {
    
-    pub fn prev(&mut self) {
+    fn prev(&mut self) {
         assert!(
             self.valid(),
             "BlockIter::prev called on invalid iterator"

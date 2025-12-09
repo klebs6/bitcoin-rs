@@ -19,7 +19,7 @@ crate::ix!();
 
 /// Status encapsulates the result of an operation. 
 /// It may indicate success, or it may indicate an error with an associated message.
-#[derive(Debug, Getters, Setters, Builder)]
+#[derive(Clone,Debug, Getters, Setters, Builder)]
 #[getset(get = "pub", set = "pub")]
 pub struct Status {
     /// If `None`, the status is `OK`. Otherwise:

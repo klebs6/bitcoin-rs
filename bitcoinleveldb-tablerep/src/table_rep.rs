@@ -8,7 +8,7 @@ pub struct TableRep {
     status:           Status,
     file:             Rc<RefCell<dyn RandomAccessFile>>,
     cache_id:         u64,
-    filter:           *mut FilterBlockReader,
+    filter:           Option<Box<FilterBlockReader>>,
     filter_data:      *mut u8,
     filter_data_len:  usize,
 
@@ -17,6 +17,34 @@ pub struct TableRep {
     /// 
     metaindex_handle: BlockHandle,
     index_block:      *mut Block,
+}
+
+impl TableRep {
+    pub fn new(
+        options:          Options,
+        file:             Rc<RefCell<dyn RandomAccessFile>>,
+        cache_id:         u64,
+        metaindex_handle: BlockHandle,
+        index_block:      *mut Block,
+    ) -> Self {
+        trace!(
+            "TableRep::new: cache_id={}, index_block={:?}",
+            cache_id,
+            index_block
+        );
+
+        TableRep {
+            options,
+            status:          Status::ok(),
+            file,
+            cache_id,
+            filter:          None,
+            filter_data:     core::ptr::null_mut(),
+            filter_data_len: 0,
+            metaindex_handle,
+            index_block,
+        }
+    }
 }
 
 impl Drop for TableRep {
@@ -31,16 +59,6 @@ impl Drop for TableRep {
         );
 
         unsafe {
-            if !self.filter.is_null() {
-                trace!(
-                    "TableRep::drop: deleting FilterBlockReader @ {:?}",
-                    self.filter
-                );
-                let _filter_box: Box<FilterBlockReader> = Box::from_raw(self.filter);
-                self.filter = core::ptr::null_mut();
-            } else {
-                trace!("TableRep::drop: filter pointer is null; nothing to free");
-            }
 
             if !self.filter_data.is_null() {
                 if self.filter_data_len > 0 {

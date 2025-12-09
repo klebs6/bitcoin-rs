@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbinterface/src/get_snapshot.rs ]
 crate::ix!();
 
 pub trait GetSnapshot {

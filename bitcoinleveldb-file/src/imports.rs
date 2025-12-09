@@ -6,3 +6,4 @@ pub(crate) use bitcoinleveldb_slice::*;
 pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use bitcoinleveldb_util::*;
 pub(crate) use bitcoin_support::*;
+pub(crate) use bitcoinleveldb_comparator::*;

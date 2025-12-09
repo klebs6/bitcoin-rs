@@ -21,3 +21,4 @@ x!{rename_file}
 x!{sequential_file}
 x!{stdout}
 x!{writable_file}
+x!{find_file}

@@ -8,3 +8,4 @@ pub(crate) use bitcoinleveldb_comparator::*;
 pub(crate) use bitcoinleveldb_blockutil::*;
 pub(crate) use bitcoinleveldb_options::*;
 pub(crate) use bitcoinleveldb_blockbuilder::*;
+pub(crate) use bitcoinleveldb_iteratorinner::*;

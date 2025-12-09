@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-keyconvertingiterator/src/seek.rs ]
 crate::ix!();
 
-impl Seek for KeyConvertingIterator {
+impl LevelDBIteratorSeek for KeyConvertingIterator {
 
     fn seek(&mut self, target: &Slice) {
         let iter_ptr = self.iter_raw_mut();
@@ -12,7 +12,7 @@ impl Seek for KeyConvertingIterator {
             iter_ptr
         );
 
-        let max_sequence: SequenceNumber = ((0x1u64 << 56) - 1);
+        let max_sequence: SequenceNumber = (0x1u64 << 56) - 1;
         let ikey = ParsedInternalKey::new(target, &max_sequence, ValueType::TypeValue);
 
         let mut encoded = String::new();

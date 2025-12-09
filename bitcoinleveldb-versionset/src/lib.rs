@@ -3,3 +3,5 @@
 
 x!{set}
 x!{setbuilder}
+x!{meta}
+x!{meta_test}

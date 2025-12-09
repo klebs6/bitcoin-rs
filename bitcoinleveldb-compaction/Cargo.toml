@@ -11,3 +11,9 @@ description = "todo: write a description here"
 
 [dependencies]
 bitcoin-imports = { path = "../bitcoin-imports" }
+bitcoinleveldb-version = { path = "../bitcoinleveldb-version" }
+bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }

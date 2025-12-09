@@ -22,6 +22,9 @@ bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-table = { path = "../bitcoinleveldb-table" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-stringsink = { path = "../bitcoinleveldb-stringsink" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

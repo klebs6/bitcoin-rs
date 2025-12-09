@@ -1,15 +1,18 @@
 // ---------------- [ File: bitcoinleveldb-blockiter/src/block_iter_seek_to.rs ]
 crate::ix!();
 
-impl BlockIter {
+impl LevelDBIteratorSeekToFirst for BlockIter {
      
-    pub fn seek_to_first(&mut self) {
+    fn seek_to_first(&mut self) {
         trace!("BlockIter::seek_to_first called");
         self.seek_to_restart_point(0);
         self.parse_next_key();
     }
+}
+
+impl LevelDBIteratorSeekToLast for BlockIter {
     
-    pub fn seek_to_last(&mut self) {
+    fn seek_to_last(&mut self) {
         trace!("BlockIter::seek_to_last called");
         if self.num_restarts() == 0 {
             self.mark_invalid();

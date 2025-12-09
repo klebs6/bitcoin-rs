@@ -27,6 +27,26 @@ pub struct Block {
     pub(crate) owned:          bool,
 }
 
+impl Debug for Block {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        trace!("entering Debug::fmt for Block");
+
+        // Pointer values are logged as raw addresses.
+        let data_addr = self.data as usize;
+
+        let result = f
+            .debug_struct("Block")
+            .field("data_ptr", &format_args!("{:#x}", data_addr))
+            .field("size", &self.size)
+            .field("restart_offset", &self.restart_offset)
+            .field("owned", &self.owned)
+            .finish();
+
+        trace!("exiting Debug::fmt for Block");
+        result
+    }
+}
+
 unsafe impl Send for Block {}
 unsafe impl Sync for Block {}
 

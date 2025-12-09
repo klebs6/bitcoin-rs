@@ -19,7 +19,7 @@ iterating through blocks within a table.
 There are also several iterator-related structs
 included in this crate, such as
 `LevelDBIteratorCleanupNode`,
-`LevelDBIteratorInner`, and
+`LevelDBIterator`, and
 `LevelDBIteratorCleanupFunction`. These are used
 for iterating through the data stored in the
 tables and performing cleanup functions.

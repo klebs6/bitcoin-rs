@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-keyconvertingiterator/src/key.rs ]
 crate::ix!();
 
-impl Key for KeyConvertingIterator {
+impl LevelDBIteratorKey for KeyConvertingIterator {
 
     fn key(&self) -> Slice {
         let iter_ptr = self.iter_raw();

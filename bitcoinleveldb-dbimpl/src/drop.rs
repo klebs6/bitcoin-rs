@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/drop.rs ]
 crate::ix!();
 
 impl Drop for DBImpl {

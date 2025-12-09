@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/get_snapshot.rs ]
 crate::ix!();
 
 impl GetSnapshot for DBImpl {

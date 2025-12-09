@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/recover_log_file.rs ]
 crate::ix!();
 
 impl DBImpl {

@@ -3,21 +3,7 @@ crate::ix!();
 
 impl Table {
 
-    /// Attempt to open the table that is stored in bytes [0..file_size) of
-    /// "file", and read the metadata entries necessary to allow retrieving data
-    /// from the table.
-    /// 
-    /// If successful, returns ok and sets "*table" to the newly opened table.
-    /// The client should delete "*table" when no longer needed.  If there was
-    /// an error while initializing the table, sets "*table" to nullptr and
-    /// returns a non-ok status.  Does not take ownership of "*source", but the
-    /// client must ensure that "source" remains live for the duration of the
-    /// returned table's lifetime.
-    /// 
-    /// *file must remain live while this Table is in use.
-    ///
     pub fn open(
-        &mut self,
         options: &Options,
         file:    Rc<RefCell<dyn RandomAccessFile>>,
         size:    u64,
@@ -48,7 +34,7 @@ impl Table {
             return Status::corruption(&msg_slice, None);
         }
 
-        let mut footer_buf = vec![0u8; FOOTER_ENCODED_LENGTH];
+        let mut footer_buf   = vec![0u8; FOOTER_ENCODED_LENGTH];
         let mut footer_input = Slice::default();
 
         let read_offset = size - FOOTER_ENCODED_LENGTH as u64;
@@ -91,14 +77,8 @@ impl Table {
             return s_footer;
         }
 
-        // Read the index block
-        let mut index_block_contents = BlockContents {
-            data:           Slice::default(),
-            cachable:       false,
-            heap_allocated: false,
-        };
-
-        let mut status = Status::ok();
+        let mut index_block_contents = BlockContents::default();
+        let mut status               = Status::ok();
 
         if status.is_ok() {
             let mut opt = ReadOptions::default();
@@ -123,54 +103,35 @@ impl Table {
         if status.is_ok() {
             trace!("Table::open: constructing index Block and TableRep");
 
-            // We've successfully read the footer and the index block: we're
-            // ready to serve requests.
             let index_block = Box::new(Block::new(&index_block_contents));
 
             let cache_id = unsafe {
-                let cache_ptr = options.block_cache();
+                let cache_ptr_ref = options.block_cache();
+                let cache_ptr: *mut Cache = *cache_ptr_ref;
                 if cache_ptr.is_null() {
                     0
                 } else {
-                    let cache_ref = &mut *cache_ptr;
+                    let cache_ref: &mut Cache = &mut *cache_ptr;
                     cache_ref.new_id()
                 }
             };
 
-            let rep = TableRep {
-                options:          Options {
-                    comparator:             Box::new(BytewiseComparatorImpl::default()),
-                    create_if_missing:      *options.create_if_missing(),
-                    error_if_exists:        *options.error_if_exists(),
-                    paranoid_checks:        *options.paranoid_checks(),
-                    env:                    options.env().clone(),
-                    info_log:               options.info_log().clone(),
-                    write_buffer_size:      *options.write_buffer_size(),
-                    max_open_files:         *options.max_open_files(),
-                    block_cache:            options.block_cache(),
-                    block_size:             *options.block_size(),
-                    block_restart_interval: *options.block_restart_interval(),
-                    max_file_size:          *options.max_file_size(),
-                    compression:            *options.compression(),
-                    reuse_logs:             *options.reuse_logs(),
-                    filter_policy:          Box::new(NullFilterPolicy::default()),
-                },
-                status:           Status::ok(),
-                file:             file.clone(),
+            let mut rep_options = options.clone();
+            rep_options.set_comparator(Arc::new(BytewiseComparatorImpl::default()));
+            rep_options.set_filter_policy(Arc::new(NullFilterPolicy::default()));
+
+            let rep = TableRep::new(
+                rep_options.clone(),
+                file.clone(),
                 cache_id,
-                filter:           core::ptr::null_mut(),
-                filter_data:      core::ptr::null_mut(),
-                filter_data_len:  0,
-                metaindex_handle: *footer.metaindex_handle(),
-                index_block:      Box::into_raw(index_block),
-            };
+                *footer.metaindex_handle(),
+                Box::into_raw(index_block),
+            );
 
-            let rep_box = Box::new(rep);
-            let rep_ptr: *mut TableRep = Box::into_raw(rep_box);
+            let rep_box: Box<TableRep> = Box::new(rep);
+            let rep_ptr: *mut TableRep  = Box::into_raw(rep_box);
 
-            let table_box = Box::new(Table {
-                rep: rep_ptr as *const TableRep,
-            });
+            let table_box: Box<Table> = Box::new(Table::new(rep_ptr));
             let table_ptr: *mut Table = Box::into_raw(table_box);
 
             unsafe {
@@ -193,5 +154,141 @@ impl Table {
         }
 
         status
+    }
+}
+
+#[cfg(test)]
+mod table_open_file_size_behavior {
+    use super::*;
+    use bitcoin_imports::Named;
+    use bitcoinleveldb_file::RandomAccessFileRead;
+    use std::borrow::Cow;
+    use std::cell::RefCell;
+    use std::rc::Rc;
+
+    #[derive(Clone)]
+    struct DummyRandomAccessFile {
+        name:        &'static str,
+        read_status: Status,
+    }
+
+    impl DummyRandomAccessFile {
+        fn new_ok() -> Self {
+            DummyRandomAccessFile {
+                name:        "DummyRandomAccessFile(ok)",
+                read_status: Status::ok(),
+            }
+        }
+
+        fn new_error(status: Status) -> Self {
+            DummyRandomAccessFile {
+                name:        "DummyRandomAccessFile(error)",
+                read_status: status,
+            }
+        }
+    }
+
+    impl Named for DummyRandomAccessFile {
+        fn name(&self) -> Cow<'_, str> {
+            Cow::Borrowed(self.name)
+        }
+    }
+
+    impl RandomAccessFileRead for DummyRandomAccessFile {
+        fn read(
+            &self,
+            offset: u64,
+            n: usize,
+            result: *mut Slice,
+            scratch: *mut u8,
+        ) -> Status {
+            trace!(
+                "DummyRandomAccessFile::read(open): offset={}, n={}, scratch={:?}",
+                offset,
+                n,
+                scratch
+            );
+            unsafe {
+                *result = Slice::default();
+            }
+            self.read_status.clone()
+        }
+    }
+
+    impl RandomAccessFile for DummyRandomAccessFile {}
+
+    #[traced_test]
+    fn open_returns_corruption_for_too_small_file() {
+        let mut out_table: *mut Table = core::ptr::null_mut();
+
+        let file: Rc<RefCell<dyn RandomAccessFile>> =
+            Rc::new(RefCell::new(DummyRandomAccessFile::new_ok()));
+        let opts = Options::default();
+
+        let status = Table::open(
+            &opts,
+            file.clone(),
+            (FOOTER_ENCODED_LENGTH as u64) - 1,
+            &mut out_table,
+        );
+
+        trace!(
+            "open_returns_corruption_for_too_small_file: status_ok={}, out_table={:?}",
+            status.is_ok(),
+            out_table
+        );
+
+        assert!(!status.is_ok());
+        assert!(out_table.is_null());
+    }
+
+    #[traced_test]
+    fn open_propagates_footer_read_error() {
+        let msg = b"forced read error";
+        let msg_slice = Slice::from(&msg[..]);
+        let forced_status = Status::corruption(&msg_slice, None);
+
+        let mut out_table: *mut Table = core::ptr::null_mut();
+
+        let file: Rc<RefCell<dyn RandomAccessFile>> =
+            Rc::new(RefCell::new(DummyRandomAccessFile::new_error(
+                forced_status.clone(),
+            )));
+        let opts = Options::default();
+
+        let status = Table::open(
+            &opts,
+            file.clone(),
+            FOOTER_ENCODED_LENGTH as u64,
+            &mut out_table,
+        );
+
+        trace!(
+            "open_propagates_footer_read_error: status_ok={}, out_table={:?}",
+            status.is_ok(),
+            out_table
+        );
+
+        assert!(!status.is_ok());
+        assert!(out_table.is_null());
+    }
+
+    #[test]
+    #[should_panic(expected = "Table::open: table out-parameter pointer is null")]
+    fn open_panics_when_out_table_pointer_is_null() {
+        let file: Rc<RefCell<dyn RandomAccessFile>> =
+            Rc::new(RefCell::new(DummyRandomAccessFile::new_ok()));
+        let opts = Options::default();
+
+        trace!(
+            "open_panics_when_out_table_pointer_is_null: calling open with null out-table pointer"
+        );
+
+        let _ = Table::open(
+            &opts,
+            file.clone(),
+            FOOTER_ENCODED_LENGTH as u64,
+            core::ptr::null_mut(),
+        );
     }
 }

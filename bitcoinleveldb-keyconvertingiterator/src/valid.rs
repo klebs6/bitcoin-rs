@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-keyconvertingiterator/src/valid.rs ]
 crate::ix!();
 
-impl Valid for KeyConvertingIterator {
+impl LevelDBIteratorValid for KeyConvertingIterator {
 
     fn valid(&self) -> bool {
         let iter_ptr = self.iter_raw();

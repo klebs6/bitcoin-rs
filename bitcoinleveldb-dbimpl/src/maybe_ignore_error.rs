@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/maybe_ignore_error.rs ]
 crate::ix!();
 
 impl DBImpl {

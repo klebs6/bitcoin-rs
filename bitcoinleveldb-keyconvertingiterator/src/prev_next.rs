@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-keyconvertingiterator/src/prev_next.rs ]
 crate::ix!();
 
-impl Next for KeyConvertingIterator {
+impl LevelDBIteratorNext for KeyConvertingIterator {
 
     fn next(&mut self) {
         let iter_ptr = self.iter_raw_mut();
@@ -21,7 +21,7 @@ impl Next for KeyConvertingIterator {
     }
 }
 
-impl Prev for KeyConvertingIterator {
+impl LevelDBIteratorPrev for KeyConvertingIterator {
 
     fn prev(&mut self) {
         let iter_ptr = self.iter_raw_mut();

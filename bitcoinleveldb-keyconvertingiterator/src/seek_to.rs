@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-keyconvertingiterator/src/seek_to.rs ]
 crate::ix!();
 
-impl SeekToFirst for KeyConvertingIterator {
+impl LevelDBIteratorSeekToFirst for KeyConvertingIterator {
 
     fn seek_to_first(&mut self) {
         let iter_ptr = self.iter_raw_mut();
@@ -21,7 +21,7 @@ impl SeekToFirst for KeyConvertingIterator {
     }
 }
 
-impl SeekToLast for KeyConvertingIterator {
+impl LevelDBIteratorSeekToLast for KeyConvertingIterator {
 
     fn seek_to_last(&mut self) {
         let iter_ptr = self.iter_raw_mut();

@@ -3,7 +3,7 @@ crate::ix!();
 
 /// Options that control read operations
 /// 
-#[derive(Getters,MutGetters,Setters)]
+#[derive(Clone,Getters,MutGetters,Setters)]
 #[getset(get="pub",get_mut="pub",set="pub")]
 pub struct ReadOptions {
 
@@ -24,7 +24,7 @@ pub struct ReadOptions {
     /// If "snapshot" is null, use an implicit snapshot of the state at the
     /// beginning of this read operation.
     ///
-    snapshot:         Option<Box<dyn Snapshot>>,
+    snapshot:         Option<Arc<dyn Snapshot>>,
 }
 
 impl Default for ReadOptions {

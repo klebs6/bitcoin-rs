@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/delete_obsolete_files.rs ]
 crate::ix!();
 
 impl DBImpl {

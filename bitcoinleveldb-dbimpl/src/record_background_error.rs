@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/record_background_error.rs ]
 crate::ix!();
 
 impl DBImpl {

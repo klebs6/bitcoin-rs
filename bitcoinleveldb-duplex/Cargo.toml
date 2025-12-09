@@ -3,8 +3,9 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
+tracing.workspace = true
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-iteratorwrapper = { path = "../bitcoinleveldb-iteratorwrapper" }
 bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
 
 [dependencies.bitcoin-derive]

@@ -21,6 +21,8 @@ bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
 bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-lru = { path = "../bitcoinleveldb-lru" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

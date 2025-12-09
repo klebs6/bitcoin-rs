@@ -1,9 +1,9 @@
 // ---------------- [ File: bitcoinleveldb-blockiter/src/block_iter_key_value.rs ]
 crate::ix!();
 
-impl BlockIter {
+impl LevelDBIteratorKey for BlockIter {
 
-    pub fn key(&self) -> Slice {
+    fn key(&self) -> Slice {
         assert!(self.valid(), "BlockIter::key called on invalid iterator");
         let slice = Slice::from(self.key_buffer());
         trace!(
@@ -13,8 +13,11 @@ impl BlockIter {
         );
         slice
     }
+}
+
+impl LevelDBIteratorValue for BlockIter {
  
-    pub fn value(&self) -> Slice {
+    fn value(&self) -> Slice {
         assert!(
             self.valid(),
             "BlockIter::value called on invalid iterator"

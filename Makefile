@@ -43,23 +43,14 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-1]
-
 ACTIVE := bitcoinleveldb-tablecache
 ACTIVE := bitcoinleveldb-tableconstructor
-ACTIVE := bitcoinleveldb-versioniterator
-
-ACTIVE := bitcoinleveldb-table
-ACTIVE := bitcoinleveldb-db
-ACTIVE := bitcoinleveldb-duplex
-ACTIVE := bitcoinleveldb-tablebuilder
 
 # ------------------------------- [leveldb-layer-2]
 #ACTIVE := bitcoinleveldb-memtable #loc: 476
-#ACTIVE := bitcoinleveldb-merger   #loc: 286
-#ACTIVE := bitcoinleveldb-meta     #loc: 921
 #ACTIVE := bitcoinleveldb-version
 #ACTIVE := bitcoinleveldb-versionset
-#ACTIVE := bitcoinleveldb-compaction
+ACTIVE := bitcoinleveldb-compaction
 #ACTIVE := bitcoinleveldb-compactionstats
 
 # ------------------------------- [leveldb-layer-3]
@@ -73,7 +64,6 @@ ACTIVE := bitcoinleveldb-tablebuilder
 #ACTIVE := bitcoinleveldb-dbimplwriter
 #ACTIVE := bitcoinleveldb-dbinterface
 #ACTIVE := bitcoinleveldb-dbtest
-#ACTIVE := bitcoinleveldb-filterpolicy
 #ACTIVE := bitcoinleveldb-harness
 #ACTIVE := bitcoinleveldb-dbiter
 #ACTIVE := bitcoinleveldb-modeldb
@@ -343,7 +333,6 @@ bench:
 #ACTIVE := bitcoinleveldb-bloom          #loc: 989
 #ACTIVE := bitcoinleveldb-key            #loc: 1953
 #ACTIVE := bitcoinleveldb-snapshot       #loc: 842
-#ACTIVE := bitcoinleveldb-file           #loc: 843
 #ACTIVE := bitcoinleveldb-lru            #loc: 4192
 #ACTIVE := bitcoinleveldb-skiplist       #loc: 1045
 #ACTIVE := bitcoinleveldb-logtools       #loc: 1198
@@ -362,9 +351,6 @@ bench:
 #ACTIVE := bitcoinleveldb-posix          #loc: 632
 #ACTIVE := bitcoinleveldb-options        #loc: 339
 #ACTIVE := bitcoinleveldb-memenv         #loc: 3569
-#ACTIVE := bitcoinleveldb-erroriterator
-#ACTIVE := bitcoinleveldb-emptyiterator
-#ACTIVE := bitcoinleveldb-iterator
 #ACTIVE := bitcoinleveldb-stringsource
 #ACTIVE := bitcoinleveldb-stringsink
 #ACTIVE := bitcoinleveldb-reversekeycomparator
@@ -372,10 +358,19 @@ bench:
 #ACTIVE := bitcoinleveldb-blockbuilder
 #ACTIVE := bitcoinleveldb-block
 #ACTIVE := bitcoinleveldb-blockhandle
-#ACTIVE := bitcoinleveldb-iteratorwrapper
 #ACTIVE := bitcoinleveldb-tablerep
 #ACTIVE := bitcoinleveldb-blockconstructor
 #ACTIVE := bitcoinleveldb-blockiter
 #ACTIVE := bitcoinleveldb-footer
-#ACTIVE := bitcoinleveldb-keyconvertingiterator
 #ACTIVE := bitcoinleveldb-snapshot
+#ACTIVE := bitcoinleveldb-tablebuilder
+#ACTIVE := bitcoinleveldb-iteratorinner
+#ACTIVE := bitcoinleveldb-iterator
+#ACTIVE := bitcoinleveldb-emptyiterator
+#ACTIVE := bitcoinleveldb-erroriterator
+#ACTIVE := bitcoinleveldb-file           #loc: 843
+#ACTIVE := bitcoinleveldb-merger
+#ACTIVE := bitcoinleveldb-keyconvertingiterator
+#ACTIVE := bitcoinleveldb-duplex
+#ACTIVE := bitcoinleveldb-versioniterator
+#ACTIVE := bitcoinleveldb-table

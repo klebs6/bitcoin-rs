@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbinterface/src/open.rs ]
 crate::ix!();
 
 pub trait DBOpen {

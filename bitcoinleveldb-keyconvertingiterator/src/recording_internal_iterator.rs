@@ -79,7 +79,7 @@ impl Drop for RecordingInternalIterator {
 
 impl LevelDBIteratorInterface for RecordingInternalIterator {}
 
-impl Valid for RecordingInternalIterator {
+impl LevelDBIteratorValid for RecordingInternalIterator {
     fn valid(&self) -> bool {
         let is_valid = self
             .index
@@ -95,7 +95,7 @@ impl Valid for RecordingInternalIterator {
     }
 }
 
-impl SeekToFirst for RecordingInternalIterator {
+impl LevelDBIteratorSeekToFirst for RecordingInternalIterator {
     fn seek_to_first(&mut self) {
         trace!("RecordingInternalIterator::seek_to_first");
         {
@@ -110,7 +110,7 @@ impl SeekToFirst for RecordingInternalIterator {
     }
 }
 
-impl SeekToLast for RecordingInternalIterator {
+impl LevelDBIteratorSeekToLast for RecordingInternalIterator {
     fn seek_to_last(&mut self) {
         trace!("RecordingInternalIterator::seek_to_last");
         {
@@ -125,7 +125,7 @@ impl SeekToLast for RecordingInternalIterator {
     }
 }
 
-impl Seek for RecordingInternalIterator {
+impl LevelDBIteratorSeek for RecordingInternalIterator {
     fn seek(&mut self, target: &Slice) {
         trace!(
             "RecordingInternalIterator::seek: target_len={}",
@@ -144,7 +144,7 @@ impl Seek for RecordingInternalIterator {
     }
 }
 
-impl Next for RecordingInternalIterator {
+impl LevelDBIteratorNext for RecordingInternalIterator {
     fn next(&mut self) {
         trace!(
             "RecordingInternalIterator::next: index_before={:?}",
@@ -164,7 +164,7 @@ impl Next for RecordingInternalIterator {
     }
 }
 
-impl Prev for RecordingInternalIterator {
+impl LevelDBIteratorPrev for RecordingInternalIterator {
     fn prev(&mut self) {
         trace!(
             "RecordingInternalIterator::prev: index_before={:?}",
@@ -184,7 +184,7 @@ impl Prev for RecordingInternalIterator {
     }
 }
 
-impl Key for RecordingInternalIterator {
+impl LevelDBIteratorKey for RecordingInternalIterator {
     fn key(&self) -> Slice {
         trace!(
             "RecordingInternalIterator::key: index={:?}, len={}",
@@ -198,7 +198,7 @@ impl Key for RecordingInternalIterator {
     }
 }
 
-impl Value for RecordingInternalIterator {
+impl LevelDBIteratorValue for RecordingInternalIterator {
     fn value(&self) -> Slice {
         trace!(
             "RecordingInternalIterator::value: index={:?}, len={}",

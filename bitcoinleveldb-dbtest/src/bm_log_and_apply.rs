@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbtest/src/bm_log_and_apply.rs ]
 crate::ix!();
 
 pub fn make_key(num: u32) -> String {

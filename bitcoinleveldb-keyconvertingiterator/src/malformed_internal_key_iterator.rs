@@ -35,14 +35,14 @@ impl Drop for MalformedInternalKeyIterator {
 
 impl LevelDBIteratorInterface for MalformedInternalKeyIterator {}
 
-impl Valid for MalformedInternalKeyIterator {
+impl LevelDBIteratorValid for MalformedInternalKeyIterator {
     fn valid(&self) -> bool {
         trace!("MalformedInternalKeyIterator::valid -> true");
         true
     }
 }
 
-impl SeekToFirst for MalformedInternalKeyIterator {
+impl LevelDBIteratorSeekToFirst for MalformedInternalKeyIterator {
     fn seek_to_first(&mut self) {
         trace!("MalformedInternalKeyIterator::seek_to_first (no-op)");
         let mut state = self.shared.borrow_mut();
@@ -50,7 +50,7 @@ impl SeekToFirst for MalformedInternalKeyIterator {
     }
 }
 
-impl SeekToLast for MalformedInternalKeyIterator {
+impl LevelDBIteratorSeekToLast for MalformedInternalKeyIterator {
     fn seek_to_last(&mut self) {
         trace!("MalformedInternalKeyIterator::seek_to_last (no-op)");
         let mut state = self.shared.borrow_mut();
@@ -58,7 +58,7 @@ impl SeekToLast for MalformedInternalKeyIterator {
     }
 }
 
-impl Seek for MalformedInternalKeyIterator {
+impl LevelDBIteratorSeek for MalformedInternalKeyIterator {
     fn seek(&mut self, target: &Slice) {
         trace!(
             "MalformedInternalKeyIterator::seek: target_len={}",
@@ -69,7 +69,7 @@ impl Seek for MalformedInternalKeyIterator {
     }
 }
 
-impl Next for MalformedInternalKeyIterator {
+impl LevelDBIteratorNext for MalformedInternalKeyIterator {
     fn next(&mut self) {
         trace!("MalformedInternalKeyIterator::next (no-op)");
         let mut state = self.shared.borrow_mut();
@@ -77,7 +77,7 @@ impl Next for MalformedInternalKeyIterator {
     }
 }
 
-impl Prev for MalformedInternalKeyIterator {
+impl LevelDBIteratorPrev for MalformedInternalKeyIterator {
     fn prev(&mut self) {
         trace!("MalformedInternalKeyIterator::prev (no-op)");
         let mut state = self.shared.borrow_mut();
@@ -85,7 +85,7 @@ impl Prev for MalformedInternalKeyIterator {
     }
 }
 
-impl Key for MalformedInternalKeyIterator {
+impl LevelDBIteratorKey for MalformedInternalKeyIterator {
     fn key(&self) -> Slice {
         trace!(
             "MalformedInternalKeyIterator::key: returning malformed key len={}",
@@ -95,7 +95,7 @@ impl Key for MalformedInternalKeyIterator {
     }
 }
 
-impl Value for MalformedInternalKeyIterator {
+impl LevelDBIteratorValue for MalformedInternalKeyIterator {
     fn value(&self) -> Slice {
         trace!("MalformedInternalKeyIterator::value: returning empty value");
         Slice::default()
