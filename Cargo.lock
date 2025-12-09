@@ -3280,6 +3280,15 @@ name = "bitcoinleveldb-compaction"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-tablebuilder",
+ "bitcoinleveldb-version",
+ "bitcoinleveldb-versionedit",
 ]
 
 [[package]]
@@ -4102,6 +4111,8 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-imports",
  "bitcoinleveldb-key",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-status",
  "tracing",
 ]
 
@@ -4228,13 +4239,18 @@ dependencies = [
  "bitcoin-imports",
  "bitcoinleveldb-cache",
  "bitcoinleveldb-env",
+ "bitcoinleveldb-erroriterator",
  "bitcoinleveldb-file",
  "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-log",
  "bitcoinleveldb-lru",
  "bitcoinleveldb-options",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-table",
+ "bitcoinleveldb-tablebuilder",
+ "tracing",
 ]
 
 [[package]]
@@ -4247,6 +4263,7 @@ dependencies = [
  "bitcoinleveldb-blockconstructor",
  "bitcoinleveldb-comparator",
  "bitcoinleveldb-file",
+ "bitcoinleveldb-footer",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-options",
  "bitcoinleveldb-slice",
@@ -4255,6 +4272,7 @@ dependencies = [
  "bitcoinleveldb-stringsource",
  "bitcoinleveldb-table",
  "bitcoinleveldb-tablebuilder",
+ "tracing",
 ]
 
 [[package]]
@@ -4328,13 +4346,14 @@ dependencies = [
  "bitcoinleveldb-cfg",
  "bitcoinleveldb-env",
  "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
  "bitcoinleveldb-key",
  "bitcoinleveldb-log",
  "bitcoinleveldb-options",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-table",
- "bitcoinleveldb-versionedit",
+ "bitcoinleveldb-versionsetinterface",
 ]
 
 [[package]]
@@ -4375,12 +4394,54 @@ dependencies = [
 name = "bitcoinleveldb-versionset"
 version = "0.1.0"
 dependencies = [
+ "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinleveldb-compaction",
+ "bitcoinleveldb-env",
  "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
  "bitcoinleveldb-key",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-tablecache",
  "bitcoinleveldb-version",
  "bitcoinleveldb-versionedit",
+ "bitcoinleveldb-versionsetinterface",
+]
+
+[[package]]
+name = "bitcoinleveldb-versionsetbuilder"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-version",
+ "bitcoinleveldb-versionset",
+]
+
+[[package]]
+name = "bitcoinleveldb-versionsetinterface"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-status",
+]
+
+[[package]]
+name = "bitcoinleveldb-versionsetutil"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-slice",
 ]
 
 [[package]]

@@ -15,4 +15,12 @@ bitcoinleveldb-version = { path = "../bitcoinleveldb-version" }
 bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
 bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoin-derive = { path = "../bitcoin-derive" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-compaction = { path = "../bitcoinleveldb-compaction" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
+bitcoinleveldb-logwriter = { path = "../bitcoinleveldb-logwriter" }
+bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }

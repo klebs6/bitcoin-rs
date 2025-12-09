@@ -7,6 +7,20 @@ pub struct StringSink {
     contents: String,
 }
 
+impl StringSink { 
+
+    pub fn new() -> Self {
+        let empty = String::new();
+        StringSink::with(&empty)
+    }
+
+    pub fn with(contents: &str) -> Self {
+        Self {
+            contents: contents.to_string()
+        }
+    }
+}
+
 impl WritableFile for StringSink { }
 
 impl WritableFileClose for StringSink {

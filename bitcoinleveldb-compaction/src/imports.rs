@@ -8,3 +8,6 @@ pub(crate) use bitcoinleveldb_file::*;
 pub(crate) use bitcoinleveldb_options::*;
 pub(crate) use bitcoinleveldb_slice::*;
 pub(crate) use bitcoinleveldb_key::*;
+pub(crate) use bitcoinleveldb_tablebuilder::*;
+pub(crate) use bitcoinleveldb_iterator::*;
+pub(crate) use bitcoinleveldb_cfg::*;

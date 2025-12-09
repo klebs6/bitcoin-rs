@@ -23,7 +23,7 @@ pub struct Version {
       | VersionSet to which this Version belongs
       |
       */
-    vset:                  *mut VersionSet,
+    vset:                  *mut dyn VersionSetInterface,
 
     /**
       | Next version in linked list

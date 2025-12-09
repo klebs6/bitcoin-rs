@@ -274,4 +274,3 @@ mod table_block_reader_invariants {
         }
     }
 }
-

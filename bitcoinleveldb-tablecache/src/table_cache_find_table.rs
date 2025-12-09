@@ -23,12 +23,22 @@ impl TableCache {
 
             let mut status = Status::ok();
 
-            // Build cache key from file_number
+            // Build cache key from file_number (little-endian fixed64).
             let mut buf = [0u8; core::mem::size_of::<u64>()];
-            bitcoinleveldb_coding::encode_fixed64(&mut buf, file_number);
+            let mut v = file_number;
+            for i in 0..core::mem::size_of::<u64>() {
+                buf[i] = (v & 0xff) as u8;
+                v >>= 8;
+            }
             let key = Slice::from(&buf[..]);
 
-            let cache_ref = &mut *self.cache;
+            let cache_ptr = self.cache_raw();
+            assert!(
+                !cache_ptr.is_null(),
+                "TableCache::find_table: cache pointer is null"
+            );
+            let cache_ref = &mut *cache_ptr;
+
             let mut cache_handle: *mut CacheHandle = cache_ref.lookup(&key);
             *handle = cache_handle;
 
@@ -38,17 +48,17 @@ impl TableCache {
                     file_number
                 );
 
-                let mut file_ptr: *mut dyn RandomAccessFile = core::ptr::null_mut();
-                let mut table_ptr: *mut crate::table::Table =
+                let mut file_ptr_opt: Option<*mut dyn RandomAccessFile> = None;
+                let mut table_ptr: *mut bitcoinleveldb_table::Table =
                     core::ptr::null_mut();
 
                 // First try canonical table file name.
-                let mut fname = table_file_name(&self.dbname, file_number);
+                let mut fname =
+                    table_file_name(self.dbname_str(), file_number);
 
                 {
-                    use bitcoinleveldb_env::NewRandomAccessFile;
-
-                    let env_ref = &mut *self.env;
+                    let env_rc = self.env_handle();
+                    let mut env_ref = env_rc.borrow_mut();
                     let mut file_box_ptr: *mut Box<dyn RandomAccessFile> =
                         core::ptr::null_mut();
 
@@ -67,19 +77,25 @@ impl TableCache {
                             !file_box_ptr.is_null(),
                             "TableCache::find_table: Env returned OK but file pointer is null"
                         );
-                        let file_box: Box<dyn RandomAccessFile> =
+
+                        let file_holder: Box<Box<dyn RandomAccessFile>> =
                             Box::from_raw(file_box_ptr);
-                        file_ptr = Box::into_raw(file_box);
+                        let inner_box: Box<dyn RandomAccessFile> = *file_holder;
+                        core::mem::forget(file_holder);
+
+                        let raw_ptr: *mut dyn RandomAccessFile =
+                            Box::into_raw(inner_box);
+                        file_ptr_opt = Some(raw_ptr);
                     }
                 }
 
                 // If canonical name fails, try legacy .sst filename.
                 if !status.is_ok() {
-                    use bitcoinleveldb_env::NewRandomAccessFile;
-
                     let old_fname =
-                        sst_table_file_name(&self.dbname, file_number);
-                    let env_ref = &mut *self.env;
+                        sst_table_file_name(self.dbname_str(), file_number);
+
+                    let env_rc = self.env_handle();
+                    let mut env_ref = env_rc.borrow_mut();
                     let mut file_box_ptr: *mut Box<dyn RandomAccessFile> =
                         core::ptr::null_mut();
 
@@ -100,9 +116,15 @@ impl TableCache {
                             !file_box_ptr.is_null(),
                             "TableCache::find_table: Env returned OK but legacy file pointer is null"
                         );
-                        let file_box: Box<dyn RandomAccessFile> =
+
+                        let file_holder: Box<Box<dyn RandomAccessFile>> =
                             Box::from_raw(file_box_ptr);
-                        file_ptr = Box::into_raw(file_box);
+                        let inner_box: Box<dyn RandomAccessFile> = *file_holder;
+                        core::mem::forget(file_holder);
+
+                        let raw_ptr: *mut dyn RandomAccessFile =
+                            Box::into_raw(inner_box);
+                        file_ptr_opt = Some(raw_ptr);
                         fname = old_fname;
                     } else {
                         trace!(
@@ -118,28 +140,38 @@ impl TableCache {
                         fname
                     );
 
-                    // Open the Table. This mirrors the static Table::Open in C++.
-                    let mut table_out: *mut crate::table::Table =
-                        core::ptr::null_mut();
+                    if let Some(file_ptr) = file_ptr_opt {
+                        // Open the Table. This mirrors the static Table::Open in C++.
+                        let mut table_out: *mut bitcoinleveldb_table::Table =
+                            core::ptr::null_mut();
 
-                    status = crate::table::Table::open(
-                        &*self.options,
-                        file_ptr,
-                        file_size,
-                        &mut table_out,
-                    );
-
-                    if status.is_ok() {
-                        assert!(
-                            !table_out.is_null(),
-                            "TableCache::find_table: Table::open returned OK but table pointer is null"
+                        status = Table::open(
+                            self.options_ref(),
+                            file_ptr,
+                            file_size,
+                            &mut table_out,
                         );
-                        table_ptr = table_out;
+
+                        if status.is_ok() {
+                            assert!(
+                                !table_out.is_null(),
+                                "TableCache::find_table: Table::open returned OK but table pointer is null"
+                            );
+                            table_ptr = table_out;
+                        } else {
+                            error!(
+                                "TableCache::find_table: Table::open failed for file='{}'",
+                                fname
+                            );
+                        }
                     } else {
+                        let msg = b"TableCache::find_table: file pointer missing despite OK status";
+                        let msg_slice = Slice::from(&msg[..]);
                         error!(
-                            "TableCache::find_table: Table::open failed for file='{}'",
+                            "TableCache::find_table: missing file pointer for file='{}'",
                             fname
                         );
+                        status = Status::corruption(&msg_slice, None);
                     }
                 }
 
@@ -149,7 +181,7 @@ impl TableCache {
                         "TableCache::find_table: non-OK status but table pointer is non-null"
                     );
 
-                    if !file_ptr.is_null() {
+                    if let Some(file_ptr) = file_ptr_opt {
                         trace!(
                             "TableCache::find_table: deleting RandomAccessFile @ {:?} after open failure",
                             file_ptr
@@ -167,7 +199,9 @@ impl TableCache {
                     );
 
                     let tf = Box::new(TableAndFile {
-                        file:  file_ptr,
+                        file:  file_ptr_opt.expect(
+                            "TableCache::find_table: file pointer missing when inserting into cache",
+                        ),
                         table: table_ptr,
                     });
 
@@ -195,5 +229,115 @@ impl TableCache {
 
             status
         }
+    }
+}
+
+#[cfg(test)]
+mod table_cache_find_table_tests {
+    use super::*;
+    use crate::table_cache_test_support::*;
+    use std::cell::RefCell;
+    use std::ptr;
+    use std::rc::Rc;
+    use std::sync::{Arc, Mutex};
+
+    #[traced_test]
+    fn find_table_returns_error_when_random_access_creation_fails() {
+        let (env, state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
+            make_in_memory_env();
+        let mut options = make_options_with_env(env.clone());
+
+        {
+            let mut guard = state
+                .lock()
+                .unwrap_or_else(|poison| poison.into_inner());
+            guard.fail_new_random_access = true;
+        }
+
+        let dbname = String::from("find_table_fail_env_db");
+        let mut table_cache = TableCache::new(&dbname, &options, 4);
+
+        let mut handle: *mut CacheHandle = ptr::null_mut();
+        let status = table_cache.find_table(100, 1024, &mut handle);
+
+        assert!(
+            !status.is_ok(),
+            "find_table must fail if env::NewRandomAccessFile fails"
+        );
+        assert!(
+            handle.is_null(),
+            "handle must remain null on failure"
+        );
+    }
+
+    #[traced_test]
+    fn find_table_caches_and_reuses_table_handles() {
+        use std::ffi::c_void;
+
+        let (env, state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
+            make_in_memory_env();
+        let mut options = make_options_with_env(env.clone());
+
+        let dbname = String::from("find_table_cache_db");
+        let mut meta = FileMetaData::default();
+        meta.set_number(51);
+
+        let mut table_cache = TableCache::new(&dbname, &options, 32);
+        let table_cache_ptr: *mut TableCache = &mut table_cache;
+
+        let key = b"k-cache".to_vec();
+        let val = b"v-cache".to_vec();
+        let iter_ptr = make_iterator_from_kv_pairs(&[(key.clone(), val.clone())]);
+        let meta_ptr: *mut FileMetaData = &mut meta;
+
+        let build_status = build_table(
+            &dbname,
+            env.clone(),
+            &options,
+            table_cache_ptr,
+            iter_ptr,
+            meta_ptr,
+        );
+        unsafe {
+            drop(Box::from_raw(iter_ptr));
+        }
+
+        assert!(build_status.is_ok());
+
+        let fname = table_file_name(&dbname, meta.number());
+
+        let mut handle1: *mut CacheHandle = std::ptr::null_mut();
+        let s1 = table_cache.find_table(meta.number(), meta.file_size(), &mut handle1);
+        assert!(s1.is_ok());
+        assert!(!handle1.is_null());
+
+        let open_count_after_first = {
+            let guard = state
+                .lock()
+                .unwrap_or_else(|poison| poison.into_inner());
+            *guard.random_open_count.get(&fname).unwrap_or(&0)
+        };
+
+        let mut handle2: *mut CacheHandle = std::ptr::null_mut();
+        let s2 = table_cache.find_table(meta.number(), meta.file_size(), &mut handle2);
+        assert!(s2.is_ok());
+        assert!(!handle2.is_null());
+
+        let open_count_after_second = {
+            let guard = state
+                .lock()
+                .unwrap_or_else(|poison| poison.into_inner());
+            *guard.random_open_count.get(&fname).unwrap_or(&0)
+        };
+
+        assert_eq!(
+            open_count_after_second, open_count_after_first,
+            "subsequent find_table calls should hit cache and not reopen file"
+        );
+
+        info!(
+            "handles: handle1={:?}, handle2={:?}",
+            handle1, handle2
+        );
     }
 }

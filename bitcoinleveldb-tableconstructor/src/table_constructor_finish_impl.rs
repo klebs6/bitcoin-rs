@@ -2,7 +2,13 @@
 crate::ix!();
 
 impl TableConstructor {
-   
+
+    /// High‑level "finish" entry point:
+    ///
+    /// 1. Reset any previous table/source.
+    /// 2. Build an sstable image into an in‑memory `StringSink`.
+    /// 3. Wrap the sink contents in a `StringSource`.
+    /// 4. Open a `Table` over that in‑memory file.
     pub fn finish_impl(
         &mut self,
         options: &Options,
@@ -16,104 +22,20 @@ impl TableConstructor {
         // Dispose of any previous table/source.
         self.reset();
 
-        // Build table into an in-memory StringSink.
-        let mut sink = StringSink {
-            contents: String::new(),
-        };
-
-        let file_ptr: *mut dyn WritableFile = &mut sink;
-
-        let mut builder = TableBuilder::new(options, file_ptr);
-
-        for (k, v) in data.iter() {
-            let key_slice   = Slice::from(k.as_bytes());
-            let value_slice = Slice::from(v.as_bytes());
-
-            trace!(
-                "TableConstructor::finish_impl: adding entry key_len={}, value_len={}",
-                k.len(),
-                v.len()
-            );
-
-            builder.add(&key_slice, &value_slice);
-
-            let st = builder.status();
-            if !st.is_ok() {
-                error!(
-                    "TableConstructor::finish_impl: builder status became non-OK while adding key='{}'",
-                    k
-                );
-                assert!(
-                    st.is_ok(),
-                    "TableConstructor::finish_impl: builder status not OK during Add"
-                );
-                return st;
-            }
-        }
-
-        let mut status = builder.finish();
-
-        trace!(
-            "TableConstructor::finish_impl: builder.finish status_ok={}, file_size={}",
-            status.is_ok(),
-            builder.file_size()
-        );
+        // Step 1: build the table image into an in‑memory sink.
+        let (mut status, sink, sink_size) =
+            Self::build_table_into_sink(options, data);
 
         if !status.is_ok() {
-            error!(
-                "TableConstructor::finish_impl: builder.finish returned non-OK status"
-            );
             return status;
         }
 
-        let sink_size = sink.contents().len() as u64;
-        let file_size = builder.file_size();
+        // Step 2: create a StringSource over the sink contents and
+        // stash a non‑owning raw pointer for debugging.
+        let source_rc = self.make_source_from_sink(&sink);
 
-        debug_assert_eq!(
-            sink_size,
-            file_size,
-            "TableConstructor::finish_impl: sink size and builder file_size mismatch"
-        );
-
-        trace!(
-            "TableConstructor::finish_impl: sink_size={} bytes matches builder.file_size",
-            sink_size
-        );
-
-        // Open the table over a StringSource wrapping the built contents.
-        let contents_slice =
-            Slice::from(sink.contents().as_bytes());
-        let source = StringSource::new(&contents_slice);
-        let source_box = Box::new(source);
-        let source_ptr: *mut StringSource = Box::into_raw(source_box);
-        self.set_source(source_ptr);
-
-        let mut table_options = options.clone();
-        table_options.set_comparator(options.comparator().clone());
-
-        trace!(
-            "TableConstructor::finish_impl: opening Table on in-memory StringSource @ {:?}, file_size={}",
-            self.source(),
-            sink_size
-        );
-
-        status = Table::open(
-            &table_options,
-            self.source(),
-            sink_size,
-            self.table_mut(),
-        );
-
-        if !status.is_ok() {
-            error!(
-                "TableConstructor::finish_impl: Table::open returned non-OK status"
-            );
-        } else {
-            trace!(
-                "TableConstructor::finish_impl: Table opened successfully @ {:?}",
-                self.table()
-            );
-        }
+        // Step 3: open a Table on top of that in‑memory file.
+        status = self.open_table_from_source(options, source_rc, sink_size);
 
         status
     }

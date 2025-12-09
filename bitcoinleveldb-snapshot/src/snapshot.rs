@@ -1,6 +1,15 @@
 // ---------------- [ File: bitcoinleveldb-snapshot/src/snapshot.rs ]
 crate::ix!();
 
+pub trait WriteSnapshot {
+    
+    /**
+      | Save current contents to *log
+      |
+      */
+    fn write_snapshot(&mut self, log: *mut LogWriter) -> Status;
+}
+
 /**
   | Abstract handle to particular state of a DB.
   |

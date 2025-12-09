@@ -4,3 +4,4 @@
 x!{compaction}
 x!{compaction_state}
 x!{manual}
+x!{interface}

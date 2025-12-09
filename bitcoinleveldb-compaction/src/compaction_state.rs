@@ -1,6 +1,17 @@
 // ---------------- [ File: bitcoinleveldb-compaction/src/compaction_state.rs ]
 crate::ix!();
 
+/**
+  | Files produced by compaction
+  |
+  */
+pub struct CompactionStateOutput {
+    number:    u64,
+    file_size: u64,
+    smallest:  InternalKey,
+    largest:   InternalKey,
+}
+
 pub struct CompactionState {
 
     compaction:        *const Compaction,
@@ -18,7 +29,7 @@ pub struct CompactionState {
       */
     smallest_snapshot: SequenceNumber,
 
-    outputs:           Vec<compaction_state::Output>,
+    outputs:           Vec<compaction_state::CompactionStateOutput>,
 
     /**
       | State kept for output being generated
@@ -30,25 +41,9 @@ pub struct CompactionState {
     total_bytes:       u64,
 }
 
-pub mod compaction_state {
-
-    use super::*;
-
-    /**
-      | Files produced by compaction
-      |
-      */
-    pub struct Output {
-        number:    u64,
-        file_size: u64,
-        smallest:  InternalKey,
-        largest:   InternalKey,
-    }
-}
-
 impl CompactionState {
 
-    pub fn current_output(&mut self) -> *mut compaction_state::Output {
+    pub fn current_output(&mut self) -> *mut compaction_state::CompactionStateOutput {
         
         todo!();
         /*

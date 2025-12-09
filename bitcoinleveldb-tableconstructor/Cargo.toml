@@ -14,6 +14,7 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
+tracing.workspace = true
 bitcoinleveldb-tablebuilder = { path = "../bitcoinleveldb-tablebuilder" }
 bitcoinleveldb-stringsource = { path = "../bitcoinleveldb-stringsource" }
 bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
@@ -25,6 +26,7 @@ bitcoinleveldb-table = { path = "../bitcoinleveldb-table" }
 bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-stringsink = { path = "../bitcoinleveldb-stringsink" }
+bitcoinleveldb-footer = { path = "../bitcoinleveldb-footer" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

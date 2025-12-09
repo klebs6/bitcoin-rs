@@ -5,7 +5,10 @@ crate::ix!();
 #[getset(get="pub",set="pub",get_mut="pub")]
 pub struct TableConstructor {
     base:   Constructor,
+    // Non‑owning pointer into the in‑memory table data source.
+    // Lifetime is tied to the RandomAccessFile stored inside the Table.
     source: *mut StringSource,
+    // Owning pointer to the opened Table (allocated in Table::open).
     table:  *mut Table,
 }
 
@@ -32,7 +35,7 @@ impl TableConstructor {
             table:  core::ptr::null_mut(),
         }
     }
-   
+
     pub fn new_iterator(&self) -> *mut LevelDBIterator {
         unsafe {
             assert!(
@@ -70,36 +73,70 @@ impl TableConstructor {
             off
         }
     }
-   
-    pub fn reset(&mut self) {
-        unsafe {
-            if !self.table.is_null() {
-                trace!(
-                    "TableConstructor::reset: deleting Table @ {:?}",
-                    self.table
-                );
-                let _tbl_box: Box<Table> =
-                    Box::from_raw(self.table);
-                self.table = core::ptr::null_mut();
-            } else {
-                trace!(
-                    "TableConstructor::reset: table pointer is null; nothing to delete"
-                );
-            }
+}
 
-            if !self.source.is_null() {
-                trace!(
-                    "TableConstructor::reset: deleting StringSource @ {:?}",
-                    self.source
-                );
-                let _src_box: Box<StringSource> =
-                    Box::from_raw(self.source);
-                self.source = core::ptr::null_mut();
-            } else {
-                trace!(
-                    "TableConstructor::reset: source pointer is null; nothing to delete"
-                );
-            }
+#[cfg(test)]
+mod table_constructor_lifecycle_behavior {
+    use super::*;
+
+    #[traced_test]
+    fn new_initializes_null_pointers() {
+        let cmp: Box<dyn SliceComparator> =
+            Box::new(BytewiseComparatorImpl::default());
+        let ctor = TableConstructor::new(cmp);
+
+        assert!(
+            ctor.table().is_null(),
+            "table pointer must start null"
+        );
+        assert!(
+            ctor.source().is_null(),
+            "source pointer must start null"
+        );
+    }
+
+    #[traced_test]
+    fn reset_clears_table_and_source_pointers() {
+        let mut ctor = TableConstructor::new(
+            Box::new(BytewiseComparatorImpl::default()),
+        );
+
+        unsafe {
+            // Install a dummy Table so we exercise the owned‑pointer branch.
+            let tbl_box: Box<Table> =
+                Box::new(Table::new(core::ptr::null_mut()));
+            let raw_tbl: *mut Table = Box::into_raw(tbl_box);
+            ctor.set_table(raw_tbl);
+
+            // Source is non‑owning; we can use any non‑null address for testing.
+            ctor.set_source(0x1 as *mut StringSource);
         }
+
+        assert!(!ctor.table().is_null());
+        assert!(!ctor.source().is_null());
+
+        ctor.reset();
+
+        assert!(ctor.table().is_null());
+        assert!(ctor.source().is_null());
+    }
+
+    #[test]
+    #[should_panic(expected = "TableConstructor::new_iterator: table pointer is null")]
+    fn new_iterator_panics_when_table_is_null() {
+        let ctor = TableConstructor::new(
+            Box::new(BytewiseComparatorImpl::default()),
+        );
+        let _ = ctor.new_iterator();
+    }
+
+    #[test]
+    #[should_panic(expected = "TableConstructor::approximate_offset_of: table pointer is null")]
+    fn approximate_offset_of_panics_when_table_is_null() {
+        let ctor = TableConstructor::new(
+            Box::new(BytewiseComparatorImpl::default()),
+        );
+        let key = Slice::from(b"some-key".as_ref());
+        let _ = ctor.approximate_offset_of(&key);
     }
 }

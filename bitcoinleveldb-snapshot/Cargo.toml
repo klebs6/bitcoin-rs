@@ -17,3 +17,5 @@ version = "0.1.19"
 tracing.workspace = true
 bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-logwriter = { path = "../bitcoinleveldb-logwriter" }

@@ -1,8 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-file/src/metadata.rs ]
 crate::ix!();
 
-#[derive(Debug, Getters, Setters, Builder, Clone)]
-#[getset(get = "pub", set = "pub")]
+#[derive(Debug, Getters, MutGetters, Setters, Builder, Clone)]
+#[getset(get = "pub", get_mut = "pub", set = "pub")]
 pub struct FileMetaData {
 
     refs:          i32,
@@ -36,15 +36,14 @@ pub struct FileMetaData {
 
 impl Default for FileMetaData {
     fn default() -> Self {
-        use tracing::trace;
         trace!("FileMetaData::default");
         Self {
-            refs: 0,
+            refs:          0,
             allowed_seeks: 1 << 30,
-            number: 0,
-            file_size: 0,
-            smallest: Default::default(),
-            largest: Default::default(),
+            number:        0,
+            file_size:     0,
+            smallest:      Default::default(),
+            largest:       Default::default(),
         }
     }
 }

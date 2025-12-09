@@ -9,3 +9,4 @@ x!{versionedit_decode_from}
 x!{versionedit_delete_file}
 x!{versionedit_encode_to}
 x!{access}
+x!{interface_log_and_apply}
