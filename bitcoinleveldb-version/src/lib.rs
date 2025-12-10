@@ -15,3 +15,6 @@ x!{ref_unref}
 x!{update_stats}
 x!{version}
 x!{version_get_stats}
+x!{before_after_file}
+x!{some_file_overlaps_range}
+x!{record_read_sample_match_cb}

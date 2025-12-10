@@ -251,12 +251,10 @@ mod build_table_behavior_tests {
     use std::cell::RefCell;
     use std::ffi::c_void;
     use std::rc::Rc;
-    use std::sync::{Arc, Mutex};
 
     #[traced_test]
     fn build_table_with_empty_iterator_produces_no_file() {
-        let (env, state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         let dbname = String::from("build_table_empty_iterator_db");
@@ -284,16 +282,14 @@ mod build_table_behavior_tests {
 
         assert!(status.is_ok(), "status must be OK for empty iterator");
         assert_eq!(
-            meta.file_size(),
+            *meta.file_size(),
             0,
             "file_size must remain zero when iterator has no entries"
         );
 
-        let fname = table_file_name(&dbname, meta.number());
+        let fname = table_file_name(&dbname, *meta.number());
         let files_snapshot = {
-            let guard = state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let guard = state.lock();
             guard.files.clone()
         };
 
@@ -306,8 +302,7 @@ mod build_table_behavior_tests {
 
     #[traced_test]
     fn build_table_with_single_entry_builds_and_verifies_table() {
-        let (env, _state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, _state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         let dbname = String::from("build_table_single_entry_db");
@@ -319,7 +314,8 @@ mod build_table_behavior_tests {
 
         let key = b"alpha".to_vec();
         let value = b"value-alpha".to_vec();
-        let iter_ptr = make_iterator_from_kv_pairs(&[(key.clone(), value.clone())]);
+        let iter_ptr =
+            make_iterator_from_kv_pairs(&[(key.clone(), value.clone())]);
         let meta_ptr: *mut FileMetaData = &mut meta;
 
         trace!("calling build_table (single entry)");
@@ -342,11 +338,12 @@ mod build_table_behavior_tests {
             status.to_string()
         );
         assert!(
-            meta.file_size() > 0,
+            *meta.file_size() > 0,
             "file_size must be > 0 for non-empty table"
         );
 
         let read_options = ReadOptions::default();
+
         #[derive(Default)]
         struct CapturedKV {
             key:   Option<String>,
@@ -358,6 +355,7 @@ mod build_table_behavior_tests {
                 let c: &mut CapturedKV = &mut *(arg as *mut CapturedKV);
                 c.key = Some(k.to_string());
                 c.value = Some(v.to_string());
+                core::mem::zeroed()
             }
         }
 
@@ -367,8 +365,8 @@ mod build_table_behavior_tests {
         info!("invoking TableCache::get to verify built table contents");
         let get_status = table_cache.get(
             &read_options,
-            meta.number(),
-            meta.file_size(),
+            *meta.number(),
+            *meta.file_size(),
             &Slice::from("alpha"),
             arg_ptr,
             capture_kv,
@@ -387,8 +385,7 @@ mod build_table_behavior_tests {
     fn build_table_propagates_iterator_status_on_error() {
         use bitcoinleveldb_status::StatusCode;
 
-        let (env, _state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, _state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         let dbname = String::from("build_table_iter_status_db");
@@ -401,8 +398,12 @@ mod build_table_behavior_tests {
         let error_msg = Slice::from("iter-corruption");
         let iter_status = Status::corruption(&error_msg, None);
 
-        let iface = VecLevelDBIterator::new(Vec::new(), iter_status.clone());
-        let wrapper = bitcoinleveldb_iterator::LevelDBIterator::new(Some(Box::new(iface)));
+        let iface =
+            VecLevelDBIterator::new(Vec::new(), iter_status.clone());
+        let wrapper =
+            bitcoinleveldb_iterator::LevelDBIterator::new(Some(Box::new(
+                iface,
+            )));
         let iter_ptr = Box::into_raw(Box::new(wrapper));
 
         let meta_ptr: *mut FileMetaData = &mut meta;

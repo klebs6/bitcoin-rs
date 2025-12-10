@@ -19,6 +19,35 @@ pub struct TableRep {
     index_block:      *mut Block,
 }
 
+impl core::fmt::Debug for TableRep {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        use core::fmt::Debug;
+
+        // We cannot print the underlying RandomAccessFile safely,
+        // but we *can* indicate pointer identity for debugging.
+        let file_ptr = Rc::as_ptr(&self.file);
+
+        f.debug_struct("TableRep")
+            .field("options", &self.options)
+            .field("status", &self.status)
+            .field("file", &format_args!("{:p}", file_ptr))
+            .field("cache_id", &self.cache_id)
+            .field(
+                "filter",
+                if self.filter.is_some() {
+                    &"Some(FilterBlockReader)"
+                } else {
+                    &"None"
+                },
+            )
+            .field("filter_data", &format_args!("{:p}", self.filter_data))
+            .field("filter_data_len", &self.filter_data_len)
+            .field("metaindex_handle", &self.metaindex_handle)
+            .field("index_block", &format_args!("{:p}", self.index_block))
+            .finish()
+    }
+}
+
 impl TableRep {
     pub fn new(
         options:          Options,

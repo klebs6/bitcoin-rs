@@ -151,6 +151,46 @@ pub struct Options {
     filter_policy: Arc<dyn FilterPolicy>,
 }
 
+impl core::fmt::Debug for Options {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        // Comparator + FilterPolicy are trait objects → show only their names.
+        let comparator_name = self.comparator().name();
+        let filter_name     = self.filter_policy().name();
+
+        // For env and info_log we cannot safely deref → show pointer identity.
+        let env_repr = match self.env() {
+            Some(rc) => format!("{:p}", Rc::as_ptr(rc)),
+            None     => String::from("None"),
+        };
+
+        let info_log_repr = match self.info_log() {
+            Some(ptr) => format!("{:p}", ptr),
+            None      => String::from("None"),
+        };
+
+        // block_cache is a raw pointer, show the address only.
+        let block_cache_repr = format!("{:p}", self.block_cache());
+
+        f.debug_struct("Options")
+            .field("comparator", &comparator_name)
+            .field("create_if_missing", self.create_if_missing())
+            .field("error_if_exists",  self.error_if_exists())
+            .field("paranoid_checks",  self.paranoid_checks())
+            .field("env",              &env_repr)
+            .field("info_log",         &info_log_repr)
+            .field("write_buffer_size",      self.write_buffer_size())
+            .field("max_open_files",         self.max_open_files())
+            .field("block_cache",            &block_cache_repr)
+            .field("block_size",             self.block_size())
+            .field("block_restart_interval", self.block_restart_interval())
+            .field("max_file_size",          self.max_file_size())
+            .field("compression",            self.compression())
+            .field("reuse_logs",             self.reuse_logs())
+            .field("filter_policy",          &filter_name)
+            .finish()
+    }
+}
+
 impl Default for Options {
 
     fn default() -> Self {

@@ -14,44 +14,68 @@ impl Version {
       | REQUIRES: lock is held
       */
     pub fn record_read_sample(&mut self, internal_key_: Slice) -> bool {
-        
-        todo!();
-        /*
-            ParsedInternalKey ikey;
-      if (!ParseInternalKey(internal_key, &ikey)) {
-        return false;
-      }
+        trace!(
+            "Version::record_read_sample: internal_key_len={}",
+            *internal_key_.size()
+        );
 
-      struct State {
-        GetStats stats;  // Holds first matching file
-        int matches;
+        let mut ikey = ParsedInternalKey::default();
+        let parsed_ok =
+            parse_internal_key(&internal_key_, &mut ikey as *mut ParsedInternalKey);
 
-        static bool Match(c_void* arg, int level, FileMetaData* f) {
-          State* state = reinterpret_cast<State*>(arg);
-          state->matches++;
-          if (state->matches == 1) {
-            // Remember first match.
-            state->stats.seek_file = f;
-            state->stats.seek_file_level = level;
-          }
-          // We can stop iterating once we have a second match.
-          return state->matches < 2;
+        if !parsed_ok {
+            debug!(
+                "Version::record_read_sample: ParseInternalKey failed; ignoring sample"
+            );
+            return false;
         }
-      };
 
-      State state;
-      state.matches = 0;
-      ForEachOverlapping(ikey.user_key, internal_key, &state, &State::Match);
+        let user_key_slice_ref = ikey.user_key();
+        let user_key = unsafe {
+            Slice::from_ptr_len(
+                *user_key_slice_ref.data(),
+                *user_key_slice_ref.size(),
+            )
+        };
 
-      // Must have at least two matches since we want to merge across
-      // files. But what if we have a single file that contains many
-      // overwrites and deletions?  Should we have another mechanism for
-      // finding such files?
-      if (state.matches >= 2) {
-        // 1MB cost is about 1 seek (see comment in Builder::Apply).
-        return UpdateStats(state.stats);
-      }
-      return false;
-        */
+        let mut state = RecordReadSampleStateBuilder::default()
+            .stats(VersionGetStats::default())
+            .matches(0)
+            .build()
+            .unwrap();
+
+        self.for_each_overlapping(
+            user_key,
+            internal_key_,
+            &mut state as *mut RecordReadSampleState as *mut c_void,
+            record_read_sample_match_cb,
+        );
+
+        // Must have at least two matches since we want to merge across files. 
+        //
+        // But what if we have a single file that contains many overwrites and
+        // deletions?  
+        //
+        // Should we have another mechanism for finding such files?
+        //
+        if *state.matches() >= 2 {
+            // 1MB cost is about 1 seek (see comment in Builder::Apply).
+            trace!(
+                "Version::record_read_sample: found {} overlapping files; updating stats",
+                state.matches()
+            );
+            let triggered = self.update_stats(state.stats_mut());
+            debug!(
+                "Version::record_read_sample: UpdateStats returned {}",
+                triggered
+            );
+            triggered
+        } else {
+            trace!(
+                "Version::record_read_sample: matches < 2 ({}); no compaction trigger",
+                state.matches()
+            );
+            false
+        }
     }
 }

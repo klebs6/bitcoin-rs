@@ -1,177 +1,93 @@
 // ---------------- [ File: bitcoinleveldb-tableconstructor/src/build_table_into_sink.rs ]
 crate::ix!();
 
-impl TableConstructor {
+/// Build an sstable into an in‑memory `StringSink` using a `TableBuilder`.
+///
+/// Returns `(status, sink, file_size_bytes)`.
+pub(crate) fn build_table_into_sink(
+    options: &Options,
+    data:    &KVMap,
+) -> (crate::Status, StringSink, u64) {
+    // Build table into an in‑memory StringSink.
+    let mut sink = StringSink::new();
 
-    /// Build an sstable into an in‑memory `StringSink` using a `TableBuilder`.
-    ///
-    /// Returns `(status, sink, file_size_bytes)`.
-    pub(crate) fn build_table_into_sink(
-        options: &Options,
-        data:    &KVMap,
-    ) -> (crate::Status, StringSink, u64) {
-        // Build table into an in‑memory StringSink.
-        let mut sink = StringSink::new();
+    let file_ptr: *mut dyn WritableFile = &mut sink;
 
-        let file_ptr: *mut dyn WritableFile = &mut sink;
+    let mut builder = TableBuilder::new(options, file_ptr);
 
-        let mut builder = TableBuilder::new(options, file_ptr);
+    // Ensure keys are presented to TableBuilder in strictly increasing order.
+    // This is required by the underlying LevelDB table builder.
+    let mut entries: Vec<(&String, &String)> = data.iter().collect();
+    entries.sort_by(|(k1, _), (k2, _)| k1.cmp(k2));
 
-        for (k, v) in data.iter() {
-            let key_slice   = Slice::from(k.as_bytes());
-            let value_slice = Slice::from(v.as_bytes());
-
-            trace!(
-                "TableConstructor::build_table_into_sink: adding entry key_len={}, value_len={}",
-                k.len(),
-                v.len()
-            );
-
-            builder.add(&key_slice, &value_slice);
-
-            let st = builder.status();
-            if !st.is_ok() {
-                error!(
-                    "TableConstructor::build_table_into_sink: builder status became non-OK while adding key='{}'",
-                    k
-                );
-                // Preserve the original invariant in debug builds.
-                assert!(
-                    st.is_ok(),
-                    "TableConstructor::build_table_into_sink: builder status not OK during Add"
-                );
-                return (st, sink, 0);
-            }
-        }
-
-        let mut status = builder.finish();
+    for (k, v) in entries.into_iter() {
+        let key_slice   = Slice::from(k.as_bytes());
+        let value_slice = Slice::from(v.as_bytes());
 
         trace!(
-            "TableConstructor::build_table_into_sink: builder.finish status_ok={}, file_size={}",
-            status.is_ok(),
-            builder.file_size()
+            "build_table_into_sink: adding entry key_len={}, value_len={}",
+            k.len(),
+            v.len()
         );
 
-        if !status.is_ok() {
+        builder.add(&key_slice, &value_slice);
+
+        let st = builder.status();
+        if !st.is_ok() {
             error!(
-                "TableConstructor::build_table_into_sink: builder.finish returned non-OK status"
+                "build_table_into_sink: builder status became non-OK while adding key='{}'",
+                k
             );
-            return (status, sink, 0);
+
+            // Ensure the underlying TableBuilderRep is marked closed so Drop
+            // does not panic about an unterminated builder.
+            builder.abandon();
+
+            return (st, sink, 0);
         }
-
-        let sink_size = sink.contents().len() as u64;
-        let file_size = builder.file_size();
-
-        // In practice, StringSink may contain pre‑existing data or
-        // additional bookkeeping bytes. The TableBuilder's file_size
-        // tracks the logical table image we just wrote, which must
-        // not exceed the underlying sink length.
-        debug_assert!(
-            sink_size >= file_size,
-            "TableConstructor::build_table_into_sink: builder.file_size ({}) larger than sink length ({})",
-            file_size,
-            sink_size
-        );
-
-        trace!(
-            "TableConstructor::build_table_into_sink: sink_size={} bytes, builder.file_size={}",
-            sink_size,
-            file_size
-        );
-
-        // For callers, return the *logical* SSTable size as seen by TableBuilder.
-        // The StringSink may contain extra bytes (e.g., instrumentation) beyond this.
-        (status, sink, file_size)
     }
 
-    /// From a completed `StringSink`, create a `StringSource`, keep a
-    /// non‑owning raw pointer to it in `self.source`, and return the
-    /// owning `Rc<RefCell<StringSource>>`.
-    pub(crate) fn make_source_from_sink(
-        &mut self,
-        sink: &StringSink,
-    ) -> std::rc::Rc<std::cell::RefCell<StringSource>> {
-        use std::cell::RefCell;
-        use std::rc::Rc;
+    let mut status = builder.finish();
 
-        let contents_slice =
-            Slice::from(sink.contents().as_bytes());
+    trace!(
+        "build_table_into_sink: builder.finish status_ok={}, file_size={}",
+        status.is_ok(),
+        builder.file_size()
+    );
 
-        let source = StringSource::new(&contents_slice);
-
-        // Own the source via Rc<RefCell<...>> so it can be shared with the
-        // TableRep while we keep a non‑owning raw pointer for debugging.
-        let source_rc: Rc<RefCell<StringSource>> =
-            Rc::new(RefCell::new(source));
-
-        // Grab a raw pointer into the underlying StringSource for diagnostics,
-        // but DO NOT free it via this pointer (reset() only clears it).
-        let raw_ptr: *mut StringSource = {
-            let mut borrow = source_rc.borrow_mut();
-            &mut *borrow as *mut StringSource
-        };
-
-        self.set_source(raw_ptr);
-
-        trace!(
-            "TableConstructor::make_source_from_sink: created StringSource @ {:?}, len={}",
-            raw_ptr,
-            sink.contents().len()
+    if !status.is_ok() {
+        error!(
+            "build_table_into_sink: builder.finish returned non-OK status"
         );
-
-        source_rc
+        return (status, sink, 0);
     }
 
-    /// Open a `Table` over the given in‑memory file.
-    ///
-    /// * `source_rc` is an owning handle to the in‑memory file.
-    /// * `file_size` is the logical size of the file in bytes.
-    pub(crate) fn open_table_from_source(
-        &mut self,
-        options: &Options,
-        source_rc: std::rc::Rc<std::cell::RefCell<StringSource>>,
-        file_size: u64,
-    ) -> crate::Status {
-        use std::cell::RefCell;
-        use std::rc::Rc;
+    // Logical table size as reported by the TableBuilder.
+    let file_size_bytes = builder.file_size();
 
-        let mut table_options = options.clone();
-        table_options.set_comparator(options.comparator().clone());
+    // Physical backing buffer size.
+    let sink_size = sink.contents().len() as u64;
 
-        // Upcast Rc<RefCell<StringSource>> to Rc<RefCell<dyn RandomAccessFile>>
-        // so it can be consumed by Table::open and stored inside TableRep.
-        let file_rc: Rc<RefCell<dyn RandomAccessFile>> = source_rc;
+    // In practice, StringSink may contain pre‑existing data or additional
+    // bookkeeping bytes. The TableBuilder's file_size tracks the logical
+    // table image we just wrote, which must not exceed the underlying sink
+    // length.
+    debug_assert!(
+        sink_size >= file_size_bytes,
+        "build_table_into_sink: builder.file_size ({}) larger than sink length ({})",
+        file_size_bytes,
+        sink_size
+    );
 
-        trace!(
-            "TableConstructor::open_table_from_source: opening Table on in-memory StringSource @ {:?}, file_size={}",
-            self.source(),
-            file_size
-        );
+    trace!(
+        "build_table_into_sink: sink_size={} bytes, builder.file_size={}",
+        sink_size,
+        file_size_bytes
+    );
 
-        // We only need a receiver to call the method; `open` allocates a fresh
-        // Table into `self.table`.
-        let mut tmp = Table::new(core::ptr::null_mut());
-
-        let status = Table::open(
-            &table_options,
-            file_rc,
-            file_size,
-            self.table_mut(),
-        );
-
-        if !status.is_ok() {
-            error!(
-                "TableConstructor::open_table_from_source: Table::open returned non-OK status"
-            );
-        } else {
-            trace!(
-                "TableConstructor::open_table_from_source: Table opened successfully @ {:?}",
-                self.table()
-            );
-        }
-
-        status
-    }
+    // For callers, return the *logical* SSTable size as seen by TableBuilder.
+    // The StringSink may contain extra bytes (e.g., instrumentation) beyond this.
+    (status, sink, file_size_bytes)
 }
 
 #[cfg(test)]
@@ -198,7 +114,7 @@ mod table_constructor_finish_impl_behavior {
         let data = KVMap::default();
 
         let (status, sink, file_size) =
-            TableConstructor::build_table_into_sink(&opts, &data);
+            build_table_into_sink(&opts, &data);
 
         let sink_len = sink.contents().len() as u64;
 
@@ -262,7 +178,7 @@ mod table_constructor_finish_impl_behavior {
         let data = small_kv_map();
 
         let (status_build, sink, file_size) =
-            TableConstructor::build_table_into_sink(&opts, &data);
+            build_table_into_sink(&opts, &data);
         assert!(status_build.is_ok());
 
         let source_rc = ctor.make_source_from_sink(&sink);
@@ -292,7 +208,7 @@ mod table_constructor_finish_impl_behavior {
         let data = small_kv_map();
 
         let (status_build, sink, _real_size) =
-            TableConstructor::build_table_into_sink(&opts, &data);
+            build_table_into_sink(&opts, &data);
         assert!(status_build.is_ok());
 
         let source_rc = ctor.make_source_from_sink(&sink);

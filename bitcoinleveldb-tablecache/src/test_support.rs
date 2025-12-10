@@ -7,18 +7,18 @@ pub(crate) mod table_cache_test_support {
 
     #[derive(Default)]
     pub struct InMemoryEnvState {
-        pub files: HashMap<String, Vec<u8>>,
-        pub directories: HashSet<String>,
-        pub deleted_files: Vec<String>,
-        pub renamed_files: Vec<(String, String)>,
-        pub random_open_count: HashMap<String, usize>,
+        pub files:                 HashMap<String, Vec<u8>>,
+        pub directories:           HashSet<String>,
+        pub deleted_files:         Vec<String>,
+        pub renamed_files:         Vec<(String, String)>,
+        pub random_open_count:     HashMap<String, usize>,
         pub sequential_open_count: HashMap<String, usize>,
-        pub fail_new_writable: bool,
+        pub fail_new_writable:     bool,
         pub fail_new_random_access: bool,
-        pub fail_delete_file: bool,
-        pub fail_rename_file: bool,
-        pub fail_get_file_size: bool,
-        pub reported_now_micros: u64,
+        pub fail_delete_file:      bool,
+        pub fail_rename_file:      bool,
+        pub fail_get_file_size:    bool,
+        pub reported_now_micros:   u64,
     }
 
     #[derive(Clone)]
@@ -36,17 +36,14 @@ pub(crate) mod table_cache_test_support {
         where
             F: FnOnce(&mut InMemoryEnvState) -> R,
         {
-            let mut guard = self
-                .state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let mut guard = self.state.lock();
             f(&mut *guard)
         }
     }
 
     #[derive(Clone)]
     struct InMemoryFileHandle {
-        name: String,
+        name:  String,
         state: Arc<Mutex<InMemoryEnvState>>,
         pos:   u64,
     }
@@ -57,10 +54,7 @@ pub(crate) mod table_cache_test_support {
         }
 
         fn read_range(&self, offset: u64, n: usize) -> Vec<u8> {
-            let guard = self
-                .state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let guard = self.state.lock();
             let data = guard.files.get(&self.name);
             match data {
                 None => Vec::new(),
@@ -77,10 +71,7 @@ pub(crate) mod table_cache_test_support {
         }
 
         fn append_bytes(&mut self, bytes: &[u8]) {
-            let mut guard = self
-                .state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let mut guard = self.state.lock();
             let entry = guard
                 .files
                 .entry(self.name.clone())
@@ -90,10 +81,7 @@ pub(crate) mod table_cache_test_support {
         }
 
         fn size(&self) -> u64 {
-            let guard = self
-                .state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let guard = self.state.lock();
             guard
                 .files
                 .get(&self.name)
@@ -250,13 +238,15 @@ pub(crate) mod table_cache_test_support {
 
     struct InMemoryLogger;
 
-    impl Logger for InMemoryLogger {
+    impl Logv for InMemoryLogger {
         fn logv(&mut self, format: *const u8, args: &[&str]) {
             let fmt_str = unsafe {
                 if format.is_null() {
                     "<null>"
                 } else {
-                    match std::ffi::CStr::from_ptr(format as *const i8).to_str() {
+                    match std::ffi::CStr::from_ptr(format as *const i8)
+                        .to_str()
+                    {
                         Ok(s) => s,
                         Err(_) => "<non-utf8>",
                     }
@@ -269,6 +259,8 @@ pub(crate) mod table_cache_test_support {
             );
         }
     }
+
+    impl Logger for InMemoryLogger {}
 
     impl CreateDir for InMemoryEnv {
         fn create_dir(&mut self, dirname: &String) -> Status {
@@ -307,7 +299,8 @@ pub(crate) mod table_cache_test_support {
 
     impl FileExists for InMemoryEnv {
         fn file_exists(&mut self, fname: &String) -> bool {
-            let exists = self.with_state(|st| st.files.contains_key(fname));
+            let exists =
+                self.with_state(|st| st.files.contains_key(fname));
             trace!(
                 "InMemoryEnv::file_exists: file='{}' -> {}",
                 fname,
@@ -357,7 +350,11 @@ pub(crate) mod table_cache_test_support {
                     let msg = Slice::from("get_file_size_fail");
                     return Status::io_error(&msg, None);
                 }
-                let sz = st.files.get(fname).map(|v| v.len() as u64).unwrap_or(0);
+                let sz = st
+                    .files
+                    .get(fname)
+                    .map(|v| v.len() as u64)
+                    .unwrap_or(0);
                 unsafe {
                     if !file_size.is_null() {
                         *file_size = sz;
@@ -380,7 +377,8 @@ pub(crate) mod table_cache_test_support {
                 target
             );
             self.with_state(|st| {
-                st.renamed_files.push((src.clone(), target.clone()));
+                st.renamed_files
+                    .push((src.clone(), target.clone()));
                 if st.fail_rename_file {
                     let msg = Slice::from("rename_file_fail");
                     return Status::io_error(&msg, None);
@@ -408,7 +406,8 @@ pub(crate) mod table_cache_test_support {
                     .entry(fname.clone())
                     .or_insert(0) += 1;
             });
-            let handle = InMemoryFileHandle::new(fname.clone(), self.state.clone());
+            let handle =
+                InMemoryFileHandle::new(fname.clone(), self.state.clone());
             let boxed: Box<dyn SequentialFile> = Box::new(handle);
             let outer: Box<Box<dyn SequentialFile>> = Box::new(boxed);
             let raw = Box::into_raw(outer);
@@ -447,7 +446,8 @@ pub(crate) mod table_cache_test_support {
                 return Status::io_error(&msg, None);
             }
 
-            let handle = InMemoryFileHandle::new(fname.clone(), self.state.clone());
+            let handle =
+                InMemoryFileHandle::new(fname.clone(), self.state.clone());
             let boxed: Box<dyn RandomAccessFile> = Box::new(handle);
             let outer: Box<Box<dyn RandomAccessFile>> = Box::new(boxed);
             let raw = Box::into_raw(outer);
@@ -485,7 +485,8 @@ pub(crate) mod table_cache_test_support {
                 st.files.insert(fname.clone(), Vec::new());
             });
 
-            let handle = InMemoryFileHandle::new(fname.clone(), self.state.clone());
+            let handle =
+                InMemoryFileHandle::new(fname.clone(), self.state.clone());
             let boxed: Box<dyn WritableFile> = Box::new(handle);
             let outer: Box<Box<dyn WritableFile>> = Box::new(boxed);
             let raw = Box::into_raw(outer);
@@ -509,9 +510,12 @@ pub(crate) mod table_cache_test_support {
                 fname
             );
             self.with_state(|st| {
-                st.files.entry(fname.clone()).or_insert_with(Vec::new);
+                st.files
+                    .entry(fname.clone())
+                    .or_insert_with(Vec::new);
             });
-            let handle = InMemoryFileHandle::new(fname.clone(), self.state.clone());
+            let handle =
+                InMemoryFileHandle::new(fname.clone(), self.state.clone());
             let boxed: Box<dyn WritableFile> = Box::new(handle);
             let outer: Box<Box<dyn WritableFile>> = Box::new(boxed);
             let raw = Box::into_raw(outer);
@@ -552,7 +556,6 @@ pub(crate) mod table_cache_test_support {
             unsafe {
                 if !lock.is_null() {
                     let _boxed: Box<Box<dyn FileLock>> = Box::from_raw(lock);
-                    // dropped here
                 }
             }
             Status::ok()
@@ -618,7 +621,8 @@ pub(crate) mod table_cache_test_support {
     impl NowMicros for InMemoryEnv {
         fn now_micros(&mut self) -> u64 {
             let micros = self.with_state(|st| {
-                st.reported_now_micros = st.reported_now_micros.wrapping_add(1);
+                st.reported_now_micros =
+                    st.reported_now_micros.wrapping_add(1);
                 st.reported_now_micros
             });
             trace!("InMemoryEnv::now_micros -> {}", micros);
@@ -753,7 +757,9 @@ pub(crate) mod table_cache_test_support {
     impl LevelDBIteratorKey for VecLevelDBIterator {
         fn key(&self) -> Slice {
             if !self.is_valid_index() {
-                trace!("VecLevelDBIterator::key: invalid index; returning empty Slice");
+                trace!(
+                    "VecLevelDBIterator::key: invalid index; returning empty Slice"
+                );
                 return Slice::default();
             }
             let idx = self.index as usize;
@@ -795,10 +801,12 @@ pub(crate) mod table_cache_test_support {
 
     impl LevelDBIteratorInterface for VecLevelDBIterator {}
 
-    pub fn make_in_memory_env() -> (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) {
+    pub fn make_in_memory_env(
+    ) -> (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) {
         let state = Arc::new(Mutex::new(InMemoryEnvState::default()));
         let env_impl = InMemoryEnv::new(state.clone());
-        let env_dyn: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(env_impl));
+        let env_dyn: Rc<RefCell<dyn Env>> =
+            Rc::new(RefCell::new(env_impl));
         (env_dyn, state)
     }
 
@@ -808,7 +816,9 @@ pub(crate) mod table_cache_test_support {
         opts
     }
 
-    pub fn make_iterator_from_kv_pairs(pairs: &[(Vec<u8>, Vec<u8>)]) -> *mut LevelDBIterator {
+    pub fn make_iterator_from_kv_pairs(
+        pairs: &[(Vec<u8>, Vec<u8>)],
+    ) -> *mut LevelDBIterator {
         trace!(
             "make_iterator_from_kv_pairs: count={}",
             pairs.len()

@@ -43,13 +43,13 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-1]
-ACTIVE := bitcoinleveldb-tablecache
+ACTIVE := bitcoinleveldb-version
 ACTIVE := bitcoinleveldb-tableconstructor
+ACTIVE := bitcoinleveldb-tablecache
 
 # ------------------------------- [leveldb-layer-2]
-#ACTIVE := bitcoinleveldb-version
 #ACTIVE := bitcoinleveldb-versionsetutil
-#ACTIVE := bitcoinleveldb-compaction
+ACTIVE := bitcoinleveldb-compaction
 
 # ------------------------------- [leveldb-layer-2b]
 #ACTIVE := bitcoinleveldb-memtable #loc: 476

@@ -14,6 +14,14 @@ pub struct Table {
     rep: *const TableRep,
 }
 
+impl core::fmt::Debug for Table {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("Table")
+            .field("rep", &format_args!("{:p}", self.rep))
+            .finish()
+    }
+}
+
 impl Table {
 
     #[inline]

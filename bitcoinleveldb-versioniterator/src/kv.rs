@@ -339,4 +339,3 @@ mod version_level_file_num_iterator_kv_tests {
         drop(file_ptrs_box);
     }
 }
-

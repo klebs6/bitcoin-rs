@@ -17,12 +17,15 @@
 
 crate::ix!();
 
+#[derive(Getters,Setters,MutGetters)]
+#[getset(get="pub",get_mut="pub",set="pub")]
 pub struct Version {
 
     /**
       | VersionSet to which this Version belongs
       |
       */
+    #[getset(skip)]
     vset:                  *mut dyn VersionSetInterface,
 
     /**
@@ -70,11 +73,24 @@ pub struct Version {
 
 impl Version {
 
+    pub fn vset(&self) -> *mut dyn VersionSetInterface {
+        self.vset
+    }
+
     pub fn num_files(&self, level: i32) -> i32 {
-        
-        todo!();
-        /*
-            return files_[level].size();
-        */
+        trace!("Version::num_files: level={}", level);
+        assert!(
+            level >= 0 && (level as usize) < NUM_LEVELS,
+            "Version::num_files: level {} out of range 0..{}",
+            level,
+            NUM_LEVELS - 1
+        );
+
+        let count = self.files[level as usize].len() as i32;
+        debug!(
+            "Version::num_files: level={} has {} files",
+            level, count
+        );
+        count
     }
 }

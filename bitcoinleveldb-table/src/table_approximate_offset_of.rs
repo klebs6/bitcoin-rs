@@ -3,17 +3,14 @@ crate::ix!();
 
 impl Table {
 
-    /// Given a key, return an approximate byte
-    /// offset in the file where the data for that
-    /// key begins (or would begin if the key were
-    /// present in the file).  The returned value is
-    /// in terms of file bytes, and so includes
-    /// effects like compression of the underlying
-    /// data.
+    /// Given a key, return an approximate byte offset in the file where the
+    /// data for that key begins (or would begin if the key were present in the
+    /// file).  The returned value is in terms of file bytes, and so includes
+    /// effects like compression of the underlying data.
     /// 
-    /// E.g., the approximate offset of the last key
-    /// in the table will be close to the file
-    /// length.
+    /// E.g., the approximate offset of the last key in the table will be close
+    /// to the file length.
+    ///
     pub fn approximate_offset_of(&self, key_: &Slice) -> u64 {
         unsafe {
             let rep_ptr = (*(self as *const Table as *mut Table)).rep_mut_ptr();

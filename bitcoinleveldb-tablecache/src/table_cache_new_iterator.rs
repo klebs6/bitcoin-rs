@@ -99,21 +99,16 @@ mod table_cache_new_iterator_tests {
     use super::*;
     use crate::table_cache_test_support::*;
     use std::cell::RefCell;
-    use std::ffi::c_void;
     use std::ptr;
     use std::rc::Rc;
-    use std::sync::{Arc, Mutex};
 
     #[traced_test]
     fn new_iterator_returns_error_iterator_when_find_table_fails() {
-        let (env, state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         {
-            let mut guard = state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let mut guard = state.lock();
             guard.fail_new_random_access = true;
         }
 
@@ -145,8 +140,7 @@ mod table_cache_new_iterator_tests {
 
     #[traced_test]
     fn new_iterator_walks_over_all_table_entries_in_order() {
-        let (env, _state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, _state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         let dbname = String::from("table_cache_new_iterator_ok_db");
@@ -178,12 +172,13 @@ mod table_cache_new_iterator_tests {
         assert!(build_status.is_ok());
 
         let read_options = ReadOptions::default();
-        let table_ptr_out: *mut *mut Table =
-            &mut (ptr::null_mut());
+        let mut table_out: *mut Table = ptr::null_mut();
+        let table_ptr_out: *mut *mut Table = &mut table_out;
+
         let it_ptr = table_cache.new_iterator(
             &read_options,
-            meta.number(),
-            meta.file_size(),
+            *meta.number(),
+            *meta.file_size(),
             table_ptr_out,
         );
 

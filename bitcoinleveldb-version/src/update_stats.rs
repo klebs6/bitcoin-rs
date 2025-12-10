@@ -2,28 +2,49 @@
 crate::ix!();
 
 impl Version {
-    
-    /**
-      | Adds "stats" into the current state.  Returns
-      | true if a new compaction may need to be
-      | triggered, false otherwise.
-      |
-      | REQUIRES: lock is held
-      */
-    pub fn update_stats(&mut self, stats: &VersionGetStats) -> bool {
-        
-        todo!();
-        /*
-            FileMetaData* f = stats.seek_file;
-      if (f != nullptr) {
-        f->allowed_seeks--;
-        if (f->allowed_seeks <= 0 && file_to_compact_ == nullptr) {
-          file_to_compact_ = f;
-          file_to_compact_level_ = stats.seek_file_level;
-          return true;
+
+    /// Adds "stats" into the current state.  
+    ///
+    /// Returns true if a new compaction may need to be triggered, false otherwise.
+    /// 
+    /// REQUIRES: lock is held
+    ///
+    pub fn update_stats(&mut self, stats: &mut VersionGetStats) -> bool {
+        trace!(
+            "Version::update_stats: enter; seek_file={:?}, seek_file_level={}",
+            stats.seek_file(),
+            stats.seek_file_level()
+        );
+
+        let fptr = *stats.seek_file_mut();
+
+        if !fptr.is_null() {
+            unsafe {
+                let allowed_seeks_ref    = (*fptr).allowed_seeks_mut();
+                *allowed_seeks_ref -= 1;
+
+                debug!(
+                    "Version::update_stats: file {} allowed_seeks decremented to {}",
+                    (*fptr).number(),
+                    *allowed_seeks_ref
+                );
+
+                if *allowed_seeks_ref <= 0 && self.file_to_compact().is_null() {
+                    self.set_file_to_compact(fptr);
+                    self.set_file_to_compact_level(*stats.seek_file_level());
+                    info!(
+                        "Version::update_stats: scheduling file {} at level {} for compaction",
+                        (*fptr).number(),
+                        stats.seek_file_level()
+                    );
+                    return true;
+                }
+            }
         }
-      }
-      return false;
-        */
+
+        trace!(
+            "Version::update_stats: no compaction scheduled"
+        );
+        false
     }
 }

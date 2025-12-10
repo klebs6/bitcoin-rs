@@ -3,38 +3,62 @@ crate::ix!();
 
 impl Version {
 
-    /**
-      | Return a human readable string that
-      | describes this version's contents.
-      |
-      */
+    /// Return a human readable string that describes this version's contents.
+    /// 
     pub fn debug_string(&self) -> String {
-        
-        todo!();
-        /*
-            std::string r;
-      for (int level = 0; level < config::NUM_LEVELS; level++) {
-        // E.g.,
-        //   --- level 1 ---
-        //   17:123['a' .. 'd']
-        //   20:43['e' .. 'g']
-        r.append("--- level ");
-        AppendNumberTo(&r, level);
-        r.append(" ---\n");
-        const std::vector<FileMetaData*>& files = files_[level];
-        for (size_t i = 0; i < files.size(); i++) {
-          r.push_back(' ');
-          AppendNumberTo(&r, files[i]->number);
-          r.push_back(':');
-          AppendNumberTo(&r, files[i]->file_size);
-          r.append("[");
-          r.append(files[i]->smallest.DebugString());
-          r.append(" .. ");
-          r.append(files[i]->largest.DebugString());
-          r.append("]\n");
+        trace!(
+            "Version::debug_string: generating string for {} levels",
+            NUM_LEVELS
+        );
+
+        let mut r = String::new();
+
+        for level in 0..NUM_LEVELS {
+            use core::fmt::Write;
+
+            write!(&mut r, "--- level {} ---\n", level)
+                .expect("write! to String cannot fail");
+
+            let files_level = &self.files()[level];
+            trace!(
+                "Version::debug_string: level {} has {} files",
+                level,
+                files_level.len()
+            );
+
+            for &fptr in files_level.iter() {
+                if fptr.is_null() {
+                    warn!(
+                        "Version::debug_string: null FileMetaData pointer at level {}",
+                        level
+                    );
+                    continue;
+                }
+
+                unsafe {
+                    let f: &FileMetaData = &*fptr;
+                    let number    = *f.number();
+                    let file_size = *f.file_size();
+                    let smallest  = f.smallest().debug_string();
+                    let largest   = f.largest().debug_string();
+
+                    write!(
+                        &mut r,
+                        " {}:{}[{} .. {}]\n",
+                        number,
+                        file_size,
+                        smallest,
+                        largest
+                    )
+                    .expect("write! to String cannot fail");
+                }
+            }
         }
-      }
-      return r;
-        */
+
+        debug!(
+            "Version::debug_string: completed; len={}",
+            r.len()
+        );
+        r
     }
 }

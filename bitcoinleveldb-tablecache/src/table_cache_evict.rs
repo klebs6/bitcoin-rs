@@ -43,15 +43,12 @@ mod table_cache_evict_tests {
     use super::*;
     use crate::table_cache_test_support::*;
     use std::cell::RefCell;
+    use std::ffi::c_void;
     use std::rc::Rc;
-    use std::sync::{Arc, Mutex};
 
     #[traced_test]
     fn table_cache_evict_forces_reopen_on_next_get() {
-        use std::ffi::c_void;
-
-        let (env, state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         let dbname = String::from("table_cache_evict_db");
@@ -63,7 +60,8 @@ mod table_cache_evict_tests {
 
         let key = b"k1".to_vec();
         let val = b"v1".to_vec();
-        let iter_ptr = make_iterator_from_kv_pairs(&[(key.clone(), val.clone())]);
+        let iter_ptr =
+            make_iterator_from_kv_pairs(&[(key.clone(), val.clone())]);
         let meta_ptr: *mut FileMetaData = &mut meta;
 
         let build_status = build_table(
@@ -88,6 +86,7 @@ mod table_cache_evict_tests {
             unsafe {
                 let c: &mut HitCounter = &mut *(arg as *mut HitCounter);
                 c.hits += 1;
+                core::mem::zeroed()
             }
         }
 
@@ -99,8 +98,8 @@ mod table_cache_evict_tests {
         info!("first TableCache::get (expected cache miss + file open)");
         let s1 = table_cache.get(
             &read_options,
-            meta.number(),
-            meta.file_size(),
+            *meta.number(),
+            *meta.file_size(),
             &Slice::from("k1"),
             arg_ptr,
             count_hits,
@@ -109,18 +108,16 @@ mod table_cache_evict_tests {
         assert_eq!(counter.hits, 1);
 
         let open_count_after_first = {
-            let guard = state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
-            let fname = table_file_name(&dbname, meta.number());
+            let guard = state.lock();
+            let fname = table_file_name(&dbname, *meta.number());
             *guard.random_open_count.get(&fname).unwrap_or(&0)
         };
 
         info!("second TableCache::get (expected cache hit, no new file open)");
         let s2 = table_cache.get(
             &read_options,
-            meta.number(),
-            meta.file_size(),
+            *meta.number(),
+            *meta.file_size(),
             &Slice::from("k1"),
             arg_ptr,
             count_hits,
@@ -129,10 +126,8 @@ mod table_cache_evict_tests {
         assert_eq!(counter.hits, 2);
 
         let open_count_after_second = {
-            let guard = state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
-            let fname = table_file_name(&dbname, meta.number());
+            let guard = state.lock();
+            let fname = table_file_name(&dbname, *meta.number());
             *guard.random_open_count.get(&fname).unwrap_or(&0)
         };
         assert_eq!(
@@ -141,13 +136,13 @@ mod table_cache_evict_tests {
         );
 
         trace!("calling TableCache::evict");
-        table_cache.evict(meta.number());
+        table_cache.evict(*meta.number());
 
         info!("third TableCache::get (expected cache miss + reopen)");
         let s3 = table_cache.get(
             &read_options,
-            meta.number(),
-            meta.file_size(),
+            *meta.number(),
+            *meta.file_size(),
             &Slice::from("k1"),
             arg_ptr,
             count_hits,
@@ -156,10 +151,8 @@ mod table_cache_evict_tests {
         assert_eq!(counter.hits, 3);
 
         let open_count_after_third = {
-            let guard = state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
-            let fname = table_file_name(&dbname, meta.number());
+            let guard = state.lock();
+            let fname = table_file_name(&dbname, *meta.number());
             *guard.random_open_count.get(&fname).unwrap_or(&0)
         };
 

@@ -90,12 +90,10 @@ mod table_cache_get_tests {
     use std::cell::RefCell;
     use std::ffi::c_void;
     use std::rc::Rc;
-    use std::sync::{Arc, Mutex};
 
     #[traced_test]
     fn table_cache_get_successfully_reads_existing_key() {
-        let (env, _state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, _state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         let dbname = String::from("table_cache_get_db");
@@ -107,7 +105,8 @@ mod table_cache_get_tests {
 
         let key = b"get-key".to_vec();
         let val = b"get-value".to_vec();
-        let iter_ptr = make_iterator_from_kv_pairs(&[(key.clone(), val.clone())]);
+        let iter_ptr =
+            make_iterator_from_kv_pairs(&[(key.clone(), val.clone())]);
         let meta_ptr: *mut FileMetaData = &mut meta;
 
         let build_status = build_table(
@@ -136,6 +135,7 @@ mod table_cache_get_tests {
                 c.seen = true;
                 c.key = k.to_string();
                 c.val = v.to_string();
+                core::mem::zeroed()
             }
         }
 
@@ -145,8 +145,8 @@ mod table_cache_get_tests {
 
         let status = table_cache.get(
             &read_options,
-            meta.number(),
-            meta.file_size(),
+            *meta.number(),
+            *meta.file_size(),
             &Slice::from("get-key"),
             arg_ptr,
             handle,
@@ -160,14 +160,11 @@ mod table_cache_get_tests {
 
     #[traced_test]
     fn table_cache_get_propagates_find_table_error_without_invoking_handler() {
-        let (env, state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         {
-            let mut guard = state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let mut guard = state.lock();
             guard.fail_new_random_access = true;
         }
 
@@ -183,6 +180,7 @@ mod table_cache_get_tests {
             unsafe {
                 let c: &mut Capture = &mut *(arg as *mut Capture);
                 c.seen = true;
+                core::mem::zeroed()
             }
         }
 

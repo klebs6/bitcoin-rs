@@ -239,18 +239,14 @@ mod table_cache_find_table_tests {
     use std::cell::RefCell;
     use std::ptr;
     use std::rc::Rc;
-    use std::sync::{Arc, Mutex};
 
     #[traced_test]
     fn find_table_returns_error_when_random_access_creation_fails() {
-        let (env, state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         {
-            let mut guard = state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let mut guard = state.lock();
             guard.fail_new_random_access = true;
         }
 
@@ -264,18 +260,12 @@ mod table_cache_find_table_tests {
             !status.is_ok(),
             "find_table must fail if env::NewRandomAccessFile fails"
         );
-        assert!(
-            handle.is_null(),
-            "handle must remain null on failure"
-        );
+        assert!(handle.is_null(), "handle must remain null on failure");
     }
 
     #[traced_test]
     fn find_table_caches_and_reuses_table_handles() {
-        use std::ffi::c_void;
-
-        let (env, state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         let dbname = String::from("find_table_cache_db");
@@ -287,7 +277,8 @@ mod table_cache_find_table_tests {
 
         let key = b"k-cache".to_vec();
         let val = b"v-cache".to_vec();
-        let iter_ptr = make_iterator_from_kv_pairs(&[(key.clone(), val.clone())]);
+        let iter_ptr =
+            make_iterator_from_kv_pairs(&[(key.clone(), val.clone())]);
         let meta_ptr: *mut FileMetaData = &mut meta;
 
         let build_status = build_table(
@@ -304,29 +295,27 @@ mod table_cache_find_table_tests {
 
         assert!(build_status.is_ok());
 
-        let fname = table_file_name(&dbname, meta.number());
+        let fname = table_file_name(&dbname, *meta.number());
 
         let mut handle1: *mut CacheHandle = std::ptr::null_mut();
-        let s1 = table_cache.find_table(meta.number(), meta.file_size(), &mut handle1);
+        let s1 =
+            table_cache.find_table(*meta.number(), *meta.file_size(), &mut handle1);
         assert!(s1.is_ok());
         assert!(!handle1.is_null());
 
         let open_count_after_first = {
-            let guard = state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let guard = state.lock();
             *guard.random_open_count.get(&fname).unwrap_or(&0)
         };
 
         let mut handle2: *mut CacheHandle = std::ptr::null_mut();
-        let s2 = table_cache.find_table(meta.number(), meta.file_size(), &mut handle2);
+        let s2 =
+            table_cache.find_table(*meta.number(), *meta.file_size(), &mut handle2);
         assert!(s2.is_ok());
         assert!(!handle2.is_null());
 
         let open_count_after_second = {
-            let guard = state
-                .lock()
-                .unwrap_or_else(|poison| poison.into_inner());
+            let guard = state.lock();
             *guard.random_open_count.get(&fname).unwrap_or(&0)
         };
 

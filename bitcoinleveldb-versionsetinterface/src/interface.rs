@@ -5,6 +5,7 @@ pub trait VersionSetInterface
 : ManifestFileNumber
 + NewFileNumber
 + ReuseFileNumber
++ GetInternalKeyComparator
 + LastSequenceNumber
 + SetLastSequenceNumber
 + GetCurrentLogFileNumber
@@ -19,6 +20,10 @@ pub trait VersionSetInterface
 + Recover
 + ReuseManifest
 { }
+
+pub trait GetInternalKeyComparator {
+    fn icmp(&self) -> &InternalKeyComparator;
+}
 
 pub trait LastSequenceNumber {
 

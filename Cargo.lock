@@ -4354,6 +4354,8 @@ dependencies = [
  "bitcoinleveldb-status",
  "bitcoinleveldb-table",
  "bitcoinleveldb-versionsetinterface",
+ "derive_builder",
+ "tracing",
 ]
 
 [[package]]
@@ -4442,6 +4444,8 @@ dependencies = [
  "bitcoinleveldb-key",
  "bitcoinleveldb-options",
  "bitcoinleveldb-slice",
+ "bitcoinleveldb-tablecache",
+ "tracing",
 ]
 
 [[package]]

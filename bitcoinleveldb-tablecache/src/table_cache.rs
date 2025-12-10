@@ -111,12 +111,10 @@ mod table_cache_construction_tests {
     use crate::table_cache_test_support::*;
     use std::cell::RefCell;
     use std::rc::Rc;
-    use std::sync::{Arc, Mutex};
 
     #[traced_test]
     fn table_cache_new_initializes_with_valid_cache_pointer() {
-        let (env, _state): (Rc<RefCell<dyn Env>>, Arc<Mutex<InMemoryEnvState>>) =
-            make_in_memory_env();
+        let (env, _state) = make_in_memory_env();
         let mut options = make_options_with_env(env.clone());
 
         let dbname = String::from("table_cache_new_db");

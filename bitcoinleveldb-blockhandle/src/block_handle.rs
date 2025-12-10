@@ -9,7 +9,7 @@ pub const BLOCK_TRAILER_SIZE: usize = 5;
 /// of a file that stores a data block or a
 /// meta block.
 /// 
-#[derive(Default, Clone, Copy)]
+#[derive(Debug,Default, Clone, Copy)]
 pub struct BlockHandle {
     offset: u64,
     size:   u64,

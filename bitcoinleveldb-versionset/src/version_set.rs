@@ -54,6 +54,12 @@ pub struct VersionSet {
     compact_pointer:      [String; NUM_LEVELS],
 }
 
+impl GetInternalKeyComparator for VersionSet {
+    fn icmp(&self) -> &InternalKeyComparator {
+        &self.icmp
+    }
+}
+
 impl VersionSetInterface for VersionSet {}
 impl VersionSetVersionInterface for VersionSet {}
 impl CompactionInterface for VersionSet {}

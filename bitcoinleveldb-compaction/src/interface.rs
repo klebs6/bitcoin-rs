@@ -65,4 +65,3 @@ pub trait CompactionSetupOtherInputs {
     
     fn setup_other_inputs(&mut self, c: *mut Compaction);
 }
-

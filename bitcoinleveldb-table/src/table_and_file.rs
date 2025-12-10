@@ -5,7 +5,7 @@ crate::ix!();
 #[getset(get_copy = "pub")]
 pub struct TableAndFile {
     file:  *mut dyn RandomAccessFile,
-    table: *mut table::Table,
+    table: *mut Table,
 }
 
 impl TableAndFile {
@@ -21,7 +21,7 @@ impl TableAndFile {
     }
 
     #[inline]
-    pub fn table_ptr(&self) -> *mut table::Table {
+    pub fn table_ptr(&self) -> *mut Table {
         let ptr = self.table;
         trace!(
             "TableAndFile::table_ptr: returning table pointer {:?}",

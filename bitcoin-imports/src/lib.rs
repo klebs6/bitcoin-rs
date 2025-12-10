@@ -540,4 +540,3 @@ pub type LockGuard<'a,T> = std::sync::MutexGuard<'a,T>;
 //pub type KVMap      = Elsewhere;
 //pub type Reader     = Elsewhere;
 //pub type WriteBatch = Elsewhere;
-

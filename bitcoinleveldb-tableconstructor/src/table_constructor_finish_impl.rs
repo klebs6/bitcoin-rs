@@ -23,8 +23,8 @@ impl TableConstructor {
         self.reset();
 
         // Step 1: build the table image into an in‑memory sink.
-        let (mut status, sink, sink_size) =
-            Self::build_table_into_sink(options, data);
+        let (mut status, sink, file_size_bytes) =
+            build_table_into_sink(options, data);
 
         if !status.is_ok() {
             return status;
@@ -35,7 +35,7 @@ impl TableConstructor {
         let source_rc = self.make_source_from_sink(&sink);
 
         // Step 3: open a Table on top of that in‑memory file.
-        status = self.open_table_from_source(options, source_rc, sink_size);
+        status = self.open_table_from_source(options, source_rc, file_size_bytes);
 
         status
     }

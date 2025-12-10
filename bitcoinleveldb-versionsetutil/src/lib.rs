@@ -4,7 +4,6 @@
 x!{add_boundary_inputs}
 x!{after_before}
 x!{file_set}
-x!{find_file}
 x!{find_largest_key}
 x!{find_smallest_boundary_file}
 x!{get_file_iterator}
