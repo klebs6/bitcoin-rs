@@ -10,13 +10,13 @@ pub fn delete_entry(_key_: &Slice, value: *mut c_void) {
 
         let tf = &mut *(value as *mut TableAndFile);
         let table_ptr = tf.table_ptr();
-        let file_ptr  = tf.file_ptr();
+        let file_holder_ptr = tf.file_ptr();
 
         trace!(
-            "delete_entry: deleting TableAndFile at {:?} (table={:?}, file={:?})",
+            "delete_entry: TableAndFile @ {:?}, table_ptr={:?}, file_holder_ptr={:?}",
             value,
             table_ptr,
-            file_ptr
+            file_holder_ptr
         );
 
         if !table_ptr.is_null() {
@@ -28,13 +28,13 @@ pub fn delete_entry(_key_: &Slice, value: *mut c_void) {
                 Box::from_raw(table_ptr);
         }
 
-        if !file_ptr.is_null() {
+        if !file_holder_ptr.is_null() {
             trace!(
-                "delete_entry: deleting RandomAccessFile at {:?}",
-                file_ptr
+                "delete_entry: deleting RandomAccessFile holder at {:?}",
+                file_holder_ptr
             );
-            let _file_box: Box<dyn RandomAccessFile> =
-                Box::from_raw(file_ptr);
+            let _file_holder_box: Box<Box<dyn RandomAccessFile>> =
+                Box::from_raw(file_holder_ptr);
         }
 
         let _tf_box: Box<TableAndFile> =
@@ -107,23 +107,25 @@ mod delete_entry_resource_release_behavior {
     fn delete_entry_releases_table_and_file() {
         let drop_counter = Rc::new(Cell::new(0));
 
-        let file_box: Box<dyn RandomAccessFile> =
+        let inner_file: Box<dyn RandomAccessFile> =
             Box::new(DropCountingRandomAccessFile::new(drop_counter.clone()));
-        let file_ptr: *mut dyn RandomAccessFile = Box::into_raw(file_box);
+        let file_holder: Box<Box<dyn RandomAccessFile>> = Box::new(inner_file);
+        let file_holder_ptr: *mut Box<dyn RandomAccessFile> =
+            Box::into_raw(file_holder);
 
         let table_box: Box<table::Table> =
             Box::new(Table::new(core::ptr::null_mut()));
         let table_ptr: *mut table::Table = Box::into_raw(table_box);
 
-        let tf = TableAndFile::new_for_tests(file_ptr, table_ptr);
+        let tf = TableAndFile::new_for_tests(file_holder_ptr, table_ptr);
         let tf_box = Box::new(tf);
         let value_ptr: *mut TableAndFile = Box::into_raw(tf_box);
 
         trace!(
-            "delete_entry_releases_table_and_file: value_ptr={:?}, table_ptr={:?}, file_ptr={:?}",
+            "delete_entry_releases_table_and_file: value_ptr={:?}, table_ptr={:?}, file_holder_ptr={:?}",
             value_ptr,
             table_ptr,
-            file_ptr
+            file_holder_ptr
         );
 
         delete_entry(&Slice::default(), value_ptr as *mut c_void);
@@ -145,18 +147,20 @@ mod delete_entry_resource_release_behavior {
     fn delete_entry_with_null_table_pointer_releases_file_only() {
         let drop_counter = Rc::new(Cell::new(0));
 
-        let file_box: Box<dyn RandomAccessFile> =
+        let inner_file: Box<dyn RandomAccessFile> =
             Box::new(DropCountingRandomAccessFile::new(drop_counter.clone()));
-        let file_ptr: *mut dyn RandomAccessFile = Box::into_raw(file_box);
+        let file_holder: Box<Box<dyn RandomAccessFile>> = Box::new(inner_file);
+        let file_holder_ptr: *mut Box<dyn RandomAccessFile> =
+            Box::into_raw(file_holder);
 
-        let tf = TableAndFile::new_for_tests(file_ptr, core::ptr::null_mut());
+        let tf = TableAndFile::new_for_tests(file_holder_ptr, core::ptr::null_mut());
         let tf_box = Box::new(tf);
         let value_ptr: *mut TableAndFile = Box::into_raw(tf_box);
 
         trace!(
-            "delete_entry_with_null_table_pointer_releases_file_only: value_ptr={:?}, file_ptr={:?}",
+            "delete_entry_with_null_table_pointer_releases_file_only: value_ptr={:?}, file_holder_ptr={:?}",
             value_ptr,
-            file_ptr
+            file_holder_ptr
         );
 
         delete_entry(&Slice::default(), value_ptr as *mut c_void);
@@ -179,11 +183,10 @@ mod delete_entry_resource_release_behavior {
             Box::new(Table::new(core::ptr::null_mut()));
         let table_ptr: *mut table::Table = Box::into_raw(table_box);
 
-        let tf = TableAndFile::new_for_tests(
-            core::ptr::null_mut::<DropCountingRandomAccessFile>()
-                as *mut dyn RandomAccessFile,
-            table_ptr,
-        );
+        let null_file_holder_ptr: *mut Box<dyn RandomAccessFile> =
+            core::ptr::null_mut();
+
+        let tf = TableAndFile::new_for_tests(null_file_holder_ptr, table_ptr);
         let tf_box = Box::new(tf);
         let value_ptr: *mut TableAndFile = Box::into_raw(tf_box);
 

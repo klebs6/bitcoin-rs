@@ -7,6 +7,10 @@ derive_builder.workspace           = true
 tracing.workspace                  = true
 bitcoinleveldb-iterator            = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-versionsetutil = { path = "../bitcoinleveldb-versionsetutil" }
+bitcoinleveldb-duplex = { path = "../bitcoinleveldb-duplex" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

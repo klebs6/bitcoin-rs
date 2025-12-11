@@ -12,8 +12,8 @@ impl Version {
     ///
     pub fn for_each_overlapping(
         &mut self,
-        user_key_:     Slice,
-        internal_key_: Slice,
+        user_key_:     &Slice,
+        internal_key_: &Slice,
         arg:           *mut c_void,
         func:          fn(
             _0: *mut c_void,
@@ -23,8 +23,8 @@ impl Version {
     ) {
         trace!(
             "Version::for_each_overlapping: start; user_key_len={}, internal_key_len={}",
-            *user_key_.size(),
-            *internal_key_.size()
+            user_key_.size(),
+            internal_key_.size()
         );
 
         let ucmp = unsafe { (*self.vset()).icmp().user_comparator() };
@@ -44,8 +44,8 @@ impl Version {
                 let smallest_user = f.smallest().user_key();
                 let largest_user  = f.largest().user_key();
 
-                if (*ucmp).compare(&user_key_, &smallest_user) >= 0
-                    && (*ucmp).compare(&user_key_, &largest_user) <= 0
+                if (*ucmp).compare(user_key_, &smallest_user) >= 0
+                    && (*ucmp).compare(user_key_, &largest_user) <= 0
                 {
                     tmp.push(fptr);
                 }
@@ -81,7 +81,7 @@ impl Version {
             }
 
             // Binary search to find earliest index whose largest key >= internal_key.
-            let index = find_file(&icmp, files_level, &internal_key_) as usize;
+            let index = find_file(&icmp, files_level, internal_key_) as usize;
             if index < num_files {
                 let fptr = files_level[index];
                 if fptr.is_null() {
@@ -96,7 +96,7 @@ impl Version {
                     let f = &*fptr;
                     let smallest_user = f.smallest().user_key();
 
-                    if (*ucmp).compare(&user_key_, &smallest_user) < 0 {
+                    if (*ucmp).compare(user_key_, &smallest_user) < 0 {
                         // All of "f" is past any data for user_key
                     } else if !func(arg, level, fptr) {
                         trace!(
@@ -114,3 +114,23 @@ impl Version {
         );
     }
 }
+
+#[cfg(test)]
+mod version_for_each_overlapping_signature_tests {
+    use super::*;
+    use std::ffi::c_void;
+
+    #[traced_test]
+    fn for_each_overlapping_signature_is_stable() {
+        let _fn_ptr: fn(
+            &mut Version,
+            &Slice,
+            &Slice,
+            *mut c_void,
+            fn(*mut c_void, i32, *mut FileMetaData) -> bool,
+        ) = Version::for_each_overlapping;
+        let _ = _fn_ptr;
+    }
+}
+
+

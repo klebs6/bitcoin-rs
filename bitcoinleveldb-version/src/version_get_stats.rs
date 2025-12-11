@@ -24,3 +24,45 @@ impl Default for VersionGetStats {
         }
     }
 }
+
+#[cfg(test)]
+mod version_get_stats_tests {
+    use super::*;
+
+    #[traced_test]
+    fn default_stats_have_null_seek_file_and_negative_level() {
+        let stats = VersionGetStats::default();
+        assert!(
+            stats.seek_file().is_null(),
+            "Default VersionGetStats must have null seek_file pointer"
+        );
+        assert_eq!(
+            *stats.seek_file_level(),
+            -1,
+            "Default VersionGetStats must use -1 as sentinel seek_file_level"
+        );
+    }
+
+    #[traced_test]
+    fn setters_and_getters_round_trip_correctly() {
+        let mut stats = VersionGetStats::default();
+        let mut file_meta = FileMetaData::default();
+        let file_meta_ptr: *mut FileMetaData = &mut file_meta;
+
+        stats.set_seek_file(file_meta_ptr);
+        stats.set_seek_file_level(3);
+
+        assert_eq!(
+            *stats.seek_file(),
+            file_meta_ptr,
+            "seek_file getter must return the pointer set earlier"
+        );
+        assert_eq!(
+            *stats.seek_file_level(),
+            3,
+            "seek_file_level getter must return level assigned via setter"
+        );
+    }
+}
+
+

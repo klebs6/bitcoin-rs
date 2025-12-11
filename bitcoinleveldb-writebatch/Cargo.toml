@@ -12,3 +12,4 @@ description = "todo: write a description here"
 [dependencies]
 bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
+bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }

@@ -37,30 +37,15 @@ impl Version {
         let files_level = &self.files()[level as usize];
         let icmp        = unsafe { (*self.vset()).icmp() };
 
-        let smallest_opt: Option<&Slice> = unsafe {
-            if smallest_user_key_.is_null() {
-                None
-            } else {
-                Some(&*smallest_user_key_)
-            }
+        let result = unsafe {
+            some_file_overlaps_range(
+                &icmp,
+                level > 0,
+                files_level,
+                smallest_user_key_,
+                largest_user_key_,
+            )
         };
-        let largest_opt: Option<&Slice> = unsafe {
-            if largest_user_key_.is_null() {
-                None
-            } else {
-                Some(&*largest_user_key_)
-            }
-        };
-
-        let disjoint_sorted_files = level > 0;
-
-        let result = some_file_overlaps_range(
-            &icmp,
-            disjoint_sorted_files,
-            files_level,
-            smallest_opt,
-            largest_opt,
-        );
 
         debug!(
             "Version::overlap_in_level: level={}, result={}",

@@ -9,3 +9,5 @@ pub(crate) use bitcoinleveldb_options::*;
 pub(crate) use bitcoinleveldb_iterator::*;
 pub(crate) use bitcoinleveldb_key::*;
 pub(crate) use bitcoinleveldb_tablecache::*;
+pub(crate) use bitcoinleveldb_status::*;
+pub(crate) use bitcoinleveldb_erroriterator::*;

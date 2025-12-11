@@ -43,3 +43,44 @@ impl Version {
         }
     }
 }
+
+#[cfg(test)]
+mod version_ref_and_unref_tests {
+    use super::*;
+    use super::version_test_helpers as helpers;
+
+    #[traced_test]
+    fn ref_increments_reference_count() {
+        let version_box = helpers::build_boxed_empty_version();
+        let raw: *mut Version = Box::into_raw(version_box);
+
+        unsafe {
+            assert_eq!(
+                *(*raw).refs(),
+                0,
+                "Fresh Version must start with refs == 0"
+            );
+            (*raw).ref_();
+            assert_eq!(
+                *(*raw).refs(),
+                1,
+                "ref_ must increment refs from 0 to 1"
+            );
+        }
+
+        // Leak the Version here to avoid interacting with unref / Drop.
+    }
+
+    #[traced_test]
+    fn unref_deletes_version_when_reference_count_reaches_zero() {
+        let version_box = helpers::build_boxed_empty_version();
+        let raw: *mut Version = Box::into_raw(version_box);
+
+        unsafe {
+            (*raw).ref_();
+            (*raw).unref();
+            // After unref, the Version has been deallocated via Box::from_raw;
+            // we must not touch `raw` again.
+        }
+    }
+}

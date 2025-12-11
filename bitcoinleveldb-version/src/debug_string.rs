@@ -62,3 +62,48 @@ impl Version {
         r
     }
 }
+
+#[cfg(test)]
+mod version_debug_string_behavior_tests {
+    use super::*;
+    use super::version_test_helpers as helpers;
+
+    #[traced_test]
+    fn debug_string_contains_header_for_each_level_even_when_empty() {
+        let version = helpers::build_empty_version();
+        let s = version.debug_string();
+
+        for level in 0..NUM_LEVELS {
+            let header = format!("--- level {} ---", level);
+            assert!(
+                s.contains(&header),
+                "debug_string must contain a header line for level {}",
+                level
+            );
+        }
+    }
+
+    #[traced_test]
+    fn debug_string_includes_file_metadata_for_present_files() {
+        let mut version = helpers::build_empty_version();
+        let file_number: u64 = 11;
+        let file_size: u64 = 1234;
+
+        {
+            let files = version.files_mut();
+            files[0].push(helpers::build_file_meta_boxed(
+                file_number,
+                file_size,
+                "k",
+                "t",
+            ));
+        }
+
+        let s = version.debug_string();
+        let pattern = format!(" {}:{}", file_number, file_size);
+        assert!(
+            s.contains(&pattern),
+            "debug_string must describe files as '<number>:<size>'"
+        );
+    }
+}

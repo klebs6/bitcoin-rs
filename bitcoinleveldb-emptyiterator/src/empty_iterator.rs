@@ -1,119 +1,135 @@
 // ---------------- [ File: bitcoinleveldb-emptyiterator/src/empty_iterator.rs ]
 crate::ix!();
 
-#[derive(Getters, MutGetters)]
-#[getset(get = "pub", get_mut = "pub")]
-pub struct EmptyIterator {
-    base:   LevelDBIterator,
-    status: Status,
-}
-
-/**
-  | Return an empty iterator (yields nothing).
-  |
-  */
 pub fn new_empty_iterator() -> *mut LevelDBIterator {
     trace!("new_empty_iterator: creating OK empty iterator");
 
-    let ok   = Status::ok();
-    let iter = EmptyIterator::new(&ok);
-    let boxed = Box::new(iter);
-    let raw: *mut EmptyIterator = Box::into_raw(boxed);
+    let ok_status = Status::ok();
 
-    unsafe {
-        // Because `base` is the first field of `EmptyIterator`, the address
-        // of `base` is the same as the start of the allocation. We return
-        // the pointer to the embedded `LevelDBIterator` subobject, which is
-        // what the C++ API exposed as the base iterator type.
-        let base_ptr: *mut LevelDBIterator = &mut *(*raw).base_mut();
-        trace!(
-            "new_empty_iterator: allocated EmptyIterator at {:?}, base_ptr={:?}",
-            raw,
-            base_ptr
-        );
-        base_ptr
-    }
+    // Build the underlying EmptyIterator as a dynamic LevelDBIteratorInterface.
+    let empty_iface: Box<dyn LevelDBIteratorInterface> =
+        Box::new(EmptyIterator::new(ok_status));
+
+    // Wrap it in a LevelDBIterator so that the wrapper owns the interface
+    // and all methods delegate correctly (has_iter == true).
+    let wrapper = LevelDBIterator::new(Some(empty_iface));
+
+    let raw_wrapper: *mut LevelDBIterator = Box::into_raw(Box::new(wrapper));
+
+    trace!(
+        "new_empty_iterator: allocated LevelDBIterator wrapper at {:?}",
+        raw_wrapper
+    );
+
+    raw_wrapper
+}
+
+/// An iterator representing either an empty data set or a terminal error.
+///
+/// When constructed with `Status::ok()`, this behaves as an "empty but OK"
+/// iterator: `valid()` is always false and `status()` is OK.
+///
+/// When constructed with a non‑OK status (e.g. via `new_error_iterator`),
+/// this behaves as a terminal error iterator: `valid()` is still always
+/// false, but `status()` returns the stored non‑OK status.
+pub struct EmptyIterator {
+    status_: Status,
 }
 
 impl EmptyIterator {
-    pub fn new(s: &Status) -> Self {
+    /// Construct a new EmptyIterator with the provided status.
+    ///
+    /// If `status` is OK, this behaves as an "empty but OK" iterator.
+    /// If `status` is non-OK, this behaves as a terminal error iterator.
+    pub fn new(status: Status) -> Self {
         trace!(
             "EmptyIterator::new: status_is_ok={}",
-            s.is_ok()
+            status.is_ok()
         );
-
-        EmptyIterator {
-            base:   LevelDBIterator::default(),
-            status: Status::new_from_other_copy(s),
-        }
+        EmptyIterator { status_: status }
     }
+}
 
-    pub fn valid(&self) -> bool {
-        trace!("EmptyIterator::valid called -> false");
+impl LevelDBIteratorValid for EmptyIterator {
+    fn valid(&self) -> bool {
+        let ok = self.status_.is_ok();
+        trace!(
+            "EmptyIterator::valid -> false (status_is_ok={})",
+            ok
+        );
         false
     }
+}
 
-    pub fn seek(&mut self, _target: &Slice) {
+impl LevelDBIteratorSeekToFirst for EmptyIterator {
+    fn seek_to_first(&mut self) {
+        trace!("EmptyIterator::seek_to_first: no-op");
+    }
+}
+
+impl LevelDBIteratorSeekToLast for EmptyIterator {
+    fn seek_to_last(&mut self) {
+        trace!("EmptyIterator::seek_to_last: no-op");
+    }
+}
+
+impl LevelDBIteratorSeek for EmptyIterator {
+    fn seek(&mut self, target: &Slice) {
         trace!(
-            "EmptyIterator::seek called (no-op; iterator is always invalid)"
+            "EmptyIterator::seek: no-op, target_len={}",
+            *target.size()
         );
     }
+}
 
-    pub fn seek_to_first(&mut self) {
-        trace!(
-            "EmptyIterator::seek_to_first called (no-op; iterator is always invalid)"
-        );
+impl LevelDBIteratorNext for EmptyIterator {
+    fn next(&mut self) {
+        trace!("EmptyIterator::next: no-op");
     }
+}
 
-    pub fn seek_to_last(&mut self) {
-        trace!(
-            "EmptyIterator::seek_to_last called (no-op; iterator is always invalid)"
-        );
+impl LevelDBIteratorPrev for EmptyIterator {
+    fn prev(&mut self) {
+        trace!("EmptyIterator::prev: no-op");
     }
+}
 
-    pub fn next(&mut self) {
-        trace!(
-            "EmptyIterator::next called; panicking because iterator is invalid"
-        );
-        panic!("EmptyIterator::next called on empty iterator");
+impl LevelDBIteratorKey for EmptyIterator {
+    fn key(&self) -> Slice {
+        trace!("EmptyIterator::key: returning empty Slice");
+        Slice::default()
     }
+}
 
-    pub fn prev(&mut self) {
-        trace!(
-            "EmptyIterator::prev called; panicking because iterator is invalid"
-        );
-        panic!("EmptyIterator::prev called on empty iterator");
-    }
-
-    pub fn key(&self) -> Slice {
-        trace!(
-            "EmptyIterator::key called; panicking because iterator is invalid"
-        );
-        panic!("EmptyIterator::key called on empty iterator");
-    }
-
-    pub fn value(&self) -> Slice {
-        trace!(
-            "EmptyIterator::value called; panicking because iterator is invalid"
-        );
-        panic!("EmptyIterator::value called on empty iterator");
+impl LevelDBIteratorValue for EmptyIterator {
+    fn value(&self) -> Slice {
+        trace!("EmptyIterator::value: returning empty Slice");
+        Slice::default()
     }
 }
 
 impl LevelDBIteratorStatus for EmptyIterator {
-    fn status(&self) -> crate::Status {
-        Status::new_from_other_copy(&self.status)
+    fn status(&self) -> Status {
+        trace!(
+            "EmptyIterator::status: status_is_ok={}",
+            self.status_.is_ok()
+        );
+        bitcoinleveldb_status::Status::new_from_other_copy(
+            &self.status_,
+        )
     }
 }
 
+impl LevelDBIteratorInterface for EmptyIterator {}
+
 #[cfg(test)]
-mod tests_empty_iterator_behavior {
+mod empty_iterator_behavior_tests {
     use super::*;
 
     #[traced_test]
-    fn empty_iterator_reports_invalid_and_ok_status() {
-        let ok  = Status::ok();
-        let mut iter = EmptyIterator::new(&ok);
+    fn empty_iterator_ok_status_is_always_invalid() {
+        let ok = Status::ok();
+        let mut iter = EmptyIterator::new(ok);
 
         assert!(
             !iter.valid(),
@@ -123,69 +139,80 @@ mod tests_empty_iterator_behavior {
         let st = iter.status();
         assert!(
             st.is_ok(),
-            "EmptyIterator created with Status::ok should report ok status"
+            "EmptyIterator created with Status::ok must report OK status"
         );
 
         let dummy_key = Slice::default();
 
-        // These are all no-ops and must not panic.
+        // All navigation methods are no-ops and must not panic.
         iter.seek(&dummy_key);
         iter.seek_to_first();
         iter.seek_to_last();
-    }
-
-    #[test]
-    #[should_panic(expected = "EmptyIterator::next called on empty iterator")]
-    fn empty_iterator_next_panics_when_invalid() {
-        let ok = Status::ok();
-        let mut iter = EmptyIterator::new(&ok);
         iter.next();
-    }
-
-    #[test]
-    #[should_panic(expected = "EmptyIterator::prev called on empty iterator")]
-    fn empty_iterator_prev_panics_when_invalid() {
-        let ok = Status::ok();
-        let mut iter = EmptyIterator::new(&ok);
         iter.prev();
-    }
 
-    #[test]
-    #[should_panic(expected = "EmptyIterator::key called on empty iterator")]
-    fn empty_iterator_key_panics_when_invalid() {
-        let ok = Status::ok();
-        let iter = EmptyIterator::new(&ok);
-        let _ = iter.key();
-    }
-
-    #[test]
-    #[should_panic(expected = "EmptyIterator::value called on empty iterator")]
-    fn empty_iterator_value_panics_when_invalid() {
-        let ok = Status::ok();
-        let iter = EmptyIterator::new(&ok);
-        let _ = iter.value();
+        // key/value must be empty slices.
+        let k = iter.key();
+        let v = iter.value();
+        assert_eq!(*k.size(), 0);
+        assert_eq!(*v.size(), 0);
     }
 
     #[traced_test]
-    fn new_empty_iterator_allocates_distinct_non_null_pointers() {
-        let p1: *mut LevelDBIterator = new_empty_iterator();
-        let p2: *mut LevelDBIterator = new_empty_iterator();
+    fn empty_iterator_error_status_is_propagated() {
+        let msg = Slice::from("empty-iter-corruption");
+        let err_status = Status::corruption(&msg, None);
+
+        let iter = EmptyIterator::new(err_status);
+        let st = iter.status();
 
         assert!(
-            !p1.is_null(),
-            "new_empty_iterator must never return a null pointer (p1)"
+            !st.is_ok(),
+            "EmptyIterator created with non-OK status must report non-OK status"
+        );
+    }
+
+    #[traced_test]
+    fn new_empty_iterator_returns_ok_empty_wrapper() {
+        let ptr1: *mut LevelDBIterator = new_empty_iterator();
+        let ptr2: *mut LevelDBIterator = new_empty_iterator();
+
+        assert!(
+            !ptr1.is_null(),
+            "new_empty_iterator must never return a null pointer (ptr1)"
         );
         assert!(
-            !p2.is_null(),
-            "new_empty_iterator must never return a null pointer (p2)"
+            !ptr2.is_null(),
+            "new_empty_iterator must never return a null pointer (ptr2)"
         );
         assert_ne!(
-            p1, p2,
-            "Each call to new_empty_iterator should allocate a distinct iterator base pointer"
+            ptr1, ptr2,
+            "Each call to new_empty_iterator should allocate a distinct iterator wrapper"
         );
 
-        // Ownership and reclamation of these raw pointers is handled at the
-        // higher layers that know the concrete iterator type. We only ensure
-        // that the factory returns sensible, unique base pointers.
+        unsafe {
+            // Interface-level behavior: always invalid, OK status.
+            assert!(
+                !(*ptr1).valid(),
+                "wrapper from new_empty_iterator must report invalid"
+            );
+            assert!(
+                (*ptr1).status().is_ok(),
+                "wrapper from new_empty_iterator must report OK status"
+            );
+
+            assert!(
+                !(*ptr2).valid(),
+                "second wrapper from new_empty_iterator must report invalid"
+            );
+            assert!(
+                (*ptr2).status().is_ok(),
+                "second wrapper from new_empty_iterator must report OK status"
+            );
+
+            // Avoid leaks by reclaiming the wrappers.
+            drop(Box::from_raw(ptr1));
+            drop(Box::from_raw(ptr2));
+        }
     }
 }

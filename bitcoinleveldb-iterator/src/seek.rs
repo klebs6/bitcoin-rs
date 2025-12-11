@@ -2,22 +2,33 @@
 crate::ix!();
 
 impl LevelDBIteratorSeek for LevelDBIterator {
-
-    fn seek(&mut self, k: &Slice) {
+    fn seek(&mut self, target: &Slice) {
         trace!(
-            "LevelDBIterator::seek: seeking to target={:?}, has_iter={}",
-            k,
-            self.has_iterator()
+            target = ?target,
+            has_iter = self.has_iterator(),
+            "LevelDBIterator::seek: seeking to target"
         );
 
-        {
-            let iter = self
-                .iter_mut()
-                .expect("LevelDBIterator::seek: underlying iterator is missing");
-            iter.seek(k);
+        if !self.has_iterator() {
+            warn!(
+                target = ?target,
+                "LevelDBIterator::seek called with no underlying iterator; leaving iterator invalid"
+            );
+            // Do not panic here: callers that use a default-constructed iterator
+            // (e.g. Table::read_meta for the metaindex block) should simply
+            // observe an invalid iterator rather than a hard failure.
+            return;
         }
 
-        self.update();
+        if let Some(ref mut inner) = self.iter_mut() {
+            inner.seek(target);
+            self.update();
+        } else {
+            error!(
+                target = ?target,
+                "LevelDBIterator::seek: has_iterator() returned true but iter is None"
+            );
+        }
     }
 }
 

@@ -13,8 +13,7 @@ impl TableConstructor {
         use std::cell::RefCell;
         use std::rc::Rc;
 
-        let contents_slice =
-            Slice::from(sink.contents().as_bytes());
+        let contents_slice = Slice::from(sink.contents().as_slice());
 
         let source = StringSource::new(&contents_slice);
 

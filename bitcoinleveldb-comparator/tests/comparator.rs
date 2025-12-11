@@ -1,5 +1,6 @@
 // ---------------- [ File: bitcoinleveldb-comparator/tests/comparator.rs ]
 use bitcoinleveldb_comparator::*;
+use bitcoinleveldb_slice::*;
 use bitcoin_imports::*;
 
 #[traced_test]

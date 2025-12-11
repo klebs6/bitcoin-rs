@@ -3,3 +3,4 @@
 // For now, placeholder comment.
 pub(crate) use bitcoin_imports::*;
 pub(crate) use bitcoinleveldb_batch::*;
+pub(crate) use bitcoinleveldb_memtable::*;

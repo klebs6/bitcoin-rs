@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-tablebuilder/src/table_builder_write_raw_block.rs ]
 crate::ix!();
 
-fn mask_crc32c_for_table_block(crc: u32) -> u32 {
+pub fn mask_crc32c_for_table_block(crc: u32) -> u32 {
     const MASK_DELTA: u32 = 0xa282_ead8;
     crc.rotate_right(15).wrapping_add(MASK_DELTA)
 }

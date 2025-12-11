@@ -128,7 +128,7 @@ mod tests_iterator_cleanup_node {
     use super::*;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
-    fn increment_node_run_count(arg1: *mut c_void, arg2: *mut c_void) -> c_void {
+    fn increment_node_run_count(arg1: *mut c_void, arg2: *mut c_void) {
         debug!(
             "increment_node_run_count invoked with arg1={:?}, arg2={:?}",
             arg1,
@@ -143,8 +143,6 @@ mod tests_iterator_cleanup_node {
             let counter: &AtomicUsize = &*(arg1 as *const AtomicUsize);
             counter.fetch_add(1, Ordering::SeqCst);
         }
-
-        unsafe { core::mem::zeroed() }
     }
 
     #[traced_test]
@@ -219,15 +217,13 @@ mod tests_iterator_cleanup_node {
 mod iterator_cleanup_node_behavior_tests {
     use super::*;
 
-    fn test_cleanup_flag(arg1: *mut c_void, _arg2: *mut c_void) -> c_void {
+    fn test_cleanup_flag(arg1: *mut c_void, _arg2: *mut c_void) {
         debug!("test_cleanup_flag invoked");
         unsafe {
             let flag_ptr = arg1 as *mut bool;
             assert!(!flag_ptr.is_null(), "flag pointer must not be null");
             *flag_ptr = true;
         }
-        // Return value is unused; we just satisfy the function type.
-        unsafe { core::mem::zeroed() }
     }
 
     #[traced_test]

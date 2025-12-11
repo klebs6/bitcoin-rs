@@ -44,15 +44,11 @@ impl Table {
                 index_iter_raw
             );
 
-            // Take ownership of the raw LevelDBIterator as a Box<LevelDBIterator>,
-            // then upcast to the abstract iterator interface.
             let index_iter_box: Box<LevelDBIterator> = Box::from_raw(index_iter_raw);
             let index_iter_iface: Box<dyn LevelDBIteratorInterface> = index_iter_box;
 
             let table_ptr = self as *const Table as *mut c_void;
 
-            // This mirrors the original LevelDB call:
-            // NewTwoLevelIterator(index_iter, &Table::BlockReader, this, options)
             let two_level_iface: Box<dyn LevelDBIteratorInterface> =
                 bitcoinleveldb_duplex::new_two_level_iterator(
                     index_iter_iface,
@@ -65,8 +61,6 @@ impl Table {
                 "Table::new_iterator: two-level iterator created"
             );
 
-            // Wrap the resulting TwoLevelIterator interface in a LevelDBIterator
-            // wrapper, as everywhere else in this port.
             let wrapper = LevelDBIterator::new(Some(two_level_iface));
             let boxed_wrapper = Box::new(wrapper);
             let raw_wrapper: *mut LevelDBIterator = Box::into_raw(boxed_wrapper);

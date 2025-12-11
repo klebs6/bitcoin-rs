@@ -44,17 +44,11 @@ ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-1]
 ACTIVE := bitcoinleveldb-version
-ACTIVE := bitcoinleveldb-tableconstructor
-ACTIVE := bitcoinleveldb-tablecache
+ACTIVE := bitcoinleveldb-memtable
 
 # ------------------------------- [leveldb-layer-2]
-#ACTIVE := bitcoinleveldb-versionsetutil
-ACTIVE := bitcoinleveldb-compaction
-
-# ------------------------------- [leveldb-layer-2b]
-#ACTIVE := bitcoinleveldb-memtable #loc: 476
-#ACTIVE := bitcoinleveldb-versionset
-#ACTIVE := bitcoinleveldb-versionsetbuilder
+ACTIVE := bitcoinleveldb-versionset
+ACTIVE := bitcoinleveldb-versionsetbuilder
 
 # ------------------------------- [leveldb-layer-3]
 #ACTIVE := bitcoinleveldb-batch    #loc: 547
@@ -364,13 +358,10 @@ bench:
 #ACTIVE := bitcoinleveldb-tablerep
 #ACTIVE := bitcoinleveldb-blockconstructor
 #ACTIVE := bitcoinleveldb-blockiter
-#ACTIVE := bitcoinleveldb-footer
 #ACTIVE := bitcoinleveldb-snapshot
 #ACTIVE := bitcoinleveldb-tablebuilder
 #ACTIVE := bitcoinleveldb-iteratorinner
 #ACTIVE := bitcoinleveldb-iterator
-#ACTIVE := bitcoinleveldb-emptyiterator
-#ACTIVE := bitcoinleveldb-erroriterator
 #ACTIVE := bitcoinleveldb-file           #loc: 843
 #ACTIVE := bitcoinleveldb-merger
 #ACTIVE := bitcoinleveldb-keyconvertingiterator
@@ -379,3 +370,10 @@ bench:
 #ACTIVE := bitcoinleveldb-table
 #ACTIVE := bitcoinleveldb-versionsetinterface
 #ACTIVE := bitcoinleveldb-compactionstats
+#ACTIVE := bitcoinleveldb-emptyiterator
+#ACTIVE := bitcoinleveldb-erroriterator
+#ACTIVE := bitcoinleveldb-footer
+#ACTIVE := bitcoinleveldb-versionsetutil
+#ACTIVE := bitcoinleveldb-tableconstructor
+#ACTIVE := bitcoinleveldb-tablecache
+#ACTIVE := bitcoinleveldb-compaction

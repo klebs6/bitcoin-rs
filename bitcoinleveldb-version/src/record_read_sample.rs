@@ -45,8 +45,8 @@ impl Version {
             .unwrap();
 
         self.for_each_overlapping(
-            user_key,
-            internal_key_,
+            &user_key,
+            &internal_key_,
             &mut state as *mut RecordReadSampleState as *mut c_void,
             record_read_sample_match_cb,
         );
@@ -77,5 +77,129 @@ impl Version {
             );
             false
         }
+    }
+}
+
+#[cfg(test)]
+mod version_record_read_sample_state_and_callback_tests {
+    use super::*;
+    use std::ffi::c_void;
+
+    fn build_record_read_sample_state() -> RecordReadSampleState {
+        RecordReadSampleStateBuilder::default()
+            .stats(VersionGetStats::default())
+            .matches(0)
+            .build()
+            .expect("RecordReadSampleStateBuilder must succeed")
+    }
+
+    #[traced_test]
+    fn record_read_sample_match_cb_first_match_sets_stats_and_returns_true() {
+        let mut state = build_record_read_sample_state();
+        let state_ptr: *mut RecordReadSampleState = &mut state;
+
+        let mut file_meta = FileMetaData::default();
+        let mut file_meta_box = Box::new(file_meta);
+        let file_ptr: *mut FileMetaData = &mut *file_meta_box;
+
+        let continue_iterating = record_read_sample_match_cb(
+            state_ptr as *mut c_void,
+            3,
+            file_ptr,
+        );
+
+        assert_eq!(
+            *state.matches(),
+            1,
+            "First invocation must increment matches to 1"
+        );
+        assert!(
+            continue_iterating,
+            "Callback must return true when matches == 1"
+        );
+        assert_eq!(
+            *state.stats().seek_file(),
+            file_ptr,
+            "stats.seek_file must be set to first matching file pointer"
+        );
+        assert_eq!(
+            *state.stats().seek_file_level(),
+            3,
+            "stats.seek_file_level must equal level of first match"
+        );
+    }
+
+    #[traced_test]
+    fn record_read_sample_match_cb_second_match_returns_false_without_overwriting_stats() {
+        let mut state = build_record_read_sample_state();
+        let state_ptr: *mut RecordReadSampleState = &mut state;
+
+        let mut first_meta = FileMetaData::default();
+        let mut first_box = Box::new(first_meta);
+        let first_ptr: *mut FileMetaData = &mut *first_box;
+
+        let cont1 = record_read_sample_match_cb(
+            state_ptr as *mut c_void,
+            2,
+            first_ptr,
+        );
+        assert!(cont1, "Iteration should continue after first match");
+
+        let mut second_meta = FileMetaData::default();
+        let mut second_box = Box::new(second_meta);
+        let second_ptr: *mut FileMetaData = &mut *second_box;
+
+        let cont2 = record_read_sample_match_cb(
+            state_ptr as *mut c_void,
+            5,
+            second_ptr,
+        );
+
+        assert_eq!(
+            *state.matches(),
+            2,
+            "Two invocations of callback must increment matches to 2"
+        );
+        assert!(
+            !cont2,
+            "Callback must return false once matches reaches 2"
+        );
+        assert_eq!(
+            *state.stats().seek_file(),
+            first_ptr,
+            "stats.seek_file must still refer to the first matching file"
+        );
+        assert_eq!(
+            *state.stats().seek_file_level(),
+            2,
+            "stats.seek_file_level must remain that of the first match"
+        );
+    }
+}
+
+#[cfg(test)]
+mod version_record_read_sample_behavior_tests {
+    use super::*;
+    use super::version_test_helpers as helpers;
+
+    #[traced_test]
+    fn record_read_sample_returns_false_when_internal_key_parse_fails() {
+        let mut version = helpers::build_empty_version();
+
+        let bad_bytes: [u8; 4] = [0x01, 0x02, 0x03, 0x04];
+        let key_slice = Slice::from(&bad_bytes[..]);
+
+        let triggered = version.record_read_sample(key_slice);
+        assert!(
+            !triggered,
+            "record_read_sample must return false when ParseInternalKey fails"
+        );
+    }
+
+    #[traced_test]
+    fn record_read_sample_method_signature_remains_stable() {
+        let _fn_ptr: fn(&mut Version, Slice) -> bool =
+            Version::record_read_sample;
+        let _ = _fn_ptr;
     }
 }

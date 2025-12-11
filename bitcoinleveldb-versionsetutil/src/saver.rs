@@ -13,7 +13,8 @@ pub enum SaverState {
     Corrupt,
 }
 
-#[derive(Debug)]
+#[derive(Builder)]
+#[builder(pattern="owned")]
 pub struct Saver {
     state:    SaverState,
     ucmp:     Box<dyn SliceComparator>,
@@ -21,12 +22,28 @@ pub struct Saver {
     value:    *mut String,
 }
 
+impl core::fmt::Debug for Saver {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("Saver")
+            .field("state", &self.state)
+            .field("user_key*", &self.user_key_)
+            .field("value", &self.value)
+            .finish()
+    }
+}
+
+impl Saver {
+    pub fn user_key(&self) -> &Slice {
+        &self.user_key_
+    }
+
+    pub fn state(&self) -> SaverState {
+        self.state
+    }
+}
+
 /// Callback from TableCache::Get()
-pub fn save_value(
-    arg:   *mut c_void,
-    ikey_: &Slice,
-    v:     &Slice,
-) {
+pub fn save_value(arg: *mut c_void, ikey_: &Slice, v: &Slice) -> c_void {
     unsafe {
         trace!("save_value: invoked");
 
@@ -41,63 +58,65 @@ pub fn save_value(
 
         let ok = parse_internal_key(ikey_, &mut parsed_key as *mut ParsedInternalKey);
 
-        if !ok {
-            debug!("save_value: parse_internal_key failed; marking state=Corrupt");
-            s.state = SaverState::Corrupt;
-            return;
-        }
+        if ok {
+            let user_key = parsed_key.user_key();
+            let cmp      = s.ucmp.compare(user_key, &s.user_key_);
 
-        let user_key = parsed_key.user_key();
-        let cmp      = s.ucmp.compare(user_key, &s.user_key_);
+            trace!(
+                parsed_user_key_len = *user_key.size(),
+                saver_user_key_len  = *s.user_key_.size(),
+                cmp,
+                "save_value: user key comparison"
+            );
 
-        trace!(
-            parsed_user_key_len = *user_key.size(),
-            saver_user_key_len  = *s.user_key_.size(),
-            cmp,
-            "save_value: user key comparison"
-        );
+            if cmp == 0 {
+                let value_type = *parsed_key.ty();
+                s.state = if value_type == ValueType::TypeValue {
+                    SaverState::Found
+                } else {
+                    SaverState::Deleted
+                };
 
-        if cmp == 0 {
-            let value_type = *parsed_key.ty();
-            s.state = if value_type == ValueType::TypeValue {
-                SaverState::Found
-            } else {
-                SaverState::Deleted
-            };
+                match s.state {
+                    SaverState::Found => {
+                        if !s.value.is_null() {
+                            let out: &mut String = &mut *s.value;
+                            let len              = *v.size();
+                            let data_ptr         = *v.data();
+                            let bytes =
+                                std::slice::from_raw_parts(data_ptr, len);
 
-            match s.state {
-                SaverState::Found => {
-                    if !s.value.is_null() {
-                        let out: &mut String = &mut *s.value;
-                        let len              = *v.size();
-                        let data_ptr         = *v.data();
-                        let bytes =
-                            std::slice::from_raw_parts(data_ptr, len);
+                            debug!(
+                                value_len = len,
+                                "save_value: writing value bytes into destination string"
+                            );
 
+                            // Preserve raw bytes exactly as in C++ std::string::assign.
+                            let new_string =
+                                String::from_utf8_unchecked(bytes.to_vec());
+                            *out = new_string;
+                        } else {
+                            debug!(
+                                "save_value: state=Found but destination value pointer is null; skipping write"
+                            );
+                        }
+                    }
+                    SaverState::Deleted => {
                         debug!(
-                            value_len = len,
-                            "save_value: writing value bytes into destination string"
-                        );
-
-                        // Preserve raw bytes exactly as in C++ std::string::assign.
-                        let new_string =
-                            String::from_utf8_unchecked(bytes.to_vec());
-                        *out = new_string;
-                    } else {
-                        debug!(
-                            "save_value: state=Found but destination value pointer is null; skipping write"
+                            "save_value: user key matched but value marked as Deleted"
                         );
                     }
+                    _ => { /* Not reachable here */ }
                 }
-                SaverState::Deleted => {
-                    debug!(
-                        "save_value: user key matched but value marked as Deleted"
-                    );
-                }
-                _ => { /* Not reachable here */ }
             }
+        } else {
+            debug!(
+                "save_value: parse_internal_key failed; marking state=Corrupt"
+            );
+            s.state = SaverState::Corrupt;
         }
     }
+    unsafe { core::mem::zeroed::<c_void>() }
 }
 
 #[cfg(test)]

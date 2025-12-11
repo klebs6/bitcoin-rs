@@ -12,7 +12,7 @@ crate::ix!();
   */
 pub fn find_file(
     icmp:  &InternalKeyComparator,
-    files: &Vec<*mut FileMetaData>,
+    files: &[*mut FileMetaData],
     key_:  &Slice,
 ) -> i32 {
     use tracing::{trace, debug};

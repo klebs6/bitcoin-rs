@@ -1,33 +1,36 @@
 // ---------------- [ File: bitcoinleveldb-erroriterator/src/error_iterator.rs ]
 crate::ix!();
 
-/**
-  | Return an empty iterator with the specified
-  | status.
-  |
-  */
+/// Construct a new "error iterator" that always yields a non‑OK status.
+///
+/// This is used by helpers like `TableCache::new_iterator` when the
+/// underlying table cannot be opened. The returned `LevelDBIterator`
+/// wraps an `EmptyIterator` carrying the provided `status`.
 pub fn new_error_iterator(status: &Status) -> *mut LevelDBIterator {
     trace!(
         "new_error_iterator: creating error iterator (status_is_ok={})",
         status.is_ok()
     );
 
-    let iter = EmptyIterator::new(status);
-    let boxed = Box::new(iter);
-    let raw: *mut EmptyIterator = Box::into_raw(boxed);
+    // Copy the incoming status so the iterator owns its error state.
+    let copied_status =
+        bitcoinleveldb_status::Status::new_from_other_copy(status);
 
-    unsafe {
-        // As with `new_empty_iterator`, the address of `base` is the start of
-        // the allocation, so we can safely return it as the abstract iterator.
-        let base_ptr: *mut LevelDBIterator = &mut *(*raw).base_mut();
-        trace!(
-            "new_error_iterator: allocated EmptyIterator at {:?}, base_ptr={:?}",
-            raw,
-            base_ptr
-        );
-        base_ptr
-    }
+    let empty_iface: Box<dyn LevelDBIteratorInterface> =
+        Box::new(EmptyIterator::new(copied_status));
+
+    let wrapper = LevelDBIterator::new(Some(empty_iface));
+
+    let raw_wrapper: *mut LevelDBIterator = Box::into_raw(Box::new(wrapper));
+
+    trace!(
+        "new_error_iterator: allocated EmptyIterator-backed wrapper at {:?}",
+        raw_wrapper
+    );
+
+    raw_wrapper
 }
+
 
 #[cfg(test)]
 mod error_iterator_behavior_tests {
@@ -39,7 +42,7 @@ mod error_iterator_behavior_tests {
         let msg_slice = Slice::from(msg_bytes.as_slice());
         let err_status = Status::corruption(&msg_slice, None);
 
-        let iter = EmptyIterator::new(&err_status);
+        let iter = EmptyIterator::new(err_status);
         let st = iter.status();
 
         assert!(

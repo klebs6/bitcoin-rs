@@ -10,4 +10,7 @@ pub(crate) use bitcoinleveldb_slice::*;
 pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use bitcoinleveldb_table::*;
 pub(crate) use bitcoinleveldb_iterator::*;
-pub(crate) use bitcoinleveldb_tableconstructor::*;
+pub(crate) use bitcoinleveldb_blockconstructor::*;
+pub(crate) use bitcoinleveldb_iteratorinner::*;
+pub(crate) use bitcoinleveldb_coding::*;
+pub(crate) use bitcoinleveldb_keyconvertingiterator::*;

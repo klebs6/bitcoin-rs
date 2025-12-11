@@ -117,3 +117,56 @@ impl Version {
         );
     }
 }
+
+#[cfg(test)]
+mod version_overlapping_inputs_and_overlap_in_level_tests {
+    use super::*;
+    use super::version_test_helpers as helpers;
+
+    #[test]
+    #[should_panic(expected = "out of range")]
+    fn get_overlapping_inputs_panics_on_invalid_level() {
+        let mut version = helpers::build_empty_version();
+        let begin_ptr: *const InternalKey = core::ptr::null();
+        let end_ptr: *const InternalKey = core::ptr::null();
+        let mut inputs: Vec<*mut FileMetaData> = Vec::new();
+        let inputs_ptr: *mut Vec<*mut FileMetaData> = &mut inputs;
+
+        version.get_overlapping_inputs(NUM_LEVELS as i32, begin_ptr, end_ptr, inputs_ptr);
+    }
+
+    #[test]
+    #[should_panic(expected = "out of range")]
+    fn overlap_in_level_panics_on_invalid_level() {
+        let mut version = helpers::build_empty_version();
+        let smallest_ptr: *const Slice = core::ptr::null();
+        let largest_ptr: *const Slice = core::ptr::null();
+
+        let _ = version.overlap_in_level(NUM_LEVELS as i32, smallest_ptr, largest_ptr);
+    }
+
+    #[traced_test]
+    fn get_overlapping_inputs_signature_is_stable() {
+        let _fn_ptr: fn(
+            &mut Version,
+            i32,
+            *const InternalKey,
+            *const InternalKey,
+            *mut Vec<*mut FileMetaData>,
+        ) = Version::get_overlapping_inputs;
+        let _ = _fn_ptr;
+    }
+
+    #[traced_test]
+    fn overlap_in_level_signature_is_stable() {
+        let _fn_ptr: fn(
+            &mut Version,
+            i32,
+            *const Slice,
+            *const Slice,
+        ) -> bool = Version::overlap_in_level;
+        let _ = _fn_ptr;
+    }
+}
+
+

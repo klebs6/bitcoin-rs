@@ -26,7 +26,6 @@ pub struct LevelDBIterator {
     rep:   Rc<RefCell<LevelDBIteratorCleanupNodeList>>,
 }
 
-
 impl LevelDBIteratorInterface for LevelDBIterator {}
 
 impl Default for LevelDBIterator {
@@ -89,12 +88,6 @@ impl LevelDBIteratorStatus for LevelDBIterator {
 
 impl LevelDBIterator {
 
-    /**
-      | Construct a wrapper that optionally owns
-      | an iterator. Passing `None` corresponds
-      | to the default C++ constructor with
-      | a null `Iterator*`.
-      */
     pub fn new(iter: Option<Box<dyn LevelDBIteratorInterface>>) -> Self {
         trace!(
             "LevelDBIterator::new: constructing wrapper; has_iter={}",
@@ -102,7 +95,28 @@ impl LevelDBIterator {
         );
 
         let mut wrapper = LevelDBIterator::default();
-        wrapper.reset_iterator(iter);
+
+        // Directly set the inner iterator instead of going through
+        // reset_iterator(), which assumes that any previous iterator
+        // has already been dropped and that it is safe to call
+        // iter() / iter_mut() during update(). At construction time,
+        // the previous iterator is always None, so we can safely
+        // install the new iterator first, then update the cached
+        // state.
+        wrapper.iter = iter;
+
+        if wrapper.has_iterator() {
+            trace!(
+                "LevelDBIterator::new: iterator attached at construction; updating cached state"
+            );
+            wrapper.update();
+        } else {
+            trace!(
+                "LevelDBIterator::new: constructed without underlying iterator; leaving wrapper invalid"
+            );
+            wrapper.set_valid_flag(false);
+        }
+
         wrapper
     }
 
@@ -401,10 +415,9 @@ mod tests_leveldb_iterator_lifecycle {
 
     static ITERATOR_CLEANUP_CALLED: AtomicUsize = AtomicUsize::new(0);
 
-    fn iterator_cleanup(_arg1: *mut c_void, _arg2: *mut c_void) -> c_void {
+    fn iterator_cleanup(_arg1: *mut c_void, _arg2: *mut c_void) {
         debug!("iterator_cleanup invoked");
         ITERATOR_CLEANUP_CALLED.fetch_add(1, Ordering::SeqCst);
-        unsafe { std::mem::zeroed() }
     }
 
     #[traced_test]

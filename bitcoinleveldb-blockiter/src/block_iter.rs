@@ -36,6 +36,8 @@ pub struct BlockIter {
     status:        Status,
 }
 
+impl LevelDBIteratorInterface for BlockIter {}
+
 impl BlockIter {
   
     pub fn new(

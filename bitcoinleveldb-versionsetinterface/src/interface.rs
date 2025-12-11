@@ -19,7 +19,17 @@ pub trait VersionSetInterface
 + NumLevelBytes
 + Recover
 + ReuseManifest
++ GetTableCache
++ GetOptionsPtr
 { }
+
+pub trait GetTableCache {
+    fn table_cache(&self) -> *mut TableCache;
+}
+
+pub trait GetOptionsPtr {
+    fn options(&self) -> *const Options;
+}
 
 pub trait GetInternalKeyComparator {
     fn icmp(&self) -> &InternalKeyComparator;

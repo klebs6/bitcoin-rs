@@ -2,10 +2,10 @@
 crate::ix!();
 
 pub struct StringSource {
-    contents: String,
+    contents: Vec<u8>,
 }
 
-impl RandomAccessFile for StringSource { }
+impl RandomAccessFile for StringSource {}
 
 impl RandomAccessFileRead for StringSource {
     fn read(
@@ -26,6 +26,7 @@ impl RandomAccessFileRead for StringSource {
             );
 
             let len = self.contents.len() as u64;
+
             trace!(
                 "StringSource::read: offset={}, requested_n={}, total_len={}",
                 offset,
@@ -34,7 +35,7 @@ impl RandomAccessFileRead for StringSource {
             );
 
             if offset >= len {
-                let msg = b"invalid Read offset";
+                let msg       = b"invalid Read offset";
                 let msg_slice = Slice::from(&msg[..]);
 
                 error!(
@@ -43,10 +44,7 @@ impl RandomAccessFileRead for StringSource {
                     len
                 );
 
-                return crate::Status::invalid_argument(
-                    &msg_slice,
-                    None,
-                );
+                return crate::Status::invalid_argument(&msg_slice, None);
             }
 
             let available = (len - offset) as usize;
@@ -54,13 +52,14 @@ impl RandomAccessFileRead for StringSource {
                 n = available;
             }
 
-            let src_bytes = self.contents.as_bytes();
-            let src_ptr = src_bytes.as_ptr().add(offset as usize);
+            let src_ptr = self
+                .contents
+                .as_ptr()
+                .add(offset as usize);
 
             core::ptr::copy_nonoverlapping(src_ptr, scratch, n);
 
-            *result =
-                Slice::from_ptr_len(scratch as *const u8, n);
+            *result = Slice::from_ptr_len(scratch as *const u8, n);
 
             trace!(
                 "StringSource::read: fulfilled {} bytes from offset {}",
@@ -80,20 +79,19 @@ impl Named for StringSource {
 }
 
 impl StringSource {
-
     pub fn new(contents: &Slice) -> Self {
         unsafe {
-            let ptr = *contents.data();
-            let len = *contents.size();
+            let ptr   = *contents.data();
+            let len   = *contents.size();
             let bytes = core::slice::from_raw_parts(ptr, len);
-            let s = String::from_utf8_lossy(bytes).to_string();
+            let data  = bytes.to_vec();
 
             trace!(
                 "StringSource::new: initialized with {} bytes",
                 len
             );
 
-            StringSource { contents: s }
+            StringSource { contents: data }
         }
     }
 

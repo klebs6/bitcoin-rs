@@ -4,17 +4,21 @@ crate::ix!();
 #[derive(Getters)]
 #[getset(get_copy = "pub")]
 pub struct TableAndFile {
-    file:  *mut dyn RandomAccessFile,
+    file:  *mut Box<dyn RandomAccessFile>,
     table: *mut Table,
 }
 
 impl TableAndFile {
 
+    pub fn new(file: *mut Box<dyn RandomAccessFile>, table: *mut Table) -> Self {
+        Self { file, table }
+    }
+
     #[inline]
-    pub fn file_ptr(&self) -> *mut dyn RandomAccessFile {
+    pub fn file_ptr(&self) -> *mut Box<dyn RandomAccessFile> {
         let ptr = self.file;
         trace!(
-            "TableAndFile::file_ptr: returning file pointer {:?}",
+            "TableAndFile::file_ptr: returning file holder pointer {:?}",
             ptr
         );
         ptr
@@ -33,7 +37,7 @@ impl TableAndFile {
     #[cfg(test)]
     #[inline]
     pub fn new_for_tests(
-        file:  *mut dyn RandomAccessFile,
+        file:  *mut Box<dyn RandomAccessFile>,
         table: *mut table::Table,
     ) -> Self {
         trace!(
@@ -85,14 +89,16 @@ mod table_and_file_pointer_accessors_behavior {
 
     #[traced_test]
     fn table_and_file_accessors_round_trip_non_null_pointers() {
-        let mut file_box: Box<dyn RandomAccessFile> =
+        let inner_file: Box<dyn RandomAccessFile> =
             Box::new(DummyRandomAccessFile);
-        let file_ptr: *mut dyn RandomAccessFile = &mut *file_box;
+        let file_holder: Box<Box<dyn RandomAccessFile>> = Box::new(inner_file);
+        let file_holder_ptr: *mut Box<dyn RandomAccessFile> =
+            Box::into_raw(file_holder);
 
         let mut table = Table::new(core::ptr::null_mut());
         let table_ptr: *mut table::Table = &mut table;
 
-        let tf = TableAndFile::new_for_tests(file_ptr, table_ptr);
+        let tf = TableAndFile::new_for_tests(file_holder_ptr, table_ptr);
 
         trace!(
             "table_and_file_accessors_round_trip_non_null_pointers: tf.file_ptr={:?}, tf.table_ptr={:?}",
@@ -100,14 +106,13 @@ mod table_and_file_pointer_accessors_behavior {
             tf.table_ptr()
         );
 
-        assert_eq!(tf.file_ptr(), file_ptr);
+        assert_eq!(tf.file_ptr(), file_holder_ptr);
         assert_eq!(tf.table_ptr(), table_ptr);
     }
 
     #[traced_test]
     fn table_and_file_accessors_round_trip_null_pointers() {
-        let null_file: *mut dyn RandomAccessFile =
-            core::ptr::null_mut::<DummyRandomAccessFile>() as *mut dyn RandomAccessFile;
+        let null_file: *mut Box<dyn RandomAccessFile> = core::ptr::null_mut();
         let null_table: *mut table::Table = core::ptr::null_mut();
 
         let tf = TableAndFile::new_for_tests(null_file, null_table);
@@ -124,14 +129,16 @@ mod table_and_file_pointer_accessors_behavior {
 
     #[traced_test]
     fn table_and_file_accessors_are_side_effect_free() {
-        let mut file_box: Box<dyn RandomAccessFile> =
+        let inner_file: Box<dyn RandomAccessFile> =
             Box::new(DummyRandomAccessFile);
-        let file_ptr: *mut dyn RandomAccessFile = &mut *file_box;
+        let file_holder: Box<Box<dyn RandomAccessFile>> = Box::new(inner_file);
+        let file_holder_ptr: *mut Box<dyn RandomAccessFile> =
+            Box::into_raw(file_holder);
 
         let mut table = Table::new(core::ptr::null_mut());
         let table_ptr: *mut table::Table = &mut table;
 
-        let tf = TableAndFile::new_for_tests(file_ptr, table_ptr);
+        let tf = TableAndFile::new_for_tests(file_holder_ptr, table_ptr);
 
         let first_file_ptr = tf.file_ptr();
         let second_file_ptr = tf.file_ptr();

@@ -30,10 +30,12 @@ impl Footer {
             let base_ptr   = *slice.data();
             let total_size = *slice.size();
 
-            // Position of magic number within the footer.
+            // Position of magic number within the footer: the last 8 bytes.
             let magic_offset = FOOTER_ENCODED_LENGTH - 8;
             let magic_ptr    = base_ptr.add(magic_offset);
 
+            // Footer magic is stored as two little‑endian fixed32 values:
+            // low 32 bits followed by high 32 bits.
             let magic_lo_bytes =
                 core::slice::from_raw_parts(magic_ptr, 4);
             let magic_hi_bytes =

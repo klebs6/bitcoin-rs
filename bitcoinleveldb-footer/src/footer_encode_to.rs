@@ -5,59 +5,87 @@ impl Footer {
 
     pub fn encode_to(&self, dst: *mut String) {
         unsafe {
+            // Safety: caller must pass a valid, non-null pointer to a `String`.
             assert!(
                 !dst.is_null(),
                 "Footer::encode_to: dst pointer is null"
             );
-            let s: &mut String = &mut *dst;
-            let original_size = s.len();
+
+            let original_size = (&(*dst)).len();
 
             trace!(
-                "Footer::encode_to: original_size={}, metaindex(offset={}, size={}), index(offset={}, size={})",
+                target: "bitcoinleveldb_footer::footer_encode_to",
                 original_size,
-                self.metaindex_handle().offset(),
-                self.metaindex_handle().size(),
-                self.index_handle().offset(),
-                self.index_handle().size()
+                metaindex_offset = self.metaindex_handle().offset(),
+                metaindex_size   = self.metaindex_handle().size(),
+                index_offset     = self.index_handle().offset(),
+                index_size       = self.index_handle().size(),
+                "Footer::encode_to: begin encoding footer"
             );
 
-            self.metaindex_handle().encode_to(s);
-            self.index_handle().encode_to(s);
+            // Encode the two block handles into `dst`, exactly like LevelDB.
+            self.metaindex_handle().encode_to(dst);
+            self.index_handle().encode_to(dst);
 
-            // Pad to fixed length for the two handles
-            let target_len =
-                original_size + 2 * BLOCK_HANDLE_MAX_ENCODED_LENGTH;
-            {
-                let buf: &mut Vec<u8> = s.as_mut_vec();
-                if buf.len() < target_len {
-                    buf.resize(target_len, 0u8);
+            let len_after_handles = (&(*dst)).len();
+            let padding_target = original_size + 2 * BLOCK_HANDLE_MAX_ENCODED_LENGTH;
+
+            if len_after_handles < padding_target {
+                trace!(
+                    target: "bitcoinleveldb_footer::footer_encode_to",
+                    len_after_handles,
+                    padding_target,
+                    "Footer::encode_to: padding footer encoding with zero bytes"
+                );
+                {
+                    let buf: &mut Vec<u8> = (*dst).as_mut_vec();
+                    let needed = padding_target.saturating_sub(buf.len());
+                    buf.extend(std::iter::repeat(0u8).take(needed));
                 }
+            } else if len_after_handles > padding_target {
+                // This should never happen if BlockHandle::encode_to respects BLOCK_HANDLE_MAX_ENCODED_LENGTH.
+                warn!(
+                    target: "bitcoinleveldb_footer::footer_encode_to",
+                    len_after_handles,
+                    padding_target,
+                    "Footer::encode_to: handle encoding exceeded BLOCK_HANDLE_MAX_ENCODED_LENGTH; footer size will be larger than expected"
+                );
+            } else {
+                trace!(
+                    target: "bitcoinleveldb_footer::footer_encode_to",
+                    len_after_handles,
+                    "Footer::encode_to: no padding required"
+                );
             }
 
-            // Append magic number (split into low/high 32 bits)
-            let lower: u32 =
-                (TABLE_MAGIC_NUMBER & 0xffffffffu64) as u32;
-            let upper: u32 =
-                (TABLE_MAGIC_NUMBER >> 32) as u32;
+            // Append the 64-bit table magic as two fixed32 values in little-endian order.
+            let magic_lo: u32 = (TABLE_MAGIC_NUMBER & 0xffff_ffffu64) as u32;
+            let magic_hi: u32 = (TABLE_MAGIC_NUMBER >> 32) as u32;
 
-            bitcoinleveldb_coding::put_fixed32(
-                s as *mut String,
-                lower,
+            trace!(
+                target: "bitcoinleveldb_footer::footer_encode_to",
+                magic_lo,
+                magic_hi,
+                "Footer::encode_to: writing TABLE_MAGIC_NUMBER halves"
             );
-            bitcoinleveldb_coding::put_fixed32(
-                s as *mut String,
-                upper,
+
+            put_fixed32(dst, magic_lo);
+            put_fixed32(dst, magic_hi);
+
+            let final_len = (&(*dst)).len();
+            let expected_len = original_size + FOOTER_ENCODED_LENGTH;
+
+            debug!(
+                target: "bitcoinleveldb_footer::footer_encode_to",
+                final_len,
+                expected_len,
+                "Footer::encode_to: footer encoding complete"
             );
 
             debug_assert_eq!(
-                s.len(),
-                original_size + FOOTER_ENCODED_LENGTH
-            );
-
-            trace!(
-                "Footer::encode_to: dst_len_after={}, expected_added={}",
-                s.len(),
-                FOOTER_ENCODED_LENGTH
+                final_len,
+                expected_len,
+                "Footer::encode_to: encoded footer length mismatch"
             );
         }
     }

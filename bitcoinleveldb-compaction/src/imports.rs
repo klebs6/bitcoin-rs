@@ -11,3 +11,6 @@ pub(crate) use bitcoinleveldb_key::*;
 pub(crate) use bitcoinleveldb_tablebuilder::*;
 pub(crate) use bitcoinleveldb_iterator::*;
 pub(crate) use bitcoinleveldb_cfg::*;
+pub(crate) use bitcoinleveldb_comparator::*;
+pub(crate) use bitcoinleveldb_versionsetinterface::*;
+pub(crate) use bitcoinleveldb_versionsetutil::*;

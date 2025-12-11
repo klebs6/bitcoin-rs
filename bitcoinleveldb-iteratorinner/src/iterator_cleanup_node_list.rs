@@ -170,7 +170,7 @@ mod tests_iterator_inner_cleanup_chain {
     use super::*;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
-    fn increment_cleanup_counter(arg1: *mut c_void, _arg2: *mut c_void) -> c_void {
+    fn increment_cleanup_counter(arg1: *mut c_void, _arg2: *mut c_void) {
         debug!(
             "increment_cleanup_counter invoked with arg1={:?}, arg2={:?}",
             arg1,
@@ -185,8 +185,6 @@ mod tests_iterator_inner_cleanup_chain {
             let counter: &AtomicUsize = &*(arg1 as *const AtomicUsize);
             counter.fetch_add(1, Ordering::SeqCst);
         }
-
-        unsafe { core::mem::zeroed() }
     }
 
     #[traced_test]
@@ -267,7 +265,7 @@ mod iterator_inner_cleanup_chain_tests {
     use super::*;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
-    fn increment_cleanup_counter(arg1: *mut c_void, _arg2: *mut c_void) -> c_void {
+    fn increment_cleanup_counter(arg1: *mut c_void, _arg2: *mut c_void) {
         debug!(
             "increment_cleanup_counter invoked with arg1={:?}, arg2={:?}",
             arg1,
@@ -282,8 +280,6 @@ mod iterator_inner_cleanup_chain_tests {
             let counter: &AtomicUsize = &*(arg1 as *const AtomicUsize);
             counter.fetch_add(1, Ordering::SeqCst);
         }
-
-        unsafe { core::mem::zeroed() }
     }
 
     #[traced_test]

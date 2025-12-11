@@ -6,7 +6,6 @@ pub fn get_file_iterator(
     options:    &ReadOptions,
     file_value: &Slice,
 ) -> *mut LevelDBIterator {
-
     unsafe {
         let size = *file_value.size();
         trace!(
@@ -19,16 +18,18 @@ pub fn get_file_iterator(
                 "get_file_iterator: unexpected file_value size {}; expected 16",
                 size
             );
-            let status =
-                Status::corruption("FileReader invoked with unexpected value");
-            return new_error_iterator(status);
+            let msg_slice =
+                Slice::from("FileReader invoked with unexpected value");
+            let status = Status::corruption(&msg_slice, None);
+            return new_error_iterator(&status);
         }
 
         if arg.is_null() {
             error!("get_file_iterator: null TableCache pointer");
-            let status =
-                Status::corruption("FileReader invoked with null TableCache pointer");
-            return new_error_iterator(status);
+            let msg_slice =
+                Slice::from("FileReader invoked with null TableCache pointer");
+            let status = Status::corruption(&msg_slice, None);
+            return new_error_iterator(&status);
         }
 
         let data_ptr = *file_value.data();
@@ -40,7 +41,7 @@ pub fn get_file_iterator(
         let file_number = decode_fixed64_le(data_ptr);
         let file_size   = decode_fixed64_le(data_ptr.add(8));
 
-        let cache    = arg as *mut TableCache;
+        let cache: *mut TableCache = arg as *mut TableCache;
         let cache_ref: &mut TableCache = &mut *cache;
 
         trace!(
@@ -49,7 +50,12 @@ pub fn get_file_iterator(
             "get_file_iterator: delegating to TableCache::new_iterator"
         );
 
-        cache_ref.new_iterator(options, file_number, file_size)
+        cache_ref.new_iterator(
+            options,
+            file_number,
+            file_size,
+            core::ptr::null_mut(),
+        )
     }
 }
 

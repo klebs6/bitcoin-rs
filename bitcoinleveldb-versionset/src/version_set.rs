@@ -60,6 +60,18 @@ impl GetInternalKeyComparator for VersionSet {
     }
 }
 
+impl GetTableCache for VersionSet {
+    fn table_cache(&self) -> *mut TableCache {
+        self.table_cache_
+    }
+}
+
+impl GetOptionsPtr for VersionSet {
+    fn options(&self) -> *const Options {
+        &self.options_ as *const Options
+    }
+}
+
 impl VersionSetInterface for VersionSet {}
 impl VersionSetVersionInterface for VersionSet {}
 impl CompactionInterface for VersionSet {}

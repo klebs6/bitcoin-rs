@@ -2,13 +2,12 @@
 crate::ix!();
 
 impl TableCache {
-
     pub fn find_table(
         &mut self,
         file_number: u64,
         file_size:   u64,
         handle:      *mut *mut CacheHandle,
-    ) -> crate::Status {
+    ) -> Status {
         unsafe {
             assert!(
                 !handle.is_null(),
@@ -23,7 +22,6 @@ impl TableCache {
 
             let mut status = Status::ok();
 
-            // Build cache key from file_number (little-endian fixed64).
             let mut buf = [0u8; core::mem::size_of::<u64>()];
             let mut v = file_number;
             for i in 0..core::mem::size_of::<u64>() {
@@ -48,11 +46,10 @@ impl TableCache {
                     file_number
                 );
 
-                let mut file_ptr_opt: Option<*mut dyn RandomAccessFile> = None;
+                let mut file_holder_ptr_opt: Option<*mut Box<dyn RandomAccessFile>> = None;
                 let mut table_ptr: *mut bitcoinleveldb_table::Table =
                     core::ptr::null_mut();
 
-                // First try canonical table file name.
                 let mut fname =
                     table_file_name(self.dbname_str(), file_number);
 
@@ -75,21 +72,12 @@ impl TableCache {
                     if status.is_ok() {
                         assert!(
                             !file_box_ptr.is_null(),
-                            "TableCache::find_table: Env returned OK but file pointer is null"
+                            "TableCache::find_table: Env returned OK but file holder pointer is null"
                         );
-
-                        let file_holder: Box<Box<dyn RandomAccessFile>> =
-                            Box::from_raw(file_box_ptr);
-                        let inner_box: Box<dyn RandomAccessFile> = *file_holder;
-                        core::mem::forget(file_holder);
-
-                        let raw_ptr: *mut dyn RandomAccessFile =
-                            Box::into_raw(inner_box);
-                        file_ptr_opt = Some(raw_ptr);
+                        file_holder_ptr_opt = Some(file_box_ptr);
                     }
                 }
 
-                // If canonical name fails, try legacy .sst filename.
                 if !status.is_ok() {
                     let old_fname =
                         sst_table_file_name(self.dbname_str(), file_number);
@@ -114,17 +102,9 @@ impl TableCache {
                         status = Status::ok();
                         assert!(
                             !file_box_ptr.is_null(),
-                            "TableCache::find_table: Env returned OK but legacy file pointer is null"
+                            "TableCache::find_table: Env returned OK but legacy file holder pointer is null"
                         );
-
-                        let file_holder: Box<Box<dyn RandomAccessFile>> =
-                            Box::from_raw(file_box_ptr);
-                        let inner_box: Box<dyn RandomAccessFile> = *file_holder;
-                        core::mem::forget(file_holder);
-
-                        let raw_ptr: *mut dyn RandomAccessFile =
-                            Box::into_raw(inner_box);
-                        file_ptr_opt = Some(raw_ptr);
+                        file_holder_ptr_opt = Some(file_box_ptr);
                         fname = old_fname;
                     } else {
                         trace!(
@@ -140,35 +120,42 @@ impl TableCache {
                         fname
                     );
 
-                    if let Some(file_ptr) = file_ptr_opt {
-                        // Open the Table. This mirrors the static Table::Open in C++.
-                        let mut table_out: *mut bitcoinleveldb_table::Table =
-                            core::ptr::null_mut();
+                    if let Some(file_holder_ptr) = file_holder_ptr_opt {
+                        let adapter =
+                            BorrowedRandomAccessFileAdapter::new(file_holder_ptr, &fname);
+                        let file_rc: Rc<RefCell<dyn RandomAccessFile>> =
+                            Rc::new(RefCell::new(adapter));
 
-                        status = Table::open(
+                        let open_result = bitcoinleveldb_table::Table::open(
                             self.options_ref(),
-                            file_ptr,
+                            file_rc,
                             file_size,
-                            &mut table_out,
                         );
 
-                        if status.is_ok() {
-                            assert!(
-                                !table_out.is_null(),
-                                "TableCache::find_table: Table::open returned OK but table pointer is null"
-                            );
-                            table_ptr = table_out;
-                        } else {
-                            error!(
-                                "TableCache::find_table: Table::open failed for file='{}'",
-                                fname
-                            );
+                        match open_result {
+                            Ok(table_box) => {
+                                let table_out: *mut bitcoinleveldb_table::Table =
+                                    Box::into_raw(table_box);
+                                assert!(
+                                    !table_out.is_null(),
+                                    "TableCache::find_table: Table::open returned Ok but table pointer is null"
+                                );
+                                table_ptr = table_out;
+                                status = Status::ok();
+                            }
+                            Err(s) => {
+                                error!(
+                                    "TableCache::find_table: Table::open failed for file='{}'",
+                                    fname
+                                );
+                                status = s;
+                            }
                         }
                     } else {
-                        let msg = b"TableCache::find_table: file pointer missing despite OK status";
+                        let msg = b"TableCache::find_table: file holder pointer missing despite OK status";
                         let msg_slice = Slice::from(&msg[..]);
                         error!(
-                            "TableCache::find_table: missing file pointer for file='{}'",
+                            "TableCache::find_table: missing file holder for file='{}'",
                             fname
                         );
                         status = Status::corruption(&msg_slice, None);
@@ -181,29 +168,28 @@ impl TableCache {
                         "TableCache::find_table: non-OK status but table pointer is non-null"
                     );
 
-                    if let Some(file_ptr) = file_ptr_opt {
+                    if let Some(file_holder_ptr) = file_holder_ptr_opt {
                         trace!(
-                            "TableCache::find_table: deleting RandomAccessFile @ {:?} after open failure",
-                            file_ptr
+                            "TableCache::find_table: deleting RandomAccessFile holder @ {:?} after open failure",
+                            file_holder_ptr
                         );
-                        let _file_box: Box<dyn RandomAccessFile> =
-                            Box::from_raw(file_ptr);
+                        let _file_holder: Box<Box<dyn RandomAccessFile>> =
+                            Box::from_raw(file_holder_ptr);
                     }
-
-                    // We do not cache error results so that if the error is transient,
-                    // or somebody repairs the file, we recover automatically.
                 } else {
                     trace!(
                         "TableCache::find_table: inserting TableAndFile into cache for file_number={}",
                         file_number
                     );
 
-                    let tf = Box::new(TableAndFile {
-                        file:  file_ptr_opt.expect(
-                            "TableCache::find_table: file pointer missing when inserting into cache",
-                        ),
-                        table: table_ptr,
-                    });
+                    let file_holder_ptr = file_holder_ptr_opt.expect(
+                        "TableCache::find_table: file holder pointer missing when inserting into cache",
+                    );
+
+                    let tf = Box::new(TableAndFile::new(
+                        file_holder_ptr,
+                        table_ptr,
+                    ));
 
                     let tf_ptr: *mut TableAndFile = Box::into_raw(tf);
 
@@ -231,6 +217,7 @@ impl TableCache {
         }
     }
 }
+
 
 #[cfg(test)]
 mod table_cache_find_table_tests {

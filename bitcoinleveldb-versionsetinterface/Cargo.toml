@@ -15,3 +15,5 @@ bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
 bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }

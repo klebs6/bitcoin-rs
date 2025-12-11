@@ -4,24 +4,25 @@ crate::ix!();
 #[derive(Getters, MutGetters)]
 #[getset(get = "pub", get_mut = "pub")]
 pub struct StringSink {
-    contents: String,
+    contents: Vec<u8>,
 }
 
-impl StringSink { 
+impl StringSink {
 
     pub fn new() -> Self {
-        let empty = String::new();
-        StringSink::with(&empty)
+        StringSink {
+            contents: Vec::new(),
+        }
     }
 
     pub fn with(contents: &str) -> Self {
         Self {
-            contents: contents.to_string()
+            contents: contents.as_bytes().to_vec(),
         }
     }
 }
 
-impl WritableFile for StringSink { }
+impl WritableFile for StringSink {}
 
 impl WritableFileClose for StringSink {
     fn close(&mut self) -> crate::Status {
@@ -56,18 +57,18 @@ impl WritableFileSync for StringSink {
 impl WritableFileAppend for StringSink {
     fn append(&mut self, data: &Slice) -> crate::Status {
         unsafe {
-            let ptr = *data.data();
-            let len = *data.size();
+            let ptr   = *data.data();
+            let len   = *data.size();
             let bytes = core::slice::from_raw_parts(ptr, len);
 
-            // Match std::string::append(const char*, size_t).
-            let s = String::from_utf8_lossy(bytes);
             trace!(
                 "StringSink::append: appending {} bytes (current_len={})",
                 len,
                 self.contents.len()
             );
-            self.contents.push_str(&s);
+
+            // Treat contents as raw binary; preserve bytes exactly as written.
+            self.contents.extend_from_slice(bytes);
         }
 
         crate::Status::ok()
@@ -79,7 +80,6 @@ impl Named for StringSink {
         std::borrow::Cow::Owned(String::from("StringSink"))
     }
 }
-
 #[cfg(test)]
 mod string_sink_behavior_tests {
     use super::*;
@@ -87,7 +87,7 @@ mod string_sink_behavior_tests {
     #[traced_test]
     fn string_sink_append_accumulates_content_in_order() {
         let mut sink = StringSink {
-            contents: String::new(),
+            contents: Vec::new(),
         };
 
         let part1 = Slice::from("hello".as_bytes());
@@ -102,13 +102,13 @@ mod string_sink_behavior_tests {
         assert!(st2.is_ok());
         assert!(st3.is_ok());
 
-        assert_eq!(sink.contents(), "hello world");
+        assert_eq!(sink.contents(), String::from("hello world").as_bytes());
     }
 
     #[traced_test]
     fn string_sink_flush_sync_close_are_noops_but_return_ok() {
         let mut sink = StringSink {
-            contents: String::from("abc"),
+            contents: String::from("abc").into(),
         };
 
         let flush_status = sink.flush();
@@ -119,6 +119,6 @@ mod string_sink_behavior_tests {
         assert!(sync_status.is_ok());
         assert!(close_status.is_ok());
 
-        assert_eq!(sink.contents(), "abc");
+        assert_eq!(sink.contents(), String::from("abc").as_bytes());
     }
 }
