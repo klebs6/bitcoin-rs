@@ -253,5 +253,3 @@ mod version_get_method_tests {
         let _ = _fn_ptr;
     }
 }
-
-

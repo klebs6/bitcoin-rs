@@ -65,7 +65,7 @@ impl Version {
             };
 
             let two_level_iface: Box<dyn LevelDBIteratorInterface> =
-                bitcoinleveldb_duplex::new_two_level_iterator(
+                new_two_level_iterator(
                     index_iter_iface,
                     block_fn,
                     arg,
@@ -113,5 +113,3 @@ mod version_create_concatenating_iterator_tests {
         let _ = _fn_ptr;
     }
 }
-
-

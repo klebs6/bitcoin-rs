@@ -64,5 +64,3 @@ mod version_get_stats_tests {
         );
     }
 }
-
-

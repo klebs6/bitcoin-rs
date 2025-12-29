@@ -16,3 +16,4 @@ pub(crate) use bitcoinleveldb_iteratorinner::*;
 pub(crate) use bitcoinleveldb_versionsetutil::*;
 pub(crate) use bitcoinleveldb_duplex::*;
 pub(crate) use bitcoinleveldb_comparator::*;
+pub(crate) use bitcoinleveldb_mockversionset::*;

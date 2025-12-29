@@ -8,15 +8,15 @@ pub mod version_test_helpers {
 
     pub fn build_internal_key_from_str(user_key: &str) -> InternalKey {
         let user_bytes = user_key.as_bytes();
-        let slice = Slice::from(user_bytes);
+        let slice      = Slice::from(user_bytes);
         InternalKey::new(&slice, 1, ValueType::TypeValue)
     }
 
     pub fn build_file_meta_owned(
-        number: u64,
-        file_size: u64,
+        number:      u64,
+        file_size:   u64,
         smallest_key: &str,
-        largest_key: &str,
+        largest_key:  &str,
     ) -> FileMetaData {
         let mut meta = FileMetaData::default();
         meta.set_refs(1);
@@ -29,10 +29,10 @@ pub mod version_test_helpers {
     }
 
     pub fn build_file_meta_boxed(
-        number: u64,
-        file_size: u64,
+        number:      u64,
+        file_size:   u64,
         smallest_key: &str,
-        largest_key: &str,
+        largest_key:  &str,
     ) -> *mut FileMetaData {
         let meta = build_file_meta_owned(number, file_size, smallest_key, largest_key);
         Box::into_raw(Box::new(meta))
@@ -53,19 +53,26 @@ pub mod version_test_helpers {
     }
 
     pub fn build_empty_version() -> Version {
-        let files: [Vec<*mut FileMetaData>; NUM_LEVELS] = array::from_fn(|_| Vec::new());
+        let files: [Vec<*mut FileMetaData>; NUM_LEVELS] =
+            array::from_fn(|_| Vec::new());
 
-        Version {
-            vset: unsafe { core::mem::zeroed() },
-            next: core::ptr::null_mut(),
-            prev: core::ptr::null_mut(),
-            refs: 0,
-            files,
-            file_to_compact: core::ptr::null_mut(),
-            file_to_compact_level: 0,
-            compaction_score: 0.0,
-            compaction_level: 0,
-        }
+        let mock_vset = Box::new(MockVersionSet::new());
+        let mock_vset_trait: Box<dyn VersionSetInterface> = mock_vset;
+        let vset_raw: *mut dyn VersionSetInterface =
+            Box::into_raw(mock_vset_trait);
+
+        VersionBuilder::default()
+            .vset(vset_raw)
+            .next(core::ptr::null_mut())
+            .prev(core::ptr::null_mut())
+            .refs(0)
+            .files(files)
+            .file_to_compact(core::ptr::null_mut())
+            .file_to_compact_level(0)
+            .compaction_score(0.0)
+            .compaction_level(0)
+            .build()
+            .unwrap()
     }
 
     pub fn build_boxed_empty_version() -> Box<Version> {
@@ -78,12 +85,16 @@ mod version_before_after_file_tests {
     use super::*;
     use super::version_test_helpers as helpers;
 
+    fn build_boxed_bytewise_comparator() -> Box<dyn SliceComparator> {
+        Box::new(bitcoinleveldb_comparator::BytewiseComparatorImpl::default())
+    }
+
     #[traced_test]
     fn after_file_none_user_key_is_never_after() {
         let file_meta = helpers::build_file_meta_owned(1, 0, "a", "z");
         let user_key_ptr: *const Slice = core::ptr::null();
         let result = after_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             user_key_ptr,
             &file_meta,
         );
@@ -98,7 +109,7 @@ mod version_before_after_file_tests {
         let file_meta = helpers::build_file_meta_owned(2, 0, "a", "z");
         let user_key_ptr: *const Slice = core::ptr::null();
         let result = before_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             user_key_ptr,
             &file_meta,
         );
@@ -117,7 +128,7 @@ mod version_before_after_file_tests {
         let user_key_ptr: *const Slice = &user_key_slice as *const Slice;
 
         let before_result = before_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             user_key_ptr,
             &file_meta,
         );
@@ -127,7 +138,7 @@ mod version_before_after_file_tests {
         );
 
         let after_result = after_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             user_key_ptr,
             &file_meta,
         );
@@ -146,7 +157,7 @@ mod version_before_after_file_tests {
         let user_key_ptr: *const Slice = &user_key_slice as *const Slice;
 
         let result = after_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             user_key_ptr,
             &file_meta,
         );
@@ -156,7 +167,7 @@ mod version_before_after_file_tests {
         );
 
         let before_result = before_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             user_key_ptr,
             &file_meta,
         );
@@ -180,12 +191,12 @@ mod version_before_after_file_tests {
         let largest_ptr: *const Slice = &largest_slice as *const Slice;
 
         let before_smallest = before_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             smallest_ptr,
             &file_meta,
         );
         let after_smallest = after_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             smallest_ptr,
             &file_meta,
         );
@@ -196,12 +207,12 @@ mod version_before_after_file_tests {
         );
 
         let before_largest = before_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             largest_ptr,
             &file_meta,
         );
         let after_largest = after_file(
-            bitcoinleveldb_comparator::bytewise_comparator(),
+            build_boxed_bytewise_comparator(),
             largest_ptr,
             &file_meta,
         );
@@ -212,5 +223,3 @@ mod version_before_after_file_tests {
         );
     }
 }
-
-

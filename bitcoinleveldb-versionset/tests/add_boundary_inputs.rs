@@ -1,3 +1,11 @@
+use bitcoinleveldb_versionset::*;
+use bitcoinleveldb_file::*;
+use bitcoinleveldb_slice::*;
+use bitcoinleveldb_key::*;
+use bitcoinleveldb_versionsetutil::*;
+use bitcoinleveldb_comparator::*;
+use bitcoin_imports::*;
+
 // ---------------- [ File: bitcoinleveldb-versionset/tests/add_boundary_inputs.rs ]
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/version_set_test.cc]
 struct AddBoundaryInputsTest {
@@ -8,202 +16,395 @@ struct AddBoundaryInputsTest {
 }
 
 impl Default for AddBoundaryInputsTest {
-    
     fn default() -> Self {
-        todo!();
-        /*
-        : icmp(BytewiseComparator()),
-
-        
-        */
+        tracing::trace!("AddBoundaryInputsTest::default: constructing harness");
+        Self {
+            level_files: Vec::new(),
+            compaction_files: Vec::new(),
+            all_files: Vec::new(),
+            icmp: InternalKeyComparator::new(bytewise_comparator()),
+        }
     }
 }
+
 
 impl Drop for AddBoundaryInputsTest {
     fn drop(&mut self) {
-        todo!();
-        /*
-            for (size_t i = 0; i < all_files_.size(); ++i) {
-          delete all_files_[i];
+        tracing::trace!(
+            all_files_len = self.all_files.len(),
+            level_files_len = self.level_files.len(),
+            compaction_files_len = self.compaction_files.len(),
+            "AddBoundaryInputsTest::drop: freeing FileMetaData allocations"
+        );
+
+        for (i, fptr) in self.all_files.drain(..).enumerate() {
+            if fptr.is_null() {
+                tracing::warn!(
+                    index = i,
+                    "AddBoundaryInputsTest::drop: encountered null FileMetaData pointer in all_files; skipping"
+                );
+                continue;
+            }
+
+            unsafe {
+                drop(Box::from_raw(fptr));
+            }
         }
-        all_files_.clear();
-        */
+
+        self.level_files.clear();
+        self.compaction_files.clear();
+
+        tracing::trace!("AddBoundaryInputsTest::drop: complete");
     }
 }
+
 
 impl AddBoundaryInputsTest {
-
-    pub fn create_file_meta_data(&mut self, 
-        number:   u64,
+    pub fn create_file_meta_data(
+        &mut self,
+        number: u64,
         smallest: InternalKey,
-        largest:  InternalKey) -> *mut FileMetaData {
-        
-        todo!();
-        /*
-            FileMetaData* f = new FileMetaData();
-        f->number = number;
-        f->smallest = smallest;
-        f->largest = largest;
-        all_files_.push_back(f);
-        return f;
-        */
+        largest: InternalKey,
+    ) -> *mut FileMetaData {
+        let mut f = Box::new(FileMetaData::default());
+        f.set_number(number);
+        f.set_smallest(smallest);
+        f.set_largest(largest);
+
+        let raw: *mut FileMetaData = Box::into_raw(f);
+
+        self.all_files.push(raw);
+
+        tracing::trace!(
+            number,
+            ptr = %format!("{:p}", raw),
+            all_files_len = self.all_files.len(),
+            "AddBoundaryInputsTest::create_file_meta_data: created FileMetaData"
+        );
+
+        raw
     }
 }
 
-#[test] fn add_boundary_inputs_test_empty_file_sets() {
-    todo!();
-    /*
-    
-      AddBoundaryInputs(icmp_, level_files_, &compaction_files_);
-      ASSERT_TRUE(compaction_files_.empty());
-      ASSERT_TRUE(level_files_.empty());
+mod add_boundary_inputs_behavior_suite {
+    use super::*;
 
-    */
-}
+    fn make_internal_key_for_user_key(user_key: &str, seq: u64) -> InternalKey {
+        tracing::trace!(user_key, seq, "make_internal_key_for_user_key");
+        InternalKey::new(&Slice::from(user_key), seq, ValueType::TypeValue)
+    }
 
-#[test] fn add_boundary_inputs_test_empty_level_files() {
-    todo!();
-    /*
-    
-      FileMetaData* f1 =
-          CreateFileMetaData(1, InternalKey("100", 2, kTypeValue),
-                             InternalKey(InternalKey("100", 1, kTypeValue)));
-      compaction_files_.push_back(f1);
+    #[traced_test]
+    fn add_boundary_inputs_preserves_empty_vectors() {
+        let mut h = super::AddBoundaryInputsTest::default();
 
-      AddBoundaryInputs(icmp_, level_files_, &compaction_files_);
-      ASSERT_EQ(1, compaction_files_.size());
-      ASSERT_EQ(f1, compaction_files_[0]);
-      ASSERT_TRUE(level_files_.empty());
+        let icmp = &h.icmp;
+        let level_files = &h.level_files;
+        let compaction_files = &mut h.compaction_files;
 
-    */
-}
+        tracing::debug!(
+            level_files_len = level_files.len(),
+            compaction_files_len = compaction_files.len(),
+            "calling add_boundary_inputs on empty vectors"
+        );
 
-#[test] fn add_boundary_inputs_test_empty_compaction_files() {
-    todo!();
-    /*
-    
-      FileMetaData* f1 =
-          CreateFileMetaData(1, InternalKey("100", 2, kTypeValue),
-                             InternalKey(InternalKey("100", 1, kTypeValue)));
-      level_files_.push_back(f1);
+        add_boundary_inputs(
+            icmp,
+            level_files,
+            compaction_files as *mut Vec<*mut FileMetaData>,
+        );
 
-      AddBoundaryInputs(icmp_, level_files_, &compaction_files_);
-      ASSERT_TRUE(compaction_files_.empty());
-      ASSERT_EQ(1, level_files_.size());
-      ASSERT_EQ(f1, level_files_[0]);
+        tracing::debug!(
+            level_files_len = level_files.len(),
+            compaction_files_len = compaction_files.len(),
+            "after add_boundary_inputs"
+        );
 
-    */
-}
+        assert!(compaction_files.is_empty(), "compaction_files must remain empty");
+        assert!(level_files.is_empty(), "level_files must remain empty");
+    }
 
-#[test] fn add_boundary_inputs_test_no_files() {
-    todo!();
-    /*
-    
-      FileMetaData* f1 =
-          CreateFileMetaData(1, InternalKey("100", 2, kTypeValue),
-                             InternalKey(InternalKey("100", 1, kTypeValue)));
-      FileMetaData* f2 =
-          CreateFileMetaData(1, InternalKey("200", 2, kTypeValue),
-                             InternalKey(InternalKey("200", 1, kTypeValue)));
-      FileMetaData* f3 =
-          CreateFileMetaData(1, InternalKey("300", 2, kTypeValue),
-                             InternalKey(InternalKey("300", 1, kTypeValue)));
+    #[traced_test]
+    fn add_boundary_inputs_noops_when_level_files_empty() {
+        let mut h = super::AddBoundaryInputsTest::default();
 
-      level_files_.push_back(f3);
-      level_files_.push_back(f2);
-      level_files_.push_back(f1);
-      compaction_files_.push_back(f2);
-      compaction_files_.push_back(f3);
+        let f1 = h.create_file_meta_data(
+            1,
+            make_internal_key_for_user_key("100", 2),
+            make_internal_key_for_user_key("100", 1),
+        );
+        h.compaction_files.push(f1);
 
-      AddBoundaryInputs(icmp_, level_files_, &compaction_files_);
-      ASSERT_EQ(2, compaction_files_.size());
+        let icmp = &h.icmp;
+        let level_files = &h.level_files;
+        let compaction_files = &mut h.compaction_files;
 
-    */
-}
+        tracing::debug!(
+            level_files_len = level_files.len(),
+            compaction_files_len = compaction_files.len(),
+            "calling add_boundary_inputs with empty level_files"
+        );
 
-#[test] fn add_boundary_inputs_test_one_files() {
-    todo!();
-    /*
-    
-      FileMetaData* f1 =
-          CreateFileMetaData(1, InternalKey("100", 3, kTypeValue),
-                             InternalKey(InternalKey("100", 2, kTypeValue)));
-      FileMetaData* f2 =
-          CreateFileMetaData(1, InternalKey("100", 1, kTypeValue),
-                             InternalKey(InternalKey("200", 3, kTypeValue)));
-      FileMetaData* f3 =
-          CreateFileMetaData(1, InternalKey("300", 2, kTypeValue),
-                             InternalKey(InternalKey("300", 1, kTypeValue)));
+        add_boundary_inputs(
+            icmp,
+            level_files,
+            compaction_files as *mut Vec<*mut FileMetaData>,
+        );
 
-      level_files_.push_back(f3);
-      level_files_.push_back(f2);
-      level_files_.push_back(f1);
-      compaction_files_.push_back(f1);
+        tracing::debug!(
+            compaction_files_len = compaction_files.len(),
+            "after add_boundary_inputs"
+        );
 
-      AddBoundaryInputs(icmp_, level_files_, &compaction_files_);
-      ASSERT_EQ(2, compaction_files_.size());
-      ASSERT_EQ(f1, compaction_files_[0]);
-      ASSERT_EQ(f2, compaction_files_[1]);
+        assert_eq!(compaction_files.len(), 1, "must not add boundary files");
+        assert_eq!(compaction_files[0], f1, "must preserve existing compaction file");
+        assert!(level_files.is_empty(), "level_files must remain empty");
+    }
 
-    */
-}
+    #[traced_test]
+    fn add_boundary_inputs_noops_when_compaction_files_empty() {
+        let mut h = super::AddBoundaryInputsTest::default();
 
-#[test] fn add_boundary_inputs_test_two_files() {
-    todo!();
-    /*
-    
-      FileMetaData* f1 =
-          CreateFileMetaData(1, InternalKey("100", 6, kTypeValue),
-                             InternalKey(InternalKey("100", 5, kTypeValue)));
-      FileMetaData* f2 =
-          CreateFileMetaData(1, InternalKey("100", 2, kTypeValue),
-                             InternalKey(InternalKey("300", 1, kTypeValue)));
-      FileMetaData* f3 =
-          CreateFileMetaData(1, InternalKey("100", 4, kTypeValue),
-                             InternalKey(InternalKey("100", 3, kTypeValue)));
+        let f1 = h.create_file_meta_data(
+            1,
+            make_internal_key_for_user_key("100", 2),
+            make_internal_key_for_user_key("100", 1),
+        );
+        h.level_files.push(f1);
 
-      level_files_.push_back(f2);
-      level_files_.push_back(f3);
-      level_files_.push_back(f1);
-      compaction_files_.push_back(f1);
+        let icmp = &h.icmp;
+        let level_files = &h.level_files;
+        let compaction_files = &mut h.compaction_files;
 
-      AddBoundaryInputs(icmp_, level_files_, &compaction_files_);
-      ASSERT_EQ(3, compaction_files_.size());
-      ASSERT_EQ(f1, compaction_files_[0]);
-      ASSERT_EQ(f3, compaction_files_[1]);
-      ASSERT_EQ(f2, compaction_files_[2]);
+        tracing::debug!(
+            level_files_len = level_files.len(),
+            compaction_files_len = compaction_files.len(),
+            "calling add_boundary_inputs with empty compaction_files"
+        );
 
-    */
-}
+        add_boundary_inputs(
+            icmp,
+            level_files,
+            compaction_files as *mut Vec<*mut FileMetaData>,
+        );
 
-#[test] fn add_boundary_inputs_test_disjoin_file_pointers() {
-    todo!();
-    /*
-    
-      FileMetaData* f1 =
-          CreateFileMetaData(1, InternalKey("100", 6, kTypeValue),
-                             InternalKey(InternalKey("100", 5, kTypeValue)));
-      FileMetaData* f2 =
-          CreateFileMetaData(1, InternalKey("100", 6, kTypeValue),
-                             InternalKey(InternalKey("100", 5, kTypeValue)));
-      FileMetaData* f3 =
-          CreateFileMetaData(1, InternalKey("100", 2, kTypeValue),
-                             InternalKey(InternalKey("300", 1, kTypeValue)));
-      FileMetaData* f4 =
-          CreateFileMetaData(1, InternalKey("100", 4, kTypeValue),
-                             InternalKey(InternalKey("100", 3, kTypeValue)));
+        assert!(compaction_files.is_empty(), "compaction_files must remain empty");
+        assert_eq!(level_files.len(), 1, "level_files must remain unchanged");
+        assert_eq!(level_files[0], f1, "level_files must preserve original pointer");
+    }
 
-      level_files_.push_back(f2);
-      level_files_.push_back(f3);
-      level_files_.push_back(f4);
+    #[traced_test]
+    fn add_boundary_inputs_does_not_add_when_no_boundary_user_keys_exist() {
+        let mut h = super::AddBoundaryInputsTest::default();
 
-      compaction_files_.push_back(f1);
+        let f1 = h.create_file_meta_data(
+            1,
+            make_internal_key_for_user_key("100", 2),
+            make_internal_key_for_user_key("100", 1),
+        );
+        let f2 = h.create_file_meta_data(
+            2,
+            make_internal_key_for_user_key("200", 2),
+            make_internal_key_for_user_key("200", 1),
+        );
+        let f3 = h.create_file_meta_data(
+            3,
+            make_internal_key_for_user_key("300", 2),
+            make_internal_key_for_user_key("300", 1),
+        );
 
-      AddBoundaryInputs(icmp_, level_files_, &compaction_files_);
-      ASSERT_EQ(3, compaction_files_.size());
-      ASSERT_EQ(f1, compaction_files_[0]);
-      ASSERT_EQ(f4, compaction_files_[1]);
-      ASSERT_EQ(f3, compaction_files_[2]);
+        h.level_files.push(f3);
+        h.level_files.push(f2);
+        h.level_files.push(f1);
 
-    */
+        h.compaction_files.push(f2);
+        h.compaction_files.push(f3);
+
+        let icmp = &h.icmp;
+        let level_files = &h.level_files;
+        let compaction_files = &mut h.compaction_files;
+
+        tracing::debug!(
+            level_files_len = level_files.len(),
+            compaction_files_len = compaction_files.len(),
+            "calling add_boundary_inputs for no-boundary case"
+        );
+
+        add_boundary_inputs(
+            icmp,
+            level_files,
+            compaction_files as *mut Vec<*mut FileMetaData>,
+        );
+
+        tracing::debug!(
+            compaction_files_len = compaction_files.len(),
+            "after add_boundary_inputs"
+        );
+
+        assert_eq!(compaction_files.len(), 2, "must not add boundary files");
+    }
+
+    #[traced_test]
+    fn add_boundary_inputs_adds_single_boundary_file_for_shared_user_key() {
+        let mut h = super::AddBoundaryInputsTest::default();
+
+        let f1 = h.create_file_meta_data(
+            1,
+            make_internal_key_for_user_key("100", 3),
+            make_internal_key_for_user_key("100", 2),
+        );
+        let f2 = h.create_file_meta_data(
+            2,
+            make_internal_key_for_user_key("100", 1),
+            make_internal_key_for_user_key("200", 3),
+        );
+        let f3 = h.create_file_meta_data(
+            3,
+            make_internal_key_for_user_key("300", 2),
+            make_internal_key_for_user_key("300", 1),
+        );
+
+        h.level_files.push(f3);
+        h.level_files.push(f2);
+        h.level_files.push(f1);
+
+        h.compaction_files.push(f1);
+
+        let icmp = &h.icmp;
+        let level_files = &h.level_files;
+        let compaction_files = &mut h.compaction_files;
+
+        tracing::debug!(
+            level_files_len = level_files.len(),
+            compaction_files_len = compaction_files.len(),
+            "calling add_boundary_inputs for single-boundary case"
+        );
+
+        add_boundary_inputs(
+            icmp,
+            level_files,
+            compaction_files as *mut Vec<*mut FileMetaData>,
+        );
+
+        tracing::debug!(
+            compaction_files_len = compaction_files.len(),
+            "after add_boundary_inputs"
+        );
+
+        assert_eq!(compaction_files.len(), 2, "expected one boundary file to be added");
+        assert_eq!(compaction_files[0], f1, "first compaction input must be original");
+        assert_eq!(compaction_files[1], f2, "boundary file must be appended");
+    }
+
+    #[traced_test]
+    fn add_boundary_inputs_adds_multiple_boundary_files_in_chain() {
+        let mut h = super::AddBoundaryInputsTest::default();
+
+        let f1 = h.create_file_meta_data(
+            1,
+            make_internal_key_for_user_key("100", 6),
+            make_internal_key_for_user_key("100", 5),
+        );
+        let f2 = h.create_file_meta_data(
+            2,
+            make_internal_key_for_user_key("100", 2),
+            make_internal_key_for_user_key("300", 1),
+        );
+        let f3 = h.create_file_meta_data(
+            3,
+            make_internal_key_for_user_key("100", 4),
+            make_internal_key_for_user_key("100", 3),
+        );
+
+        h.level_files.push(f2);
+        h.level_files.push(f3);
+        h.level_files.push(f1);
+
+        h.compaction_files.push(f1);
+
+        let icmp = &h.icmp;
+        let level_files = &h.level_files;
+        let compaction_files = &mut h.compaction_files;
+
+        tracing::debug!(
+            level_files_len = level_files.len(),
+            compaction_files_len = compaction_files.len(),
+            "calling add_boundary_inputs for chained-boundary case"
+        );
+
+        add_boundary_inputs(
+            icmp,
+            level_files,
+            compaction_files as *mut Vec<*mut FileMetaData>,
+        );
+
+        tracing::debug!(
+            compaction_files_len = compaction_files.len(),
+            "after add_boundary_inputs"
+        );
+
+        assert_eq!(compaction_files.len(), 3, "expected two boundary files to be added");
+        assert_eq!(compaction_files[0], f1, "first compaction input must be original");
+        assert_eq!(compaction_files[1], f3, "first boundary file must be appended next");
+        assert_eq!(compaction_files[2], f2, "second boundary file must be appended last");
+    }
+
+    #[traced_test]
+    fn add_boundary_inputs_respects_pointer_identity_and_matches_by_keys() {
+        let mut h = super::AddBoundaryInputsTest::default();
+
+        let f1 = h.create_file_meta_data(
+            1,
+            make_internal_key_for_user_key("100", 6),
+            make_internal_key_for_user_key("100", 5),
+        );
+        let f2 = h.create_file_meta_data(
+            2,
+            make_internal_key_for_user_key("100", 6),
+            make_internal_key_for_user_key("100", 5),
+        );
+        let f3 = h.create_file_meta_data(
+            3,
+            make_internal_key_for_user_key("100", 2),
+            make_internal_key_for_user_key("300", 1),
+        );
+        let f4 = h.create_file_meta_data(
+            4,
+            make_internal_key_for_user_key("100", 4),
+            make_internal_key_for_user_key("100", 3),
+        );
+
+        h.level_files.push(f2);
+        h.level_files.push(f3);
+        h.level_files.push(f4);
+
+        h.compaction_files.push(f1);
+
+        let icmp = &h.icmp;
+        let level_files = &h.level_files;
+        let compaction_files = &mut h.compaction_files;
+
+        tracing::debug!(
+            level_files_len = level_files.len(),
+            compaction_files_len = compaction_files.len(),
+            "calling add_boundary_inputs for disjoint-pointer case"
+        );
+
+        add_boundary_inputs(
+            icmp,
+            level_files,
+            compaction_files as *mut Vec<*mut FileMetaData>,
+        );
+
+        tracing::debug!(
+            compaction_files_len = compaction_files.len(),
+            "after add_boundary_inputs"
+        );
+
+        assert_eq!(compaction_files.len(), 3, "expected two boundary files to be added");
+
+        assert_eq!(compaction_files[0], f1, "original file must remain first");
+        assert_eq!(compaction_files[1], f4, "boundary selection must prefer the correct pointer");
+        assert_eq!(compaction_files[2], f3, "final boundary file must be appended last");
+    }
 }

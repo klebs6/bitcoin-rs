@@ -103,22 +103,6 @@ pub trait NumLevelFiles {
     fn num_level_files(&self, level: i32) -> i32;
 }
     
-/**
-  | Return a human-readable short (single-line)
-  | summary of the number of files per level.
-  | 
-  | Uses *scratch as backing store.
-  |
-  */
-pub struct VersionSetLevelSummaryStorage {
-    buffer: [u8; 100],
-}
-
-pub trait GetLevelSummary {
-
-    fn level_summary(&self, scratch: *mut VersionSetLevelSummaryStorage) -> *const u8;
-}
-
 pub trait MaxNextLevelOverlappingBytes {
     
     /**
@@ -154,6 +138,6 @@ pub trait ReuseManifest {
 
     fn reuse_manifest(
         &mut self, 
-        dscname: &String,
-        dscbase: &String) -> bool;
+        dscname: &str,
+        dscbase: &str) -> bool;
 }

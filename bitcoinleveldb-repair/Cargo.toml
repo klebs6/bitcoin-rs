@@ -2,6 +2,18 @@
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
+[dependencies]
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }
+bitcoinleveldb-tablebuilder = { path = "../bitcoinleveldb-tablebuilder" }
+bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
+bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader" }
+bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.19"

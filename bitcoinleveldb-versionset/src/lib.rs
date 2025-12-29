@@ -1,22 +1,44 @@
 // ---------------- [ File: bitcoinleveldb-versionset/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
+x!{borrowed_writable_file_for_manifest}
+x!{current_version}
+x!{get_current_log_file_number}
+x!{get_internal_key_comparator}
+x!{get_level_summary}
+x!{get_options_ptr}
+x!{get_prev_log_file_number}
+x!{get_table_cache}
+x!{last_sequence_number}
 x!{level_state}
+x!{manifest_file_number}
+x!{mark_file_number_used}
+x!{needs_compaction}
+x!{new_file_number}
+x!{next_file_number}
+x!{num_level_files}
+x!{reuse_file_number}
+x!{set_last_sequence_number}
 x!{version_set}
 x!{version_set_add_live_files}
 x!{version_set_append_version}
 x!{version_set_approximate_offset_of}
+x!{version_set_builder}
+x!{version_set_builder_apply}
+x!{version_set_builder_drop}
+x!{version_set_builder_maybe_add_file}
+x!{version_set_builder_save_to}
 x!{version_set_compact_range}
 x!{version_set_create}
 x!{version_set_drop}
 x!{version_set_finalize}
 x!{version_set_get_range}
-x!{version_set_level_files}
 x!{version_set_log_and_apply}
 x!{version_set_make_input_iterator}
 x!{version_set_max_next_level_overlapping_bytes}
 x!{version_set_num_level_bytes}
 x!{version_set_pick_compaction}
+x!{version_set_ptr}
 x!{version_set_recover}
 x!{version_set_reuse_manifest}
 x!{version_set_setup_other_inputs}

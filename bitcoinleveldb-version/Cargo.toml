@@ -11,6 +11,7 @@ bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-versionsetutil = { path = "../bitcoinleveldb-versionsetutil" }
 bitcoinleveldb-duplex = { path = "../bitcoinleveldb-duplex" }
 bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-mockversionset = { path = "../bitcoinleveldb-mockversionset" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

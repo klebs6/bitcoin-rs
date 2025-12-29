@@ -7,13 +7,14 @@ crate::ix!();
 pub type MemTableTable = SkipList<*const u8, MemTableKeyComparator>;
 
 #[derive(Builder,Getters,Setters,MutGetters)]
-#[getset(get="pub",set="pub",get_mut="pub")]
-#[builder(pattern="owned")]
+#[getset(get = "pub", set = "pub", get_mut = "pub")]
+#[builder(pattern = "owned")]
 pub struct MemTable {
-    comparator: MemTableKeyComparator,
-    refs:       i32,
-    arena:      Box<Arena>,
-    table:      MemTableTable,
+    comparator:       MemTableKeyComparator,
+    refs:             i32,
+    arena:            Box<Arena>,
+    table:            MemTableTable,
+    base_arena_usage: usize,
 }
 
 impl Drop for MemTable {
@@ -110,27 +111,41 @@ impl MemTable {
 
         let table = MemTableTable::new(cmp_for_table, arena_ptr);
 
+        let base_usage = arena_box.memory_usage();
+        trace!(
+            "MemTable::new: base_arena_usage={} bytes",
+            base_usage
+        );
+
         MemTable {
-            comparator: cmp_for_mem,
-            refs:       0,
-            arena:      arena_box,
+            comparator:       cmp_for_mem,
+            refs:             0,
+            arena:            arena_box,
             table,
+            base_arena_usage: base_usage,
         }
     }
 
     /**
       | Returns an estimate of the number of
-      | bytes of data in use by this data structure.
+      | bytes of data in use by this data structure
+      | beyond the baseline skiplist overhead.
       | It is safe to call when MemTable is being
       | modified.
       |
       */
     pub fn approximate_memory_usage(&mut self) -> usize {
-        let usage = self.arena.memory_usage();
+        let total = self.arena.memory_usage();
+        let base  = self.base_arena_usage;
+        let usage = total.saturating_sub(base);
+
         trace!(
-            "MemTable::approximate_memory_usage: usage={} bytes",
+            "MemTable::approximate_memory_usage: total={} base={} usage={} bytes",
+            total,
+            base,
             usage
         );
+
         usage
     }
 

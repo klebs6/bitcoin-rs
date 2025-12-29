@@ -132,5 +132,3 @@ mod version_for_each_overlapping_signature_tests {
         let _ = _fn_ptr;
     }
 }
-
-

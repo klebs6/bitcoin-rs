@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-versionsetbuilder/src/version_set_builder_drop.rs ]
+// ---------------- [ File: bitcoinleveldb-versionset/src/version_set_builder_drop.rs ]
 crate::ix!();
 
 impl Drop for VersionSetBuilder {

@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-versionsetbuilder/src/version_set_builder.rs ]
+// ---------------- [ File: bitcoinleveldb-versionset/src/version_set_builder.rs ]
 crate::ix!();
 
 /**

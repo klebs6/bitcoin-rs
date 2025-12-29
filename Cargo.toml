@@ -263,8 +263,11 @@ members = [
     "bitcoinwallet-library", 
     "bitcoinwallet-receive", 
     "bitcoinwallet-salvage", 
-    "bitcoinwallet-spend"
-, "bitcoinleveldb-versionsetbuilder", "bitcoinleveldb-versionsetutil", "bitcoinleveldb-versionsetinterface"]
+    "bitcoinwallet-spend", 
+    "bitcoinleveldb-versionsetutil", 
+    "bitcoinleveldb-versionsetinterface", 
+    "bitcoinleveldb-mockversionset"
+]
 
 [workspace.dependencies]
 #qmetaobject            = "0.2.7"

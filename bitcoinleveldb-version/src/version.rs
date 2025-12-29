@@ -1,5 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-version/src/version.rs ]
-/*!
+crate::ix!();
+
+
+/**
   | The representation of a DBImpl consists of
   | a set of Versions. The newest version is
   | called "current". Older versions may be kept
@@ -14,11 +17,9 @@
   | require external synchronization on all
   | accesses.
   */
-
-crate::ix!();
-
-#[derive(Getters,Setters,MutGetters)]
+#[derive(Builder,Getters,Setters,MutGetters)]
 #[getset(get="pub",get_mut="pub",set="pub")]
+#[builder(pattern="owned")]
 pub struct Version {
 
     /**
@@ -156,5 +157,3 @@ mod version_core_behavior_tests {
         let _ = version.num_files(NUM_LEVELS as i32);
     }
 }
-
-

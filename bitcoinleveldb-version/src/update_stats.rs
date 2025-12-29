@@ -187,5 +187,3 @@ mod version_update_stats_behavior_tests {
         }
     }
 }
-
-

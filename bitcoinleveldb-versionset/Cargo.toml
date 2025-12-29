@@ -10,17 +10,29 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoinleveldb-version = { path = "../bitcoinleveldb-version" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
-bitcoin-derive = { path = "../bitcoin-derive" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-compaction = { path = "../bitcoinleveldb-compaction" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+tracing.workspace                  = true
+derive_builder.workspace           = true
+bitcoin-imports                    = { path = "../bitcoin-imports" }
+bitcoinleveldb-version             = { path = "../bitcoinleveldb-version" }
+bitcoinleveldb-file                = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-versionedit         = { path = "../bitcoinleveldb-versionedit" }
+bitcoinleveldb-key                 = { path = "../bitcoinleveldb-key" }
+bitcoin-derive                     = { path = "../bitcoin-derive" }
+bitcoinleveldb-status              = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-compaction          = { path = "../bitcoinleveldb-compaction" }
+bitcoinleveldb-iterator            = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
-bitcoinleveldb-logwriter = { path = "../bitcoinleveldb-logwriter" }
-bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }
-bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
-bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
+bitcoinleveldb-logwriter           = { path = "../bitcoinleveldb-logwriter" }
+bitcoinleveldb-tablecache          = { path = "../bitcoinleveldb-tablecache" }
+bitcoinleveldb-options             = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-env                 = { path = "../bitcoinleveldb-env" }
+bitcoinleveldb-versionsetutil      = { path = "../bitcoinleveldb-versionsetutil" }
+bitcoinleveldb-logreader           = { path = "../bitcoinleveldb-logreader" }
+bitcoinleveldb-table               = { path = "../bitcoinleveldb-table" }
+bitcoinleveldb-slice               = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-iteratorinner       = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-cfg                 = { path = "../bitcoinleveldb-cfg" }
+bitcoinleveldb-duplex = { path = "../bitcoinleveldb-duplex" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
+bitcoinleveldb-merger = { path = "../bitcoinleveldb-merger" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }

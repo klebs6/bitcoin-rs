@@ -118,5 +118,3 @@ mod version_add_iterators_behavior_tests {
         let _ = _fn_ptr;
     }
 }
-
-

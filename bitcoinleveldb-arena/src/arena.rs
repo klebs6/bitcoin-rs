@@ -57,6 +57,10 @@ impl Arena {
         trace!("Request to allocate {} bytes", bytes);
         debug_assert!(bytes > 0, "Cannot allocate zero bytes");
 
+        // Track the logical number of bytes handed out by the arena.
+        self.memory_usage
+            .fetch_add(bytes, atomic::Ordering::Relaxed);
+
         if bytes <= self.alloc_bytes_remaining {
             unsafe {
                 let result = self.alloc_ptr;
@@ -67,26 +71,36 @@ impl Arena {
                     bytes,
                     self.alloc_bytes_remaining
                 );
-                return result;
+                result
             }
         } else {
-            trace!("Falling back to allocate_fallback for {} bytes", bytes);
-            return self.allocate_fallback(bytes);
+            trace!(
+                "Falling back to allocate_fallback for {} bytes",
+                bytes
+            );
+            self.allocate_fallback(bytes)
         }
     }
 
     /// Called when the current block is too small; decides if we need a dedicated block or a new standard block.
     fn allocate_fallback(&mut self, bytes: usize) -> *mut u8 {
         trace!("allocate_fallback called with {} bytes", bytes);
+
         if bytes > (BLOCK_SIZE as usize) / 4 {
             // Object is more than a quarter of our block size. Allocate it separately.
             let result = self.allocate_new_block(bytes);
-            trace!("Allocated {} bytes in a dedicated block", bytes);
+            trace!(
+                "Allocated {} bytes in a dedicated block",
+                bytes
+            );
             return result;
         }
 
         // Otherwise, waste the remaining space in the current block and allocate a fresh standard block.
-        trace!("Allocating a new block of size {} for fallback", BLOCK_SIZE);
+        trace!(
+            "Allocating a new block of size {} for fallback",
+            BLOCK_SIZE
+        );
         self.alloc_ptr = self.allocate_new_block(BLOCK_SIZE as usize);
         self.alloc_bytes_remaining = BLOCK_SIZE as usize;
 
@@ -116,8 +130,17 @@ impl Arena {
             "Alignment must be a power of two"
         );
 
+        // Track the logical bytes requested (alignment slop is intentionally not
+        // charged here; it is accounted for in block overhead).
+        self.memory_usage
+            .fetch_add(bytes, atomic::Ordering::Relaxed);
+
         let current_mod = (self.alloc_ptr as usize) & (align - 1);
-        let slop = if current_mod == 0 { 0 } else { align - current_mod };
+        let slop = if current_mod == 0 {
+            0
+        } else {
+            align - current_mod
+        };
         let needed = bytes + slop;
 
         unsafe {
@@ -153,7 +176,10 @@ impl Arena {
 
     /// Allocate a fresh block of `block_bytes` bytes, push it into `blocks`, and update memory usage.
     fn allocate_new_block(&mut self, block_bytes: usize) -> *mut u8 {
-        trace!("Allocating a new block of {} bytes", block_bytes);
+        trace!(
+            "Allocating a new block of {} bytes",
+            block_bytes
+        );
 
         // In C++, we do: new char[block_bytes].
         // In Rust, we can create a boxed slice of zeros and leak its raw pointer.
@@ -163,14 +189,23 @@ impl Arena {
         // Record this pointer in our array of blocks.
         self.blocks.push(ptr);
 
-        // For memory usage, replicate the C++ approach: block_bytes + sizeof(char*).
+        // Charge only the bookkeeping overhead for the block here; the logical
+        // bytes returned to callers are accounted for in allocate/allocate_aligned.
         let overhead = std::mem::size_of::<*mut u8>();
-        let total = block_bytes + overhead;
-        self.memory_usage.fetch_add(total, atomic::Ordering::Relaxed);
+        let new_total = self
+            .memory_usage
+            .fetch_add(overhead, atomic::Ordering::Relaxed)
+            .saturating_add(overhead);
 
-        trace!("Block allocated. Updated memory usage by {} bytes", total);
+        trace!(
+            "Block allocated. Recorded overhead {} bytes, memory_usage now {}",
+            overhead,
+            new_total
+        );
+
         ptr
     }
+
 }
 
 #[cfg(test)]

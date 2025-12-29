@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-versionsetbuilder/src/version_set_builder_maybe_add_file.rs ]
+// ---------------- [ File: bitcoinleveldb-versionset/src/version_set_builder_maybe_add_file.rs ]
 crate::ix!();
 
 impl VersionSetBuilder {

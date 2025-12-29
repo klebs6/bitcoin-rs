@@ -25,11 +25,11 @@ BENCH := bench
 RUST_LOG := debug
 RUST_LOG := bitcoinleveldb_crc32=off,debug
 
-#DEFAULT := build_active
-#DEFAULT := build
 #DEFAULT := hack_test
 #DEFAULT := test_one_release
 DEFAULT := test_active
+#DEFAULT := build
+#DEFAULT := build_active
 #DEFAULT := test_one
 #DEFAULT := test_ignored
 #DEFAULT := test_one_ignored
@@ -43,32 +43,25 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-1]
-ACTIVE := bitcoinleveldb-version
-ACTIVE := bitcoinleveldb-memtable
-
-# ------------------------------- [leveldb-layer-2]
+ACTIVE := bitcoinleveldb-repair
+ACTIVE := bitcoinleveldb-dumpfile #loc: 473
+ACTIVE := bitcoinleveldb-testenv
 ACTIVE := bitcoinleveldb-versionset
-ACTIVE := bitcoinleveldb-versionsetbuilder
+
+# ------------------------------- [leveldb-layer-2a]
+#ACTIVE := bitcoinleveldb-modeldb
+#ACTIVE := bitcoinleveldb-dbiter
+#ACTIVE := bitcoinleveldb-dbinterface
+#ACTIVE := bitcoinleveldb-dbconstructor
+#ACTIVE := bitcoinleveldb-harness
+#ACTIVE := bitcoinleveldb-dbimplwriter
+
+# ------------------------------- [leveldb-layer-2b]
+#ACTIVE := bitcoinleveldb-dbtest
+#ACTIVE := bitcoinleveldb-db
+#ACTIVE := bitcoinleveldb-dbimpl
 
 # ------------------------------- [leveldb-layer-3]
-#ACTIVE := bitcoinleveldb-batch    #loc: 547
-#ACTIVE := bitcoinleveldb-repair   #loc: 545
-
-# ------------------------------- [leveldb-layer-4]
-#ACTIVE := bitcoinleveldb-db
-#ACTIVE := bitcoinleveldb-dbconstructor
-#ACTIVE := bitcoinleveldb-dbimpl
-#ACTIVE := bitcoinleveldb-dbimplwriter
-#ACTIVE := bitcoinleveldb-dbinterface
-#ACTIVE := bitcoinleveldb-dbtest
-#ACTIVE := bitcoinleveldb-harness
-#ACTIVE := bitcoinleveldb-dbiter
-#ACTIVE := bitcoinleveldb-modeldb
-#ACTIVE := bitcoinleveldb-specialenv
-#ACTIVE := bitcoinleveldb-testenv
-#ACTIVE := bitcoinleveldb-dumpfile #loc: 473
-
-# ------------------------------- [leveldb-layer-5]
 #ACTIVE := bitcoinleveldb-bench    #loc: 3003
 #ACTIVE := bitcoinleveldb-test     #loc: 3261
 #ACTIVE := bitcoin-leveldb         #loc: 37
@@ -158,9 +151,6 @@ ACTIVE := bitcoinleveldb-versionsetbuilder
 #ACTIVE := bitcoin-validation
 #ACTIVE := bitcoin-walletdb
 #-----------------------------------
-#ACTIVE := bitcoinchain-client
-#ACTIVE := bitcoinchain-interface
-#ACTIVE := bitcoinchain-notifications
 #ACTIVE := bitcoinchain-params
 #ACTIVE := bitcoinnode-interface
 #ACTIVE := bitcoinnode-stats
@@ -377,3 +367,11 @@ bench:
 #ACTIVE := bitcoinleveldb-tableconstructor
 #ACTIVE := bitcoinleveldb-tablecache
 #ACTIVE := bitcoinleveldb-compaction
+#ACTIVE := bitcoinchain-client
+#ACTIVE := bitcoinchain-interface
+#ACTIVE := bitcoinchain-notifications
+#ACTIVE := bitcoinleveldb-memtable
+#ACTIVE := bitcoinleveldb-mockversionset
+#ACTIVE := bitcoinleveldb-version
+#ACTIVE := bitcoinleveldb-batch
+#ACTIVE := bitcoinleveldb-specialenv
