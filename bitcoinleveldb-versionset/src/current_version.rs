@@ -27,5 +27,3 @@ impl VersionSet {
         current
     }
 }
-
-

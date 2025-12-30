@@ -7,7 +7,7 @@ pub trait WriteSnapshot {
       | Save current contents to *log
       |
       */
-    fn write_snapshot(&mut self, log: *mut LogWriter) -> Status;
+    fn write_snapshot(&mut self, log: &mut LogWriter) -> Status;
 }
 
 /**

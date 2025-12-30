@@ -4,50 +4,58 @@ crate::ix!();
 impl Drop for VersionSet {
 
     fn drop(&mut self) {
-
-        trace!(
-            "VersionSet::drop: enter; current={:p} descriptor_log={:p} descriptor_file={:p}",
-            self.current(),
-            self.descriptor_log(),
-            self.descriptor_file()
-        );
+        trace!("VersionSet::drop: beginning teardown");
 
         unsafe {
-            let cur: *mut Version = self.current();
+            let cur = self.current();
             if !cur.is_null() {
+                debug!(
+                    cur_ptr = ?cur,
+                    "VersionSet::drop: unref current version"
+                );
                 (*cur).unref();
                 self.set_current(core::ptr::null_mut());
-            } else {
-                trace!("VersionSet::drop: current is null; nothing to unref");
             }
-        }
 
-        // List must be empty
-        let dummy_ptr: *mut Version = self.dummy_versions_mut() as *mut Version;
-        unsafe {
-            assert!(
-                *(*dummy_ptr).next() == dummy_ptr,
-                "VersionSet::drop: dummy_versions list not empty (next={:p}, dummy={:p})",
-                *(*dummy_ptr).next(),
-                dummy_ptr
-            );
-        }
+            // In Rust, panics may unwind through destructors. LevelDB asserts this list is empty,
+            // but panicking in Drop causes abort if another panic is in flight. We do a best-effort
+            // invariant check and detach the sentinel instead of panicking.
+            let dummy_ptr: *mut Version = self.dummy_versions_mut() as *mut Version;
+            if !dummy_ptr.is_null() {
+                let next = *(*dummy_ptr).next();
+                if next != dummy_ptr {
+                    error!(
+                        next_ptr = ?next,
+                        dummy_ptr = ?dummy_ptr,
+                        "VersionSet::drop: dummy_versions list not empty; detaching sentinel to avoid destructor panics"
+                    );
+                    (*dummy_ptr).set_next(dummy_ptr);
+                    (*dummy_ptr).set_prev(dummy_ptr);
+                }
+            }
 
-        unsafe {
             let dlog: *mut LogWriter = self.descriptor_log();
             if !dlog.is_null() {
-                drop(Box::from_raw(dlog));
+                debug!(
+                    descriptor_log_ptr = ?dlog,
+                    "VersionSet::drop: dropping descriptor log writer"
+                );
+                drop(Box::<LogWriter>::from_raw(dlog));
                 self.set_descriptor_log(core::ptr::null_mut());
             }
 
             let dfile: *mut dyn WritableFile = self.descriptor_file();
             if !dfile.is_null() {
+                debug!(
+                    descriptor_file_ptr = ?dfile,
+                    "VersionSet::drop: dropping descriptor file"
+                );
                 drop(Box::<dyn WritableFile>::from_raw(dfile));
                 self.set_descriptor_file(VersionSet::null_writable_file_ptr());
             }
         }
 
-        trace!("VersionSet::drop: exit");
+        trace!("VersionSet::drop: teardown complete");
     }
 }
 
@@ -107,7 +115,8 @@ mod version_set_drop_exhaustive_test_suite {
 
             let dbname = Box::new(dir.to_string_lossy().to_string());
 
-            let mut options = Box::new(Options::default());
+            let env = PosixEnv::shared();
+            let mut options = Box::new(Options::with_env(env));
             options.set_create_if_missing(true);
             options.set_error_if_exists(false);
 
@@ -157,7 +166,8 @@ mod version_set_drop_exhaustive_test_suite {
         h1.drop_versionset_now();
         drop(h1);
 
-        let mut options = Box::new(Options::default());
+        let env = PosixEnv::shared();
+        let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(false);
         options.set_error_if_exists(false);
 

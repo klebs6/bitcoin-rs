@@ -44,7 +44,7 @@ ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-1]
 ACTIVE := bitcoinleveldb-repair
-ACTIVE := bitcoinleveldb-dumpfile #loc: 473
+ACTIVE := bitcoinleveldb-dumpfile
 ACTIVE := bitcoinleveldb-testenv
 ACTIVE := bitcoinleveldb-versionset
 

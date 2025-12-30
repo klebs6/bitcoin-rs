@@ -4,26 +4,59 @@ crate::ix!();
 impl Drop for VersionSetBuilder {
 
     fn drop(&mut self) {
-        todo!();
-        /*
-            for (int level = 0; level < config::NUM_LEVELS; level++) {
-          const VersionSetBuilderFileSet* added = levels_[level].added_files;
-          std::vector<FileMetaData*> to_unref;
-          to_unref.reserve(added->size());
-          for (VersionSetBuilderFileSet::const_iterator it = added->begin(); it != added->end();
-               ++it) {
-            to_unref.push_back(*it);
-          }
-          delete added;
-          for (uint32_t i = 0; i < to_unref.size(); i++) {
-            FileMetaData* f = to_unref[i];
-            f->refs--;
-            if (f->refs <= 0) {
-              delete f;
+        trace!(
+            vset_ptr = ?self.vset_ptr(),
+            base_ptr = ?self.base_ptr(),
+            "VersionSetBuilder::drop: releasing builder resources"
+        );
+
+        unsafe {
+            for level in 0..NUM_LEVELS {
+                let added_ptr = self.level_state_ref(level).added_files_ptr();
+                self.level_state_mut_ref(level)
+                    .set_added_files_ptr(core::ptr::null_mut());
+
+                if added_ptr.is_null() {
+                    continue;
+                }
+
+                let added_box: Box<VersionSetBuilderFileSet> = Box::from_raw(added_ptr);
+
+                let mut to_unref: Vec<*mut FileMetaData> = Vec::with_capacity(added_box.len());
+                for f in added_box.iter() {
+                    to_unref.push(*f);
+                }
+
+                drop(added_box);
+
+                for fptr in to_unref {
+                    debug_assert!(!fptr.is_null());
+
+                    let refs = (*fptr).refs_mut();
+                    *refs -= 1;
+
+                    if *refs <= 0 {
+                        debug_assert_eq!(
+                            *refs, 0,
+                            "VersionSetBuilder::drop: FileMetaData refs went negative"
+                        );
+
+                        drop(Box::from_raw(fptr));
+
+                        trace!(
+                            level,
+                            "VersionSetBuilder::drop: freed FileMetaData that was only owned by builder"
+                        );
+                    }
+                }
             }
-          }
+
+            let base_ptr = self.take_base_ptr();
+            if !base_ptr.is_null() {
+                (*base_ptr).unref();
+            }
         }
-        base_->Unref();
-        */
+
+        trace!("VersionSetBuilder::drop: complete");
     }
 }

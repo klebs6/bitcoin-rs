@@ -3902,6 +3902,7 @@ dependencies = [
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "derive_builder",
+ "tracing",
 ]
 
 [[package]]
@@ -4462,6 +4463,7 @@ dependencies = [
  "bitcoinleveldb-logwriter",
  "bitcoinleveldb-merger",
  "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",

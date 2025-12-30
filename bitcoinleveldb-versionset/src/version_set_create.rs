@@ -3,23 +3,6 @@ crate::ix!();
 
 impl VersionSet {
 
-    pub fn into_version(&self) -> Version {
-    
-        todo!();
-        /*
-        : vset(vset),
-        : next(this),
-        : prev(this),
-        : refs(0),
-        : file_to_compact(nullptr),
-        : file_to_compact_level(-1),
-        : compaction_score(-1),
-        : compaction_level(-1),
-
-        
-        */
-    }
-
     pub fn new(
         dbname:      &String,
         options:     *const Options,
@@ -159,7 +142,8 @@ mod version_set_create_exhaustive_test_suite {
 
             let dbname = Box::new(dir.to_string_lossy().to_string());
 
-            let mut options = Box::new(Options::default());
+            let env = PosixEnv::shared();
+            let mut options = Box::new(Options::with_env(env));
             options.set_create_if_missing(create_if_missing);
             options.set_error_if_exists(error_if_exists);
 

@@ -99,7 +99,7 @@ impl Recover for VersionSet {
                 let mut lw = LogWriter::new(dest, 0);
                 let lw_ptr: *mut LogWriter = &mut lw as *mut LogWriter;
 
-                let snap_status = <VersionSet as WriteSnapshot>::write_snapshot(self, lw_ptr);
+                let snap_status = unsafe { <VersionSet as WriteSnapshot>::write_snapshot(self, &mut *lw_ptr) };
                 if !snap_status.is_ok() {
                     unsafe {
                         drop(Box::<dyn WritableFile>::from_raw(raw_file));
@@ -373,7 +373,8 @@ mod version_set_recover_exhaustive_test_suite {
 
             let dbname = Box::new(dir.to_string_lossy().to_string());
 
-            let mut options = Box::new(Options::default());
+            let env = PosixEnv::shared();
+            let mut options = Box::new(Options::with_env(env));
             options.set_create_if_missing(create_if_missing);
             options.set_error_if_exists(false);
 
@@ -454,7 +455,8 @@ mod version_set_recover_exhaustive_test_suite {
 
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
-        let mut options = Box::new(Options::default());
+        let env = PosixEnv::shared();
+        let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(false);
         options.set_error_if_exists(false);
 
@@ -495,7 +497,8 @@ mod version_set_recover_exhaustive_test_suite {
 
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
-        let mut options = Box::new(Options::default());
+        let env = PosixEnv::shared();
+        let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(false);
         options.set_error_if_exists(false);
 

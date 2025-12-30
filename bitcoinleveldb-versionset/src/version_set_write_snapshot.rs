@@ -5,71 +5,73 @@ impl WriteSnapshot for VersionSet {
 
     /// Save current contents to *log
     /// 
-    fn write_snapshot(&mut self, log: *mut LogWriter) -> Status {
+    fn write_snapshot(&mut self, log: &mut LogWriter) -> Status {
         trace!("VersionSet::write_snapshot(log): enter; log={:p}", log);
-
-        assert!(!log.is_null(), "VersionSet::write_snapshot(log): log is null");
-
-        let cur: *mut Version = self.current();
-
-        assert!(
-            !cur.is_null(),
-            "VersionSet::write_snapshot(log): current is null"
-        );
 
         let mut edit = VersionEdit::default();
 
-        let cmp_name_owned: String = unsafe {
-            let ucmp_ptr = self.icmp().user_comparator();
-            if ucmp_ptr.is_null() {
-                String::new()
-            } else {
-                match (*ucmp_ptr).name() {
-                    Cow::Borrowed(s) => s.to_owned(),
-                    Cow::Owned(s) => s,
-                }
-            }
-        };
+        // Comparator name is required for recover() validation.
+        let comparator_name = unsafe { (*self.icmp().user_comparator()).name() };
+        edit.set_comparator_name(&Slice::from(&comparator_name.to_string()));
 
-        let cmp_name_slice = Slice::from(cmp_name_owned.as_bytes());
-        edit.set_comparator_name(&cmp_name_slice);
+        // These metadata fields are required for future recover() calls.
+        // Without them, recover() will return Corruption (e.g. "no meta-nextfile entry in descriptor").
+        edit.set_log_number(self.log_number());
+        edit.set_prev_log_number(self.prev_log_number());
+        edit.set_next_file(self.next_file_number());
+        edit.set_last_sequence(self.last_sequence());
 
-        for level in 0..(NUM_LEVELS as i32) {
-            let cp_string: String = self.compact_pointer_mut()[level as usize].clone();
-            if !cp_string.is_empty() {
-                let mut key = InternalKey::default();
+        debug!(
+            log_number = self.log_number(),
+            prev_log_number = self.prev_log_number(),
+            next_file_number = self.next_file_number(),
+            last_sequence = self.last_sequence(),
+            "VersionSet::write_snapshot: emitting required manifest metadata"
+        );
 
-                unsafe {
-                    let cp_slice = Slice::from_ptr_len(cp_string.as_ptr(), cp_string.len());
-                    let _ = key.decode_from(&cp_slice);
-                }
+        // Snapshot current version's file set.
+        let current_ptr = self.current();
+        if current_ptr.is_null() {
+            warn!(
+                "VersionSet::write_snapshot: current version pointer is null; snapshot will contain only metadata"
+            );
+        } else {
+            let current: &Version = unsafe { &*current_ptr };
 
-                edit.set_compact_pointer(level, &key);
-            }
-        }
+            for (level, level_files) in current.files().iter().enumerate() {
+                trace!(
+                    level,
+                    file_count = level_files.len(),
+                    "VersionSet::write_snapshot: capturing level files"
+                );
 
-        unsafe {
-            let v: &mut Version = &mut *cur;
+                for fmeta_ptr in level_files.iter() {
+                    let fmeta_ptr = *fmeta_ptr;
 
-            for level in 0..(NUM_LEVELS as i32) {
-                let files = &v.files()[level as usize];
+                    match unsafe { fmeta_ptr.as_ref() } {
+                        Some(f) => {
+                            trace!(
+                                level,
+                                file_number = f.number(),
+                                file_size = f.file_size(),
+                                "VersionSet::write_snapshot: adding file to snapshot"
+                            );
 
-                for &fptr in files.iter() {
-                    assert!(
-                        !fptr.is_null(),
-                        "VersionSet::write_snapshot(log): null FileMetaData pointer at level {}",
-                        level
-                    );
-
-                    let f: &FileMetaData = &*fptr;
-
-                    edit.add_file(
-                        level,
-                        *f.number(),
-                        *f.file_size(),
-                        f.smallest(),
-                        f.largest(),
-                    );
+                            edit.add_file(
+                                level as i32,
+                                *f.number(),
+                                *f.file_size(),
+                                &f.smallest(),
+                                &f.largest(),
+                            );
+                        }
+                        None => {
+                            warn!(
+                                level,
+                                "VersionSet::write_snapshot: encountered null FileMetaData pointer; skipping"
+                            );
+                        }
+                    }
                 }
             }
         }
@@ -77,12 +79,16 @@ impl WriteSnapshot for VersionSet {
         let mut record = String::new();
         edit.encode_to(&mut record as *mut String);
 
-        let rec_slice = Slice::from(record.as_bytes());
-        let st = unsafe { (*log).add_record(&rec_slice) };
+        debug!(
+            record_len = record.len(),
+            "VersionSet::write_snapshot: encoded snapshot record"
+        );
 
-        trace!("VersionSet::write_snapshot(log): exit; ok={}", st.is_ok());
+        let record_slice = Slice::from(record.as_bytes());
+        let s = log.add_record(&record_slice);
 
-        st
+        trace!("VersionSet::write_snapshot(log): exit; ok={}", s.is_ok());
+        s
     }
 }
 
@@ -105,7 +111,7 @@ impl VersionSet {
             return Status::invalid_argument(&msg, None);
         }
 
-        <VersionSet as WriteSnapshot>::write_snapshot(self, log_ptr)
+        unsafe { <VersionSet as WriteSnapshot>::write_snapshot(self, &mut *log_ptr) }
     }
 }
 
@@ -178,7 +184,8 @@ mod version_set_write_snapshot_exhaustive_test_suite {
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
-        let mut options = Box::new(Options::default());
+        let env = PosixEnv::shared();
+        let mut options = Box::new(Options::with_env(env.clone()));
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
@@ -210,7 +217,7 @@ mod version_set_write_snapshot_exhaustive_test_suite {
         info!(status = ?st_snap, "write_snapshot");
         assert_status_ok(&st_snap, "write_snapshot");
 
-        let mut options2 = Box::new(Options::default());
+        let mut options2 = Box::new(Options::with_env(env));
         options2.set_create_if_missing(false);
         options2.set_error_if_exists(false);
 

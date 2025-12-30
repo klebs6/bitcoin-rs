@@ -1,16 +1,35 @@
 // ---------------- [ File: bitcoinleveldb-versionsetutil/src/by_smallest_key.rs ]
 crate::ix!();
 
-/**
-  | Helper to sort by
-  | v->files_[file_number].smallest
-  |
-  */
+/// Helper to sort by v->files_[file_number].smallest
+/// 
 pub struct BySmallestKeyComparator {
     internal_comparator: *const InternalKeyComparator,
 }
 
+impl std::hash::BuildHasher for BySmallestKeyComparator {
+    type Hasher = std::collections::hash_map::DefaultHasher;
+
+    fn build_hasher(&self) -> Self::Hasher {
+        std::collections::hash_map::DefaultHasher::new()
+    }
+}
+
 impl BySmallestKeyComparator {
+
+    pub fn new(internal_comparator: *const InternalKeyComparator) -> Self {
+        trace!(
+            internal_comparator_ptr = ?internal_comparator,
+            "BySmallestKeyComparator::new"
+        );
+
+        assert!(
+            !internal_comparator.is_null(),
+            "BySmallestKeyComparator::new: internal_comparator is null"
+        );
+
+        Self { internal_comparator }
+    }
 
     pub fn invoke(
         &self,

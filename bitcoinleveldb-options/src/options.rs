@@ -191,6 +191,27 @@ impl core::fmt::Debug for Options {
     }
 }
 
+impl Options {
+
+    pub fn with_env(env: Rc<RefCell<dyn Env>>) -> Self {
+        let mut x = Self::default();
+        x.set_env(Some(env));
+        x
+    }
+
+    pub fn internal_key_comparator(&self) -> InternalKeyComparator {
+        let user_cmp_ptr: *const dyn SliceComparator =
+            self.comparator().as_ref() as *const dyn SliceComparator;
+
+        trace!(
+            user_comparator_ptr = %format!("{:p}", user_cmp_ptr),
+            "Options::internal_key_comparator"
+        );
+
+        InternalKeyComparator::new(user_cmp_ptr)
+    }
+}
+
 impl Default for Options {
 
     fn default() -> Self {

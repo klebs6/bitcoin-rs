@@ -173,48 +173,23 @@ mod version_set_approximate_offset_of_exhaustive_test_suite {
         InternalKey::new(&Slice::from(user_key), seq, ValueType::TypeValue)
     }
 
-    fn make_internal_key_comparator_from_options(options: &Options) -> InternalKeyComparator {
-        let ucmp_ptr: *const dyn SliceComparator =
-            options.comparator().as_ref() as *const dyn SliceComparator;
-        InternalKeyComparator::new(ucmp_ptr)
-    }
-
-    struct RawMutexTestGuard {
-        mu: *mut RawMutex,
-    }
-
-    impl RawMutexTestGuard {
-        fn lock(mu: *mut RawMutex) -> Self {
-            trace!(mu_ptr = %format!("{:p}", mu), "RawMutexTestGuard::lock");
-            unsafe {
-                (*mu).lock();
-            }
-            Self { mu }
-        }
-    }
-
-    impl Drop for RawMutexTestGuard {
-        fn drop(&mut self) {
-            trace!(mu_ptr = %format!("{:p}", self.mu), "RawMutexTestGuard::drop (unlock)");
-            unsafe {
-                (*self.mu).unlock();
-            }
-        }
-    }
-
     #[traced_test]
     fn approximate_offset_is_zero_for_empty_versions() {
         let dir = make_unique_temp_db_dir("versionset_approx_offset_empty");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
-        let mut options = Box::new(Options::default());
+        let env = PosixEnv::shared();
+        let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
-
-        let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
+        let icmp = Box::new(options.internal_key_comparator());
+        let mut table_cache = Box::new(TableCache::new(
+            dbname.as_ref(),
+            options.as_ref(),
+            128,
+        ));
 
         let mut vs = VersionSet::new(
             dbname.as_ref(),
@@ -244,13 +219,18 @@ mod version_set_approximate_offset_of_exhaustive_test_suite {
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
-        let mut options = Box::new(Options::default());
+        let env = PosixEnv::shared();
+        let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
-
-        let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
+        let icmp = Box::new(options.internal_key_comparator());
+        let mut table_cache = Box::new(TableCache::new(
+            dbname.as_ref(),
+            options.as_ref(),
+            128,
+        ));
+        let mut mutex = Box::new(RawMutex::INIT);
 
         let mut vs = VersionSet::new(
             dbname.as_ref(),
@@ -263,32 +243,19 @@ mod version_set_approximate_offset_of_exhaustive_test_suite {
         let st0 = vs.recover(&mut save_manifest as *mut bool);
         assert_status_ok(&st0, "recover");
 
-        let mut mu = Box::new(RawMutex::INIT);
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _l = mutex.lock();
 
         let mut e1 = VersionEdit::default();
-        e1.add_file(
-            1,
-            vs.new_file_number(),
-            100,
-            &make_ikey("a", 1),
-            &make_ikey("k", 1),
-        );
+        e1.add_file(1, vs.new_file_number(), 100, &make_ikey("a", 1), &make_ikey("k", 1));
         assert_status_ok(
-            &vs.log_and_apply(&mut e1 as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
+            &vs.log_and_apply(&mut e1 as *mut VersionEdit, mutex.as_mut() as *mut RawMutex),
             "log_and_apply e1",
         );
 
         let mut e2 = VersionEdit::default();
-        e2.add_file(
-            1,
-            vs.new_file_number(),
-            200,
-            &make_ikey("l", 1),
-            &make_ikey("z", 1),
-        );
+        e2.add_file(1, vs.new_file_number(), 200, &make_ikey("l", 1), &make_ikey("z", 1));
         assert_status_ok(
-            &vs.log_and_apply(&mut e2 as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
+            &vs.log_and_apply(&mut e2 as *mut VersionEdit, mutex.as_mut() as *mut RawMutex),
             "log_and_apply e2",
         );
 
@@ -299,20 +266,23 @@ mod version_set_approximate_offset_of_exhaustive_test_suite {
         let off1 = vs.approximate_offset_of(v, &ik1);
         debug!(off1, "offset for key in first file");
         assert!(
-            off1 <= 100,
-            "when table open fails, offset should conservatively reach end-of-file (<= 100) for first file"
+            off1 == 100 || off1 <= 100,
+            "when table open fails, offset should conservatively reach end-of-file (100) for first file"
         );
 
         let ik2 = make_ikey("m", 1);
         let off2 = vs.approximate_offset_of(v, &ik2);
         debug!(off2, "offset for key in second file");
-        assert!(off2 >= 100, "offset for second file key must include at least first file size");
+        assert!(
+            off2 >= 100,
+            "offset for second file key must include at least first file size"
+        );
 
         let ik3 = make_ikey("zzzz", 1);
         let off3 = vs.approximate_offset_of(v, &ik3);
         debug!(off3, "offset for key after last file");
         assert!(
-            off3 >= 300,
+            off3 >= 300 || off3 == 300,
             "offset after last file should be at least the sum of file sizes (300)"
         );
 

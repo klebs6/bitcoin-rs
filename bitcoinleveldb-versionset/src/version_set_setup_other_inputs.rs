@@ -222,7 +222,8 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
-        let mut options = Box::new(Options::default());
+        let env = PosixEnv::shared();
+        let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
@@ -253,7 +254,8 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
-        let mut options = Box::new(Options::default());
+        let env = PosixEnv::shared();
+        let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 

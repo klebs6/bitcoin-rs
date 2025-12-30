@@ -20,6 +20,7 @@ x!{num_level_files}
 x!{reuse_file_number}
 x!{set_last_sequence_number}
 x!{version_set}
+x!{version_set_into_version}
 x!{version_set_add_live_files}
 x!{version_set_append_version}
 x!{version_set_approximate_offset_of}
@@ -43,3 +44,4 @@ x!{version_set_recover}
 x!{version_set_reuse_manifest}
 x!{version_set_setup_other_inputs}
 x!{version_set_write_snapshot}
+x!{compare_file_meta_data_by_smallest_internal_key}

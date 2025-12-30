@@ -90,6 +90,38 @@ impl Default for PosixEnv {
     }
 }
 
+impl PosixEnv {
+    pub fn shared() -> Rc<RefCell<dyn Env>> {
+        trace!("PosixEnv::shared: acquiring thread-local singleton");
+
+        thread_local! {
+            static POSIX_ENV_SINGLETON_PTR: *const Rc<RefCell<dyn Env>> = {
+                trace!("PosixEnv::shared: initializing thread-local singleton instance");
+
+                let env_rc: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(PosixEnv::default()));
+
+                // Leak the Rc so that it is never dropped; this prevents PosixEnv::drop
+                // from aborting the process during test teardown (mirrors C++ singleton lifetime).
+                let leaked: *const Rc<RefCell<dyn Env>> = Box::into_raw(Box::new(env_rc));
+
+                debug!(
+                    leaked_ptr = ?leaked,
+                    "PosixEnv::shared: leaked thread-local singleton Rc"
+                );
+
+                leaked
+            };
+        }
+
+        POSIX_ENV_SINGLETON_PTR.with(|ptr| unsafe {
+            debug!(
+                leaked_ptr = ?*ptr,
+                "PosixEnv::shared: cloning Rc from leaked singleton"
+            );
+            (**ptr).clone()
+        })
+    }
+}
 impl Drop for PosixEnv {
 
     fn drop(&mut self) {
