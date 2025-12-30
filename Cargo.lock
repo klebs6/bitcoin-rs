@@ -3479,11 +3479,17 @@ dependencies = [
  "bitcoinleveldb-batch",
  "bitcoinleveldb-env",
  "bitcoinleveldb-file",
+ "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-key",
  "bitcoinleveldb-log",
+ "bitcoinleveldb-logreader",
+ "bitcoinleveldb-options",
  "bitcoinleveldb-posixtools",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-versionedit",
+ "tracing",
 ]
 
 [[package]]
@@ -4101,6 +4107,7 @@ dependencies = [
  "bitcoinleveldb-tablecache",
  "bitcoinleveldb-versionedit",
  "bitcoinleveldb-writebatch",
+ "tracing",
 ]
 
 [[package]]
@@ -4474,6 +4481,7 @@ dependencies = [
  "bitcoinleveldb-versionsetinterface",
  "bitcoinleveldb-versionsetutil",
  "derive_builder",
+ "disable_macro",
  "tracing",
 ]
 

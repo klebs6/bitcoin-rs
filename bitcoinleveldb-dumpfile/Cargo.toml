@@ -3,7 +3,13 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
+tracing.workspace = true
 bitcoinleveldb-posixtools = { path = "../bitcoinleveldb-posixtools" }
+bitcoinleveldb-table = { path = "../bitcoinleveldb-table" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader" }
+bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

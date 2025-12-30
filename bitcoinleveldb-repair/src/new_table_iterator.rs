@@ -20,3 +20,39 @@ impl Repairer {
         }
     }
 }
+
+#[cfg(test)]
+mod new_table_iterator_suite {
+    use super::*;
+    use crate::repairer_test_harness::*;
+    use tracing::{debug, info, trace, warn};
+
+    #[traced_test]
+    fn new_table_iterator_returns_non_null_iterator_pointer_for_missing_table() {
+        let db = EphemeralDbDir::new("new-table-iter-missing");
+        let dbname: String = db.path_string();
+
+        // Ensure non-empty so Repairer::new doesn't depend on external FS state.
+        let sentinel = format!("{}/SENTINEL", dbname);
+        touch_file(&sentinel);
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        let mut meta = FileMetaData::default();
+        meta.set_number(999);
+        meta.set_file_size(1);
+
+        trace!(table_no = *meta.number(), file_size = *meta.file_size(), "calling new_table_iterator");
+        let iter = repairer.new_table_iterator(&meta);
+
+        // Contract: iterator pointer should be returned (often an error iterator) unless table_cache is null.
+        assert!(!iter.is_null(), "expected non-null iterator pointer");
+
+        unsafe {
+            let st = (*iter).status();
+            info!(ok = st.is_ok(), status = %st.to_string(), "iterator status");
+            drop(Box::from_raw(iter));
+        }
+    }
+}

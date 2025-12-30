@@ -112,3 +112,57 @@ impl Repairer {
         trace!(table_no = number, "Repairer::scan_table: done");
     }
 }
+
+#[cfg(test)]
+mod scan_table_behavior_suite {
+    use super::*;
+    use crate::repairer_test_harness::*;
+    use tracing::{debug, info, trace, warn};
+
+    #[traced_test]
+    fn scan_table_archives_both_candidate_names_when_table_is_missing() {
+        let db = EphemeralDbDir::new("scan-table-missing");
+        let dbname: String = db.path_string();
+
+        // Ensure non-empty so Repairer::new doesn't depend on any env-created artifacts.
+        let sentinel = format!("{}/SENTINEL", dbname);
+        touch_file(&sentinel);
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        let table_no: u64 = 777;
+        let ldb = table_file_name(&dbname, table_no);
+        let sst = sst_table_file_name(&dbname, table_no);
+
+        assert!(!path_exists(&ldb));
+        assert!(!path_exists(&sst));
+
+        trace!(table_no, ldb = %ldb, sst = %sst, "calling scan_table for missing table");
+        repairer.scan_table(table_no);
+
+        // The archive attempts won't move anything (files absent), but the lost directory
+        // should be created by archive_file's directory creation attempt.
+        let lost_dir = format!("{}/lost", dbname);
+        info!(lost_dir = %lost_dir, "verifying lost dir creation best-effort");
+        assert!(is_directory(&lost_dir), "expected lost dir to exist");
+    }
+
+    #[traced_test]
+    fn scan_table_archives_invalid_existing_table_file() {
+        let db = EphemeralDbDir::new("scan-table-invalid");
+        let dbname: String = db.path_string();
+
+        let table_no: u64 = 5;
+        let ldb = table_file_name(&dbname, table_no);
+        touch_file(&ldb);
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        trace!(table_no, ldb = %ldb, "calling scan_table for invalid table");
+        repairer.scan_table(table_no);
+
+        let _ = assert_archived(&ldb);
+    }
+}

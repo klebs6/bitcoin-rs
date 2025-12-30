@@ -17,3 +17,5 @@ x!{extract_meta_data}
 x!{new_table_iterator}
 x!{create}
 x!{repair_log_reporter}
+x!{test_harness}
+x!{public_surface_suite}

@@ -70,3 +70,100 @@ impl Repairer {
         status
     }
 }
+
+#[cfg(test)]
+mod find_files_discovery_suite {
+    use super::*;
+    use crate::repairer_test_harness::*;
+    use tracing::{debug, info, trace, warn};
+
+    #[traced_test]
+    fn find_files_returns_error_for_non_directory_path() {
+        let db = EphemeralDbDir::new("find-files-non-dir");
+        let file_path = format!("{}/NOT_A_DIR", db.path_string());
+        touch_file(&file_path);
+        assert!(path_exists(&file_path));
+        assert!(!is_directory(&file_path));
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&file_path, &options);
+
+        trace!(path = %file_path, "calling find_files on non-directory");
+        let st = repairer.find_files();
+
+        info!(ok = st.is_ok(), status = %st.to_string(), "find_files returned");
+        assert!(
+            !st.is_ok(),
+            "expected find_files to fail for non-directory dbname"
+        );
+    }
+
+    #[traced_test]
+    fn find_files_succeeds_when_directory_contains_any_file() {
+        let db = EphemeralDbDir::new("find-files-nonempty");
+        let dbname: String = db.path_string();
+
+        // Any file presence makes filenames non-empty.
+        let sentinel = format!("{}/SENTINEL", dbname);
+        touch_file(&sentinel);
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        trace!(dbname = %dbname, "calling find_files");
+        let st = repairer.find_files();
+
+        info!(ok = st.is_ok(), status = %st.to_string(), "find_files returned");
+        assert!(st.is_ok(), "expected ok: {}", st.to_string());
+    }
+
+    #[traced_test]
+    fn find_files_discovers_logs_tables_and_manifests_via_run_side_effects() {
+        let db = EphemeralDbDir::new("find-files-discovers-by-run");
+        let dbname: String = db.path_string();
+
+        let log3 = log_file_name(&dbname, 3);
+        let table4 = table_file_name(&dbname, 4);
+        let manifest2 = descriptor_file_name(&dbname, 2);
+
+        touch_file(&log3);
+        touch_file(&table4);
+        touch_file(&manifest2);
+
+        // Also create CURRENT to resemble a DB directory; content isn't required here.
+        let current = format!("{}/CURRENT", dbname);
+        write_text_file(&current, "MANIFEST-000002\n");
+
+        info!(
+            log3 = %log3,
+            table4 = %table4,
+            manifest2 = %manifest2,
+            "seeded db directory with representative files"
+        );
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        trace!(dbname = %dbname, "running Repairer::run");
+        let st = repairer.run();
+
+        info!(
+            ok = st.is_ok(),
+            status = %st.to_string(),
+            "Repairer::run returned"
+        );
+        assert!(st.is_ok(), "expected run ok: {}", st.to_string());
+
+        // Logs are always archived during convert_log_files_to_tables.
+        let _ = assert_archived(&log3);
+
+        // Manifests are archived during write_descriptor.
+        let _ = assert_archived(&manifest2);
+
+        // Invalid/empty table files should be archived via scan_table->repair_table.
+        let _ = assert_archived(&table4);
+
+        let new_manifest = descriptor_file_name(&dbname, 1);
+        assert!(path_exists(&new_manifest), "expected new manifest created");
+    }
+}

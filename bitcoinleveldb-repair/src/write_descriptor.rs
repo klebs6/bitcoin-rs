@@ -121,3 +121,74 @@ impl Repairer {
         status
     }
 }
+
+#[cfg(test)]
+mod write_descriptor_manifest_suite {
+    use super::*;
+    use crate::repairer_test_harness::*;
+    use tracing::{debug, info, trace, warn};
+
+    #[traced_test]
+    fn write_descriptor_archives_old_manifests_and_installs_new_manifest_and_current() {
+        let db = EphemeralDbDir::new("write-descriptor-installs");
+        let dbname: String = db.path_string();
+
+        let old_manifest = descriptor_file_name(&dbname, 2);
+        touch_file(&old_manifest);
+
+        let current = format!("{}/CURRENT", dbname);
+        write_text_file(&current, "MANIFEST-000002\n");
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        // Populate `manifests` from the directory listing.
+        let st_find = repairer.find_files();
+        info!(ok = st_find.is_ok(), status = %st_find.to_string(), "find_files returned");
+        assert!(st_find.is_ok(), "expected ok find_files: {}", st_find.to_string());
+
+        trace!(dbname = %dbname, "calling write_descriptor directly");
+        let st = repairer.write_descriptor();
+
+        info!(ok = st.is_ok(), status = %st.to_string(), "write_descriptor returned");
+        assert!(st.is_ok(), "expected ok write_descriptor: {}", st.to_string());
+
+        let _ = assert_archived(&old_manifest);
+
+        let new_manifest = descriptor_file_name(&dbname, 1);
+        debug!(new_manifest = %new_manifest, "checking new manifest path");
+        assert!(path_exists(&new_manifest), "expected new manifest file to exist");
+
+        let current_guess = read_current_file_guess(&dbname).unwrap_or_default();
+        debug!(current = %current_guess, "CURRENT contents (best-effort)");
+        assert!(
+            current_guess.contains("MANIFEST-000001") || current_guess.contains("MANIFEST-1"),
+            "expected CURRENT to mention manifest 000001; got: {:?}",
+            current_guess
+        );
+    }
+
+    #[traced_test]
+    fn write_descriptor_succeeds_even_with_no_tables_discovered() {
+        let db = EphemeralDbDir::new("write-descriptor-no-tables");
+        let dbname: String = db.path_string();
+
+        let sentinel = format!("{}/SENTINEL", dbname);
+        touch_file(&sentinel);
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        let st_find = repairer.find_files();
+        assert!(st_find.is_ok(), "expected ok find_files: {}", st_find.to_string());
+
+        trace!("calling write_descriptor with empty tables set");
+        let st = repairer.write_descriptor();
+
+        info!(ok = st.is_ok(), status = %st.to_string(), "write_descriptor returned");
+        assert!(st.is_ok(), "expected ok write_descriptor: {}", st.to_string());
+
+        let new_manifest = descriptor_file_name(&dbname, 1);
+        assert!(path_exists(&new_manifest), "expected manifest created");
+    }
+}

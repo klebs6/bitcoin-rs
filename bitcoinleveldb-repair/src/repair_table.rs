@@ -115,3 +115,29 @@ impl Repairer {
         );
     }
 }
+
+#[cfg(test)]
+mod repair_table_recovery_suite {
+    use super::*;
+    use crate::repairer_test_harness::*;
+    use tracing::{debug, info, trace, warn};
+
+    #[traced_test]
+    fn scan_table_triggers_repair_table_and_archives_source_for_invalid_table() {
+        let db = EphemeralDbDir::new("repair-table-via-scan");
+        let dbname: String = db.path_string();
+
+        let table_no: u64 = 10;
+        let table_path = table_file_name(&dbname, table_no);
+        touch_file(&table_path);
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        trace!(table_no, table_path = %table_path, "calling scan_table to trigger repair_table path");
+        repairer.scan_table(table_no);
+
+        // Regardless of how repair proceeds, scan_table->repair_table archives input file on failure.
+        let _dst = assert_archived(&table_path);
+    }
+}

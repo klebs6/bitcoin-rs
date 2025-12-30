@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-versionset/tests/find_file.rs ]
 use bitcoinleveldb_versionset::*;
 use bitcoinleveldb_file::*;
 use bitcoinleveldb_slice::*;
@@ -6,7 +7,6 @@ use bitcoinleveldb_versionsetutil::*;
 use bitcoinleveldb_comparator::*;
 use bitcoin_imports::*;
 
-// ---------------- [ File: bitcoinleveldb-versionset/tests/find_file.rs ]
 struct FindFileTest {
     disjoint_sorted_files: bool,
     files:                 Vec<*mut FileMetaData>,

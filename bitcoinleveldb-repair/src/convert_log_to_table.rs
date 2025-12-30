@@ -139,3 +139,67 @@ impl Repairer {
         status
     }
 }
+
+#[cfg(test)]
+mod convert_log_to_table_error_and_smoke_suite {
+    use super::*;
+    use crate::repairer_test_harness::*;
+    use tracing::{debug, info, trace, warn};
+
+    #[traced_test]
+    fn convert_log_to_table_returns_error_when_log_file_is_missing() {
+        let db = EphemeralDbDir::new("convert-log-missing");
+        let dbname: String = db.path_string();
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        let lognum: u64 = 12345;
+        let log_path = log_file_name(&dbname, lognum);
+        assert!(!path_exists(&log_path), "precondition: log should be absent");
+
+        trace!(lognum, log_path = %log_path, "calling convert_log_to_table");
+        let st = repairer.convert_log_to_table(lognum);
+
+        info!(
+            lognum,
+            ok = st.is_ok(),
+            status = %st.to_string(),
+            "convert_log_to_table returned"
+        );
+        assert!(
+            !st.is_ok(),
+            "expected conversion to fail for missing log file; got: {}",
+            st.to_string()
+        );
+    }
+
+    #[traced_test]
+    fn convert_log_to_table_does_not_panic_for_empty_existing_log_file() {
+        let db = EphemeralDbDir::new("convert-log-empty-file");
+        let dbname: String = db.path_string();
+
+        let options = Options::default();
+        let mut repairer = Repairer::new(&dbname, &options);
+
+        let lognum: u64 = 1;
+        let log_path = log_file_name(&dbname, lognum);
+        touch_file(&log_path);
+        assert!(path_exists(&log_path));
+
+        trace!(lognum, log_path = %log_path, "calling convert_log_to_table");
+        let st = repairer.convert_log_to_table(lognum);
+
+        info!(
+            lognum,
+            ok = st.is_ok(),
+            status = %st.to_string(),
+            "convert_log_to_table returned"
+        );
+
+        // Empty logs are valid in the sense that the conversion should be resilient.
+        // Accept either Ok or a non-fatal error depending on underlying log/table code,
+        // but require that it returns a Status and does not panic.
+        let _ = st;
+    }
+}

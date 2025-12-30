@@ -92,25 +92,55 @@ impl Recover for VersionSet {
                     Box::into_raw(file_inner)
                 };
 
-                let dest: Rc<RefCell<dyn WritableFile>> = Rc::new(RefCell::new(
-                    BorrowedWritableFileForManifest::new(raw_file),
-                ));
+                trace!(
+                    manifest = %manifest,
+                    raw_file_ptr = %format!("{:p}", raw_file),
+                    "VersionSet::recover: created initial MANIFEST writable file"
+                );
 
-                let mut lw = LogWriter::new(dest, 0);
-                let lw_ptr: *mut LogWriter = &mut lw as *mut LogWriter;
+                let mut snap_status: Status = Status::ok();
+                let mut sync_status: Status = Status::ok();
 
-                let snap_status = unsafe { <VersionSet as WriteSnapshot>::write_snapshot(self, &mut *lw_ptr) };
-                if !snap_status.is_ok() {
-                    unsafe {
-                        drop(Box::<dyn WritableFile>::from_raw(raw_file));
+                {
+                    let dest: Rc<RefCell<dyn WritableFile>> = Rc::new(RefCell::new(
+                        BorrowedWritableFileForManifest::new(raw_file),
+                    ));
+
+                    let mut lw = LogWriter::new(dest, 0);
+
+                    snap_status = <VersionSet as WriteSnapshot>::write_snapshot(self, &mut lw);
+
+                    trace!(
+                        ok = snap_status.is_ok(),
+                        status = %snap_status.to_string(),
+                        "VersionSet::recover: write_snapshot into initial MANIFEST"
+                    );
+
+                    if snap_status.is_ok() {
+                        sync_status = unsafe { (*raw_file).sync() };
+
+                        trace!(
+                            ok = sync_status.is_ok(),
+                            status = %sync_status.to_string(),
+                            "VersionSet::recover: synced initial MANIFEST"
+                        );
                     }
-                    return snap_status;
+
+                    // `lw` (and its borrowed wrapper) MUST drop before we free `raw_file`.
+                    trace!(
+                        raw_file_ptr = %format!("{:p}", raw_file),
+                        "VersionSet::recover: dropping temporary LogWriter before freeing MANIFEST file"
+                    );
                 }
 
-                let sync_status = unsafe { (*raw_file).sync() };
                 unsafe {
                     drop(Box::<dyn WritableFile>::from_raw(raw_file));
                 }
+
+                if !snap_status.is_ok() {
+                    return snap_status;
+                }
+
                 if !sync_status.is_ok() {
                     return sync_status;
                 }
@@ -266,7 +296,8 @@ impl Recover for VersionSet {
             let vset_iface_ptr: *mut dyn VersionSetInterface =
                 (self as &mut dyn VersionSetInterface) as *mut dyn VersionSetInterface;
 
-            let v_files: [Vec<*mut FileMetaData>; NUM_LEVELS] = core::array::from_fn(|_| Vec::new());
+            let v_files: [Vec<*mut FileMetaData>; NUM_LEVELS] =
+                core::array::from_fn(|_| Vec::new());
 
             let v_ptr: *mut Version = Box::into_raw(Box::new(
                 VersionBuilder::default()

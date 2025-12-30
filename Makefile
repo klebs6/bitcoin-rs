@@ -43,9 +43,9 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoin-top
 
 # ------------------------------- [leveldb-layer-1]
+ACTIVE := bitcoinleveldb-testenv
 ACTIVE := bitcoinleveldb-repair
 ACTIVE := bitcoinleveldb-dumpfile
-ACTIVE := bitcoinleveldb-testenv
 ACTIVE := bitcoinleveldb-versionset
 
 # ------------------------------- [leveldb-layer-2a]

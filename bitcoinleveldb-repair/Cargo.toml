@@ -3,6 +3,7 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
+tracing.workspace = true
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }

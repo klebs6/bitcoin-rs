@@ -47,3 +47,56 @@ impl Drop for Repairer {
         trace!("Repairer::drop: done");
     }
 }
+
+#[cfg(test)]
+mod repairer_drop_safety_suite {
+    use super::*;
+    use crate::repairer_test_harness::*;
+    use tracing::{debug, info, trace, warn};
+
+    #[traced_test]
+    fn dropping_repairer_after_run_does_not_panic() {
+        let db = EphemeralDbDir::new("drop-after-run");
+        let dbname: String = db.path_string();
+
+        let sentinel = format!("{}/SENTINEL", dbname);
+        touch_file(&sentinel);
+
+        let options = Options::default();
+
+        trace!(dbname = %dbname, "constructing Repairer");
+        {
+            let mut repairer = Repairer::new(&dbname, &options);
+
+            trace!(dbname = %dbname, "running Repairer::run");
+            let st = repairer.run();
+
+            info!(
+                dbname = %dbname,
+                ok = st.is_ok(),
+                status = %st.to_string(),
+                "Repairer::run completed"
+            );
+
+            // Regardless of outcome, dropping should be safe.
+            let _ = st;
+        }
+
+        // If drop had a double-free or similar issue, the test process would likely abort.
+        debug!(dbname = %dbname, "repairer dropped cleanly");
+    }
+
+    #[traced_test]
+    fn dropping_repairer_without_running_does_not_panic() {
+        let db = EphemeralDbDir::new("drop-without-run");
+        let dbname: String = db.path_string();
+
+        let sentinel = format!("{}/SENTINEL", dbname);
+        touch_file(&sentinel);
+
+        let options = Options::default();
+        trace!(dbname = %dbname, "constructing Repairer only");
+        let _repairer = Repairer::new(&dbname, &options);
+        debug!(dbname = %dbname, "Repairer constructed; will be dropped at scope end");
+    }
+}

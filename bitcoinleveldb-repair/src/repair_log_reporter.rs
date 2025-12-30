@@ -19,3 +19,30 @@ impl RepairLogReporter {
         let _ = &self.info_log;
     }
 }
+
+#[cfg(test)]
+mod repair_log_reporter_behavior_suite {
+    use super::*;
+    use tracing::{debug, info, trace, warn};
+
+    #[traced_test]
+    fn corruption_method_logs_and_does_not_panic_with_none_info_log() {
+        let mut reporter = RepairLogReporter {
+            info_log: None,
+            lognum: 42,
+        };
+
+        let msg = Slice::from(&b"corruption"[..]);
+        let s = crate::Status::corruption(&msg, None);
+
+        trace!(lognum = reporter.lognum, "calling RepairLogReporter::corruption");
+        reporter.corruption(123, &s);
+
+        info!(
+            lognum = reporter.lognum,
+            bytes = 123usize,
+            status = %s.to_string(),
+            "corruption invoked"
+        );
+    }
+}

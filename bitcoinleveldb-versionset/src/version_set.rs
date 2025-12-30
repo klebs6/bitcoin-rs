@@ -181,3 +181,80 @@ impl VersionSet {
 impl VersionSetInterface for VersionSet {}
 impl VersionSetVersionInterface for VersionSet {}
 impl CompactionInterface for VersionSet {}
+
+#[cfg(test)]
+mod version_set_exhaustive_test_suite {
+    use super::*;
+    use std::path::{Path, PathBuf};
+    use std::time::{SystemTime, UNIX_EPOCH};
+    use tracing::{debug, error, info, trace, warn};
+
+    fn make_unique_temp_db_dir(prefix: &str) -> PathBuf {
+        let pid = std::process::id();
+        let nanos = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_nanos())
+            .unwrap_or(0);
+
+        let mut p = std::env::temp_dir();
+        p.push(format!("{prefix}_{pid}_{nanos}"));
+        p
+    }
+
+    fn remove_dir_all_best_effort(dir: &Path) {
+        match std::fs::remove_dir_all(dir) {
+            Ok(()) => trace!(dir = %dir.display(), "removed temp db dir"),
+            Err(e) => warn!(dir = %dir.display(), error = ?e, "failed to remove temp db dir (best effort)"),
+        }
+    }
+
+    fn make_internal_key_comparator_from_options(options: &Options) -> InternalKeyComparator {
+        let ucmp_ptr: *const dyn SliceComparator =
+            options.comparator().as_ref() as *const dyn SliceComparator;
+        InternalKeyComparator::new(ucmp_ptr)
+    }
+
+    #[traced_test]
+    fn versionset_new_initializes_expected_state_invariants() {
+        let dir = make_unique_temp_db_dir("versionset_new_invariants");
+        std::fs::create_dir_all(&dir).unwrap();
+        let dbname = dir.to_string_lossy().to_string();
+
+        let env = PosixEnv::shared();
+        let options = Box::new(Options::with_env(env));
+        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 4));
+
+        let vs = VersionSet::new(
+            &dbname,
+            options.as_ref(),
+            table_cache.as_mut() as *mut TableCache,
+            icmp.as_ref() as *const InternalKeyComparator,
+        );
+
+        debug!(
+            dbname = %vs.dbname(),
+            next_file_number = vs.next_file_number(),
+            manifest_file_number = vs.manifest_file_number(),
+            last_sequence = vs.last_sequence(),
+            log_number = vs.log_number(),
+            prev_log_number = vs.prev_log_number(),
+            current_ptr = %format!("{:p}", vs.current()),
+            "constructed versionset state"
+        );
+
+        assert_eq!(vs.dbname().as_str(), dbname.as_str(), "dbname must be stored");
+        assert!(!vs.options().is_null(), "options pointer must not be null");
+        assert!(!vs.table_cache().is_null(), "table_cache pointer must not be null");
+
+        assert_eq!(vs.next_file_number(), 2, "default next_file_number must be 2");
+        assert_eq!(vs.manifest_file_number(), 0, "default manifest_file_number must be 0");
+        assert_eq!(vs.last_sequence(), 0, "default last_sequence must be 0");
+        assert_eq!(vs.log_number(), 0, "default log_number must be 0");
+        assert_eq!(vs.prev_log_number(), 0, "default prev_log_number must be 0");
+
+        assert!(!vs.current().is_null(), "current version must be initialized in new_internal");
+
+        remove_dir_all_best_effort(&dir);
+    }
+}

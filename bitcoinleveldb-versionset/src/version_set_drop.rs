@@ -2,52 +2,91 @@
 crate::ix!();
 
 impl Drop for VersionSet {
-
     fn drop(&mut self) {
-        trace!("VersionSet::drop: beginning teardown");
+        trace!("VersionSet::drop: enter");
 
         unsafe {
-            let cur = self.current();
+            let cur: *mut Version = self.current();
+            let dummy_ptr: *mut Version = self.dummy_versions_mut() as *mut Version;
+
+            trace!(
+                current_ptr = %format!("{:p}", cur),
+                dummy_ptr = %format!("{:p}", dummy_ptr),
+                descriptor_log_ptr = %format!("{:p}", self.descriptor_log()),
+                descriptor_file_ptr = %format!("{:p}", self.descriptor_file()),
+                "VersionSet::drop: initial state"
+            );
+
+            // Unref the current version first (while the sentinel is still intact).
             if !cur.is_null() {
                 debug!(
-                    cur_ptr = ?cur,
+                    current_ptr = %format!("{:p}", cur),
                     "VersionSet::drop: unref current version"
                 );
                 (*cur).unref();
                 self.set_current(core::ptr::null_mut());
             }
 
-            // In Rust, panics may unwind through destructors. LevelDB asserts this list is empty,
-            // but panicking in Drop causes abort if another panic is in flight. We do a best-effort
-            // invariant check and detach the sentinel instead of panicking.
-            let dummy_ptr: *mut Version = self.dummy_versions_mut() as *mut Version;
+            // If the version list is not empty, detach the dummy sentinel by bypassing it:
+            // head.prev = tail; tail.next = head; then dummy.next = dummy; dummy.prev = dummy.
+            //
+            // This prevents any later Version drops from touching `dummy_versions_` after `VersionSet`
+            // is gone, which would otherwise be a use-after-free.
             if !dummy_ptr.is_null() {
-                let next = *(*dummy_ptr).next();
-                if next != dummy_ptr {
+                let head: *mut Version = *(*dummy_ptr).next();
+                let tail: *mut Version = *(*dummy_ptr).prev();
+
+                if head == dummy_ptr && tail == dummy_ptr {
+                    trace!("VersionSet::drop: version list already empty");
+                } else if head.is_null() || tail.is_null() {
                     error!(
-                        next_ptr = ?next,
-                        dummy_ptr = ?dummy_ptr,
-                        "VersionSet::drop: dummy_versions list not empty; detaching sentinel to avoid destructor panics"
+                        head_ptr = %format!("{:p}", head),
+                        tail_ptr = %format!("{:p}", tail),
+                        "VersionSet::drop: corrupt version list (null head/tail); forcing sentinel to self-loop"
                     );
                     (*dummy_ptr).set_next(dummy_ptr);
                     (*dummy_ptr).set_prev(dummy_ptr);
+                } else {
+                    trace!(
+                        head_ptr = %format!("{:p}", head),
+                        tail_ptr = %format!("{:p}", tail),
+                        "VersionSet::drop: detaching dummy sentinel from non-empty version list"
+                    );
+
+                    // Bypass dummy: connect tail <-> head.
+                    (*head).set_prev(tail);
+                    (*tail).set_next(head);
+
+                    // Now isolate the sentinel.
+                    (*dummy_ptr).set_next(dummy_ptr);
+                    (*dummy_ptr).set_prev(dummy_ptr);
+
+                    debug!(
+                        "VersionSet::drop: dummy sentinel detached; remaining versions are self-contained"
+                    );
                 }
+            } else {
+                warn!(
+                    "VersionSet::drop: dummy_versions pointer is null; skipping list detachment"
+                );
             }
 
+            // Drop MANIFEST log writer first (it borrows descriptor_file via BorrowedWritableFileForManifest).
             let dlog: *mut LogWriter = self.descriptor_log();
             if !dlog.is_null() {
                 debug!(
-                    descriptor_log_ptr = ?dlog,
+                    descriptor_log_ptr = %format!("{:p}", dlog),
                     "VersionSet::drop: dropping descriptor log writer"
                 );
                 drop(Box::<LogWriter>::from_raw(dlog));
                 self.set_descriptor_log(core::ptr::null_mut());
             }
 
+            // Drop MANIFEST file.
             let dfile: *mut dyn WritableFile = self.descriptor_file();
             if !dfile.is_null() {
                 debug!(
-                    descriptor_file_ptr = ?dfile,
+                    descriptor_file_ptr = %format!("{:p}", dfile),
                     "VersionSet::drop: dropping descriptor file"
                 );
                 drop(Box::<dyn WritableFile>::from_raw(dfile));
@@ -55,7 +94,7 @@ impl Drop for VersionSet {
             }
         }
 
-        trace!("VersionSet::drop: teardown complete");
+        trace!("VersionSet::drop: exit");
     }
 }
 
