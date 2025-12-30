@@ -3,28 +3,6 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/env_posix.cc]
 
-/**
-  | Return a default environment suitable for the
-  | current operating system.
-  |
-  | This is the Rust analogue of leveldb::Env::Default().
-  | The returned Env is owned by the library and must
-  | not be manually deleted by callers.
-  */
-pub fn posix_default_env() -> Rc<RefCell<dyn Env>> {
-    // NOTE:
-    // The real implementation is OS-specific and provided
-    // elsewhere in the C++ code (env_posix, env_windows, ...).
-    // Here we leave a stub so that the translation compiles;
-    // platform-specific wiring should replace this.
-    todo!();
-    /*
-    static PosixDefaultEnv env_container;
-    return env_container.env();
-    */
-}
-
-
 /// Wraps an Env instance whose destructor
 /// is never (meaningfully) observed by the
 /// rest of the system.

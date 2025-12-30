@@ -10,6 +10,7 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
+export-magic.workspace = true
 bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
@@ -17,3 +18,4 @@ bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
 bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
 bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }

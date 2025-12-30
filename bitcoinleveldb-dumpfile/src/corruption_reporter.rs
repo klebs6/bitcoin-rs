@@ -93,7 +93,8 @@ mod corruption_reporter_behavior_suite {
     fn corruption_reporter_does_not_panic_on_null_destination() {
         trace!("corruption_reporter_does_not_panic_on_null_destination: start");
 
-        let mut reporter = CorruptionReporter::new(std::ptr::null_mut());
+        let null_dst = CapturingWritableFile::null_mut_writable_file_ptr();
+        let mut reporter = CorruptionReporter::new(null_dst);
 
         let msg = Slice::from("bad");
         let status = Status::corruption(&msg, None);

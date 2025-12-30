@@ -7,8 +7,6 @@
 
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/issues/issue178_test.cc]
 
 const NUM_KEYS: i32 = 1100000;

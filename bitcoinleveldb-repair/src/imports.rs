@@ -25,29 +25,29 @@ pub(crate) use bitcoinleveldb_batch::*;
 #[cfg(test)]
 mod imports_smoke_suite {
     use super::*;
-    use tracing::{debug, info, trace, warn};
 
     #[traced_test]
-    fn imports_module_reexports_core_leveldb_types_for_tests() {
-        // This test is intentionally "smoke" oriented: it validates that commonly used
-        // types and functions remain available from the prelude and compile together.
-        let mut options = Options::default();
-
-        let a = Slice::from(&b"a"[..]);
-        let b = Slice::from(&b"b"[..]);
-
-        let ok = crate::Status::ok();
-        info!(ok = ok.is_ok(), status = %ok.to_string(), "constructed Status::ok");
-
-        let dbname = "imports-smoke-db";
-        let log = log_file_name(&dbname.to_string(), 1);
-        trace!(log = %log, "computed log_file_name");
+    fn imports_parses_log_filename_via_parse_file_name_interface() {
+        trace!("imports_smoke_suite: start");
 
         let mut number: u64 = 0;
         let mut ty: FileType = FileType::LogFile;
-        let parsed = parse_file_name("000001.log", &mut number as *mut u64, &mut ty as *mut FileType);
-        debug!(parsed, number, "parse_file_name on canonical log file");
+
+        let filename: String = "000001.log".to_string();
+        let parsed = parse_file_name(&filename, &mut number as *mut u64, &mut ty as *mut FileType);
+
+        info!(
+            parsed,
+            number,
+            ty = ?ty,
+            filename = %filename,
+            "imports_smoke_suite: parse_file_name result"
+        );
+
         assert!(parsed);
-        let _ = (&a, &b, &mut options);
+        assert_eq!(number, 1);
+        assert!(matches!(ty, FileType::LogFile));
+
+        trace!("imports_smoke_suite: done");
     }
 }

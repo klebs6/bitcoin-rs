@@ -52,7 +52,8 @@ mod dump_descriptor_behavior_suite {
         let env = posix_default_env();
         let fname = "MANIFEST-000001".to_string();
 
-        let s = dump_descriptor(env, &fname, std::ptr::null_mut());
+        let null_dst = CapturingWritableFile::null_mut_writable_file_ptr();
+        let s = dump_descriptor(env, &fname, null_dst);
 
         assert!(s.is_invalid_argument());
         trace!(status = %s.to_string(), "dump_descriptor returned");

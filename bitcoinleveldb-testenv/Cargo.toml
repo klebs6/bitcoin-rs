@@ -16,3 +16,5 @@ bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
 bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }

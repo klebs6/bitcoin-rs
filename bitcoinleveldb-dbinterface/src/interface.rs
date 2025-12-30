@@ -13,7 +13,7 @@ pub trait DB:
     Put
     + DBOpen
     + Delete
-    + Write
+    + DBInterfaceWrite
     + Get
     + NewIterator
     + GetSnapshot

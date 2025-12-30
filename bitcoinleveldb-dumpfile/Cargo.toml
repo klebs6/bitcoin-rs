@@ -4,7 +4,7 @@ version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-posixtools = { path = "../bitcoinleveldb-posixtools" }
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
 bitcoinleveldb-table = { path = "../bitcoinleveldb-table" }
 bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
 bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader" }

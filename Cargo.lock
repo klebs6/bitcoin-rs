@@ -3421,6 +3421,7 @@ name = "bitcoinleveldb-dbimplwriter"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-batch",
  "bitcoinleveldb-status",
  "bitcoinleveldb-writebatch",
 ]
@@ -3430,12 +3431,14 @@ name = "bitcoinleveldb-dbinterface"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-batch",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-options",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",
  "bitcoinleveldb-writebatch",
+ "export-magic",
 ]
 
 [[package]]
@@ -3484,7 +3487,7 @@ dependencies = [
  "bitcoinleveldb-log",
  "bitcoinleveldb-logreader",
  "bitcoinleveldb-options",
- "bitcoinleveldb-posixtools",
+ "bitcoinleveldb-posixenv",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-table",
@@ -4369,6 +4372,8 @@ version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
  "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-log",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "traced-test",

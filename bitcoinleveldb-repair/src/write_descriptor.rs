@@ -4,6 +4,8 @@ crate::ix!();
 impl Repairer {
     
     pub fn write_descriptor(&mut self) -> crate::Status {
+        use std::cell::RefCell;
+        use std::rc::Rc;
         use std::ptr;
 
         trace!(dbname = %self.dbname, "Repairer::write_descriptor: start");
@@ -65,14 +67,19 @@ impl Repairer {
                 );
             }
 
-            // fprintf(stderr, "NewDescriptor:\n%s\n", edit_.DebugString().c_str());
             {
-                let mut logw = LogWriter::new(file_holder.as_mut());
+                let wf_ptr: *mut dyn WritableFile = (&mut **file_holder) as *mut dyn WritableFile;
+
+                let dest: Rc<RefCell<dyn WritableFile>> =
+                    Rc::new(RefCell::new(WritableFileRefAdapter::new(wf_ptr)));
+
+                let mut logw = LogWriter::new(dest, 0);
 
                 let mut record = String::new();
                 self.edit.encode_to(&mut record as *mut String);
 
-                status = logw.add_record(&record);
+                let record_slice = Slice::from(record.as_bytes());
+                status = logw.add_record(&record_slice);
             }
 
             if status.is_ok() {

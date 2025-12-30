@@ -17,7 +17,6 @@ pub struct DBImplWriter {
 impl DBImplWriter {
 
     pub fn new(mu: *mut parking_lot::RawMutex) -> Self {
-    
         todo!();
         /*
             : batch(nullptr), sync(false), done(false), cv(mu)

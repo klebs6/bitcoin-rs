@@ -9,7 +9,7 @@ pub(crate) use bitcoinleveldb_log::*;
 pub(crate) use bitcoinleveldb_slice::*;
 pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use std::ffi::c_char;
-pub(crate) use bitcoinleveldb_posixtools::*;
+pub(crate) use bitcoinleveldb_posixenv::*;
 pub(crate) use bitcoinleveldb_table::*;
 pub(crate) use bitcoinleveldb_options::*;
 pub(crate) use bitcoinleveldb_logreader::*;

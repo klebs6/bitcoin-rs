@@ -142,7 +142,8 @@ mod write_batch_item_printer_behavior_suite {
     fn write_batch_item_printer_does_not_panic_when_destination_is_null() {
         trace!("write_batch_item_printer_does_not_panic_when_destination_is_null: start");
 
-        let mut printer = WriteBatchItemPrinter::new(std::ptr::null_mut());
+        let null_dst = CapturingWritableFile::null_mut_writable_file_ptr();
+        let mut printer = WriteBatchItemPrinter::new(null_dst);
 
         let key_bytes = b"k";
         let val_bytes = b"v";

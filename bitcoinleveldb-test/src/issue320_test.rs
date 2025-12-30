@@ -1,8 +1,6 @@
 // ---------------- [ File: bitcoinleveldb-test/src/issue320_test.rs ]
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/issues/issue320_test.cc]
 
 /**

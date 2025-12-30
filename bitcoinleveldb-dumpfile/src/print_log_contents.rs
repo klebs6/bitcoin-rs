@@ -6,7 +6,7 @@ crate::ix!();
 pub fn print_log_contents(
     env: Rc<RefCell<dyn crate::Env>>,
     fname: &String,
-    func: fn(_0: u64, _1: Slice, _2: *mut dyn WritableFile) -> c_void,
+    func: fn(_0: u64, _1: Slice, _2: *mut dyn WritableFile),
     dst: *mut dyn WritableFile,
 ) -> crate::Status {
     trace!(file = %fname, dst_is_null = dst.is_null(), "print_log_contents: start");
@@ -18,11 +18,10 @@ pub fn print_log_contents(
         return Status::invalid_argument(&msg_slice, None);
     }
 
-    let mut file: *mut Box<dyn SequentialFile> = std::ptr::null_mut();
-    let s = env.borrow_mut().new_sequential_file(
-        fname,
-        &mut file as *mut *mut Box<dyn SequentialFile>,
-    );
+    let mut file_out: *mut Box<dyn SequentialFile> = std::ptr::null_mut();
+    let s = env
+        .borrow_mut()
+        .new_sequential_file(fname, &mut file_out as *mut *mut Box<dyn SequentialFile>);
 
     if !s.is_ok() {
         error!(
@@ -33,7 +32,7 @@ pub fn print_log_contents(
         return s;
     }
 
-    if file.is_null() {
+    if file_out.is_null() {
         error!(
             file = %fname,
             "print_log_contents: NewSequentialFile returned ok but file pointer is null"
@@ -43,23 +42,18 @@ pub fn print_log_contents(
         return Status::io_error(&msg_slice, None);
     }
 
-    let mut reporter = CorruptionReporter::new(dst);
+    let file_box: Box<dyn SequentialFile> = unsafe { *Box::from_raw(file_out) };
+    let reporter: Box<dyn LogReaderReporter> = Box::new(CorruptionReporter::new(dst));
 
-    let seq_file: *mut dyn SequentialFile = unsafe { &mut **file };
-    let reporter_ptr: *mut dyn LogReaderReporter = &mut reporter;
-
-    let mut reader = LogReader::new(seq_file, reporter_ptr, true, 0);
+    let mut reader = LogReader::new(file_box, reporter, true, 0);
 
     let mut record: Slice = Slice::default();
-    let mut scratch: String = String::new();
+    let mut scratch: Vec<u8> = Vec::new();
 
     while reader.read_record(&mut record, &mut scratch) {
-        (func)(reader.last_record_offset(), record, dst);
+        let pos = *reader.last_record_offset();
+        (func)(pos, record, dst);
         record = Slice::default();
-    }
-
-    unsafe {
-        drop(Box::from_raw(file));
     }
 
     info!(file = %fname, "print_log_contents: complete");
@@ -126,7 +120,7 @@ mod print_log_contents_behavior_suite {
         out
     }
 
-    fn record_echo_printer(pos: u64, record: Slice, dst: *mut dyn WritableFile) -> c_void {
+    fn record_echo_printer(pos: u64, record: Slice, dst: *mut dyn WritableFile) {
         trace!(
             pos,
             record_len = slice_as_bytes(&record).len(),
@@ -135,7 +129,7 @@ mod print_log_contents_behavior_suite {
         );
 
         if dst.is_null() {
-            return ();
+            return;
         }
 
         let escaped = escape_for_debug(slice_as_bytes(&record));
@@ -144,8 +138,6 @@ mod print_log_contents_behavior_suite {
 
         let s = unsafe { (&mut *dst).append(&slice) };
         debug!(status = %s.to_string(), "record_echo_printer append status");
-
-        ()
     }
 
     #[traced_test]
@@ -155,7 +147,8 @@ mod print_log_contents_behavior_suite {
         let env = posix_default_env();
         let fname = "000001.log".to_string();
 
-        let s = print_log_contents(env, &fname, record_echo_printer, std::ptr::null_mut());
+        let null_dst = CapturingWritableFile::null_mut_writable_file_ptr();
+        let s = print_log_contents(env, &fname, record_echo_printer, null_dst);
 
         assert!(s.is_invalid_argument());
 

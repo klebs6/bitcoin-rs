@@ -51,7 +51,8 @@ mod dump_log_behavior_suite {
         let env = posix_default_env();
         let fname = "000001.log".to_string();
 
-        let s = dump_log(env, &fname, std::ptr::null_mut());
+        let null_dst = CapturingWritableFile::null_mut_writable_file_ptr();
+        let s = dump_log(env, &fname, null_dst);
 
         assert!(s.is_invalid_argument());
         trace!(status = %s.to_string(), "dump_log returned");

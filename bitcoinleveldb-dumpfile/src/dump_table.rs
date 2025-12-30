@@ -2,11 +2,10 @@
 crate::ix!();
 
 pub fn dump_table(
-    env:   Rc<RefCell<dyn crate::Env>>,
+    env: Rc<RefCell<dyn crate::Env>>,
     fname: &String,
-    dst:   *mut dyn WritableFile,
+    dst: *mut dyn WritableFile,
 ) -> crate::Status {
-
     trace!(file = %fname, dst_is_null = dst.is_null(), "dump_table: start");
 
     if dst.is_null() {
@@ -16,74 +15,74 @@ pub fn dump_table(
         return Status::invalid_argument(&msg_slice, None);
     }
 
-    let mut file_size: u64 = 0;
-    let mut file: *mut Box<dyn RandomAccessFile> = std::ptr::null_mut();
-    let mut table: *mut Table = std::ptr::null_mut();
+    let dst_ref: &mut dyn WritableFile = unsafe { &mut *dst };
 
+    let mut file_size: u64 = 0;
     let mut s = env
         .borrow_mut()
         .get_file_size(fname, &mut file_size as *mut u64);
 
-    if s.is_ok() {
-        debug!(file = %fname, file_size, "dump_table: got file size");
-        s = env
-            .borrow_mut()
-            .new_random_access_file(fname, &mut file as *mut *mut Box<dyn RandomAccessFile>);
-    }
-
-    if s.is_ok() {
-        debug!(file = %fname, "dump_table: opened random access file");
-
-        let options = Options::default();
-
-        if file.is_null() {
-            error!(
-                file = %fname,
-                "dump_table: NewRandomAccessFile returned ok but file pointer is null"
-            );
-            let msg = format!("{fname}: null RandomAccessFile");
-            let msg_slice = Slice::from(&msg);
-            s = Status::io_error(&msg_slice, None);
-        } else {
-            // We use the default comparator, which may or may not match the
-            // comparator used in this database. However this should not cause
-            // problems since we only use Table operations that do not require
-            // any comparisons.  In particular, we do not call Seek or Prev.
-            let raf: *mut dyn RandomAccessFile = unsafe { &mut **file };
-            s = Table::open(options, raf, file_size, &mut table as *mut *mut Table);
-        }
-    }
-
     if !s.is_ok() {
-        error!(file = %fname, status = %s.to_string(), "dump_table: open failed");
-
-        unsafe {
-            if !table.is_null() {
-                drop(Box::from_raw(table));
-            }
-            if !file.is_null() {
-                drop(Box::from_raw(file));
-            }
-        }
-
+        error!(
+            file = %fname,
+            status = %s.to_string(),
+            "dump_table: GetFileSize failed"
+        );
         return s;
     }
+
+    debug!(file = %fname, file_size, "dump_table: got file size");
+
+    let mut file_out: *mut Box<dyn RandomAccessFile> = std::ptr::null_mut();
+    s = env
+        .borrow_mut()
+        .new_random_access_file(fname, &mut file_out as *mut *mut Box<dyn RandomAccessFile>);
+
+    if !s.is_ok() {
+        error!(
+            file = %fname,
+            status = %s.to_string(),
+            "dump_table: NewRandomAccessFile failed"
+        );
+        return s;
+    }
+
+    if file_out.is_null() {
+        error!(
+            file = %fname,
+            "dump_table: NewRandomAccessFile returned ok but file pointer is null"
+        );
+        let msg = format!("{fname}: null RandomAccessFile");
+        let msg_slice = Slice::from(&msg);
+        return Status::io_error(&msg_slice, None);
+    }
+
+    let file_box: Box<dyn RandomAccessFile> = unsafe { *Box::from_raw(file_out) };
+
+    let file_rc: Rc<RefCell<dyn RandomAccessFile>> =
+        Rc::new(RefCell::new(BoxedRandomAccessFile::from(file_box)));
+
+    let options = Options::with_env(env);
+
+    let table = match Table::open(&options, file_rc.clone(), file_size) {
+        Ok(t) => t,
+        Err(e) => {
+            error!(
+                file = %fname,
+                status = %e.to_string(),
+                "dump_table: Table::open failed"
+            );
+            return e;
+        }
+    };
 
     let mut ro = ReadOptions::default();
     ro.set_fill_cache(false);
 
-    let iter = unsafe { (*table).new_iterator(ro) };
+    let iter = table.new_iterator(&ro);
 
     if iter.is_null() {
         error!(file = %fname, "dump_table: table returned null iterator");
-
-        unsafe {
-            drop(Box::from_raw(table));
-            if !file.is_null() {
-                drop(Box::from_raw(file));
-            }
-        }
-
         let msg = format!("{fname}: null iterator");
         let msg_slice = Slice::from(&msg);
         return Status::io_error(&msg_slice, None);
@@ -131,7 +130,7 @@ pub fn dump_table(
             }
 
             let line = Slice::from(&r);
-            let append_status = (&mut *dst).append(&line);
+            let append_status = dst_ref.append(&line);
 
             if !append_status.is_ok() {
                 error!(
@@ -148,7 +147,7 @@ pub fn dump_table(
         if !iter_status.is_ok() {
             let msg = format!("iterator error: {}\n", iter_status.to_string());
             let msg_slice = Slice::from(&msg);
-            let append_status = (&mut *dst).append(&msg_slice);
+            let append_status = dst_ref.append(&msg_slice);
 
             if !append_status.is_ok() {
                 error!(
@@ -160,10 +159,6 @@ pub fn dump_table(
         }
 
         drop(Box::from_raw(iter));
-        drop(Box::from_raw(table));
-        if !file.is_null() {
-            drop(Box::from_raw(file));
-        }
     }
 
     info!(file = %fname, "dump_table: complete");
@@ -191,7 +186,8 @@ mod dump_table_behavior_suite {
         let env = posix_default_env();
         let fname = "000001.sst".to_string();
 
-        let s = dump_table(env, &fname, std::ptr::null_mut());
+        let null_dst = CapturingWritableFile::null_mut_writable_file_ptr();
+        let s = dump_table(env, &fname, null_dst);
 
         assert!(s.is_invalid_argument());
         trace!(status = %s.to_string(), "dump_table returned");

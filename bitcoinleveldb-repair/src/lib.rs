@@ -19,3 +19,4 @@ x!{create}
 x!{repair_log_reporter}
 x!{test_harness}
 x!{public_surface_suite}
+x!{writable_file_ref_adapter}

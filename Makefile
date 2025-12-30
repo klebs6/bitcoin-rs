@@ -42,148 +42,216 @@ NO_FAIL_FAST := --no-fail-fast
 #-------------------------------[active-below]
 ACTIVE := bitcoin-top
 
-# ------------------------------- [leveldb-layer-1]
-ACTIVE := bitcoinleveldb-testenv
+# ---[leveldb-layer-1]
 ACTIVE := bitcoinleveldb-repair
-ACTIVE := bitcoinleveldb-dumpfile
-ACTIVE := bitcoinleveldb-versionset
+ACTIVE := bitcoinleveldb-modeldb
+ACTIVE := bitcoinleveldb-dbconstructor
+ACTIVE := bitcoinleveldb-harness
+ACTIVE := bitcoinleveldb-dbimplwriter
+ACTIVE := bitcoinleveldb-dbinterface
 
-# ------------------------------- [leveldb-layer-2a]
-#ACTIVE := bitcoinleveldb-modeldb
-#ACTIVE := bitcoinleveldb-dbiter
-#ACTIVE := bitcoinleveldb-dbinterface
-#ACTIVE := bitcoinleveldb-dbconstructor
-#ACTIVE := bitcoinleveldb-harness
-#ACTIVE := bitcoinleveldb-dbimplwriter
-
-# ------------------------------- [leveldb-layer-2b]
+# ---[leveldb-layer-2]
 #ACTIVE := bitcoinleveldb-dbtest
 #ACTIVE := bitcoinleveldb-db
 #ACTIVE := bitcoinleveldb-dbimpl
+#ACTIVE := bitcoinleveldb-dbiter
 
-# ------------------------------- [leveldb-layer-3]
+# ---[leveldb-layer-3]
 #ACTIVE := bitcoinleveldb-bench    #loc: 3003
 #ACTIVE := bitcoinleveldb-test     #loc: 3261
 #ACTIVE := bitcoin-leveldb         #loc: 37
 
-#-------------------------------[future]
-#ACTIVE := bitcoin-block
-#ACTIVE := bitcoin-db
-#ACTIVE := bitcoin-portmap
-#ACTIVE := bitcoinsecp256k1-keys
-#ACTIVE := bitcoin-scripting
-#ACTIVE := bitcoin-key
-#ACTIVE := bitcoin-bdb
-#ACTIVE := bitcoin-addr
-#ACTIVE := bitcoin-addrman
-#ACTIVE := bitcoin-argsman
-#ACTIVE := bitcoin-banman
-#ACTIVE := bitcoin-bench
-#ACTIVE := bitcoin-blockencoding
-#ACTIVE := bitcoin-blockfilter
-#ACTIVE := bitcoin-blockman
-#ACTIVE := bitcoin-blockpolicy
-#ACTIVE := bitcoin-bloom
-#ACTIVE := bitcoin-cfg
-#ACTIVE := bitcoin-chain-consensus
-#ACTIVE := bitcoin-chainman
-#ACTIVE := bitcoin-checkqueue
-#ACTIVE := bitcoin-cli
-#ACTIVE := bitcoin-client-ui
-#ACTIVE := bitcoin-coincontrol
-#ACTIVE := bitcoin-coinselect
-#ACTIVE := bitcoin-coinsview
-#ACTIVE := bitcoin-compressor
-#ACTIVE := bitcoin-connman
-#ACTIVE := bitcoin-crypter
-#ACTIVE := bitcoin-daemon
-#ACTIVE := bitcoin-db
-#ACTIVE := bitcoin-deployment
-#ACTIVE := bitcoin-derive
-#ACTIVE := bitcoin-dns
-#ACTIVE := bitcoin-dummywallet
-#ACTIVE := bitcoin-dumpwallet
-#ACTIVE := bitcoin-foundblock
-#ACTIVE := bitcoin-fuzz
-#ACTIVE := bitcoin-hdchain
-#ACTIVE := bitcoin-http
-#ACTIVE := bitcoin-imports
-#ACTIVE := bitcoin-index
-#ACTIVE := bitcoin-indexed-chain
-#ACTIVE := bitcoin-init
-#ACTIVE := bitcoin-ipc
-#ACTIVE := bitcoin-leveldb
-#ACTIVE := bitcoin-mainsignals
-#ACTIVE := bitcoin-mem
-#ACTIVE := bitcoin-merkle
-#ACTIVE := bitcoin-message
-#ACTIVE := bitcoin-miner
-#ACTIVE := bitcoin-net
-#ACTIVE := bitcoin-net-zmq
-#ACTIVE := bitcoin-netmsg
-#ACTIVE := bitcoin-netpermissions
-#ACTIVE := bitcoin-node
-#ACTIVE := bitcoin-noui
-#ACTIVE := bitcoin-packages
-#ACTIVE := bitcoin-peerman
-#ACTIVE := bitcoin-policy
-#ACTIVE := bitcoin-pow
-#ACTIVE := bitcoin-proxy
-#ACTIVE := bitcoin-psbt
-#ACTIVE := bitcoin-qt
-#ACTIVE := bitcoin-rbf
-#ACTIVE := bitcoin-restapi
-#ACTIVE := bitcoin-sam
-#ACTIVE := bitcoin-scheduler
-#ACTIVE := bitcoin-scriptpubkeyman
+#----------------------------------------
+# ---[secp-layer-0]
+#ACTIVE := bitcoinsecp256k1-modinv
+#ACTIVE := bitcoinsecp256k1-scratch
+# ---[secp-layer-1]
+#ACTIVE := bitcoinsecp256k1-field
+#ACTIVE := bitcoinsecp256k1-scalar
+# ---[secp-layer-2]
+#ACTIVE := bitcoinsecp256k1-group
+# ---[secp-layer-3]
+#ACTIVE := bitcoinsecp256k1-ec
+# ---[secp-layer-4]
 #ACTIVE := bitcoin-secp256k1
-#ACTIVE := bitcoin-signet
-#ACTIVE := bitcoin-signingprovider
-#ACTIVE := bitcoin-sqlite
-#ACTIVE := bitcoin-subnet
-#ACTIVE := bitcoin-system
-#ACTIVE := bitcoin-test
-#ACTIVE := bitcoin-top
-#ACTIVE := bitcoin-tor
-#ACTIVE := bitcoin-tx
-#ACTIVE := bitcoin-txmempool
-#ACTIVE := bitcoin-txmempoolentry
+# ---[secp-layer-5]
+#ACTIVE := bitcoinsecp256k1-keys
+#ACTIVE := bitcoinsecp256k1-parse
+#ACTIVE := bitcoinsecp256k1-recovery
+# ---[secp-layer-6]
+#ACTIVE := bitcoinsecp256k1-bench
+#ACTIVE := bitcoinsecp256k1-schnorr
+
+#----------------------------------------
+# ---[layer 0]
+#ACTIVE := bitcoin-checkqueue
+#ACTIVE := bitcoin-scheduler
 #ACTIVE := bitcoin-validation
-#ACTIVE := bitcoin-walletdb
-#-----------------------------------
-#ACTIVE := bitcoinchain-params
-#ACTIVE := bitcoinnode-interface
-#ACTIVE := bitcoinnode-stats
+
+# ---[layer 1]
+#ACTIVE := bitcoin-subnet
+
+# ---[layer 2]
+#ACTIVE := bitcoin-addr
+#ACTIVE := bitcoin-netpermissions
+#ACTIVE := bitcoin-proxy
+#ACTIVE := bitcoin-sam
+
+# ---[layer 3]
+#ACTIVE := bitcoin-dns
+
+# ---[layer 4]
+#ACTIVE := bitcoin-key
+
+# ---[layer 5]
+#ACTIVE := bitcoin-hdchain
+#ACTIVE := bitcoin-message
+
+# ---[layer 6]
+#ACTIVE := bitcoin-crypter
+
+# ---[layer 7]
+#ACTIVE := bitcoin-scripting
+
+# ---[layer 8]
+#ACTIVE := bitcoin-compressor
+#ACTIVE := bitcoin-netmsg
+#ACTIVE := bitcoin-tx
+
+# ---[layer 9]
+#ACTIVE := bitcoin-block
+#ACTIVE := bitcoin-bloom
+#ACTIVE := bitcoin-noui
+#ACTIVE := bitcoin-rbf
+
+# ---[layer 10]
+#ACTIVE := bitcoin-blockencoding
+#ACTIVE := bitcoin-chain-consensus
+#ACTIVE := bitcoin-client-ui
+#ACTIVE := bitcoin-foundblock
+#ACTIVE := bitcoin-merkle
+#ACTIVE := bitcoin-txmempoolentry
 #ACTIVE := bitcoinnode-txrelay
+
+# ---[layer 11]
+#ACTIVE := bitcoin-blockpolicy
+#ACTIVE := bitcoin-deployment
+#ACTIVE := bitcoin-pow
+#ACTIVE := bitcoin-signet
+
+# ---[layer 12]
+#ACTIVE := bitcoin-db
+
+# ---[layer 13]
+#ACTIVE := bitcoin-coinsview
+
+# ---[layer 14]
+#ACTIVE := bitcoin-policy
+#ACTIVE := bitcoin-signingprovider
+#ACTIVE := bitcoinchain-params
+
+# ---[layer 15]
+#ACTIVE := bitcoin-blockman
+#ACTIVE := bitcoin-net
+#ACTIVE := bitcoin-packages
+#ACTIVE := bitcoin-portmap
+#ACTIVE := bitcoin-psbt
+
+# ---[layer 16]
+#ACTIVE := bitcoin-addrman
+#ACTIVE := bitcoin-banman
+#ACTIVE := bitcoin-tor
+#ACTIVE := bitcoin-txmempool
+#ACTIVE := bitcoinnode-stats
+
+# ---[layer 17]
+#ACTIVE := bitcoin-system
+
+# ---[layer 18]
+#ACTIVE := bitcoin-scriptpubkeyman
+
+# ---[layer 19]
+#ACTIVE := bitcoin-bdb
+#ACTIVE := bitcoin-chainman
+#ACTIVE := bitcoin-index
+#ACTIVE := bitcoin-sqlite
+
+# ---[layer 20]
+#ACTIVE := bitcoin-blockfilter
+#ACTIVE := bitcoin-coincontrol
+#ACTIVE := bitcoin-ipc
+
+# ---[wallet layer 0]
+#ACTIVE := bitcoinwallet-salvage
+#ACTIVE := bitcoinwallet-feature
+
+# ---[wallet layer 1]
+#ACTIVE := bitcoinwallet-interface
+
+# ---[wallet layer 2]
+#ACTIVE := bitcoin-walletdb
+
+# ---[wallet layer 3]
+#ACTIVE := bitcoinwallet-context
+
+# ---[wallet layer 4]
+#ACTIVE := bitcoinwallet-client
+
+# ---[wallet layer 5]
+#ACTIVE := bitcoinwallet-library
+
+# ---[wallet layer 6]
+#ACTIVE := bitcoinwallet-fees
+#ACTIVE := bitcoinwallet-init
+#ACTIVE := bitcoinwallet-receive
+#ACTIVE := bitcoinwallet-spend
+
+# ---[layer 21]
+#ACTIVE := bitcoinnode-interface
+
+# ---[layer 22]
+#ACTIVE := bitcoin-connman
+#ACTIVE := bitcoin-node
+
+# ---[layer 23]
+#ACTIVE := bitcoin-http
+#ACTIVE := bitcoin-peerman
+
+# ---[layer 24]
+#ACTIVE := bitcoin-indexed-chain
+
+# ---[layer 25]
+#ACTIVE := bitcoin-coinselect
+#ACTIVE := bitcoin-init
+#ACTIVE := bitcoin-mainsignals
+#ACTIVE := bitcoin-miner
+#ACTIVE := bitcoin-net-zmq
+#ACTIVE := bitcoin-restapi
+
+# ---[layer 26]
+#ACTIVE := bitcoinrpc-util
+#ACTIVE := bitcoinrpc-server
 #ACTIVE := bitcoinrpc-blockchain
-#ACTIVE := bitcoinrpc-dump
 #ACTIVE := bitcoinrpc-mining
 #ACTIVE := bitcoinrpc-misc
 #ACTIVE := bitcoinrpc-net
-#ACTIVE := bitcoinrpc-server
 #ACTIVE := bitcoinrpc-txn
-#ACTIVE := bitcoinrpc-util
+#ACTIVE := bitcoinrpc-dump
 #ACTIVE := bitcoinrpc-wallet
-#ACTIVE := bitcoinsecp256k1-bench
-#ACTIVE := bitcoinsecp256k1-ec
-#ACTIVE := bitcoinsecp256k1-field
-#ACTIVE := bitcoinsecp256k1-group
-#ACTIVE := bitcoinsecp256k1-modinv
-#ACTIVE := bitcoinsecp256k1-parse
-#ACTIVE := bitcoinsecp256k1-recovery
-#ACTIVE := bitcoinsecp256k1-scalar
-#ACTIVE := bitcoinsecp256k1-schnorr
-#ACTIVE := bitcoinsecp256k1-scratch
-#ACTIVE := bitcoinwallet-client
-#ACTIVE := bitcoinwallet-context
-#ACTIVE := bitcoinwallet-feature
-#ACTIVE := bitcoinwallet-fees
-#ACTIVE := bitcoinwallet-init
-#ACTIVE := bitcoinwallet-interface
-#ACTIVE := bitcoinwallet-library
-#ACTIVE := bitcoinwallet-receive
-#ACTIVE := bitcoinwallet-salvage
-#ACTIVE := bitcoinwallet-spend
+
+# ---[layer 27]
+#ACTIVE := bitcoin-cli
+#ACTIVE := bitcoin-test
+#ACTIVE := bitcoin-dummywallet
+#ACTIVE := bitcoin-dumpwallet
+
+# ---[layer 28]
+#ACTIVE := bitcoin-bench
+#ACTIVE := bitcoin-daemon
+#ACTIVE := bitcoin-fuzz
+
+# ---[layer 29]
+#ACTIVE := bitcoin-top
 
 #-------------------------------DONE
 
@@ -375,3 +443,6 @@ bench:
 #ACTIVE := bitcoinleveldb-version
 #ACTIVE := bitcoinleveldb-batch
 #ACTIVE := bitcoinleveldb-specialenv
+#ACTIVE := bitcoinleveldb-versionset
+#ACTIVE := bitcoinleveldb-dumpfile
+#ACTIVE := bitcoinleveldb-testenv

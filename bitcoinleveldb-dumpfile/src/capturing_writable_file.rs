@@ -32,6 +32,10 @@ impl CapturingWritableFile {
     pub fn force_append_status(&mut self, st: Status) {
         self.append_override = Some(st);
     }
+
+    pub fn null_mut_writable_file_ptr() -> *mut dyn WritableFile {
+        std::ptr::null_mut::<CapturingWritableFile>() as *mut dyn WritableFile
+    }
 }
 
 #[cfg(test)]

@@ -14,3 +14,4 @@ x!{write_batch_item_printer}
 x!{write_batch_printer}
 x!{dumpfile_main}
 x!{capturing_writable_file}
+x!{boxed_random_access_file}

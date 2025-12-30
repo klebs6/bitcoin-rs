@@ -9,8 +9,6 @@
 
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/issues/issue200_test.cc]
 
 struct Issue200 {}

@@ -33,6 +33,8 @@ impl Repairer {
             return;
         }
 
+        let mut counter: i32 = 0;
+
         {
             let mut file_holder: Box<Box<dyn WritableFile>> = unsafe {
                 assert!(
@@ -42,24 +44,35 @@ impl Repairer {
                 Box::from_raw(file_ptr)
             };
 
+            let wf_ptr: *mut dyn WritableFile = (&mut **file_holder) as *mut dyn WritableFile;
+
             let mut builder: *mut TableBuilder =
-                Box::into_raw(Box::new(TableBuilder::new(&self.options, file_holder.as_mut())));
+                Box::into_raw(Box::new(TableBuilder::new(&self.options, wf_ptr)));
 
             // Copy data.
             let iter = self.new_table_iterator(&t.meta);
-            let mut counter: i32 = 0;
 
             unsafe {
-                (*iter).seek_to_first();
-                while (*iter).valid() {
-                    (*builder).add(&(*iter).key(), &(*iter).value());
-                    counter += 1;
-                    (*iter).next();
+                if iter.is_null() {
+                    error!(
+                        src = %src,
+                        table_no = *t.meta.number(),
+                        "Repairer::repair_table: new_table_iterator returned null"
+                    );
+                    (*builder).abandon();
+                } else {
+                    (*iter).seek_to_first();
+                    while (*iter).valid() {
+                        (*builder).add(&(*iter).key(), &(*iter).value());
+                        counter += 1;
+                        (*iter).next();
+                    }
+                    drop(Box::from_raw(iter));
                 }
-                drop(Box::from_raw(iter));
             }
 
-            self.archive_file(src);
+            let src_string: String = src.to_string();
+            self.archive_file(&src_string);
 
             if counter == 0 {
                 // Nothing to save

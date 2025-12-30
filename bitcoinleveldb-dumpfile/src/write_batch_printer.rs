@@ -91,8 +91,10 @@ mod write_batch_printer_behavior_suite {
         trace!("write_batch_printer_does_not_panic_on_null_destination_pointer: start");
 
         let record = Slice::from(&[][..]);
+        let null_dst = CapturingWritableFile::null_mut_writable_file_ptr();
+
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-            write_batch_printer(0, record, std::ptr::null_mut());
+            write_batch_printer(0, record, null_dst);
         }));
 
         assert!(result.is_ok());

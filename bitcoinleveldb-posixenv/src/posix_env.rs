@@ -57,6 +57,29 @@ pub struct PosixEnv {
     file_lock_registry: Mutex<std::collections::HashMap<usize, PosixEnvFileLockInfo>>,
 }
 
+/**
+  | Return a default environment suitable for the
+  | current operating system.
+  |
+  | This is the Rust analogue of leveldb::Env::Default().
+  | The returned Env is owned by the library and must
+  | not be manually deleted by callers.
+  */
+pub fn posix_default_env() -> Rc<RefCell<dyn Env>> {
+    // NOTE:
+    // The real implementation is OS-specific and provided
+    // elsewhere in the C++ code (env_posix, env_windows, ...).
+    // Here we leave a stub so that the translation compiles;
+    // platform-specific wiring should replace this.
+
+    /*
+    static PosixDefaultEnv env_container;
+    return env_container.env();
+    */
+
+    PosixEnv::shared()
+}
+
 impl Env for PosixEnv {
 
 }

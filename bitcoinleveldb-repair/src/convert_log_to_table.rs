@@ -24,54 +24,60 @@ impl Repairer {
             return status;
         }
 
+        let mut mem: *mut MemTable = ptr::null_mut();
+        let mut counter: i32 = 0;
+
         {
-            let mut lfile_holder: Box<Box<dyn SequentialFile>> = unsafe {
+            let lfile_holder: Box<Box<dyn SequentialFile>> = unsafe {
                 assert!(
                     !lfile_ptr.is_null(),
                     "Repairer::convert_log_to_table: env returned null SequentialFile"
                 );
                 Box::from_raw(lfile_ptr)
             };
+            let lfile: Box<dyn SequentialFile> = *lfile_holder;
 
             // Create the log reader.
-            let mut reporter = RepairLogReporter {
+            let mut reporter_box: Box<RepairLogReporter> = Box::new(RepairLogReporter {
                 info_log: *self.options.info_log(),
                 lognum:   log,
-            };
+            });
+            let reporter_ptr: *mut RepairLogReporter = &mut *reporter_box;
 
             // We intentionally make LogReader do checksumming so that
             // corruptions cause entire commits to be skipped instead of
             // propagating bad information (like overly large sequence
             // numbers).
-            //
-            // NOTE: We preserve the original argument/comment pairing from the
-            // upstream source: `false /*do not checksum*/`.
+            let reporter_dyn: Box<dyn LogReaderReporter> = reporter_box;
             let mut reader = LogReader::new(
-                lfile_holder.as_mut(),
-                &mut reporter,
-                false, // do not checksum
-                0,     // initial_offset
+                lfile,
+                reporter_dyn,
+                true, // checksum
+                0,    // initial_offset
             );
 
             // Read all the records and add to a memtable
-            let mut scratch = String::new();
+            let mut scratch: Vec<u8> = Vec::new();
             let mut record = Slice::default();
 
-            let mut batch = WriteBatch::default();
+            let mut batch = WriteBatch::new();
 
-            let mut mem: *mut MemTable = Box::into_raw(Box::new(MemTable::new(&self.icmp)));
+            mem = Box::into_raw(Box::new(MemTable::new(&self.icmp)));
             unsafe {
                 (*mem).ref_();
             }
-
-            let mut counter: i32 = 0;
 
             while reader.read_record(&mut record, &mut scratch) {
                 if *record.size() < 12 {
                     let msg = Slice::from(&b"log record too small"[..]);
                     let msg2 = Slice::from(logname.as_bytes());
                     let s = crate::Status::corruption(&msg, Some(&msg2));
-                    reporter.corruption(*record.size(), &s);
+
+                    unsafe {
+                        // Reporter lives inside `reader`; this raw pointer remains valid
+                        // until `reader` is dropped at end of this scope.
+                        (*reporter_ptr).corruption(*record.size(), &s);
+                    }
                     continue;
                 }
 
@@ -90,7 +96,7 @@ impl Repairer {
                 }
             }
 
-            // `lfile_holder` drops here (mirrors `delete lfile;`).
+            // `reader` drops here, mirroring lifetime of `lfile` + reporter.
         }
 
         // Do not record a version edit for this conversion to a Table

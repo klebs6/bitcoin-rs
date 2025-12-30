@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-dbinterface/src/write.rs ]
 crate::ix!();
 
-pub trait Write {
+pub trait DBInterfaceWrite {
 
     /**
       | Apply the specified updates to the database.

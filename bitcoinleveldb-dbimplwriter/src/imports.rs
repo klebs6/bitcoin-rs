@@ -4,3 +4,4 @@
 pub(crate) use bitcoin_imports::*;
 pub(crate) use bitcoinleveldb_writebatch::*;
 pub(crate) use bitcoinleveldb_status::*;
+pub(crate) use bitcoinleveldb_batch::*;

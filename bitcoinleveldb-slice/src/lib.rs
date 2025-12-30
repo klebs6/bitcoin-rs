@@ -5,4 +5,4 @@
 #[macro_use] mod imports; use imports::*;
 
 x!{slice}
-x!{range}
+x!{range_of_keys}

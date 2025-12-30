@@ -6,7 +6,7 @@ impl Repairer {
     pub fn new(dbname: &str, options: &Options) -> Self {
         trace!(dbname = %dbname, "Repairer::new: start");
 
-        let dbname_owned = dbname.clone();
+        let dbname_owned: String = dbname.to_string();
 
         let user_cmp_ptr: *const dyn SliceComparator = &**options.comparator();
         let icmp = InternalKeyComparator::new(user_cmp_ptr);
@@ -29,15 +29,18 @@ impl Repairer {
             .clone()
             .or_else(|| options.env().clone())
             .unwrap_or_else(|| {
-                warn!("Repairer::new: Options.env is None; using default_env()");
-                default_env()
+                error!(
+                    dbname = %dbname_owned,
+                    "Repairer::new: Options.env is None (sanitized and original); cannot proceed"
+                );
+                panic!("Repairer::new: Options.env is None");
             });
 
         let env_box: Box<dyn Env> = Box::new(EnvWrapper::new(env_rc));
 
         // TableCache can be small since we expect each table to be opened once.
         let table_cache_ptr: *mut TableCache =
-            Box::into_raw(Box::new(TableCache::new(&dbname_owned, sanitized.clone(), 10)));
+            Box::into_raw(Box::new(TableCache::new(&dbname_owned, &sanitized, 10)));
 
         debug!(
             owns_info_log,
