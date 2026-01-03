@@ -59,13 +59,11 @@ NO_FAIL_FAST := --no-fail-fast
 #ACTIVE := bitcoinleveldb-test          #loc: 3254
 #ACTIVE := bitcoin-leveldb              #loc: 36
 
-#----------------------------------------
+#----------------------------------------[block-1]
 # ---[secp-layer-0]
-#ACTIVE := bitcoinsecp256k1-modinv   #loc: 1549
-#ACTIVE := bitcoinsecp256k1-scratch  #loc: 210
+ACTIVE := bitcoinsecp256k1-scalar   #loc: 3197
 # ---[secp-layer-1]
 #ACTIVE := bitcoinsecp256k1-field    #loc: 3831
-#ACTIVE := bitcoinsecp256k1-scalar   #loc: 3197
 # ---[secp-layer-2]
 #ACTIVE := bitcoinsecp256k1-group    #loc: 1223
 # ---[secp-layer-3]
@@ -80,7 +78,7 @@ NO_FAIL_FAST := --no-fail-fast
 #ACTIVE := bitcoinsecp256k1-bench    #loc: 1643
 #ACTIVE := bitcoinsecp256k1-schnorr  #loc: 1876
 
-#----------------------------------------
+#----------------------------------------[block-2]
 # ---[layer 0]
 #ACTIVE := bitcoin-checkqueue      #loc: 365
 #ACTIVE := bitcoin-scheduler       #loc: 449
@@ -155,7 +153,7 @@ NO_FAIL_FAST := --no-fail-fast
 #ACTIVE := bitcoin-portmap         #loc: 972
 #ACTIVE := bitcoin-psbt            #loc: 2223
 
-#---------------------------------------
+#----------------------------------------[block-3]
 # ---[layer 16]
 #ACTIVE := bitcoin-addrman         #loc: 2976
 #ACTIVE := bitcoin-banman          #loc: 912
@@ -180,7 +178,7 @@ NO_FAIL_FAST := --no-fail-fast
 #ACTIVE := bitcoin-coincontrol     #loc: 425
 #ACTIVE := bitcoin-ipc             #loc: 611
 
-#---------------------------------------
+#----------------------------------------[block-4]
 # ---[wallet layer 0]
 #ACTIVE := bitcoinwallet-salvage   #loc: 186
 #ACTIVE := bitcoinwallet-feature   #loc: 258
@@ -206,7 +204,7 @@ NO_FAIL_FAST := --no-fail-fast
 #ACTIVE := bitcoinwallet-receive   #loc: 682
 #ACTIVE := bitcoinwallet-spend     #loc: 1398
 
-#---------------------------------------
+#----------------------------------------[block-5]
 # ---[layer 21]
 #ACTIVE := bitcoinnode-interface   #loc: 1618
 
@@ -229,6 +227,7 @@ NO_FAIL_FAST := --no-fail-fast
 #ACTIVE := bitcoin-net-zmq         #loc: 1032
 #ACTIVE := bitcoin-restapi         #loc: 891
 
+#----------------------------------------[block-6]
 # ---[layer 26]
 #ACTIVE := bitcoinrpc-util         #loc: 1967
 #ACTIVE := bitcoinrpc-server       #loc: 1067
@@ -447,3 +446,7 @@ bench:
 #ACTIVE := bitcoinleveldb-versionset
 #ACTIVE := bitcoinleveldb-dumpfile
 #ACTIVE := bitcoinleveldb-testenv
+#ACTIVE := bitcoinsecp256k1-scratch  #loc: 210
+#ACTIVE := bitcoinsecp256k1-modinv32   #loc: 750
+#ACTIVE := bitcoinsecp256k1-modinv
+#ACTIVE := bitcoinsecp256k1-modinv64   #loc: 750

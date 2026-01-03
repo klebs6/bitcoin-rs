@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinsecp256k1-field/src/field_5x52.rs ]
+// ---------------- [ File: bitcoinsecp256k1-fe5x52/src/field_5x52.rs ]
 /*!
   | Implements arithmetic modulo FFFFFFFF FFFFFFFF
   |  FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE
@@ -23,7 +23,7 @@ crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/field_5x52.h]
 
-pub struct Fe {
+pub struct Fe5x52 {
 
     /**
       | X = sum(i=0..4, n[i]*2^(i*52)) mod
@@ -39,7 +39,7 @@ pub struct Fe {
     pub normalized: i32,
 }
 
-impl Fe {
+impl Fe5x52 {
 
     pub const fn new() -> Self {
         Self {
@@ -84,7 +84,7 @@ macro_rules! fe_const {
      $d2:expr, 
      $d1:expr, 
      $d0:expr) => {
-        Fe {
+        Fe5x52 {
             n: fe_const_inner!{
                 $d7, 
                 $d6, 
@@ -111,7 +111,7 @@ macro_rules! fe_const {
      $d2:expr, 
      $d1:expr, 
      $d0:expr) => {
-        Fe {
+        Fe5x52 {
             n: fe_const_inner!{
                 $d7, 
                 $d6, 
@@ -167,7 +167,7 @@ macro_rules! fe_storage_const_get {
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/field_5x52_impl.h]
 
 #[cfg(VERIFY)]
-pub fn fe_verify(a: *const Fe)  {
+pub fn fe_verify(a: *const Fe5x52)  {
     
     todo!();
         /*
@@ -191,7 +191,7 @@ pub fn fe_verify(a: *const Fe)  {
         */
 }
 
-pub fn fe_normalize(r: *mut Fe)  {
+pub fn fe_normalize(r: *mut Fe5x52)  {
     
     todo!();
         /*
@@ -238,7 +238,7 @@ pub fn fe_normalize(r: *mut Fe)  {
         */
 }
 
-pub fn fe_normalize_weak(r: *mut Fe)  {
+pub fn fe_normalize_weak(r: *mut Fe5x52)  {
     
     todo!();
         /*
@@ -266,7 +266,7 @@ pub fn fe_normalize_weak(r: *mut Fe)  {
         */
 }
 
-pub fn fe_normalize_var(r: *mut Fe)  {
+pub fn fe_normalize_var(r: *mut Fe5x52)  {
     
     todo!();
         /*
@@ -314,7 +314,7 @@ pub fn fe_normalize_var(r: *mut Fe)  {
         */
 }
 
-pub fn fe_normalizes_to_zero(r: *const Fe) -> i32 {
+pub fn fe_normalizes_to_zero(r: *const Fe5x52) -> i32 {
     
     todo!();
         /*
@@ -341,7 +341,7 @@ pub fn fe_normalizes_to_zero(r: *const Fe) -> i32 {
         */
 }
 
-pub fn fe_normalizes_to_zero_var(r: *const Fe) -> i32 {
+pub fn fe_normalizes_to_zero_var(r: *const Fe5x52) -> i32 {
     
     todo!();
         /*
@@ -387,7 +387,7 @@ pub fn fe_normalizes_to_zero_var(r: *const Fe) -> i32 {
 }
 
 #[inline] pub fn fe_set_int(
-        r: *mut Fe,
+        r: *mut Fe5x52,
         a: i32)  {
     
     todo!();
@@ -402,7 +402,7 @@ pub fn fe_normalizes_to_zero_var(r: *const Fe) -> i32 {
         */
 }
 
-#[inline] pub fn fe_is_zero(a: *const Fe) -> i32 {
+#[inline] pub fn fe_is_zero(a: *const Fe5x52) -> i32 {
     
     todo!();
         /*
@@ -415,7 +415,7 @@ pub fn fe_normalizes_to_zero_var(r: *const Fe) -> i32 {
         */
 }
 
-#[inline] pub fn fe_is_odd(a: *const Fe) -> i32 {
+#[inline] pub fn fe_is_odd(a: *const Fe5x52) -> i32 {
     
     todo!();
         /*
@@ -427,7 +427,7 @@ pub fn fe_normalizes_to_zero_var(r: *const Fe) -> i32 {
         */
 }
 
-#[inline] pub fn fe_clear(a: *mut Fe)  {
+#[inline] pub fn fe_clear(a: *mut Fe5x52)  {
     
     todo!();
         /*
@@ -443,8 +443,8 @@ pub fn fe_normalizes_to_zero_var(r: *const Fe) -> i32 {
 }
 
 pub fn fe_cmp_var(
-        a: *const Fe,
-        b: *const Fe) -> i32 {
+        a: *const Fe5x52,
+        b: *const Fe5x52) -> i32 {
     
     todo!();
         /*
@@ -468,7 +468,7 @@ pub fn fe_cmp_var(
 }
 
 pub fn fe_set_b32(
-        r: *mut Fe,
+        r: *mut Fe5x52,
         a: *const u8) -> i32 {
     
     todo!();
@@ -530,7 +530,7 @@ pub fn fe_set_b32(
   */
 pub fn fe_get_b32(
         r: *mut u8,
-        a: *const Fe)  {
+        a: *const Fe5x52)  {
     
     todo!();
         /*
@@ -574,8 +574,8 @@ pub fn fe_get_b32(
 }
 
 #[inline] pub fn fe_negate(
-        r: *mut Fe,
-        a: *const Fe,
+        r: *mut Fe5x52,
+        a: *const Fe5x52,
         m: i32)  {
     
     todo!();
@@ -598,7 +598,7 @@ pub fn fe_get_b32(
 }
 
 #[inline] pub fn fe_mul_int(
-        r: *mut Fe,
+        r: *mut Fe5x52,
         a: i32)  {
     
     todo!();
@@ -617,8 +617,8 @@ pub fn fe_get_b32(
 }
 
 #[inline] pub fn fe_add(
-        r: *mut Fe,
-        a: *const Fe)  {
+        r: *mut Fe5x52,
+        a: *const Fe5x52)  {
     
     todo!();
         /*
@@ -639,9 +639,9 @@ pub fn fe_get_b32(
 }
 
 pub fn fe_mul(
-        r: *mut Fe,
-        a: *const Fe,
-        b: *const Fe)  {
+        r: *mut Fe5x52,
+        a: *const Fe5x52,
+        b: *const Fe5x52)  {
     
     todo!();
         /*
@@ -663,8 +663,8 @@ pub fn fe_mul(
 }
 
 pub fn fe_sqr(
-        r: *mut Fe,
-        a: *const Fe)  {
+        r: *mut Fe5x52,
+        a: *const Fe5x52)  {
     
     todo!();
         /*
@@ -682,8 +682,8 @@ pub fn fe_sqr(
 }
 
 #[inline] pub fn fe_cmov(
-        r:    *mut Fe,
-        a:    *const Fe,
+        r:    *mut Fe5x52,
+        a:    *const Fe5x52,
         flag: i32)  {
     
     todo!();
@@ -727,7 +727,7 @@ pub fn fe_sqr(
 
 pub fn fe_to_storage(
         r: *mut FeStorage,
-        a: *const Fe)  {
+        a: *const Fe5x52)  {
     
     todo!();
         /*
@@ -742,7 +742,7 @@ pub fn fe_to_storage(
 }
 
 #[inline] pub fn fe_from_storage(
-        r: *mut Fe,
+        r: *mut Fe5x52,
         a: *const FeStorage)  {
     
     todo!();
@@ -760,7 +760,7 @@ pub fn fe_to_storage(
 }
 
 pub fn fe_from_signed62(
-        r: *mut Fe,
+        r: *mut Fe5x52,
         a: *const ModInv64Signed62)  {
     
     todo!();
@@ -793,7 +793,7 @@ pub fn fe_from_signed62(
 
 pub fn fe_to_signed62(
         r: *mut ModInv64Signed62,
-        a: *const Fe)  {
+        a: *const Fe5x52)  {
     
     todo!();
         /*
@@ -822,12 +822,12 @@ lazy_static!{
 }
 
 pub fn fe_inv(
-        r: *mut Fe,
-        x: *const Fe)  {
+        r: *mut Fe5x52,
+        x: *const Fe5x52)  {
     
     todo!();
         /*
-            Fe tmp;
+            Fe5x52 tmp;
         modinv64_signed62 s;
 
         tmp = *x;
@@ -843,12 +843,12 @@ pub fn fe_inv(
 }
 
 pub fn fe_inv_var(
-        r: *mut Fe,
-        x: *const Fe)  {
+        r: *mut Fe5x52,
+        x: *const Fe5x52)  {
     
     todo!();
         /*
-            Fe tmp;
+            Fe5x52 tmp;
         modinv64_signed62 s;
 
         tmp = *x;

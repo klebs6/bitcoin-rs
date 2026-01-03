@@ -267,7 +267,7 @@ members = [
     "bitcoinleveldb-versionsetutil", 
     "bitcoinleveldb-versionsetinterface", 
     "bitcoinleveldb-mockversionset"
-]
+, "bitcoinsecp256k1-modinv64", "bitcoinsecp256k1-modinv32", "bitcoinsecp256k1-fe10x26", "bitcoinsecp256k1-fe5x52"]
 
 [workspace.dependencies]
 #qmetaobject            = "0.2.7"

@@ -10,8 +10,8 @@ version = "0.1.19"
 path = "../bitcoin-imports"
 version = "0.1.19"
 
-[dependencies.bitcoinsecp256k1-modinv]
-path = "../bitcoinsecp256k1-modinv"
+[dependencies.bitcoinsecp256k1-modinv32]
+path = "../bitcoinsecp256k1-modinv32"
 version = "0.1.19"
 
 [package]

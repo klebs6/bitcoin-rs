@@ -4800,13 +4800,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitcoinsecp256k1-fe10x26"
+version = "0.1.0"
+
+[[package]]
+name = "bitcoinsecp256k1-fe5x52"
+version = "0.1.0"
+
+[[package]]
 name = "bitcoinsecp256k1-field"
 version = "0.1.19"
 dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
- "bitcoinsecp256k1-modinv",
+ "bitcoinsecp256k1-modinv32",
 ]
 
 [[package]]
@@ -4837,9 +4845,35 @@ dependencies = [
 name = "bitcoinsecp256k1-modinv"
 version = "0.1.19"
 dependencies = [
+ "bitcoin-imports",
+ "bitcoinsecp256k1-modinv32",
+ "bitcoinsecp256k1-modinv64",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-modinv32"
+version = "0.1.19"
+dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoinsecp256k1-scratch",
+ "derive_builder",
+ "getset",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-modinv64"
+version = "0.1.19"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinsecp256k1-scratch",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]
@@ -4898,6 +4932,9 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]

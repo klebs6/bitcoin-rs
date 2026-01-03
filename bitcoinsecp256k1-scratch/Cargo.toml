@@ -2,6 +2,11 @@
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
+[dependencies]
+tracing.workspace = true
+derive_builder.workspace = true
+getset.workspace = true
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.19"
