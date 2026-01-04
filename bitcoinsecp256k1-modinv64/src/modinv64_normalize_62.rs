@@ -31,12 +31,12 @@ pub fn modinv64_normalize_62(
             /* Verify that all limbs are in range (-2^62,2^62). */
             let mut i: i32 = 0;
             while i < 5 {
-                VERIFY_CHECK!((*r).v()[i as usize] >= -M62);
-                VERIFY_CHECK!((*r).v()[i as usize] <= M62);
+                verify_check!((*r).v()[i as usize] >= -M62);
+                verify_check!((*r).v()[i as usize] <= M62);
                 i += 1;
             }
-            VERIFY_CHECK!(modinv64_mul_cmp_62(r as *const _, 5, modulus as *const _, -2) > 0); /* r > -2*modulus */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(r as *const _, 5, modulus as *const _, 1) < 0); /* r < modulus */
+            verify_check!(modinv64_mul_cmp_62(r as *const _, 5, modulus as *const _, -2) > 0); /* r > -2*modulus */
+            verify_check!(modinv64_mul_cmp_62(r as *const _, 5, modulus as *const _, 1) < 0); /* r < modulus */
         }
 
         /* In a first step, add the modulus if the input is negative, and then negate if requested.
@@ -84,13 +84,13 @@ pub fn modinv64_normalize_62(
 
         #[cfg(VERIFY)]
         {
-            VERIFY_CHECK!(r0 >> 62 == 0);
-            VERIFY_CHECK!(r1 >> 62 == 0);
-            VERIFY_CHECK!(r2 >> 62 == 0);
-            VERIFY_CHECK!(r3 >> 62 == 0);
-            VERIFY_CHECK!(r4 >> 62 == 0);
-            VERIFY_CHECK!(modinv64_mul_cmp_62(r as *const _, 5, modulus as *const _, 0) >= 0); /* r >= 0 */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(r as *const _, 5, modulus as *const _, 1) < 0); /* r < modulus */
+            verify_check!(r0 >> 62 == 0);
+            verify_check!(r1 >> 62 == 0);
+            verify_check!(r2 >> 62 == 0);
+            verify_check!(r3 >> 62 == 0);
+            verify_check!(r4 >> 62 == 0);
+            verify_check!(modinv64_mul_cmp_62(r as *const _, 5, modulus as *const _, 0) >= 0); /* r >= 0 */
+            verify_check!(modinv64_mul_cmp_62(r as *const _, 5, modulus as *const _, 1) < 0); /* r < modulus */
         }
     }
 }

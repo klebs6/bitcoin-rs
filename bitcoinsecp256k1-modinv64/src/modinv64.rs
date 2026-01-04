@@ -41,18 +41,18 @@ pub fn modinv64(
             /* Update f,g using that transition matrix. */
             #[cfg(VERIFY)]
             {
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, 5, (*modinfo).modulus() as *const _, -1) > 0); /* f > -modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, 5, (*modinfo).modulus() as *const _, 1) <= 0); /* f <= modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, 5, (*modinfo).modulus() as *const _, -1) > 0); /* g > -modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, 5, (*modinfo).modulus() as *const _, 1) < 0);  /* g <  modulus */
+                verify_check!(modinv64_mul_cmp_62(&f as *const _, 5, (*modinfo).modulus() as *const _, -1) > 0); /* f > -modulus */
+                verify_check!(modinv64_mul_cmp_62(&f as *const _, 5, (*modinfo).modulus() as *const _, 1) <= 0); /* f <= modulus */
+                verify_check!(modinv64_mul_cmp_62(&g as *const _, 5, (*modinfo).modulus() as *const _, -1) > 0); /* g > -modulus */
+                verify_check!(modinv64_mul_cmp_62(&g as *const _, 5, (*modinfo).modulus() as *const _, 1) < 0);  /* g <  modulus */
             }
             modinv64_update_fg_62(&mut f as *mut _, &mut g as *mut _, t.as_ptr());
             #[cfg(VERIFY)]
             {
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, 5, (*modinfo).modulus() as *const _, -1) > 0); /* f > -modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, 5, (*modinfo).modulus() as *const _, 1) <= 0); /* f <= modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, 5, (*modinfo).modulus() as *const _, -1) > 0); /* g > -modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, 5, (*modinfo).modulus() as *const _, 1) < 0);  /* g <  modulus */
+                verify_check!(modinv64_mul_cmp_62(&f as *const _, 5, (*modinfo).modulus() as *const _, -1) > 0); /* f > -modulus */
+                verify_check!(modinv64_mul_cmp_62(&f as *const _, 5, (*modinfo).modulus() as *const _, 1) <= 0); /* f <= modulus */
+                verify_check!(modinv64_mul_cmp_62(&g as *const _, 5, (*modinfo).modulus() as *const _, -1) > 0); /* g > -modulus */
+                verify_check!(modinv64_mul_cmp_62(&g as *const _, 5, (*modinfo).modulus() as *const _, 1) < 0);  /* g <  modulus */
             }
             i += 1;
         }
@@ -63,9 +63,9 @@ pub fn modinv64(
         #[cfg(VERIFY)]
         {
             /* g == 0 */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, 5, &SIGNED62_ONE as *const _, 0) == 0);
+            verify_check!(modinv64_mul_cmp_62(&g as *const _, 5, &SIGNED62_ONE as *const _, 0) == 0);
             /* |f| == 1, or (x == 0 and d == 0 and |f|=modulus) */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, 5, &SIGNED62_ONE as *const _, -1) == 0 ||
+            verify_check!(modinv64_mul_cmp_62(&f as *const _, 5, &SIGNED62_ONE as *const _, -1) == 0 ||
                          modinv64_mul_cmp_62(&f as *const _, 5, &SIGNED62_ONE as *const _, 1) == 0 ||
                          (modinv64_mul_cmp_62(x as *const _, 5, &SIGNED62_ONE as *const _, 0) == 0 &&
                           modinv64_mul_cmp_62(&d as *const _, 5, &SIGNED62_ONE as *const _, 0) == 0 &&

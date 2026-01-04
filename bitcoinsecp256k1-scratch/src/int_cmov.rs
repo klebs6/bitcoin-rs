@@ -25,7 +25,7 @@ crate::ix!();
         let vflag: i32 = core::ptr::read_volatile(&flag);
 
         /* Casting a negative int to unsigned and back to int is implementation defined behavior */
-        VERIFY_CHECK!{ (*r >= 0) && (*a >= 0) };
+        verify_check!{ (*r >= 0) && (*a >= 0) };
 
         let mask0: u32 = (vflag as u32).wrapping_add(!0u32);
         let mask1: u32 = !mask0;

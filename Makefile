@@ -61,22 +61,38 @@ NO_FAIL_FAST := --no-fail-fast
 
 #----------------------------------------[block-1]
 # ---[secp-layer-0]
+ACTIVE := bitcoinsecp256k1-fe10x26 
+ACTIVE := bitcoinsecp256k1-fe5x52
 ACTIVE := bitcoinsecp256k1-scalar   #loc: 3197
+
 # ---[secp-layer-1]
 #ACTIVE := bitcoinsecp256k1-field    #loc: 3831
+
 # ---[secp-layer-2]
 #ACTIVE := bitcoinsecp256k1-group    #loc: 1223
+
 # ---[secp-layer-3]
-#ACTIVE := bitcoinsecp256k1-ec       #loc: 4050
-# ---[secp-layer-4]
-#ACTIVE := bitcoin-secp256k1         #loc: 10730
+#ACTIVE := bitcoinsecp256k1-ec
+#ACTIVE := bitcoinsecp256k1-eccontext
+#ACTIVE := bitcoinsecp256k1-ecdh
+#ACTIVE := bitcoinsecp256k1-ecdsa
+#ACTIVE := bitcoinsecp256k1-ecdsasignature
+#ACTIVE := bitcoinsecp256k1-eckey
+#ACTIVE := bitcoinsecp256k1-ecmult
+#ACTIVE := bitcoinsecp256k1-ecmultconst
+#ACTIVE := bitcoinsecp256k1-ecmultgen
+
 # ---[secp-layer-5]
 #ACTIVE := bitcoinsecp256k1-keys     #loc: 1556
 #ACTIVE := bitcoinsecp256k1-parse    #loc: 512
 #ACTIVE := bitcoinsecp256k1-recovery #loc: 992
+
 # ---[secp-layer-6]
 #ACTIVE := bitcoinsecp256k1-bench    #loc: 1643
 #ACTIVE := bitcoinsecp256k1-schnorr  #loc: 1876
+
+# ---[secp-layer-4]
+#ACTIVE := bitcoin-secp256k1         #loc: 10730
 
 #----------------------------------------[block-2]
 # ---[layer 0]
@@ -446,7 +462,7 @@ bench:
 #ACTIVE := bitcoinleveldb-versionset
 #ACTIVE := bitcoinleveldb-dumpfile
 #ACTIVE := bitcoinleveldb-testenv
-#ACTIVE := bitcoinsecp256k1-scratch  #loc: 210
 #ACTIVE := bitcoinsecp256k1-modinv32   #loc: 750
 #ACTIVE := bitcoinsecp256k1-modinv
 #ACTIVE := bitcoinsecp256k1-modinv64   #loc: 750
+#ACTIVE := bitcoinsecp256k1-scratch  #loc: 210

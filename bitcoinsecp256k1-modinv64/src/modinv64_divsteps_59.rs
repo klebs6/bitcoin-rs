@@ -36,9 +36,9 @@ pub fn modinv64_divsteps_59(
     let mut i: i32 = 3;
 
     while i < 62 {
-        VERIFY_CHECK!((f & 1) == 1); /* f must always be odd */
-        VERIFY_CHECK!(u.wrapping_mul(f0).wrapping_add(v.wrapping_mul(g0)) == (f << (i as u32)));
-        VERIFY_CHECK!(q.wrapping_mul(f0).wrapping_add(r.wrapping_mul(g0)) == (g << (i as u32)));
+        verify_check!((f & 1) == 1); /* f must always be odd */
+        verify_check!(u.wrapping_mul(f0).wrapping_add(v.wrapping_mul(g0)) == (f << (i as u32)));
+        verify_check!(q.wrapping_mul(f0).wrapping_add(r.wrapping_mul(g0)) == (g << (i as u32)));
         /* Compute conditional masks for (zeta < 0) and for (g & 1). */
         let mut c1: u64 = (zeta >> 63) as u64;
         let c2: u64 = (g & 1).wrapping_neg();
@@ -63,7 +63,7 @@ pub fn modinv64_divsteps_59(
         u <<= 1;
         v <<= 1;
         /* Bounds on zeta that follow from the bounds on iteration count (max 10*59 divsteps). */
-        VERIFY_CHECK!(zeta >= -591 && zeta <= 591);
+        verify_check!(zeta >= -591 && zeta <= 591);
         i += 1;
     }
     /* Return data in t and return value. */
@@ -75,7 +75,7 @@ pub fn modinv64_divsteps_59(
          * aggregate of 59 of them will have determinant 2^59. Multiplying with the initial
          * 8*identity (which has determinant 2^6) means the overall outputs has determinant
          * 2^65. */
-        VERIFY_CHECK!(((*t).u() as i128) * ((*t).r() as i128) - ((*t).v() as i128) * ((*t).q() as i128) == (1i128 << 65));
+        verify_check!(((*t).u() as i128) * ((*t).r() as i128) - ((*t).v() as i128) * ((*t).q() as i128) == (1i128 << 65));
     }
     zeta
 }

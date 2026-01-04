@@ -21,17 +21,13 @@ crate::ix!();
  | r2 = k + 5 (mod n) and 
  | r1 = k - r2 * lambda (mod n).
  */
-#[cfg(EXHAUSTIVE_TEST_ORDER)]
-pub fn scalar_split_lambda(
-        r1: *mut Scalar,
-        r2: *mut Scalar,
-        k:  *const Scalar)  {
-    
-    todo!();
-        /*
-            *r2 = (*k + 5) % EXHAUSTIVE_TEST_ORDER;
-        *r1 = (*k + (EXHAUSTIVE_TEST_ORDER - *r2) * EXHAUSTIVE_TEST_LAMBDA) % EXHAUSTIVE_TEST_ORDER;
-        */
+#[cfg(feature="exhaustive-test-order")]
+pub fn scalar_split_lambda(r1: *mut Scalar, r2: *mut Scalar, k: *const Scalar) {
+    unsafe {
+        *r2 = ((*k).wrapping_add(5)) % EXHAUSTIVE_TEST_ORDER;
+        *r1 = ((*k).wrapping_add((EXHAUSTIVE_TEST_ORDER - *r2).wrapping_mul(EXHAUSTIVE_TEST_LAMBDA)))
+            % EXHAUSTIVE_TEST_ORDER;
+    }
 }
 
 /**
@@ -120,45 +116,145 @@ pub fn scalar_split_lambda(
  |
  | See proof below.
  */
-#[cfg(not(EXHAUSTIVE_TEST_ORDER))]
-pub fn scalar_split_lambda(
-        r1: *mut Scalar,
-        r2: *mut Scalar,
-        k:  *const Scalar)  {
-    
-    todo!();
-        /*
-            scalar c1, c2;
-        static const scalar minus_b1 = SCALAR_CONST(
-            0x00000000UL, 0x00000000UL, 0x00000000UL, 0x00000000UL,
-            0xE4437ED6UL, 0x010E8828UL, 0x6F547FA9UL, 0x0ABFE4C3UL
+#[cfg(not(feature="exhaustive-test-order"))]
+pub fn scalar_split_lambda(r1: *mut Scalar, r2: *mut Scalar, k: *mut Scalar) {
+    unsafe {
+        let mut c1: Scalar = Scalar::new();
+        let mut c2: Scalar = Scalar::new();
+
+        const minus_b1: Scalar = scalar_const!(
+            0x00000000,
+            0x00000000,
+            0x00000000,
+            0x00000000,
+            0xE4437ED6,
+            0x010E8828,
+            0x6F547FA9,
+            0x0ABFE4C3
         );
-        static const scalar minus_b2 = SCALAR_CONST(
-            0xFFFFFFFFUL, 0xFFFFFFFFUL, 0xFFFFFFFFUL, 0xFFFFFFFEUL,
-            0x8A280AC5UL, 0x0774346DUL, 0xD765CDA8UL, 0x3DB1562CUL
+        const minus_b2: Scalar = scalar_const!(
+            0xFFFFFFFF,
+            0xFFFFFFFF,
+            0xFFFFFFFF,
+            0xFFFFFFFE,
+            0x8A280AC5,
+            0x0774346D,
+            0xD765CDA8,
+            0x3DB1562C
         );
-        static const scalar g1 = SCALAR_CONST(
-            0x3086D221UL, 0xA7D46BCDUL, 0xE86C90E4UL, 0x9284EB15UL,
-            0x3DAA8A14UL, 0x71E8CA7FUL, 0xE893209AUL, 0x45DBB031UL
+        const g1: Scalar = scalar_const!(
+            0x3086D221,
+            0xA7D46BCD,
+            0xE86C90E4,
+            0x9284EB15,
+            0x3DAA8A14,
+            0x71E8CA7F,
+            0xE893209A,
+            0x45DBB031
         );
-        static const scalar g2 = SCALAR_CONST(
-            0xE4437ED6UL, 0x010E8828UL, 0x6F547FA9UL, 0x0ABFE4C4UL,
-            0x221208ACUL, 0x9DF506C6UL, 0x1571B4AEUL, 0x8AC47F71UL
+        const g2: Scalar = scalar_const!(
+            0xE4437ED6,
+            0x010E8828,
+            0x6F547FA9,
+            0x0ABFE4C4,
+            0x221208AC,
+            0x9DF506C6,
+            0x1571B4AE,
+            0x8AC47F71
         );
-        VERIFY_CHECK(r1 != k);
-        VERIFY_CHECK(r2 != k);
+
+        verify_check!(r1 != k);
+        verify_check!(r2 != k);
+
         /* these _var calls are constant time since the shift amount is constant */
-        scalar_mul_shift_var(&c1, k, &g1, 384);
-        scalar_mul_shift_var(&c2, k, &g2, 384);
-        scalar_mul(&c1, &c1, &minus_b1);
-        scalar_mul(&c2, &c2, &minus_b2);
+        scalar_mul_shift_var(&mut c1, k, &g1, 384);
+        scalar_mul_shift_var(&mut c2, k, &g2, 384);
+
+        scalar_mul(&mut c1, &c1, &minus_b1);
+        scalar_mul(&mut c2, &c2, &minus_b2);
         scalar_add(r2, &c1, &c2);
-        scalar_mul(r1, r2, &const_lambda);
+
+        scalar_mul(r1, r2, &*const_lambda);
         scalar_negate(r1, r1);
         scalar_add(r1, r1, k);
 
-    #ifdef VERIFY
-        scalar_split_lambda_verify(r1, r2, k);
-    #endif
-        */
+        #[cfg(feature="secp256k1-verify")]
+        {
+            scalar_split_lambda_verify(r1, r2, k);
+        }
+    }
+}
+
+#[cfg(test)]
+#[cfg(not(feature = "exhaustive-test-order"))]
+mod scalar_split_lambda_contracts {
+    use super::*;
+    use crate::scalar_test_support::*;
+    use tracing::{debug, info, trace};
+
+    fn is_lt_2_128(be: &[u8; 32]) -> bool {
+        be[0..16].iter().all(|&b| b == 0)
+    }
+
+    #[traced_test]
+    fn scalar_split_lambda_recombines_and_meets_128_bit_bounds() {
+        info!("validating scalar_split_lambda recombination and 128-bit bounds");
+
+        let lambda = &*const_lambda;
+
+        let vectors: &[[u8; 32]] = &[
+            SCALAR_ZERO_BE,
+            SCALAR_ONE_BE,
+            SCALAR_TWO_BE,
+            SCALAR_THREE_BE,
+            SCALAR_MAX_U32_BE,
+            SECP256K1_ORDER_HALF_BE,
+            SECP256K1_ORDER_MINUS_1_BE,
+        ];
+
+        for (i, k_be) in vectors.iter().enumerate() {
+            let mut k = scalar_from_be_bytes(k_be);
+
+            let mut r1 = scalar_zero_value();
+            let mut r2 = scalar_zero_value();
+
+            unsafe {
+                scalar_split_lambda(
+                    &mut r1 as *mut Scalar,
+                    &mut r2 as *mut Scalar,
+                    &mut k as *mut Scalar,
+                );
+            }
+
+            let r1_be = scalar_to_be_bytes(&r1);
+            let r2_be = scalar_to_be_bytes(&r2);
+
+            // Check r1 + lambda*r2 == k (mod n).
+            let mut s = scalar_zero_value();
+            unsafe {
+                scalar_mul(
+                    &mut s as *mut Scalar,
+                    lambda as *const Scalar,
+                    &r2 as *const Scalar,
+                );
+                let _ov = scalar_add(
+                    &mut s as *mut Scalar,
+                    &s as *const Scalar,
+                    &r1 as *const Scalar,
+                );
+                assert_ne!(scalar_eq(&s as *const Scalar, &k as *const Scalar), 0);
+            }
+
+            // Check bound: either r < 2^128 or -r mod n < 2^128 for both r1 and r2.
+            let r1_neg = be_neg_mod_n(&r1_be);
+            let r2_neg = be_neg_mod_n(&r2_be);
+
+            trace!(i, ?k_be, ?r1_be, ?r2_be, "split_lambda outputs");
+            debug!(i, r1_small = is_lt_2_128(&r1_be), r1_neg_small = is_lt_2_128(&r1_neg), "r1 bound");
+            debug!(i, r2_small = is_lt_2_128(&r2_be), r2_neg_small = is_lt_2_128(&r2_neg), "r2 bound");
+
+            assert!(is_lt_2_128(&r1_be) || is_lt_2_128(&r1_neg));
+            assert!(is_lt_2_128(&r2_be) || is_lt_2_128(&r2_neg));
+        }
+    }
 }

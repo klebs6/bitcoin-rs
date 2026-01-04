@@ -13,7 +13,7 @@ crate::ix!();
 /// + max_size), the caller can use this function to allocate memory in this block and keep track
 /// of the current allocation state with *prealloc_ptr.
 /// 
-/// It is VERIFY_CHECKed that there is enough space left in the memory object and *prealloc_ptr is
+/// It is verify_checked that there is enough space left in the memory object and *prealloc_ptr is
 /// aligned relative to base.
 /// 
 #[inline] pub fn manual_alloc(
@@ -37,24 +37,24 @@ crate::ix!();
             (tmp / ALIGNMENT).wrapping_mul(ALIGNMENT)
         };
 
-        VERIFY_CHECK!{!prealloc_ptr.is_null()};
+        verify_check!{!prealloc_ptr.is_null()};
 
         let cur: *mut libc::c_void = *prealloc_ptr;
 
-        VERIFY_CHECK!{ !cur.is_null() };
+        verify_check!{ !cur.is_null() };
 
-        VERIFY_CHECK!{ !base.is_null() };
+        verify_check!{ !base.is_null() };
 
         let cur_u8: *mut u8 = cur as *mut u8;
         let base_u8: *mut u8 = base as *mut u8;
 
-        VERIFY_CHECK!{ cur_u8 >= base_u8 };
+        verify_check!{ cur_u8 >= base_u8 };
 
         let diff: usize = (cur_u8 as usize).wrapping_sub(base_u8 as usize);
 
-        VERIFY_CHECK!{ (diff % ALIGNMENT) == 0 };
+        verify_check!{ (diff % ALIGNMENT) == 0 };
 
-        VERIFY_CHECK!{ diff.wrapping_add(aligned_alloc_size) <= max_size };
+        verify_check!{ diff.wrapping_add(aligned_alloc_size) <= max_size };
 
         let ret: *mut libc::c_void = cur;
 

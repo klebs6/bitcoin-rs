@@ -42,12 +42,12 @@ pub fn modinv64_divsteps_62_var(
         i -= zeros;
         /* We're done once we've done 62 divsteps. */
         if i == 0 { break; }
-        VERIFY_CHECK!((f & 1) == 1);
-        VERIFY_CHECK!((g & 1) == 1);
-        VERIFY_CHECK!(u.wrapping_mul(f0).wrapping_add(v.wrapping_mul(g0)) == (f << ((62 - i) as u32)));
-        VERIFY_CHECK!(q.wrapping_mul(f0).wrapping_add(r.wrapping_mul(g0)) == (g << ((62 - i) as u32)));
+        verify_check!((f & 1) == 1);
+        verify_check!((g & 1) == 1);
+        verify_check!(u.wrapping_mul(f0).wrapping_add(v.wrapping_mul(g0)) == (f << ((62 - i) as u32)));
+        verify_check!(q.wrapping_mul(f0).wrapping_add(r.wrapping_mul(g0)) == (g << ((62 - i) as u32)));
         /* Bounds on eta that follow from the bounds on iteration count (max 12*62 divsteps). */
-        VERIFY_CHECK!(eta >= -745 && eta <= 745);
+        verify_check!(eta >= -745 && eta <= 745);
         /* If eta is negative, negate it and replace f,g with g,-f. */
         if eta < 0 {
             let tmp_f: u64;
@@ -61,7 +61,7 @@ pub fn modinv64_divsteps_62_var(
              * out (as we'd be done before that point), and no more than eta+1 can be done as its
              * will flip again once that happens. */
             limit = if ((eta as i32) + 1) > i { i } else { (eta as i32) + 1 };
-            VERIFY_CHECK!(limit > 0 && limit <= 62);
+            verify_check!(limit > 0 && limit <= 62);
             /* m is a mask for the bottom min(limit, 6) bits. */
             m = (u64::MAX >> (64 - (limit as u32))) & 63u64;
             /* Find what multiple of f must be added to g to cancel its bottom min(limit, 6)
@@ -73,7 +73,7 @@ pub fn modinv64_divsteps_62_var(
             /* In this branch, use a simpler formula that only lets us cancel up to 4 bits of g, as
              * eta tends to be smaller here. */
             limit = if ((eta as i32) + 1) > i { i } else { (eta as i32) + 1 };
-            VERIFY_CHECK!(limit > 0 && limit <= 62);
+            verify_check!(limit > 0 && limit <= 62);
             /* m is a mask for the bottom min(limit, 4) bits. */
             m = (u64::MAX >> (64 - (limit as u32))) & 15u64;
             /* Find what multiple of f must be added to g to cancel its bottom min(limit, 4)
@@ -84,7 +84,7 @@ pub fn modinv64_divsteps_62_var(
         g = g.wrapping_add(f.wrapping_mul(w));
         q = q.wrapping_add(u.wrapping_mul(w));
         r = r.wrapping_add(v.wrapping_mul(w));
-        VERIFY_CHECK!((g & m) == 0);
+        verify_check!((g & m) == 0);
     }
     /* Return data in t and return value. */
     unsafe {
@@ -93,7 +93,7 @@ pub fn modinv64_divsteps_62_var(
          * does not change the gcd of f and g, apart from adding a power-of-2 factor to it (which
          * will be divided out again). As each divstep's individual matrix has determinant 2, the
          * aggregate of 62 of them will have determinant 2^62. */
-        VERIFY_CHECK!(((*t).u() as i128) * ((*t).r() as i128) - ((*t).v() as i128) * ((*t).q() as i128) == (1i128 << 62));
+        verify_check!(((*t).u() as i128) * ((*t).r() as i128) - ((*t).v() as i128) * ((*t).q() as i128) == (1i128 << 62));
     }
     eta
 }

@@ -75,14 +75,14 @@ pub(crate) fn util_trigger_test_failure(
 
 #[cfg(COVERAGE)]
 #[macro_export]
-macro_rules! VERIFY_CHECK {
+macro_rules! verify_check {
     ($cond:expr) => {{}};
     {$cond:expr} => {{}};
 }
 
 #[cfg(all(VERIFY, not(COVERAGE)))]
 #[macro_export]
-macro_rules! VERIFY_CHECK {
+macro_rules! verify_check {
     ($cond:expr) => {{
         $crate::check!($cond);
     }};
@@ -93,7 +93,7 @@ macro_rules! VERIFY_CHECK {
 
 #[cfg(all(not(VERIFY), not(COVERAGE)))]
 #[macro_export]
-macro_rules! VERIFY_CHECK {
+macro_rules! verify_check {
     ($cond:expr) => {{
         let _ = $cond;
     }};
@@ -195,7 +195,7 @@ mod util_macro_semantics_test_suite {
         }
 
         let before = CALLS.load(Ordering::SeqCst);
-        VERIFY_CHECK!({ side_effect_true() });
+        verify_check!({ side_effect_true() });
         let after = CALLS.load(Ordering::SeqCst);
 
         assert_eq!(after, before + 1);
@@ -212,7 +212,7 @@ mod util_macro_semantics_test_suite {
         }
 
         let before = CALLS.load(Ordering::SeqCst);
-        VERIFY_CHECK!({ side_effect_true() });
+        verify_check!({ side_effect_true() });
         let after = CALLS.load(Ordering::SeqCst);
 
         assert_eq!(after, before);
@@ -222,9 +222,9 @@ mod util_macro_semantics_test_suite {
     #[traced_test]
     fn verify_check_panics_in_tests_on_failure_in_verify_build() {
         let r = std::panic::catch_unwind(|| {
-            VERIFY_CHECK!({ false });
+            verify_check!({ false });
         });
 
-        assert!(r.is_err(), "VERIFY_CHECK(false) must fail in VERIFY builds");
+        assert!(r.is_err(), "verify_check(false) must fail in VERIFY builds");
     }
 }

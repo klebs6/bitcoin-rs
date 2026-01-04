@@ -4790,6 +4790,119 @@ name = "bitcoinsecp256k1-ec"
 version = "0.1.20"
 dependencies = [
  "bitcoin-cfg",
+ "bitcoinsecp256k1-eccontext",
+ "bitcoinsecp256k1-ecdh",
+ "bitcoinsecp256k1-ecdsa",
+ "bitcoinsecp256k1-ecdsasignature",
+ "bitcoinsecp256k1-eckey",
+ "bitcoinsecp256k1-ecmult",
+ "bitcoinsecp256k1-ecmultconst",
+ "bitcoinsecp256k1-ecmultgen",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-eccontext"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-key",
+ "bitcoinsecp256k1-field",
+ "bitcoinsecp256k1-group",
+ "bitcoinsecp256k1-scalar",
+ "bitcoinsecp256k1-scratch",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-ecdh"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-key",
+ "bitcoinsecp256k1-field",
+ "bitcoinsecp256k1-group",
+ "bitcoinsecp256k1-scalar",
+ "bitcoinsecp256k1-scratch",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-ecdsa"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-key",
+ "bitcoinsecp256k1-field",
+ "bitcoinsecp256k1-group",
+ "bitcoinsecp256k1-scalar",
+ "bitcoinsecp256k1-scratch",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-ecdsasignature"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-key",
+ "bitcoinsecp256k1-field",
+ "bitcoinsecp256k1-group",
+ "bitcoinsecp256k1-scalar",
+ "bitcoinsecp256k1-scratch",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-eckey"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-key",
+ "bitcoinsecp256k1-field",
+ "bitcoinsecp256k1-group",
+ "bitcoinsecp256k1-scalar",
+ "bitcoinsecp256k1-scratch",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-ecmult"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-key",
+ "bitcoinsecp256k1-field",
+ "bitcoinsecp256k1-group",
+ "bitcoinsecp256k1-scalar",
+ "bitcoinsecp256k1-scratch",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-ecmultconst"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoin-key",
+ "bitcoinsecp256k1-field",
+ "bitcoinsecp256k1-group",
+ "bitcoinsecp256k1-scalar",
+ "bitcoinsecp256k1-scratch",
+]
+
+[[package]]
+name = "bitcoinsecp256k1-ecmultgen"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-key",
@@ -4802,10 +4915,30 @@ dependencies = [
 [[package]]
 name = "bitcoinsecp256k1-fe10x26"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinsecp256k1-modinv",
+ "bitcoinsecp256k1-scratch",
+ "derive_builder",
+ "getset",
+ "tracing",
+]
 
 [[package]]
 name = "bitcoinsecp256k1-fe5x52"
 version = "0.1.0"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinsecp256k1-modinv64",
+ "bitcoinsecp256k1-scratch",
+ "derive_builder",
+ "getset",
+ "tracing",
+]
 
 [[package]]
 name = "bitcoinsecp256k1-field"
@@ -4815,6 +4948,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinsecp256k1-modinv32",
+ "bitcoinsecp256k1-scratch",
 ]
 
 [[package]]
@@ -4909,6 +5043,10 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinsecp256k1-modinv",
+ "bitcoinsecp256k1-scratch",
+ "derive_builder",
+ "getset",
+ "tracing",
 ]
 
 [[package]]

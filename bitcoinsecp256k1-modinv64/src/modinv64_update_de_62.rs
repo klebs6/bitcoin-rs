@@ -48,14 +48,14 @@ pub fn modinv64_update_de_62(
 
         #[cfg(VERIFY)]
         {
-            VERIFY_CHECK!(modinv64_mul_cmp_62(d as *const _, 5, modulus as *const _, -2) > 0); /* d > -2*modulus */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(d as *const _, 5, modulus as *const _, 1) < 0);  /* d <    modulus */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(e as *const _, 5, modulus as *const _, -2) > 0); /* e > -2*modulus */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(e as *const _, 5, modulus as *const _, 1) < 0);  /* e <    modulus */
-            VERIFY_CHECK!((modinv64_abs(u).wrapping_add(modinv64_abs(v))) >= 0); /* |u|+|v| doesn't overflow */
-            VERIFY_CHECK!((modinv64_abs(q).wrapping_add(modinv64_abs(r))) >= 0); /* |q|+|r| doesn't overflow */
-            VERIFY_CHECK!((modinv64_abs(u).wrapping_add(modinv64_abs(v))) <= M62 + 1); /* |u|+|v| <= 2^62 */
-            VERIFY_CHECK!((modinv64_abs(q).wrapping_add(modinv64_abs(r))) <= M62 + 1); /* |q|+|r| <= 2^62 */
+            verify_check!(modinv64_mul_cmp_62(d as *const _, 5, modulus as *const _, -2) > 0); /* d > -2*modulus */
+            verify_check!(modinv64_mul_cmp_62(d as *const _, 5, modulus as *const _, 1) < 0);  /* d <    modulus */
+            verify_check!(modinv64_mul_cmp_62(e as *const _, 5, modulus as *const _, -2) > 0); /* e > -2*modulus */
+            verify_check!(modinv64_mul_cmp_62(e as *const _, 5, modulus as *const _, 1) < 0);  /* e <    modulus */
+            verify_check!((modinv64_abs(u).wrapping_add(modinv64_abs(v))) >= 0); /* |u|+|v| doesn't overflow */
+            verify_check!((modinv64_abs(q).wrapping_add(modinv64_abs(r))) >= 0); /* |q|+|r| doesn't overflow */
+            verify_check!((modinv64_abs(u).wrapping_add(modinv64_abs(v))) <= M62 + 1); /* |u|+|v| <= 2^62 */
+            verify_check!((modinv64_abs(q).wrapping_add(modinv64_abs(r))) <= M62 + 1); /* |q|+|r| <= 2^62 */
         }
 
         /* [md,me] start as zero; plus [u,q] if d is negative; plus [v,r] if e is negative. */
@@ -73,8 +73,8 @@ pub fn modinv64_update_de_62(
         cd += (m0 as i128) * (md as i128);
         ce += (m0 as i128) * (me as i128);
         /* Verify that the low 62 bits of the computation are indeed zero, and then throw them away. */
-        VERIFY_CHECK!(((cd as i64) & M62) == 0); cd >>= 62;
-        VERIFY_CHECK!(((ce as i64) & M62) == 0); ce >>= 62;
+        verify_check!(((cd as i64) & M62) == 0); cd >>= 62;
+        verify_check!(((ce as i64) & M62) == 0); ce >>= 62;
         /* Compute limb 1 of t*[d,e]+modulus*[md,me], and store it as output limb 0 (= down shift). */
         cd += (u as i128) * (d1 as i128) + (v as i128) * (e1 as i128);
         ce += (q as i128) * (d1 as i128) + (r as i128) * (e1 as i128);
@@ -115,10 +115,10 @@ pub fn modinv64_update_de_62(
 
         #[cfg(VERIFY)]
         {
-            VERIFY_CHECK!(modinv64_mul_cmp_62(d as *const _, 5, modulus as *const _, -2) > 0); /* d > -2*modulus */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(d as *const _, 5, modulus as *const _, 1) < 0);  /* d <    modulus */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(e as *const _, 5, modulus as *const _, -2) > 0); /* e > -2*modulus */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(e as *const _, 5, modulus as *const _, 1) < 0);  /* e <    modulus */
+            verify_check!(modinv64_mul_cmp_62(d as *const _, 5, modulus as *const _, -2) > 0); /* d > -2*modulus */
+            verify_check!(modinv64_mul_cmp_62(d as *const _, 5, modulus as *const _, 1) < 0);  /* d <    modulus */
+            verify_check!(modinv64_mul_cmp_62(e as *const _, 5, modulus as *const _, -2) > 0); /* e > -2*modulus */
+            verify_check!(modinv64_mul_cmp_62(e as *const _, 5, modulus as *const _, 1) < 0);  /* e <    modulus */
         }
     }
 }

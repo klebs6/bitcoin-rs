@@ -9,4 +9,30 @@ description = "todo: write a description here"
 # keywords = []
 # categories = []
 
+[build-dependencies.bitcoin-cfg]
+path = "../bitcoin-cfg"
+version = "0.1.19"
+
 [dependencies]
+tracing.workspace = true
+getset.workspace = true
+derive_builder.workspace = true
+bitcoinsecp256k1-scratch = { path = "../bitcoinsecp256k1-scratch" }
+
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+version = "0.1.19"
+
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.19"
+
+[dependencies.bitcoinsecp256k1-modinv]
+path = "../bitcoinsecp256k1-modinv"
+version = "0.1.19"
+
+[features]
+default               = ["secp256k1-verify"]
+secp256k1-use-external-asm = []
+secp256k1-verify = []
+

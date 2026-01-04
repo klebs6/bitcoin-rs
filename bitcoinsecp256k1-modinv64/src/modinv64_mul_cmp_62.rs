@@ -21,8 +21,8 @@ pub fn modinv64_mul_cmp_62(
     i = 0;
     while i < 4 {
         /* Verify that all but the top limb of a and b are normalized. */
-        VERIFY_CHECK!(am.v()[i as usize] >> 62 == 0);
-        VERIFY_CHECK!(bm.v()[i as usize] >> 62 == 0);
+        verify_check!(am.v()[i as usize] >> 62 == 0);
+        verify_check!(bm.v()[i as usize] >> 62 == 0);
         i += 1;
     }
     i = 4;

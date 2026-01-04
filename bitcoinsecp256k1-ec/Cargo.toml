@@ -1,35 +1,3 @@
-[build-dependencies.bitcoin-cfg]
-path = "../bitcoin-cfg"
-version = "0.1.19"
-
-[dependencies.bitcoin-derive]
-path = "../bitcoin-derive"
-version = "0.1.19"
-
-[dependencies.bitcoin-imports]
-path = "../bitcoin-imports"
-version = "0.1.19"
-
-[dependencies.bitcoin-key]
-path = "../bitcoin-key"
-version = "0.1.20"
-
-[dependencies.bitcoinsecp256k1-field]
-path = "../bitcoinsecp256k1-field"
-version = "0.1.19"
-
-[dependencies.bitcoinsecp256k1-group]
-path = "../bitcoinsecp256k1-group"
-version = "0.1.19"
-
-[dependencies.bitcoinsecp256k1-scalar]
-path = "../bitcoinsecp256k1-scalar"
-version = "0.1.19"
-
-[dependencies.bitcoinsecp256k1-scratch]
-path = "../bitcoinsecp256k1-scratch"
-version = "0.1.19"
-
 [package]
 authors = ["klebs <none>"]
 description = "tools for running elliptic curve cryptography"
@@ -39,6 +7,42 @@ license = "MIT"
 name = "bitcoinsecp256k1-ec"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.20"
+
+[build-dependencies.bitcoin-cfg]
+path = "../bitcoin-cfg"
+version = "0.1.0"
+
+[dependencies.bitcoinsecp256k1-eccontext]
+path = "../bitcoinsecp256k1-eccontext"
+version = "0.1.0"
+
+[dependencies.bitcoinsecp256k1-ecdh]
+path = "../bitcoinsecp256k1-ecdh"
+version = "0.1.0"
+
+[dependencies.bitcoinsecp256k1-ecdsa]
+path = "../bitcoinsecp256k1-ecdsa"
+version = "0.1.0"
+
+[dependencies.bitcoinsecp256k1-ecdsasignature]
+path = "../bitcoinsecp256k1-ecdsasignature"
+version = "0.1.0"
+
+[dependencies.bitcoinsecp256k1-eckey]
+path = "../bitcoinsecp256k1-eckey"
+version = "0.1.0"
+
+[dependencies.bitcoinsecp256k1-ecmult]
+path = "../bitcoinsecp256k1-ecmult"
+version = "0.1.0"
+
+[dependencies.bitcoinsecp256k1-ecmultconst]
+path = "../bitcoinsecp256k1-ecmultconst"
+version = "0.1.0"
+
+[dependencies.bitcoinsecp256k1-ecmultgen]
+path = "../bitcoinsecp256k1-ecmultgen"
+version = "0.1.0"
 
 [package.metadata]
 cpp-authors = [

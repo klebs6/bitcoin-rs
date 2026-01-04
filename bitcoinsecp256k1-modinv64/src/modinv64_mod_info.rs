@@ -5,11 +5,11 @@ pub struct ModInv64ModInfo {
 
     /// The modulus in signed62 notation, must be odd and in [3, 2^256].
     ///
-    modulus:       ModInv64Signed62,
+    pub modulus:       ModInv64Signed62,
 
     /// modulus^{-1} mod 2^62
     /// 
-    modulus_inv62: u64,
+    pub modulus_inv62: u64,
 }
 
 impl ModInv64ModInfo {

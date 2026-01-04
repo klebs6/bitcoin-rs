@@ -7,7 +7,7 @@ crate::ix!();
 #[cfg(VERIFY)]
 pub fn modinv64_abs(v: i64) -> i64 {
 
-    VERIFY_CHECK!(v > i64::MIN);
+    verify_check!(v > i64::MIN);
     if v < 0 { -v } else { v }
 }
 

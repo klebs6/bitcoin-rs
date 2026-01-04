@@ -19,8 +19,8 @@ pub fn modinv32_mul_cmp_30(a: *const ModInv32Signed30, alen: i32, b: *const ModI
         i = 0;
         while i < 8 {
             /* Verify that all but the top limb of a and b are normalized. */
-            VERIFY_CHECK!(am.v[i as usize] >> 30 == 0);
-            VERIFY_CHECK!(bm.v[i as usize] >> 30 == 0);
+            verify_check!(am.v[i as usize] >> 30 == 0);
+            verify_check!(bm.v[i as usize] >> 30 == 0);
             i += 1;
         }
         i = 8;

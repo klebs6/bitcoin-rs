@@ -20,6 +20,8 @@ x!{scratch_create}
 x!{scratch_destroy}
 x!{scratch_max_allocation}
 x!{util}
+x!{callback}
+x!{nonce}
 
 #[cfg(test)]
 mod crate_root_api_smoke_test_suite {

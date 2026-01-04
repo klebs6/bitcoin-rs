@@ -21,7 +21,7 @@ pub fn scratch_destroy(
             return;
         }
 
-        VERIFY_CHECK!((*scratch).alloc_size == 0);
+        verify_check!((*scratch).alloc_size == 0);
 
         if memcmp_var(
             (*scratch).magic.as_ptr() as *const libc::c_void,

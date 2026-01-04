@@ -26,15 +26,15 @@ pub fn modinv64_update_fg_62_var(
         let mut cg: i128;
         let mut i: i32;
 
-        VERIFY_CHECK!(len > 0);
+        verify_check!(len > 0);
         /* Start computing t*[f,g]. */
         fi = (*f).v()[0];
         gi = (*g).v()[0];
         cf = (u as i128) * (fi as i128) + (v as i128) * (gi as i128);
         cg = (q as i128) * (fi as i128) + (r as i128) * (gi as i128);
         /* Verify that the bottom 62 bits of the result are zero, and then throw them away. */
-        VERIFY_CHECK!(((cf as i64) & M62) == 0); cf >>= 62;
-        VERIFY_CHECK!(((cg as i64) & M62) == 0); cg >>= 62;
+        verify_check!(((cf as i64) & M62) == 0); cf >>= 62;
+        verify_check!(((cg as i64) & M62) == 0); cg >>= 62;
         /* Now iteratively compute limb i=1..len of t*[f,g], and store them in output limb i-1 (shifting
          * down by 62 bits). */
         i = 1;

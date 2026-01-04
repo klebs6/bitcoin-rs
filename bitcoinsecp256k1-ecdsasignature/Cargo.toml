@@ -1,0 +1,44 @@
+[package]
+name = "bitcoinsecp256k1-ecdsasignature"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[build-dependencies.bitcoin-cfg]
+path = "../bitcoin-cfg"
+version = "0.1.19"
+
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+version = "0.1.19"
+
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.19"
+
+[dependencies.bitcoin-key]
+path = "../bitcoin-key"
+version = "0.1.20"
+
+[dependencies.bitcoinsecp256k1-field]
+path = "../bitcoinsecp256k1-field"
+version = "0.1.19"
+
+[dependencies.bitcoinsecp256k1-group]
+path = "../bitcoinsecp256k1-group"
+version = "0.1.19"
+
+[dependencies.bitcoinsecp256k1-scalar]
+path = "../bitcoinsecp256k1-scalar"
+version = "0.1.19"
+
+[dependencies.bitcoinsecp256k1-scratch]
+path = "../bitcoinsecp256k1-scratch"
+version = "0.1.19"
+
+

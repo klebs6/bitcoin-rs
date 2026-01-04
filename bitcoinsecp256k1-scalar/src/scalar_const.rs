@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinsecp256k1-scalar/src/scalar_const.rs ]
 crate::ix!();
 
-#[cfg(WIDEMUL_INT64)]
+#[cfg(feature="widemul-int64")]
 #[macro_export] macro_rules! scalar_const {
     ($d7:expr, 
      $d6:expr, 
@@ -26,7 +26,7 @@ crate::ix!();
     }
 }
 
-#[cfg(WIDEMUL_INT128)]
+#[cfg(feature="widemul-int128")]
 #[macro_export] macro_rules! scalar_const {
     ($d7:expr, 
      $d6:expr, 
@@ -47,7 +47,7 @@ crate::ix!();
     }
 }
 
-#[cfg(EXHAUSTIVE_TEST_ORDER)]
+#[cfg(feature="exhaustive-test-order")]
 #[macro_export] macro_rules! scalar_const {
     ($d7:ident, 
      $d6:ident, 
@@ -61,4 +61,36 @@ crate::ix!();
     }
 }
 
+#[cfg(test)]
+mod scalar_const_macro_contracts {
+    use super::*;
+    use crate::scalar_test_support::*;
+    use tracing::{debug, info};
 
+    #[traced_test]
+    fn scalar_const_macro_constructs_expected_byte_pattern() {
+        info!("validating scalar_const! byte layout is consistent");
+
+        let s: Scalar = scalar_const!(
+            0x00000000,
+            0x00000001,
+            0x00000002,
+            0x00000003,
+            0x00000004,
+            0x00000005,
+            0x00000006,
+            0x00000007
+        );
+
+        let be = scalar_to_be_bytes(&s);
+        let expected: [u8; 32] = [
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03,
+            0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x07,
+        ];
+
+        debug!(?be, ?expected, "constructed/expected");
+        assert_eq!(be, expected);
+        assert!(scalar_is_normalized_bytes(&be));
+    }
+
+}

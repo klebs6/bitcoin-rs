@@ -6,9 +6,8 @@
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/scalar_4x64_impl.h]
 
 x!{constants}
-x!{extract}
+x!{widemul_macros}
 x!{limbs}
-x!{muladd}
 x!{scalar}
 x!{scalar_add}
 x!{scalar_cadd_bit}
@@ -44,7 +43,9 @@ x!{scalar_split_lambda}
 x!{scalar_split_lambda_verify}
 x!{scalar_to_signed30}
 x!{scalar_to_signed62}
-x!{sumadd}
+
+#[cfg(test)]
+x!{scalar_test_support}
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/scalar.h]
 

@@ -1,13 +1,8 @@
-// ---------------- [ File: bitcoinsecp256k1-ec/src/lib.rs ]
-#[macro_use] mod imports; use imports::*;
-
-x!{ecmult_gen}
-x!{eckey}
-x!{ecdh}
-x!{ecmult_const}
-x!{ecmult}
-x!{ecdsa}
-x!{ecdsa_signature}
-x!{context}
-x!{nonce}
-x!{callback}
+pub use bitcoinsecp256k1_eccontext::*;
+pub use bitcoinsecp256k1_ecdh::*;
+pub use bitcoinsecp256k1_ecdsa::*;
+pub use bitcoinsecp256k1_ecdsasignature::*;
+pub use bitcoinsecp256k1_eckey::*;
+pub use bitcoinsecp256k1_ecmult::*;
+pub use bitcoinsecp256k1_ecmultconst::*;
+pub use bitcoinsecp256k1_ecmultgen::*;

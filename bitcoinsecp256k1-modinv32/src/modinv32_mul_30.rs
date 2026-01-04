@@ -24,7 +24,7 @@ pub fn modinv32_mul_30(r: *mut ModInv32Signed30, a: *const ModInv32Signed30, ale
         if 8 < alen {
             c += (i64::from((*a).v[8])) * (i64::from(factor));
         }
-        VERIFY_CHECK!(c == (c as i32) as i64);
+        verify_check!(c == (c as i32) as i64);
         (*r).v[8] = c as i32;
     }
 }

@@ -26,7 +26,7 @@ pub fn modinv64_mul_62(
         if 4 < alen {
             c += ((*a).v()[4] as i128) * (factor as i128);
         }
-        VERIFY_CHECK!(c == ((c as i64) as i128));
+        verify_check!(c == ((c as i64) as i128));
         (*r).v_mut()[4] = c as i64;
     }
 }

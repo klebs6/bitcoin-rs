@@ -8,7 +8,7 @@ crate::ix!();
 /// 
 #[derive(Debug,Copy,Clone)]
 pub struct ModInv32Signed30 {
-    pub(crate) v: [i32; 9],
+    pub v: [i32; 9],
 }
 
 #[cfg(test)]

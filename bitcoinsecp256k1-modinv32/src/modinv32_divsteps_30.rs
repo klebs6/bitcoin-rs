@@ -35,9 +35,9 @@ pub fn modinv32_divsteps_30(zeta: i32, f0: u32, g0: u32, t: *mut ModInv32Trans2x
 
         i = 0;
         while i < 30 {
-            VERIFY_CHECK!((f & 1) == 1); /* f must always be odd */
-            VERIFY_CHECK!(u.wrapping_mul(f0).wrapping_add(v.wrapping_mul(g0)) == f.wrapping_shl(i as u32));
-            VERIFY_CHECK!(q.wrapping_mul(f0).wrapping_add(r.wrapping_mul(g0)) == g.wrapping_shl(i as u32));
+            verify_check!((f & 1) == 1); /* f must always be odd */
+            verify_check!(u.wrapping_mul(f0).wrapping_add(v.wrapping_mul(g0)) == f.wrapping_shl(i as u32));
+            verify_check!(q.wrapping_mul(f0).wrapping_add(r.wrapping_mul(g0)) == g.wrapping_shl(i as u32));
             /* Compute conditional masks for (zeta < 0) and for (g & 1). */
             c1 = (zeta >> 31) as u32;
             c2 = (g & 1).wrapping_neg();
@@ -62,7 +62,7 @@ pub fn modinv32_divsteps_30(zeta: i32, f0: u32, g0: u32, t: *mut ModInv32Trans2x
             u <<= 1;
             v <<= 1;
             /* Bounds on zeta that follow from the bounds on iteration count (max 20*30 divsteps). */
-            VERIFY_CHECK!(zeta >= -601 && zeta <= 601);
+            verify_check!(zeta >= -601 && zeta <= 601);
 
             i += 1;
         }
@@ -75,7 +75,7 @@ pub fn modinv32_divsteps_30(zeta: i32, f0: u32, g0: u32, t: *mut ModInv32Trans2x
          * does not change the gcd of f and g, apart from adding a power-of-2 factor to it (which
          * will be divided out again). As each divstep's individual matrix has determinant 2, the
          * aggregate of 30 of them will have determinant 2^30. */
-        VERIFY_CHECK!(
+        verify_check!(
             ((*t).u as i64) * ((*t).r as i64) - ((*t).v as i64) * ((*t).q as i64) == (1i64 << 30)
         );
     }
@@ -103,7 +103,7 @@ mod modinv32_divsteps_30_transition_matrix_validation {
         ];
 
         /*
-          The zeta bounds enforced by VERIFY_CHECK inside modinv32_divsteps_30 are derived for the
+          The zeta bounds enforced by verify_check inside modinv32_divsteps_30 are derived for the
           maximum 600-divstep usage in modinv32 starting from zeta=-1. Calls with extreme zeta
           inputs (e.g. zeta=-601) are not generally valid for an additional 30-divstep chunk
           (example: g0=0 yields zeta_out = zeta_in - 30 = -631).

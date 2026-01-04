@@ -42,10 +42,10 @@ pub fn modinv64_var(
             /* Update f,g using that transition matrix. */
             #[cfg(VERIFY)]
             {
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, len, (*modinfo).modulus() as *const _, -1) > 0); /* f > -modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, len, (*modinfo).modulus() as *const _, 1) <= 0); /* f <= modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, len, (*modinfo).modulus() as *const _, -1) > 0); /* g > -modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, len, (*modinfo).modulus() as *const _, 1) < 0);  /* g <  modulus */
+                verify_check!(modinv64_mul_cmp_62(&f as *const _, len, (*modinfo).modulus() as *const _, -1) > 0); /* f > -modulus */
+                verify_check!(modinv64_mul_cmp_62(&f as *const _, len, (*modinfo).modulus() as *const _, 1) <= 0); /* f <= modulus */
+                verify_check!(modinv64_mul_cmp_62(&g as *const _, len, (*modinfo).modulus() as *const _, -1) > 0); /* g > -modulus */
+                verify_check!(modinv64_mul_cmp_62(&g as *const _, len, (*modinfo).modulus() as *const _, 1) < 0);  /* g <  modulus */
             }
             modinv64_update_fg_62_var(len, &mut f as *mut _, &mut g as *mut _, t.as_ptr());
             /* If the bottom limb of g is zero, there is a chance that g=0. */
@@ -77,11 +77,11 @@ pub fn modinv64_var(
             #[cfg(VERIFY)]
             {
                 i += 1;
-                VERIFY_CHECK!(i < 12); /* We should never need more than 12*62 = 744 divsteps */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, len, (*modinfo).modulus() as *const _, -1) > 0); /* f > -modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, len, (*modinfo).modulus() as *const _, 1) <= 0); /* f <= modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, len, (*modinfo).modulus() as *const _, -1) > 0); /* g > -modulus */
-                VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, len, (*modinfo).modulus() as *const _, 1) < 0);  /* g <  modulus */
+                verify_check!(i < 12); /* We should never need more than 12*62 = 744 divsteps */
+                verify_check!(modinv64_mul_cmp_62(&f as *const _, len, (*modinfo).modulus() as *const _, -1) > 0); /* f > -modulus */
+                verify_check!(modinv64_mul_cmp_62(&f as *const _, len, (*modinfo).modulus() as *const _, 1) <= 0); /* f <= modulus */
+                verify_check!(modinv64_mul_cmp_62(&g as *const _, len, (*modinfo).modulus() as *const _, -1) > 0); /* g > -modulus */
+                verify_check!(modinv64_mul_cmp_62(&g as *const _, len, (*modinfo).modulus() as *const _, 1) < 0);  /* g <  modulus */
             }
         }
 
@@ -90,9 +90,9 @@ pub fn modinv64_var(
         #[cfg(VERIFY)]
         {
             /* g == 0 */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(&g as *const _, len, &SIGNED62_ONE as *const _, 0) == 0);
+            verify_check!(modinv64_mul_cmp_62(&g as *const _, len, &SIGNED62_ONE as *const _, 0) == 0);
             /* |f| == 1, or (x == 0 and d == 0 and |f|=modulus) */
-            VERIFY_CHECK!(modinv64_mul_cmp_62(&f as *const _, len, &SIGNED62_ONE as *const _, -1) == 0 ||
+            verify_check!(modinv64_mul_cmp_62(&f as *const _, len, &SIGNED62_ONE as *const _, -1) == 0 ||
                          modinv64_mul_cmp_62(&f as *const _, len, &SIGNED62_ONE as *const _, 1) == 0 ||
                          (modinv64_mul_cmp_62(x as *const _, 5, &SIGNED62_ONE as *const _, 0) == 0 &&
                           modinv64_mul_cmp_62(&d as *const _, 5, &SIGNED62_ONE as *const _, 0) == 0 &&

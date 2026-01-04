@@ -34,16 +34,16 @@ pub fn modinv32_update_de_30(
 
         #[cfg(VERIFY)]
         {
-            VERIFY_CHECK!(modinv32_mul_cmp_30(d as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* d > -2*modulus */
-            VERIFY_CHECK!(modinv32_mul_cmp_30(d as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* d <    modulus */
-            VERIFY_CHECK!(modinv32_mul_cmp_30(e as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* e > -2*modulus */
-            VERIFY_CHECK!(modinv32_mul_cmp_30(e as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* e <    modulus */
+            verify_check!(modinv32_mul_cmp_30(d as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* d > -2*modulus */
+            verify_check!(modinv32_mul_cmp_30(d as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* d <    modulus */
+            verify_check!(modinv32_mul_cmp_30(e as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* e > -2*modulus */
+            verify_check!(modinv32_mul_cmp_30(e as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* e <    modulus */
             let uv_sum: i64 = (u as i64).abs() + (v as i64).abs();
             let qr_sum: i64 = (q as i64).abs() + (r as i64).abs();
-            VERIFY_CHECK!(uv_sum >= 0); /* |u|+|v| doesn't overflow */
-            VERIFY_CHECK!(qr_sum >= 0); /* |q|+|r| doesn't overflow */
-            VERIFY_CHECK!(uv_sum <= (M30 as i64) + 1); /* |u|+|v| <= 2^30 */
-            VERIFY_CHECK!(qr_sum <= (M30 as i64) + 1); /* |q|+|r| <= 2^30 */
+            verify_check!(uv_sum >= 0); /* |u|+|v| doesn't overflow */
+            verify_check!(qr_sum >= 0); /* |q|+|r| doesn't overflow */
+            verify_check!(uv_sum <= (M30 as i64) + 1); /* |u|+|v| <= 2^30 */
+            verify_check!(qr_sum <= (M30 as i64) + 1); /* |q|+|r| <= 2^30 */
         }
 
         /* [md,me] start as zero; plus [u,q] if d is negative; plus [v,r] if e is negative. */
@@ -73,9 +73,9 @@ pub fn modinv32_update_de_30(
         cd += i64::from((*modinfo).modulus.v[0]) * i64::from(md);
         ce += i64::from((*modinfo).modulus.v[0]) * i64::from(me);
         /* Verify that the low 30 bits of the computation are indeed zero, and then throw them away. */
-        VERIFY_CHECK!(((cd as i32) & M30) == 0);
+        verify_check!(((cd as i32) & M30) == 0);
         cd >>= 30;
-        VERIFY_CHECK!(((ce as i32) & M30) == 0);
+        verify_check!(((ce as i32) & M30) == 0);
         ce >>= 30;
         /* Now iteratively compute limb i=1..8 of t*[d,e]+modulus*[md,me], and store them in output
          * limb i-1 (shifting down by 30 bits). */
@@ -99,10 +99,10 @@ pub fn modinv32_update_de_30(
 
         #[cfg(VERIFY)]
         {
-            VERIFY_CHECK!(modinv32_mul_cmp_30(d as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* d > -2*modulus */
-            VERIFY_CHECK!(modinv32_mul_cmp_30(d as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* d <    modulus */
-            VERIFY_CHECK!(modinv32_mul_cmp_30(e as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* e > -2*modulus */
-            VERIFY_CHECK!(modinv32_mul_cmp_30(e as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* e <    modulus */
+            verify_check!(modinv32_mul_cmp_30(d as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* d > -2*modulus */
+            verify_check!(modinv32_mul_cmp_30(d as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* d <    modulus */
+            verify_check!(modinv32_mul_cmp_30(e as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* e > -2*modulus */
+            verify_check!(modinv32_mul_cmp_30(e as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* e <    modulus */
         }
     }
 
@@ -113,14 +113,14 @@ pub fn modinv32_update_de_30(
     int64_t cd, ce;
     int i;
 #ifdef VERIFY
-    VERIFY_CHECK(modinv32_mul_cmp_30(d, 9, &modinfo->modulus, -2) > 0); /* d > -2*modulus */
-    VERIFY_CHECK(modinv32_mul_cmp_30(d, 9, &modinfo->modulus, 1) < 0);  /* d <    modulus */
-    VERIFY_CHECK(modinv32_mul_cmp_30(e, 9, &modinfo->modulus, -2) > 0); /* e > -2*modulus */
-    VERIFY_CHECK(modinv32_mul_cmp_30(e, 9, &modinfo->modulus, 1) < 0);  /* e <    modulus */
-    VERIFY_CHECK((labs(u) + labs(v)) >= 0); /* |u|+|v| doesn't overflow */
-    VERIFY_CHECK((labs(q) + labs(r)) >= 0); /* |q|+|r| doesn't overflow */
-    VERIFY_CHECK((labs(u) + labs(v)) <= M30 + 1); /* |u|+|v| <= 2^30 */
-    VERIFY_CHECK((labs(q) + labs(r)) <= M30 + 1); /* |q|+|r| <= 2^30 */
+    verify_check(modinv32_mul_cmp_30(d, 9, &modinfo->modulus, -2) > 0); /* d > -2*modulus */
+    verify_check(modinv32_mul_cmp_30(d, 9, &modinfo->modulus, 1) < 0);  /* d <    modulus */
+    verify_check(modinv32_mul_cmp_30(e, 9, &modinfo->modulus, -2) > 0); /* e > -2*modulus */
+    verify_check(modinv32_mul_cmp_30(e, 9, &modinfo->modulus, 1) < 0);  /* e <    modulus */
+    verify_check((labs(u) + labs(v)) >= 0); /* |u|+|v| doesn't overflow */
+    verify_check((labs(q) + labs(r)) >= 0); /* |q|+|r| doesn't overflow */
+    verify_check((labs(u) + labs(v)) <= M30 + 1); /* |u|+|v| <= 2^30 */
+    verify_check((labs(q) + labs(r)) <= M30 + 1); /* |q|+|r| <= 2^30 */
 #endif
     /* [md,me] start as zero; plus [u,q] if d is negative; plus [v,r] if e is negative. */
     sd = d->v[8] >> 31;
@@ -139,8 +139,8 @@ pub fn modinv32_update_de_30(
     cd += (int64_t)modinfo->modulus.v[0] * md;
     ce += (int64_t)modinfo->modulus.v[0] * me;
     /* Verify that the low 30 bits of the computation are indeed zero, and then throw them away. */
-    VERIFY_CHECK(((int32_t)cd & M30) == 0); cd >>= 30;
-    VERIFY_CHECK(((int32_t)ce & M30) == 0); ce >>= 30;
+    verify_check(((int32_t)cd & M30) == 0); cd >>= 30;
+    verify_check(((int32_t)ce & M30) == 0); ce >>= 30;
     /* Now iteratively compute limb i=1..8 of t*[d,e]+modulus*[md,me], and store them in output
      * limb i-1 (shifting down by 30 bits). */
     for (i = 1; i < 9; ++i) {
@@ -157,10 +157,10 @@ pub fn modinv32_update_de_30(
     d->v[8] = (int32_t)cd;
     e->v[8] = (int32_t)ce;
 #ifdef VERIFY
-    VERIFY_CHECK(modinv32_mul_cmp_30(d, 9, &modinfo->modulus, -2) > 0); /* d > -2*modulus */
-    VERIFY_CHECK(modinv32_mul_cmp_30(d, 9, &modinfo->modulus, 1) < 0);  /* d <    modulus */
-    VERIFY_CHECK(modinv32_mul_cmp_30(e, 9, &modinfo->modulus, -2) > 0); /* e > -2*modulus */
-    VERIFY_CHECK(modinv32_mul_cmp_30(e, 9, &modinfo->modulus, 1) < 0);  /* e <    modulus */
+    verify_check(modinv32_mul_cmp_30(d, 9, &modinfo->modulus, -2) > 0); /* d > -2*modulus */
+    verify_check(modinv32_mul_cmp_30(d, 9, &modinfo->modulus, 1) < 0);  /* d <    modulus */
+    verify_check(modinv32_mul_cmp_30(e, 9, &modinfo->modulus, -2) > 0); /* e > -2*modulus */
+    verify_check(modinv32_mul_cmp_30(e, 9, &modinfo->modulus, 1) < 0);  /* e <    modulus */
 #endif
     */
 }

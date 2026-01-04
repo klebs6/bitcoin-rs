@@ -32,8 +32,8 @@ pub fn modinv64_update_fg_62(
         cf = (u as i128) * (f0 as i128) + (v as i128) * (g0 as i128);
         cg = (q as i128) * (f0 as i128) + (r as i128) * (g0 as i128);
         /* Verify that the bottom 62 bits of the result are zero, and then throw them away. */
-        VERIFY_CHECK!(((cf as i64) & M62) == 0); cf >>= 62;
-        VERIFY_CHECK!(((cg as i64) & M62) == 0); cg >>= 62;
+        verify_check!(((cf as i64) & M62) == 0); cf >>= 62;
+        verify_check!(((cg as i64) & M62) == 0); cg >>= 62;
         /* Compute limb 1 of t*[f,g], and store it as output limb 0 (= down shift). */
         cf += (u as i128) * (f1 as i128) + (v as i128) * (g1 as i128);
         cg += (q as i128) * (f1 as i128) + (r as i128) * (g1 as i128);

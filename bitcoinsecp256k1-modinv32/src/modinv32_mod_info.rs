@@ -6,11 +6,11 @@ pub struct ModInv32ModInfo {
     /// The modulus in signed30 notation, must
     /// be odd and in [3, 2^256].
     /// 
-    pub(crate) modulus:       ModInv32Signed30,
+    pub modulus:       ModInv32Signed30,
 
     /// modulus^{-1} mod 2^30
     /// 
-    pub(crate) modulus_inv30: u32,
+    pub modulus_inv30: u32,
 }
 
 #[cfg(test)]

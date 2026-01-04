@@ -55,16 +55,16 @@ pub fn modinv32_divsteps_30_var(eta: i32, f0: u32, g0: u32, t: *mut ModInv32Tran
             if i == 0 {
                 break;
             }
-            VERIFY_CHECK!((f & 1) == 1);
-            VERIFY_CHECK!((g & 1) == 1);
-            VERIFY_CHECK!(
+            verify_check!((f & 1) == 1);
+            verify_check!((g & 1) == 1);
+            verify_check!(
                 u.wrapping_mul(f0).wrapping_add(v.wrapping_mul(g0)) == f.wrapping_shl((30 - i) as u32)
             );
-            VERIFY_CHECK!(
+            verify_check!(
                 q.wrapping_mul(f0).wrapping_add(r.wrapping_mul(g0)) == g.wrapping_shl((30 - i) as u32)
             );
             /* Bounds on eta that follow from the bounds on iteration count (max 25*30 divsteps). */
-            VERIFY_CHECK!(eta >= -751 && eta <= 751);
+            verify_check!(eta >= -751 && eta <= 751);
             /* If eta is negative, negate it and replace f,g with g,-f. */
             if eta < 0 {
                 let mut tmp: u32;
@@ -84,7 +84,7 @@ pub fn modinv32_divsteps_30_var(eta: i32, f0: u32, g0: u32, t: *mut ModInv32Tran
              * can be done as its sign will flip once that happens. */
             limit = if (eta + 1) > i { i } else { eta + 1 };
             /* m is a mask for the bottom min(limit, 8) bits (our table only supports 8 bits). */
-            VERIFY_CHECK!(limit > 0 && limit <= 30);
+            verify_check!(limit > 0 && limit <= 30);
             m = (u32::MAX >> (32 - (limit as u32))) & 255u32;
             /* Find what multiple of f must be added to g to cancel its bottom min(limit, 8) bits. */
             w = (g.wrapping_mul(INV256[((f >> 1) & 127u32) as usize] as u32) & m) as u16;
@@ -92,7 +92,7 @@ pub fn modinv32_divsteps_30_var(eta: i32, f0: u32, g0: u32, t: *mut ModInv32Tran
             g = g.wrapping_add(f.wrapping_mul(w as u32));
             q = q.wrapping_add(u.wrapping_mul(w as u32));
             r = r.wrapping_add(v.wrapping_mul(w as u32));
-            VERIFY_CHECK!((g & m) == 0);
+            verify_check!((g & m) == 0);
         }
         /* Return data in t and return value. */
         (*t).u = u as i32;
@@ -103,7 +103,7 @@ pub fn modinv32_divsteps_30_var(eta: i32, f0: u32, g0: u32, t: *mut ModInv32Tran
          * does not change the gcd of f and g, apart from adding a power-of-2 factor to it (which
          * will be divided out again). As each divstep's individual matrix has determinant 2, the
          * aggregate of 30 of them will have determinant 2^30. */
-        VERIFY_CHECK!(
+        verify_check!(
             ((*t).u as i64) * ((*t).r as i64) - ((*t).v as i64) * ((*t).q as i64) == (1i64 << 30)
         );
     }

@@ -27,6 +27,9 @@ pub struct Callback {
     data: *const libc::c_void,
 }
 
+unsafe impl core::marker::Sync for Callback {}
+unsafe impl core::marker::Send for Callback {}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CallbackBuilderError {
     MissingFn,

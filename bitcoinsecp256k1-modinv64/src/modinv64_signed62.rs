@@ -8,7 +8,7 @@ crate::ix!();
 #[repr(C)]
 #[derive(Copy, Clone)]
 pub struct ModInv64Signed62 {
-    v: [i64; 5],
+    pub v: [i64; 5],
 }
 
 impl ModInv64Signed62 {
@@ -98,4 +98,3 @@ mod modinv64_signed62_contract {
         assert!(al == mem::align_of::<i64>());
     }
 }
-

@@ -7,7 +7,7 @@ crate::ix!();
     
     trace!(target: "bitcoinsecp256k1_scratch::util", "ctz32_var");
 
-    VERIFY_CHECK!{x != 0};
+    verify_check!{x != 0};
 
     x.trailing_zeros() as i32
 }

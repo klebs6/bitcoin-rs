@@ -1,3 +1,5 @@
 // ---------------- [ File: bitcoinsecp256k1-fe5x52/src/imports.rs ]
-// If we belong to a prefix group, we'd do `pub(crate) use prefix_3p::*;`
-// For now, placeholder comment.
+pub(crate) use bitcoin_derive::*;
+pub(crate) use bitcoin_imports::*;
+pub(crate) use bitcoinsecp256k1_modinv64::*;
+pub(crate) use bitcoinsecp256k1_scratch::*;

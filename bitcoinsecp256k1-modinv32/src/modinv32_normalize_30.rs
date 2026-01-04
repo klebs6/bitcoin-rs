@@ -29,12 +29,12 @@ pub fn modinv32_normalize_30(r: *mut ModInv32Signed30, sign: i32, modinfo: *cons
             let mut i: i32;
             i = 0;
             while i < 9 {
-                VERIFY_CHECK!((*r).v[i as usize] >= -M30);
-                VERIFY_CHECK!((*r).v[i as usize] <= M30);
+                verify_check!((*r).v[i as usize] >= -M30);
+                verify_check!((*r).v[i as usize] <= M30);
                 i += 1;
             }
-            VERIFY_CHECK!(modinv32_mul_cmp_30(r as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* r > -2*modulus */
-            VERIFY_CHECK!(modinv32_mul_cmp_30(r as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* r < modulus */
+            verify_check!(modinv32_mul_cmp_30(r as *const ModInv32Signed30, 9, &(*modinfo).modulus, -2) > 0); /* r > -2*modulus */
+            verify_check!(modinv32_mul_cmp_30(r as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* r < modulus */
         }
 
         /* In a first step, add the modulus if the input is negative, and then negate if requested.
@@ -122,17 +122,17 @@ pub fn modinv32_normalize_30(r: *mut ModInv32Signed30, sign: i32, modinfo: *cons
 
         #[cfg(VERIFY)]
         {
-            VERIFY_CHECK!(r0 >> 30 == 0);
-            VERIFY_CHECK!(r1 >> 30 == 0);
-            VERIFY_CHECK!(r2 >> 30 == 0);
-            VERIFY_CHECK!(r3 >> 30 == 0);
-            VERIFY_CHECK!(r4 >> 30 == 0);
-            VERIFY_CHECK!(r5 >> 30 == 0);
-            VERIFY_CHECK!(r6 >> 30 == 0);
-            VERIFY_CHECK!(r7 >> 30 == 0);
-            VERIFY_CHECK!(r8 >> 30 == 0);
-            VERIFY_CHECK!(modinv32_mul_cmp_30(r as *const ModInv32Signed30, 9, &(*modinfo).modulus, 0) >= 0); /* r >= 0 */
-            VERIFY_CHECK!(modinv32_mul_cmp_30(r as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* r < modulus */
+            verify_check!(r0 >> 30 == 0);
+            verify_check!(r1 >> 30 == 0);
+            verify_check!(r2 >> 30 == 0);
+            verify_check!(r3 >> 30 == 0);
+            verify_check!(r4 >> 30 == 0);
+            verify_check!(r5 >> 30 == 0);
+            verify_check!(r6 >> 30 == 0);
+            verify_check!(r7 >> 30 == 0);
+            verify_check!(r8 >> 30 == 0);
+            verify_check!(modinv32_mul_cmp_30(r as *const ModInv32Signed30, 9, &(*modinfo).modulus, 0) >= 0); /* r >= 0 */
+            verify_check!(modinv32_mul_cmp_30(r as *const ModInv32Signed30, 9, &(*modinfo).modulus, 1) < 0); /* r < modulus */
         }
     }
 
@@ -146,11 +146,11 @@ pub fn modinv32_normalize_30(r: *mut ModInv32Signed30, sign: i32, modinfo: *cons
     /* Verify that all limbs are in range (-2^30,2^30). */
     int i;
     for (i = 0; i < 9; ++i) {
-        VERIFY_CHECK(r->v[i] >= -M30);
-        VERIFY_CHECK(r->v[i] <= M30);
+        verify_check(r->v[i] >= -M30);
+        verify_check(r->v[i] <= M30);
     }
-    VERIFY_CHECK(modinv32_mul_cmp_30(r, 9, &modinfo->modulus, -2) > 0); /* r > -2*modulus */
-    VERIFY_CHECK(modinv32_mul_cmp_30(r, 9, &modinfo->modulus, 1) < 0); /* r < modulus */
+    verify_check(modinv32_mul_cmp_30(r, 9, &modinfo->modulus, -2) > 0); /* r > -2*modulus */
+    verify_check(modinv32_mul_cmp_30(r, 9, &modinfo->modulus, 1) < 0); /* r < modulus */
 #endif
 
     /* In a first step, add the modulus if the input is negative, and then negate if requested.
@@ -221,17 +221,17 @@ pub fn modinv32_normalize_30(r: *mut ModInv32Signed30, sign: i32, modinfo: *cons
     r->v[8] = r8;
 
 #ifdef VERIFY
-    VERIFY_CHECK(r0 >> 30 == 0);
-    VERIFY_CHECK(r1 >> 30 == 0);
-    VERIFY_CHECK(r2 >> 30 == 0);
-    VERIFY_CHECK(r3 >> 30 == 0);
-    VERIFY_CHECK(r4 >> 30 == 0);
-    VERIFY_CHECK(r5 >> 30 == 0);
-    VERIFY_CHECK(r6 >> 30 == 0);
-    VERIFY_CHECK(r7 >> 30 == 0);
-    VERIFY_CHECK(r8 >> 30 == 0);
-    VERIFY_CHECK(modinv32_mul_cmp_30(r, 9, &modinfo->modulus, 0) >= 0); /* r >= 0 */
-    VERIFY_CHECK(modinv32_mul_cmp_30(r, 9, &modinfo->modulus, 1) < 0); /* r < modulus */
+    verify_check(r0 >> 30 == 0);
+    verify_check(r1 >> 30 == 0);
+    verify_check(r2 >> 30 == 0);
+    verify_check(r3 >> 30 == 0);
+    verify_check(r4 >> 30 == 0);
+    verify_check(r5 >> 30 == 0);
+    verify_check(r6 >> 30 == 0);
+    verify_check(r7 >> 30 == 0);
+    verify_check(r8 >> 30 == 0);
+    verify_check(modinv32_mul_cmp_30(r, 9, &modinfo->modulus, 0) >= 0); /* r >= 0 */
+    verify_check(modinv32_mul_cmp_30(r, 9, &modinfo->modulus, 1) < 0); /* r < modulus */
 #endif
     */
 }

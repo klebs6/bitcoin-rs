@@ -43,10 +43,10 @@ pub fn modinv32_var(x: *mut ModInv32Signed30, modinfo: *const ModInv32ModInfo) {
             /* Update f,g using that transition matrix. */
             #[cfg(VERIFY)]
             {
-                VERIFY_CHECK!(modinv32_mul_cmp_30(&f, len, &(*modinfo).modulus, -1) > 0); /* f > -modulus */
-                VERIFY_CHECK!(modinv32_mul_cmp_30(&f, len, &(*modinfo).modulus, 1) <= 0); /* f <= modulus */
-                VERIFY_CHECK!(modinv32_mul_cmp_30(&g, len, &(*modinfo).modulus, -1) > 0); /* g > -modulus */
-                VERIFY_CHECK!(modinv32_mul_cmp_30(&g, len, &(*modinfo).modulus, 1) < 0); /* g <  modulus */
+                verify_check!(modinv32_mul_cmp_30(&f, len, &(*modinfo).modulus, -1) > 0); /* f > -modulus */
+                verify_check!(modinv32_mul_cmp_30(&f, len, &(*modinfo).modulus, 1) <= 0); /* f <= modulus */
+                verify_check!(modinv32_mul_cmp_30(&g, len, &(*modinfo).modulus, -1) > 0); /* g > -modulus */
+                verify_check!(modinv32_mul_cmp_30(&g, len, &(*modinfo).modulus, 1) < 0); /* g <  modulus */
             }
             modinv32_update_fg_30_var(len, &mut f, &mut g, &t);
             /* If the bottom limb of g is 0, there is a chance g=0. */
@@ -80,11 +80,11 @@ pub fn modinv32_var(x: *mut ModInv32Signed30, modinfo: *const ModInv32ModInfo) {
             #[cfg(VERIFY)]
             {
                 i += 1;
-                VERIFY_CHECK!(i < 25); /* We should never need more than 25*30 = 750 divsteps */
-                VERIFY_CHECK!(modinv32_mul_cmp_30(&f, len, &(*modinfo).modulus, -1) > 0); /* f > -modulus */
-                VERIFY_CHECK!(modinv32_mul_cmp_30(&f, len, &(*modinfo).modulus, 1) <= 0); /* f <= modulus */
-                VERIFY_CHECK!(modinv32_mul_cmp_30(&g, len, &(*modinfo).modulus, -1) > 0); /* g > -modulus */
-                VERIFY_CHECK!(modinv32_mul_cmp_30(&g, len, &(*modinfo).modulus, 1) < 0); /* g <  modulus */
+                verify_check!(i < 25); /* We should never need more than 25*30 = 750 divsteps */
+                verify_check!(modinv32_mul_cmp_30(&f, len, &(*modinfo).modulus, -1) > 0); /* f > -modulus */
+                verify_check!(modinv32_mul_cmp_30(&f, len, &(*modinfo).modulus, 1) <= 0); /* f <= modulus */
+                verify_check!(modinv32_mul_cmp_30(&g, len, &(*modinfo).modulus, -1) > 0); /* g > -modulus */
+                verify_check!(modinv32_mul_cmp_30(&g, len, &(*modinfo).modulus, 1) < 0); /* g <  modulus */
             }
         }
 
@@ -93,9 +93,9 @@ pub fn modinv32_var(x: *mut ModInv32Signed30, modinfo: *const ModInv32ModInfo) {
         #[cfg(VERIFY)]
         {
             /* g == 0 */
-            VERIFY_CHECK!(modinv32_mul_cmp_30(&g, len, &SIGNED30_ONE, 0) == 0);
+            verify_check!(modinv32_mul_cmp_30(&g, len, &SIGNED30_ONE, 0) == 0);
             /* |f| == 1, or (x == 0 and d == 0 and |f|=modulus) */
-            VERIFY_CHECK!(
+            verify_check!(
                 modinv32_mul_cmp_30(&f, len, &SIGNED30_ONE, -1) == 0
                     || modinv32_mul_cmp_30(&f, len, &SIGNED30_ONE, 1) == 0
                     || (modinv32_mul_cmp_30(x as *const ModInv32Signed30, 9, &SIGNED30_ONE, 0)
@@ -133,10 +133,10 @@ pub fn modinv32_var(x: *mut ModInv32Signed30, modinfo: *const ModInv32ModInfo) {
         modinv32_update_de_30(&d, &e, &t, modinfo);
         /* Update f,g using that transition matrix. */
 #ifdef VERIFY
-        VERIFY_CHECK(modinv32_mul_cmp_30(&f, len, &modinfo->modulus, -1) > 0); /* f > -modulus */
-        VERIFY_CHECK(modinv32_mul_cmp_30(&f, len, &modinfo->modulus, 1) <= 0); /* f <= modulus */
-        VERIFY_CHECK(modinv32_mul_cmp_30(&g, len, &modinfo->modulus, -1) > 0); /* g > -modulus */
-        VERIFY_CHECK(modinv32_mul_cmp_30(&g, len, &modinfo->modulus, 1) < 0);  /* g <  modulus */
+        verify_check(modinv32_mul_cmp_30(&f, len, &modinfo->modulus, -1) > 0); /* f > -modulus */
+        verify_check(modinv32_mul_cmp_30(&f, len, &modinfo->modulus, 1) <= 0); /* f <= modulus */
+        verify_check(modinv32_mul_cmp_30(&g, len, &modinfo->modulus, -1) > 0); /* g > -modulus */
+        verify_check(modinv32_mul_cmp_30(&g, len, &modinfo->modulus, 1) < 0);  /* g <  modulus */
 #endif
         modinv32_update_fg_30_var(len, &f, &g, &t);
         /* If the bottom limb of g is 0, there is a chance g=0. */
@@ -163,11 +163,11 @@ pub fn modinv32_var(x: *mut ModInv32Signed30, modinfo: *const ModInv32ModInfo) {
             --len;
         }
 #ifdef VERIFY
-        VERIFY_CHECK(++i < 25); /* We should never need more than 25*30 = 750 divsteps */
-        VERIFY_CHECK(modinv32_mul_cmp_30(&f, len, &modinfo->modulus, -1) > 0); /* f > -modulus */
-        VERIFY_CHECK(modinv32_mul_cmp_30(&f, len, &modinfo->modulus, 1) <= 0); /* f <= modulus */
-        VERIFY_CHECK(modinv32_mul_cmp_30(&g, len, &modinfo->modulus, -1) > 0); /* g > -modulus */
-        VERIFY_CHECK(modinv32_mul_cmp_30(&g, len, &modinfo->modulus, 1) < 0);  /* g <  modulus */
+        verify_check(++i < 25); /* We should never need more than 25*30 = 750 divsteps */
+        verify_check(modinv32_mul_cmp_30(&f, len, &modinfo->modulus, -1) > 0); /* f > -modulus */
+        verify_check(modinv32_mul_cmp_30(&f, len, &modinfo->modulus, 1) <= 0); /* f <= modulus */
+        verify_check(modinv32_mul_cmp_30(&g, len, &modinfo->modulus, -1) > 0); /* g > -modulus */
+        verify_check(modinv32_mul_cmp_30(&g, len, &modinfo->modulus, 1) < 0);  /* g <  modulus */
 #endif
     }
 
@@ -175,9 +175,9 @@ pub fn modinv32_var(x: *mut ModInv32Signed30, modinfo: *const ModInv32ModInfo) {
      * the initial f, g values i.e. +/- 1, and d now contains +/- the modular inverse. */
 #ifdef VERIFY
     /* g == 0 */
-    VERIFY_CHECK(modinv32_mul_cmp_30(&g, len, &SIGNED30_ONE, 0) == 0);
+    verify_check(modinv32_mul_cmp_30(&g, len, &SIGNED30_ONE, 0) == 0);
     /* |f| == 1, or (x == 0 and d == 0 and |f|=modulus) */
-    VERIFY_CHECK(modinv32_mul_cmp_30(&f, len, &SIGNED30_ONE, -1) == 0 ||
+    verify_check(modinv32_mul_cmp_30(&f, len, &SIGNED30_ONE, -1) == 0 ||
                  modinv32_mul_cmp_30(&f, len, &SIGNED30_ONE, 1) == 0 ||
                  (modinv32_mul_cmp_30(x, 9, &SIGNED30_ONE, 0) == 0 &&
                   modinv32_mul_cmp_30(&d, 9, &SIGNED30_ONE, 0) == 0 &&

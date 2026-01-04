@@ -25,16 +25,16 @@ pub fn modinv32_update_fg_30_var(
         let mut cg: i64;
         let mut i: i32;
 
-        VERIFY_CHECK!(len > 0);
+        verify_check!(len > 0);
         /* Start computing t*[f,g]. */
         fi = (*f).v[0];
         gi = (*g).v[0];
         cf = (i64::from(u) * i64::from(fi)) + (i64::from(v) * i64::from(gi));
         cg = (i64::from(q) * i64::from(fi)) + (i64::from(r) * i64::from(gi));
         /* Verify that the bottom 62 bits of the result are zero, and then throw them away. */
-        VERIFY_CHECK!(((cf as i32) & M30) == 0);
+        verify_check!(((cf as i32) & M30) == 0);
         cf >>= 30;
-        VERIFY_CHECK!(((cg as i32) & M30) == 0);
+        verify_check!(((cg as i32) & M30) == 0);
         cg >>= 30;
         /* Now iteratively compute limb i=1..len of t*[f,g], and store them in output limb i-1 (shifting
          * down by 30 bits). */
@@ -61,15 +61,15 @@ pub fn modinv32_update_fg_30_var(
     int32_t fi, gi;
     int64_t cf, cg;
     int i;
-    VERIFY_CHECK(len > 0);
+    verify_check(len > 0);
     /* Start computing t*[f,g]. */
     fi = f->v[0];
     gi = g->v[0];
     cf = (int64_t)u * fi + (int64_t)v * gi;
     cg = (int64_t)q * fi + (int64_t)r * gi;
     /* Verify that the bottom 62 bits of the result are zero, and then throw them away. */
-    VERIFY_CHECK(((int32_t)cf & M30) == 0); cf >>= 30;
-    VERIFY_CHECK(((int32_t)cg & M30) == 0); cg >>= 30;
+    verify_check(((int32_t)cf & M30) == 0); cf >>= 30;
+    verify_check(((int32_t)cg & M30) == 0); cg >>= 30;
     /* Now iteratively compute limb i=1..len of t*[f,g], and store them in output limb i-1 (shifting
      * down by 30 bits). */
     for (i = 1; i < len; ++i) {
