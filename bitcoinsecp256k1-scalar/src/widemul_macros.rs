@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-scalar/src/widemul_macros.rs ]
 crate::ix!();
 
 // Note: muladd macros inspired by the macros in OpenSSL's crypto/bn/asm/x86_64-gcc.c.

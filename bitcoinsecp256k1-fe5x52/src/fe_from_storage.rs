@@ -3,7 +3,7 @@ crate::ix!();
 
 #[inline] pub fn fe_from_storage(
         r: *mut Fe5x52,
-        a: *const FeStorage)  {
+        a: *const Fe5x52Storage)  {
 
     unsafe {
         let an: *const u64 = a as *const u64;
@@ -71,7 +71,7 @@ mod fe_from_storage_rs_exhaustive_tests {
                 let mut a = fe_from_b32_checked(s);
                 crate::fe_normalize(&mut a as *mut Fe5x52);
 
-                let mut stor = core::mem::MaybeUninit::<FeStorage>::uninit();
+                let mut stor = core::mem::MaybeUninit::<Fe5x52Storage>::uninit();
                 crate::fe_to_storage(stor.as_mut_ptr(), &a as *const Fe5x52);
 
                 let mut b = Fe5x52::new();

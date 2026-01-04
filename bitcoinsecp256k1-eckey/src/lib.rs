@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-eckey/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinsecp256k1_eckey}
+x!{eckey}

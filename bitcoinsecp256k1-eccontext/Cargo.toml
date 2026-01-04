@@ -13,6 +13,10 @@ description = "todo: write a description here"
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
+[dependencies]
+bitcoinsecp256k1-ecmult = { path = "../bitcoinsecp256k1-ecmult" }
+bitcoinsecp256k1-ecmultgen = { path = "../bitcoinsecp256k1-ecmultgen" }
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.19"

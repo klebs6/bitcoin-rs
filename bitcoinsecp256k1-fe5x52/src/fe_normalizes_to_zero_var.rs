@@ -44,7 +44,7 @@ pub fn fe_normalizes_to_zero_var(r: *const Fe5x52) -> i32 {
         z0 |= t4; z1 &= t4 ^ 0xF000000000000_u64;
 
         /* ... except for a possible carry at bit 48 of t4 (i.e. bit 256 of the field element) */
-        verify_check((t4 >> 49) == 0);
+        verify_check!((t4 >> 49) == 0);
 
         (((z0 == 0) | (z1 == 0xFFFFFFFFFFFFF_u64)) as i32)
     }

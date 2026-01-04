@@ -98,4 +98,3 @@ mod scalar_split_128_contracts {
     }
 
 }
-

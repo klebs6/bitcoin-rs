@@ -23,7 +23,7 @@ pub fn fe_normalize(r: *mut Fe5x52)  {
         t4 = t4.wrapping_add(t3 >> 52); t3 &= 0xFFFFFFFFFFFFF_u64; m &= t3;
 
         /* ... except for a possible carry at bit 48 of t4 (i.e. bit 256 of the field element) */
-        verify_check((t4 >> 49) == 0);
+        verify_check!((t4 >> 49) == 0);
 
         /* At most a single final reduction is needed; check if the value is >= the field characteristic */
         x = (t4 >> 48)
@@ -39,7 +39,7 @@ pub fn fe_normalize(r: *mut Fe5x52)  {
         t4 = t4.wrapping_add(t3 >> 52); t3 &= 0xFFFFFFFFFFFFF_u64;
 
         /* If t4 didn't carry to bit 48 already, then it should have after any final reduction */
-        verify_check((t4 >> 48) == x);
+        verify_check!((t4 >> 48) == x);
 
         /* Mask off the possible multiple of 2^256 from the final reduction */
         t4 &= 0x0FFFFFFFFFFFF_u64;

@@ -2,13 +2,13 @@
 crate::ix!();
 
 pub fn fe_to_storage(
-        r: *mut FeStorage,
+        r: *mut Fe5x52Storage,
         a: *const Fe5x52)  {
 
     unsafe {
         #[cfg(feature="secp256k1-verify")]
         {
-            verify_check((*a).normalized != 0);
+            verify_check!((*a).normalized != 0);
         }
 
         let rn: *mut u64 = r as *mut u64;
@@ -53,7 +53,7 @@ mod fe_to_storage_rs_exhaustive_tests {
             let mut a = fe_from_b32_checked(&SAMPLE_B32);
             crate::fe_normalize(&mut a as *mut Fe5x52);
 
-            let mut stor = core::mem::MaybeUninit::<FeStorage>::uninit();
+            let mut stor = core::mem::MaybeUninit::<Fe5x52Storage>::uninit();
             crate::fe_to_storage(stor.as_mut_ptr(), &a as *const Fe5x52);
 
             let mut b = Fe5x52::new();

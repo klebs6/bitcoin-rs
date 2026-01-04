@@ -10,8 +10,8 @@ pub fn fe_cmp_var(
 
         #[cfg(feature="secp256k1-verify")]
         {
-            verify_check((*a).normalized != 0);
-            verify_check((*b).normalized != 0);
+            verify_check!((*a).normalized != 0);
+            verify_check!((*b).normalized != 0);
             fe_verify(a);
             fe_verify(b);
         }

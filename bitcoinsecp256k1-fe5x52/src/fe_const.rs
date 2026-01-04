@@ -16,7 +16,7 @@ macro_rules! fe_const_inner {
      $d1:expr, 
      $d0:expr) => {
         [ 
-            ($d0) | ((($d1 as u64) & 0xFFFFF) << 32), 
+            ($d0 as u64) | ((($d1 as u64) & 0xFFFFF) << 32), 
             (($d1 as u64) >> 20) | (($d2 as u64) << 12) | ((($d3 as u64) & 0xFF) << 44), 
             (($d3 as u64) >> 8)  | ((($d4 as u64) & 0xFFFFFFF) << 24), 
             (($d4 as u64) >> 28) | (($d5 as u64) << 4) | ((($d6 as u64) & 0xFFFF) << 36), 
@@ -133,4 +133,3 @@ mod fe_const_rs_exhaustive_tests {
         }
     }
 }
-

@@ -386,152 +386,204 @@ pub fn scalar_reduce_512(r: *mut Scalar, l: *const u64) {
 }
 
 #[cfg(feature = "widemul-int64")]
-pub fn scalar_reduce_512(
-        r: *mut Scalar,
-        l: *const u32)  {
-    
-    todo!();
-        /*
-            uint64_t c;
-        uint32_t n0 = l[8], n1 = l[9], n2 = l[10], n3 = l[11], n4 = l[12], n5 = l[13], n6 = l[14], n7 = l[15];
-        uint32_t m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12;
-        uint32_t p0, p1, p2, p3, p4, p5, p6, p7, p8;
+pub fn scalar_reduce_512(r: *mut Scalar, l: *const u32) {
+    unsafe {
+        let mut c: u64;
+
+        let n0: u32 = *l.add(8);
+        let n1: u32 = *l.add(9);
+        let n2: u32 = *l.add(10);
+        let n3: u32 = *l.add(11);
+        let n4: u32 = *l.add(12);
+        let n5: u32 = *l.add(13);
+        let n6: u32 = *l.add(14);
+        let n7: u32 = *l.add(15);
+
+        let mut m0: u32 = 0;
+        let mut m1: u32 = 0;
+        let mut m2: u32 = 0;
+        let mut m3: u32 = 0;
+        let mut m4: u32 = 0;
+        let mut m5: u32 = 0;
+        let mut m6: u32 = 0;
+        let mut m7: u32 = 0;
+        let mut m8: u32 = 0;
+        let mut m9: u32 = 0;
+        let mut m10: u32 = 0;
+        let mut m11: u32 = 0;
+        let mut m12: u32 = 0;
+
+        let mut p0: u32 = 0;
+        let mut p1: u32 = 0;
+        let mut p2: u32 = 0;
+        let mut p3: u32 = 0;
+        let mut p4: u32 = 0;
+        let mut p5: u32 = 0;
+        let mut p6: u32 = 0;
+        let mut p7: u32 = 0;
+        let mut p8: u32 = 0;
 
         /* 96 bit accumulator. */
-        uint32_t c0, c1, c2;
+        let mut c0: u32 = 0;
+        let mut c1: u32 = 0;
+        let mut c2: u32 = 0;
+
+        define_widemul_accum_macros!(c0, c1, c2);
 
         /* Reduce 512 bits into 385. */
         /* m[0..12] = l[0..7] + n[0..7] * N_C. */
-        c0 = l[0]; c1 = 0; c2 = 0;
-        muladd_fast(n0, N_C_0);
-        extract_fast(m0);
-        sumadd_fast(l[1]);
-        muladd(n1, N_C_0);
-        muladd(n0, N_C_1);
-        extract(m1);
-        sumadd(l[2]);
-        muladd(n2, N_C_0);
-        muladd(n1, N_C_1);
-        muladd(n0, N_C_2);
-        extract(m2);
-        sumadd(l[3]);
-        muladd(n3, N_C_0);
-        muladd(n2, N_C_1);
-        muladd(n1, N_C_2);
-        muladd(n0, N_C_3);
-        extract(m3);
-        sumadd(l[4]);
-        muladd(n4, N_C_0);
-        muladd(n3, N_C_1);
-        muladd(n2, N_C_2);
-        muladd(n1, N_C_3);
-        sumadd(n0);
-        extract(m4);
-        sumadd(l[5]);
-        muladd(n5, N_C_0);
-        muladd(n4, N_C_1);
-        muladd(n3, N_C_2);
-        muladd(n2, N_C_3);
-        sumadd(n1);
-        extract(m5);
-        sumadd(l[6]);
-        muladd(n6, N_C_0);
-        muladd(n5, N_C_1);
-        muladd(n4, N_C_2);
-        muladd(n3, N_C_3);
-        sumadd(n2);
-        extract(m6);
-        sumadd(l[7]);
-        muladd(n7, N_C_0);
-        muladd(n6, N_C_1);
-        muladd(n5, N_C_2);
-        muladd(n4, N_C_3);
-        sumadd(n3);
-        extract(m7);
-        muladd(n7, N_C_1);
-        muladd(n6, N_C_2);
-        muladd(n5, N_C_3);
-        sumadd(n4);
-        extract(m8);
-        muladd(n7, N_C_2);
-        muladd(n6, N_C_3);
-        sumadd(n5);
-        extract(m9);
-        muladd(n7, N_C_3);
-        sumadd(n6);
-        extract(m10);
-        sumadd_fast(n7);
-        extract_fast(m11);
-        VERIFY_CHECK(c0 <= 1);
+        c0 = *l.add(0);
+        c1 = 0;
+        c2 = 0;
+        muladd_fast!(n0, N_C_0);
+        extract_fast!(m0);
+        sumadd_fast!(*l.add(1));
+        muladd!(n1, N_C_0);
+        muladd!(n0, N_C_1);
+        extract!(m1);
+        sumadd!(*l.add(2));
+        muladd!(n2, N_C_0);
+        muladd!(n1, N_C_1);
+        muladd!(n0, N_C_2);
+        extract!(m2);
+        sumadd!(*l.add(3));
+        muladd!(n3, N_C_0);
+        muladd!(n2, N_C_1);
+        muladd!(n1, N_C_2);
+        muladd!(n0, N_C_3);
+        extract!(m3);
+        sumadd!(*l.add(4));
+        muladd!(n4, N_C_0);
+        muladd!(n3, N_C_1);
+        muladd!(n2, N_C_2);
+        muladd!(n1, N_C_3);
+        sumadd!(n0);
+        extract!(m4);
+        sumadd!(*l.add(5));
+        muladd!(n5, N_C_0);
+        muladd!(n4, N_C_1);
+        muladd!(n3, N_C_2);
+        muladd!(n2, N_C_3);
+        sumadd!(n1);
+        extract!(m5);
+        sumadd!(*l.add(6));
+        muladd!(n6, N_C_0);
+        muladd!(n5, N_C_1);
+        muladd!(n4, N_C_2);
+        muladd!(n3, N_C_3);
+        sumadd!(n2);
+        extract!(m6);
+        sumadd!(*l.add(7));
+        muladd!(n7, N_C_0);
+        muladd!(n6, N_C_1);
+        muladd!(n5, N_C_2);
+        muladd!(n4, N_C_3);
+        sumadd!(n3);
+        extract!(m7);
+        muladd!(n7, N_C_1);
+        muladd!(n6, N_C_2);
+        muladd!(n5, N_C_3);
+        sumadd!(n4);
+        extract!(m8);
+        muladd!(n7, N_C_2);
+        muladd!(n6, N_C_3);
+        sumadd!(n5);
+        extract!(m9);
+        muladd!(n7, N_C_3);
+        sumadd!(n6);
+        extract!(m10);
+        sumadd_fast!(n7);
+        extract_fast!(m11);
+        verify_check!(c0 <= 1);
         m12 = c0;
 
         /* Reduce 385 bits into 258. */
         /* p[0..8] = m[0..7] + m[8..12] * N_C. */
-        c0 = m0; c1 = 0; c2 = 0;
-        muladd_fast(m8, N_C_0);
-        extract_fast(p0);
-        sumadd_fast(m1);
-        muladd(m9, N_C_0);
-        muladd(m8, N_C_1);
-        extract(p1);
-        sumadd(m2);
-        muladd(m10, N_C_0);
-        muladd(m9, N_C_1);
-        muladd(m8, N_C_2);
-        extract(p2);
-        sumadd(m3);
-        muladd(m11, N_C_0);
-        muladd(m10, N_C_1);
-        muladd(m9, N_C_2);
-        muladd(m8, N_C_3);
-        extract(p3);
-        sumadd(m4);
-        muladd(m12, N_C_0);
-        muladd(m11, N_C_1);
-        muladd(m10, N_C_2);
-        muladd(m9, N_C_3);
-        sumadd(m8);
-        extract(p4);
-        sumadd(m5);
-        muladd(m12, N_C_1);
-        muladd(m11, N_C_2);
-        muladd(m10, N_C_3);
-        sumadd(m9);
-        extract(p5);
-        sumadd(m6);
-        muladd(m12, N_C_2);
-        muladd(m11, N_C_3);
-        sumadd(m10);
-        extract(p6);
-        sumadd_fast(m7);
-        muladd_fast(m12, N_C_3);
-        sumadd_fast(m11);
-        extract_fast(p7);
-        p8 = c0 + m12;
-        VERIFY_CHECK(p8 <= 2);
+        c0 = m0;
+        c1 = 0;
+        c2 = 0;
+        muladd_fast!(m8, N_C_0);
+        extract_fast!(p0);
+        sumadd_fast!(m1);
+        muladd!(m9, N_C_0);
+        muladd!(m8, N_C_1);
+        extract!(p1);
+        sumadd!(m2);
+        muladd!(m10, N_C_0);
+        muladd!(m9, N_C_1);
+        muladd!(m8, N_C_2);
+        extract!(p2);
+        sumadd!(m3);
+        muladd!(m11, N_C_0);
+        muladd!(m10, N_C_1);
+        muladd!(m9, N_C_2);
+        muladd!(m8, N_C_3);
+        extract!(p3);
+        sumadd!(m4);
+        muladd!(m12, N_C_0);
+        muladd!(m11, N_C_1);
+        muladd!(m10, N_C_2);
+        muladd!(m9, N_C_3);
+        sumadd!(m8);
+        extract!(p4);
+        sumadd!(m5);
+        muladd!(m12, N_C_1);
+        muladd!(m11, N_C_2);
+        muladd!(m10, N_C_3);
+        sumadd!(m9);
+        extract!(p5);
+        sumadd!(m6);
+        muladd!(m12, N_C_2);
+        muladd!(m11, N_C_3);
+        sumadd!(m10);
+        extract!(p6);
+        sumadd_fast!(m7);
+        muladd_fast!(m12, N_C_3);
+        sumadd_fast!(m11);
+        extract_fast!(p7);
+        p8 = c0.wrapping_add(m12);
+        verify_check!(p8 <= 2);
 
         /* Reduce 258 bits into 256. */
         /* r[0..7] = p[0..7] + p[8] * N_C. */
-        c = p0 + (uint64_t)N_C_0 * p8;
-        r->d[0] = c & 0xFFFFFFFFUL; c >>= 32;
-        c += p1 + (uint64_t)N_C_1 * p8;
-        r->d[1] = c & 0xFFFFFFFFUL; c >>= 32;
-        c += p2 + (uint64_t)N_C_2 * p8;
-        r->d[2] = c & 0xFFFFFFFFUL; c >>= 32;
-        c += p3 + (uint64_t)N_C_3 * p8;
-        r->d[3] = c & 0xFFFFFFFFUL; c >>= 32;
-        c += p4 + (uint64_t)p8;
-        r->d[4] = c & 0xFFFFFFFFUL; c >>= 32;
-        c += p5;
-        r->d[5] = c & 0xFFFFFFFFUL; c >>= 32;
-        c += p6;
-        r->d[6] = c & 0xFFFFFFFFUL; c >>= 32;
-        c += p7;
-        r->d[7] = c & 0xFFFFFFFFUL; c >>= 32;
+        c = (p0 as u64).wrapping_add((N_C_0 as u64).wrapping_mul(p8 as u64));
+        (*r).d[0] = (c & 0xFFFF_FFFFu64) as u32;
+        c >>= 32;
+        c = c
+            .wrapping_add(p1 as u64)
+            .wrapping_add((N_C_1 as u64).wrapping_mul(p8 as u64));
+        (*r).d[1] = (c & 0xFFFF_FFFFu64) as u32;
+        c >>= 32;
+        c = c
+            .wrapping_add(p2 as u64)
+            .wrapping_add((N_C_2 as u64).wrapping_mul(p8 as u64));
+        (*r).d[2] = (c & 0xFFFF_FFFFu64) as u32;
+        c >>= 32;
+        c = c
+            .wrapping_add(p3 as u64)
+            .wrapping_add((N_C_3 as u64).wrapping_mul(p8 as u64));
+        (*r).d[3] = (c & 0xFFFF_FFFFu64) as u32;
+        c >>= 32;
+        c = c.wrapping_add(p4 as u64).wrapping_add(p8 as u64);
+        (*r).d[4] = (c & 0xFFFF_FFFFu64) as u32;
+        c >>= 32;
+        c = c.wrapping_add(p5 as u64);
+        (*r).d[5] = (c & 0xFFFF_FFFFu64) as u32;
+        c >>= 32;
+        c = c.wrapping_add(p6 as u64);
+        (*r).d[6] = (c & 0xFFFF_FFFFu64) as u32;
+        c >>= 32;
+        c = c.wrapping_add(p7 as u64);
+        (*r).d[7] = (c & 0xFFFF_FFFFu64) as u32;
+        c >>= 32;
 
         /* Final reduction of r. */
-        scalar_reduce(r, c + scalar_check_overflow(r));
-        */
+        scalar_reduce(
+            r,
+            (c as u32).wrapping_add(scalar_check_overflow(r as *const Scalar) as u32),
+        );
+    }
+
 }
 
 #[cfg(test)]

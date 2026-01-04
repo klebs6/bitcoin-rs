@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinsecp256k1-ec/src/callback.rs ]
+// ---------------- [ File: bitcoinsecp256k1-scratch/src/callback.rs ]
 crate::ix!();
 
 #[cfg(not(feature="secp256k1-use-external-default-callbacks"))]

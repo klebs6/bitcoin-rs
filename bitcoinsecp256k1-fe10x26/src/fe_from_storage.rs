@@ -3,7 +3,7 @@ crate::ix!();
 
 #[inline] pub fn fe_from_storage(
     r: *mut Fe10x26,
-    a: *const FeStorage)  {
+    a: *const Fe10x26Storage)  {
 
     unsafe {
         (*r).n[0] = (*a).n[0] & 0x3FFFFFFu32;
@@ -34,11 +34,11 @@ mod fe_from_storage_roundtrip_contract_suite {
         let mut a = fe_from_be_bytes_checked(bytes);
         fe_normalize_in_place(&mut a);
 
-        let mut stor = FeStorage { n: [0u32; 8] };
-        unsafe { fe_to_storage(&mut stor as *mut FeStorage, &a as *const Fe10x26) };
+        let mut stor = Fe10x26Storage { n: [0u32; 8] };
+        unsafe { fe_to_storage(&mut stor as *mut Fe10x26Storage, &a as *const Fe10x26) };
 
         let mut b = Fe10x26::new();
-        unsafe { fe_from_storage(&mut b as *mut Fe10x26, &stor as *const FeStorage) };
+        unsafe { fe_from_storage(&mut b as *mut Fe10x26, &stor as *const Fe10x26Storage) };
 
         let out = fe_to_be_bytes_normalized(&mut b);
         debug!(?out, "roundtrip bytes");
@@ -47,7 +47,7 @@ mod fe_from_storage_roundtrip_contract_suite {
 
     #[traced_test]
     fn fe_to_storage_then_fe_from_storage_roundtrips_representative_values() {
-        info!("roundtripping via FeStorage encoding");
+        info!("roundtripping via Fe10x26Storage encoding");
         roundtrip_storage(&BYTES_ZERO);
         roundtrip_storage(&BYTES_ONE);
         roundtrip_storage(&BYTES_PATTERN_A);
@@ -59,11 +59,11 @@ mod fe_from_storage_roundtrip_contract_suite {
     fn fe_from_storage_sets_verify_metadata_when_enabled() {
         info!("under secp256k1-verify, fe_from_storage sets magnitude=1 normalized=1");
         let a = fe_from_be_bytes_checked(&BYTES_TWO);
-        let mut stor = FeStorage { n: [0u32; 8] };
-        unsafe { fe_to_storage(&mut stor as *mut FeStorage, &a as *const Fe10x26) };
+        let mut stor = Fe10x26Storage { n: [0u32; 8] };
+        unsafe { fe_to_storage(&mut stor as *mut Fe10x26Storage, &a as *const Fe10x26) };
 
         let mut r = Fe10x26::new();
-        unsafe { fe_from_storage(&mut r as *mut Fe10x26, &stor as *const FeStorage) };
+        unsafe { fe_from_storage(&mut r as *mut Fe10x26, &stor as *const Fe10x26Storage) };
 
         #[cfg(feature = "secp256k1-verify")]
         {
@@ -72,4 +72,3 @@ mod fe_from_storage_roundtrip_contract_suite {
         }
     }
 }
-

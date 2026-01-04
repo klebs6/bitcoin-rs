@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ecdh/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinsecp256k1_ecdh}
+x!{ecdh}

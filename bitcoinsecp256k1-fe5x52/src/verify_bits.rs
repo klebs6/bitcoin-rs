@@ -5,7 +5,7 @@ crate::ix!();
 #[macro_export]
 macro_rules! verify_bits {
     ($x:expr, $n:expr) => {
-        verify_check(((($x) >> ($n)) == 0));
+        verify_check!(((($x) >> ($n)) == 0));
     }
 }
 

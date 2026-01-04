@@ -4808,6 +4808,8 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-key",
+ "bitcoinsecp256k1-ecmult",
+ "bitcoinsecp256k1-ecmultgen",
  "bitcoinsecp256k1-field",
  "bitcoinsecp256k1-group",
  "bitcoinsecp256k1-scalar",
@@ -4822,6 +4824,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-key",
+ "bitcoinsecp256k1-eccontext",
  "bitcoinsecp256k1-field",
  "bitcoinsecp256k1-group",
  "bitcoinsecp256k1-scalar",
@@ -4836,6 +4839,10 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-key",
+ "bitcoinsecp256k1-eccontext",
+ "bitcoinsecp256k1-ecdsasignature",
+ "bitcoinsecp256k1-ecmult",
+ "bitcoinsecp256k1-ecmultgen",
  "bitcoinsecp256k1-field",
  "bitcoinsecp256k1-group",
  "bitcoinsecp256k1-scalar",
@@ -4850,6 +4857,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-key",
+ "bitcoinsecp256k1-eccontext",
  "bitcoinsecp256k1-field",
  "bitcoinsecp256k1-group",
  "bitcoinsecp256k1-scalar",
@@ -4864,6 +4872,9 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoin-key",
+ "bitcoinsecp256k1-eccontext",
+ "bitcoinsecp256k1-ecmult",
+ "bitcoinsecp256k1-ecmultgen",
  "bitcoinsecp256k1-field",
  "bitcoinsecp256k1-group",
  "bitcoinsecp256k1-scalar",
@@ -4947,8 +4958,11 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
- "bitcoinsecp256k1-modinv32",
+ "bitcoinsecp256k1-fe10x26",
+ "bitcoinsecp256k1-fe5x52",
+ "bitcoinsecp256k1-modinv",
  "bitcoinsecp256k1-scratch",
+ "tracing",
 ]
 
 [[package]]
@@ -4959,6 +4973,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinsecp256k1-field",
+ "bitcoinsecp256k1-scratch",
 ]
 
 [[package]]

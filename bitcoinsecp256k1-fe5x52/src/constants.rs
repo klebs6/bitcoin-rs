@@ -174,8 +174,8 @@ mod constants_rs_exhaustive_tests {
                 crate::fe_to_signed62(s1.as_mut_ptr(), &x as *const Fe5x52);
                 crate::fe_to_signed62(s2.as_mut_ptr(), &x as *const Fe5x52);
 
-                modinv64(&mut *s1.as_mut_ptr(), &const_modinfo_fe);
-                modinv64_var(&mut *s2.as_mut_ptr(), &const_modinfo_fe);
+                modinv64(&mut *s1.as_mut_ptr(), &*const_modinfo_fe);
+                modinv64_var(&mut *s2.as_mut_ptr(), &*const_modinfo_fe);
 
                 let mut r1 = Fe5x52::new();
                 let mut r2 = Fe5x52::new();

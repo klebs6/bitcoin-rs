@@ -2,8 +2,8 @@
 crate::ix!();
 
 #[inline] pub fn fe_storage_cmov(
-    r:    *mut FeStorage,
-    a:    *const FeStorage,
+    r:    *mut Fe10x26Storage,
+    a:    *const Fe10x26Storage,
     flag: i32)  {
 
     unsafe {
@@ -34,11 +34,11 @@ mod fe_storage_cmov_interface_contract_suite {
     #[traced_test]
     fn fe_storage_cmov_flag_zero_keeps_r() {
         info!("fe_storage_cmov flag=0 should keep r unchanged");
-        let mut r = FeStorage { n: [1u32, 2u32, 3u32, 4u32, 5u32, 6u32, 7u32, 8u32] };
-        let a = FeStorage { n: [9u32, 10u32, 11u32, 12u32, 13u32, 14u32, 15u32, 16u32] };
+        let mut r = Fe10x26Storage { n: [1u32, 2u32, 3u32, 4u32, 5u32, 6u32, 7u32, 8u32] };
+        let a = Fe10x26Storage { n: [9u32, 10u32, 11u32, 12u32, 13u32, 14u32, 15u32, 16u32] };
         let before = r.n;
 
-        unsafe { fe_storage_cmov(&mut r as *mut FeStorage, &a as *const FeStorage, 0) };
+        unsafe { fe_storage_cmov(&mut r as *mut Fe10x26Storage, &a as *const Fe10x26Storage, 0) };
 
         debug!(?r.n, "cmov flag=0 result");
         assert_eq!(r.n, before);
@@ -47,10 +47,10 @@ mod fe_storage_cmov_interface_contract_suite {
     #[traced_test]
     fn fe_storage_cmov_flag_one_copies_a() {
         info!("fe_storage_cmov flag=1 should copy a into r");
-        let mut r = FeStorage { n: [1u32, 2u32, 3u32, 4u32, 5u32, 6u32, 7u32, 8u32] };
-        let a = FeStorage { n: [9u32, 10u32, 11u32, 12u32, 13u32, 14u32, 15u32, 16u32] };
+        let mut r = Fe10x26Storage { n: [1u32, 2u32, 3u32, 4u32, 5u32, 6u32, 7u32, 8u32] };
+        let a = Fe10x26Storage { n: [9u32, 10u32, 11u32, 12u32, 13u32, 14u32, 15u32, 16u32] };
 
-        unsafe { fe_storage_cmov(&mut r as *mut FeStorage, &a as *const FeStorage, 1) };
+        unsafe { fe_storage_cmov(&mut r as *mut Fe10x26Storage, &a as *const Fe10x26Storage, 1) };
 
         debug!(?r.n, "cmov flag=1 result");
         assert_eq!(r.n, a.n);

@@ -29,6 +29,8 @@ crate::ix!();
 ///   Store per-table metadata (smallest, largest, largest-seq#, ...) in the table's meta section
 ///   to speed up ScanTable.
 ///
+#[derive(Getters)]
+#[getset(get="pub")]
 pub struct Repairer {
     dbname:           String,
     env:              Box<dyn Env>,

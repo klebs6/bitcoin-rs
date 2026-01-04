@@ -18,11 +18,11 @@ pub fn fe_from_signed62(
         /* The output from modinv64{_var} should be normalized to range [0,modulus), and
          * have limbs in [0,2^62). The modulus is < 2^256, so the top limb must be below 2^(256-62*4).
          */
-        verify_check((a0 >> 62) == 0);
-        verify_check((a1 >> 62) == 0);
-        verify_check((a2 >> 62) == 0);
-        verify_check((a3 >> 62) == 0);
-        verify_check((a4 >> 8) == 0);
+        verify_check!((a0 >> 62) == 0);
+        verify_check!((a1 >> 62) == 0);
+        verify_check!((a2 >> 62) == 0);
+        verify_check!((a3 >> 62) == 0);
+        verify_check!((a4 >> 8) == 0);
 
         (*r).n[0] = ( a0                   ) & M52;
         (*r).n[1] = ((a0 >> 52) | (a1 << 10)) & M52;

@@ -2,3 +2,5 @@
 pub(crate) use bitcoin_derive::*;
 pub(crate) use bitcoin_imports::*;
 pub(crate) use bitcoinsecp256k1_field::*;
+pub(crate) use bitcoinsecp256k1_scratch::*;
+pub(crate) use bitcoinsecp256k1_field::*;

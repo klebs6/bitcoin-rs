@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ecmultconst/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinsecp256k1_ecmultconst}
+x!{ecmult_const}

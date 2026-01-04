@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinsecp256k1-fe10x26/src/fe_storage.rs ]
 crate::ix!();
 
-pub struct FeStorage {
+pub struct Fe10x26Storage {
     pub n: [u32; 8],
 }
 
@@ -14,7 +14,7 @@ pub struct FeStorage {
      $d2:expr,
      $d1:expr,
      $d0:expr) => {
-        FeStorage { n: [($d0) as u32, ($d1) as u32, ($d2) as u32, ($d3) as u32, ($d4) as u32, ($d5) as u32, ($d6) as u32, ($d7) as u32] }
+        Fe10x26Storage { n: [($d0) as u32, ($d1) as u32, ($d2) as u32, ($d3) as u32, ($d4) as u32, ($d5) as u32, ($d6) as u32, ($d7) as u32] }
     };
 }
 

@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinsecp256k1-ec/src/eckey.rs ]
+// ---------------- [ File: bitcoinsecp256k1-eckey/src/eckey.rs ]
 crate::ix!();
 
 

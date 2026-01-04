@@ -10,7 +10,7 @@ pub fn fe_get_b32(
     unsafe {
         #[cfg(feature="secp256k1-verify")]
         {
-            verify_check((*a).normalized != 0);
+            verify_check!((*a).normalized != 0);
             fe_verify(a);
         }
 

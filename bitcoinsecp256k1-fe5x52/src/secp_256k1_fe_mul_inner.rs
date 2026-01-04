@@ -53,8 +53,8 @@ crate::ix!();
         verify_bits!(b2, 56);
         verify_bits!(b3, 56);
         verify_bits!(b4, 52);
-        verify_check(r != b as *mut u64);
-        verify_check(a != b);
+        verify_check!(r != b as *mut u64);
+        verify_check!(a != b);
 
         /* [... a b c] is a shorthand for ... + a<<104 + b<<52 + c<<0 mod n.
          * for 0 <= x <= 4, px is a shorthand for sum(a[i]*b[x-i], i=0..x).

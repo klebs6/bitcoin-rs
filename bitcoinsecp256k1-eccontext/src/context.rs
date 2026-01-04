@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinsecp256k1-ec/src/context.rs ]
+// ---------------- [ File: bitcoinsecp256k1-eccontext/src/context.rs ]
 /*!
   | Unless explicitly stated all pointer
   | arguments must not be NULL.
@@ -76,14 +76,8 @@ pub struct Secp256k1Context {
 pub const CONTEXT_NO_PRECOMP: Secp256k1Context = Secp256k1Context {
     ecmult_ctx:       EcMultContext::new(),
     ecmult_gen_ctx:   EcMultGenContext::new(),
-    illegal_callback: Callback {
-        fn_:  default_illegal_callback_fn,
-        data: null_mut(),
-    },
-    error_callback:   Callback {
-        fn_:  default_error_callback_fn,
-        data: null_mut(),
-    },
+    illegal_callback: Callback::new(default_illegal_callback_fn,null_mut()),
+    error_callback:   Callback::new(default_error_callback_fn,null_mut()),
     declassify:       0,
 };
 
@@ -340,6 +334,3 @@ pub fn get_verify_context() -> *const Secp256k1Context {
         */
 }
 
-//-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/basic-config.h]
-#[cfg(USE_BASIC_CONFIG)] pub const ECMULT_WINDOW_SIZE:   usize = 15;
-#[cfg(USE_BASIC_CONFIG)] pub const ECMULT_GEN_PREC_BITS: usize = 4;

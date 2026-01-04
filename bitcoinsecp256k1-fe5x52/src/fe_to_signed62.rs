@@ -16,7 +16,7 @@ pub fn fe_to_signed62(
 
         #[cfg(feature="secp256k1-verify")]
         {
-            verify_check((*a).normalized != 0);
+            verify_check!((*a).normalized != 0);
         }
 
         let rv: *mut i64 = r as *mut i64;

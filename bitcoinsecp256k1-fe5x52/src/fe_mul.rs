@@ -9,12 +9,12 @@ pub fn fe_mul(
     unsafe {
         #[cfg(feature="secp256k1-verify")]
         {
-            verify_check((*a).magnitude <= 8);
-            verify_check((*b).magnitude <= 8);
+            verify_check!((*a).magnitude <= 8);
+            verify_check!((*b).magnitude <= 8);
             fe_verify(a);
             fe_verify(b);
-            verify_check((r as *const Fe5x52) != b);
-            verify_check(a != b);
+            verify_check!((r as *const Fe5x52) != b);
+            verify_check!(a != b);
         }
 
         let rn: *mut u64 = core::ptr::addr_of_mut!((*r).n) as *mut u64;

@@ -1,7 +1,8 @@
-// ---------------- [ File: bitcoinsecp256k1-ec/src/ecmult.rs ]
+// ---------------- [ File: bitcoinsecp256k1-ecmult/src/ecmult.rs ]
 crate::ix!();
 
-
+//-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/basic-config.h]
+#[cfg(feature="secp256k1-use-basic-config")] pub const ECMULT_WINDOW_SIZE:   usize = 15;
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/ecmult.h]
 

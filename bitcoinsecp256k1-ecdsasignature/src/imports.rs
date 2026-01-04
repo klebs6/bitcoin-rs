@@ -1,2 +1,8 @@
-// If we belong to a prefix group, we'd do `pub(crate) use prefix_3p::*;`
-// For now, placeholder comment.
+// ---------------- [ File: bitcoinsecp256k1-ecdsasignature/src/imports.rs ]
+pub(crate) use bitcoin_imports::*;
+pub(crate) use bitcoin_key::*;
+pub(crate) use bitcoinsecp256k1_field::*;
+pub(crate) use bitcoinsecp256k1_group::*;
+pub(crate) use bitcoinsecp256k1_scalar::*;
+pub(crate) use bitcoinsecp256k1_scratch::*;
+pub(crate) use bitcoinsecp256k1_eccontext::*;

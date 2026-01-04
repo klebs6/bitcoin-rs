@@ -26,6 +26,7 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/field_5x52_asm_impl.h]
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/field_5x52_int128_impl.h]
 
+#[derive(Copy,Clone,Debug)]
 pub struct Fe5x52 {
 
     /**

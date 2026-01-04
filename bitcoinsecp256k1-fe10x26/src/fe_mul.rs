@@ -4,7 +4,7 @@ crate::ix!();
 pub fn fe_mul(
     r: *mut Fe10x26,
     a: *const Fe10x26,
-    b: *mut Fe10x26)  {
+    b: *const Fe10x26)  {
 
     unsafe {
         #[cfg(feature="secp256k1-verify")]
@@ -13,7 +13,7 @@ pub fn fe_mul(
             verify_check!((*b).magnitude <= 8);
             fe_verify(a);
             fe_verify(b);
-            verify_check!(r != b);
+            verify_check!(r as *const _ != b);
             verify_check!(a != b);
         }
 

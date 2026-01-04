@@ -82,4 +82,3 @@ mod fe_to_signed30_interface_contract_suite {
         }
     }
 }
-

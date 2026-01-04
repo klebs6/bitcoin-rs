@@ -2,8 +2,8 @@
 crate::ix!();
 
 #[inline] pub fn fe_storage_cmov(
-        r:    *mut FeStorage,
-        a:    *const FeStorage,
+        r:    *mut Fe5x52Storage,
+        a:    *const Fe5x52Storage,
         flag: i32)  {
 
     unsafe {
@@ -38,12 +38,12 @@ mod fe_storage_cmov_rs_exhaustive_tests {
             let b = fe_storage_const!(0xAAAAAAAAu32, 0xBBBBBBBBu32, 0xCCCCCCCCu32, 0xDDDDDDDDu32, 0xEEEEEEEEu32, 0xFFFFFFFFu32, 0x00000000u32, 0x12345678u32);
 
             let mut r = a;
-            crate::fe_storage_cmov(&mut r as *mut FeStorage, &b as *const FeStorage, 0);
+            crate::fe_storage_cmov(&mut r as *mut Fe5x52Storage, &b as *const Fe5x52Storage, 0);
             let (r7, r6, r5, r4, r3, r2, r1, r0) = fe_storage_const_get!(r);
             let (a7, a6, a5, a4, a3, a2, a1, a0) = fe_storage_const_get!(a);
             assert_eq!((r7, r6, r5, r4, r3, r2, r1, r0), (a7, a6, a5, a4, a3, a2, a1, a0));
 
-            crate::fe_storage_cmov(&mut r as *mut FeStorage, &b as *const FeStorage, 1);
+            crate::fe_storage_cmov(&mut r as *mut Fe5x52Storage, &b as *const Fe5x52Storage, 1);
             let (r7, r6, r5, r4, r3, r2, r1, r0) = fe_storage_const_get!(r);
             let (b7, b6, b5, b4, b3, b2, b1, b0) = fe_storage_const_get!(b);
             assert_eq!((r7, r6, r5, r4, r3, r2, r1, r0), (b7, b6, b5, b4, b3, b2, b1, b0));

@@ -22,7 +22,7 @@ pub fn fe_normalize_weak(r: *mut Fe5x52)  {
         t4 = t4.wrapping_add(t3 >> 52); t3 &= 0xFFFFFFFFFFFFF_u64;
 
         /* ... except for a possible carry at bit 48 of t4 (i.e. bit 256 of the field element) */
-        verify_check((t4 >> 49) == 0);
+        verify_check!((t4 >> 49) == 0);
 
         (*r).n[0] = t0; (*r).n[1] = t1; (*r).n[2] = t2; (*r).n[3] = t3; (*r).n[4] = t4;
 

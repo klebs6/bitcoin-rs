@@ -77,20 +77,26 @@ mod scalar_shift_right_contracts {
 
             let got = scalar_to_be_bytes(&s);
 
-            // Reference: interpret as 256-bit, shift right by n, return low bits.
-            let mut expected = base_be;
-            let mut low_bits: u32 = 0;
-            for i in 0..n {
-                let bit = (expected[31] >> i) & 1;
-                low_bits |= (bit as u32) << i;
-            }
+            // Low bits shifted off: original value mod 2^n.
+            let low_bits: u32 = be_bit_extract_u32(&base_be, 0, n as u32);
 
-            // Shift right by n.
-            let mut carry: u8 = 0;
-            for i in 0..32 {
-                let new_carry = expected[i] & ((1u8 << (n as u8)) - 1);
-                expected[i] = (expected[i] >> (n as u8)) | (carry << (8 - n as u8));
-                carry = new_carry;
+            // Reference: shift right by n bits on 256-bit big-endian bytes.
+            let shift = n as u32;
+            let shift_bytes = (shift / 8) as usize;
+            let shift_bits = (shift % 8) as u32;
+
+            let mut expected = [0u8; 32];
+            for i in 0..32usize {
+                if i < shift_bytes {
+                    expected[i] = 0;
+                    continue;
+                }
+                let src = i - shift_bytes;
+                let mut v: u16 = (base_be[src] as u16) >> shift_bits;
+                if shift_bits != 0 && src > 0 {
+                    v |= ((base_be[src - 1] as u16) << (8 - shift_bits)) & 0xFF;
+                }
+                expected[i] = (v & 0xFF) as u8;
             }
 
             debug!(n, ret, low_bits, ?got, ?expected, "shr_int case");

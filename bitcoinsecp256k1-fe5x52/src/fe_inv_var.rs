@@ -12,13 +12,13 @@ pub fn fe_inv_var(
         fe_normalize_var(&mut tmp as *mut Fe5x52);
         fe_to_signed62(s.as_mut_ptr(), &tmp as *const Fe5x52);
 
-        modinv64_var(&mut *s.as_mut_ptr(), &const_modinfo_fe);
+        modinv64_var(&mut *s.as_mut_ptr(), &*const_modinfo_fe);
 
         fe_from_signed62(r, s.as_ptr());
 
         #[cfg(feature="secp256k1-verify")]
         {
-            verify_check(fe_normalizes_to_zero(r) == fe_normalizes_to_zero(&tmp as *const Fe5x52));
+            verify_check!(fe_normalizes_to_zero(r) == fe_normalizes_to_zero(&tmp as *const Fe5x52));
         }
     }
 }

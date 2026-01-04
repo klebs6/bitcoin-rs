@@ -1,12 +1,11 @@
 // ---------------- [ File: bitcoinsecp256k1-field/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{field}
+pub mod field; pub use field::*;
 
-#[cfg(SECP256K1_WIDEMUL_INT128)]
-x!{field_5x52}
+#[cfg(feature="widemul-int128")] 
+pub use bitcoinsecp256k1_fe5x52::*;
 
-//x!{asm_field_10x26_arm}
+#[cfg(feature="widemul-int64")] 
+pub use bitcoinsecp256k1_fe10x26::*;
 
-#[cfg(SECP256K1_WIDEMUL_INT64)]
-x!{field_10x26}

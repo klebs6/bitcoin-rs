@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ecdsasignature/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinsecp256k1_ecdsasignature}
+x!{ecdsa_signature}

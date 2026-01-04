@@ -36,17 +36,19 @@ mod imports_smoke_suite {
         let filename: String = "000001.log".to_string();
         let parsed = parse_file_name(&filename, &mut number as *mut u64, &mut ty as *mut FileType);
 
+        let ty_is_log = matches!(ty, FileType::LogFile);
+
         info!(
             parsed,
             number,
-            ty = ?ty,
+            ty_is_log,
             filename = %filename,
             "imports_smoke_suite: parse_file_name result"
         );
 
         assert!(parsed);
         assert_eq!(number, 1);
-        assert!(matches!(ty, FileType::LogFile));
+        assert!(ty_is_log);
 
         trace!("imports_smoke_suite: done");
     }

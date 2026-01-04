@@ -9,7 +9,7 @@ crate::ix!();
     unsafe {
         #[cfg(feature="secp256k1-verify")]
         {
-            verify_check((*a).magnitude <= m);
+            verify_check!((*a).magnitude <= m);
             fe_verify(a);
         }
 

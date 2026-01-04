@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinsecp256k1-ec/src/ecmult_const.rs ]
+// ---------------- [ File: bitcoinsecp256k1-ecmultconst/src/ecmult_const.rs ]
 crate::ix!();
 
 

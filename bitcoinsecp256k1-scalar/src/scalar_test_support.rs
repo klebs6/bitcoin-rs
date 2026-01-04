@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-scalar/src/scalar_test_support.rs ]
 #![allow(dead_code)]
 #![cfg(test)]
 
@@ -161,11 +162,13 @@ pub(crate) const REDUCTION_TEST_INPUTS_BE: [[u8; 32]; 6] = [
     }
 
     pub(crate) fn be_add_mod_n(a: &[u8; 32], b: &[u8; 32]) -> [u8; 32] {
-        let (mut sum, carry) = be_add_32(a, b);
+        let (sum, carry) = be_add_32(a, b);
         if carry != 0 || be_ge_32(&sum, &SECP256K1_ORDER_BE) {
-            be_sub_assign_32(&mut sum, &SECP256K1_ORDER_BE);
+            let (reduced, _) = be_sub_32(&sum, &SECP256K1_ORDER_BE);
+            reduced
+        } else {
+            sum
         }
-        sum
     }
 
     pub(crate) fn be_reduce_256_mod_n(x: &[u8; 32]) -> ([u8; 32], u8) {
@@ -353,8 +356,31 @@ pub(crate) const REDUCTION_TEST_INPUTS_BE: [[u8; 32]; 6] = [
 
     pub(crate) fn be_shr_rounded_512(prod: &[u8; 64], shift: u32) -> [u8; 32] {
         debug_assert!(shift >= 1 && shift <= 512);
-        let rounded = be_add_pow2_512(prod, shift - 1);
-        let shifted = be_shr_512(&rounded, shift);
+
+        let mut shifted = be_shr_512(prod, shift);
+
+        // Round to nearest integer by adding 1 to the shifted quotient iff bit (shift-1) of prod is set.
+        let bitpos = shift - 1;
+        let byte_from_lsb = (bitpos / 8) as usize;
+        let bit_in_byte = (bitpos % 8) as u8;
+        let idx = 63usize - byte_from_lsb;
+        let round = (shifted[idx] & 0u8) | ((prod[idx] >> bit_in_byte) & 1u8);
+
+        if round != 0 {
+            let mut carry: u16 = 1;
+            let mut i: usize = 63;
+            while carry != 0 {
+                let sum = shifted[i] as u16 + carry;
+                shifted[i] = (sum & 0xFF) as u8;
+                carry = sum >> 8;
+                if i == 0 {
+                    break;
+                }
+                i -= 1;
+            }
+            debug_assert!(carry == 0);
+        }
+
         let mut out = [0u8; 32];
         out.copy_from_slice(&shifted[32..64]);
         out
@@ -411,5 +437,3 @@ pub(crate) const REDUCTION_TEST_INPUTS_BE: [[u8; 32]; 6] = [
     pub(crate) fn scalar_is_normalized_bytes(be: &[u8; 32]) -> bool {
         be_cmp_32(be, &SECP256K1_ORDER_BE) == Ordering::Less
     }
-
-

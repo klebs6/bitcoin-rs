@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinsecp256k1-ec/src/nonce.rs ]
+// ---------------- [ File: bitcoinsecp256k1-scratch/src/nonce.rs ]
 crate::ix!();
 
 /// A pointer to a function to deterministically generate a nonce.

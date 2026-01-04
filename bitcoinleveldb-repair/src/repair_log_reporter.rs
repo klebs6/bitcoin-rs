@@ -20,6 +20,12 @@ impl RepairLogReporter {
     }
 }
 
+impl LogReaderReporter for RepairLogReporter {
+    fn corruption(&mut self, bytes: usize, s: &crate::Status) {
+        RepairLogReporter::corruption(self, bytes, s);
+    }
+}
+
 #[cfg(test)]
 mod repair_log_reporter_behavior_suite {
     use super::*;

@@ -2,7 +2,7 @@
 crate::ix!();
 
 pub fn fe_to_storage(
-    r: *mut FeStorage,
+    r: *mut Fe10x26Storage,
     a: *const Fe10x26)  {
 
     unsafe {
@@ -43,11 +43,11 @@ mod fe_to_storage_interface_contract_suite {
             let mut a = fe_from_be_bytes_checked(v);
             fe_normalize_in_place(&mut a);
 
-            let mut stor = FeStorage { n: [0u32; 8] };
-            unsafe { fe_to_storage(&mut stor as *mut FeStorage, &a as *const Fe10x26) };
+            let mut stor = Fe10x26Storage { n: [0u32; 8] };
+            unsafe { fe_to_storage(&mut stor as *mut Fe10x26Storage, &a as *const Fe10x26) };
 
             let mut b = Fe10x26::new();
-            unsafe { fe_from_storage(&mut b as *mut Fe10x26, &stor as *const FeStorage) };
+            unsafe { fe_from_storage(&mut b as *mut Fe10x26, &stor as *const Fe10x26Storage) };
 
             let out = fe_to_be_bytes_normalized(&mut b);
             debug!(?out, "storage roundtrip bytes");

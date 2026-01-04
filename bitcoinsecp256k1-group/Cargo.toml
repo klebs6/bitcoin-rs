@@ -1,6 +1,19 @@
+[package]
+authors = ["klebs <none>"]
+description = "abstracts a group element of the secp256k1 curve in affine coordinates"
+documentation = "https://docs.rs/bitcoinsecp256k1-group"
+edition = "2021"
+license = "MIT"
+name = "bitcoinsecp256k1-group"
+repository = "https://github.com/klebs6/bitcoin-rs"
+version = "0.1.19"
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.19"
+
+[dependencies]
+bitcoinsecp256k1-scratch = { path = "../bitcoinsecp256k1-scratch" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -13,16 +26,15 @@ version = "0.1.19"
 [dependencies.bitcoinsecp256k1-field]
 path = "../bitcoinsecp256k1-field"
 version = "0.1.19"
+features = ["widemul-int64", "secp256k1-verify"]
 
-[package]
-authors = ["klebs <none>"]
-description = "abstracts a group element of the secp256k1 curve in affine coordinates"
-documentation = "https://docs.rs/bitcoinsecp256k1-group"
-edition = "2021"
-license = "MIT"
-name = "bitcoinsecp256k1-group"
-repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+[features]
+default               = ["widemul-int64", "secp256k1-verify"]
+widemul-int64         = []
+widemul-int128        = []
+exhaustive-test-order = []
+secp256k1-asm = []
+secp256k1-verify = []
 
 [package.metadata]
 cpp-authors = [

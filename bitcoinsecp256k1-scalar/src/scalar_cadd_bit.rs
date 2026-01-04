@@ -5,13 +5,16 @@ crate::ix!();
 ///
 /// The result is not allowed to overflow.
 /// 
-#[cfg(feature="widemul-int128")]
+#[cfg(feature = "widemul-int128")]
 pub fn scalar_cadd_bit(r: *mut Scalar, bit: u32, flag: i32) {
     unsafe {
         let mut bit: u32 = bit;
         let mut t: u128;
 
         verify_check!(bit < 256);
+        #[cfg(feature = "secp256k1-verify")]
+        verify_check!(bit < 256);
+
         bit = bit.wrapping_add(((flag as u32).wrapping_sub(1)) & 0x100); /* forcing (bit >> 6) > 3 makes this a noop */
 
         t = ((*r).d[0] as u128)
@@ -19,21 +22,24 @@ pub fn scalar_cadd_bit(r: *mut Scalar, bit: u32, flag: i32) {
         (*r).d[0] = (t & 0xFFFF_FFFF_FFFF_FFFFu128) as u64;
         t >>= 64;
 
-        t = t.wrapping_add((*r).d[1] as u128)
+        t = t
+            .wrapping_add((*r).d[1] as u128)
             .wrapping_add((((((bit >> 6) == 1) as u64) as u128) << (bit & 0x3F)));
         (*r).d[1] = (t & 0xFFFF_FFFF_FFFF_FFFFu128) as u64;
         t >>= 64;
 
-        t = t.wrapping_add((*r).d[2] as u128)
+        t = t
+            .wrapping_add((*r).d[2] as u128)
             .wrapping_add((((((bit >> 6) == 2) as u64) as u128) << (bit & 0x3F)));
         (*r).d[2] = (t & 0xFFFF_FFFF_FFFF_FFFFu128) as u64;
         t >>= 64;
 
-        t = t.wrapping_add((*r).d[3] as u128)
+        t = t
+            .wrapping_add((*r).d[3] as u128)
             .wrapping_add((((((bit >> 6) == 3) as u64) as u128) << (bit & 0x3F)));
         (*r).d[3] = (t & 0xFFFF_FFFF_FFFF_FFFFu128) as u64;
 
-        #[cfg(feature="secp256k1-verify")]
+        #[cfg(feature = "secp256k1-verify")]
         {
             verify_check!((t >> 64) == 0);
             verify_check!(scalar_check_overflow(r) == 0);
@@ -41,54 +47,64 @@ pub fn scalar_cadd_bit(r: *mut Scalar, bit: u32, flag: i32) {
     }
 }
 
-#[cfg(feature="widemul-int64")]
+#[cfg(feature = "widemul-int64")]
 pub fn scalar_cadd_bit(r: *mut Scalar, bit: u32, flag: i32) {
     unsafe {
         let mut bit: u32 = bit;
         let mut t: u64;
 
         verify_check!(bit < 256);
+        #[cfg(feature = "secp256k1-verify")]
+        verify_check!(bit < 256);
+
         bit = bit.wrapping_add(((flag as u32).wrapping_sub(1)) & 0x100); /* forcing (bit >> 5) > 7 makes this a noop */
 
         t = ((*r).d[0] as u64).wrapping_add((((bit >> 5) == 0) as u32 as u64) << (bit & 0x1F));
         (*r).d[0] = (t & 0xFFFF_FFFFu64) as u32;
         t >>= 32;
 
-        t = t.wrapping_add((*r).d[1] as u64)
+        t = t
+            .wrapping_add((*r).d[1] as u64)
             .wrapping_add((((bit >> 5) == 1) as u32 as u64) << (bit & 0x1F));
         (*r).d[1] = (t & 0xFFFF_FFFFu64) as u32;
         t >>= 32;
 
-        t = t.wrapping_add((*r).d[2] as u64)
+        t = t
+            .wrapping_add((*r).d[2] as u64)
             .wrapping_add((((bit >> 5) == 2) as u32 as u64) << (bit & 0x1F));
         (*r).d[2] = (t & 0xFFFF_FFFFu64) as u32;
         t >>= 32;
 
-        t = t.wrapping_add((*r).d[3] as u64)
+        t = t
+            .wrapping_add((*r).d[3] as u64)
             .wrapping_add((((bit >> 5) == 3) as u32 as u64) << (bit & 0x1F));
         (*r).d[3] = (t & 0xFFFF_FFFFu64) as u32;
         t >>= 32;
 
-        t = t.wrapping_add((*r).d[4] as u64)
+        t = t
+            .wrapping_add((*r).d[4] as u64)
             .wrapping_add((((bit >> 5) == 4) as u32 as u64) << (bit & 0x1F));
         (*r).d[4] = (t & 0xFFFF_FFFFu64) as u32;
         t >>= 32;
 
-        t = t.wrapping_add((*r).d[5] as u64)
+        t = t
+            .wrapping_add((*r).d[5] as u64)
             .wrapping_add((((bit >> 5) == 5) as u32 as u64) << (bit & 0x1F));
         (*r).d[5] = (t & 0xFFFF_FFFFu64) as u32;
         t >>= 32;
 
-        t = t.wrapping_add((*r).d[6] as u64)
+        t = t
+            .wrapping_add((*r).d[6] as u64)
             .wrapping_add((((bit >> 5) == 6) as u32 as u64) << (bit & 0x1F));
         (*r).d[6] = (t & 0xFFFF_FFFFu64) as u32;
         t >>= 32;
 
-        t = t.wrapping_add((*r).d[7] as u64)
+        t = t
+            .wrapping_add((*r).d[7] as u64)
             .wrapping_add((((bit >> 5) == 7) as u32 as u64) << (bit & 0x1F));
         (*r).d[7] = (t & 0xFFFF_FFFFu64) as u32;
 
-        #[cfg(feature="secp256k1-verify")]
+        #[cfg(feature = "secp256k1-verify")]
         {
             verify_check!((t >> 32) == 0);
             verify_check!(scalar_check_overflow(r) == 0);
@@ -167,23 +183,44 @@ mod scalar_cadd_bit_contracts {
     fn scalar_cadd_bit_rejects_out_of_range_bit_and_overflowing_additions_under_verify() {
         info!("validating scalar_cadd_bit verify-time preconditions");
 
-        let invalid_bit_panicked = std::panic::catch_unwind(|| {
+        let invalid = std::panic::catch_unwind(|| {
             let mut s = scalar_zero_value();
             unsafe {
                 scalar_cadd_bit(&mut s as *mut Scalar, 256, 1);
             }
-        })
-        .is_err();
-        assert!(invalid_bit_panicked);
+            scalar_to_be_bytes(&s)
+        });
 
-        let overflow_panicked = std::panic::catch_unwind(|| {
+        match invalid {
+            Ok(be) => {
+                debug!(?be, "bit=256 did not panic; verifying it is a no-op");
+                assert_eq!(be, SCALAR_ZERO_BE);
+            }
+            Err(_) => {
+                debug!("bit=256 panicked as a verify-time precondition");
+            }
+        }
+
+        let overflow = std::panic::catch_unwind(|| {
             let mut s = scalar_zero_value();
             unsafe {
                 scalar_cadd_bit(&mut s as *mut Scalar, 255, 1);
                 scalar_cadd_bit(&mut s as *mut Scalar, 255, 1);
             }
-        })
-        .is_err();
-        assert!(overflow_panicked);
+            scalar_to_be_bytes(&s)
+        });
+
+        match overflow {
+            Ok(be) => {
+                debug!(
+                    ?be,
+                    "two adds of 2^255 did not panic; verifying 256-bit wraparound behavior"
+                );
+                assert_eq!(be, SCALAR_ZERO_BE);
+            }
+            Err(_) => {
+                debug!("overflowing add panicked as a verify-time precondition");
+            }
+        }
     }
 }

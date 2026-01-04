@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinsecp256k1-ec/src/ecmult_gen.rs ]
+// ---------------- [ File: bitcoinsecp256k1-ecmultgen/src/ecmult_gen.rs ]
 crate::ix!();
 
 
@@ -15,6 +15,9 @@ const_assert!{
         || ECMULT_GEN_PREC_BITS == 4 
         || ECMULT_GEN_PREC_BITS == 8
 }
+
+#[cfg(feature="secp256k1-use-basic-config")] 
+pub const ECMULT_GEN_PREC_BITS: usize = 4;
 
 pub const ECMULT_GEN_PREC_B: usize = ECMULT_GEN_PREC_BITS;
 pub const ECMULT_GEN_PREC_G: usize = 1 << ECMULT_GEN_PREC_B;

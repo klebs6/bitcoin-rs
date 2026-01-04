@@ -13,6 +13,8 @@ description = "todo: write a description here"
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
+[dependencies]
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.19"
@@ -42,3 +44,6 @@ path = "../bitcoinsecp256k1-scratch"
 version = "0.1.19"
 
 
+[features]
+default = [ "secp256k1-use-basic-config" ]
+secp256k1-use-basic-config = []

@@ -1,8 +1,6 @@
 // ---------------- [ File: bitcoinleveldb-dbinterface/src/get_approximate_sizes.rs ]
 crate::ix!();
 
-use bitcoinleveldb_slice::range_of_keys::Range;
-
 pub trait GetApproximateSizes {
 
     /**
@@ -20,7 +18,7 @@ pub trait GetApproximateSizes {
       | recently written data.
       */
     fn get_approximate_sizes(&mut self, 
-            range: *const Range,
+            range: *const bitcoinleveldb_slice::Range,
             n:     i32,
             sizes: *mut u64);
 }

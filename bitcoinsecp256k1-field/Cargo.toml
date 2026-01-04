@@ -1,31 +1,42 @@
+[package]
+authors       = ["klebs <none>"]
+description   = "field element module for usage in EC"
+documentation = "https://docs.rs/bitcoinsecp256k1-field"
+edition       = "2021"
+license       = "MIT"
+name          = "bitcoinsecp256k1-field"
+repository    = "https://github.com/klebs6/bitcoin-rs"
+version       = "0.1.19"
+
 [build-dependencies.bitcoin-cfg]
-path = "../bitcoin-cfg"
+path    = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
+tracing.workspace        = true
 bitcoinsecp256k1-scratch = { path = "../bitcoinsecp256k1-scratch" }
+bitcoinsecp256k1-fe10x26 = { path = "../bitcoinsecp256k1-fe10x26" }
+bitcoinsecp256k1-fe5x52  = { path = "../bitcoinsecp256k1-fe5x52" }
 
 [dependencies.bitcoin-derive]
-path = "../bitcoin-derive"
+path    = "../bitcoin-derive"
 version = "0.1.19"
 
 [dependencies.bitcoin-imports]
-path = "../bitcoin-imports"
+path    = "../bitcoin-imports"
 version = "0.1.19"
 
-[dependencies.bitcoinsecp256k1-modinv32]
-path = "../bitcoinsecp256k1-modinv32"
+[dependencies.bitcoinsecp256k1-modinv]
+path    = "../bitcoinsecp256k1-modinv"
 version = "0.1.19"
 
-[package]
-authors = ["klebs <none>"]
-description = "field element module for usage in EC"
-documentation = "https://docs.rs/bitcoinsecp256k1-field"
-edition = "2021"
-license = "MIT"
-name = "bitcoinsecp256k1-field"
-repository = "https://github.com/klebs6/bitcoin-rs"
-version = "0.1.19"
+[features]
+default               = ["widemul-int64", "secp256k1-verify"]
+widemul-int64         = []
+widemul-int128        = []
+exhaustive-test-order = []
+secp256k1-asm         = []
+secp256k1-verify      = []
 
 [package.metadata]
 cpp-authors = [

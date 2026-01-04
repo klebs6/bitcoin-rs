@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinsecp256k1-ec/src/ecdh.rs ]
+// ---------------- [ File: bitcoinsecp256k1-ecdh/src/ecdh.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/include/ecdh.h]

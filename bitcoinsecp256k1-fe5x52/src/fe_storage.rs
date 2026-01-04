@@ -1,11 +1,12 @@
 // ---------------- [ File: bitcoinsecp256k1-fe5x52/src/fe_storage.rs ]
 crate::ix!();
 
-pub struct FeStorage {
+#[derive(Copy,Clone)]
+pub struct Fe5x52Storage {
     n: [u64; 4],
 }
 
-impl FeStorage {
+impl Fe5x52Storage {
     #[inline] pub const fn new(n: [u64; 4]) -> Self {
         Self { n }
     }
@@ -20,6 +21,7 @@ impl FeStorage {
     }
 }
 
+#[macro_export]
 macro_rules! fe_storage_const {
     ($d7:expr,
      $d6:expr,
@@ -29,7 +31,7 @@ macro_rules! fe_storage_const {
      $d2:expr,
      $d1:expr,
      $d0:expr) => {
-        FeStorage::new([
+        Fe5x52Storage::new([
             ($d0 as u64) | (($d1 as u64) << 32),
             ($d2 as u64) | (($d3 as u64) << 32),
             ($d4 as u64) | (($d5 as u64) << 32),
@@ -38,12 +40,13 @@ macro_rules! fe_storage_const {
     }
 }
 
+#[macro_export]
 macro_rules! fe_storage_const_get {
     ($d:expr) => {
-        ($d).get_words()[0], ($d).get_words()[1],
+        (($d).get_words()[0], ($d).get_words()[1],
         ($d).get_words()[2], ($d).get_words()[3],
         ($d).get_words()[4], ($d).get_words()[5],
-        ($d).get_words()[6], ($d).get_words()[7]
+        ($d).get_words()[6], ($d).get_words()[7])
     }
 }
 

@@ -8,7 +8,7 @@ pub fn fe_sqr(
     unsafe {
         #[cfg(feature="secp256k1-verify")]
         {
-            verify_check((*a).magnitude <= 8);
+            verify_check!((*a).magnitude <= 8);
             fe_verify(a);
         }
 

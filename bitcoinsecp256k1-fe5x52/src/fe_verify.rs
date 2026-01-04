@@ -35,7 +35,7 @@ pub fn fe_verify(a: *const Fe5x52)  {
             }
         }
 
-        verify_check(r == 1);
+        verify_check!(r == 1);
     }
 }
 
@@ -71,4 +71,3 @@ mod fe_verify_rs_exhaustive_tests {
         }
     }
 }
-

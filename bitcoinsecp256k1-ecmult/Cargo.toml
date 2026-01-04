@@ -42,3 +42,6 @@ path = "../bitcoinsecp256k1-scratch"
 version = "0.1.19"
 
 
+[features]
+default = [ "secp256k1-use-basic-config" ]
+secp256k1-use-basic-config = []
