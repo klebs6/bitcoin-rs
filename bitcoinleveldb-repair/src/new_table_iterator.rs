@@ -7,16 +7,22 @@ impl Repairer {
         // Same as compaction iterators: if paranoid_checks are on, turn
         // on checksum verification.
         let mut r = ReadOptions::default();
-        if *self.options.paranoid_checks() {
+        if *self.options().paranoid_checks() {
             *r.verify_checksums_mut() = true;
         }
 
         unsafe {
-            if self.table_cache.is_null() {
+            let table_cache_ptr: *mut TableCache = *self.table_cache();
+            if table_cache_ptr.is_null() {
                 error!("Repairer::new_table_iterator: table_cache is null");
                 return core::ptr::null_mut();
             }
-            (*self.table_cache).new_iterator(r, *meta.number(), *meta.file_size())
+            (*table_cache_ptr).new_iterator(
+                &r,
+                *meta.number(),
+                *meta.file_size(),
+                core::ptr::null_mut(),
+            )
         }
     }
 }

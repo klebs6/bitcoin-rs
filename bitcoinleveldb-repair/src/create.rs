@@ -36,7 +36,7 @@ impl Repairer {
                 panic!("Repairer::new: Options.env is None");
             });
 
-        let env_box: Box<dyn Env> = Box::new(EnvWrapper::new(env_rc));
+        let env_box: Box<dyn Env> = Box::new(EnvWrapper::new(env_rc.clone()));
 
         // TableCache can be small since we expect each table to be opened once.
         let table_cache_ptr: *mut TableCache =
@@ -49,23 +49,20 @@ impl Repairer {
             "Repairer::new: constructed core state"
         );
 
-        trace!(dbname = %dbname, "Repairer::new: done");
-        Repairer {
-            dbname:           dbname_owned,
-            env:              env_box,
+        let repairer = Self::new_from_parts(
+            dbname_owned,
+            env_box,
+            env_rc,
             icmp,
             ipolicy,
-            options:          sanitized,
+            sanitized,
             owns_info_log,
             owns_cache,
-            table_cache:      table_cache_ptr,
-            edit:             VersionEdit::default(),
-            manifests:        Vec::new(),
-            table_numbers:    Vec::new(),
-            logs:             Vec::new(),
-            tables:           Vec::new(),
-            next_file_number: 1,
-        }
+            table_cache_ptr,
+        );
+
+        trace!(dbname = %dbname, "Repairer::new: done");
+        repairer
     }
 }
 

@@ -41,23 +41,21 @@ NO_FAIL_FAST := --no-fail-fast
 
 #----------------------------------------[block-1]
 # ---[secp-layer-0]
+ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 ACTIVE := bitcoinleveldb-repair        #loc: 2302
-ACTIVE := bitcoinleveldb-versionset
+ACTIVE := bitcoinleveldb-options        #loc: 339
 ACTIVE := bitcoinleveldb-dbinterface   #loc: 346
-ACTIVE := bitcoinleveldb-dbimplwriter  #loc: 36
-ACTIVE := bitcoinsecp256k1-scalar   #loc: 3197
-ACTIVE := bitcoinsecp256k1-group    #loc: 1223
 
 # ---[secp-layer-3]
-ACTIVE := bitcoinsecp256k1-ec
-#ACTIVE := bitcoinsecp256k1-eccontext
+#ACTIVE := bitcoinsecp256k1-ec
+ACTIVE := bitcoinsecp256k1-eccontext
 #ACTIVE := bitcoinsecp256k1-ecdh
 #ACTIVE := bitcoinsecp256k1-ecdsa
 #ACTIVE := bitcoinsecp256k1-ecdsasignature
 #ACTIVE := bitcoinsecp256k1-eckey
 #ACTIVE := bitcoinsecp256k1-ecmult
-#ACTIVE := bitcoinsecp256k1-ecmultconst
-#ACTIVE := bitcoinsecp256k1-ecmultgen
+ACTIVE := bitcoinsecp256k1-ecmultgen
+ACTIVE := bitcoinsecp256k1-ecmultconst
 
 # ---[secp-layer-5]
 #ACTIVE := bitcoinsecp256k1-keys     #loc: 1556
@@ -79,7 +77,6 @@ ACTIVE := bitcoinsecp256k1-ec
 # ---[leveldb-layer-2]
 #ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
 #ACTIVE := bitcoinleveldb-db            #loc: 1049
-#ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 #ACTIVE := bitcoinleveldb-dbiter        #loc: 414
 
 # ---[leveldb-layer-3]
@@ -413,7 +410,6 @@ bench:
 #ACTIVE := bitcoinleveldb-posixmmaprfile #loc: 223
 #ACTIVE := bitcoinleveldb-posixenv       #loc: 3437
 #ACTIVE := bitcoinleveldb-posix          #loc: 632
-#ACTIVE := bitcoinleveldb-options        #loc: 339
 #ACTIVE := bitcoinleveldb-memenv         #loc: 3569
 #ACTIVE := bitcoinleveldb-stringsource
 #ACTIVE := bitcoinleveldb-stringsink
@@ -461,3 +457,7 @@ bench:
 #ACTIVE := bitcoinsecp256k1-fe5x52
 #ACTIVE := bitcoinsecp256k1-fe10x26 
 #ACTIVE := bitcoinsecp256k1-field    #loc: 3831
+#ACTIVE := bitcoinsecp256k1-scalar   #loc: 3197
+#ACTIVE := bitcoinsecp256k1-group    #loc: 1223
+#ACTIVE := bitcoinleveldb-versionset
+#ACTIVE := bitcoinleveldb-dbimplwriter  #loc: 36

@@ -39,3 +39,54 @@ pub fn ge_is_in_correct_subgroup(ge: *const Ge) -> i32 {
         1
     }
 }
+
+#[cfg(test)]
+mod ge_is_in_correct_subgroup_rs_exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn subgroup_check_accepts_generator_and_infinity() {
+        tracing::info!("Validating ge_is_in_correct_subgroup accepts generator and infinity.");
+
+        unsafe {
+            let g_ptr: *const Ge = core::ptr::addr_of!(ge_const_g);
+            assert!(ge_is_in_correct_subgroup(g_ptr) != 0);
+
+            let mut inf: Ge = core::mem::zeroed();
+            ge_set_infinity(core::ptr::addr_of_mut!(inf));
+            assert!(ge_is_in_correct_subgroup(core::ptr::addr_of!(inf)) != 0);
+        }
+    }
+
+    #[cfg(any(EXHAUSTIVE_TEST_ORDER = "13", EXHAUSTIVE_TEST_ORDER = "199"))]
+    #[traced_test]
+    fn subgroup_check_rejects_generic_curve_point_outside_small_subgroup() {
+        tracing::info!("Searching for a curve point not in the small exhaustive subgroup, and validating rejection.");
+
+        unsafe {
+            let mut found: i32 = 0;
+            let mut candidate: Ge = core::mem::zeroed();
+
+            let mut i: i32 = 2;
+            while i < 4096 && found == 0 {
+                let x: Fe = secp256k1_group_exhaustive_test_support::fe_int(i);
+
+                if ge_set_xo_var(core::ptr::addr_of_mut!(candidate), core::ptr::addr_of!(x), 0) != 0
+                {
+                    assert!(ge_is_valid_var(core::ptr::addr_of!(candidate)) != 0);
+
+                    if ge_is_in_correct_subgroup(core::ptr::addr_of!(candidate)) == 0 {
+                        found = 1;
+                    }
+                }
+
+                i += 1;
+            }
+
+            if found == 0 {
+                tracing::error!("Failed to find a curve point outside the subgroup within the search bound.");
+            }
+            assert!(found != 0);
+        }
+    }
+}

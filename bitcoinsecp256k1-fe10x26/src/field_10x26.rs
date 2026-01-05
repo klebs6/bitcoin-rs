@@ -4,6 +4,7 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/field_10x26.h]
 //-------------------------------------------[.cpp/bitcoin/src/secp256k1/src/field_10x26_impl.h]
 
+#[derive(Debug,Copy,Clone)]
 pub struct Fe10x26 {
 
     /**

@@ -66,4 +66,3 @@ mod fe_to_storage_rs_exhaustive_tests {
         }
     }
 }
-

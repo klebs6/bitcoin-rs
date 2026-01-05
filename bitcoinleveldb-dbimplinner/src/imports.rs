@@ -10,3 +10,5 @@ pub(crate) use bitcoinleveldb_snapshot::*;
 pub(crate) use bitcoinleveldb_writebatch::*;
 pub(crate) use bitcoinleveldb_memtable::*;
 pub(crate) use bitcoinleveldb_dbimplwriter::*;
+pub(crate) use bitcoinleveldb_cfg::*;
+pub(crate) use bitcoinleveldb_batch::*;

@@ -8,12 +8,12 @@ impl Repairer {
         use std::rc::Rc;
         use std::ptr;
 
-        trace!(dbname = %self.dbname, "Repairer::write_descriptor: start");
+        trace!(dbname = %self.dbname(), "Repairer::write_descriptor: start");
 
-        let tmp = temp_file_name(&self.dbname, 1);
+        let tmp = temp_file_name(self.dbname(), 1);
 
         let mut file_ptr: *mut Box<dyn WritableFile> = ptr::null_mut();
-        let mut status = self.env.new_writable_file(&tmp, &mut file_ptr);
+        let mut status = self.env_mut().new_writable_file(&tmp, &mut file_ptr);
 
         if !status.is_ok() {
             debug!(
@@ -33,14 +33,18 @@ impl Repairer {
                 Box::from_raw(file_ptr)
             };
 
+            let edit_ptr: *mut VersionEdit = self.edit_mut() as *mut VersionEdit;
+
             let mut max_sequence: SequenceNumber = 0;
-            for i in 0..self.tables.len() {
-                if max_sequence < self.tables[i].max_sequence {
-                    max_sequence = self.tables[i].max_sequence;
+            let tables_len = self.tables().len();
+            for i in 0..tables_len {
+                let seq = *self.tables()[i].max_sequence();
+                if max_sequence < seq {
+                    max_sequence = seq;
                 }
             }
 
-            let cmp_ptr = self.icmp.user_comparator();
+            let cmp_ptr = self.icmp().user_comparator();
             let cmp_name = unsafe {
                 if cmp_ptr.is_null() {
                     std::borrow::Cow::Borrowed("")
@@ -50,21 +54,27 @@ impl Repairer {
             };
             let cmp_slice = Slice::from(cmp_name.as_ref().as_bytes());
 
-            self.edit.set_comparator_name(&cmp_slice);
-            self.edit.set_log_number(0);
-            self.edit.set_next_file(self.next_file_number);
-            self.edit.set_last_sequence(max_sequence);
+            let next_file = *self.next_file_number();
 
-            for i in 0..self.tables.len() {
+            unsafe {
+                (*edit_ptr).set_comparator_name(&cmp_slice);
+                (*edit_ptr).set_log_number(0);
+                (*edit_ptr).set_next_file(next_file);
+                (*edit_ptr).set_last_sequence(max_sequence);
+            }
+
+            for i in 0..tables_len {
                 // TODO(opt): separate out into multiple levels
-                let t = &self.tables[i];
-                self.edit.add_file(
-                    0,
-                    *t.meta.number(),
-                    *t.meta.file_size(),
-                    t.meta.smallest(),
-                    t.meta.largest(),
-                );
+                let t = &self.tables()[i];
+                unsafe {
+                    (*edit_ptr).add_file(
+                        0,
+                        *t.meta().number(),
+                        *t.meta().file_size(),
+                        t.meta().smallest(),
+                        t.meta().largest(),
+                    );
+                }
             }
 
             {
@@ -76,7 +86,9 @@ impl Repairer {
                 let mut logw = LogWriter::new(dest, 0);
 
                 let mut record = String::new();
-                self.edit.encode_to(&mut record as *mut String);
+                unsafe {
+                    (*edit_ptr).encode_to(&mut record as *mut String);
+                }
 
                 let record_slice = Slice::from(record.as_bytes());
                 status = logw.add_record(&record_slice);
@@ -90,7 +102,7 @@ impl Repairer {
         }
 
         if !status.is_ok() {
-            let s_del = self.env.delete_file(&tmp);
+            let s_del = self.env_mut().delete_file(&tmp);
             debug!(
                 file = %tmp,
                 ok = s_del.is_ok(),
@@ -101,25 +113,26 @@ impl Repairer {
         }
 
         // Discard older manifests
-        for i in 0..self.manifests.len() {
-            let mut full = self.dbname.clone();
+        let manifests_len = self.manifests().len();
+        for i in 0..manifests_len {
+            let mut full = self.dbname().clone();
             full.push('/');
-            full.push_str(&self.manifests[i]);
+            full.push_str(&self.manifests()[i]);
             self.archive_file(&full);
         }
 
         // Install new manifest
-        let dest = descriptor_file_name(&self.dbname, 1);
-        status = self.env.rename_file(&tmp, &dest);
+        let dest = descriptor_file_name(self.dbname(), 1);
+        status = self.env_mut().rename_file(&tmp, &dest);
 
         if status.is_ok() {
-            status = set_current_file(&mut *self.env, &self.dbname, 1);
+            status = set_current_file(self.env_rc().clone(), self.dbname(), 1);
         } else {
-            let _ = self.env.delete_file(&tmp);
+            let _ = self.env_mut().delete_file(&tmp);
         }
 
         debug!(
-            dbname = %self.dbname,
+            dbname = %self.dbname(),
             ok = status.is_ok(),
             status = %status.to_string(),
             "Repairer::write_descriptor: done"

@@ -130,3 +130,227 @@ pub fn gej_add_var(r: *mut Gej, a: *const Gej, b: *const Gej, rzr: *mut Fe) {
         fe_add(core::ptr::addr_of_mut!((*r).y), core::ptr::addr_of!(h3));
     }
 }
+
+#[cfg(test)]
+mod gej_add_var_rs_exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn gej_add_var_identity_commutativity_and_inverse_on_small_set() {
+        tracing::info!("Validating gej_add_var identity, commutativity, and inverse behavior on a small set.");
+
+        unsafe {
+            const N: usize = 9;
+
+            let points: [Gej; N] =
+                secp256k1_group_exhaustive_test_support::generate_gej_multiples_from_affine::<N>(
+                    &*core::ptr::addr_of!(ge_const_g),
+                );
+
+            let mut i: usize = 0;
+            while i < N {
+                let mut j: usize = 0;
+                while j < N {
+                    let mut r1: Gej = core::mem::zeroed();
+                    gej_add_var(
+                        core::ptr::addr_of_mut!(r1),
+                        core::ptr::addr_of!(points[i]),
+                        core::ptr::addr_of!(points[j]),
+                        core::ptr::null_mut(),
+                    );
+
+                    let mut r2: Gej = core::mem::zeroed();
+                    gej_add_var(
+                        core::ptr::addr_of_mut!(r2),
+                        core::ptr::addr_of!(points[j]),
+                        core::ptr::addr_of!(points[i]),
+                        core::ptr::null_mut(),
+                    );
+
+                    assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&r1, &r2));
+
+                    j += 1;
+                }
+
+                let neg_i: Gej = secp256k1_group_exhaustive_test_support::gej_negate_jacobian(&points[i]);
+
+                let mut r_inv: Gej = core::mem::zeroed();
+                gej_add_var(
+                    core::ptr::addr_of_mut!(r_inv),
+                    core::ptr::addr_of!(points[i]),
+                    core::ptr::addr_of!(neg_i),
+                    core::ptr::null_mut(),
+                );
+
+                assert!(gej_is_infinity(core::ptr::addr_of!(r_inv)) != 0);
+                i += 1;
+            }
+        }
+    }
+
+    #[cfg(any(EXHAUSTIVE_TEST_ORDER = "13", EXHAUSTIVE_TEST_ORDER = "199"))]
+    #[traced_test]
+    fn gej_add_var_matches_scalar_addition_mod_exhaustive_order() {
+        tracing::info!("Validating gej_add_var matches scalar addition table modulo the exhaustive subgroup order.");
+
+        unsafe {
+            const N: usize = EXHAUSTIVE_TEST_ORDER_U32 as usize;
+
+            let points: [Gej; N] =
+                secp256k1_group_exhaustive_test_support::generate_gej_multiples_from_affine::<N>(
+                    core::ptr::addr_of!(ge_const_g),
+                );
+
+            let mut i: usize = 0;
+            while i < N {
+                let mut j: usize = 0;
+                while j < N {
+                    let mut r: Gej = core::mem::zeroed();
+                    gej_add_var(
+                        core::ptr::addr_of_mut!(r),
+                        core::ptr::addr_of!(points[i]),
+                        core::ptr::addr_of!(points[j]),
+                        core::ptr::null_mut(),
+                    );
+
+                    let expected_idx: usize = (i + j) % N;
+                    assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(
+                        &r,
+                        &points[expected_idx]
+                    ));
+
+                    j += 1;
+                }
+                i += 1;
+            }
+        }
+    }
+
+    #[traced_test]
+    fn gej_add_var_rzr_relation_holds_when_requested() {
+        tracing::info!("Validating gej_add_var sets rzr such that r.z == a.z * rzr (when a is non-infinity).");
+
+        unsafe {
+            let mut a: Gej = core::mem::zeroed();
+            gej_set_ge(core::ptr::addr_of_mut!(a), core::ptr::addr_of!(ge_const_g));
+
+            let mut b: Gej = core::mem::zeroed();
+            gej_double(core::ptr::addr_of_mut!(b), core::ptr::addr_of!(a));
+
+            let mut r: Gej = core::mem::zeroed();
+            let mut rzr: Fe = core::mem::zeroed();
+            gej_add_var(
+                core::ptr::addr_of_mut!(r),
+                core::ptr::addr_of!(a),
+                core::ptr::addr_of!(b),
+                core::ptr::addr_of_mut!(rzr),
+            );
+
+            let mut expected_z: Fe = core::mem::zeroed();
+            fe_mul(
+                core::ptr::addr_of_mut!(expected_z),
+                core::ptr::addr_of!(a.z),
+                core::ptr::addr_of!(rzr),
+            );
+
+            assert!(
+                fe_equal_var(core::ptr::addr_of!(r.z), core::ptr::addr_of!(expected_z)) != 0
+            );
+        }
+    }
+}
+
+#[cfg(test)]
+mod gej_add_var_rs_adversarial_inplace_aliasing_tests {
+    use super::*;
+
+    #[traced_test]
+    fn gej_add_var_supports_in_place_output_aliasing_inputs_and_preserves_rzr_contract() {
+        tracing::info!(
+            "Validating gej_add_var correctness when r aliases a or b, including the rzr contract."
+        );
+
+        unsafe {
+            let mut a: Gej = core::mem::zeroed();
+            gej_set_ge(
+                core::ptr::addr_of_mut!(a),
+                core::ptr::addr_of!(ge_const_g),
+            );
+
+            let s: Fe = secp256k1_group_exhaustive_test_support::fe_int(7);
+            gej_rescale(core::ptr::addr_of_mut!(a), core::ptr::addr_of!(s));
+
+            let mut b: Gej = core::mem::zeroed();
+            gej_double(core::ptr::addr_of_mut!(b), core::ptr::addr_of!(a));
+
+            let expected: Gej = secp256k1_group_exhaustive_test_support::gej_add_var_result(&a, &b);
+
+            /* r aliases a */
+            let mut a_inplace: Gej = a;
+            let old_a_z: Fe = a_inplace.z;
+
+            let mut rzr_a: Fe = core::mem::zeroed();
+            let a_ptr: *mut Gej = core::ptr::addr_of_mut!(a_inplace);
+
+            gej_add_var(
+                a_ptr,
+                a_ptr as *const Gej,
+                core::ptr::addr_of!(b),
+                core::ptr::addr_of_mut!(rzr_a),
+            );
+
+            if !secp256k1_group_exhaustive_test_support::gej_affine_eq(&a_inplace, &expected) {
+                tracing::error!("In-place r==a result mismatch.");
+            }
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(
+                &a_inplace, &expected
+            ));
+
+            let mut expected_z_a: Fe = core::mem::zeroed();
+            fe_mul(
+                core::ptr::addr_of_mut!(expected_z_a),
+                core::ptr::addr_of!(old_a_z),
+                core::ptr::addr_of!(rzr_a),
+            );
+            assert!(
+                fe_equal_var(
+                    core::ptr::addr_of!(a_inplace.z),
+                    core::ptr::addr_of!(expected_z_a)
+                ) != 0
+            );
+
+            /* r aliases b */
+            let mut b_inplace: Gej = b;
+
+            let mut rzr_b: Fe = core::mem::zeroed();
+            let b_ptr: *mut Gej = core::ptr::addr_of_mut!(b_inplace);
+
+            gej_add_var(
+                b_ptr,
+                core::ptr::addr_of!(a),
+                b_ptr as *const Gej,
+                core::ptr::addr_of_mut!(rzr_b),
+            );
+
+            if !secp256k1_group_exhaustive_test_support::gej_affine_eq(&b_inplace, &expected) {
+                tracing::error!("In-place r==b result mismatch.");
+            }
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(
+                &b_inplace, &expected
+            ));
+
+            let mut expected_z_b: Fe = core::mem::zeroed();
+            fe_mul(
+                core::ptr::addr_of_mut!(expected_z_b),
+                core::ptr::addr_of!(a.z),
+                core::ptr::addr_of!(rzr_b),
+            );
+            assert!(
+                fe_equal_var(
+                    core::ptr::addr_of!(b_inplace.z),
+                    core::ptr::addr_of!(expected_z_b)
+                ) != 0
+            );
+        }
+    }
+}

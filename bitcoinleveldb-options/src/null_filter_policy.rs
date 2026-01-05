@@ -49,3 +49,64 @@ impl KeyMayMatch for NullFilterPolicy {
         true
     }
 }
+
+#[cfg(test)]
+mod null_filter_policy_contract_suite {
+    use super::*;
+    use tracing::{debug, info, trace};
+
+    #[traced_test]
+    fn null_filter_policy_name_is_stable() {
+        trace!("null_filter_policy_contract_suite: start");
+
+        let p = NullFilterPolicy::default();
+        let n = p.name();
+
+        info!(name = %n, "NullFilterPolicy name()");
+        assert_eq!(n.as_ref(), "null-filter-policy");
+
+        trace!("null_filter_policy_contract_suite: done");
+    }
+
+    #[traced_test]
+    fn null_filter_policy_create_filter_is_a_noop_and_preserves_dst() {
+        trace!("null_filter_policy_contract_suite: start");
+
+        let p = NullFilterPolicy::default();
+
+        let mut dst: Vec<u8> = vec![0xAA, 0xBB, 0xCC];
+        let before = dst.clone();
+
+        // `NullFilterPolicy` must be able to accept any `keys` pointer without dereferencing it.
+        let keys: *const Slice = core::ptr::null();
+
+        p.create_filter(keys, 123, &mut dst);
+
+        debug!(before_len = before.len(), after_len = dst.len(), "dst lengths");
+        assert_eq!(dst, before);
+
+        trace!("null_filter_policy_contract_suite: done");
+    }
+
+    #[traced_test]
+    fn null_filter_policy_key_may_match_is_unconditionally_true() {
+        trace!("null_filter_policy_contract_suite: start");
+
+        let p = NullFilterPolicy::default();
+
+        let key = Slice::from(&b"any-key"[..]);
+        let filter = Slice::from(&b""[..]);
+
+        let ok = p.key_may_match(&key, &filter);
+        info!(
+            key_len = key.size(),
+            filter_len = filter.size(),
+            ok,
+            "key_may_match result"
+        );
+
+        assert!(ok);
+
+        trace!("null_filter_policy_contract_suite: done");
+    }
+}

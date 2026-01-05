@@ -38,3 +38,50 @@ impl Default for ReadOptions {
         }
     }
 }
+
+#[cfg(test)]
+mod read_options_default_and_mutation_suite {
+    use super::*;
+    use tracing::{debug, info, trace};
+
+    #[traced_test]
+    fn read_options_default_matches_leveldb_defaults() {
+        trace!("read_options_default_and_mutation_suite: start");
+
+        let ro = ReadOptions::default();
+
+        info!(
+            verify_checksums = *ro.verify_checksums(),
+            fill_cache = *ro.fill_cache(),
+            snapshot_is_some = ro.snapshot().is_some(),
+            "ReadOptions::default snapshot"
+        );
+
+        assert!(!*ro.verify_checksums());
+        assert!(*ro.fill_cache());
+        assert!(ro.snapshot().is_none());
+
+        trace!("read_options_default_and_mutation_suite: done");
+    }
+
+    #[traced_test]
+    fn read_options_setters_round_trip_via_public_accessors() {
+        trace!("read_options_default_and_mutation_suite: start");
+
+        let mut ro = ReadOptions::default();
+
+        ro.set_verify_checksums(true);
+        ro.set_fill_cache(false);
+
+        debug!(
+            verify_checksums = *ro.verify_checksums(),
+            fill_cache = *ro.fill_cache(),
+            "mutated ReadOptions"
+        );
+
+        assert!(*ro.verify_checksums());
+        assert!(!*ro.fill_cache());
+
+        trace!("read_options_default_and_mutation_suite: done");
+    }
+}

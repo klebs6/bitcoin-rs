@@ -27,3 +27,26 @@ pub fn gej_rescale(r: *mut Gej, s: *const Fe) {
         fe_mul(rz, rz as *const Fe, s); 
     }
 }
+
+#[cfg(test)]
+mod gej_rescale_rs_exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn gej_rescale_preserves_affine_point_and_updates_z_by_scale_factor() {
+        tracing::info!("Validating gej_rescale preserves affine point representation and multiplies z by s.");
+
+        unsafe {
+            let mut a: Gej = core::mem::zeroed();
+            gej_set_ge(core::ptr::addr_of_mut!(a), core::ptr::addr_of!(ge_const_g));
+
+            let original: Gej = core::ptr::read(core::ptr::addr_of!(a));
+
+            let s: Fe = secp256k1_group_exhaustive_test_support::fe_int(7);
+            gej_rescale(core::ptr::addr_of_mut!(a), core::ptr::addr_of!(s));
+
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&a, &original));
+            assert!(fe_equal_var(core::ptr::addr_of!(a.z), core::ptr::addr_of!(s)) != 0);
+        }
+    }
+}

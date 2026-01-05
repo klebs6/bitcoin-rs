@@ -6,9 +6,11 @@ impl Repairer {
     pub fn repair_table(&mut self, src: &str, t: RepairerTableInfo) {
         use std::ptr;
 
+        let table_no: u64 = *t.meta().number();
+
         trace!(
             src = %src,
-            table_no = *t.meta.number(),
+            table_no,
             "Repairer::repair_table: start"
         );
 
@@ -18,11 +20,13 @@ impl Repairer {
         let mut t = t;
 
         // Create builder.
-        let copy = table_file_name(&self.dbname, self.next_file_number);
-        self.next_file_number = self.next_file_number.wrapping_add(1);
+        let copy_no: u64 = *self.next_file_number();
+        *self.next_file_number_mut() = copy_no.wrapping_add(1);
+
+        let copy = table_file_name(self.dbname(), copy_no);
 
         let mut file_ptr: *mut Box<dyn WritableFile> = ptr::null_mut();
-        let mut s = self.env.new_writable_file(&copy, &mut file_ptr);
+        let mut s = self.env_mut().new_writable_file(&copy, &mut file_ptr);
 
         if !s.is_ok() {
             debug!(
@@ -46,17 +50,18 @@ impl Repairer {
 
             let wf_ptr: *mut dyn WritableFile = (&mut **file_holder) as *mut dyn WritableFile;
 
+            let options_ptr: *const Options = self.options() as *const Options;
             let mut builder: *mut TableBuilder =
-                Box::into_raw(Box::new(TableBuilder::new(&self.options, wf_ptr)));
+                Box::into_raw(Box::new(TableBuilder::new(unsafe { &*options_ptr }, wf_ptr)));
 
             // Copy data.
-            let iter = self.new_table_iterator(&t.meta);
+            let iter = self.new_table_iterator(t.meta());
 
             unsafe {
                 if iter.is_null() {
                     error!(
                         src = %src,
-                        table_no = *t.meta.number(),
+                        table_no,
                         "Repairer::repair_table: new_table_iterator returned null"
                     );
                     (*builder).abandon();
@@ -81,7 +86,7 @@ impl Repairer {
                 s = unsafe { (*builder).finish() };
                 if s.is_ok() {
                     let sz = unsafe { (*builder).file_size() };
-                    t.meta.set_file_size(sz);
+                    t.meta_mut().set_file_size(sz);
                 }
             }
 
@@ -98,20 +103,20 @@ impl Repairer {
         }
 
         if counter > 0 && s.is_ok() {
-            let orig = table_file_name(&self.dbname, *t.meta.number());
-            s = self.env.rename_file(&copy, &orig);
+            let orig = table_file_name(self.dbname(), table_no);
+            s = self.env_mut().rename_file(&copy, &orig);
             if s.is_ok() {
                 info!(
-                    table_no = *t.meta.number(),
+                    table_no,
                     entries = counter,
                     "Repairer::repair_table: entries repaired"
                 );
-                self.tables.push(t);
+                self.tables_mut().push(t);
             }
         }
 
         if !s.is_ok() {
-            let s_del = self.env.delete_file(&copy);
+            let s_del = self.env_mut().delete_file(&copy);
             debug!(
                 file = %copy,
                 ok = s_del.is_ok(),
@@ -122,7 +127,7 @@ impl Repairer {
 
         trace!(
             src = %src,
-            table_no = *t.meta.number(),
+            table_no,
             status = %s.to_string(),
             "Repairer::repair_table: done"
         );

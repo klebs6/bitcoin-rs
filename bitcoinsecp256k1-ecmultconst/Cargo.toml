@@ -9,6 +9,10 @@ description = "todo: write a description here"
 # keywords = []
 # categories = []
 
+[dependencies]
+tracing.workspace = true
+bitcoinsecp256k1-ecmult = { path = "../bitcoinsecp256k1-ecmult" }
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.19"

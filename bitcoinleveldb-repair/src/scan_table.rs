@@ -8,25 +8,22 @@ impl Repairer {
 
         trace!(table_no = number, "Repairer::scan_table: start");
 
-        let mut t = RepairerTableInfo {
-            meta: FileMetaData::default(),
-            max_sequence: 0,
-        };
-        t.meta.set_number(number);
+        let mut t = RepairerTableInfo::default();
+        t.meta_mut().set_number(number);
 
-        let mut fname = table_file_name(&self.dbname, number);
+        let mut fname = table_file_name(self.dbname(), number);
 
         let mut status = self
-            .env
-            .get_file_size(&fname, t.meta.file_size_mut() as *mut u64);
+            .env_mut()
+            .get_file_size(&fname, t.meta_mut().file_size_mut() as *mut u64);
 
         if !status.is_ok() {
             // Try alternate file name.
-            fname = sst_table_file_name(&self.dbname, number);
+            fname = sst_table_file_name(self.dbname(), number);
 
             let s2 = self
-                .env
-                .get_file_size(&fname, t.meta.file_size_mut() as *mut u64);
+                .env_mut()
+                .get_file_size(&fname, t.meta_mut().file_size_mut() as *mut u64);
 
             if s2.is_ok() {
                 status = crate::Status::ok();
@@ -34,8 +31,8 @@ impl Repairer {
         }
 
         if !status.is_ok() {
-            self.archive_file(&table_file_name(&self.dbname, number));
-            self.archive_file(&sst_table_file_name(&self.dbname, number));
+            self.archive_file(&table_file_name(self.dbname(), number));
+            self.archive_file(&sst_table_file_name(self.dbname(), number));
 
             warn!(
                 table_no = number,
@@ -48,11 +45,11 @@ impl Repairer {
         // Extract metadata by scanning through table.
         let mut counter: i32 = 0;
 
-        let iter = self.new_table_iterator(&t.meta);
+        let iter = self.new_table_iterator(t.meta());
 
         let mut empty = true;
         let mut parsed = ParsedInternalKey::default();
-        t.max_sequence = 0;
+        *t.max_sequence_mut() = 0;
 
         unsafe {
             (*iter).seek_to_first();
@@ -75,13 +72,13 @@ impl Repairer {
 
                 if empty {
                     empty = false;
-                    let _ = t.meta.smallest_mut().decode_from(&key);
+                    let _ = t.meta_mut().smallest_mut().decode_from(&key);
                 }
 
-                let _ = t.meta.largest_mut().decode_from(&key);
+                let _ = t.meta_mut().largest_mut().decode_from(&key);
 
-                if *parsed.sequence() > t.max_sequence {
-                    t.max_sequence = *parsed.sequence();
+                if *parsed.sequence() > *t.max_sequence() {
+                    *t.max_sequence_mut() = *parsed.sequence();
                 }
 
                 (*iter).next();
@@ -103,7 +100,7 @@ impl Repairer {
         );
 
         if status.is_ok() {
-            self.tables.push(t);
+            self.tables_mut().push(t);
         } else {
             // RepairTable archives input file.
             self.repair_table(&fname, t);
@@ -112,7 +109,6 @@ impl Repairer {
         trace!(table_no = number, "Repairer::scan_table: done");
     }
 }
-
 #[cfg(test)]
 mod scan_table_behavior_suite {
     use super::*;

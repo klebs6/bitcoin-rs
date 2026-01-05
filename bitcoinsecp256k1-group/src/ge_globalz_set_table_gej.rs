@@ -51,3 +51,104 @@ pub fn ge_globalz_set_table_gej(
         }
     }
 }
+
+#[cfg(test)]
+mod ge_globalz_set_table_gej_rs_exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn globalz_table_matches_manual_globalz_over_z_scaling() {
+        tracing::info!("Validating ge_globalz_set_table_gej against manual zi = globalz / z scaling.");
+
+        unsafe {
+            const LEN: usize = 4;
+
+            let mut base: Gej = core::mem::zeroed();
+            gej_set_ge(core::ptr::addr_of_mut!(base), core::ptr::addr_of!(ge_const_g));
+
+            let z0: Fe = secp256k1_group_exhaustive_test_support::fe_int(1);
+            let z1: Fe = secp256k1_group_exhaustive_test_support::fe_int(2);
+            let z2: Fe = secp256k1_group_exhaustive_test_support::fe_int(6);
+            let z3: Fe = secp256k1_group_exhaustive_test_support::fe_int(30);
+
+            let mut a: [Gej; LEN] = core::array::from_fn(|_| core::mem::zeroed());
+
+            a[0] = base;
+            gej_rescale(core::ptr::addr_of_mut!(a[0]), core::ptr::addr_of!(z0));
+
+            a[1] = base;
+            gej_rescale(core::ptr::addr_of_mut!(a[1]), core::ptr::addr_of!(z1));
+
+            a[2] = base;
+            gej_rescale(core::ptr::addr_of_mut!(a[2]), core::ptr::addr_of!(z2));
+
+            a[3] = base;
+            gej_rescale(core::ptr::addr_of_mut!(a[3]), core::ptr::addr_of!(z3));
+
+            let mut zr: [Fe; LEN] = core::array::from_fn(|_| core::mem::zeroed());
+            zr[0] = secp256k1_group_exhaustive_test_support::fe_int(0);
+            zr[1] = secp256k1_group_exhaustive_test_support::fe_int(2);
+            zr[2] = secp256k1_group_exhaustive_test_support::fe_int(3);
+            zr[3] = secp256k1_group_exhaustive_test_support::fe_int(5);
+
+            let mut r: [Ge; LEN] = core::array::from_fn(|_| core::mem::zeroed());
+            let mut globalz: Fe = core::mem::zeroed();
+
+            ge_globalz_set_table_gej(
+                LEN,
+                r.as_mut_ptr(),
+                core::ptr::addr_of_mut!(globalz),
+                a.as_ptr(),
+                zr.as_ptr(),
+            );
+
+            assert!(
+                fe_equal_var(
+                    core::ptr::addr_of!(globalz),
+                    core::ptr::addr_of!(a[LEN - 1].z)
+                ) != 0
+            );
+
+            let mut i: usize = 0;
+            while i < LEN {
+                let mut invz: Fe = core::mem::zeroed();
+                fe_inv_var(core::ptr::addr_of_mut!(invz), core::ptr::addr_of!(a[i].z));
+
+                let mut zi: Fe = core::mem::zeroed();
+                fe_mul(
+                    core::ptr::addr_of_mut!(zi),
+                    core::ptr::addr_of!(globalz),
+                    core::ptr::addr_of!(invz),
+                );
+
+                let mut expected: Ge = core::mem::zeroed();
+                ge_set_gej_zinv(
+                    core::ptr::addr_of_mut!(expected),
+                    core::ptr::addr_of!(a[i]),
+                    core::ptr::addr_of!(zi),
+                );
+
+                assert!(secp256k1_group_exhaustive_test_support::ge_eq(&r[i], &expected));
+                assert!(ge_is_infinity(core::ptr::addr_of!(r[i])) == 0);
+
+                i += 1;
+            }
+        }
+    }
+
+    #[traced_test]
+    fn globalz_table_with_zero_length_does_not_dereference_inputs() {
+        tracing::info!("Validating ge_globalz_set_table_gej(len=0) does not dereference pointers.");
+
+        unsafe {
+            let mut globalz: Fe = core::mem::zeroed();
+            ge_globalz_set_table_gej(
+                0,
+                core::ptr::null_mut(),
+                core::ptr::addr_of_mut!(globalz),
+                core::ptr::null(),
+                core::ptr::null(),
+            );
+        }
+    }
+}

@@ -37,3 +37,30 @@ macro_rules! ge_storage_const_get {
         fe_storage_const_get!($t.x), fe_storage_const_get!($t.y)
     };
 }
+
+#[cfg(test)]
+mod ge_storage_rs_exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn ge_storage_const_macro_converts_back_to_expected_fe_values() {
+        tracing::info!("Validating ge_storage_const! macro and ge_from_storage produce expected field values.");
+
+        unsafe {
+            let st: GeStorage = ge_storage_const!(
+                0, 0, 0, 0, 0, 0, 0, 1,
+                0, 0, 0, 0, 0, 0, 0, 2
+            );
+
+            let mut p: Ge = core::mem::zeroed();
+            ge_from_storage(core::ptr::addr_of_mut!(p), core::ptr::addr_of!(st));
+
+            let expected_x: Fe = secp256k1_group_exhaustive_test_support::fe_int(1);
+            let expected_y: Fe = secp256k1_group_exhaustive_test_support::fe_int(2);
+
+            assert!(fe_equal_var(core::ptr::addr_of!(p.x), core::ptr::addr_of!(expected_x)) != 0);
+            assert!(fe_equal_var(core::ptr::addr_of!(p.y), core::ptr::addr_of!(expected_y)) != 0);
+            assert!(ge_is_infinity(core::ptr::addr_of!(p)) == 0);
+        }
+    }
+}

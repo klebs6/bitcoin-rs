@@ -2,8 +2,9 @@
 crate::ix!();
 
 impl Repairer {
+
     pub fn run(&mut self) -> crate::Status {
-        trace!(dbname = %self.dbname, "Repairer::run: start");
+        trace!(dbname = %self.dbname(), "Repairer::run: start");
 
         let mut status: crate::Status = self.find_files();
 
@@ -15,25 +16,26 @@ impl Repairer {
 
         if status.is_ok() {
             let mut bytes: u64 = 0;
-            for i in 0..self.tables.len() {
-                bytes = bytes.wrapping_add(*self.tables[i].meta.file_size());
+            let tables_len = self.tables().len();
+            for i in 0..tables_len {
+                bytes = bytes.wrapping_add(*self.tables()[i].meta().file_size());
             }
 
             info!(
-                dbname = %self.dbname,
-                recovered_files = self.tables.len(),
+                dbname = %self.dbname(),
+                recovered_files = self.tables().len(),
                 recovered_bytes = bytes,
                 "**** Repaired leveldb; Some data may have been lost. ****"
             );
         } else {
             warn!(
-                dbname = %self.dbname,
+                dbname = %self.dbname(),
                 status = %status.to_string(),
                 "Repairer::run: failed"
             );
         }
 
-        trace!(dbname = %self.dbname, "Repairer::run: done");
+        trace!(dbname = %self.dbname(), "Repairer::run: done");
         status
     }
 }

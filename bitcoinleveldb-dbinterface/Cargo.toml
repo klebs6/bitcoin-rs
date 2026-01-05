@@ -11,6 +11,7 @@ description = "todo: write a description here"
 
 [dependencies]
 export-magic.workspace = true
+tracing.workspace = true
 bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }

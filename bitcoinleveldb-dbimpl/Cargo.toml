@@ -32,3 +32,5 @@ bitcoinleveldb-logwriter = { path = "../bitcoinleveldb-logwriter" }
 bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
 bitcoinleveldb-version = { path = "../bitcoinleveldb-version" }
 bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }

@@ -5,9 +5,11 @@ version = "0.1.19"
 [dependencies]
 derive_builder.workspace = true
 tracing.workspace = true
+disable_macro.workspace = true
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
 bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

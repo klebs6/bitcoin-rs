@@ -207,3 +207,180 @@ pub fn gej_add_ge(r: *mut Gej, a: *const Gej, b: *const Ge) {
         (*r).infinity = infinity;
     }
 }
+
+#[cfg(test)]
+mod gej_add_ge_rs_exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn gej_add_ge_behaves_for_identity_doubling_and_inverse() {
+        tracing::info!("Validating gej_add_ge (CT) handles a=infinity, doubling, and inverse cases.");
+
+        unsafe {
+            let g_ptr: *const Ge = core::ptr::addr_of!(ge_const_g);
+
+            let mut a_inf: Gej = core::mem::zeroed();
+            gej_set_infinity(core::ptr::addr_of_mut!(a_inf));
+
+            let mut r1: Gej = core::mem::zeroed();
+            gej_add_ge(core::ptr::addr_of_mut!(r1), core::ptr::addr_of!(a_inf), g_ptr);
+
+            let mut expected1: Gej = core::mem::zeroed();
+            gej_set_ge(core::ptr::addr_of_mut!(expected1), g_ptr);
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&r1, &expected1));
+
+            let mut a_g: Gej = core::mem::zeroed();
+            gej_set_ge(core::ptr::addr_of_mut!(a_g), g_ptr);
+
+            let mut r2: Gej = core::mem::zeroed();
+            gej_add_ge(core::ptr::addr_of_mut!(r2), core::ptr::addr_of!(a_g), g_ptr);
+
+            let mut expected2: Gej = core::mem::zeroed();
+            gej_double(core::ptr::addr_of_mut!(expected2), core::ptr::addr_of!(a_g));
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&r2, &expected2));
+
+            let mut neg_g: Ge = core::mem::zeroed();
+            ge_neg(core::ptr::addr_of_mut!(neg_g), g_ptr);
+
+            let mut r3: Gej = core::mem::zeroed();
+            gej_add_ge(
+                core::ptr::addr_of_mut!(r3),
+                core::ptr::addr_of!(a_g),
+                core::ptr::addr_of!(neg_g),
+            );
+            assert!(gej_is_infinity(core::ptr::addr_of!(r3)) != 0);
+        }
+    }
+}
+
+#[cfg(test)]
+mod gej_add_ge_rs_adversarial_degenerate_and_ct_cmov_tests {
+    use super::*;
+
+    #[traced_test]
+    fn ct_addition_matches_var_addition_for_degenerate_y_sum_zero_case() {
+        tracing::info!(
+            "Cross-checking gej_add_ge (CT) vs gej_add_ge_var on the degenerate y1+y2==0, x1!=x2 path (via b = -lambda(a))."
+        );
+
+        unsafe {
+            const N: usize = 12;
+            let base: [Gej; N] =
+                secp256k1_group_exhaustive_test_support::generate_gej_multiples_from_affine::<N>(
+                    &*core::ptr::addr_of!(ge_const_g),
+                );
+
+            let scales: [i32; 3] = [1, 2, 7];
+
+            let mut idx: usize = 1; // skip infinity
+            while idx < N {
+                let p_aff: Ge =
+                    secp256k1_group_exhaustive_test_support::ge_from_gej_via_set_gej_var(&base[idx]);
+
+                let mut lambda_p: Ge = core::mem::zeroed();
+                ge_mul_lambda(
+                    core::ptr::addr_of_mut!(lambda_p),
+                    core::ptr::addr_of!(p_aff),
+                );
+
+                let mut b: Ge = core::mem::zeroed();
+                ge_neg(core::ptr::addr_of_mut!(b), core::ptr::addr_of!(lambda_p));
+
+                let mut si: usize = 0;
+                while si < scales.len() {
+                    let s: Fe =
+                        secp256k1_group_exhaustive_test_support::fe_int(scales[si]);
+
+                    let mut a_j: Gej = base[idx];
+                    gej_rescale(core::ptr::addr_of_mut!(a_j), core::ptr::addr_of!(s));
+
+                    let mut r_ct: Gej = core::mem::zeroed();
+                    gej_add_ge(
+                        core::ptr::addr_of_mut!(r_ct),
+                        core::ptr::addr_of!(a_j),
+                        core::ptr::addr_of!(b),
+                    );
+
+                    let mut r_var: Gej = core::mem::zeroed();
+                    gej_add_ge_var(
+                        core::ptr::addr_of_mut!(r_var),
+                        core::ptr::addr_of!(a_j),
+                        core::ptr::addr_of!(b),
+                        core::ptr::null_mut(),
+                    );
+
+                    if !secp256k1_group_exhaustive_test_support::gej_affine_eq(&r_ct, &r_var) {
+                        tracing::error!(
+                            point_index = idx,
+                            scale = scales[si],
+                            "CT vs VAR mismatch for degenerate (b = -lambda(a)) addition case."
+                        );
+                    }
+                    assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(
+                        &r_ct, &r_var
+                    ));
+
+                    si += 1;
+                }
+
+                idx += 1;
+            }
+        }
+    }
+
+    #[traced_test]
+    fn ct_addition_with_infinity_is_independent_of_infinity_coordinates() {
+        tracing::info!(
+            "Ensuring gej_add_ge (CT) returns b when a is infinity, independent of a's coordinates."
+        );
+
+        unsafe {
+            let g_ptr: *const Ge = core::ptr::addr_of!(ge_const_g);
+
+            let mut expected: Gej = core::mem::zeroed();
+            gej_set_ge(core::ptr::addr_of_mut!(expected), g_ptr);
+
+            let mut a1: Gej = core::mem::zeroed();
+            gej_set_infinity(core::ptr::addr_of_mut!(a1));
+            a1.x = secp256k1_group_exhaustive_test_support::fe_int(123);
+            a1.y = secp256k1_group_exhaustive_test_support::fe_int(456);
+            a1.z = secp256k1_group_exhaustive_test_support::fe_int(789);
+            a1.infinity = 1;
+
+            let mut a2: Gej = core::mem::zeroed();
+            gej_set_infinity(core::ptr::addr_of_mut!(a2));
+            a2.x = secp256k1_group_exhaustive_test_support::fe_int(321);
+            a2.y = secp256k1_group_exhaustive_test_support::fe_int(654);
+            a2.z = secp256k1_group_exhaustive_test_support::fe_int(987);
+            a2.infinity = 1;
+
+            let mut r1: Gej = core::mem::zeroed();
+            gej_add_ge(
+                core::ptr::addr_of_mut!(r1),
+                core::ptr::addr_of!(a1),
+                g_ptr,
+            );
+
+            let mut r2: Gej = core::mem::zeroed();
+            gej_add_ge(
+                core::ptr::addr_of_mut!(r2),
+                core::ptr::addr_of!(a2),
+                g_ptr,
+            );
+
+            if !secp256k1_group_exhaustive_test_support::gej_affine_eq(&r1, &expected) {
+                tracing::error!("CT add did not return expected b for a=infinity (case a1).");
+            }
+            if !secp256k1_group_exhaustive_test_support::gej_affine_eq(&r2, &expected) {
+                tracing::error!("CT add did not return expected b for a=infinity (case a2).");
+            }
+            if !secp256k1_group_exhaustive_test_support::gej_affine_eq(&r1, &r2) {
+                tracing::error!("CT add depends on infinity coordinates (a1 vs a2 mismatch).");
+            }
+
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&r1, &expected));
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&r2, &expected));
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&r1, &r2));
+        }
+    }
+}

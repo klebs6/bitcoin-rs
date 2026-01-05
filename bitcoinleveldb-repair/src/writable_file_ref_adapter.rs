@@ -17,8 +17,8 @@ impl WritableFileRefAdapter {
 }
 
 impl Named for WritableFileRefAdapter {
-    fn name(&self) -> &'static str {
-        "WritableFileRefAdapter"
+    fn name(&self) -> std::borrow::Cow<'_, str> {
+        std::borrow::Cow::Borrowed("WritableFileRefAdapter")
     }
 }
 
@@ -47,4 +47,3 @@ impl WritableFileSync for WritableFileRefAdapter {
 }
 
 impl WritableFile for WritableFileRefAdapter {}
-

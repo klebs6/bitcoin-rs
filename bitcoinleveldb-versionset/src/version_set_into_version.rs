@@ -4,26 +4,28 @@ crate::ix!();
 impl VersionSet {
 
     pub fn into_version(&self) -> Version {
-        let self_ptr: *mut VersionSet = (self as *const VersionSet as *mut VersionSet);
+        let vset_ptr: *const VersionSet = self as *const VersionSet;
+
+        let vset_iface_const: *const dyn VersionSetInterface =
+            (self as &dyn VersionSetInterface) as *const dyn VersionSetInterface;
+        let vset_iface_ptr: *mut dyn VersionSetInterface =
+            vset_iface_const as *mut dyn VersionSetInterface;
 
         trace!(
-            vset_ptr = %format!("{:p}", self_ptr),
+            vset_ptr = %format!("{:p}", vset_ptr),
+            vset_iface_ptr = %format!("{:p}", vset_iface_ptr),
             num_levels = NUM_LEVELS,
             "VersionSet::into_version: constructing detached Version"
         );
 
         debug_assert!(
-            !self_ptr.is_null(),
-            "VersionSet::into_version: self_ptr must never be null"
+            !vset_iface_ptr.is_null(),
+            "VersionSet::into_version: vset_iface_ptr must never be null"
         );
-
-        let vset_iface_ptr: *mut dyn VersionSetInterface = unsafe {
-            (&mut *self_ptr as &mut dyn VersionSetInterface) as *mut dyn VersionSetInterface
-        };
 
         let files: [Vec<*mut FileMetaData>; NUM_LEVELS] = core::array::from_fn(|_| Vec::new());
 
-        let v = VersionBuilder::default()
+        let v: Version = VersionBuilder::default()
             .vset(vset_iface_ptr)
             .next(core::ptr::null_mut())
             .prev(core::ptr::null_mut())
@@ -51,13 +53,43 @@ impl VersionSet {
     }
 }
 
-
 #[cfg(test)]
 mod version_set_into_version_exhaustive_test_suite {
     use super::*;
     use std::path::{Path, PathBuf};
     use std::time::{Duration, SystemTime, UNIX_EPOCH};
     use tracing::{debug, error, info, trace, warn};
+
+    fn make_internal_key_comparator_from_options(options: &Options) -> InternalKeyComparator {
+        trace!("make_internal_key_comparator_from_options: enter");
+
+        let user_cmp_ptr = options.comparator();
+
+        trace!(
+            user_cmp_ptr = %format!("{:p}", user_cmp_ptr),
+            "make_internal_key_comparator_from_options: read user comparator pointer"
+        );
+
+        /*
+        assert!(
+            !user_cmp_ptr.is_null(),
+            "make_internal_key_comparator_from_options: options.comparator() must not be null"
+        );
+        */
+
+        let name = unsafe { (*user_cmp_ptr).name() };
+        let name_s: String = match name {
+            Cow::Borrowed(x) => x.to_owned(),
+            Cow::Owned(x) => x,
+        };
+
+        trace!(
+            comparator_name = %name_s,
+            "make_internal_key_comparator_from_options: creating InternalKeyComparator"
+        );
+
+        InternalKeyComparator::new(Arc::as_ptr(user_cmp_ptr))
+    }
 
     fn make_unique_db_dir_for_versionset_into_version(test_label: &str) -> PathBuf {
         let pid = std::process::id();
@@ -92,19 +124,31 @@ mod version_set_into_version_exhaustive_test_suite {
     }
 
     fn create_dir_all_or_panic_for_versionset_into_version(dir: &Path) {
-        trace!(dir = %dir.display(), "create_dir_all_or_panic_for_versionset_into_version: enter");
+        trace!(
+            dir = %dir.display(),
+            "create_dir_all_or_panic_for_versionset_into_version: enter"
+        );
         if let Err(e) = std::fs::create_dir_all(dir) {
             error!(dir = %dir.display(), error = %e, "failed to create test directory");
             panic!("create_dir_all_or_panic_for_versionset_into_version: create_dir_all failed");
         }
-        trace!(dir = %dir.display(), "create_dir_all_or_panic_for_versionset_into_version: ok");
+        trace!(
+            dir = %dir.display(),
+            "create_dir_all_or_panic_for_versionset_into_version: ok"
+        );
     }
 
     fn remove_dir_all_best_effort_for_versionset_into_version(dir: &Path) {
-        trace!(dir = %dir.display(), "remove_dir_all_best_effort_for_versionset_into_version: enter");
+        trace!(
+            dir = %dir.display(),
+            "remove_dir_all_best_effort_for_versionset_into_version: enter"
+        );
         match std::fs::remove_dir_all(dir) {
             Ok(()) => {
-                trace!(dir = %dir.display(), "remove_dir_all_best_effort_for_versionset_into_version: removed");
+                trace!(
+                    dir = %dir.display(),
+                    "remove_dir_all_best_effort_for_versionset_into_version: removed"
+                );
             }
             Err(e) => {
                 // Best effort cleanup; tests should not fail solely due to filesystem cleanup issues.
@@ -127,7 +171,8 @@ mod version_set_into_version_exhaustive_test_suite {
         {
             let dbname: Box<String> = Box::new(dir.to_string_lossy().to_string());
 
-            let options: Box<Options> = Box::new(Options::default());
+            let env = PosixEnv::shared();
+            let options: Box<Options> = Box::new(Options::with_env(env));
             let icmp: Box<InternalKeyComparator> =
                 Box::new(make_internal_key_comparator_from_options(options.as_ref()));
 
@@ -157,6 +202,7 @@ mod version_set_into_version_exhaustive_test_suite {
                 compaction_level = *v.compaction_level(),
                 next_ptr = %format!("{:p}", *v.next()),
                 prev_ptr = %format!("{:p}", *v.prev()),
+                vset_iface_ptr = %format!("{:p}", v.vset()),
                 "into_version returned Version state"
             );
 
@@ -187,6 +233,21 @@ mod version_set_into_version_exhaustive_test_suite {
             assert!(
                 (*v.prev()).is_null(),
                 "fresh detached Version must have prev == null (not yet linked)"
+            );
+
+            assert!(
+                !v.vset().is_null(),
+                "fresh detached Version must carry a non-null vset interface pointer"
+            );
+
+            let expected_iface: *const dyn VersionSetInterface =
+                (&vset as &dyn VersionSetInterface) as *const dyn VersionSetInterface;
+            let expected_data: *const () = expected_iface as *const ();
+            let got_data: *const () = (v.vset() as *const dyn VersionSetInterface) as *const ();
+
+            assert_eq!(
+                got_data, expected_data,
+                "Version::vset must point at the originating VersionSet"
             );
 
             assert_eq!(

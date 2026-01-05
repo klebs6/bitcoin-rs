@@ -14,6 +14,7 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
+bitcoin-hmac-sha256 = { path = "../bitcoin-hmac-sha256" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

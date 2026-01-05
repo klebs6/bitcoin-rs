@@ -2,17 +2,23 @@
 crate::ix!();
 
 impl Repairer {
+
     pub fn convert_log_files_to_tables(&mut self) {
         trace!(
-            log_count = self.logs.len(),
+            log_count = self.logs().len(),
             "Repairer::convert_log_files_to_tables: start"
         );
 
-        for i in 0..self.logs.len() {
-            let lognum = self.logs[i];
-            let logname = log_file_name(&self.dbname, lognum);
+        let log_len = self.logs().len();
+        for i in 0..log_len {
+            let lognum = self.logs()[i];
+            let logname = log_file_name(self.dbname(), lognum);
 
-            trace!(lognum, file = %logname, "Repairer::convert_log_files_to_tables: converting log");
+            trace!(
+                lognum,
+                file = %logname,
+                "Repairer::convert_log_files_to_tables: converting log"
+            );
 
             let status = self.convert_log_to_table(lognum);
 

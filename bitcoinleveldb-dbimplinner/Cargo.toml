@@ -19,3 +19,5 @@ bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
 bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
 bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
 bitcoinleveldb-dbimplwriter = { path = "../bitcoinleveldb-dbimplwriter" }
+bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }

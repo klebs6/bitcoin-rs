@@ -628,33 +628,579 @@ mod scalar_reduce_512_contracts {
     #[traced_test]
     #[cfg(feature = "widemul-int64")]
     fn scalar_reduce_512_matches_reference_mod_n_for_u32_limb_input() {
-        info!("validating scalar_reduce_512 (widemul-int64) against reference mod-n reduction");
+        tracing::info!("validating scalar_reduce_512 (widemul-int64) against reference mod-n reduction");
 
-        for (i, a_be) in CANONICAL_TEST_SCALARS_BE.iter().enumerate() {
-            let a = scalar_from_be_bytes(a_be);
-            for (j, b_be) in CANONICAL_TEST_SCALARS_BE.iter().enumerate() {
-                let b = scalar_from_be_bytes(b_be);
+        const MOD_N: [u64; 4] = [
+            0xBFD25E8CD0364141u64,
+            0xBAAEDCE6AF48A03Bu64,
+            0xFFFFFFFFFFFFFFFEu64,
+            0xFFFFFFFFFFFFFFFFu64,
+        ];
 
-                let mut l = [0u32; 16];
-                unsafe {
-                    scalar_mul_512(l.as_mut_ptr(), &a as *const Scalar, &b as *const Scalar);
+        fn u64x4_le_ge(a: &[u64; 4], b: &[u64; 4]) -> bool {
+            for i in (0..4).rev() {
+                if a[i] > b[i] {
+                    return true;
                 }
-
-                let mut r = scalar_zero_value();
-                unsafe {
-                    scalar_reduce_512(&mut r as *mut Scalar, l.as_ptr());
+                if a[i] < b[i] {
+                    return false;
                 }
-                let got = scalar_to_be_bytes(&r);
+            }
+            true
+        }
 
-                let prod = be_mul_256(a_be, b_be);
-                let expected = be_mod_512_by_order_n(&prod);
+        fn u64x4_le_add(a: &[u64; 4], b: &[u64; 4]) -> ([u64; 4], u64) {
+            let mut out = [0u64; 4];
+            let mut carry: u128 = 0;
+            for i in 0..4 {
+                let sum = a[i] as u128 + b[i] as u128 + carry;
+                out[i] = sum as u64;
+                carry = sum >> 64;
+            }
+            (out, carry as u64)
+        }
 
-                trace!(i, j, ?got, ?expected, "reduce_512 case");
-                assert_eq!(got, expected);
-                assert!(scalar_is_normalized_bytes(&got));
+        fn u64x4_le_sub_wrapping(a: &[u64; 4], b: &[u64; 4]) -> [u64; 4] {
+            let mut out = [0u64; 4];
+            let mut borrow: u128 = 0;
+            for i in 0..4 {
+                let ai = a[i] as u128;
+                let bi = b[i] as u128 + borrow;
+                if ai >= bi {
+                    out[i] = (ai - bi) as u64;
+                    borrow = 0;
+                } else {
+                    out[i] = ((1u128 << 64) + ai - bi) as u64;
+                    borrow = 1;
+                }
+            }
+            out
+        }
+
+        fn u64x4_le_add_mod_n(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
+            let (sum, carry) = u64x4_le_add(&a, &b);
+            if carry != 0 || u64x4_le_ge(&sum, &MOD_N) {
+                u64x4_le_sub_wrapping(&sum, &MOD_N)
+            } else {
+                sum
             }
         }
 
-        debug!("scalar_reduce_512 reference match completed");
+        fn u64x4_le_to_be_bytes(limbs: &[u64; 4]) -> [u8; 32] {
+            let mut out = [0u8; 32];
+            for i in 0..4 {
+                let be = limbs[3 - i].to_be_bytes();
+                out[i * 8..(i + 1) * 8].copy_from_slice(&be);
+            }
+            out
+        }
+
+        fn reference_reduce_512_mod_n_u32_limbs(l: &[u32; 16]) -> [u8; 32] {
+            let mut rem = [0u64; 4];
+
+            for idx in (0..16usize).rev() {
+                for _ in 0..32 {
+                    rem = u64x4_le_add_mod_n(rem, rem);
+                }
+                let add = [l[idx] as u64, 0u64, 0u64, 0u64];
+                rem = u64x4_le_add_mod_n(rem, add);
+            }
+
+            u64x4_le_to_be_bytes(&rem)
+        }
+
+        unsafe fn scalar_from_be_bytes(bytes: &[u8; 32]) -> Scalar {
+            let mut s = core::mem::MaybeUninit::<Scalar>::zeroed().assume_init();
+            let mut overflow: i32 = 0;
+            scalar_set_b32(&mut s, bytes.as_ptr(), &mut overflow);
+            if overflow != 0 {
+                tracing::warn!(overflow, "scalar_set_b32 reported overflow for canonical-vector input");
+            }
+            s
+        }
+
+        unsafe fn scalar_to_be_bytes(s: &Scalar) -> [u8; 32] {
+            let mut out = [0u8; 32];
+            scalar_get_b32(out.as_mut_ptr(), s);
+            out
+        }
+
+        let canonical_vectors: [[u8; 32]; 10] = {
+            let v0 = [0u8; 32];
+
+            let mut v1 = [0u8; 32];
+            v1[31] = 1;
+
+            let mut v2 = [0u8; 32];
+            v2[31] = 2;
+
+            let mut v3 = [0u8; 32];
+            v3[31] = 3;
+
+            let mut v4 = [0u8; 32];
+            v4[28..32].copy_from_slice(&[0xFFu8; 4]);
+
+            let mut v5 = [0u8; 32];
+            v5[15] = 0x80;
+
+            let mut v6 = [0u8; 32];
+            v6[15] = 0x01;
+
+            let mut v7 = [0u8; 32];
+            v7[0] = 0x80;
+
+            let v8: [u8; 32] = [
+                0x7F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFF, 0x5D, 0x57, 0x6E, 0x73, 0x57, 0xA4, 0x50, 0x1D, 0xDF, 0xE9, 0x2F, 0x46, 0x68, 0x1B,
+                0x20, 0xA0,
+            ];
+
+            let v9: [u8; 32] = [
+                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+                0xFE, 0xBA, 0xAE, 0xDC, 0xE6, 0xAF, 0x48, 0xA0, 0x3B, 0xBF, 0xD2, 0x5E, 0x8C, 0xD0, 0x36,
+                0x41, 0x40,
+            ];
+
+            [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9]
+        };
+
+        for (i, a_bytes) in canonical_vectors.iter().enumerate() {
+            for (j, b_bytes) in canonical_vectors.iter().enumerate() {
+                let (l, got) = unsafe {
+                    let a = scalar_from_be_bytes(a_bytes);
+                    let b = scalar_from_be_bytes(b_bytes);
+
+                    let mut wide = [0u32; 16];
+                    scalar_mul_512(wide.as_mut_ptr(), &a, &b);
+
+                    let mut r = core::mem::MaybeUninit::<Scalar>::zeroed().assume_init();
+                    scalar_reduce_512(&mut r, wide.as_ptr());
+
+                    (wide, scalar_to_be_bytes(&r))
+                };
+
+                let expected = reference_reduce_512_mod_n_u32_limbs(&l);
+
+                tracing::trace!(i, j, l = ?l, got = ?got, expected = ?expected, "reduce_512 case");
+                assert_eq!(got, expected);
+            }
+        }
+    }
+
+    #[traced_test]
+    fn scalar_reduce_512_attack_surface_matches_reference_for_wide_edge_patterns_and_random_inputs() {
+        tracing::info!(
+            "adversarial reduction coverage: scalar_reduce_512 vs independent mod-n reference for edge patterns and random wide inputs"
+        );
+
+        const MOD_N: [u64; 4] = [
+            0xBFD25E8CD0364141u64,
+            0xBAAEDCE6AF48A03Bu64,
+            0xFFFFFFFFFFFFFFFEu64,
+            0xFFFFFFFFFFFFFFFFu64,
+        ];
+
+        const N_BYTES: [u8; 32] = [
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+            0xFE, 0xBA, 0xAE, 0xDC, 0xE6, 0xAF, 0x48, 0xA0, 0x3B, 0xBF, 0xD2, 0x5E, 0x8C, 0xD0, 0x36,
+            0x41, 0x41,
+        ];
+
+        const N_MINUS_ONE_BYTES: [u8; 32] = [
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+            0xFE, 0xBA, 0xAE, 0xDC, 0xE6, 0xAF, 0x48, 0xA0, 0x3B, 0xBF, 0xD2, 0x5E, 0x8C, 0xD0, 0x36,
+            0x41, 0x40,
+        ];
+
+        fn u64x4_le_ge(a: &[u64; 4], b: &[u64; 4]) -> bool {
+            for i in (0..4).rev() {
+                if a[i] > b[i] {
+                    return true;
+                }
+                if a[i] < b[i] {
+                    return false;
+                }
+            }
+            true
+        }
+
+        fn u64x4_le_add(a: &[u64; 4], b: &[u64; 4]) -> ([u64; 4], u64) {
+            let mut out = [0u64; 4];
+            let mut carry: u128 = 0;
+            for i in 0..4 {
+                let sum = a[i] as u128 + b[i] as u128 + carry;
+                out[i] = sum as u64;
+                carry = sum >> 64;
+            }
+            (out, carry as u64)
+        }
+
+        fn u64x4_le_sub_wrapping(a: &[u64; 4], b: &[u64; 4]) -> [u64; 4] {
+            let mut out = [0u64; 4];
+            let mut borrow: u128 = 0;
+            for i in 0..4 {
+                let ai = a[i] as u128;
+                let bi = b[i] as u128 + borrow;
+                if ai >= bi {
+                    out[i] = (ai - bi) as u64;
+                    borrow = 0;
+                } else {
+                    out[i] = ((1u128 << 64) + ai - bi) as u64;
+                    borrow = 1;
+                }
+            }
+            out
+        }
+
+        fn u64x4_le_add_mod_n(a: [u64; 4], b: [u64; 4]) -> [u64; 4] {
+            let (sum, carry) = u64x4_le_add(&a, &b);
+            if carry != 0 || u64x4_le_ge(&sum, &MOD_N) {
+                u64x4_le_sub_wrapping(&sum, &MOD_N)
+            } else {
+                sum
+            }
+        }
+
+        fn u64x4_le_to_be_bytes(limbs: &[u64; 4]) -> [u8; 32] {
+            let mut out = [0u8; 32];
+            for i in 0..4 {
+                let be = limbs[3 - i].to_be_bytes();
+                out[i * 8..(i + 1) * 8].copy_from_slice(&be);
+            }
+            out
+        }
+
+        fn reference_reduce_512_mod_n_u32_limbs(l: &[u32; 16]) -> [u8; 32] {
+            let mut rem = [0u64; 4];
+
+            for idx in (0..16usize).rev() {
+                for _ in 0..32 {
+                    rem = u64x4_le_add_mod_n(rem, rem);
+                }
+                rem = u64x4_le_add_mod_n(rem, [l[idx] as u64, 0u64, 0u64, 0u64]);
+            }
+
+            u64x4_le_to_be_bytes(&rem)
+        }
+
+        fn bytes_be_to_u32_words_le(bytes: &[u8; 32]) -> [u32; 8] {
+            let mut words = [0u32; 8];
+            for i in 0..8 {
+                let start = 32 - 4 * (i + 1);
+                let mut buf = [0u8; 4];
+                buf.copy_from_slice(&bytes[start..start + 4]);
+                words[i] = u32::from_be_bytes(buf);
+            }
+            words
+        }
+
+        fn prng_next_u64(state: &mut u64) -> u64 {
+            let mut x = *state;
+            x ^= x >> 12;
+            x ^= x << 25;
+            x ^= x >> 27;
+            *state = x;
+            x.wrapping_mul(2685821657736338717u64)
+        }
+
+        fn prng_fill_u32x16(state: &mut u64) -> [u32; 16] {
+            let mut out = [0u32; 16];
+            for i in 0..8 {
+                let v = prng_next_u64(state);
+                out[i * 2] = v as u32;
+                out[i * 2 + 1] = (v >> 32) as u32;
+            }
+            out
+        }
+
+        unsafe fn scalar_to_be_bytes(s: &Scalar) -> [u8; 32] {
+            let mut out = [0u8; 32];
+            scalar_get_b32(out.as_mut_ptr(), s);
+            out
+        }
+
+        unsafe fn reduce_512_via_api(l: &[u32; 16]) -> [u8; 32] {
+            let mut r = core::mem::MaybeUninit::<Scalar>::zeroed().assume_init();
+            scalar_reduce_512(&mut r, l.as_ptr());
+            scalar_to_be_bytes(&r)
+        }
+
+        unsafe fn assert_canonical_bytes(bytes: &[u8; 32]) {
+            let mut s = core::mem::MaybeUninit::<Scalar>::zeroed().assume_init();
+            let mut overflow: i32 = 0;
+            scalar_set_b32(&mut s, bytes.as_ptr(), &mut overflow);
+            assert_eq!(overflow, 0);
+
+            let mut roundtrip = [0u8; 32];
+            scalar_get_b32(roundtrip.as_mut_ptr(), &s);
+            assert_eq!(roundtrip, *bytes);
+        }
+
+        let mut n_plus_one_bytes = N_BYTES;
+        n_plus_one_bytes[31] = n_plus_one_bytes[31].wrapping_add(1);
+
+        let n_words = bytes_be_to_u32_words_le(&N_BYTES);
+        let n_minus_one_words = bytes_be_to_u32_words_le(&N_MINUS_ONE_BYTES);
+        let n_plus_one_words = bytes_be_to_u32_words_le(&n_plus_one_bytes);
+
+        let mut patterns: Vec<(&'static str, [u32; 16])> = Vec::new();
+
+        patterns.push(("all_zero", [0u32; 16]));
+        patterns.push(("all_ones", [0xFFFF_FFFFu32; 16]));
+        patterns.push(("all_aaaa", [0xAAAA_AAAAu32; 16]));
+        patterns.push(("all_5555", [0x5555_5555u32; 16]));
+
+        let mut alternating = [0u32; 16];
+        for i in 0..16 {
+            alternating[i] = if (i & 1) == 0 { 0xAAAA_AAAAu32 } else { 0x5555_5555u32 };
+        }
+        patterns.push(("alternating_aaaa_5555", alternating));
+
+        let mut low_half_ones = [0u32; 16];
+        for i in 0..8 {
+            low_half_ones[i] = 0xFFFF_FFFFu32;
+        }
+        patterns.push(("low_half_ones", low_half_ones));
+
+        let mut high_half_ones = [0u32; 16];
+        for i in 8..16 {
+            high_half_ones[i] = 0xFFFF_FFFFu32;
+        }
+        patterns.push(("high_half_ones", high_half_ones));
+
+        let mut increasing = [0u32; 16];
+        for i in 0..16 {
+            increasing[i] = i as u32;
+        }
+        patterns.push(("increasing_words", increasing));
+
+        let mut decreasing = [0u32; 16];
+        for i in 0..16 {
+            decreasing[i] = (15 - i) as u32;
+        }
+        patterns.push(("decreasing_words", decreasing));
+
+        let mut single_lsb = [0u32; 16];
+        single_lsb[0] = 1;
+        patterns.push(("single_lsb", single_lsb));
+
+        let mut single_msb = [0u32; 16];
+        single_msb[15] = 1;
+        patterns.push(("single_msb", single_msb));
+
+        let mut n_in_low_half = [0u32; 16];
+        for i in 0..8 {
+            n_in_low_half[i] = n_words[i];
+        }
+        patterns.push(("n_in_low_half", n_in_low_half));
+
+        let mut n_minus_one_in_low_half = [0u32; 16];
+        for i in 0..8 {
+            n_minus_one_in_low_half[i] = n_minus_one_words[i];
+        }
+        patterns.push(("n_minus_one_in_low_half", n_minus_one_in_low_half));
+
+        let mut n_plus_one_in_low_half = [0u32; 16];
+        for i in 0..8 {
+            n_plus_one_in_low_half[i] = n_plus_one_words[i];
+        }
+        patterns.push(("n_plus_one_in_low_half", n_plus_one_in_low_half));
+
+        let mut n_in_high_half = [0u32; 16];
+        for i in 0..8 {
+            n_in_high_half[i + 8] = n_words[i];
+        }
+        patterns.push(("n_in_high_half", n_in_high_half));
+
+        let mut n_minus_one_in_high_half = [0u32; 16];
+        for i in 0..8 {
+            n_minus_one_in_high_half[i + 8] = n_minus_one_words[i];
+        }
+        patterns.push(("n_minus_one_in_high_half", n_minus_one_in_high_half));
+
+        let mut n_plus_one_in_high_half = [0u32; 16];
+        for i in 0..8 {
+            n_plus_one_in_high_half[i + 8] = n_plus_one_words[i];
+        }
+        patterns.push(("n_plus_one_in_high_half", n_plus_one_in_high_half));
+
+        tracing::info!(pattern_count = patterns.len(), "running wide pattern reduction cases");
+
+        for (name, wide) in patterns.iter() {
+            let expected = reference_reduce_512_mod_n_u32_limbs(wide);
+            let got = unsafe { reduce_512_via_api(wide) };
+
+            tracing::debug!(name = *name, "scalar_reduce_512 pattern case");
+            tracing::trace!(name = *name, wide = ?wide, got = ?got, expected = ?expected, "reduce_512 pattern details");
+
+            if got != expected {
+                tracing::error!(name = *name, wide = ?wide, got = ?got, expected = ?expected, "scalar_reduce_512 mismatch on pattern");
+            }
+            assert_eq!(got, expected);
+            unsafe { assert_canonical_bytes(&got) };
+        }
+
+        tracing::info!("running randomized wide reduction cases");
+
+        const RANDOM_CASES: usize = 256;
+        let mut rng_state: u64 = 0x9E37_79B9_7F4A_7C15u64;
+
+        for iter in 0..RANDOM_CASES {
+            if (iter & 63) == 0 {
+                tracing::debug!(iter, "randomized scalar_reduce_512 sweep progress");
+            }
+
+            let wide = prng_fill_u32x16(&mut rng_state);
+            let expected = reference_reduce_512_mod_n_u32_limbs(&wide);
+            let got = unsafe { reduce_512_via_api(&wide) };
+
+            tracing::trace!(
+                iter,
+                w0 = wide[0],
+                w15 = wide[15],
+                got0 = got[0],
+                got31 = got[31],
+                "reduce_512 randomized sample"
+            );
+
+            if got != expected {
+                tracing::error!(
+                    iter,
+                    wide = ?wide,
+                    got = ?got,
+                    expected = ?expected,
+                    "scalar_reduce_512 mismatch on random wide input"
+                );
+            }
+            assert_eq!(got, expected);
+            unsafe { assert_canonical_bytes(&got) };
+        }
+
+        tracing::debug!("scalar_reduce_512 adversarial coverage complete");
+    }
+
+    #[traced_test]
+    fn scalar_mul_and_reduce_512_attack_surface_remain_consistent_for_randomized_pairs() {
+        tracing::info!(
+            "adversarial consistency coverage: scalar_mul must match scalar_mul_512 + scalar_reduce_512 for randomized canonical inputs"
+        );
+
+        fn prng_next_u64(state: &mut u64) -> u64 {
+            let mut x = *state;
+            x ^= x >> 12;
+            x ^= x << 25;
+            x ^= x >> 27;
+            *state = x;
+            x.wrapping_mul(2685821657736338717u64)
+        }
+
+        fn prng_fill_b32(state: &mut u64) -> [u8; 32] {
+            let mut out = [0u8; 32];
+            for i in 0..4 {
+                let v = prng_next_u64(state);
+                out[i * 8..(i + 1) * 8].copy_from_slice(&v.to_be_bytes());
+            }
+            out
+        }
+
+        unsafe fn scalar_to_be_bytes(s: &Scalar) -> [u8; 32] {
+            let mut out = [0u8; 32];
+            scalar_get_b32(out.as_mut_ptr(), s);
+            out
+        }
+
+        unsafe fn canonical_scalar_from_bytes(bytes: &[u8; 32]) -> (Scalar, [u8; 32]) {
+            let mut s = core::mem::MaybeUninit::<Scalar>::zeroed().assume_init();
+            let mut overflow: i32 = 0;
+            scalar_set_b32(&mut s, bytes.as_ptr(), &mut overflow);
+            tracing::trace!(overflow, "canonicalize scalar_set_b32 overflow flag");
+
+            let canonical = scalar_to_be_bytes(&s);
+
+            let mut s2 = core::mem::MaybeUninit::<Scalar>::zeroed().assume_init();
+            let mut overflow2: i32 = 0;
+            scalar_set_b32(&mut s2, canonical.as_ptr(), &mut overflow2);
+            assert_eq!(overflow2, 0);
+
+            (s2, canonical)
+        }
+
+        unsafe fn assert_canonical_bytes(bytes: &[u8; 32]) {
+            let mut s = core::mem::MaybeUninit::<Scalar>::zeroed().assume_init();
+            let mut overflow: i32 = 0;
+            scalar_set_b32(&mut s, bytes.as_ptr(), &mut overflow);
+            assert_eq!(overflow, 0);
+
+            let mut roundtrip = [0u8; 32];
+            scalar_get_b32(roundtrip.as_mut_ptr(), &s);
+            assert_eq!(roundtrip, *bytes);
+        }
+
+        unsafe fn scalar_mul_to_bytes(a: &Scalar, b: &Scalar) -> [u8; 32] {
+            let mut r = core::mem::MaybeUninit::<Scalar>::zeroed().assume_init();
+            scalar_mul(&mut r, a, b);
+            scalar_to_be_bytes(&r)
+        }
+
+        unsafe fn scalar_mul_512_then_reduce_to_bytes(a: &Scalar, b: &Scalar) -> [u8; 32] {
+            let mut wide = [0u32; 16];
+            scalar_mul_512(wide.as_mut_ptr(), a, b);
+
+            let mut r = core::mem::MaybeUninit::<Scalar>::zeroed().assume_init();
+            scalar_reduce_512(&mut r, wide.as_ptr());
+
+            let out = scalar_to_be_bytes(&r);
+            tracing::trace!(wide0 = wide[0], wide15 = wide[15], out0 = out[0], out31 = out[31], "mul_512+reduce sample");
+            out
+        }
+
+        const ITERATIONS: usize = 256;
+        let mut rng_state: u64 = 0x4F1B_9D25_3C8A_77E1u64;
+
+        for iter in 0..ITERATIONS {
+            if (iter & 63) == 0 {
+                tracing::debug!(iter, "mul vs mul_512+reduce sweep progress");
+            }
+
+            let a_raw = prng_fill_b32(&mut rng_state);
+            let b_raw = prng_fill_b32(&mut rng_state);
+
+            let (a, a_bytes) = unsafe { canonical_scalar_from_bytes(&a_raw) };
+            let (b, b_bytes) = unsafe { canonical_scalar_from_bytes(&b_raw) };
+
+            let got_mul = unsafe { scalar_mul_to_bytes(&a, &b) };
+            let got_reduce = unsafe { scalar_mul_512_then_reduce_to_bytes(&a, &b) };
+
+            tracing::trace!(
+                iter,
+                a0 = a_bytes[0],
+                a31 = a_bytes[31],
+                b0 = b_bytes[0],
+                b31 = b_bytes[31],
+                mul0 = got_mul[0],
+                mul31 = got_mul[31],
+                red0 = got_reduce[0],
+                red31 = got_reduce[31],
+                "consistency sample"
+            );
+
+            if got_mul != got_reduce {
+                tracing::error!(
+                    iter,
+                    a = ?a_bytes,
+                    b = ?b_bytes,
+                    mul = ?got_mul,
+                    reduced = ?got_reduce,
+                    "scalar_mul != scalar_mul_512+scalar_reduce_512"
+                );
+            }
+
+            assert_eq!(got_mul, got_reduce);
+
+            unsafe { assert_canonical_bytes(&got_mul) };
+            unsafe { assert_canonical_bytes(&got_reduce) };
+        }
+
+        tracing::debug!("mul vs mul_512+reduce adversarial consistency coverage complete");
     }
 }

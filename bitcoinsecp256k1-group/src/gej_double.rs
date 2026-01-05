@@ -92,3 +92,38 @@ pub fn gej_double(r: *mut Gej, a: *const Gej) {
         fe_add(core::ptr::addr_of_mut!((*r).y), core::ptr::addr_of!(t2)); 
     }
 }
+
+#[cfg(test)]
+mod gej_double_rs_exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn gej_double_matches_adding_point_to_itself_and_preserves_infinity() {
+        tracing::info!("Validating gej_double equals gej_add_var(a,a) and preserves infinity.");
+
+        unsafe {
+            let mut a: Gej = core::mem::zeroed();
+            gej_set_ge(core::ptr::addr_of_mut!(a), core::ptr::addr_of!(ge_const_g));
+
+            let mut dbl: Gej = core::mem::zeroed();
+            gej_double(core::ptr::addr_of_mut!(dbl), core::ptr::addr_of!(a));
+
+            let mut sum: Gej = core::mem::zeroed();
+            gej_add_var(
+                core::ptr::addr_of_mut!(sum),
+                core::ptr::addr_of!(a),
+                core::ptr::addr_of!(a),
+                core::ptr::null_mut(),
+            );
+
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&dbl, &sum));
+
+            let mut inf: Gej = core::mem::zeroed();
+            gej_set_infinity(core::ptr::addr_of_mut!(inf));
+
+            let mut dbl_inf: Gej = core::mem::zeroed();
+            gej_double(core::ptr::addr_of_mut!(dbl_inf), core::ptr::addr_of!(inf));
+            assert!(gej_is_infinity(core::ptr::addr_of!(dbl_inf)) != 0);
+        }
+    }
+}

@@ -4,16 +4,18 @@ crate::ix!();
 impl Repairer {
     
     pub fn find_files(&mut self) -> crate::Status {
-        trace!(dbname = %self.dbname, "Repairer::find_files: start");
+        trace!(dbname = %self.dbname(), "Repairer::find_files: start");
 
         let mut filenames: Vec<String> = Vec::new();
+
+        let dbname_ptr: *const String = self.dbname() as *const String;
         let status = self
-            .env
-            .get_children(&self.dbname, &mut filenames as *mut Vec<String>);
+            .env_mut()
+            .get_children(unsafe { &*dbname_ptr }, &mut filenames as *mut Vec<String>);
 
         if !status.is_ok() {
             debug!(
-                dbname = %self.dbname,
+                dbname = %self.dbname(),
                 status = %status.to_string(),
                 "Repairer::find_files: GetChildren failed"
             );
@@ -21,10 +23,10 @@ impl Repairer {
         }
 
         if filenames.is_empty() {
-            let msg1 = Slice::from(self.dbname.as_bytes());
+            let msg1 = Slice::from(self.dbname().as_bytes());
             let msg2 = Slice::from(&b"repair found no files"[..]);
             error!(
-                dbname = %self.dbname,
+                dbname = %self.dbname(),
                 "Repairer::find_files: no files found"
             );
             return crate::Status::io_error(&msg1, Some(&msg2));
@@ -37,19 +39,19 @@ impl Repairer {
             if parse_file_name(&filenames[i], &mut number as *mut u64, &mut ty as *mut FileType)
             {
                 if matches!(ty, FileType::DescriptorFile) {
-                    self.manifests.push(filenames[i].clone());
+                    self.manifests_mut().push(filenames[i].clone());
                 } else {
                     let next = number.wrapping_add(1);
-                    if next > self.next_file_number {
-                        self.next_file_number = next;
+                    if next > *self.next_file_number() {
+                        *self.next_file_number_mut() = next;
                     }
 
                     match ty {
                         FileType::LogFile => {
-                            self.logs.push(number);
+                            self.logs_mut().push(number);
                         }
                         FileType::TableFile => {
-                            self.table_numbers.push(number);
+                            self.table_numbers_mut().push(number);
                         }
                         _ => {
                             // Ignore other files
@@ -60,10 +62,10 @@ impl Repairer {
         }
 
         debug!(
-            manifests = self.manifests.len(),
-            logs = self.logs.len(),
-            tables = self.table_numbers.len(),
-            next_file_number = self.next_file_number,
+            manifests = self.manifests().len(),
+            logs = self.logs().len(),
+            tables = self.table_numbers().len(),
+            next_file_number = *self.next_file_number(),
             "Repairer::find_files: done"
         );
 

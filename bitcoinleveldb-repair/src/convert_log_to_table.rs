@@ -9,10 +9,10 @@ impl Repairer {
         trace!(lognum = log, "Repairer::convert_log_to_table: start");
 
         // Open the log file
-        let logname = log_file_name(&self.dbname, log);
+        let logname = log_file_name(self.dbname(), log);
 
         let mut lfile_ptr: *mut Box<dyn SequentialFile> = ptr::null_mut();
-        let mut status = self.env.new_sequential_file(&logname, &mut lfile_ptr);
+        let mut status = self.env_mut().new_sequential_file(&logname, &mut lfile_ptr);
 
         if !status.is_ok() {
             debug!(
@@ -39,7 +39,7 @@ impl Repairer {
 
             // Create the log reader.
             let mut reporter_box: Box<RepairLogReporter> = Box::new(RepairLogReporter {
-                info_log: *self.options.info_log(),
+                info_log: *self.options().info_log(),
                 lognum:   log,
             });
             let reporter_ptr: *mut RepairLogReporter = &mut *reporter_box;
@@ -62,7 +62,9 @@ impl Repairer {
 
             let mut batch = WriteBatch::new();
 
-            mem = Box::into_raw(Box::new(MemTable::new(&self.icmp)));
+            let icmp_ptr: *const InternalKeyComparator =
+                self.icmp() as *const InternalKeyComparator;
+            mem = Box::into_raw(Box::new(MemTable::new(unsafe { &*icmp_ptr })));
             unsafe {
                 (*mem).ref_();
             }
@@ -103,17 +105,22 @@ impl Repairer {
         // since ExtractMetaData() will also generate edits.
         let mut meta = FileMetaData::default();
 
-        let file_no = self.next_file_number;
-        self.next_file_number = self.next_file_number.wrapping_add(1);
+        let file_no = *self.next_file_number();
+        *self.next_file_number_mut() = file_no.wrapping_add(1);
         meta.set_number(file_no);
 
         let iter: *mut LevelDBIterator = unsafe { (*mem).new_iterator() };
 
+        let dbname_ptr: *const String = self.dbname() as *const String;
+        let options_ptr: *const Options = self.options() as *const Options;
+        let table_cache_ptr: *mut TableCache = *self.table_cache();
+        let env_rc = self.env_rc().clone();
+
         status = build_table(
-            &self.dbname,
-            &mut *self.env,
-            &self.options,
-            self.table_cache,
+            unsafe { &*dbname_ptr },
+            env_rc,
+            unsafe { &*options_ptr },
+            table_cache_ptr,
             iter,
             &mut meta,
         );
@@ -129,7 +136,7 @@ impl Repairer {
 
         if status.is_ok() {
             if *meta.file_size() > 0 {
-                self.table_numbers.push(*meta.number());
+                self.table_numbers_mut().push(*meta.number());
             }
         }
 

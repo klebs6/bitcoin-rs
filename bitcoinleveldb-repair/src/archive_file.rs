@@ -2,6 +2,7 @@
 crate::ix!();
 
 impl Repairer {
+
     pub fn archive_file(&mut self, fname: &String) {
         trace!(file = %fname, "Repairer::archive_file: start");
 
@@ -18,7 +19,7 @@ impl Repairer {
         new_dir.push_str("/lost");
 
         // Ignore error
-        let s_create = self.env.create_dir(&new_dir);
+        let s_create = self.env_mut().create_dir(&new_dir);
         if !s_create.is_ok() {
             debug!(
                 dir = %new_dir,
@@ -38,7 +39,7 @@ impl Repairer {
         new_file.push('/');
         new_file.push_str(base);
 
-        let s_rename = self.env.rename_file(fname, &new_file);
+        let s_rename = self.env_mut().rename_file(fname, &new_file);
 
         info!(
             src = %fname,

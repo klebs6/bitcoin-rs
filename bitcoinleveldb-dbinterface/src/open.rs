@@ -3,66 +3,171 @@ crate::ix!();
 
 pub trait DBOpen {
 
-    /**
-      | Open the database with the specified "name".
-      |
-      | Stores a pointer to a heap-allocated database
-      | in *dbptr and returns OK on success.
-      |
-      | Stores nullptr in *dbptr and returns a non-OK
-      | status on error.
-      |
-      | Caller should delete *dbptr when it is no
-      | longer needed.
-      */
-    fn open(&mut self, 
+    /// Open the database with the specified "name".
+    /// 
+    /// Stores a pointer to a heap-allocated database in *dbptr and returns OK on success.
+    /// 
+    /// Stores nullptr in *dbptr and returns a non-OK status on error.
+    /// 
+    /// Caller should delete *dbptr when it is no longer needed.
+    ///
+    fn open(
+        &mut self,
         options: &Options,
-        dbname:  &String,
-        dbptr:   *mut *mut dyn DB) -> crate::Status {
-        
-        todo!();
-        /*
-            *dbptr = nullptr;
+        dbname: &String,
+        dbptr: *mut *mut dyn DB,
+    ) -> Status;
+}
 
-      DBImpl* impl = new DBImpl(options, dbname);
-      impl->mutex_.Lock();
-      VersionEdit edit;
-      // Recover handles create_if_missing, error_if_exists
-      bool save_manifest = false;
-      Status s = impl->Recover(&edit, &save_manifest);
-      if (s.ok() && impl->mem_ == nullptr) {
-        // Create new log and a corresponding memtable.
-        uint64_t new_log_number = impl->versions_->NewFileNumber();
-        WritableFile* lfile;
-        s = options.env->NewWritableFile(LogFileName(dbname, new_log_number),
-                                         &lfile);
-        if (s.ok()) {
-          edit.SetLogNumber(new_log_number);
-          impl->logfile_ = lfile;
-          impl->logfile_number_ = new_log_number;
-          impl->log_ = new LogWriter(lfile);
-          impl->mem_ = new MemTable(impl->internal_comparator_);
-          impl->mem_->Ref();
+#[cfg(test)]
+mod open_pointer_contract_suite {
+    use super::*;
+    use core::ptr;
+    use tracing::{debug, error, info, trace, warn};
+
+    struct DummySnapshot;
+
+    impl Snapshot for DummySnapshot {}
+
+    struct DbStub;
+
+    impl DBOpen for DbStub {
+        fn open(
+            &mut self,
+            _options: &Options,
+            _dbname: &String,
+            dbptr: *mut *mut dyn DB,
+        ) -> crate::Status {
+            unsafe {
+                *dbptr = ptr::null_mut();
+            }
+            crate::Status::not_supported(&Slice::from("not used"), None)
         }
-      }
-      if (s.ok() && save_manifest) {
-        edit.SetPrevLogNumber(0);  // No older logs needed after recovery.
-        edit.SetLogNumber(impl->logfile_number_);
-        s = impl->versions_->LogAndApply(&edit, &impl->mutex_);
-      }
-      if (s.ok()) {
-        impl->DeleteObsoleteFiles();
-        impl->MaybeScheduleCompaction();
-      }
-      impl->mutex_.Unlock();
-      if (s.ok()) {
-        assert(impl->mem_ != nullptr);
-        *dbptr = impl;
-      } else {
-        delete impl;
-      }
-      return s;
-        */
     }
 
+    impl DBInterfaceWrite for DbStub {
+        fn write(&mut self, _options: &WriteOptions, _updates: *mut WriteBatch) -> crate::Status {
+            crate::Status::ok()
+        }
+    }
+
+    impl Put for DbStub {}
+    impl Delete for DbStub {}
+
+    impl Get for DbStub {
+        fn get(&mut self, _options: &ReadOptions, _key_: &Slice, _value: *mut String) -> crate::Status {
+            crate::Status::not_found(&Slice::from("missing"), None)
+        }
+    }
+
+    impl NewIterator for DbStub {
+        fn new_iterator(&mut self, _options: &ReadOptions) -> *mut LevelDBIterator {
+            Box::into_raw(Box::new(LevelDBIterator::default()))
+        }
+    }
+
+    impl GetSnapshot for DbStub {
+        fn get_snapshot(&mut self) -> Box<dyn Snapshot> {
+            Box::new(DummySnapshot)
+        }
+    }
+
+    impl ReleaseSnapshot for DbStub {
+        fn release_snapshot(&mut self, snapshot: Box<dyn Snapshot>) {
+            drop(snapshot);
+        }
+    }
+
+    impl GetProperty for DbStub {
+        fn get_property(&mut self, _property: &str, _value: *mut String) -> bool {
+            false
+        }
+    }
+
+    impl GetApproximateSizes for DbStub {
+        fn get_approximate_sizes(
+            &mut self,
+            _range: *const bitcoinleveldb_slice::Range,
+            _n: i32,
+            _sizes: *mut u64,
+        ) {
+        }
+    }
+
+    impl CompactRange for DbStub {
+        fn compact_range(&mut self, _begin: *const Slice, _end: *const Slice) {}
+    }
+
+    impl DB for DbStub {}
+
+    struct OpenProvider;
+
+    impl DBOpen for OpenProvider {
+        fn open(
+            &mut self,
+            _options: &Options,
+            dbname: &String,
+            dbptr: *mut *mut dyn DB,
+        ) -> crate::Status {
+            unsafe {
+                *dbptr = ptr::null_mut();
+            }
+
+            if dbname.len() == 0 {
+                return crate::Status::invalid_argument(&Slice::from("empty name"), None);
+            }
+
+            let db: Box<dyn DB> = Box::new(DbStub);
+            let raw: *mut dyn DB = Box::into_raw(db);
+
+            unsafe {
+                *dbptr = raw;
+            }
+
+            return crate::Status::ok();
+        }
+    }
+
+    #[traced_test]
+    fn open_sets_dbptr_to_null_on_error() {
+        let mut provider = OpenProvider;
+        let options = Options::default();
+
+        let mut out: *mut dyn DB = ptr::null_mut();
+        let out_ptr: *mut *mut dyn DB = &mut out as *mut *mut dyn DB;
+
+        let empty = Slice::from("").to_string();
+
+        trace!("calling open() with empty name");
+        let s = provider.open(&options, &empty, out_ptr);
+
+        assert!(s.is_invalid_argument());
+        assert!(out.is_null());
+
+        info!("verified open() leaves *dbptr as nullptr on error");
+    }
+
+    #[traced_test]
+    fn open_sets_dbptr_to_heap_allocated_db_on_success_and_caller_can_drop_it() {
+        let mut provider = OpenProvider;
+        let options = Options::default();
+
+        let mut out: *mut dyn DB = ptr::null_mut();
+        let out_ptr: *mut *mut dyn DB = &mut out as *mut *mut dyn DB;
+
+        let name = Slice::from("testdb").to_string();
+
+        trace!("calling open() expecting success");
+        let s = provider.open(&options, &name, out_ptr);
+
+        assert!(s.is_ok());
+        assert!(!out.is_null());
+
+        trace!("dropping returned db pointer");
+        unsafe {
+            drop(Box::from_raw(out));
+        }
+
+        info!("verified open() can hand ownership to caller via *mut dyn DB");
+    }
 }

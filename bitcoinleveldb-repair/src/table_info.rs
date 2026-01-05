@@ -1,6 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-repair/src/table_info.rs ]
 crate::ix!();
 
+#[derive(Default, Getters, MutGetters)]
+#[getset(get="pub", get_mut="pub(crate)")]
 pub struct RepairerTableInfo {
     meta:         FileMetaData,
     max_sequence: SequenceNumber,

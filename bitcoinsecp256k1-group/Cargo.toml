@@ -13,6 +13,7 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
+tracing.workspace = true
 bitcoinsecp256k1-scratch = { path = "../bitcoinsecp256k1-scratch" }
 
 [dependencies.bitcoin-derive]

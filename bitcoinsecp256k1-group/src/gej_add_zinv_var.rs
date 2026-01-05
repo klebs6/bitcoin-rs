@@ -138,3 +138,189 @@ pub fn gej_add_zinv_var(r: *mut Gej, a: *const Gej, b: *const Ge, bzinv: *const 
         fe_add(core::ptr::addr_of_mut!((*r).y), core::ptr::addr_of!(h3));
     }
 }
+
+#[cfg(test)]
+mod gej_add_zinv_var_rs_exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn gej_add_zinv_var_matches_gej_add_var_for_rescaled_b_with_known_inverse() {
+        tracing::info!(
+            "Validating gej_add_zinv_var matches gej_add_var when b is provided as Jacobian (X,Y) with known z inverse (bzinv)."
+        );
+
+        unsafe {
+            const N: usize = 6;
+
+            let base: [Gej; N] =
+                secp256k1_group_exhaustive_test_support::generate_gej_multiples_from_affine::<N>(
+                    &*core::ptr::addr_of!(ge_const_g),
+                );
+
+            let a_scales: [i32; 3] = [1, 2, 7];
+            let b_scales: [i32; 3] = [1, 3, 13];
+
+            let mut m: usize = 0;
+            while m < N {
+                let mut n: usize = 1; // exclude infinity for b (index 0)
+                while n < N {
+                    let mut ia: usize = 0;
+                    while ia < a_scales.len() {
+                        let mut ib: usize = 0;
+                        while ib < b_scales.len() {
+                            let sa: Fe =
+                                secp256k1_group_exhaustive_test_support::fe_int(a_scales[ia]);
+                            let sb: Fe =
+                                secp256k1_group_exhaustive_test_support::fe_int(b_scales[ib]);
+
+                            let mut a: Gej = base[m];
+                            let mut b: Gej = base[n];
+
+                            gej_rescale(core::ptr::addr_of_mut!(a), core::ptr::addr_of!(sa));
+                            gej_rescale(core::ptr::addr_of_mut!(b), core::ptr::addr_of!(sb));
+
+                            assert!(gej_is_infinity(core::ptr::addr_of!(b)) == 0);
+                            assert!(fe_is_zero(core::ptr::addr_of!(b.z)) == 0);
+
+                            let mut bzinv: Fe = core::mem::zeroed();
+                            fe_inv_var(
+                                core::ptr::addr_of_mut!(bzinv),
+                                core::ptr::addr_of!(b.z),
+                            );
+
+                            /* IMPORTANT: b is represented by its Jacobian X/Y with implicit Z = 1/bzinv.
+                               (So we must NOT pass an affine-normalized (x,y) here.) */
+                            let mut b_xy: Ge = core::mem::zeroed();
+                            ge_set_xy(
+                                core::ptr::addr_of_mut!(b_xy),
+                                core::ptr::addr_of!(b.x),
+                                core::ptr::addr_of!(b.y),
+                            );
+                            b_xy.infinity = b.infinity;
+
+                            let mut r_zinv: Gej = core::mem::zeroed();
+                            gej_add_zinv_var(
+                                core::ptr::addr_of_mut!(r_zinv),
+                                core::ptr::addr_of!(a),
+                                core::ptr::addr_of!(b_xy),
+                                core::ptr::addr_of!(bzinv),
+                            );
+
+                            let mut r_jac: Gej = core::mem::zeroed();
+                            gej_add_var(
+                                core::ptr::addr_of_mut!(r_jac),
+                                core::ptr::addr_of!(a),
+                                core::ptr::addr_of!(b),
+                                core::ptr::null_mut(),
+                            );
+
+                            if !secp256k1_group_exhaustive_test_support::gej_affine_eq(
+                                &r_zinv, &r_jac,
+                            ) {
+                                tracing::error!(
+                                    m = m,
+                                    n = n,
+                                    a_scale = a_scales[ia],
+                                    b_scale = b_scales[ib],
+                                    "Mismatch between gej_add_zinv_var and gej_add_var."
+                                );
+                            }
+
+                            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(
+                                &r_zinv, &r_jac
+                            ));
+
+                            ib += 1;
+                        }
+                        ia += 1;
+                    }
+                    n += 1;
+                }
+                m += 1;
+            }
+        }
+    }
+
+    #[traced_test]
+    fn gej_add_zinv_var_handles_infinity_operands_like_documented() {
+        tracing::info!(
+            "Validating gej_add_zinv_var copies a if b is infinity, and returns b if a is infinity."
+        );
+
+        unsafe {
+            let one: Fe = secp256k1_group_exhaustive_test_support::fe_int(1);
+
+            let mut a: Gej = core::mem::zeroed();
+            gej_set_ge(
+                core::ptr::addr_of_mut!(a),
+                core::ptr::addr_of!(ge_const_g),
+            );
+
+            let sa: Fe = secp256k1_group_exhaustive_test_support::fe_int(7);
+            gej_rescale(core::ptr::addr_of_mut!(a), core::ptr::addr_of!(sa));
+
+            /* Build a nontrivial b with z != 1. */
+            let mut g: Gej = core::mem::zeroed();
+            gej_set_ge(
+                core::ptr::addr_of_mut!(g),
+                core::ptr::addr_of!(ge_const_g),
+            );
+
+            let mut b: Gej = core::mem::zeroed();
+            gej_double(core::ptr::addr_of_mut!(b), core::ptr::addr_of!(g));
+
+            let sb: Fe = secp256k1_group_exhaustive_test_support::fe_int(11);
+            gej_rescale(core::ptr::addr_of_mut!(b), core::ptr::addr_of!(sb));
+
+            assert!(gej_is_infinity(core::ptr::addr_of!(b)) == 0);
+            assert!(fe_is_zero(core::ptr::addr_of!(b.z)) == 0);
+
+            let mut bzinv: Fe = core::mem::zeroed();
+            fe_inv_var(
+                core::ptr::addr_of_mut!(bzinv),
+                core::ptr::addr_of!(b.z),
+            );
+
+            /* IMPORTANT: b is represented by its Jacobian X/Y with implicit Z = 1/bzinv. */
+            let mut b_xy: Ge = core::mem::zeroed();
+            ge_set_xy(
+                core::ptr::addr_of_mut!(b_xy),
+                core::ptr::addr_of!(b.x),
+                core::ptr::addr_of!(b.y),
+            );
+            b_xy.infinity = b.infinity;
+
+            /* Case 1: b is infinity => r = a (copied). */
+            let mut b_inf: Ge = core::mem::zeroed();
+            ge_set_infinity(core::ptr::addr_of_mut!(b_inf));
+
+            let mut r1: Gej = core::mem::zeroed();
+            gej_add_zinv_var(
+                core::ptr::addr_of_mut!(r1),
+                core::ptr::addr_of!(a),
+                core::ptr::addr_of!(b_inf),
+                core::ptr::addr_of!(one),
+            );
+
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&r1, &a));
+
+            /* Case 2: a is infinity => r is b converted to affine (z=1). */
+            let mut a_inf: Gej = core::mem::zeroed();
+            gej_set_infinity(core::ptr::addr_of_mut!(a_inf));
+
+            let mut r2: Gej = core::mem::zeroed();
+            gej_add_zinv_var(
+                core::ptr::addr_of_mut!(r2),
+                core::ptr::addr_of!(a_inf),
+                core::ptr::addr_of!(b_xy),
+                core::ptr::addr_of!(bzinv),
+            );
+
+            assert!(secp256k1_group_exhaustive_test_support::gej_affine_eq(&r2, &b));
+            assert!(gej_is_infinity(core::ptr::addr_of!(r2)) == 0);
+            assert!(
+                fe_equal_var(core::ptr::addr_of!(r2.z), core::ptr::addr_of!(one)) != 0
+            );
+        }
+    }
+}

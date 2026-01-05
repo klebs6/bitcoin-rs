@@ -19,3 +19,41 @@ pub enum CompressionType {
     None   = 0x0,
     Snappy = 0x1
 }
+
+#[cfg(test)]
+mod compression_type_persistent_encoding_suite {
+    use super::*;
+    use tracing::{debug, info, trace};
+
+    #[traced_test]
+    fn compression_type_discriminants_match_on_disk_format() {
+        trace!("compression_type_persistent_encoding_suite: start");
+
+        let none_v = CompressionType::None as u8;
+        let snappy_v = CompressionType::Snappy as u8;
+
+        info!(none_v, snappy_v, "compression type discriminants");
+
+        assert_eq!(none_v, 0x0);
+        assert_eq!(snappy_v, 0x1);
+
+        trace!("compression_type_persistent_encoding_suite: done");
+    }
+
+    #[traced_test]
+    fn compression_type_is_copy_and_debug_is_stable() {
+        trace!("compression_type_persistent_encoding_suite: start");
+
+        let a = CompressionType::Snappy;
+        let b = a;
+
+        assert_eq!(a, b);
+
+        let dbg = format!("{:?}", a);
+        debug!(dbg = %dbg, "debug formatting");
+
+        assert!(dbg.contains("Snappy"));
+
+        trace!("compression_type_persistent_encoding_suite: done");
+    }
+}
