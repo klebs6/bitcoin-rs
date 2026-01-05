@@ -17,7 +17,7 @@ mod release_snapshot_lifecycle_suite {
         atomic::{AtomicUsize, Ordering},
         Arc,
     };
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{info, trace};
 
     struct DropCountingSnapshot {
         drops: Arc<AtomicUsize>,
@@ -49,7 +49,7 @@ mod release_snapshot_lifecycle_suite {
         }
     }
 
-    impl ReleaseSnapshot for SnapshotReleaser {
+    impl DBReleaseSnapshot for SnapshotReleaser {
         fn release_snapshot(&mut self, snapshot: Box<dyn Snapshot>) {
             let n = self.releases.fetch_add(1, Ordering::SeqCst) + 1;
             trace!(release_calls = n, "release_snapshot invoked");

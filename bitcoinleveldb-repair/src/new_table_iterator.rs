@@ -42,7 +42,8 @@ mod new_table_iterator_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let mut meta = FileMetaData::default();

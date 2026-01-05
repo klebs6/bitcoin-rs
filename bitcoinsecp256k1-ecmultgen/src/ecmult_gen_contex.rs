@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ecmultgen/src/ecmult_gen_contex.rs ]
 crate::ix!();
 
 /// For accelerating the computation of a*G:

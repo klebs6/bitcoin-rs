@@ -160,7 +160,7 @@ mod put_convenience_method_contract_suite {
         }
     }
 
-    impl DBInterfaceWrite for WriteCallSpy {
+    impl DBWrite for WriteCallSpy {
         fn write(&mut self, _options: &WriteOptions, updates: *mut WriteBatch) -> crate::Status {
             trace!(updates_ptr = (updates as usize), "write invoked");
 
@@ -187,7 +187,7 @@ mod put_convenience_method_contract_suite {
         }
     }
 
-    impl Put for WriteCallSpy {}
+    impl DBPut for WriteCallSpy {}
 
     #[traced_test]
     fn put_builds_single_put_batch_and_invokes_write_once() {
@@ -197,7 +197,7 @@ mod put_convenience_method_contract_suite {
         let key = Slice::from("alpha");
         let val = Slice::from("beta");
 
-        trace!("calling Put::put convenience method");
+        trace!("calling DBPut::put convenience method");
         let s = db.put(&opt, &key, &val);
 
         assert!(s.is_ok());
@@ -226,7 +226,7 @@ mod put_convenience_method_contract_suite {
         let key = Slice::from("k");
         let val = Slice::from("v");
 
-        trace!("calling put() expecting error propagation");
+        warn!(code = ?err.code(), "expecting put() to propagate write() error");
         let s = db.put(&opt, &key, &val);
 
         assert!(s.is_io_error());

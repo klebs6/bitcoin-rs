@@ -124,7 +124,8 @@ mod scan_table_behavior_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let table_no: u64 = 777;
@@ -153,7 +154,8 @@ mod scan_table_behavior_suite {
         let ldb = table_file_name(&dbname, table_no);
         touch_file(&ldb);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         trace!(table_no, ldb = %ldb, "calling scan_table for invalid table");

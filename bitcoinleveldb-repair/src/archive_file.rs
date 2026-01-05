@@ -64,7 +64,8 @@ mod archive_file_behavior_suite {
         let db = EphemeralDbDir::new("archive-file-basic");
         let dbname = db.path_string();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let src = format!("{}/foo.txt", dbname);
@@ -87,7 +88,8 @@ mod archive_file_behavior_suite {
         let db = EphemeralDbDir::new("archive-file-lost-exists");
         let dbname = db.path_string();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let lost_dir = format!("{}/lost", dbname);
@@ -110,7 +112,8 @@ mod archive_file_behavior_suite {
         let db = EphemeralDbDir::new("archive-file-createdir-fails");
         let dbname = db.path_string();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         // Create a file at {dbname}/lost, forcing CreateDir("{dbname}/lost") to fail.
@@ -139,7 +142,8 @@ mod archive_file_behavior_suite {
         let db = EphemeralDbDir::new("archive-file-nested");
         let dbname = db.path_string();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let subdir = format!("{}/subdir", dbname);

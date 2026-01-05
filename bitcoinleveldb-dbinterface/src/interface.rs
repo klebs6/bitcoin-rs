@@ -27,7 +27,7 @@ mod db_trait_composition_suite {
         atomic::{AtomicUsize, Ordering},
         Arc,
     };
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{info, trace};
 
     struct DummySnapshot;
 
@@ -51,54 +51,54 @@ mod db_trait_composition_suite {
             dbptr: *mut *mut dyn DB,
         ) -> crate::Status {
             unsafe {
-                *dbptr = ptr::null_mut();
+                core::ptr::write(dbptr, core::mem::zeroed());
             }
             return crate::Status::not_supported(&Slice::from("open not implemented in test"), None);
         }
     }
 
-    impl DBInterfaceWrite for MinimalDbForComposition {
+    impl DBWrite for MinimalDbForComposition {
         fn write(&mut self, _options: &WriteOptions, _updates: *mut WriteBatch) -> crate::Status {
             let n = self.writes.fetch_add(1, Ordering::SeqCst) + 1;
-            trace!(write_calls = n, "DBInterfaceWrite::write called");
+            trace!(write_calls = n, "DBWrite::write called");
             crate::Status::ok()
         }
     }
 
-    impl Put for MinimalDbForComposition {}
-    impl Delete for MinimalDbForComposition {}
+    impl DBPut for MinimalDbForComposition {}
+    impl DBDelete for MinimalDbForComposition {}
 
-    impl Get for MinimalDbForComposition {
+    impl DBGet for MinimalDbForComposition {
         fn get(&mut self, _options: &ReadOptions, _key_: &Slice, _value: *mut String) -> crate::Status {
             crate::Status::not_found(&Slice::from("missing"), None)
         }
     }
 
-    impl NewIterator for MinimalDbForComposition {
+    impl DBNewIterator for MinimalDbForComposition {
         fn new_iterator(&mut self, _options: &ReadOptions) -> *mut LevelDBIterator {
             Box::into_raw(Box::new(LevelDBIterator::default()))
         }
     }
 
-    impl GetSnapshot for MinimalDbForComposition {
+    impl DBGetSnapshot for MinimalDbForComposition {
         fn get_snapshot(&mut self) -> Box<dyn Snapshot> {
             Box::new(DummySnapshot)
         }
     }
 
-    impl ReleaseSnapshot for MinimalDbForComposition {
+    impl DBReleaseSnapshot for MinimalDbForComposition {
         fn release_snapshot(&mut self, snapshot: Box<dyn Snapshot>) {
             drop(snapshot);
         }
     }
 
-    impl GetProperty for MinimalDbForComposition {
+    impl DBGetProperty for MinimalDbForComposition {
         fn get_property(&mut self, _property: &str, _value: *mut String) -> bool {
             false
         }
     }
 
-    impl GetApproximateSizes for MinimalDbForComposition {
+    impl DBGetApproximateSizes for MinimalDbForComposition {
         fn get_approximate_sizes(
             &mut self,
             _range: *const bitcoinleveldb_slice::Range,
@@ -108,7 +108,7 @@ mod db_trait_composition_suite {
         }
     }
 
-    impl CompactRange for MinimalDbForComposition {
+    impl DBCompactRange for MinimalDbForComposition {
         fn compact_range(&mut self, _begin: *const Slice, _end: *const Slice) {}
     }
 

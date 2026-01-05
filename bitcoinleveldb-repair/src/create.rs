@@ -80,7 +80,8 @@ mod repairer_construction_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         trace!(dbname = %dbname, "calling Repairer::run");
@@ -101,7 +102,8 @@ mod repairer_construction_suite {
 
     #[traced_test]
     fn repairer_new_is_drop_safe_in_tight_loop() {
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
 
         for i in 0..32u32 {
             let db = EphemeralDbDir::new(&format!("repairer-new-drop-loop-{}", i));
@@ -140,7 +142,8 @@ mod repairer_type_smoke_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         trace!(dbname = %dbname, "calling run on Repairer");

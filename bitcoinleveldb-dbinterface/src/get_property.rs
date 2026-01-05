@@ -27,11 +27,11 @@ pub trait DBGetProperty {
 #[cfg(test)]
 mod get_property_contract_suite {
     use super::*;
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{info, trace};
 
     struct FixedPropertyProvider;
 
-    impl GetProperty for FixedPropertyProvider {
+    impl DBGetProperty for FixedPropertyProvider {
         fn get_property(&mut self, property: &str, value: *mut String) -> bool {
             assert!(!value.is_null(), "value must not be null");
 

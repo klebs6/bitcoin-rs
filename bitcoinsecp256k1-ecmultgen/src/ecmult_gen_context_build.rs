@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinsecp256k1-ecmultgen/src/ecmult_gen_context_built.rs ]
+// ---------------- [ File: bitcoinsecp256k1-ecmultgen/src/ecmult_gen_context_build.rs ]
 crate::ix!();
 
 pub fn ecmult_gen_context_build(

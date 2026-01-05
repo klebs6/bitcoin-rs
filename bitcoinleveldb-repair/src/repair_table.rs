@@ -149,7 +149,8 @@ mod repair_table_recovery_suite {
         let table_path = table_file_name(&dbname, table_no);
         touch_file(&table_path);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         trace!(table_no, table_path = %table_path, "calling scan_table to trigger repair_table path");

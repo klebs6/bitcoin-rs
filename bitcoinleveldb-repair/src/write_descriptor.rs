@@ -159,7 +159,8 @@ mod write_descriptor_manifest_suite {
         let current = format!("{}/CURRENT", dbname);
         write_text_file(&current, "MANIFEST-000002\n");
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         // Populate `manifests` from the directory listing.
@@ -196,7 +197,8 @@ mod write_descriptor_manifest_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let st_find = repairer.find_files();

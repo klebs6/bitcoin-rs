@@ -35,6 +35,10 @@ version = "0.1.19"
 path = "../bitcoinleveldb-env"
 version = "0.1.19"
 
+[dependencies.bitcoinleveldb-posixenv]
+path = "../bitcoinleveldb-posixenv"
+version = "0.1.1"
+
 [dependencies.bitcoinleveldb-file]
 path = "../bitcoinleveldb-file"
 version = "0.1.19"

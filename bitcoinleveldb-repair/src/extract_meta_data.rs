@@ -39,7 +39,8 @@ mod extract_meta_data_flow_suite {
 
         info!(table_no, table_path = %table_path, "created empty table file");
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let st = repairer.find_files();
@@ -63,7 +64,8 @@ mod extract_meta_data_flow_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let st = repairer.find_files();

@@ -65,7 +65,8 @@ mod repairer_drop_safety_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
 
         trace!(dbname = %dbname, "constructing Repairer");
         {
@@ -97,7 +98,8 @@ mod repairer_drop_safety_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         trace!(dbname = %dbname, "constructing Repairer only");
         let _repairer = Repairer::new(&dbname, &options);
         debug!(dbname = %dbname, "Repairer constructed; will be dropped at scope end");

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ecmultgen/src/constants.rs ]
 crate::ix!();
 
 /**

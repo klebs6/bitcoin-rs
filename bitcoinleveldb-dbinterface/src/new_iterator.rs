@@ -18,7 +18,7 @@ pub trait DBNewIterator {
 #[cfg(test)]
 mod new_iterator_lifecycle_suite {
     use super::*;
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{debug, info, trace};
 
     struct IteratorProvider {
         entries: Vec<(Vec<u8>, Vec<u8>)>,
@@ -42,7 +42,7 @@ mod new_iterator_lifecycle_suite {
         }
     }
 
-    impl NewIterator for IteratorProvider {
+    impl DBNewIterator for IteratorProvider {
         fn new_iterator(&mut self, _options: &ReadOptions) -> *mut LevelDBIterator {
             let pairs = self.to_pairs();
             let stub = MockStubIterator::new_with_entries(pairs.as_slice());

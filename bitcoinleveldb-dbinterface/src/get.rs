@@ -21,7 +21,7 @@ pub trait DBGet {
 mod get_contract_semantics_suite {
     use super::*;
     use std::collections::BTreeMap;
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{debug, info, trace};
 
     fn slice_to_vec(s: &Slice) -> Vec<u8> {
         let p = *s.data();
@@ -47,12 +47,12 @@ mod get_contract_semantics_suite {
         }
     }
 
-    impl Get for SimpleGetDb {
+    impl DBGet for SimpleGetDb {
         fn get(&mut self, _options: &ReadOptions, key_: &Slice, value: *mut String) -> crate::Status {
             assert!(!value.is_null(), "value must not be null");
 
             let k = slice_to_vec(key_);
-            trace!(key_len = k.len(), "get()called");
+            trace!(key_len = k.len(), "get() called");
 
             if let Some(v) = self.kv.get(&k) {
                 unsafe {

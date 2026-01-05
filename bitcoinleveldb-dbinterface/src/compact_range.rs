@@ -26,7 +26,7 @@ pub trait DBCompactRange {
 mod compact_range_contract_suite {
     use super::*;
     use core::ptr;
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{debug, info, trace, warn};
 
     #[derive(Default)]
     struct RecordingCompactionCall {
@@ -35,7 +35,7 @@ mod compact_range_contract_suite {
         last_end: *const Slice,
     }
 
-    impl CompactRange for RecordingCompactionCall {
+    impl DBCompactRange for RecordingCompactionCall {
         fn compact_range(&mut self, begin: *const Slice, end: *const Slice) {
             trace!(?begin, ?end, "compact_range invoked");
             self.calls += 1;
@@ -48,9 +48,9 @@ mod compact_range_contract_suite {
     fn compact_range_accepts_null_boundaries_and_passes_pointers_verbatim() {
         let mut recorder = RecordingCompactionCall::default();
 
-        let compactor: &mut dyn CompactRange = &mut recorder;
+        let compactor: &mut dyn DBCompactRange = &mut recorder;
 
-        trace!("invoking compact_range with nullptr begin/end");
+        warn!("invoking compact_range with nullptr begin/end (entire database)");
         compactor.compact_range(ptr::null::<Slice>(), ptr::null::<Slice>());
 
         assert_eq!(recorder.calls, 1);
@@ -90,9 +90,9 @@ mod compact_range_contract_suite {
         let begin_ptr: *const Slice = &begin as *const Slice;
         let end_ptr: *const Slice = &end as *const Slice;
 
-        let compactor: &mut dyn CompactRange = &mut recorder;
+        let compactor: &mut dyn DBCompactRange = &mut recorder;
 
-        debug!("calling through &mut dyn CompactRange");
+        debug!("calling through &mut dyn DBCompactRange");
         compactor.compact_range(begin_ptr, end_ptr);
 
         assert_eq!(recorder.calls, 1);

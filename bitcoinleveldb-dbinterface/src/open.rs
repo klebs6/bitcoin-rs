@@ -23,7 +23,7 @@ pub trait DBOpen {
 mod open_pointer_contract_suite {
     use super::*;
     use core::ptr;
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{info, trace};
 
     struct DummySnapshot;
 
@@ -39,52 +39,52 @@ mod open_pointer_contract_suite {
             dbptr: *mut *mut dyn DB,
         ) -> crate::Status {
             unsafe {
-                *dbptr = ptr::null_mut();
+                core::ptr::write(dbptr, core::mem::zeroed());
             }
             crate::Status::not_supported(&Slice::from("not used"), None)
         }
     }
 
-    impl DBInterfaceWrite for DbStub {
+    impl DBWrite for DbStub {
         fn write(&mut self, _options: &WriteOptions, _updates: *mut WriteBatch) -> crate::Status {
             crate::Status::ok()
         }
     }
 
-    impl Put for DbStub {}
-    impl Delete for DbStub {}
+    impl DBPut for DbStub {}
+    impl DBDelete for DbStub {}
 
-    impl Get for DbStub {
+    impl DBGet for DbStub {
         fn get(&mut self, _options: &ReadOptions, _key_: &Slice, _value: *mut String) -> crate::Status {
             crate::Status::not_found(&Slice::from("missing"), None)
         }
     }
 
-    impl NewIterator for DbStub {
+    impl DBNewIterator for DbStub {
         fn new_iterator(&mut self, _options: &ReadOptions) -> *mut LevelDBIterator {
             Box::into_raw(Box::new(LevelDBIterator::default()))
         }
     }
 
-    impl GetSnapshot for DbStub {
+    impl DBGetSnapshot for DbStub {
         fn get_snapshot(&mut self) -> Box<dyn Snapshot> {
             Box::new(DummySnapshot)
         }
     }
 
-    impl ReleaseSnapshot for DbStub {
+    impl DBReleaseSnapshot for DbStub {
         fn release_snapshot(&mut self, snapshot: Box<dyn Snapshot>) {
             drop(snapshot);
         }
     }
 
-    impl GetProperty for DbStub {
+    impl DBGetProperty for DbStub {
         fn get_property(&mut self, _property: &str, _value: *mut String) -> bool {
             false
         }
     }
 
-    impl GetApproximateSizes for DbStub {
+    impl DBGetApproximateSizes for DbStub {
         fn get_approximate_sizes(
             &mut self,
             _range: *const bitcoinleveldb_slice::Range,
@@ -94,7 +94,7 @@ mod open_pointer_contract_suite {
         }
     }
 
-    impl CompactRange for DbStub {
+    impl DBCompactRange for DbStub {
         fn compact_range(&mut self, _begin: *const Slice, _end: *const Slice) {}
     }
 
@@ -110,7 +110,7 @@ mod open_pointer_contract_suite {
             dbptr: *mut *mut dyn DB,
         ) -> crate::Status {
             unsafe {
-                *dbptr = ptr::null_mut();
+                core::ptr::write(dbptr, core::mem::zeroed());
             }
 
             if dbname.len() == 0 {
@@ -133,7 +133,8 @@ mod open_pointer_contract_suite {
         let mut provider = OpenProvider;
         let options = Options::default();
 
-        let mut out: *mut dyn DB = ptr::null_mut();
+        let mut out: *mut dyn DB = unsafe { core::mem::zeroed() };
+
         let out_ptr: *mut *mut dyn DB = &mut out as *mut *mut dyn DB;
 
         let empty = Slice::from("").to_string();
@@ -152,7 +153,7 @@ mod open_pointer_contract_suite {
         let mut provider = OpenProvider;
         let options = Options::default();
 
-        let mut out: *mut dyn DB = ptr::null_mut();
+        let mut out: *mut dyn DB = unsafe { core::mem::zeroed() };
         let out_ptr: *mut *mut dyn DB = &mut out as *mut *mut dyn DB;
 
         let name = Slice::from("testdb").to_string();

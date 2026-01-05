@@ -56,7 +56,8 @@ mod convert_log_files_to_tables_batch_suite {
 
         info!(log3 = %log3, log5 = %log5, "created log files to be discovered");
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let st = repairer.find_files();
@@ -83,7 +84,8 @@ mod convert_log_files_to_tables_batch_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let st = repairer.find_files();

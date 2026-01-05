@@ -37,3 +37,71 @@ pub fn context_create(flags: u32) -> *mut Secp256k1Context {
         ctx
     }
 }
+
+#[cfg(test)]
+mod context_create_api_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn context_create_returns_null_for_invalid_flags() {
+        let flags: u32 = 0;
+        tracing::info!(flags, "calling context_create with invalid flags");
+
+        let ctx = context_create(flags);
+        tracing::debug!(ctx = ?ctx, "context_create returned");
+        assert!(ctx.is_null());
+    }
+
+    #[traced_test]
+    fn context_create_allocates_and_can_be_destroyed_for_base_flags() {
+        let flags = FLAGS_TYPE_CONTEXT;
+        tracing::info!(flags, "creating base context");
+
+        let ctx = context_create(flags);
+        tracing::debug!(ctx = ?ctx, "context_create returned");
+        assert!(!ctx.is_null());
+
+        tracing::info!("destroying base context");
+        context_destroy(ctx);
+    }
+
+    #[traced_test]
+    fn context_create_allocates_sign_only_context() {
+        let flags = FLAGS_TYPE_CONTEXT | FLAGS_BIT_CONTEXT_SIGN;
+        tracing::info!(flags, "creating sign-only context");
+
+        let ctx = context_create(flags);
+        tracing::debug!(ctx = ?ctx, "context_create returned");
+        assert!(!ctx.is_null());
+
+        context_destroy(ctx);
+    }
+
+    #[traced_test]
+    fn context_create_allocates_verify_only_context() {
+        let flags = FLAGS_TYPE_CONTEXT | FLAGS_BIT_CONTEXT_VERIFY;
+        tracing::info!(flags, "creating verify-only context");
+
+        let ctx = context_create(flags);
+        tracing::debug!(ctx = ?ctx, "context_create returned");
+        assert!(!ctx.is_null());
+
+        context_destroy(ctx);
+    }
+
+    #[traced_test]
+    fn context_create_allocates_sign_verify_declassify_context() {
+        let flags = FLAGS_TYPE_CONTEXT
+            | FLAGS_BIT_CONTEXT_SIGN
+            | FLAGS_BIT_CONTEXT_VERIFY
+            | FLAGS_BIT_CONTEXT_DECLASSIFY;
+
+        tracing::info!(flags, "creating sign+verify+declassify context");
+
+        let ctx = context_create(flags);
+        tracing::debug!(ctx = ?ctx, "context_create returned");
+        assert!(!ctx.is_null());
+
+        context_destroy(ctx);
+    }
+}

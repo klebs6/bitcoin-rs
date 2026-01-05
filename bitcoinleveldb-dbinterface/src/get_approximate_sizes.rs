@@ -22,11 +22,11 @@ pub trait DBGetApproximateSizes {
 mod get_approximate_sizes_pointer_contract_suite {
     use super::*;
     use core::ptr;
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{info, trace};
 
     struct DeterministicSizer;
 
-    impl GetApproximateSizes for DeterministicSizer {
+    impl DBGetApproximateSizes for DeterministicSizer {
         fn get_approximate_sizes(
             &mut self,
             _range: *const bitcoinleveldb_slice::Range,

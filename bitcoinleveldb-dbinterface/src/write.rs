@@ -17,7 +17,7 @@ pub trait DBWrite {
 #[cfg(test)]
 mod write_interface_contract_suite {
     use super::*;
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{error, info, trace};
 
     #[derive(Debug, Clone, PartialEq, Eq)]
     enum DecodedWriteBatchRecord {
@@ -153,7 +153,7 @@ mod write_interface_contract_suite {
         }
     }
 
-    impl DBInterfaceWrite for RecordingWriteSink {
+    impl DBWrite for RecordingWriteSink {
         fn write(&mut self, _options: &WriteOptions, updates: *mut WriteBatch) -> crate::Status {
             self.calls += 1;
 
@@ -180,7 +180,7 @@ mod write_interface_contract_suite {
 
         let opt = WriteOptions::default();
 
-        let w: &mut dyn DBInterfaceWrite = &mut sink;
+        let w: &mut dyn DBWrite = &mut sink;
 
         trace!("calling write() via trait object");
         let s = w.write(&opt, &mut batch as *mut WriteBatch);

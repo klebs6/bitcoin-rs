@@ -1,4 +1,39 @@
 // ---------------- [ File: bitcoinsecp256k1-ecmult/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
+x!{config}
 x!{ecmult}
+x!{ecmult_context}
+x!{ecmult_context_build}
+x!{ecmult_context_clear}
+x!{ecmult_context_finalize_memcpy}
+x!{ecmult_context_init}
+x!{ecmult_context_is_built}
+x!{ecmult_endo_split}
+x!{ecmult_multi_batch_size_helper}
+x!{ecmult_multi_callback}
+x!{ecmult_multi_func}
+x!{ecmult_multi_simple_var}
+x!{ecmult_multi_var}
+x!{ecmult_odd_multiples_table}
+x!{ecmult_odd_multiples_table_globalz_windowa}
+x!{ecmult_odd_multiples_table_storage_var}
+x!{ecmult_pippenger_batch}
+x!{ecmult_pippenger_batch_single}
+x!{ecmult_pippenger_wnaf}
+x!{ecmult_strauss_batch}
+x!{ecmult_strauss_batch_single}
+x!{ecmult_strauss_wnaf}
+x!{ecmult_table_get_ge}
+x!{ecmult_wnaf}
+x!{pippenger_bucket_window}
+x!{pippenger_bucket_window_inv}
+x!{pippenger_max_points}
+x!{pippenger_point_state}
+x!{pippenger_scratch_size}
+x!{strauss_max_points}
+x!{strauss_scratch_size}
+x!{strauss_state}
+x!{windows}
+x!{wnaf}
+x!{wnaf_fixed}

@@ -16,7 +16,8 @@ mod crate_public_api_surface_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
 
         trace!(dbname = %dbname, "calling repairdb");
         let status = repairdb(&dbname, &options);
@@ -55,7 +56,8 @@ mod crate_public_api_surface_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         trace!(dbname = %dbname, "calling Repairer::run");

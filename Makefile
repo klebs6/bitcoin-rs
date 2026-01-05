@@ -40,24 +40,35 @@ FEATURES :=
 NO_FAIL_FAST := --no-fail-fast
 
 #----------------------------------------[block-1]
-# ---[secp-layer-0]
-ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
-ACTIVE := bitcoinleveldb-repair        #loc: 2302
-ACTIVE := bitcoinleveldb-options        #loc: 339
-ACTIVE := bitcoinleveldb-dbinterface   #loc: 346
+# ---[layer 0]
+#ACTIVE := bitcoin-checkqueue      #loc: 365
+#ACTIVE := bitcoin-scheduler       #loc: 449
+#ACTIVE := bitcoin-validation      #loc: 153
+
+# ---[layer 1]
+#ACTIVE := bitcoin-subnet          #loc: 337
+
+# ---[leveldb-layer-0]
+#ACTIVE := bitcoinleveldb-dbinterface   #loc: 346
+#ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 
 # ---[secp-layer-3]
-#ACTIVE := bitcoinsecp256k1-ec
-ACTIVE := bitcoinsecp256k1-eccontext
+#ACTIVE := bitcoinsecp256k1-ecmult
+
+#----------------------------------------[block-2]
+# ---[secp-layer-4]
+#ACTIVE := bitcoinsecp256k1-ecmultgen
+#ACTIVE := bitcoinsecp256k1-eccontext
+#ACTIVE := bitcoinsecp256k1-ecmultconst
+
+# ---[secp-layer-4b]
 #ACTIVE := bitcoinsecp256k1-ecdh
 #ACTIVE := bitcoinsecp256k1-ecdsa
 #ACTIVE := bitcoinsecp256k1-ecdsasignature
 #ACTIVE := bitcoinsecp256k1-eckey
-#ACTIVE := bitcoinsecp256k1-ecmult
-ACTIVE := bitcoinsecp256k1-ecmultgen
-ACTIVE := bitcoinsecp256k1-ecmultconst
 
 # ---[secp-layer-5]
+#ACTIVE := bitcoinsecp256k1-ec
 #ACTIVE := bitcoinsecp256k1-keys     #loc: 1556
 #ACTIVE := bitcoinsecp256k1-parse    #loc: 512
 #ACTIVE := bitcoinsecp256k1-recovery #loc: 992
@@ -85,13 +96,6 @@ ACTIVE := bitcoinsecp256k1-ecmultconst
 #ACTIVE := bitcoin-leveldb              #loc: 36
 
 #----------------------------------------[block-2]
-# ---[layer 0]
-#ACTIVE := bitcoin-checkqueue      #loc: 365
-#ACTIVE := bitcoin-scheduler       #loc: 449
-#ACTIVE := bitcoin-validation      #loc: 153
-
-# ---[layer 1]
-#ACTIVE := bitcoin-subnet          #loc: 337
 
 # ---[layer 2]
 #ACTIVE := bitcoin-addr            #loc: 431
@@ -461,3 +465,5 @@ bench:
 #ACTIVE := bitcoinsecp256k1-group    #loc: 1223
 #ACTIVE := bitcoinleveldb-versionset
 #ACTIVE := bitcoinleveldb-dbimplwriter  #loc: 36
+#ACTIVE := bitcoinleveldb-options        #loc: 339
+#ACTIVE := bitcoinleveldb-repair        #loc: 2302

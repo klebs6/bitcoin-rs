@@ -81,3 +81,29 @@ pub const CONTEXT_NO_PRECOMP: Secp256k1Context = Secp256k1Context {
     error_callback:   Callback::new(default_error_callback_fn,null_mut()),
     declassify:       0,
 };
+
+#[cfg(test)]
+mod secp256k1_context_type_contract_suite {
+    use super::*;
+
+    fn assert_send_sync<T: Send + Sync>() {}
+
+    #[traced_test]
+    fn secp256k1_context_is_send_and_sync_for_shared_read_use() {
+        tracing::info!("asserting Send + Sync bounds for Secp256k1Context");
+        assert_send_sync::<Secp256k1Context>();
+        tracing::debug!("Send + Sync bounds satisfied");
+    }
+
+    #[traced_test]
+    fn context_no_precomp_clone_size_matches_base_preallocated_size() {
+        tracing::trace!("computing clone size for CONTEXT_NO_PRECOMP");
+        let ctx_ptr: *const Secp256k1Context = &CONTEXT_NO_PRECOMP as *const Secp256k1Context;
+
+        let clone_size = context_preallocated_clone_size(ctx_ptr);
+        let base_size = context_preallocated_size(FLAGS_TYPE_CONTEXT);
+
+        tracing::debug!(clone_size, base_size, "computed sizes");
+        assert_eq!(clone_size, base_size);
+    }
+}

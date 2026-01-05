@@ -164,7 +164,8 @@ mod convert_log_to_table_error_and_smoke_suite {
         let db = EphemeralDbDir::new("convert-log-missing");
         let dbname: String = db.path_string();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let lognum: u64 = 12345;
@@ -192,7 +193,8 @@ mod convert_log_to_table_error_and_smoke_suite {
         let db = EphemeralDbDir::new("convert-log-empty-file");
         let dbname: String = db.path_string();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         let lognum: u64 = 1;

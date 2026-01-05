@@ -22,7 +22,6 @@ pub trait DBDelete: DBWrite {
 #[cfg(test)]
 mod delete_convenience_method_contract_suite {
     use super::*;
-    use core::ptr;
     use tracing::{debug, error, info, trace, warn};
 
     #[derive(Debug, Clone, PartialEq, Eq)]
@@ -163,7 +162,7 @@ mod delete_convenience_method_contract_suite {
         }
     }
 
-    impl DBInterfaceWrite for WriteCallSpy {
+    impl DBWrite for WriteCallSpy {
         fn write(&mut self, options: &WriteOptions, updates: *mut WriteBatch) -> crate::Status {
             trace!(
                 options_ptr = (options as *const WriteOptions as usize),
@@ -195,7 +194,7 @@ mod delete_convenience_method_contract_suite {
         }
     }
 
-    impl Delete for WriteCallSpy {}
+    impl DBDelete for WriteCallSpy {}
 
     #[traced_test]
     fn delete_builds_single_deletion_batch_and_invokes_write_once() {
@@ -204,7 +203,7 @@ mod delete_convenience_method_contract_suite {
         let opt = WriteOptions::default();
         let key = Slice::from("alpha");
 
-        trace!("calling Delete::delete convenience method");
+        trace!("calling DBDelete::delete convenience method");
         let s = db.delete(&opt, &key);
 
         assert!(s.is_ok());
@@ -232,7 +231,7 @@ mod delete_convenience_method_contract_suite {
         let opt = WriteOptions::default();
         let key = Slice::from("k");
 
-        trace!("calling delete() expecting error propagation");
+        warn!(code = ?err.code(), "expecting delete() to propagate write() error");
         let s = db.delete(&opt, &key);
 
         assert!(s.is_corruption());

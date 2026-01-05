@@ -286,14 +286,23 @@ mod options_defaults_and_accessors_suite {
         assert_eq!(*opts.compression(), CompressionType::Snappy);
         assert!(!*opts.reuse_logs());
 
-        assert!(opts.env().is_some(), "expected Options::default to install an env");
-        assert!(opts.info_log().is_none(), "expected default info_log to be unset");
+        assert!(
+            opts.env().is_none(),
+            "expected Options::default to leave env unset"
+        );
+        assert!(
+            opts.info_log().is_none(),
+            "expected default info_log to be unset"
+        );
 
         let cmp_name = opts.comparator().name();
         let fp_name = opts.filter_policy().name();
         debug!(cmp_name = %cmp_name, fp_name = %fp_name, "trait-object names");
 
-        assert!(!cmp_name.as_ref().is_empty(), "comparator name must be non-empty");
+        assert!(
+            !cmp_name.as_ref().is_empty(),
+            "comparator name must be non-empty"
+        );
         assert_eq!(fp_name.as_ref(), "null-filter-policy");
 
         trace!("options_defaults_and_accessors_suite: done");

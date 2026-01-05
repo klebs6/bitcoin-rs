@@ -23,4 +23,3 @@ pub fn ecmult_gen_context_finalize_memcpy(
         let _ = src;
     }
 }
-

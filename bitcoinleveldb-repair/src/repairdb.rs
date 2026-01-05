@@ -30,7 +30,8 @@ mod repairdb_api_suite {
         touch_file(&dbname);
         assert!(!is_directory(&dbname));
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
 
         trace!(dbname = %dbname, "calling repairdb for non-directory path");
         let st = repairdb(&dbname, &options);
@@ -47,7 +48,8 @@ mod repairdb_api_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
 
         trace!(dbname = %dbname, "calling repairdb");
         let st = repairdb(&dbname, &options);

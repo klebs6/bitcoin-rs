@@ -5,6 +5,7 @@ crate::ix!();
 
 /// We recover the contents of the descriptor from the other files we find.
 ///
+///```ignore
 /// (1) Any log files are first converted to tables
 ///
 /// (2) We scan every table to compute
@@ -28,6 +29,8 @@ crate::ix!();
 ///
 ///   Store per-table metadata (smallest, largest, largest-seq#, ...) in the table's meta section
 ///   to speed up ScanTable.
+///
+///```
 ///
 #[derive(Getters, MutGetters)]
 #[getset(get="pub", get_mut="pub(crate)")]
@@ -97,7 +100,8 @@ mod repairer_construction_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         trace!(dbname = %dbname, "calling Repairer::run");
@@ -118,7 +122,8 @@ mod repairer_construction_suite {
 
     #[traced_test]
     fn repairer_new_is_drop_safe_in_tight_loop() {
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
 
         for i in 0..32u32 {
             let db = EphemeralDbDir::new(&format!("repairer-new-drop-loop-{}", i));
@@ -158,7 +163,8 @@ mod repairer_type_smoke_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         trace!(dbname = %dbname, "calling run on Repairer");
@@ -172,7 +178,7 @@ mod repairer_type_smoke_suite {
     fn options_with_env_sets_env_slot_and_preserves_pointer_identity() {
         trace!("options_defaults_and_accessors_suite: start");
 
-        let env_rc = PosixEnv::default();
+        let env_rc = PosixEnv::shared();
         let opts = Options::with_env(env_rc.clone());
 
         let got = opts.env().as_ref().expect("env must be Some");

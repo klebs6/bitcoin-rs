@@ -87,7 +87,8 @@ mod find_files_discovery_suite {
         assert!(path_exists(&file_path));
         assert!(!is_directory(&file_path));
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&file_path, &options);
 
         trace!(path = %file_path, "calling find_files on non-directory");
@@ -109,7 +110,8 @@ mod find_files_discovery_suite {
         let sentinel = format!("{}/SENTINEL", dbname);
         touch_file(&sentinel);
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         trace!(dbname = %dbname, "calling find_files");
@@ -143,7 +145,8 @@ mod find_files_discovery_suite {
             "seeded db directory with representative files"
         );
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let mut repairer = Repairer::new(&dbname, &options);
 
         trace!(dbname = %dbname, "running Repairer::run");

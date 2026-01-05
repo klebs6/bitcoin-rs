@@ -20,7 +20,7 @@ mod get_snapshot_lifecycle_suite {
         atomic::{AtomicUsize, Ordering},
         Arc,
     };
-    use tracing::{debug, error, info, trace, warn};
+    use tracing::{info, trace};
 
     struct DropCountingSnapshot {
         drops: Arc<AtomicUsize>,
@@ -45,7 +45,7 @@ mod get_snapshot_lifecycle_suite {
         }
     }
 
-    impl GetSnapshot for SnapshotFactory {
+    impl DBGetSnapshot for SnapshotFactory {
         fn get_snapshot(&mut self) -> Box<dyn Snapshot> {
             trace!("creating snapshot");
             Box::new(DropCountingSnapshot {

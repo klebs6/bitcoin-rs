@@ -23,6 +23,9 @@ pub(crate) use bitcoinleveldb_iteratorinner::*;
 pub(crate) use bitcoinleveldb_batch::*;
 
 #[cfg(test)]
+pub(crate) use bitcoinleveldb_posixenv::*;
+
+#[cfg(test)]
 mod imports_smoke_suite {
     use super::*;
 
