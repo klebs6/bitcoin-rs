@@ -39,7 +39,8 @@ mod open_pointer_contract_suite {
             dbptr: *mut *mut dyn DB,
         ) -> crate::Status {
             unsafe {
-                core::ptr::write(dbptr, core::mem::zeroed());
+                // A well-formed "null" trait-object pointer: null data ptr + valid vtable.
+                *dbptr = ptr::null_mut::<DbStub>() as *mut dyn DB;
             }
             crate::Status::not_supported(&Slice::from("not used"), None)
         }
@@ -110,7 +111,8 @@ mod open_pointer_contract_suite {
             dbptr: *mut *mut dyn DB,
         ) -> crate::Status {
             unsafe {
-                core::ptr::write(dbptr, core::mem::zeroed());
+                // Ensure callers observe a null DB pointer on all error paths.
+                *dbptr = ptr::null_mut::<DbStub>() as *mut dyn DB;
             }
 
             if dbname.len() == 0 {
@@ -124,7 +126,7 @@ mod open_pointer_contract_suite {
                 *dbptr = raw;
             }
 
-            return crate::Status::ok();
+            crate::Status::ok()
         }
     }
 
@@ -133,7 +135,13 @@ mod open_pointer_contract_suite {
         let mut provider = OpenProvider;
         let options = Options::default();
 
-        let mut out: *mut dyn DB = unsafe { core::mem::zeroed() };
+        let mut sentinel = DbStub;
+        let mut out: *mut dyn DB = (&mut sentinel as &mut dyn DB) as *mut dyn DB;
+
+        assert!(
+            !out.is_null(),
+            "sentinel out pointer must start non-null for the contract check"
+        );
 
         let out_ptr: *mut *mut dyn DB = &mut out as *mut *mut dyn DB;
 
@@ -153,7 +161,7 @@ mod open_pointer_contract_suite {
         let mut provider = OpenProvider;
         let options = Options::default();
 
-        let mut out: *mut dyn DB = unsafe { core::mem::zeroed() };
+        let mut out: *mut dyn DB = ptr::null_mut::<DbStub>() as *mut dyn DB;
         let out_ptr: *mut *mut dyn DB = &mut out as *mut *mut dyn DB;
 
         let name = Slice::from("testdb").to_string();

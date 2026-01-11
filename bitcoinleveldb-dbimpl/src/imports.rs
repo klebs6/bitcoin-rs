@@ -25,3 +25,7 @@ pub(crate) use bitcoinleveldb_version::*;
 pub(crate) use bitcoinleveldb_versionedit::*;
 pub(crate) use bitcoinleveldb_batch::*;
 pub(crate) use bitcoinleveldb_comparator::*;
+pub(crate) use bitcoinleveldb_versionset::*;
+pub(crate) use bitcoinleveldb_log::*;
+pub(crate) use bitcoinleveldb_logreader::*;
+pub(crate) use bitcoinleveldb_iteratorinner::*;

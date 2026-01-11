@@ -424,6 +424,7 @@ checksum = "5e764a1d40d510daf35e07be9eb06e75770908c27d411ee6c92109c9840eaaf7"
 name = "bitcoin-addr"
 version = "0.1.21"
 dependencies = [
+ "bitcoin-bitstream",
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
@@ -844,6 +845,9 @@ version = "0.1.19"
 dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoin-syscall",
+ "bitcoin-system",
+ "tracing",
 ]
 
 [[package]]
@@ -2188,12 +2192,14 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoin-syscall",
  "lazy_static",
  "libc",
  "multimap",
  "parking_lot 0.12.5",
  "static_assertions",
  "time-point",
+ "tracing",
 ]
 
 [[package]]
@@ -2282,6 +2288,7 @@ dependencies = [
 name = "bitcoin-service"
 version = "0.1.21"
 dependencies = [
+ "bitcoin-bitstream",
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
@@ -3366,11 +3373,17 @@ name = "bitcoinleveldb-dbconstructor"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-blockconstructor",
  "bitcoinleveldb-comparator",
+ "bitcoinleveldb-dbimpl",
  "bitcoinleveldb-dbinterface",
  "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-options",
+ "bitcoinleveldb-status",
  "bitcoinleveldb-tableconstructor",
+ "tracing",
 ]
 
 [[package]]
@@ -3390,7 +3403,10 @@ dependencies = [
  "bitcoinleveldb-env",
  "bitcoinleveldb-file",
  "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logreader",
  "bitcoinleveldb-logwriter",
  "bitcoinleveldb-memtable",
  "bitcoinleveldb-options",
@@ -3400,7 +3416,10 @@ dependencies = [
  "bitcoinleveldb-tablecache",
  "bitcoinleveldb-version",
  "bitcoinleveldb-versionedit",
+ "bitcoinleveldb-versionset",
  "bitcoinleveldb-writebatch",
+ "disable_macro",
+ "tracing",
 ]
 
 [[package]]
@@ -3471,7 +3490,9 @@ name = "bitcoinleveldb-dbtest"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-dbimpl",
  "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-filter",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-options",
  "bitcoinleveldb-rand",
@@ -3618,7 +3639,9 @@ name = "bitcoinleveldb-harness"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-blockconstructor",
  "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbtest",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-options",
  "bitcoinleveldb-rand",
@@ -3896,6 +3919,7 @@ name = "bitcoinleveldb-modeldb"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-batch",
  "bitcoinleveldb-dbinterface",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-options",
@@ -4905,6 +4929,7 @@ dependencies = [
  "bitcoinsecp256k1-group",
  "bitcoinsecp256k1-scalar",
  "bitcoinsecp256k1-scratch",
+ "tracing",
 ]
 
 [[package]]
@@ -4936,6 +4961,7 @@ dependencies = [
  "bitcoinsecp256k1-group",
  "bitcoinsecp256k1-scalar",
  "bitcoinsecp256k1-scratch",
+ "tracing",
 ]
 
 [[package]]

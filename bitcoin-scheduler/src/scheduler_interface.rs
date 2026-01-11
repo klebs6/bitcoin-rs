@@ -87,3 +87,63 @@ pub trait AreThreadsServicingQueue {
     ///
     fn are_threads_servicing_queue(&self) -> bool;
 }
+
+#[cfg(test)]
+mod scheduler_interface_contract_suite {
+    use super::*;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Arc;
+
+    #[traced_test]
+    fn scheduler_can_be_exercised_via_scheduler_interface_trait_bounds() {
+        fn run_once_through_interface<S: SchedulerInterface>(s: &mut S) -> usize {
+            let counter = Arc::new(AtomicUsize::new(0));
+            let counter_cb = counter.clone();
+
+            Schedule::schedule(
+                s,
+                Box::new(move || {
+                    trace!("scheduled through SchedulerInterface bounds");
+                    counter_cb.fetch_add(1, Ordering::SeqCst);
+                }),
+                TimePoint::from_std_instant(std::time::Instant::now())
+                    - time_point::Duration::from_secs(1),
+            );
+
+            StopWhenDrained::stop_when_drained(s);
+            ServiceQueue::service_queue(s);
+
+            counter.load(Ordering::SeqCst)
+        }
+
+        let mut scheduler = scheduler_for_unit_testing();
+        let ran = run_once_through_interface(&mut scheduler);
+
+        assert_eq!(ran, 1);
+    }
+
+    #[traced_test]
+    fn scheduler_interface_methods_are_callable_through_a_dyn_scheduler_interface_reference() {
+        let mut scheduler = scheduler_for_unit_testing();
+
+        let counter = Arc::new(AtomicUsize::new(0));
+        let counter_cb = counter.clone();
+
+        let s: &mut dyn SchedulerInterface = &mut scheduler;
+
+        Schedule::schedule(
+            s,
+            Box::new(move || {
+                trace!("dyn SchedulerInterface scheduled task executed");
+                counter_cb.fetch_add(1, Ordering::SeqCst);
+            }),
+            TimePoint::from_std_instant(std::time::Instant::now())
+                - time_point::Duration::from_secs(1),
+        );
+
+        StopWhenDrained::stop_when_drained(s);
+        ServiceQueue::service_queue(s);
+
+        assert_eq!(counter.load(Ordering::SeqCst), 1);
+    }
+}

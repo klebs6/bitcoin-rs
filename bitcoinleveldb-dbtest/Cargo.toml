@@ -19,3 +19,5 @@ bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand" }
+bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl" }
+bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }

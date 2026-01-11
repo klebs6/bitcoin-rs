@@ -83,3 +83,73 @@ impl DBOpen for DBImpl {
         return s;
     }
 }
+
+#[cfg(test)]
+#[disable]
+mod open_exhaustive_suite {
+    use super::*;
+
+    #[traced_test]
+    fn open_respects_create_if_missing_and_error_if_exists_contracts() {
+        let dbname: String = unique_dbname("open_respects_create_if_missing_and_error_if_exists_contracts");
+        remove_db_dir_best_effort(&dbname);
+
+        // 1) create_if_missing = false -> fail if not present.
+        {
+            let mut opts: Options = default_test_options();
+            opts.create_if_missing = false;
+            opts.error_if_exists = false;
+
+            let mut opener: DBImpl = DBImpl::new(&opts, &dbname);
+
+            let mut dbptr: *mut dyn DB = core::ptr::null_mut();
+            let s: Status =
+                <DBImpl as DBOpen>::open(&mut opener, &opts, &dbname, (&mut dbptr) as *mut *mut dyn DB);
+
+            tracing::info!(status = %s.to_string(), dbname = %dbname, "open attempt without create_if_missing");
+            assert!(!s.is_ok(), "open should fail when db missing and create_if_missing=false");
+            assert!(dbptr.is_null(), "dbptr should remain null on open failure");
+        }
+
+        // 2) create_if_missing = true -> succeed.
+        let raw_ptr: *mut dyn DB = {
+            let mut opts: Options = default_test_options();
+            opts.create_if_missing = true;
+            opts.error_if_exists = false;
+
+            let mut opener: DBImpl = DBImpl::new(&opts, &dbname);
+
+            let mut dbptr: *mut dyn DB = core::ptr::null_mut();
+            let s: Status =
+                <DBImpl as DBOpen>::open(&mut opener, &opts, &dbname, (&mut dbptr) as *mut *mut dyn DB);
+
+            tracing::info!(status = %s.to_string(), dbname = %dbname, "open attempt with create_if_missing");
+            assert!(s.is_ok(), "open should succeed with create_if_missing=true");
+            assert!(!dbptr.is_null(), "dbptr should be set on success");
+            dbptr
+        };
+
+        unsafe {
+            drop(Box::from_raw(raw_ptr));
+        }
+
+        // 3) error_if_exists = true -> fail if present.
+        {
+            let mut opts: Options = default_test_options();
+            opts.create_if_missing = true;
+            opts.error_if_exists = true;
+
+            let mut opener: DBImpl = DBImpl::new(&opts, &dbname);
+
+            let mut dbptr: *mut dyn DB = core::ptr::null_mut();
+            let s: Status =
+                <DBImpl as DBOpen>::open(&mut opener, &opts, &dbname, (&mut dbptr) as *mut *mut dyn DB);
+
+            tracing::info!(status = %s.to_string(), dbname = %dbname, "open attempt with error_if_exists");
+            assert!(!s.is_ok(), "open should fail when db exists and error_if_exists=true");
+            assert!(dbptr.is_null(), "dbptr should remain null on open failure");
+        }
+
+        remove_db_dir_best_effort(&dbname);
+    }
+}

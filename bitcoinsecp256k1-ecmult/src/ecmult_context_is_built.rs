@@ -2,9 +2,7 @@
 crate::ix!();
 
 pub fn ecmult_context_is_built(ctx: *const EcMultContext) -> i32 {
-    
-    todo!();
-        /*
-            return ctx->pre_g != NULL;
-        */
+    tracing::trace!(target: "secp256k1::ecmult", "ecmult_context_is_built");
+
+    unsafe { (!(*ctx).pre_g().is_null()) as i32 }
 }

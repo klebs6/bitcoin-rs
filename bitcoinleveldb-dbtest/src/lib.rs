@@ -7,5 +7,5 @@ x!{compare_iterators}
 x!{dbtest}
 x!{delay}
 x!{mt_test}
-x!{rand}
+x!{db_rand}
 x!{test_type}

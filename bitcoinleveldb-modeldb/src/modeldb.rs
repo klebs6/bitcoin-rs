@@ -117,7 +117,7 @@ impl ModelDB {
     }
     
     pub fn get_approximate_sizes(&mut self, 
-        r:     *const db::Range,
+        r:     *const bitcoinleveldb_slice::Range,
         n:     i32,
         sizes: *mut u64)  {
         

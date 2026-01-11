@@ -2,81 +2,119 @@
 crate::ix!();
 
 impl DBImpl {
-    
-    /**
-      | Delete any unneeded files and stale
-      | in-memory entries.
-      |
-      */
+    /// Delete any unneeded files and stale in-memory entries.
+    /// 
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
-    pub fn delete_obsolete_files(&mut self)  {
-        
-        todo!();
-        /*
-            mutex_.AssertHeld();
+    pub fn delete_obsolete_files(&mut self) {
+        self.mutex.assert_held();
 
-      if (!bg_error_.ok()) {
-        // After a background error, we don't know whether a new version may
-        // or may not have been committed, so we cannot safely garbage collect.
-        return;
-      }
-
-      // Make a set of all of the live files
-      std::set<uint64_t> live = pending_outputs_;
-      versions_->AddLiveFiles(&live);
-
-      std::vector<std::string> filenames;
-      env_->GetChildren(dbname_, &filenames);  // Ignoring errors on purpose
-      uint64_t number;
-      FileType type;
-      std::vector<std::string> files_to_delete;
-      for (std::string& filename : filenames) {
-        if (ParseFileName(filename, &number, &type)) {
-          bool keep = true;
-          switch (type) {
-            case kLogFile:
-              keep = ((number >= versions_->LogNumber()) ||
-                      (number == versions_->PrevLogNumber()));
-              break;
-            case kDescriptorFile:
-              // Keep my manifest file, and any newer incarnations'
-              // (in case there is a race that allows other incarnations)
-              keep = (number >= versions_->ManifestFileNumber());
-              break;
-            case kTableFile:
-              keep = (live.find(number) != live.end());
-              break;
-            case kTempFile:
-              // Any temp files that are currently being written to must
-              // be recorded in pending_outputs_, which is inserted into "live"
-              keep = (live.find(number) != live.end());
-              break;
-            case kCurrentFile:
-            case kDBLockFile:
-            case kInfoLogFile:
-              keep = true;
-              break;
-          }
-
-          if (!keep) {
-            files_to_delete.push_back(std::move(filename));
-            if (type == kTableFile) {
-              table_cache_->Evict(number);
-            }
-            Log(options_.info_log, "Delete type=%d #%lld\n", static_cast<int>(type),
-                static_cast<unsigned long long>(number));
-          }
+        if !self.bg_error_.is_ok() {
+            // After a background error, we don't know whether a new version may
+            // or may not have been committed, so we cannot safely garbage collect.
+            return;
         }
-      }
 
-      // While deleting all files unblock other threads. All files being deleted
-      // have unique names which will not collide with newly created files and
-      // are therefore safe to delete while allowing other threads to proceed.
-      mutex_.Unlock();
-      for (const std::string& filename : files_to_delete) {
-        env_->DeleteFile(dbname_ + "/" + filename);
-      }
-      mutex_.Lock();
-        */
+        // Make a set of all of the live files
+        let mut live = self.pending_outputs_.clone();
+        unsafe {
+            (*self.versions_).add_live_files(&mut live);
+        }
+
+        let mut filenames: Vec<String> = Vec::new();
+
+        // Ignoring errors on purpose
+        let _ = self.env_.borrow_mut().get_children(&self.dbname_, &mut filenames);
+
+        let mut files_to_delete: Vec<String> = Vec::new();
+
+        for filename in filenames.into_iter() {
+            let mut number: u64 = 0;
+            let mut ftype: FileType = Default::default();
+
+            if parse_file_name(&filename, &mut number, &mut ftype) {
+                let mut keep: bool = true;
+
+                match ftype {
+                    FileType::LogFile => {
+                        keep = number >= unsafe { (*self.versions_).log_number() }
+                            || number == unsafe { (*self.versions_).prev_log_number() };
+                    }
+                    // Keep my manifest file, and any newer incarnations'
+                    // (in case there is a race that allows other incarnations)
+                    FileType::DescriptorFile => {
+                        keep = number >= unsafe { (*self.versions_).manifest_file_number() };
+                    }
+                    FileType::TableFile => {
+                        keep = live.contains(&number);
+                    }
+                    // Any temp files that are currently being written to must
+                    // be recorded in pending_outputs_, which is inserted into "live"
+                    FileType::TempFile => {
+                        keep = live.contains(&number);
+                    }
+                    FileType::CurrentFile => {
+                        keep = true;
+                    }
+                    FileType::DBLockFile => {
+                        keep = true;
+                    }
+                    FileType::InfoLogFile => {
+                        keep = true;
+                    }
+                }
+
+                if !keep {
+                    files_to_delete.push(filename.clone());
+                    if matches!(ftype, FileType::TableFile) {
+                        unsafe {
+                            (*self.table_cache_).evict(number);
+                        }
+                    }
+
+                    tracing::info!(
+                        file_type = ?ftype,
+                        file_number = number,
+                        "Delete obsolete file"
+                    );
+                }
+            }
+        }
+
+        // While deleting all files unblock other threads. All files being deleted
+        // have unique names which will not collide with newly created files and
+        // are therefore safe to delete while allowing other threads to proceed.
+        self.mutex.unlock();
+
+        for filename in files_to_delete.into_iter() {
+            let full = format!("{}/{}", self.dbname_, filename);
+            let _ = self.env_.borrow_mut().delete_file(&full);
+        }
+
+        self.mutex.lock();
+    }
+}
+
+#[cfg(test)]
+#[disable]
+mod delete_obsolete_files_exhaustive_suite {
+    use super::*;
+
+    #[traced_test]
+    fn delete_obsolete_files_is_safe_to_call_and_does_not_break_followup_reads() {
+        let (dbname, mut db) =
+            open_dbimpl_for_test("delete_obsolete_files_is_safe_to_call_and_does_not_break_followup_reads");
+
+        write_kv(&mut *db, "k1", "v1");
+        write_kv(&mut *db, "k2", "v2");
+
+        db.mutex_.lock();
+        db.delete_obsolete_files();
+        db.mutex_.unlock();
+
+        assert_read_eq(&mut *db, "k1", "v1");
+        assert_read_eq(&mut *db, "k2", "v2");
+
+        drop(db);
+        remove_db_dir_best_effort(&dbname);
     }
 }

@@ -5,20 +5,28 @@ crate::ix!();
 /// number of points
 ///
 pub fn ecmult_multi_batch_size_helper(
-        n_batches:          *mut usize,
-        n_batch_points:     *mut usize,
-        max_n_batch_points: usize,
-        n:                  usize) -> i32 {
-    
-    todo!();
-        /*
-        if (max_n_batch_points == 0) {
+    n_batches:          *mut usize,
+    n_batch_points:     *mut usize,
+    max_n_batch_points: usize,
+    n:                  usize,
+) -> i32 {
+    tracing::trace!(
+        target: "secp256k1::ecmult",
+        max_n_batch_points = max_n_batch_points,
+        n = n,
+        "ecmult_multi_batch_size_helper"
+    );
+
+    unsafe {
+        let mut max_n_batch_points = max_n_batch_points;
+
+        if max_n_batch_points == 0 {
             return 0;
         }
-        if (max_n_batch_points > ECMULT_MAX_POINTS_PER_BATCH) {
+        if max_n_batch_points > ECMULT_MAX_POINTS_PER_BATCH {
             max_n_batch_points = ECMULT_MAX_POINTS_PER_BATCH;
         }
-        if (n == 0) {
+        if n == 0 {
             *n_batches = 0;
             *n_batch_points = 0;
             return 1;
@@ -26,6 +34,6 @@ pub fn ecmult_multi_batch_size_helper(
         /* Compute ceil(n/max_n_batch_points) and ceil(n/n_batches) */
         *n_batches = 1 + (n - 1) / max_n_batch_points;
         *n_batch_points = 1 + (n - 1) / *n_batches;
-        return 1;
-        */
+        1
+    }
 }

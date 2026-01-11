@@ -1,660 +1,864 @@
 // ---------------- [ File: bitcoin-checkqueue/tests/checkqueue.rs ]
-crate::ix!();
+use bitcoin_checkqueue::*;
+use bitcoin_imports::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/test/checkqueue_tests.cpp]
 
-#[cfg(test)]
-#[fixture(TestingSetup)]
-pub mod checkqueue_tests {
+pub const QUEUE_BATCH_SIZE:     u32 = 128;
+pub const SCRIPT_CHECK_THREADS: i32 = 3;
 
-    pub const QUEUE_BATCH_SIZE:     u32 = 128;
-    pub const SCRIPT_CHECK_THREADS: i32 = 3;
+pub struct FakeCheck { }
 
-    pub struct FakeCheck { }
+impl Default for FakeCheck {
+    fn default() -> Self {
+        Self {}
+    }
+}
 
-    impl FakeCheck {
-        
-        pub fn invoke(&self) -> bool {
-            
-            todo!();
-            /*
-                return true;
-            */
-        }
-        
-        pub fn swap(&mut self, x: &mut FakeCheck)  {
-            
-            todo!();
-            /*
-                }{
-            */
-        }
+impl CheckQueueTask for FakeCheck {
+    fn invoke(&mut self) -> bool {
+        true
     }
 
-    ///------------------------
-    pub struct FakeCheckCheckCompletion {
-
+    fn swap(&mut self, x: &mut Self) {
     }
+}
 
-    pub mod fake_check_check_completion {
+///------------------------
+pub struct FakeCheckCheckCompletion {
 
-        lazy_static!{
-            /*
-            static std::atomic<size_t> n_calls;
-            */
-        }
-    }
+}
 
-    impl FakeCheckCheckCompletion {
+pub mod fake_check_check_completion {
+    use super::*;
 
-        pub fn invoke(&mut self) -> bool {
-            
-            todo!();
-            /*
-                n_calls.fetch_add(1, std::memory_order_relaxed);
-                return true;
-            */
-        }
-        
-        pub fn swap(&mut self, x: &mut FakeCheckCheckCompletion)  { }
-    }
-
-    ///---------------------------
-    pub struct FailingCheck {
-        fails: bool,
-    }
-
-    impl FailingCheck {
-        
-        pub fn new(fails: bool) -> Self {
-        
-            todo!();
-            /*
-            : fails(_fails),
-
-                }{
-            */
-        }
-        
-        fn default() -> Self {
-            todo!();
-            /*
-            : fails(true),
-
-                }{
-            */
-        }
-        
-        pub fn invoke(&self) -> bool {
-            
-            todo!();
-            /*
-                return !fails;
-            */
-        }
-        
-        pub fn swap(&mut self, x: &mut FailingCheck)  {
-            
-            todo!();
-            /*
-                std::swap(fails, x.fails);
-            }{
-            */
-        }
-    }
-
-    ///-------------------------
-    pub struct UniqueCheck {
-        check_id: usize,
-    }
-
-    pub mod unique_check {
-        lazy_static!{
-            /*
-            static Mutex m;
-                static std::unordered_multiset<size_t> results GUARDED_BY(m);
-            */
-        }
-    }
-
-    impl UniqueCheck {
-        
-        pub fn new(check_id_in: usize) -> Self {
-        
-            todo!();
-            /*
-            : check_id(check_id_in),
-
-            */
-        }
-        
-        fn default() -> Self {
-            todo!();
-            /*
-            : check_id(0),
-
-            */
-        }
-        
-        pub fn invoke(&mut self) -> bool {
-            
-            todo!();
-            /*
-                LOCK(m);
-                results.insert(check_id);
-                return true;
-            */
-        }
-        
-        pub fn swap(&mut self, x: &mut UniqueCheck)  {
-            
-            todo!();
-            /*
-                std::swap(x.check_id, check_id); 
-            */
-        }
-    }
-
-    ///-----------------------
-    #[derive(Default)]
-    pub struct MemoryCheck {
-
-        b: bool, // default = { false }
-    }
-
-    pub mod memory_check {
-        lazy_static!{
-            /*
-            static std::atomic<size_t> fake_allocated_memory;
-            */
-        }
-    }
-
-    impl Drop for MemoryCheck {
-        fn drop(&mut self) {
-            todo!();
-            /*
-                fake_allocated_memory.fetch_sub(b, std::memory_order_relaxed);
-            */
-        }
-    }
-
-    impl MemoryCheck {
-
-        pub fn invoke(&self) -> bool {
-            
-            todo!();
-            /*
-                return true;
-            */
-        }
-        
-        pub fn new(x: &MemoryCheck) -> Self {
-        
-            todo!();
-            /*
-
-
-                // We have to do this to make sure that destructor calls are paired
-                //
-                // Really, copy constructor should be deletable, but CCheckQueue breaks
-                // if it is deleted because of internal push_back.
-                fake_allocated_memory.fetch_add(b, std::memory_order_relaxed);
-            */
-        }
-        
-        pub fn new(b: bool) -> Self {
-        
-            todo!();
-            /*
-            : b(b_),
-
-                fake_allocated_memory.fetch_add(b, std::memory_order_relaxed);
-            */
-        }
-        
-        pub fn swap(&mut self, x: &mut MemoryCheck)  {
-            
-            todo!();
-            /*
-                std::swap(b, x.b); 
-            */
-        }
-    }
-
-    ///-----------------------
-    pub struct FrozenCleanupCheck {
-
-        /**
-          | Freezing can't be the default initialized
-          | behavior given how the queue swaps in
-          | default initialized Checks.
-          |
-          */
-        should_freeze: bool, // default = { false }
-    }
-
-    pub mod frozen_cleanup_check {
-        lazy_static!{
-            /*
-            static std::atomic<uint64_t> nFrozen;
-                static std::condition_variable cv;
-                static std::mutex m;
-            */
-        }
-    }
-
-    impl Drop for FrozenCleanupCheck {
-        fn drop(&mut self) {
-            todo!();
-            /*
-                if (should_freeze) {
-                    std::unique_lock<std::mutex> l(m);
-                    nFrozen.store(1, std::memory_order_relaxed);
-                    cv.notify_one();
-                    cv.wait(l, []{ return nFrozen.load(std::memory_order_relaxed) == 0;});
-                }
-            */
-        }
-    }
-
-    impl FrozenCleanupCheck {
-
-        
-        pub fn invoke(&self) -> bool {
-            
-            todo!();
-            /*
-                return true;
-            */
-        }
-        
-        pub fn swap(&mut self, x: &mut FrozenCleanupCheck)  {
-            
-            todo!();
-            /*
-                std::swap(should_freeze, x.should_freeze);}{
-            */
-        }
-    }
-
-    /* -------------- Static Allocations  -------------- */
     lazy_static!{
-        /*
-        std::mutex FrozenCleanupCheck::m{};
-        std::atomic<uint64_t> FrozenCleanupCheck::nFrozen{0};
-        std::condition_variable FrozenCleanupCheck::cv{};
-        Mutex UniqueCheck::m;
-        std::unordered_multiset<size_t> UniqueCheck::results;
-        std::atomic<size_t> FakeCheckCheckCompletion::n_calls{0};
-        std::atomic<size_t> MemoryCheck::fake_allocated_memory{0};
-        */
+        pub static ref N_CALLS: std::sync::atomic::AtomicUsize =
+            std::sync::atomic::AtomicUsize::new(0);
+    }
+}
+
+impl Default for FakeCheckCheckCompletion {
+    fn default() -> Self {
+        Self {}
+    }
+}
+
+impl CheckQueueTask for FakeCheckCheckCompletion {
+    fn invoke(&mut self) -> bool {
+        fake_check_check_completion::N_CALLS.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        true
     }
 
+    fn swap(&mut self, x: &mut Self) {
+    }
+}
 
-    /* ---------------- Queue Typedefs  ---------------- */
-    pub type Correct_Queue       = CheckQueue<FakeCheckCheckCompletion>;
-    pub type Standard_Queue      = CheckQueue<FakeCheck>;
-    pub type Failing_Queue       = CheckQueue<FailingCheck>;
-    pub type Unique_Queue        = CheckQueue<UniqueCheck>;
-    pub type Memory_Queue        = CheckQueue<MemoryCheck>;
-    pub type FrozenCleanup_Queue = CheckQueue<FrozenCleanupCheck>;
+///---------------------------
+pub struct FailingCheck {
+    fails: bool,
+}
 
-    /**
-      | This test case checks that the CCheckQueue
-      | works properly with each specified
-      | size_t Checks pushed.
-      |
-      */
-    pub fn correct_queue_range(range: Vec<usize>)  {
-        
-        todo!();
-            /*
-                auto small_queue = std::make_unique<Correct_Queue>(QUEUE_BATCH_SIZE);
-            small_queue->StartWorkerThreads(SCRIPT_CHECK_THREADS);
-            // Make vChecks here to save on malloc (this test can be slow...)
-            std::vector<FakeCheckCheckCompletion> vChecks;
-            for (const size_t i : range) {
-                size_t total = i;
-                FakeCheckCheckCompletion::n_calls = 0;
-                CCheckQueueControl<FakeCheckCheckCompletion> control(small_queue.get());
-                while (total) {
-                    vChecks.resize(std::min(total, (size_t) InsecureRandRange(10)));
-                    total -= vChecks.size();
-                    control.Add(vChecks);
-                }
-                BOOST_REQUIRE(control.Wait());
-                if (FakeCheckCheckCompletion::n_calls != i) {
-                    BOOST_REQUIRE_EQUAL(FakeCheckCheckCompletion::n_calls, i);
-                }
+impl FailingCheck {
+    
+    pub fn new(fails: bool) -> Self {
+        Self { fails }
+    }
+    
+    fn default() -> Self {
+        Self { fails: true }
+    }
+    
+    pub fn invoke(&self) -> bool {
+        !self.fails
+    }
+    
+    pub fn swap(&mut self, x: &mut FailingCheck)  {
+        std::mem::swap(&mut self.fails, &mut x.fails);
+    }
+}
+
+impl Default for FailingCheck {
+    fn default() -> Self {
+        Self::default()
+    }
+}
+
+impl CheckQueueTask for FailingCheck {
+    fn invoke(&mut self) -> bool {
+        FailingCheck::invoke(self)
+    }
+
+    fn swap(&mut self, x: &mut Self) {
+        FailingCheck::swap(self, x)
+    }
+}
+
+///-------------------------
+pub struct UniqueCheck {
+    check_id: usize,
+}
+
+pub mod unique_check {
+    use super::*;
+
+    lazy_static!{
+        pub static ref RESULTS: std::sync::Mutex<std::collections::HashMap<usize, usize>> =
+            std::sync::Mutex::new(std::collections::HashMap::new());
+    }
+
+    pub fn clear_results() {
+        let mut m = RESULTS.lock().unwrap();
+        m.clear();
+    }
+
+    pub fn total_results_count() -> usize {
+        let m = RESULTS.lock().unwrap();
+        m.values().copied().sum::<usize>()
+    }
+
+    pub fn results_count(check_id: usize) -> usize {
+        let m = RESULTS.lock().unwrap();
+        *m.get(&check_id).unwrap_or(&0)
+    }
+
+    pub fn insert_result(check_id: usize) {
+        let mut m = RESULTS.lock().unwrap();
+        *m.entry(check_id).or_insert(0) += 1;
+    }
+}
+
+impl UniqueCheck {
+    
+    pub fn new(check_id_in: usize) -> Self {
+    
+        Self { check_id: check_id_in }
+    }
+    
+    fn default() -> Self {
+        Self { check_id: 0 }
+    }
+    
+    pub fn invoke(&mut self) -> bool {
+        unique_check::insert_result(self.check_id);
+        true
+    }
+    
+    pub fn swap(&mut self, x: &mut UniqueCheck)  {
+        std::mem::swap(&mut x.check_id, &mut self.check_id);
+    }
+}
+
+impl Default for UniqueCheck {
+    fn default() -> Self {
+        Self::default()
+    }
+}
+
+impl CheckQueueTask for UniqueCheck {
+    fn invoke(&mut self) -> bool {
+        UniqueCheck::invoke(self)
+    }
+
+    fn swap(&mut self, x: &mut Self) {
+        UniqueCheck::swap(self, x)
+    }
+}
+
+///-----------------------
+#[derive(Default)]
+pub struct MemoryCheck {
+
+    b: bool, // default = { false }
+}
+
+pub mod memory_check {
+    use super::*;
+
+    lazy_static!{
+        pub static ref FAKE_ALLOCATED_MEMORY: std::sync::atomic::AtomicUsize =
+            std::sync::atomic::AtomicUsize::new(0);
+    }
+
+    pub fn load_fake_allocated_memory() -> usize {
+        FAKE_ALLOCATED_MEMORY.load(std::sync::atomic::Ordering::Relaxed)
+    }
+
+    pub fn store_fake_allocated_memory(v: usize) {
+        FAKE_ALLOCATED_MEMORY.store(v, std::sync::atomic::Ordering::Relaxed)
+    }
+}
+
+impl Drop for MemoryCheck {
+    fn drop(&mut self) {
+        if self.b {
+            memory_check::FAKE_ALLOCATED_MEMORY.fetch_sub(1, std::sync::atomic::Ordering::Relaxed);
+        }
+    }
+}
+
+impl Clone for MemoryCheck {
+    fn clone(&self) -> Self {
+        MemoryCheck::from_memory_check(self)
+    }
+}
+
+impl MemoryCheck {
+
+    pub fn invoke(&self) -> bool {
+        true
+    }
+    
+    pub fn from_memory_check(x: &MemoryCheck) -> Self {
+    
+        let b = x.b;
+        if b {
+            // We have to do this to make sure that destructor calls are paired
+            //
+            // Really, copy constructor should be deletable, but CCheckQueue breaks
+            // if it is deleted because of internal push_back.
+            memory_check::FAKE_ALLOCATED_MEMORY.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        }
+        Self { b }
+    }
+    
+    pub fn new(b: bool) -> Self {
+    
+        if b {
+            memory_check::FAKE_ALLOCATED_MEMORY.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        }
+        Self { b }
+    }
+    
+    pub fn swap(&mut self, x: &mut MemoryCheck)  {
+        std::mem::swap(&mut self.b, &mut x.b);
+    }
+}
+
+impl CheckQueueTask for MemoryCheck {
+    fn invoke(&mut self) -> bool {
+        MemoryCheck::invoke(self)
+    }
+
+    fn swap(&mut self, x: &mut Self) {
+        MemoryCheck::swap(self, x)
+    }
+}
+
+
+///-----------------------
+pub struct FrozenCleanupCheck {
+
+    /// Freezing can't be the default initialized
+    /// behavior given how the queue swaps in
+    /// default initialized Checks.
+    /// 
+    should_freeze: bool, // default = { false }
+}
+
+pub mod frozen_cleanup_check {
+    use super::*;
+
+    lazy_static!{
+        pub static ref N_FROZEN: std::sync::atomic::AtomicU64 =
+            std::sync::atomic::AtomicU64::new(0);
+        pub static ref CV: std::sync::Condvar = std::sync::Condvar::new();
+        pub static ref M: std::sync::Mutex<()> = std::sync::Mutex::new(());
+    }
+
+    pub fn wait_until_frozen() {
+        let mut l = M.lock().unwrap();
+        while N_FROZEN.load(std::sync::atomic::Ordering::Relaxed) != 1 {
+            l = CV.wait(l).unwrap();
+        }
+    }
+
+    pub fn unfreeze() {
+        let _l = M.lock().unwrap();
+        N_FROZEN.store(0, std::sync::atomic::Ordering::Relaxed);
+    }
+
+    pub fn notify_one() {
+        CV.notify_one();
+    }
+
+    pub fn mark_frozen_and_wait() {
+        let mut l = M.lock().unwrap();
+        N_FROZEN.store(1, std::sync::atomic::Ordering::Relaxed);
+        CV.notify_one();
+        while N_FROZEN.load(std::sync::atomic::Ordering::Relaxed) != 0 {
+            l = CV.wait(l).unwrap();
+        }
+    }
+
+    pub fn is_frozen() -> bool {
+        N_FROZEN.load(std::sync::atomic::Ordering::Relaxed) == 1
+    }
+}
+
+impl Default for FrozenCleanupCheck {
+    fn default() -> Self {
+        Self { should_freeze: false }
+    }
+}
+
+impl Drop for FrozenCleanupCheck {
+    fn drop(&mut self) {
+        if self.should_freeze {
+            frozen_cleanup_check::mark_frozen_and_wait();
+        }
+    }
+}
+
+impl FrozenCleanupCheck {
+    
+    pub fn invoke(&self) -> bool {
+        true
+    }
+    
+    pub fn swap(&mut self, x: &mut FrozenCleanupCheck)  {
+        std::mem::swap(&mut self.should_freeze, &mut x.should_freeze);
+    }
+}
+
+impl CheckQueueTask for FrozenCleanupCheck {
+    fn invoke(&mut self) -> bool {
+        FrozenCleanupCheck::invoke(self)
+    }
+
+    fn swap(&mut self, x: &mut Self) {
+        FrozenCleanupCheck::swap(self, x)
+    }
+}
+
+
+/* -------------- Static Allocations  -------------- */
+lazy_static!{
+    /*
+    std::mutex FrozenCleanupCheck::m{};
+    std::atomic<uint64_t> FrozenCleanupCheck::nFrozen{0};
+    std::condition_variable FrozenCleanupCheck::cv{};
+    Mutex UniqueCheck::m;
+    std::unordered_multiset<size_t> UniqueCheck::results;
+    std::atomic<size_t> FakeCheckCheckCompletion::n_calls{0};
+    std::atomic<size_t> MemoryCheck::fake_allocated_memory{0};
+    */
+}
+
+
+/* ---------------- Queue Typedefs  ---------------- */
+pub type Correct_Queue       = CheckQueue<FakeCheckCheckCompletion>;
+pub type Standard_Queue      = CheckQueue<FakeCheck>;
+pub type Failing_Queue       = CheckQueue<FailingCheck>;
+pub type Unique_Queue        = CheckQueue<UniqueCheck>;
+pub type Memory_Queue        = CheckQueue<MemoryCheck>;
+pub type FrozenCleanup_Queue = CheckQueue<FrozenCleanupCheck>;
+
+lazy_static! {
+    static ref CHECKQUEUE_INTEGRATION_TEST_MUTEX: std::sync::Mutex<()> = std::sync::Mutex::new(());
+}
+
+/// This test case checks that the CCheckQueue
+/// works properly with each specified
+/// size_t Checks pushed.
+/// 
+pub fn correct_queue_range(range: Vec<usize>)  {
+    
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    let mut small_queue = Box::new(Correct_Queue::new(QUEUE_BATCH_SIZE));
+    small_queue.start_worker_threads(SCRIPT_CHECK_THREADS);
+
+    // Make vChecks here to save on malloc (this test can be slow...)
+    let mut v_checks: Vec<FakeCheckCheckCompletion> = Vec::new();
+
+    for i in range {
+        let mut total: usize = i;
+
+        fake_check_check_completion::N_CALLS.store(0, std::sync::atomic::Ordering::Relaxed);
+
+        let mut control = CheckQueueControl::<FakeCheckCheckCompletion>::new(
+            small_queue.as_mut() as *mut Correct_Queue
+        );
+
+        while total != 0 {
+            let chunk: usize = std::cmp::min(total, InsecureRandRange(10) as usize);
+            v_checks.resize_with(chunk, Default::default);
+            total -= v_checks.len();
+            control.add(&mut v_checks);
+        }
+
+        assert!(control.wait());
+
+        let observed_calls = fake_check_check_completion::N_CALLS.load(
+            std::sync::atomic::Ordering::Relaxed
+        );
+
+        if observed_calls != i {
+            assert_eq!(observed_calls, i);
+        }
+    }
+
+    small_queue.stop_worker_threads();
+}
+
+/**
+  | Test that 0 checks is correct
+  |
+  */
+#[traced_test]
+fn test_check_queue_correct_zero() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    let mut range: Vec<usize> = Vec::new();
+    range.push(0usize);
+    correct_queue_range(range);
+}
+
+/**
+  | Test that 1 check is correct
+  |
+  */
+#[traced_test]
+fn test_check_queue_correct_one() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    let mut range: Vec<usize> = Vec::new();
+    range.push(1usize);
+    correct_queue_range(range);
+}
+
+/**
+  | Test that MAX check is correct
+  |
+  */
+#[traced_test]
+fn test_check_queue_correct_max() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    let mut range: Vec<usize> = Vec::new();
+    range.push(100000usize);
+    correct_queue_range(range);
+}
+
+/**
+  | Test that random numbers of checks are
+  | correct
+  |
+  */
+#[traced_test]
+fn test_check_queue_correct_random() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    let mut range: Vec<usize> = Vec::with_capacity(100000usize / 1000usize);
+
+    let mut i: usize = 2;
+    while i < 100000usize {
+        range.push(i);
+        let remaining: usize = 100000usize - i;
+        let step_max: usize = std::cmp::min(1000usize, remaining);
+        let step: usize = std::cmp::max(1usize, InsecureRandRange(step_max as u64) as usize);
+        i += step;
+    }
+
+    correct_queue_range(range);
+}
+
+/**
+  | Test that failing checks are caught
+  |
+  */
+#[traced_test]
+fn test_check_queue_catches_failure() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    let mut fail_queue = Box::new(Failing_Queue::new(QUEUE_BATCH_SIZE));
+    fail_queue.start_worker_threads(SCRIPT_CHECK_THREADS);
+
+    for i in 0..1001usize {
+        let mut control = CheckQueueControl::<FailingCheck>::new(
+            fail_queue.as_mut() as *mut Failing_Queue
+        );
+
+        let mut remaining: usize = i;
+        while remaining != 0 {
+            let r: usize = InsecureRandRange(10) as usize;
+
+            let mut v_checks: Vec<FailingCheck> = Vec::new();
+            v_checks.reserve(r);
+
+            let mut k: usize = 0;
+            while k < r && remaining != 0 {
+                v_checks.push(FailingCheck::new(remaining == 1));
+                k += 1;
+                remaining -= 1;
             }
-            small_queue->StopWorkerThreads();
-            */
+
+            control.add(&mut v_checks);
+        }
+
+        let success = control.wait();
+        if i > 0 {
+            assert!(!success);
+        } else {
+            assert!(success);
+        }
     }
 
-    /**
-      | Test that 0 checks is correct
-      |
-      */
-    #[test] fn test_check_queue_correct_zero() {
-        todo!();
-        /*
-        
-            std::vector<size_t> range;
-            range.push_back((size_t)0);
-            Correct_Queue_range(range);
+    fail_queue.stop_worker_threads();
+}
 
-        */
-    }
+/**
+  | Test that a block validation which fails
+  | does not interfere with future blocks,
+  | ie, the bad state is cleared.
+  |
+  */
+#[traced_test]
+fn test_check_queue_recovers_from_failure() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
 
-    /**
-      | Test that 1 check is correct
-      |
-      */
-    #[test] fn test_check_queue_correct_one() {
-        todo!();
-        /*
-        
-            std::vector<size_t> range;
-            range.push_back((size_t)1);
-            Correct_Queue_range(range);
+    let mut fail_queue = Box::new(Failing_Queue::new(QUEUE_BATCH_SIZE));
+    fail_queue.start_worker_threads(SCRIPT_CHECK_THREADS);
 
-        */
-    }
+    for _times in 0..10 {
+        for end_fails in [true, false] {
+            let mut control = CheckQueueControl::<FailingCheck>::new(
+                fail_queue.as_mut() as *mut Failing_Queue
+            );
 
-    /**
-      | Test that MAX check is correct
-      |
-      */
-    #[test] fn test_check_queue_correct_max() {
-        todo!();
-        /*
-        
-            std::vector<size_t> range;
-            range.push_back(100000);
-            Correct_Queue_range(range);
-
-        */
-    }
-
-    /**
-      | Test that random numbers of checks are
-      | correct
-      |
-      */
-    #[test] fn test_check_queue_correct_random() {
-        todo!();
-        /*
-        
-            std::vector<size_t> range;
-            range.reserve(100000/1000);
-            for (size_t i = 2; i < 100000; i += std::max((size_t)1, (size_t)InsecureRandRange(std::min((size_t)1000, ((size_t)100000) - i))))
-                range.push_back(i);
-            Correct_Queue_range(range);
-
-        */
-    }
-
-    /**
-      | Test that failing checks are caught
-      |
-      */
-    #[test] fn test_check_queue_catches_failure() {
-        todo!();
-        /*
-        
-            auto fail_queue = std::make_unique<Failing_Queue>(QUEUE_BATCH_SIZE);
-            fail_queue->StartWorkerThreads(SCRIPT_CHECK_THREADS);
-
-            for (size_t i = 0; i < 1001; ++i) {
-                CCheckQueueControl<FailingCheck> control(fail_queue.get());
-                size_t remaining = i;
-                while (remaining) {
-                    size_t r = InsecureRandRange(10);
-
-                    std::vector<FailingCheck> vChecks;
-                    vChecks.reserve(r);
-                    for (size_t k = 0; k < r && remaining; k++, remaining--)
-                        vChecks.emplace_back(remaining == 1);
-                    control.Add(vChecks);
-                }
-                bool success = control.Wait();
-                if (i > 0) {
-                    BOOST_REQUIRE(!success);
-                } else if (i == 0) {
-                    BOOST_REQUIRE(success);
-                }
-            }
-            fail_queue->StopWorkerThreads();
-
-        */
-    }
-
-    /**
-      | Test that a block validation which fails
-      | does not interfere with future blocks,
-      | ie, the bad state is cleared.
-      |
-      */
-    #[test] fn test_check_queue_recovers_from_failure() {
-        todo!();
-        /*
-        
-            auto fail_queue = std::make_unique<Failing_Queue>(QUEUE_BATCH_SIZE);
-            fail_queue->StartWorkerThreads(SCRIPT_CHECK_THREADS);
-
-            for (auto times = 0; times < 10; ++times) {
-                for (const bool end_fails : {true, false}) {
-                    CCheckQueueControl<FailingCheck> control(fail_queue.get());
-                    {
-                        std::vector<FailingCheck> vChecks;
-                        vChecks.resize(100, false);
-                        vChecks[99] = end_fails;
-                        control.Add(vChecks);
-                    }
-                    bool r =control.Wait();
-                    BOOST_REQUIRE(r != end_fails);
-                }
-            }
-            fail_queue->StopWorkerThreads();
-
-        */
-    }
-
-    /**
-      | Test that unique checks are actually all called
-      | individually, rather than just one check being
-      | called repeatedly. Test that checks are not
-      | called more than once as well
-      */
-    #[test] fn test_check_queue_unique() {
-        todo!();
-        /*
-        
-            auto queue = std::make_unique<Unique_Queue>(QUEUE_BATCH_SIZE);
-            queue->StartWorkerThreads(SCRIPT_CHECK_THREADS);
-
-            size_t COUNT = 100000;
-            size_t total = COUNT;
             {
-                CCheckQueueControl<UniqueCheck> control(queue.get());
-                while (total) {
-                    size_t r = InsecureRandRange(10);
-                    std::vector<UniqueCheck> vChecks;
-                    for (size_t k = 0; k < r && total; k++)
-                        vChecks.emplace_back(--total);
-                    control.Add(vChecks);
+                let mut v_checks: Vec<FailingCheck> = Vec::with_capacity(100);
+                for _ in 0..100 {
+                    v_checks.push(FailingCheck::new(false));
                 }
+                v_checks[99].fails = end_fails;
+                control.add(&mut v_checks);
             }
-            {
-                LOCK(UniqueCheck::m);
-                bool r = true;
-                BOOST_REQUIRE_EQUAL(UniqueCheck::results.size(), COUNT);
-                for (size_t i = 0; i < COUNT; ++i) {
-                    r = r && UniqueCheck::results.count(i) == 1;
-                }
-                BOOST_REQUIRE(r);
-            }
-            queue->StopWorkerThreads();
 
-        */
+            let r = control.wait();
+            assert!(r != end_fails);
+        }
     }
 
-    /**
-      | Test that blocks which might allocate lots of
-      | memory free their memory aggressively.
-      |
-      | This test attempts to catch a pathological case
-      | where by lazily freeing checks might mean
-      | leaving a check un-swapped out, and decreasing
-      | by 1 each time could leave the data hanging
-      | across a sequence of blocks.
-      */
-    #[test] fn test_check_queue_memory() {
-        todo!();
-        /*
-        
-            auto queue = std::make_unique<Memory_Queue>(QUEUE_BATCH_SIZE);
-            queue->StartWorkerThreads(SCRIPT_CHECK_THREADS);
-            for (size_t i = 0; i < 1000; ++i) {
-                size_t total = i;
-                {
-                    CCheckQueueControl<MemoryCheck> control(queue.get());
-                    while (total) {
-                        size_t r = InsecureRandRange(10);
-                        std::vector<MemoryCheck> vChecks;
-                        for (size_t k = 0; k < r && total; k++) {
-                            total--;
-                            // Each iteration leaves data at the front, back, and middle
-                            // to catch any sort of deallocation failure
-                            vChecks.emplace_back(total == 0 || total == i || total == i/2);
-                        }
-                        control.Add(vChecks);
-                    }
-                }
-                BOOST_REQUIRE_EQUAL(MemoryCheck::fake_allocated_memory, 0U);
-            }
-            queue->StopWorkerThreads();
+    fail_queue.stop_worker_threads();
+}
 
-        */
+/**
+  | Test that unique checks are actually all called
+  | individually, rather than just one check being
+  | called repeatedly. Test that checks are not
+  | called more than once as well
+  */
+#[traced_test]
+fn test_check_queue_unique() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    unique_check::clear_results();
+
+    let mut queue = Box::new(Unique_Queue::new(QUEUE_BATCH_SIZE));
+    queue.start_worker_threads(SCRIPT_CHECK_THREADS);
+
+    let count: usize = 100000;
+    let mut total: usize = count;
+
+    {
+        let _control = CheckQueueControl::<UniqueCheck>::new(queue.as_mut() as *mut Unique_Queue);
+
+        while total != 0 {
+            let r: usize = InsecureRandRange(10) as usize;
+            let mut v_checks: Vec<UniqueCheck> = Vec::new();
+
+            let mut k: usize = 0;
+            while k < r && total != 0 {
+                total -= 1;
+                v_checks.push(UniqueCheck::new(total));
+                k += 1;
+            }
+
+            // control drops and Wait()s at end of scope; we mirror that by explicit drop ordering.
+            // To keep the exact C++ shape (Add inside the scope), create a control each loop chunk.
+            //
+            // In the original test, control lives for the whole scope and multiple Adds happen.
+            // We'll match that exactly by creating it once and keeping it mutable:
+            //
+            // (We keep it in a separate block below for line-for-line structure.)
+            //
+            // (No-op here.)
+            drop(v_checks);
+        }
     }
 
-    /**
-      | Test that a new verification cannot
-      | occur until all checks have been destructed
-      |
-      */
-    #[test] fn test_check_queue_frozen_cleanup() {
-        todo!();
-        /*
-        
-            auto queue = std::make_unique<FrozenCleanup_Queue>(QUEUE_BATCH_SIZE);
-            bool fails = false;
-            queue->StartWorkerThreads(SCRIPT_CHECK_THREADS);
-            std::thread t0([&]() {
-                CCheckQueueControl<FrozenCleanupCheck> control(queue.get());
-                std::vector<FrozenCleanupCheck> vChecks(1);
-                // Freezing can't be the default initialized behavior given how the queue
-                // swaps in default initialized Checks (otherwise freezing destructor
-                // would get called twice).
-                vChecks[0].should_freeze = true;
-                control.Add(vChecks);
-                bool waitResult = control.Wait(); // Hangs here
-                assert(waitResult);
+    // Re-run with proper lifetime of control, preserving original Add loop exactly.
+    total = count;
+    unique_check::clear_results();
+    {
+        let mut control = CheckQueueControl::<UniqueCheck>::new(queue.as_mut() as *mut Unique_Queue);
+        while total != 0 {
+            let r: usize = InsecureRandRange(10) as usize;
+            let mut v_checks: Vec<UniqueCheck> = Vec::new();
+
+            let mut k: usize = 0;
+            while k < r && total != 0 {
+                total -= 1;
+                v_checks.push(UniqueCheck::new(total));
+                k += 1;
+            }
+
+            control.add(&mut v_checks);
+        }
+    }
+
+    {
+        let total_results = unique_check::total_results_count();
+        assert_eq!(total_results, count);
+
+        let mut r_ok = true;
+        for i in 0..count {
+            r_ok = r_ok && unique_check::results_count(i) == 1;
+        }
+        assert!(r_ok);
+    }
+
+    queue.stop_worker_threads();
+}
+
+/**
+  | Test that blocks which might allocate lots of
+  | memory free their memory aggressively.
+  |
+  | This test attempts to catch a pathological case
+  | where by lazily freeing checks might mean
+  | leaving a check un-swapped out, and decreasing
+  | by 1 each time could leave the data hanging
+  | across a sequence of blocks.
+  */
+#[traced_test]
+fn test_check_queue_memory() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    let mut queue = Box::new(Memory_Queue::new(QUEUE_BATCH_SIZE));
+    queue.start_worker_threads(SCRIPT_CHECK_THREADS);
+
+    for i in 0..1000usize {
+        let mut total: usize = i;
+
+        {
+            let mut control = CheckQueueControl::<MemoryCheck>::new(queue.as_mut() as *mut Memory_Queue);
+            while total != 0 {
+                let r: usize = InsecureRandRange(10) as usize;
+                let mut v_checks: Vec<MemoryCheck> = Vec::new();
+
+                let mut k: usize = 0;
+                while k < r && total != 0 {
+                    total -= 1;
+                    // Each iteration leaves data at the front, back, and middle
+                    // to catch any sort of deallocation failure
+                    v_checks.push(MemoryCheck::new(total == 0 || total == i || total == i / 2));
+                    k += 1;
+                }
+
+                control.add(&mut v_checks);
+            }
+        }
+
+        assert_eq!(memory_check::load_fake_allocated_memory(), 0usize);
+    }
+
+    queue.stop_worker_threads();
+}
+
+/// Test that a new verification cannot
+/// occur until all checks have been destructed
+/// 
+#[traced_test]
+fn test_check_queue_frozen_cleanup() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    let mut queue = Box::new(FrozenCleanup_Queue::new(QUEUE_BATCH_SIZE));
+    queue.start_worker_threads(SCRIPT_CHECK_THREADS);
+
+    let queue_ptr: *mut FrozenCleanup_Queue = queue.as_mut() as *mut FrozenCleanup_Queue;
+
+    let t0 = std::thread::spawn(move || {
+        let mut control = CheckQueueControl::<FrozenCleanupCheck>::new(queue_ptr);
+
+        let mut v_checks: Vec<FrozenCleanupCheck> = vec![FrozenCleanupCheck::default(); 1];
+
+        // Freezing can't be the default initialized behavior given how the queue
+        // swaps in default initialized Checks (otherwise freezing destructor
+        // would get called twice).
+        v_checks[0].should_freeze = true;
+
+        control.add(&mut v_checks);
+
+        let wait_result = control.wait(); // Hangs here
+        assert!(wait_result);
+    });
+
+    // Wait until the queue has finished all jobs and frozen
+    frozen_cleanup_check::wait_until_frozen();
+    assert!(frozen_cleanup_check::is_frozen());
+
+    // Try to get control of the queue a bunch of times (interface-level: try to construct a control)
+    let acquired = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let acquired2 = acquired.clone();
+
+    let queue_ptr2: *mut FrozenCleanup_Queue = queue.as_mut() as *mut FrozenCleanup_Queue;
+    let t_try = std::thread::spawn(move || {
+        let _control = CheckQueueControl::<FrozenCleanupCheck>::new(queue_ptr2);
+        acquired2.store(true, std::sync::atomic::Ordering::SeqCst);
+        // Ensure we actually exercise Wait path on drop in the same way
+        // (no outstanding work here; it should return quickly).
+    });
+
+    let mut fails = false;
+    for _x in 0..100 {
+        if acquired.load(std::sync::atomic::Ordering::SeqCst) {
+            fails = true;
+            break;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(1));
+    }
+
+    // Unfreeze (we need lock in case of spurious wakeup)
+    frozen_cleanup_check::unfreeze();
+
+    // Awaken frozen destructor
+    frozen_cleanup_check::notify_one();
+
+    // Wait for control to finish
+    t0.join().unwrap();
+    t_try.join().unwrap();
+
+    assert!(!fails);
+    queue.stop_worker_threads();
+}
+
+/// Test that CCheckQueueControl is threadsafe
+/// 
+#[traced_test]
+fn test_check_queue_control_locks() {
+    let _guard = CHECKQUEUE_INTEGRATION_TEST_MUTEX.lock().unwrap();
+
+    let mut queue = Box::new(Standard_Queue::new(QUEUE_BATCH_SIZE));
+
+    {
+        let mut tg: Vec<std::thread::JoinHandle<()>> = Vec::new();
+        let n_threads = std::sync::Arc::new(std::sync::atomic::AtomicI32::new(0));
+        let fails = std::sync::Arc::new(std::sync::atomic::AtomicI32::new(0));
+
+        for _i in 0..3usize {
+            let queue_ptr: *mut Standard_Queue = queue.as_mut() as *mut Standard_Queue;
+            let n_threads2 = n_threads.clone();
+            let fails2 = fails.clone();
+
+            tg.push(std::thread::spawn(move || {
+                let _control = CheckQueueControl::<FakeCheck>::new(queue_ptr);
+                // While sleeping, no other thread should execute to this point
+                let observed = n_threads2.fetch_add(1, std::sync::atomic::Ordering::SeqCst) + 1;
+
+                std::thread::sleep(std::time::Duration::from_millis(10));
+
+                let now = n_threads2.load(std::sync::atomic::Ordering::SeqCst);
+                if observed != now {
+                    fails2.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+                }
+            }));
+        }
+
+        for thread in tg {
+            thread.join().unwrap();
+        }
+
+        assert_eq!(fails.load(std::sync::atomic::Ordering::SeqCst), 0);
+    }
+
+    {
+        let mut tg: Vec<std::thread::JoinHandle<()>> = Vec::new();
+
+        let m = std::sync::Arc::new(std::sync::Mutex::new(()));
+        let cv = std::sync::Arc::new(std::sync::Condvar::new());
+
+        let has_lock = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let has_tried = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let done = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let done_ack = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+
+        let queue_ptr: *mut Standard_Queue = queue.as_mut() as *mut Standard_Queue;
+
+        {
+            let m2 = m.clone();
+            let cv2 = cv.clone();
+            let has_lock2 = has_lock.clone();
+            let has_tried2 = has_tried.clone();
+            let done2 = done.clone();
+            let done_ack2 = done_ack.clone();
+
+            tg.push(std::thread::spawn(move || {
+                let _control = CheckQueueControl::<FakeCheck>::new(queue_ptr);
+
+                let mut ll = m2.lock().unwrap();
+                has_lock2.store(true, std::sync::atomic::Ordering::SeqCst);
+                cv2.notify_one();
+
+                while !has_tried2.load(std::sync::atomic::Ordering::SeqCst) {
+                    ll = cv2.wait(ll).unwrap();
+                }
+
+                done2.store(true, std::sync::atomic::Ordering::SeqCst);
+                cv2.notify_one();
+
+                // Wait until the done is acknowledged
+                while !done_ack2.load(std::sync::atomic::Ordering::SeqCst) {
+                    ll = cv2.wait(ll).unwrap();
+                }
+            }));
+
+            // Wait for thread to get the lock
+            let mut l = m.lock().unwrap();
+            while !has_lock.load(std::sync::atomic::Ordering::SeqCst) {
+                l = cv.wait(l).unwrap();
+            }
+
+            // Interface-level equivalent of try_lock: spawn a thread that attempts to create a control,
+            // and ensure it does not succeed while the first control is alive.
+            let acquired = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+            let acquired2 = acquired.clone();
+
+            let queue_ptr2: *mut Standard_Queue = queue.as_mut() as *mut Standard_Queue;
+            let t_try = std::thread::spawn(move || {
+                let _control = CheckQueueControl::<FakeCheck>::new(queue_ptr2);
+                acquired2.store(true, std::sync::atomic::Ordering::SeqCst);
             });
-            {
-                std::unique_lock<std::mutex> l(FrozenCleanupCheck::m);
-                // Wait until the queue has finished all jobs and frozen
-                FrozenCleanupCheck::cv.wait(l, [](){return FrozenCleanupCheck::nFrozen == 1;});
-            }
-            // Try to get control of the queue a bunch of times
-            for (auto x = 0; x < 100 && !fails; ++x) {
-                fails = queue->m_control_mutex.try_lock();
-            }
-            {
-                // Unfreeze (we need lock n case of spurious wakeup)
-                std::unique_lock<std::mutex> l(FrozenCleanupCheck::m);
-                FrozenCleanupCheck::nFrozen = 0;
-            }
-            // Awaken frozen destructor
-            FrozenCleanupCheck::cv.notify_one();
-            // Wait for control to finish
-            t0.join();
-            BOOST_REQUIRE(!fails);
-            queue->StopWorkerThreads();
 
-        */
-    }
-
-    /**
-      | Test that CCheckQueueControl is threadsafe
-      |
-      */
-    #[test] fn test_check_queue_control_locks() {
-        todo!();
-        /*
-        
-            auto queue = std::make_unique<Standard_Queue>(QUEUE_BATCH_SIZE);
-            {
-                std::vector<std::thread> tg;
-                std::atomic<int> nThreads {0};
-                std::atomic<int> fails {0};
-                for (size_t i = 0; i < 3; ++i) {
-                    tg.emplace_back(
-                            [&]{
-                            CCheckQueueControl<FakeCheck> control(queue.get());
-                            // While sleeping, no other thread should execute to this point
-                            auto observed = ++nThreads;
-                            UninterruptibleSleep(std::chrono::milliseconds{10});
-                            fails += observed  != nThreads;
-                            });
+            let mut fails = false;
+            for _x in 0..100 {
+                if acquired.load(std::sync::atomic::Ordering::SeqCst) {
+                    fails = true;
+                    break;
                 }
-                for (auto& thread: tg) {
-                    if (thread.joinable()) thread.join();
-                }
-                BOOST_REQUIRE_EQUAL(fails, 0);
-            }
-            {
-                std::vector<std::thread> tg;
-                std::mutex m;
-                std::condition_variable cv;
-                bool has_lock{false};
-                bool has_tried{false};
-                bool done{false};
-                bool done_ack{false};
-                {
-                    std::unique_lock<std::mutex> l(m);
-                    tg.emplace_back([&]{
-                            CCheckQueueControl<FakeCheck> control(queue.get());
-                            std::unique_lock<std::mutex> ll(m);
-                            has_lock = true;
-                            cv.notify_one();
-                            cv.wait(ll, [&]{return has_tried;});
-                            done = true;
-                            cv.notify_one();
-                            // Wait until the done is acknowledged
-                            //
-                            cv.wait(ll, [&]{return done_ack;});
-                            });
-                    // Wait for thread to get the lock
-                    cv.wait(l, [&](){return has_lock;});
-                    bool fails = false;
-                    for (auto x = 0; x < 100 && !fails; ++x) {
-                        fails = queue->m_control_mutex.try_lock();
-                    }
-                    has_tried = true;
-                    cv.notify_one();
-                    cv.wait(l, [&](){return done;});
-                    // Acknowledge the done
-                    done_ack = true;
-                    cv.notify_one();
-                    BOOST_REQUIRE(!fails);
-                }
-                for (auto& thread: tg) {
-                    if (thread.joinable()) thread.join();
-                }
+                std::thread::sleep(std::time::Duration::from_millis(1));
             }
 
-        */
+            has_tried.store(true, std::sync::atomic::Ordering::SeqCst);
+            cv.notify_one();
+
+            while !done.load(std::sync::atomic::Ordering::SeqCst) {
+                l = cv.wait(l).unwrap();
+            }
+
+            // Acknowledge the done
+            done_ack.store(true, std::sync::atomic::Ordering::SeqCst);
+            cv.notify_one();
+
+            assert!(!fails);
+
+            t_try.join().unwrap();
+        }
+
+        for thread in tg {
+            thread.join().unwrap();
+        }
     }
 }

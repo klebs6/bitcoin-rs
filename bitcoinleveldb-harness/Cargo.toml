@@ -16,3 +16,5 @@ bitcoinleveldb-tableconstructor = { path = "../bitcoinleveldb-tableconstructor" 
 bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand" }
 bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-blockconstructor = { path = "../bitcoinleveldb-blockconstructor" }
+bitcoinleveldb-dbtest = { path = "../bitcoinleveldb-dbtest" }

@@ -51,9 +51,10 @@ mod db_trait_composition_suite {
             dbptr: *mut *mut dyn DB,
         ) -> crate::Status {
             unsafe {
-                core::ptr::write(dbptr, core::mem::zeroed());
+                // A well-formed "null" trait-object pointer: null data ptr + valid vtable.
+                *dbptr = ptr::null_mut::<MinimalDbForComposition>() as *mut dyn DB;
             }
-            return crate::Status::not_supported(&Slice::from("open not implemented in test"), None);
+            crate::Status::not_supported(&Slice::from("open not implemented in test"), None)
         }
     }
 

@@ -2,10 +2,81 @@
 crate::ix!();
 
 pub fn ecmult_context_build(
-        ctx:      *mut EcMultContext,
-        prealloc: *mut *mut c_void)  {
-    
-    todo!();
+    ctx:      *mut EcMultContext,
+    prealloc: *mut *mut c_void,
+) {
+    tracing::trace!(target: "secp256k1::ecmult", "ecmult_context_build");
+
+    unsafe {
+        let base: *mut c_void = *prealloc;
+        let prealloc_size: usize = *ECMULT_CONTEXT_PREALLOCATED_SIZE;
+
+        if !(*ctx).pre_g().is_null() {
+            return;
+        }
+
+        /* get the generator */
+        let mut gj = Gej::new();
+        gej_set_ge(core::ptr::addr_of_mut!(gj), core::ptr::addr_of!(ge_const_g));
+
+        {
+            let size: usize = core::mem::size_of::<GeStorage>()
+                .wrapping_mul(ecmult_table_size!(WINDOW_G));
+            /* check for overflow */
+            verify_check!(
+                size / core::mem::size_of::<GeStorage>() == ecmult_table_size!(WINDOW_G)
+            );
+            (*ctx).set_pre_g(manual_alloc(
+                prealloc,
+                core::mem::size_of::<GeStorage>() * ecmult_table_size!(WINDOW_G),
+                base,
+                prealloc_size,
+            ) as *mut GeStorage);
+        }
+
+        /* precompute the tables with odd multiples */
+        ecmult_odd_multiples_table_storage_var(
+            ecmult_table_size!(WINDOW_G) as i32,
+            (*ctx).pre_g(),
+            core::ptr::addr_of!(gj),
+        );
+
+        {
+            let mut g_128j: Gej;
+            let mut i: i32;
+
+            let size: usize = core::mem::size_of::<GeStorage>()
+                .wrapping_mul(ecmult_table_size!(WINDOW_G));
+            /* check for overflow */
+            verify_check!(
+                size / core::mem::size_of::<GeStorage>() == ecmult_table_size!(WINDOW_G)
+            );
+            (*ctx).set_pre_g_128(manual_alloc(
+                prealloc,
+                core::mem::size_of::<GeStorage>() * ecmult_table_size!(WINDOW_G),
+                base,
+                prealloc_size,
+            ) as *mut GeStorage);
+
+            /* calculate 2^128*generator */
+            g_128j = gj;
+            i = 0;
+            while i < 128 {
+                gej_double_var(
+                    core::ptr::addr_of_mut!(g_128j),
+                    core::ptr::addr_of!(g_128j),
+                    core::ptr::null_mut(),
+                );
+                i += 1;
+            }
+            ecmult_odd_multiples_table_storage_var(
+                ecmult_table_size!(WINDOW_G) as i32,
+                (*ctx).pre_g_128(),
+                core::ptr::addr_of!(g_128j),
+            );
+        }
+    }
+
         /*
             gej gj;
         c_void* const base = *prealloc;
@@ -45,4 +116,81 @@ pub fn ecmult_context_build(
             ecmult_odd_multiples_table_storage_var(ECMULT_TABLE_SIZE(WINDOW_G), *ctx->pre_g_128, &g_128j);
         }
         */
+}
+
+pub fn ecmult_context_build(
+    ctx:      *mut EcMultContext,
+    prealloc: *mut *mut c_void,
+) {
+    tracing::trace!(target: "secp256k1::ecmult", "ecmult_context_build");
+
+    unsafe {
+        let base: *mut c_void = *prealloc;
+        let prealloc_size: usize = *ECMULT_CONTEXT_PREALLOCATED_SIZE;
+
+        if !(*ctx).pre_g().is_null() {
+            return;
+        }
+
+        /* get the generator */
+        let mut gj = Gej::new();
+        gej_set_ge(core::ptr::addr_of_mut!(gj), core::ptr::addr_of!(ge_const_g));
+
+        {
+            let size: usize = core::mem::size_of::<GeStorage>()
+                .wrapping_mul(ecmult_table_size!(WINDOW_G));
+            /* check for overflow */
+            verify_check!(
+                size / core::mem::size_of::<GeStorage>() == ecmult_table_size!(WINDOW_G)
+            );
+            (*ctx).set_pre_g(manual_alloc(
+                prealloc,
+                core::mem::size_of::<GeStorage>() * ecmult_table_size!(WINDOW_G),
+                base,
+                prealloc_size,
+            ) as *mut GeStorage);
+        }
+
+        /* precompute the tables with odd multiples */
+        ecmult_odd_multiples_table_storage_var(
+            ecmult_table_size!(WINDOW_G) as i32,
+            *(*ctx).pre_g(),
+            core::ptr::addr_of!(gj),
+        );
+
+        {
+            let mut g_128j: Gej;
+            let mut i: i32;
+
+            let size: usize = core::mem::size_of::<GeStorage>()
+                .wrapping_mul(ecmult_table_size!(WINDOW_G));
+            /* check for overflow */
+            verify_check!(
+                size / core::mem::size_of::<GeStorage>() == ecmult_table_size!(WINDOW_G)
+            );
+            (*ctx).set_pre_g_128(manual_alloc(
+                prealloc,
+                core::mem::size_of::<GeStorage>() * ecmult_table_size!(WINDOW_G),
+                base,
+                prealloc_size,
+            ) as *mut GeStorage);
+
+            /* calculate 2^128*generator */
+            g_128j = gj;
+            i = 0;
+            while i < 128 {
+                gej_double_var(
+                    core::ptr::addr_of_mut!(g_128j),
+                    core::ptr::addr_of!(g_128j),
+                    core::ptr::null_mut(),
+                );
+                i += 1;
+            }
+            ecmult_odd_multiples_table_storage_var(
+                ecmult_table_size!(WINDOW_G) as i32,
+                *(*ctx).pre_g_128(),
+                core::ptr::addr_of!(g_128j),
+            );
+        }
+    }
 }

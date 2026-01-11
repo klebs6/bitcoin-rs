@@ -8,3 +8,4 @@ pub(crate) use bitcoinleveldb_slice::*;
 pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use bitcoinleveldb_iterator::*;
 pub(crate) use bitcoinleveldb_snapshot::*;
+pub(crate) use bitcoinleveldb_batch::*;

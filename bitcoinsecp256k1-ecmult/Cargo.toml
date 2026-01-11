@@ -9,6 +9,9 @@ description = "todo: write a description here"
 # keywords = []
 # categories = []
 
+[dependencies]
+tracing.workspace = true
+
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.19"

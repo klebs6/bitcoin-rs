@@ -34,6 +34,8 @@ x!{pippenger_scratch_size}
 x!{strauss_max_points}
 x!{strauss_scratch_size}
 x!{strauss_state}
+x!{strauss_point_state}
 x!{windows}
 x!{wnaf}
 x!{wnaf_fixed}
+x!{access}

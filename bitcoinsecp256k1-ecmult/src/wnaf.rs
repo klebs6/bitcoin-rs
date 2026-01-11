@@ -5,18 +5,14 @@ pub const WNAF_BITS: usize = 128;
 
 #[macro_export]
 macro_rules! wnaf_size_bits {
-    ($bits:ident, $w:ident) => {
-        /*
-                (((bits) + (w) - 1) / (w))
-        */
-    }
+    ($bits:expr, $w:expr) => {
+        ((($bits) + (($w) as usize) - 1usize) / (($w) as usize))
+    };
 }
 
 #[macro_export]
 macro_rules! wnaf_size {
-    ($w:ident) => {
-        /*
-                WNAF_SIZE_BITS(WNAF_BITS, w)
-        */
-    }
+    ($w:expr) => {
+        wnaf_size_bits!(WNAF_BITS, ($w))
+    };
 }

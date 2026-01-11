@@ -12,11 +12,9 @@ pub const ECMULT_WINDOW_SIZE:   usize = 15;
 ///
 #[macro_export]
 macro_rules! ecmult_table_size {
-    ($w:ident) => {
-        /*
-                (1 << ((w)-2))
-        */
-    }
+    ($w:expr) => {
+        (1usize << (($w as usize) - 2usize))
+    };
 }
 
 /// The number of objects allocated on the scratch space for ecmult_multi algorithms
@@ -31,10 +29,8 @@ pub const ECMULT_PIPPENGER_THRESHOLD:  usize = 88;
 pub const ECMULT_MAX_POINTS_PER_BATCH: usize = 5000000;
 
 lazy_static!{
-    /*
-    static const size_t ECMULT_CONTEXT_PREALLOCATED_SIZE =
-        ROUND_TO_ALIGN(sizeof((*((ecmult_context*) NULL)->pre_g)[0]) * ECMULT_TABLE_SIZE(WINDOW_G))
-        + ROUND_TO_ALIGN(sizeof((*((ecmult_context*) NULL)->pre_g_128)[0]) * ECMULT_TABLE_SIZE(WINDOW_G))
-        ;
-    */
+    pub static ref ECMULT_CONTEXT_PREALLOCATED_SIZE: usize = {
+        round_to_align!(size_of::<GeStorage>() * ecmult_table_size!(WINDOW_G))
+            + round_to_align!(size_of::<GeStorage>() * ecmult_table_size!(WINDOW_G))
+    };
 }

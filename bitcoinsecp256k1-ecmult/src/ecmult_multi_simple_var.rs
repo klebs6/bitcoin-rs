@@ -5,36 +5,59 @@ crate::ix!();
 /// space
 ///
 pub fn ecmult_multi_simple_var(
-        ctx:      *const EcMultContext,
-        r:        *mut Gej,
-        inp_g_sc: *const Scalar,
-        cb:       EcMultMultiCallback,
-        cbdata:   *mut c_void,
-        n_points: usize) -> i32 {
-    
-    todo!();
-        /*
-        size_t point_idx;
-        scalar szero;
-        gej tmpj;
+    ctx:      *const EcMultContext,
+    r:        *mut Gej,
+    inp_g_sc: *const Scalar,
+    cb:       EcMultMultiCallback,
+    cbdata:   *mut c_void,
+    n_points: usize,
+) -> i32 {
+    tracing::trace!(
+        target: "secp256k1::ecmult",
+        n_points = n_points,
+        "ecmult_multi_simple_var"
+    );
 
-        scalar_set_int(&szero, 0);
+    unsafe {
+        let mut point_idx: usize;
+        let mut szero = Scalar::new();
+        let mut tmpj = Gej::new();
+
+        scalar_set_int(core::ptr::addr_of_mut!(szero), 0);
         gej_set_infinity(r);
-        gej_set_infinity(&tmpj);
+        gej_set_infinity(core::ptr::addr_of_mut!(tmpj));
         /* r = inp_g_sc*G */
-        ecmult(ctx, r, &tmpj, &szero, inp_g_sc);
-        for (point_idx = 0; point_idx < n_points; point_idx++) {
-            ge point;
-            gej pointj;
-            scalar scalar;
-            if (!cb(&scalar, &point, point_idx, cbdata)) {
+        ecmult(
+            ctx,
+            r,
+            core::ptr::addr_of!(tmpj),
+            core::ptr::addr_of!(szero),
+            inp_g_sc,
+        );
+        point_idx = 0;
+        while point_idx < n_points {
+            let mut point = Ge::new();
+            let mut pointj = Gej::new();
+            let mut scalar = Scalar::new();
+
+            if cb(core::ptr::addr_of_mut!(scalar), core::ptr::addr_of_mut!(point), point_idx, cbdata)
+                == 0
+            {
                 return 0;
             }
             /* r += scalar*point */
-            gej_set_ge(&pointj, &point);
-            ecmult(ctx, &tmpj, &pointj, &scalar, NULL);
-            gej_add_var(r, r, &tmpj, NULL);
+            gej_set_ge(core::ptr::addr_of_mut!(pointj), core::ptr::addr_of!(point));
+            ecmult(
+                ctx,
+                core::ptr::addr_of_mut!(tmpj),
+                core::ptr::addr_of!(pointj),
+                core::ptr::addr_of!(scalar),
+                core::ptr::null(),
+            );
+            gej_add_var(r, r, core::ptr::addr_of!(tmpj), core::ptr::null_mut());
+
+            point_idx += 1;
         }
-        return 1;
-        */
+        1
+    }
 }

@@ -10,9 +10,15 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+tracing.workspace               = true
+bitcoin-imports                 = { path = "../bitcoin-imports" }
+bitcoinleveldb-iterator         = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-tableconstructor = { path = "../bitcoinleveldb-tableconstructor" }
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
-bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
-bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-comparator       = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-dbinterface      = { path = "../bitcoinleveldb-dbinterface" }
+bitcoinleveldb-options          = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-blockconstructor = { path = "../bitcoinleveldb-blockconstructor" }
+bitcoinleveldb-status           = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-batch            = { path = "../bitcoinleveldb-batch" }
+bitcoinleveldb-iteratorinner    = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-dbimpl           = { path = "../bitcoinleveldb-dbimpl" }

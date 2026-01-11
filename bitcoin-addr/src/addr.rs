@@ -129,23 +129,46 @@ impl Address {
 
             pub fn is_relayable(&self) -> bool;
 
-            pub fn serialize<Stream>(&self, s: &mut Stream);
+            pub fn serialize<Stream>(&self, s: &mut Stream)
+            where
+                Stream: GetVersion,
+                for<'s> &'s mut Stream: core::ops::Shl<u8,  Output = &'s mut Stream>
+                    + core::ops::Shl<u64, Output = &'s mut Stream>,
+                for<'s, 'a> &'s mut Stream: core::ops::Shl<&'a [u8], Output = &'s mut Stream>;
 
-            pub fn unserialize<Stream>(&mut self, s: &mut Stream);
+            pub fn unserialize<Stream>(&mut self, s: &mut Stream)
+            where
+                Stream: GetVersion + Backend,
+                for<'s, 'a> &'s mut Stream: core::ops::Shr<&'a mut [u8], Output = &'s mut Stream>
+                    + core::ops::Shr<&'a mut u8,  Output = &'s mut Stream>
+                    + core::ops::Shr<&'a mut u64, Output = &'s mut Stream>;
 
-            pub fn serialize_v1array(&self, arr: &mut [u8; net_addr::V1_SERIALIZATION_SIZE]);
+            pub fn serialize_v1array(&self, arr: &mut [u8; NET_ADDR_V1_SERIALIZATION_SIZE]);
 
-            pub fn serialize_v1stream<Stream>(&self, s: &mut Stream);
+            pub fn serialize_v1stream<Stream>(&self, s: &mut Stream)
+            where
+                for<'s, 'a> &'s mut Stream: core::ops::Shl<&'a [u8], Output = &'s mut Stream>;
 
-            pub fn serialize_v2stream<Stream>(&self, s: &mut Stream);
+            pub fn serialize_v2stream<Stream>(&self, s: &mut Stream)
+            where
+                for<'s> &'s mut Stream: core::ops::Shl<u8,  Output = &'s mut Stream>
+                    + core::ops::Shl<u64, Output = &'s mut Stream>,
+                for<'s, 'a> &'s mut Stream: core::ops::Shl<&'a [u8], Output = &'s mut Stream>;
 
-            pub fn unserialize_v1array(&mut self, arr: &mut [u8; net_addr::V1_SERIALIZATION_SIZE]);
+            pub fn unserialize_v1array(&mut self, arr: &mut [u8; NET_ADDR_V1_SERIALIZATION_SIZE]);
 
-            pub fn unserialize_v1stream<Stream>(&mut self, s: &mut Stream);
+            pub fn unserialize_v1stream<Stream>(&mut self, s: &mut Stream)
+            where
+                for<'s, 'a> &'s mut Stream: core::ops::Shr<&'a mut [u8], Output = &'s mut Stream>;
 
-            pub fn unserialize_v2stream<Stream>(&mut self, s: &mut Stream);
+            pub fn unserialize_v2stream<Stream>(&mut self, s: &mut Stream)
+            where
+                Stream: Backend,
+                for<'s, 'a> &'s mut Stream: core::ops::Shr<&'a mut u8,  Output = &'s mut Stream>
+                    + core::ops::Shr<&'a mut u64, Output = &'s mut Stream>
+                    + core::ops::Shr<&'a mut [u8], Output = &'s mut Stream>;
 
-            pub fn get_bip155network(&self) -> net_addr::BIP155Network;
+            pub fn get_bip155network(&self) -> BIP155Network;
 
             pub fn set_net_from_bip155network(&mut self, 
                 possible_bip155_net: u8,

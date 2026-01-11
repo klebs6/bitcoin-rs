@@ -6,3 +6,4 @@ pub(crate) use bitcoin_random::*;
 pub(crate) use bitcoin_service::*;
 pub(crate) use bitcoin_service_flags::*;
 pub(crate) use bitcoin_time::*;
+pub(crate) use bitcoin_bitstream::*;

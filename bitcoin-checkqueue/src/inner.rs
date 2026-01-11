@@ -1,6 +1,8 @@
 // ---------------- [ File: bitcoin-checkqueue/src/inner.rs ]
 crate::ix!();
 
+#[derive(Getters,MutGetters,Setters)]
+#[getset(get="pub",set="pub",get_mut="pub")]
 pub struct CheckQueueInner<T> {
 
     /**

@@ -2,10 +2,14 @@
 crate::ix!();
 
 pub fn strauss_scratch_size(n_points: usize) -> usize {
-    
-    todo!();
-        /*
-            static const size_t point_size = (2 * sizeof(ge) + sizeof(gej) + sizeof(fe)) * ECMULT_TABLE_SIZE(WINDOW_A) + sizeof(struct strauss_point_state) + sizeof(gej) + sizeof(scalar);
-        return n_points*point_size;
-        */
+    trace!(target: "secp256k1::ecmult", n_points = n_points, "strauss_scratch_size");
+
+    let point_size: usize = (2usize * size_of::<Ge>()
+        + size_of::<Gej>()
+        + size_of::<Fe>())
+        * ecmult_table_size!(WINDOW_A)
+        + size_of::<StraussPointState>()
+        + size_of::<Gej>()
+        + size_of::<Scalar>();
+    n_points * point_size
 }

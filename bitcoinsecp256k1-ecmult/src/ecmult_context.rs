@@ -7,23 +7,22 @@ crate::ix!();
 ///
 /// perhaps this will cause problems... perhaps not
 ///
+#[repr(C)]
+#[derive(Getters,Setters,MutGetters)]
+#[getset(get="pub",set="pub",get_mut="pub")]
 pub struct EcMultContext {
-
     /// odd multiples of the generator
-    ///
-    pre_g:     Vec<*mut GeStorage>,
+    pre_g:     *mut GeStorage,
 
     /// odd multiples of 2^128*generator
-    ///
-    pre_g_128: Vec<*mut GeStorage>,
+    pre_g_128: *mut GeStorage,
 }
 
 impl EcMultContext {
-
     pub const fn new() -> Self {
         Self {
-            pre_g:     vec![],
-            pre_g_128: vec![],
+            pre_g: core::ptr::null_mut(),
+            pre_g_128: core::ptr::null_mut(),
         }
     }
 }

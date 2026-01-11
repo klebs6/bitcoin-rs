@@ -37,4 +37,8 @@ x!{test_compact_range}
 x!{test_max_next_level_overlapping_bytes}
 x!{write}
 x!{write_level0_table}
+x!{log_reporter}
 x!{open}
+
+#[cfg(test)]
+x!{test_support}

@@ -1,73 +1,144 @@
 // ---------------- [ File: bitcoinleveldb-dbimpl/src/get_property.rs ]
 crate::ix!();
 
-impl GetProperty for DBImpl {
-    
-    fn get_property(&mut self, 
-        property: &str,
-        value:    *mut String) -> bool {
-        
-        todo!();
-        /*
-            value->clear();
+impl DBGetProperty for DBImpl {
 
-      MutexLock l(&mutex_);
-      Slice in = property;
-      Slice prefix("leveldb.");
-      if (!in.starts_with(prefix)) return false;
-      in.remove_prefix(prefix.size());
+    fn get_property(&mut self, property: &str, value: *mut String) -> bool {
+        unsafe {
+            (*value).clear();
+        }
 
-      if (in.starts_with("num-files-at-level")) {
-        in.remove_prefix(strlen("num-files-at-level"));
-        uint64_t level;
-        bool ok = ConsumeDecimalNumber(&in, &level) && in.empty();
-        if (!ok || level >= config::kNumLevels) {
-          return false;
-        } else {
-          char buf[100];
-          snprintf(buf, sizeof(buf), "%d",
-                   versions_->NumLevelFiles(static_cast<int>(level)));
-          *value = buf;
-          return true;
-        }
-      } else if (in == "stats") {
-        char buf[200];
-        snprintf(buf, sizeof(buf),
-                 "                               Compactions\n"
-                 "Level  Files Size(MB) Time(sec) Read(MB) Write(MB)\n"
-                 "--------------------------------------------------\n");
-        value->append(buf);
-        for (int level = 0; level < config::kNumLevels; level++) {
-          int files = versions_->NumLevelFiles(level);
-          if (stats_[level].micros > 0 || files > 0) {
-            snprintf(buf, sizeof(buf), "%3d %8d %8.0f %9.0f %8.0f %9.0f\n", level,
-                     files, versions_->NumLevelBytes(level) / 1048576.0,
-                     stats_[level].micros / 1e6,
-                     stats_[level].bytes_read / 1048576.0,
-                     stats_[level].bytes_written / 1048576.0);
-            value->append(buf);
-          }
-        }
-        return true;
-      } else if (in == "sstables") {
-        *value = versions_->current()->DebugString();
-        return true;
-      } else if (in == "approximate-memory-usage") {
-        size_t total_usage = options_.block_cache->TotalCharge();
-        if (mem_) {
-          total_usage += mem_->ApproximateMemoryUsage();
-        }
-        if (imm_) {
-          total_usage += imm_->ApproximateMemoryUsage();
-        }
-        char buf[50];
-        snprintf(buf, sizeof(buf), "%llu",
-                 static_cast<unsigned long long>(total_usage));
-        value->append(buf);
-        return true;
-      }
+        self.mutex.lock();
 
-      return false;
-        */
+        let mut input: Slice = Slice::from_str(property);
+        let prefix: Slice = Slice::from_str("leveldb.");
+
+        if !input.starts_with(prefix) {
+            self.mutex.unlock();
+            return false;
+        }
+
+        input.remove_prefix(prefix.size());
+
+        if input.starts_with_str("num-files-at-level") {
+            input.remove_prefix_str("num-files-at-level");
+
+            let mut level: u64 = 0;
+            let ok: bool = consume_decimal_number(&mut input, &mut level) && input.empty();
+
+            if !ok || level as i32 >= config::kNumLevels {
+                self.mutex.unlock();
+                return false;
+            }
+
+            let files: i32 = unsafe { (*self.versions_).num_level_files(level as i32) };
+            unsafe {
+                (*value) = files.to_string();
+            }
+
+            self.mutex.unlock();
+            return true;
+        } else if input.eq_str("stats") {
+            unsafe {
+                (*value).push_str(
+                    "                               Compactions\n\
+                     Level  Files Size(MB) Time(sec) Read(MB) Write(MB)\n\
+                     --------------------------------------------------\n",
+                );
+            }
+
+            for level in 0..config::kNumLevels {
+                let files: i32 = unsafe { (*self.versions_).num_level_files(level) };
+                if self.stats_[level as usize].micros > 0 || files > 0 {
+                    let line = format!(
+                        "{:3} {:8} {:8.0} {:9.0} {:8.0} {:9.0}\n",
+                        level,
+                        files,
+                        unsafe { (*self.versions_).num_level_bytes(level) } as f64 / 1048576.0,
+                        self.stats_[level as usize].micros as f64 / 1e6,
+                        self.stats_[level as usize].bytes_read as f64 / 1048576.0,
+                        self.stats_[level as usize].bytes_written as f64 / 1048576.0
+                    );
+                    unsafe {
+                        (*value).push_str(&line);
+                    }
+                }
+            }
+
+            self.mutex.unlock();
+            return true;
+        } else if input.eq_str("sstables") {
+            let dbg = unsafe { (*(*self.versions_).current()).debug_string() };
+            unsafe {
+                (*value) = dbg;
+            }
+            self.mutex.unlock();
+            return true;
+        } else if input.eq_str("approximate-memory-usage") {
+            let mut total_usage: usize = unsafe { (*self.options_.block_cache).total_charge() };
+
+            if !self.mem_.is_null() {
+                total_usage += unsafe { (*self.mem_).approximate_memory_usage() };
+            }
+
+            if !self.imm.is_null() {
+                total_usage += unsafe { (*self.imm).approximate_memory_usage() };
+            }
+
+            unsafe {
+                (*value).push_str(&format!("{}", total_usage as u64));
+            }
+
+            self.mutex.unlock();
+            return true;
+        }
+
+        self.mutex.unlock();
+        false
+    }
+}
+
+#[cfg(test)]
+#[disable]
+mod get_property_exhaustive_suite {
+    use super::*;
+
+    #[traced_test]
+    fn get_property_handles_known_and_unknown_properties_and_formats_values() {
+        let (dbname, mut db) = open_dbimpl_for_test("get_property_handles_known_and_unknown_properties_and_formats_values");
+
+        // Unknown property.
+        let mut out: String = String::new();
+        let ok = <DBImpl as DBGetProperty>::get_property(&mut *db, "leveldb.unknown-property", (&mut out) as *mut String);
+        tracing::info!(ok, out = %out, "unknown property");
+        assert!(!ok, "unknown property must return false");
+        assert!(out.is_empty(), "value must be cleared for unknown property");
+
+        // stats
+        let mut stats: String = String::new();
+        let ok_stats = <DBImpl as DBGetProperty>::get_property(&mut *db, "leveldb.stats", (&mut stats) as *mut String);
+        tracing::info!(ok_stats, len = stats.len(), "stats property");
+        assert!(ok_stats, "stats property should be supported");
+        assert!(stats.contains("Compactions"), "stats output should contain header");
+
+        // sstables
+        let mut sst: String = String::new();
+        let ok_sst = <DBImpl as DBGetProperty>::get_property(&mut *db, "leveldb.sstables", (&mut sst) as *mut String);
+        tracing::info!(ok_sst, len = sst.len(), "sstables property");
+        assert!(ok_sst, "sstables property should be supported");
+
+        // approximate memory usage
+        let mut mem: String = String::new();
+        let ok_mem = <DBImpl as DBGetProperty>::get_property(
+            &mut *db,
+            "leveldb.approximate-memory-usage",
+            (&mut mem) as *mut String,
+        );
+        tracing::info!(ok_mem, mem = %mem, "approximate-memory-usage");
+        assert!(ok_mem, "approximate-memory-usage should be supported");
+        assert!(!mem.is_empty(), "approximate-memory-usage should be non-empty");
+
+        drop(db);
+        remove_db_dir_best_effort(&dbname);
     }
 }

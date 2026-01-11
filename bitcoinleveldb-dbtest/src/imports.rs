@@ -10,3 +10,5 @@ pub(crate) use bitcoinleveldb_status::*;
 pub(crate) use bitcoinleveldb_slice::*;
 pub(crate) use bitcoinleveldb_iterator::*;
 pub(crate) use bitcoinleveldb_rand::*;
+pub(crate) use bitcoinleveldb_dbimpl::*;
+pub(crate) use bitcoinleveldb_filter::*;

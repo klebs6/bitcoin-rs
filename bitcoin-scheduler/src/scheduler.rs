@@ -24,10 +24,30 @@ crate::ix!();
 /// delete t;
 /// delete s; // Must be done after thread is interrupted/joined.
 ///
+#[derive(Getters)]
+#[getset(get="pub")]
 pub struct Scheduler {
     service_thread:     Thread,
     new_task_mutex:     RefCell<Mutex<SchedulerInner>>,
     new_task_scheduled: Condvar,
+}
+
+impl Scheduler {
+    pub fn new() -> Self {
+        trace!("Scheduler::new: constructing Scheduler");
+
+        Self {
+            service_thread: std::thread::current(),
+            new_task_mutex: RefCell::new(Mutex::new(SchedulerInner::default())),
+            new_task_scheduled: Default::default(),
+        }
+    }
+}
+
+impl Default for Scheduler {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 pub trait SchedulerInterface
@@ -44,13 +64,3 @@ pub trait SchedulerInterface
 {}
 
 impl SchedulerInterface for Scheduler {}
-
-impl Drop for Scheduler {
-    fn drop(&mut self) {
-        todo!();
-        /*
-            assert(nThreadsServicingQueue == 0);
-        if (stopWhenEmpty) assert(taskQueue.empty());
-        */
-    }
-}

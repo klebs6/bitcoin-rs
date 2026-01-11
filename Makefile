@@ -39,64 +39,53 @@ FEATURES :=
 
 NO_FAIL_FAST := --no-fail-fast
 
-#----------------------------------------[block-1]
-# ---[layer 0]
-#ACTIVE := bitcoin-checkqueue      #loc: 365
-#ACTIVE := bitcoin-scheduler       #loc: 449
-#ACTIVE := bitcoin-validation      #loc: 153
+#----------------------------------------[active]
 
-# ---[layer 1]
-#ACTIVE := bitcoin-subnet          #loc: 337
-
-# ---[leveldb-layer-0]
-#ACTIVE := bitcoinleveldb-dbinterface   #loc: 346
-#ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
-
-# ---[secp-layer-3]
-#ACTIVE := bitcoinsecp256k1-ecmult
+ACTIVE := bitcoinsecp256k1-ecmult
+ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 
 #----------------------------------------[block-2]
 # ---[secp-layer-4]
-#ACTIVE := bitcoinsecp256k1-ecmultgen
 #ACTIVE := bitcoinsecp256k1-eccontext
 #ACTIVE := bitcoinsecp256k1-ecmultconst
-
 # ---[secp-layer-4b]
 #ACTIVE := bitcoinsecp256k1-ecdh
 #ACTIVE := bitcoinsecp256k1-ecdsa
 #ACTIVE := bitcoinsecp256k1-ecdsasignature
 #ACTIVE := bitcoinsecp256k1-eckey
-
 # ---[secp-layer-5]
 #ACTIVE := bitcoinsecp256k1-ec
 #ACTIVE := bitcoinsecp256k1-keys     #loc: 1556
 #ACTIVE := bitcoinsecp256k1-parse    #loc: 512
 #ACTIVE := bitcoinsecp256k1-recovery #loc: 992
-
 # ---[secp-layer-6]
 #ACTIVE := bitcoinsecp256k1-bench    #loc: 1643
 #ACTIVE := bitcoinsecp256k1-schnorr  #loc: 1876
-
 # ---[secp-layer-4]
 #ACTIVE := bitcoin-secp256k1         #loc: 10730
-
 #-------------------------------[active-below]
 # ---[leveldb-layer-1]
+#ACTIVE := bitcoinleveldb-harness       #loc: 297
 #ACTIVE := bitcoinleveldb-modeldb       #loc: 281
 #ACTIVE := bitcoinleveldb-dbconstructor #loc: 99
-#ACTIVE := bitcoinleveldb-harness       #loc: 297
 # ---[leveldb-layer-2]
 #ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
 #ACTIVE := bitcoinleveldb-db            #loc: 1049
 #ACTIVE := bitcoinleveldb-dbiter        #loc: 414
-
 # ---[leveldb-layer-3]
 #ACTIVE := bitcoinleveldb-bench         #loc: 2997
 #ACTIVE := bitcoinleveldb-test          #loc: 3254
 #ACTIVE := bitcoin-leveldb              #loc: 36
 
-#----------------------------------------[block-2]
+#----------------------------------------[block-1]
+# ---[layer 0]
+#ACTIVE := bitcoin-checkqueue      #loc: 365
+#ACTIVE := bitcoin-validation      #loc: 153
 
+# ---[layer 1]
+#ACTIVE := bitcoin-subnet          #loc: 337
+
+#----------------------------------------[block-2]
 # ---[layer 2]
 #ACTIVE := bitcoin-addr            #loc: 431
 #ACTIVE := bitcoin-netpermissions  #loc: 319
@@ -467,3 +456,6 @@ bench:
 #ACTIVE := bitcoinleveldb-dbimplwriter  #loc: 36
 #ACTIVE := bitcoinleveldb-options        #loc: 339
 #ACTIVE := bitcoinleveldb-repair        #loc: 2302
+#ACTIVE := bitcoin-scheduler       #loc: 449
+#ACTIVE := bitcoinleveldb-dbinterface   #loc: 346
+#ACTIVE := bitcoinsecp256k1-ecmultgen

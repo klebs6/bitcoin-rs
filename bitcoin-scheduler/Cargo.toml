@@ -2,6 +2,10 @@
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
+[dependencies]
+tracing.workspace = true
+bitcoin-syscall = { path = "../bitcoin-syscall" }
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.19"
