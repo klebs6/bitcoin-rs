@@ -56,3 +56,41 @@ const_assert!{
     2 <= ECMULT_WINDOW_SIZE &&
         25 > ECMULT_WINDOW_SIZE
 }
+
+#[cfg(test)]
+mod windows_constants_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn window_constants_satisfy_documented_constraints() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "window_constants_satisfy_documented_constraints"
+        );
+
+        tracing::debug!(
+            target: "secp256k1::ecmult::tests",
+            window_a = WINDOW_A,
+            window_g = WINDOW_G,
+            ecmult_window_size = ECMULT_WINDOW_SIZE,
+            "window constants"
+        );
+
+        assert!(WINDOW_A >= 2);
+        assert!(WINDOW_G >= 2);
+        assert!(WINDOW_G == ECMULT_WINDOW_SIZE);
+
+        let ts_a = ecmult_table_size!(WINDOW_A);
+        let ts_g = ecmult_table_size!(WINDOW_G);
+
+        tracing::debug!(
+            target: "secp256k1::ecmult::tests",
+            ts_a = ts_a,
+            ts_g = ts_g,
+            "table sizes"
+        );
+
+        assert!(ts_a > 0);
+        assert!(ts_g > 0);
+    }
+}

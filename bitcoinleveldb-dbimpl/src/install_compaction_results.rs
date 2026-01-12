@@ -31,7 +31,7 @@ impl DBImpl {
                 );
             }
 
-            (*self.versions_).log_and_apply((*(*compact).compaction).edit(), &mut self.mutex)
+            (*self.versions).log_and_apply((*(*compact).compaction).edit(), &mut self.mutex)
         }
     }
 }

@@ -11,11 +11,11 @@ impl DBImpl {
         if s.is_ok() {
             // Wait until the compaction completes
             self.mutex.lock();
-            while !self.imm.is_null() && self.bg_error_.is_ok() {
+            while !self.imm.is_null() && self.bg_error.is_ok() {
                 self.background_work_finished_signal_.wait();
             }
             if !self.imm.is_null() {
-                s = self.bg_error_.clone();
+                s = self.bg_error.clone();
             }
             self.mutex.unlock();
         }

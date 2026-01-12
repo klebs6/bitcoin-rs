@@ -10,12 +10,12 @@ impl DBGet for DBImpl {
         let snapshot: SequenceNumber = if !options.snapshot.is_null() {
             unsafe { (*(options.snapshot as *const SnapshotImpl)).sequence_number() }
         } else {
-            unsafe { (*self.versions_).last_sequence() }
+            unsafe { (*self.versions).last_sequence() }
         };
 
         let mem: *mut MemTable = self.mem_;
         let imm: *mut MemTable = self.imm;
-        let current: *mut Version = unsafe { (*self.versions_).current() };
+        let current: *mut Version = unsafe { (*self.versions).current() };
 
         unsafe {
             (*mem).ref_();

@@ -3397,7 +3397,6 @@ dependencies = [
  "bitcoinleveldb-compaction",
  "bitcoinleveldb-compactionstats",
  "bitcoinleveldb-comparator",
- "bitcoinleveldb-dbimplinner",
  "bitcoinleveldb-dbimplwriter",
  "bitcoinleveldb-dbinterface",
  "bitcoinleveldb-env",
@@ -3417,26 +3416,10 @@ dependencies = [
  "bitcoinleveldb-version",
  "bitcoinleveldb-versionedit",
  "bitcoinleveldb-versionset",
+ "bitcoinleveldb-versionsetinterface",
  "bitcoinleveldb-writebatch",
  "disable_macro",
  "tracing",
-]
-
-[[package]]
-name = "bitcoinleveldb-dbimplinner"
-version = "0.1.0"
-dependencies = [
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-compaction",
- "bitcoinleveldb-compactionstats",
- "bitcoinleveldb-dbimplwriter",
- "bitcoinleveldb-memtable",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-status",
- "bitcoinleveldb-versionset",
- "bitcoinleveldb-writebatch",
 ]
 
 [[package]]

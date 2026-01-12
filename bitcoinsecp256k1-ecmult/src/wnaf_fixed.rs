@@ -160,3 +160,115 @@ pub fn wnaf_fixed(
         */
 
 }
+
+#[cfg(test)]
+mod wnaf_fixed_contract_suite {
+    use super::*;
+
+    use crate::ecmult_test_harness::*;
+
+    #[traced_test]
+    fn wnaf_fixed_zero_scalar_outputs_all_zeros_and_zero_skew() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "wnaf_fixed_zero_scalar_outputs_all_zeros_and_zero_skew"
+        );
+
+        unsafe {
+            const W: i32 = 4;
+
+            let s = scalar_from_u32(0);
+            let mut out: [i32; wnaf_size!(W)] = [1; wnaf_size!(W)];
+
+            let skew = wnaf_fixed(out.as_mut_ptr(), core::ptr::addr_of!(s), W);
+
+            tracing::debug!(
+                target: "secp256k1::ecmult::tests",
+                skew = skew,
+                "wnaf_fixed(skew) for zero"
+            );
+
+            assert_eq!(skew, 0);
+            for v in out {
+                assert_eq!(v, 0);
+            }
+        }
+    }
+
+    #[traced_test]
+    fn wnaf_fixed_reconstructs_small_scalars_and_respects_bounds() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "wnaf_fixed_reconstructs_small_scalars_and_respects_bounds"
+        );
+
+        unsafe {
+            const W: i32 = 5;
+            let size = wnaf_size!(W);
+            let bound: i32 = 1 << W;
+
+            for k in 1u32..=200u32 {
+                let s = scalar_from_u32(k);
+                let mut out: [i32; wnaf_size!(W)] = [0; wnaf_size!(W)];
+
+                let skew = wnaf_fixed(out.as_mut_ptr(), core::ptr::addr_of!(s), W);
+
+                let mut acc: i128 = 0;
+                let mut i = 0usize;
+                while i < size {
+                    let v = out[i];
+                    if v != 0 {
+                        assert!((v & 1) != 0, "wnaf_fixed must be odd when nonzero");
+                        assert!(v >= -bound && v <= bound, "wnaf_fixed coefficient out of range");
+                    }
+                    acc += (v as i128) << ((i as i32 * W) as u32);
+                    i += 1;
+                }
+                acc -= skew as i128;
+
+                let acc_u32 = acc as u32;
+                tracing::debug!(
+                    target: "secp256k1::ecmult::tests",
+                    k = k,
+                    skew = skew,
+                    reconstructed = acc_u32,
+                    "wnaf_fixed reconstruction"
+                );
+
+                assert_eq!(acc_u32, k);
+                assert!(skew == 0 || skew == 1);
+            }
+        }
+    }
+
+    #[traced_test]
+    fn wnaf_fixed_sets_skew_for_even_scalars() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "wnaf_fixed_sets_skew_for_even_scalars"
+        );
+
+        unsafe {
+            const W: i32 = 4;
+
+            let even = scalar_from_u32(2);
+            let odd = scalar_from_u32(3);
+
+            let mut out_even: [i32; wnaf_size!(W)] = [0; wnaf_size!(W)];
+            let mut out_odd: [i32; wnaf_size!(W)] = [0; wnaf_size!(W)];
+
+            let skew_even = wnaf_fixed(out_even.as_mut_ptr(), core::ptr::addr_of!(even), W);
+            let skew_odd = wnaf_fixed(out_odd.as_mut_ptr(), core::ptr::addr_of!(odd), W);
+
+            tracing::debug!(
+                target: "secp256k1::ecmult::tests",
+                skew_even = skew_even,
+                skew_odd = skew_odd,
+                "skew parity check"
+            );
+
+            assert_eq!(skew_even, 1);
+            assert_eq!(skew_odd, 0);
+        }
+    }
+}

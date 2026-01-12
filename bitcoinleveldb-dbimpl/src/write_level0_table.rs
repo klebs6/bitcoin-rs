@@ -11,12 +11,12 @@ impl DBImpl {
     ) -> crate::Status {
         self.mutex.assert_held();
 
-        let start_micros: u64 = self.env_.borrow_mut().now_micros();
+        let start_micros: u64 = self.env.borrow_mut().now_micros();
 
         let mut meta: FileMetaData = Default::default();
-        meta.number = unsafe { (*self.versions_).new_file_number() };
+        meta.number = unsafe { (*self.versions).new_file_number() };
 
-        self.pending_outputs_.insert(meta.number);
+        self.pending_outputs.insert(meta.number);
 
         let iter: *mut LevelDBIterator = unsafe { (*mem).new_iterator() };
 
@@ -27,7 +27,7 @@ impl DBImpl {
         self.mutex.unlock();
         s = build_table(
             &self.dbname_,
-            &mut *self.env_.borrow_mut(),
+            &mut *self.env.borrow_mut(),
             &self.options_,
             self.table_cache_,
             iter,
@@ -46,7 +46,7 @@ impl DBImpl {
             drop(Box::from_raw(iter));
         }
 
-        self.pending_outputs_.remove(&meta.number);
+        self.pending_outputs.remove(&meta.number);
 
         // Note that if file_size is zero, the file has been deleted and
         // should not be added to the manifest.
@@ -72,7 +72,7 @@ impl DBImpl {
         }
 
         let mut stats: CompactionStats = Default::default();
-        stats.micros = (self.env_.borrow_mut().now_micros() - start_micros) as i64;
+        stats.micros = (self.env.borrow_mut().now_micros() - start_micros) as i64;
         stats.bytes_written = meta.file_size as i64;
 
         self.stats_[level as usize].add(stats);

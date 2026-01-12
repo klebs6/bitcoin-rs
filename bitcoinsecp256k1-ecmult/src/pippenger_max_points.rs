@@ -6,19 +6,38 @@ crate::ix!();
 ///
 /// The function ensures that fewer points may also be used.
 ///
-pub fn pippenger_max_points(
-    error_callback: *const Callback,
-    scratch:        *mut Scratch,
-) -> usize {
-    tracing::trace!(target: "secp256k1::ecmult", "pippenger_max_points");
+pub fn pippenger_max_points(error_callback: *const Callback, scratch: *mut Scratch) -> usize {
+    tracing::trace!(
+        target: "secp256k1::ecmult",
+        error_callback_is_null = error_callback.is_null(),
+        scratch_is_null = scratch.is_null(),
+        "pippenger_max_points"
+    );
+
+    if error_callback.is_null() || scratch.is_null() {
+        tracing::warn!(
+            target: "secp256k1::ecmult",
+            error_callback_is_null = error_callback.is_null(),
+            scratch_is_null = scratch.is_null(),
+            "pippenger_max_points: null callback or scratch; returning 0"
+        );
+        return 0;
+    }
 
     unsafe {
-        let max_alloc: usize = scratch_max_allocation(error_callback, scratch, PIPPENGER_SCRATCH_OBJECTS);
+        let max_alloc: usize =
+            scratch_max_allocation(error_callback, scratch, PIPPENGER_SCRATCH_OBJECTS);
         let mut bucket_window: i32;
         let mut res: usize = 0;
 
+        tracing::debug!(
+            target: "secp256k1::ecmult",
+            max_alloc = max_alloc,
+            "pippenger_max_points: scratch_max_allocation"
+        );
+
         bucket_window = 1;
-        while bucket_window <= PIPPENGER_MAX_BUCKET_WINDOW {
+        while bucket_window <= (PIPPENGER_MAX_BUCKET_WINDOW as i32) {
             let mut n_points: usize;
             let max_points: usize = pippenger_bucket_window_inv(bucket_window);
             let space_for_points: usize;
@@ -33,6 +52,13 @@ pub fn pippenger_max_points(
                 + entry_size
                 + core::mem::size_of::<PippengerState>();
             if space_overhead > max_alloc {
+                tracing::debug!(
+                    target: "secp256k1::ecmult",
+                    bucket_window = bucket_window,
+                    space_overhead = space_overhead,
+                    max_alloc = max_alloc,
+                    "pippenger_max_points: overhead exceeds max_alloc; stopping"
+                );
                 break;
             }
             space_for_points = max_alloc - space_overhead;
@@ -43,53 +69,30 @@ pub fn pippenger_max_points(
                 res = n_points;
             }
             if n_points < max_points {
-                /* A larger bucket_window may support even more points. But if we
-                 * would choose that then the caller couldn't safely use any number
-                 * smaller than what this function returns */
+                tracing::debug!(
+                    target: "secp256k1::ecmult",
+                    bucket_window = bucket_window,
+                    n_points = n_points,
+                    max_points = max_points,
+                    "pippenger_max_points: cannot reach max_points for this window; stopping"
+                );
                 break;
             }
 
             bucket_window += 1;
         }
+
+        tracing::debug!(
+            target: "secp256k1::ecmult",
+            res = res,
+            "pippenger_max_points: result"
+        );
+
         res
     }
-
-        /*
-            size_t max_alloc = scratch_max_allocation(error_callback, scratch, PIPPENGER_SCRATCH_OBJECTS);
-        int bucket_window;
-        size_t res = 0;
-
-        for (bucket_window = 1; bucket_window <= PIPPENGER_MAX_BUCKET_WINDOW; bucket_window++) {
-            size_t n_points;
-            size_t max_points = pippenger_bucket_window_inv(bucket_window);
-            size_t space_for_points;
-            size_t space_overhead;
-            size_t entry_size = sizeof(ge) + sizeof(scalar) + sizeof(struct pippenger_point_state) + (WNAF_SIZE(bucket_window+1)+1)*sizeof(int);
-
-            entry_size = 2*entry_size;
-            space_overhead = (sizeof(gej) << bucket_window) + entry_size + sizeof(struct pippenger_state);
-            if (space_overhead > max_alloc) {
-                break;
-            }
-            space_for_points = max_alloc - space_overhead;
-
-            n_points = space_for_points/entry_size;
-            n_points = n_points > max_points ? max_points : n_points;
-            if (n_points > res) {
-                res = n_points;
-            }
-            if (n_points < max_points) {
-                /* A larger bucket_window may support even more points. But if we
-                 * would choose that then the caller couldn't safely use any number
-                 * smaller than what this function returns */
-                break;
-            }
-        }
-        return res;
-        */
-
 }
 
+#[disable]
 pub fn pippenger_max_points(
     error_callback: *const Callback,
     scratch:        *mut Scratch,
@@ -141,5 +144,61 @@ pub fn pippenger_max_points(
             bucket_window += 1;
         }
         res
+    }
+
+        /*
+            size_t max_alloc = scratch_max_allocation(error_callback, scratch, PIPPENGER_SCRATCH_OBJECTS);
+        int bucket_window;
+        size_t res = 0;
+
+        for (bucket_window = 1; bucket_window <= PIPPENGER_MAX_BUCKET_WINDOW; bucket_window++) {
+            size_t n_points;
+            size_t max_points = pippenger_bucket_window_inv(bucket_window);
+            size_t space_for_points;
+            size_t space_overhead;
+            size_t entry_size = sizeof(ge) + sizeof(scalar) + sizeof(struct pippenger_point_state) + (WNAF_SIZE(bucket_window+1)+1)*sizeof(int);
+
+            entry_size = 2*entry_size;
+            space_overhead = (sizeof(gej) << bucket_window) + entry_size + sizeof(struct pippenger_state);
+            if (space_overhead > max_alloc) {
+                break;
+            }
+            space_for_points = max_alloc - space_overhead;
+
+            n_points = space_for_points/entry_size;
+            n_points = n_points > max_points ? max_points : n_points;
+            if (n_points > res) {
+                res = n_points;
+            }
+            if (n_points < max_points) {
+                /* A larger bucket_window may support even more points. But if we
+                 * would choose that then the caller couldn't safely use any number
+                 * smaller than what this function returns */
+                break;
+            }
+        }
+        return res;
+        */
+
+}
+
+
+#[cfg(test)]
+mod pippenger_max_points_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn pippenger_max_points_returns_zero_for_zeroed_scratch_space() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "pippenger_max_points_returns_zero_for_zeroed_scratch_space"
+        );
+
+        unsafe {
+            let mut scratch: Scratch = core::mem::MaybeUninit::<Scratch>::zeroed().assume_init();
+            let got = pippenger_max_points(core::ptr::null(), core::ptr::addr_of_mut!(scratch));
+            tracing::debug!(target: "secp256k1::ecmult::tests", got = got, "pippenger_max_points");
+            assert_eq!(got, 0);
+        }
     }
 }

@@ -11,18 +11,18 @@ impl DBImpl {
             // Already scheduled
         } else if self.shutting_down_.load(core::sync::atomic::Ordering::Acquire) {
             // DB is being deleted; no more background compactions
-        } else if !self.bg_error_.is_ok() {
+        } else if !self.bg_error.is_ok() {
             // Already got an error; no more changes
         } else if self.imm.is_null()
             && self.manual_compaction_.is_null()
-            && !unsafe { (*self.versions_).needs_compaction() }
+            && !unsafe { (*self.versions).needs_compaction() }
         {
             // No work to be done
         } else {
             self.background_compaction_scheduled_ = true;
 
             let arg: *mut core::ffi::c_void = (self as *mut DBImpl) as *mut core::ffi::c_void;
-            self.env_
+            self.env
                 .borrow_mut()
                 .schedule(DBImpl::bg_work, arg);
         }

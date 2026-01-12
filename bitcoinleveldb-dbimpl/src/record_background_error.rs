@@ -6,8 +6,8 @@ impl DBImpl {
     pub fn record_background_error(&mut self, s: &Status) {
         self.mutex.assert_held();
 
-        if self.bg_error_.is_ok() {
-            self.bg_error_ = s.clone();
+        if self.bg_error.is_ok() {
+            self.bg_error = s.clone();
             self.background_work_finished_signal_.signal_all();
         }
     }
@@ -32,11 +32,11 @@ mod record_background_error_exhaustive_suite {
         let e2: Status = Status::corruption("corruption", "second");
 
         db.record_background_error(&e1);
-        assert!(!db.bg_error_.is_ok(), "bg_error must be set after first error");
+        assert!(!db.bg_error.is_ok(), "bg_error must be set after first error");
 
-        let first = db.bg_error_.to_string();
+        let first = db.bg_error.to_string();
         db.record_background_error(&e2);
-        let second = db.bg_error_.to_string();
+        let second = db.bg_error.to_string();
 
         tracing::info!(first = %first, second = %second, "bg_error latch behavior");
         assert_eq!(first, second, "bg_error must not be overwritten once set");

@@ -1,7 +1,5 @@
 crate::ix!();
 
-#[derive(Getters)]
-#[getset(get="pub")]
 pub struct StraussPointState {
     na_1:        Scalar,
     na_lam:      Scalar,

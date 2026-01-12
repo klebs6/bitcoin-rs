@@ -64,3 +64,23 @@ mod ge_storage_rs_exhaustive_test_suite {
         }
     }
 }
+
+#[inline(always)]
+pub fn ge_storage_x(this: *const GeStorage) -> *const FeStorage {
+    unsafe { core::ptr::addr_of!((*this).x) }
+}
+
+#[inline(always)]
+pub fn ge_storage_x_mut(this: *mut GeStorage) -> *mut FeStorage {
+    unsafe { core::ptr::addr_of_mut!((*this).x) }
+}
+
+#[inline(always)]
+pub fn ge_storage_y(this: *const GeStorage) -> *const FeStorage {
+    unsafe { core::ptr::addr_of!((*this).y) }
+}
+
+#[inline(always)]
+pub fn ge_storage_y_mut(this: *mut GeStorage) -> *mut FeStorage {
+    unsafe { core::ptr::addr_of_mut!((*this).y) }
+}

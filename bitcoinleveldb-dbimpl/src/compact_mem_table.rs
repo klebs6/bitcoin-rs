@@ -6,7 +6,7 @@ impl DBImpl {
     ///
     /// Switches to a new log-file/memtable and writes a new descriptor iff successful.
     /// 
-    /// Errors are recorded in bg_error_.
+    /// Errors are recorded in bg_error.
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
     pub fn compact_mem_table(&mut self) {
         self.mutex.assert_held();
@@ -14,7 +14,7 @@ impl DBImpl {
 
         // Save the contents of the memtable as a new Table
         let mut edit: VersionEdit = Default::default();
-        let base: *mut Version = unsafe { (*self.versions_).current() };
+        let base: *mut Version = unsafe { (*self.versions).current() };
         unsafe {
             (*base).ref_();
         }
@@ -35,7 +35,7 @@ impl DBImpl {
 
             // Earlier logs no longer needed
             edit.set_log_number(self.logfile_number_);
-            s = unsafe { (*self.versions_).log_and_apply(&mut edit, &mut self.mutex) };
+            s = unsafe { (*self.versions).log_and_apply(&mut edit, &mut self.mutex) };
         }
 
         if s.is_ok() {

@@ -31,7 +31,7 @@ impl DBGetProperty for DBImpl {
                 return false;
             }
 
-            let files: i32 = unsafe { (*self.versions_).num_level_files(level as i32) };
+            let files: i32 = unsafe { (*self.versions).num_level_files(level as i32) };
             unsafe {
                 (*value) = files.to_string();
             }
@@ -48,13 +48,13 @@ impl DBGetProperty for DBImpl {
             }
 
             for level in 0..config::kNumLevels {
-                let files: i32 = unsafe { (*self.versions_).num_level_files(level) };
+                let files: i32 = unsafe { (*self.versions).num_level_files(level) };
                 if self.stats_[level as usize].micros > 0 || files > 0 {
                     let line = format!(
                         "{:3} {:8} {:8.0} {:9.0} {:8.0} {:9.0}\n",
                         level,
                         files,
-                        unsafe { (*self.versions_).num_level_bytes(level) } as f64 / 1048576.0,
+                        unsafe { (*self.versions).num_level_bytes(level) } as f64 / 1048576.0,
                         self.stats_[level as usize].micros as f64 / 1e6,
                         self.stats_[level as usize].bytes_read as f64 / 1048576.0,
                         self.stats_[level as usize].bytes_written as f64 / 1048576.0
@@ -68,7 +68,7 @@ impl DBGetProperty for DBImpl {
             self.mutex.unlock();
             return true;
         } else if input.eq_str("sstables") {
-            let dbg = unsafe { (*(*self.versions_).current()).debug_string() };
+            let dbg = unsafe { (*(*self.versions).current()).debug_string() };
             unsafe {
                 (*value) = dbg;
             }

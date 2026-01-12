@@ -50,3 +50,55 @@ mod gej_rs_exhaustive_test_suite {
         assert!(fe_is_zero(core::ptr::addr_of!(p.z)) != 0);
     }
 }
+
+#[inline(always)]
+pub fn gej_x(this: *const Gej) -> *const Fe {
+    unsafe { core::ptr::addr_of!((*this).x) }
+}
+
+#[inline(always)]
+pub fn gej_x_mut(this: *mut Gej) -> *mut Fe {
+    unsafe { core::ptr::addr_of_mut!((*this).x) }
+}
+
+#[inline(always)]
+pub fn gej_y(this: *const Gej) -> *const Fe {
+    unsafe { core::ptr::addr_of!((*this).y) }
+}
+
+#[inline(always)]
+pub fn gej_y_mut(this: *mut Gej) -> *mut Fe {
+    unsafe { core::ptr::addr_of_mut!((*this).y) }
+}
+
+#[inline(always)]
+pub fn gej_z(this: *const Gej) -> *const Fe {
+    unsafe { core::ptr::addr_of!((*this).z) }
+}
+
+#[inline(always)]
+pub fn gej_z_mut(this: *mut Gej) -> *mut Fe {
+    unsafe { core::ptr::addr_of_mut!((*this).z) }
+}
+
+#[inline(always)]
+pub fn gej_infinity(this: *const Gej) -> *const i32 {
+    unsafe { core::ptr::addr_of!((*this).infinity) }
+}
+
+#[inline(always)]
+pub fn gej_infinity_mut(this: *mut Gej) -> *mut i32 {
+    unsafe { core::ptr::addr_of_mut!((*this).infinity) }
+}
+
+#[inline(always)]
+pub fn gej_negate_in_place(p: *mut Gej) {
+    if gej_is_infinity(p) != 0 {
+        return;
+    }
+    fe_negate(
+        gej_y_mut(p),
+        gej_y(p),
+        1,
+    );
+}

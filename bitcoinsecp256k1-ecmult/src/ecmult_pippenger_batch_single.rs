@@ -17,3 +17,27 @@ pub fn ecmult_pippenger_batch_single(
 
     ecmult_pippenger_batch(error_callback, actx, scratch, r, inp_g_sc, cb, cbdata, n, 0)
 }
+
+#[cfg(test)]
+mod pippenger_batch_single_interface_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn pippenger_batch_single_matches_ecmult_multi_func_interface() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "pippenger_batch_single_matches_ecmult_multi_func_interface"
+        );
+
+        let f: EcMultMultiFunc = ecmult_pippenger_batch_single;
+        let _addr = f as usize;
+
+        tracing::debug!(
+            target: "secp256k1::ecmult::tests",
+            f_addr = _addr,
+            "captured ecmult_pippenger_batch_single fn pointer"
+        );
+
+        assert!(_addr != 0);
+    }
+}

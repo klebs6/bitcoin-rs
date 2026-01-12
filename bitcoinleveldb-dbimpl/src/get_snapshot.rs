@@ -7,7 +7,7 @@ impl DBGetSnapshot for DBImpl {
         self.mutex.lock();
         let snap = self
             .snapshots_
-            .new(unsafe { (*self.versions_).last_sequence() });
+            .new(unsafe { (*self.versions).last_sequence() });
         self.mutex.unlock();
         snap
     }

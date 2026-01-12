@@ -41,7 +41,6 @@ NO_FAIL_FAST := --no-fail-fast
 
 #----------------------------------------[active]
 
-ACTIVE := bitcoinsecp256k1-ecmult
 ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 
 #----------------------------------------[block-2]
@@ -447,11 +446,7 @@ bench:
 #ACTIVE := bitcoinsecp256k1-modinv
 #ACTIVE := bitcoinsecp256k1-modinv64   #loc: 750
 #ACTIVE := bitcoinsecp256k1-scratch  #loc: 210
-#ACTIVE := bitcoinsecp256k1-fe5x52
-#ACTIVE := bitcoinsecp256k1-fe10x26 
-#ACTIVE := bitcoinsecp256k1-field    #loc: 3831
 #ACTIVE := bitcoinsecp256k1-scalar   #loc: 3197
-#ACTIVE := bitcoinsecp256k1-group    #loc: 1223
 #ACTIVE := bitcoinleveldb-versionset
 #ACTIVE := bitcoinleveldb-dbimplwriter  #loc: 36
 #ACTIVE := bitcoinleveldb-options        #loc: 339
@@ -459,3 +454,8 @@ bench:
 #ACTIVE := bitcoin-scheduler       #loc: 449
 #ACTIVE := bitcoinleveldb-dbinterface   #loc: 346
 #ACTIVE := bitcoinsecp256k1-ecmultgen
+#ACTIVE := bitcoinsecp256k1-field    #loc: 3831
+#ACTIVE := bitcoinsecp256k1-group    #loc: 1223
+#ACTIVE := bitcoinsecp256k1-fe5x52
+#ACTIVE := bitcoinsecp256k1-fe10x26 
+#ACTIVE := bitcoinsecp256k1-ecmult

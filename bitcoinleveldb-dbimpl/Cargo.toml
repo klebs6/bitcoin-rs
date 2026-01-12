@@ -28,7 +28,6 @@ bitcoinleveldb-writebatch      = { path = "../bitcoinleveldb-writebatch" }
 bitcoinleveldb-dbimplwriter    = { path = "../bitcoinleveldb-dbimplwriter" }
 bitcoinleveldb-env             = { path = "../bitcoinleveldb-env" }
 bitcoinleveldb-tablecache      = { path = "../bitcoinleveldb-tablecache" }
-bitcoinleveldb-dbimplinner     = { path = "../bitcoinleveldb-dbimplinner" }
 bitcoinleveldb-memtable        = { path = "../bitcoinleveldb-memtable" }
 bitcoinleveldb-logwriter       = { path = "../bitcoinleveldb-logwriter" }
 bitcoinleveldb-dbinterface     = { path = "../bitcoinleveldb-dbinterface" }
@@ -40,3 +39,4 @@ bitcoinleveldb-versionset = { path = "../bitcoinleveldb-versionset" }
 bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
 bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }

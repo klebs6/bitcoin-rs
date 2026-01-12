@@ -19,7 +19,7 @@ impl DBImpl {
         let fname: String = log_file_name(&self.dbname_, log_number);
 
         let mut file: *mut dyn SequentialFile = core::ptr::null_mut();
-        let mut status: Status = self.env_.borrow_mut().new_sequential_file(&fname, &mut file);
+        let mut status: Status = self.env.borrow_mut().new_sequential_file(&fname, &mut file);
 
         if !status.is_ok() {
             self.maybe_ignore_error(&mut status as *mut Status);
@@ -119,9 +119,9 @@ impl DBImpl {
 
             let mut lfile_size: u64 = 0;
 
-            if self.env_.borrow_mut().get_file_size(&fname, &mut lfile_size).is_ok()
+            if self.env.borrow_mut().get_file_size(&fname, &mut lfile_size).is_ok()
                 && self
-                    .env_
+                    .env
                     .borrow_mut()
                     .new_appendable_file(&fname, &mut self.logfile_)
                     .is_ok()
@@ -190,11 +190,11 @@ mod recover_log_file_exhaustive_suite {
             );
 
             if s.is_ok() && db.mem_.is_null() {
-                let new_log_number: u64 = unsafe { (*db.versions_).new_file_number() };
+                let new_log_number: u64 = unsafe { (*db.versions).new_file_number() };
                 let mut lfile: *mut dyn WritableFile = core::ptr::null_mut();
                 let fname: String = log_file_name(&dbname, new_log_number);
 
-                s = db.env_.borrow_mut().new_writable_file(&fname, &mut lfile);
+                s = db.env.borrow_mut().new_writable_file(&fname, &mut lfile);
 
                 if s.is_ok() {
                     edit.set_log_number(new_log_number);
@@ -210,7 +210,7 @@ mod recover_log_file_exhaustive_suite {
             if s.is_ok() && save_manifest {
                 edit.set_prev_log_number(0);
                 edit.set_log_number(db.logfile_number_);
-                s = unsafe { (*db.versions_).log_and_apply(&mut edit, &mut db.mutex_) };
+                s = unsafe { (*db.versions).log_and_apply(&mut edit, &mut db.mutex_) };
             }
 
             if s.is_ok() {

@@ -26,3 +26,59 @@ impl EcMultContext {
         }
     }
 }
+
+#[cfg(test)]
+mod ecmult_context_initial_state_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn ecmult_context_new_starts_with_null_precomputed_tables() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "ecmult_context_new_starts_with_null_precomputed_tables"
+        );
+
+        let ctx = EcMultContext::new();
+
+        let pre_g_is_null = (*ctx.pre_g()).is_null();
+        let pre_g_128_is_null = (*ctx.pre_g_128()).is_null();
+
+        tracing::debug!(
+            target: "secp256k1::ecmult::tests",
+            pre_g_is_null = pre_g_is_null,
+            pre_g_128_is_null = pre_g_128_is_null,
+            "EcMultContext::new() pointers"
+        );
+
+        assert!(pre_g_is_null);
+        assert!(pre_g_128_is_null);
+    }
+}
+
+#[cfg(test)]
+mod ecmult_context_init_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn ecmult_context_init_clears_precomputed_table_pointers() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "ecmult_context_init_clears_precomputed_table_pointers"
+        );
+
+        unsafe {
+            let mut ctx = EcMultContext::new();
+
+            ctx.set_pre_g(1usize as *mut GeStorage);
+            ctx.set_pre_g_128(2usize as *mut GeStorage);
+
+            assert!(!(*ctx.pre_g()).is_null());
+            assert!(!(*ctx.pre_g_128()).is_null());
+
+            ecmult_context_init(core::ptr::addr_of_mut!(ctx));
+
+            assert!((*ctx.pre_g()).is_null());
+            assert!((*ctx.pre_g_128()).is_null());
+        }
+    }
+}

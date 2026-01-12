@@ -105,3 +105,96 @@ pub fn ecmult_odd_multiples_table(
         */
 
 }
+
+#[cfg(test)]
+mod odd_multiples_table_contract_suite {
+    use super::*;
+
+    use crate::ecmult_test_harness::*;
+
+    #[traced_test]
+    fn odd_multiples_table_produces_expected_sequence_for_generator() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "odd_multiples_table_produces_expected_sequence_for_generator"
+        );
+
+        unsafe {
+            const N: usize = 8;
+
+            // Base point in Jacobian coordinates.
+            let a = crate::ecmult_test_harness::gej_from_ge(core::ptr::addr_of!(ge_const_g));
+
+            // Produce the (prej, zr) representation.
+            let mut prej: [Gej; N] = core::mem::MaybeUninit::<[Gej; N]>::uninit().assume_init();
+            let mut zr: [Fe; N] = core::mem::MaybeUninit::<[Fe; N]>::uninit().assume_init();
+
+            ecmult_odd_multiples_table(
+                N as i32,
+                prej.as_mut_ptr(),
+                zr.as_mut_ptr(),
+                core::ptr::addr_of!(a),
+            );
+
+            // Convert using the intended consumer: produce affine points plus a global Z.
+            let mut pre: [Ge; N] = core::mem::MaybeUninit::<[Ge; N]>::uninit().assume_init();
+            let mut globalz: Fe = core::mem::MaybeUninit::<Fe>::uninit().assume_init();
+
+            ge_globalz_set_table_gej(
+                N,
+                pre.as_mut_ptr(),
+                core::ptr::addr_of_mut!(globalz),
+                prej.as_ptr(),
+                zr.as_ptr(),
+            );
+
+            fe_normalize_var(core::ptr::addr_of_mut!(globalz));
+            let globalz_is_zero = fe_is_zero(core::ptr::addr_of!(globalz)) != 0;
+
+            tracing::debug!(
+                target: "secp256k1::ecmult::tests",
+                globalz_is_zero = globalz_is_zero,
+                "ge_globalz_set_table_gej globalz normalization"
+            );
+            assert!(!globalz_is_zero);
+
+            // The returned `pre[i]` entries are meant to be used in the global-Z isomorphism:
+            // map back the same way the Strauss code does by multiplying the Jacobian z by `globalz`.
+            let mut i = 0usize;
+            while i < N {
+                let k: u32 = (2usize * i + 1usize) as u32;
+
+                let pre_is_inf = ge_is_infinity(pre.as_ptr().add(i));
+
+                tracing::debug!(
+                    target: "secp256k1::ecmult::tests",
+                    i = i,
+                    k = k,
+                    pre_is_infinity = pre_is_inf,
+                    "verifying odd multiple table entry"
+                );
+
+                assert_eq!(pre_is_inf, 0);
+
+                let mut got = crate::ecmult_test_harness::gej_from_ge(pre.as_ptr().add(i));
+                if gej_is_infinity(core::ptr::addr_of!(got)) == 0 {
+                    fe_mul(
+                        gej_z_mut(core::ptr::addr_of_mut!(got)),
+                        gej_z(core::ptr::addr_of!(got)),
+                        core::ptr::addr_of!(globalz),
+                    );
+                }
+
+                let expected = crate::ecmult_test_harness::gej_mul_small(core::ptr::addr_of!(a), k);
+
+                crate::ecmult_test_harness::gej_assert_eq_via_add_neg(
+                    "odd_multiples_table mapped by globalz",
+                    core::ptr::addr_of!(got),
+                    core::ptr::addr_of!(expected),
+                );
+
+                i += 1;
+            }
+        }
+    }
+}

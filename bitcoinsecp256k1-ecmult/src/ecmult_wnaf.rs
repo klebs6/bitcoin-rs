@@ -129,3 +129,62 @@ pub fn ecmult_wnaf(
         */
 
 }
+
+#[cfg(test)]
+mod ecmult_wnaf_contract_suite {
+    use super::*;
+
+    use crate::ecmult_test_harness::*;
+
+    #[traced_test]
+    fn ecmult_wnaf_representation_reconstructs_small_scalars_and_meets_spacing_constraints() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "ecmult_wnaf_representation_reconstructs_small_scalars_and_meets_spacing_constraints"
+        );
+
+        unsafe {
+            const LEN: i32 = 64;
+            const W: i32 = 5;
+
+            let mut wnaf: [i32; LEN as usize] = [0; LEN as usize];
+
+            for k in 0u32..=200u32 {
+                let s = scalar_from_u32(k);
+                let used_bits = ecmult_wnaf(wnaf.as_mut_ptr(), LEN, core::ptr::addr_of!(s), W);
+
+                tracing::debug!(
+                    target: "secp256k1::ecmult::tests",
+                    k = k,
+                    used_bits = used_bits,
+                    "computed wnaf for scalar"
+                );
+
+                let mut acc: i64 = 0;
+                let mut last_nz: i32 = -1000;
+
+                let mut i = 0i32;
+                while i < LEN {
+                    let v = wnaf[i as usize];
+
+                    if v != 0 {
+                        assert!((v & 1) != 0);
+
+                        let bound: i32 = ((1i32 << (W - 1)) - 1);
+                        assert!(v >= -bound && v <= bound);
+
+                        assert!((i - last_nz) >= (W - 1), "nonzero entries too close");
+                        last_nz = i;
+
+                        acc += (v as i64) << (i as i64);
+                    }
+
+                    i += 1;
+                }
+
+                assert_eq!(acc as u32, k, "wnaf reconstruction mismatch");
+                assert!(used_bits >= 0);
+            }
+        }
+    }
+}

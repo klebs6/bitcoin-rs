@@ -26,7 +26,7 @@ impl DBOpen for DBImpl {
 
         if s.is_ok() && impl_.mem_.is_null() {
             // Create new log and a corresponding memtable.
-            let new_log_number: u64 = unsafe { (*impl_.versions_).new_file_number() };
+            let new_log_number: u64 = unsafe { (*impl_.versions).new_file_number() };
 
             let mut lfile: core::mem::MaybeUninit<*mut dyn WritableFile> =
                 core::mem::MaybeUninit::uninit();
@@ -61,7 +61,7 @@ impl DBOpen for DBImpl {
         if s.is_ok() && save_manifest {
             edit.set_prev_log_number(0); // No older logs needed after recovery.
             edit.set_log_number(impl_.logfile_number_);
-            s = unsafe { (*impl_.versions_).log_and_apply(&mut edit, &mut impl_.mutex_) };
+            s = unsafe { (*impl_.versions).log_and_apply(&mut edit, &mut impl_.mutex_) };
         }
 
         if s.is_ok() {

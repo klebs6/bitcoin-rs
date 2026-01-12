@@ -309,3 +309,76 @@ pub fn ecmult_odd_multiples_table_storage_var(
         */
 
 }
+
+#[cfg(test)]
+mod odd_multiples_storage_var_contract_suite {
+    use super::*;
+
+    use crate::ecmult_test_harness::*;
+
+    #[traced_test]
+    fn odd_multiples_table_storage_var_matches_expected_odd_multiples_for_generator_small_n() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "odd_multiples_table_storage_var_matches_expected_odd_multiples_for_generator_small_n"
+        );
+
+        unsafe {
+            const N: usize = 8;
+
+            let a = gej_from_ge(core::ptr::addr_of!(ge_const_g));
+            let mut table: [GeStorage; N] =
+                core::mem::MaybeUninit::<[GeStorage; N]>::uninit().assume_init();
+
+            ecmult_odd_multiples_table_storage_var(
+                N as i32,
+                table.as_mut_ptr(),
+                core::ptr::addr_of!(a),
+            );
+
+            let mut expected = gej_clone(core::ptr::addr_of!(a));
+
+            let mut two_a = Gej::new();
+            gej_double_var(
+                core::ptr::addr_of_mut!(two_a),
+                core::ptr::addr_of!(a),
+                core::ptr::null_mut(),
+            );
+
+            let two_a_is_infinity = gej_is_infinity(core::ptr::addr_of!(two_a)) != 0;
+            tracing::debug!(
+                target: "secp256k1::ecmult::tests",
+                two_a_is_infinity = two_a_is_infinity,
+                "computed two_a via gej_double_var"
+            );
+
+            let mut i = 0usize;
+            while i < N {
+                let mut ge = Ge::new();
+                ge_from_storage(core::ptr::addr_of_mut!(ge), table.as_ptr().add(i));
+
+                let got = gej_from_ge(core::ptr::addr_of!(ge));
+
+                tracing::debug!(
+                    target: "secp256k1::ecmult::tests",
+                    i = i,
+                    "verifying storage odd multiple"
+                );
+
+                gej_assert_eq_via_add_neg(
+                    "odd_multiples_storage entry",
+                    core::ptr::addr_of!(got),
+                    core::ptr::addr_of!(expected),
+                );
+
+                let next = gej_add(
+                    core::ptr::addr_of!(expected),
+                    core::ptr::addr_of!(two_a),
+                );
+                expected = next;
+
+                i += 1;
+            }
+        }
+    }
+}

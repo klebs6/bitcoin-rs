@@ -8,22 +8,22 @@ impl DBImpl {
     pub fn delete_obsolete_files(&mut self) {
         self.mutex.assert_held();
 
-        if !self.bg_error_.is_ok() {
+        if !self.bg_error.is_ok() {
             // After a background error, we don't know whether a new version may
             // or may not have been committed, so we cannot safely garbage collect.
             return;
         }
 
         // Make a set of all of the live files
-        let mut live = self.pending_outputs_.clone();
+        let mut live = self.pending_outputs.clone();
         unsafe {
-            (*self.versions_).add_live_files(&mut live);
+            (*self.versions).add_live_files(&mut live);
         }
 
         let mut filenames: Vec<String> = Vec::new();
 
         // Ignoring errors on purpose
-        let _ = self.env_.borrow_mut().get_children(&self.dbname_, &mut filenames);
+        let _ = self.env.borrow_mut().get_children(&self.dbname_, &mut filenames);
 
         let mut files_to_delete: Vec<String> = Vec::new();
 
@@ -36,19 +36,19 @@ impl DBImpl {
 
                 match ftype {
                     FileType::LogFile => {
-                        keep = number >= unsafe { (*self.versions_).log_number() }
-                            || number == unsafe { (*self.versions_).prev_log_number() };
+                        keep = number >= unsafe { (*self.versions).log_number() }
+                            || number == unsafe { (*self.versions).prev_log_number() };
                     }
                     // Keep my manifest file, and any newer incarnations'
                     // (in case there is a race that allows other incarnations)
                     FileType::DescriptorFile => {
-                        keep = number >= unsafe { (*self.versions_).manifest_file_number() };
+                        keep = number >= unsafe { (*self.versions).manifest_file_number() };
                     }
                     FileType::TableFile => {
                         keep = live.contains(&number);
                     }
                     // Any temp files that are currently being written to must
-                    // be recorded in pending_outputs_, which is inserted into "live"
+                    // be recorded in pending_outputs, which is inserted into "live"
                     FileType::TempFile => {
                         keep = live.contains(&number);
                     }
@@ -87,7 +87,7 @@ impl DBImpl {
 
         for filename in files_to_delete.into_iter() {
             let full = format!("{}/{}", self.dbname_, filename);
-            let _ = self.env_.borrow_mut().delete_file(&full);
+            let _ = self.env.borrow_mut().delete_file(&full);
         }
 
         self.mutex.lock();

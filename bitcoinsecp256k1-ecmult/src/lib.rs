@@ -38,4 +38,37 @@ x!{strauss_point_state}
 x!{windows}
 x!{wnaf}
 x!{wnaf_fixed}
-x!{access}
+
+#[cfg(test)]
+x!{ecmult_test_harness}
+
+#[cfg(test)]
+mod crate_root_public_surface_contract {
+    use super::*;
+
+    #[traced_test]
+    fn crate_root_exports_key_symbols_and_macros() {
+        tracing::info!(target: "secp256k1::ecmult::tests", "crate_root_exports_key_symbols_and_macros");
+
+        let w = WINDOW_A;
+        let ts = ecmult_table_size!(w);
+        tracing::debug!(
+            target: "secp256k1::ecmult::tests",
+            window_a = w,
+            table_size = ts,
+            "validated ecmult_table_size!(WINDOW_A)"
+        );
+
+        assert!(WINDOW_A >= 2);
+        assert!(WINDOW_G >= 2);
+        assert!(ts >= 1);
+
+        let size = *ECMULT_CONTEXT_PREALLOCATED_SIZE;
+        tracing::debug!(
+            target: "secp256k1::ecmult::tests",
+            prealloc_size = size,
+            "validated ECMULT_CONTEXT_PREALLOCATED_SIZE is accessible"
+        );
+        assert!(size > 0);
+    }
+}

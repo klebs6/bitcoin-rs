@@ -38,11 +38,47 @@ pub struct DBImpl {
       */
     db_lock:                Rc<RefCell<dyn FileLock>>,
 
-    /**
-      | State below is protected by mutex_
-      |
-      */
-    mutex:                  Mutex<DBImplInner>,
+    /// State below is protected by mutex_
+    mutex:                  RawMutex,
+
+    //--------------------------------------------[mutex-guarded-fields]
+    background_work_finished_signal: Condvar,
+
+    /// Memtable being compacted
+    /// 
+    imm: *mut MemTable,
+
+    logfile_number: u64,
+
+    /// For sampling.
+    /// 
+    seed: u32,
+
+    /// Queue of writers.
+    /// 
+    writers: VecDeque<*mut DBImplWriter>,
+    tmp_batch: *mut WriteBatch,
+    snapshots: SnapshotList,
+
+    /// Set of table files to protect from deletion
+    /// because they are part of ongoing compactions.
+    /// 
+    pending_outputs: HashSet<u64>,
+
+    /// Has a background compaction been scheduled
+    /// or is running?
+    /// 
+    background_compaction_scheduled: bool,
+    manual_compaction: *mut ManualCompaction,
+    versions: *const VersionSet,
+
+    /// Have we encountered a background error
+    /// in paranoid mode?
+    /// 
+    bg_error: Status,
+    stats: [CompactionStats; NUM_LEVELS],
+
+    //--------------------------------------------[marks-end-of-mutex-guarded-fields]
 
     shutting_down:          AtomicBool,
 
@@ -79,7 +115,7 @@ mod dbimpl_struct_exhaustive_suite {
         assert!(db.manual_compaction_.is_null(), "manual compaction should be null");
         assert!(db.mem_.is_null(), "memtable should be null before open path initializes it");
         assert!(db.imm_.is_null(), "imm should start null");
-        assert!(db.bg_error_.is_ok(), "bg_error should start OK");
+        assert!(db.bg_error.is_ok(), "bg_error should start OK");
         assert!(!db.tmp_batch_.is_null(), "tmp_batch should be allocated");
         assert_eq!(
             unsafe { WriteBatchInternal::count(db.tmp_batch_) },

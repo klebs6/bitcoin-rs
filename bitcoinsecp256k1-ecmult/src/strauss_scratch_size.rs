@@ -13,3 +13,32 @@ pub fn strauss_scratch_size(n_points: usize) -> usize {
         + size_of::<Scalar>();
     n_points * point_size
 }
+
+#[cfg(test)]
+mod strauss_scratch_size_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn strauss_scratch_size_is_zero_for_zero_points_and_scales_linearly() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "strauss_scratch_size_is_zero_for_zero_points_and_scales_linearly"
+        );
+
+        let z = strauss_scratch_size(0);
+        let one = strauss_scratch_size(1);
+        let two = strauss_scratch_size(2);
+
+        tracing::debug!(
+            target: "secp256k1::ecmult::tests",
+            z = z,
+            one = one,
+            two = two,
+            "strauss_scratch_size samples"
+        );
+
+        assert_eq!(z, 0);
+        assert!(one > 0);
+        assert_eq!(two, 2 * one);
+    }
+}

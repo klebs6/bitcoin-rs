@@ -11,7 +11,7 @@ impl DBImpl {
     }
     
     pub fn new(raw_options: &Options, dbname: &String) -> Self {
-        let env_ = raw_options.env().clone();
+        let env = raw_options.env().clone();
 
         let internal_comparator_ = InternalKeyComparator::new(raw_options.comparator());
         let internal_filter_policy_ = InternalFilterPolicy::new(raw_options.filter_policy());
@@ -37,7 +37,7 @@ impl DBImpl {
         let mut mutex_: Mutex = Default::default();
         let background_work_finished_signal_ = ConditionVariable::new(&mut mutex_);
 
-        let versions_ = Box::into_raw(Box::new(VersionSet::new(
+        let versions = Box::into_raw(Box::new(VersionSet::new(
             &dbname_,
             &options_,
             table_cache_,
@@ -45,7 +45,7 @@ impl DBImpl {
         )));
 
         Self {
-            env_,
+            env,
             internal_comparator_,
             internal_filter_policy_,
             options_,
@@ -74,12 +74,12 @@ impl DBImpl {
             background_compaction_scheduled_: false,
             manual_compaction_: core::ptr::null_mut(),
 
-            versions_,
+            versions,
 
             writers_: Default::default(),
             snapshots_: Default::default(),
-            pending_outputs_: Default::default(),
-            bg_error_: Status::ok(),
+            pending_outputs: Default::default(),
+            bg_error: Status::ok(),
             stats_: Default::default(),
         }
     }

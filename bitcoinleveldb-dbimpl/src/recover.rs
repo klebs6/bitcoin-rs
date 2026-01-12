@@ -16,11 +16,11 @@ impl DBImpl {
         // Ignore error from CreateDir since the creation of the DB is
         // committed only when the descriptor is created, and this directory
         // may already exist from a previous failed creation attempt.
-        let _ = self.env_.borrow_mut().create_dir(&self.dbname_);
+        let _ = self.env.borrow_mut().create_dir(&self.dbname_);
         assert!(self.db_lock_.is_null());
 
         let mut s: Status = self
-            .env_
+            .env
             .borrow_mut()
             .lock_file(&lock_file_name(&self.dbname_), &mut self.db_lock_);
 
@@ -28,7 +28,7 @@ impl DBImpl {
             return s;
         }
 
-        if !self.env_.borrow_mut().file_exists(&current_file_name(&self.dbname_)) {
+        if !self.env.borrow_mut().file_exists(&current_file_name(&self.dbname_)) {
             if self.options_.create_if_missing {
                 s = self.newdb();
                 if !s.is_ok() {
@@ -41,7 +41,7 @@ impl DBImpl {
             return Status::invalid_argument(&self.dbname_, "exists (error_if_exists is true)");
         }
 
-        s = unsafe { (*self.versions_).recover(save_manifest) };
+        s = unsafe { (*self.versions).recover(save_manifest) };
         if !s.is_ok() {
             return s;
         }
@@ -55,18 +55,18 @@ impl DBImpl {
         // Note that PrevLogNumber() is no longer used, but we pay
         // attention to it in case we are recovering a database
         // produced by an older version of leveldb.
-        let min_log: u64 = unsafe { (*self.versions_).log_number() };
-        let prev_log: u64 = unsafe { (*self.versions_).prev_log_number() };
+        let min_log: u64 = unsafe { (*self.versions).log_number() };
+        let prev_log: u64 = unsafe { (*self.versions).prev_log_number() };
 
         let mut filenames: Vec<String> = Vec::new();
-        s = self.env_.borrow_mut().get_children(&self.dbname_, &mut filenames);
+        s = self.env.borrow_mut().get_children(&self.dbname_, &mut filenames);
         if !s.is_ok() {
             return s;
         }
 
         let mut expected = std::collections::BTreeSet::<u64>::new();
         unsafe {
-            (*self.versions_).add_live_files(&mut expected);
+            (*self.versions).add_live_files(&mut expected);
         }
 
         let mut logs: Vec<u64> = Vec::new();
@@ -110,13 +110,13 @@ impl DBImpl {
                 // The previous incarnation may not have written any MANIFEST
                 // records after allocating this log number.  So we manually
                 // update the file number allocation counter in VersionSet.
-                (*self.versions_).mark_file_number_used(log_number);
+                (*self.versions).mark_file_number_used(log_number);
             }
         }
 
-        if unsafe { (*self.versions_).last_sequence() } < max_sequence {
+        if unsafe { (*self.versions).last_sequence() } < max_sequence {
             unsafe {
-                (*self.versions_).set_last_sequence(max_sequence);
+                (*self.versions).set_last_sequence(max_sequence);
             }
         }
 

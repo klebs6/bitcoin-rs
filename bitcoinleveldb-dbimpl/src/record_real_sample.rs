@@ -10,7 +10,7 @@ impl DBImpl {
     pub fn record_read_sample(&mut self, key_: Slice) {
         self.mutex.lock();
 
-        if unsafe { (*(*self.versions_).current()).record_read_sample(key_) } {
+        if unsafe { (*(*self.versions).current()).record_read_sample(key_) } {
             self.maybe_schedule_compaction();
         }
 

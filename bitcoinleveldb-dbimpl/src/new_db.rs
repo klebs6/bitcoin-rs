@@ -14,7 +14,7 @@ impl DBImpl {
         let mut file: *mut dyn WritableFile = core::ptr::null_mut();
 
         let mut s: Status = self
-            .env_
+            .env
             .borrow_mut()
             .new_writable_file(&manifest, &mut file);
 
@@ -38,9 +38,9 @@ impl DBImpl {
 
         if s.is_ok() {
             // Make "CURRENT" file that points to the new manifest file.
-            s = set_current_file(&mut *self.env_.borrow_mut(), &self.dbname_, 1);
+            s = set_current_file(&mut *self.env.borrow_mut(), &self.dbname_, 1);
         } else {
-            let _ = self.env_.borrow_mut().delete_file(&manifest);
+            let _ = self.env.borrow_mut().delete_file(&manifest);
         }
 
         s

@@ -4,7 +4,7 @@ crate::ix!();
 impl DBImpl {
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
     pub fn background_compaction(&mut self) {
-        self.mutex.assert_held();
+        self.mutex().assert_held();
 
         if !self.imm.is_null() {
             self.compact_mem_table();
@@ -17,7 +17,7 @@ impl DBImpl {
 
         if is_manual {
             let m: *mut ManualCompaction = self.manual_compaction_;
-            c = unsafe { (*self.versions_).compact_range((*m).level, (*m).begin, (*m).end) };
+            c = unsafe { (*self.versions).compact_range((*m).level, (*m).begin, (*m).end) };
             unsafe {
                 (*m).done = c.is_null();
             }
@@ -25,7 +25,7 @@ impl DBImpl {
             if !c.is_null() {
                 let n0: i32 = unsafe { (*c).num_input_files(0) };
                 if n0 > 0 {
-                    manual_end = unsafe { (*(*c).input(0, n0 - 1)).largest.clone() };
+                    manual_end = unsafe { (*(*c).input(0, n0 - 1)).largest().clone() };
                 }
             }
 
@@ -61,7 +61,7 @@ impl DBImpl {
                 "Manual compaction"
             );
         } else {
-            c = unsafe { (*self.versions_).pick_compaction() };
+            c = unsafe { (*self.versions).pick_compaction() };
         }
 
         let mut status: Status = Status::ok();
@@ -74,23 +74,23 @@ impl DBImpl {
             let f: *mut FileMetaData = unsafe { (*c).input(0, 0) };
 
             unsafe {
-                (*(*c).edit()).delete_file((*c).level(), (*f).number);
+                (*(*c).edit()).delete_file((*c).level(), (*f).number());
                 (*(*c).edit()).add_file(
                     (*c).level() + 1,
-                    (*f).number,
-                    (*f).file_size,
-                    (*f).smallest.clone(),
-                    (*f).largest.clone(),
+                    (*f).number(),
+                    (*f).file_size(),
+                    (*f).smallest().clone(),
+                    (*f).largest().clone(),
                 );
             }
 
-            status = unsafe { (*self.versions_).log_and_apply((*c).edit(), &mut self.mutex) };
+            status = unsafe { (*self.versions).log_and_apply((*c).edit(), self.mutex_mut()) };
             if !status.is_ok() {
                 self.record_background_error(&status);
             }
 
             let mut tmp: VersionSetLevelSummaryStorage = Default::default();
-            let summary: String = unsafe { (*self.versions_).level_summary(&mut tmp) };
+            let summary: String = unsafe { (*self.versions).level_summary(&mut tmp) };
 
             tracing::info!(
                 file_number = (*f).number as u64,

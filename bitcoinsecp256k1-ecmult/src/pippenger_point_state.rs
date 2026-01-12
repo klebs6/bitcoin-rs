@@ -61,3 +61,53 @@ impl PippengerState {
         core::ptr::read(core::ptr::addr_of!((*src).ps))
     }
 }
+
+#[cfg(test)]
+mod pippenger_state_pointer_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn pippenger_point_state_new_and_mutators_round_trip() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "pippenger_point_state_new_and_mutators_round_trip"
+        );
+
+        let s = PippengerPointState::new(1, 42);
+        assert_eq!(*s.skew_na(), 1);
+        assert_eq!(*s.input_pos(), 42);
+
+        unsafe {
+            let mut s2 = PippengerPointState::new(0, 0);
+            PippengerPointState::write_skew_na(core::ptr::addr_of_mut!(s2), 7);
+            PippengerPointState::write_input_pos(core::ptr::addr_of_mut!(s2), 99);
+
+            assert_eq!(*s2.skew_na(), 7);
+            assert_eq!(*s2.input_pos(), 99);
+        }
+    }
+
+    #[traced_test]
+    fn pippenger_state_new_starts_null_and_raw_pointer_accessors_reflect_writes() {
+        tracing::info!(
+            target: "secp256k1::ecmult::tests",
+            "pippenger_state_new_starts_null_and_raw_pointer_accessors_reflect_writes"
+        );
+
+        unsafe {
+            let mut st = PippengerState::new();
+
+            assert!(PippengerState::ps_ptr(core::ptr::addr_of!(st)).is_null());
+            assert!(PippengerState::wnaf_na_ptr(core::ptr::addr_of!(st)).is_null());
+
+            let dummy_ps = 0x1usize as *mut PippengerPointState;
+            let dummy_wnaf = 0x2usize as *mut i32;
+
+            PippengerState::write_ps(core::ptr::addr_of_mut!(st), dummy_ps);
+            PippengerState::write_wnaf_na(core::ptr::addr_of_mut!(st), dummy_wnaf);
+
+            assert_eq!(PippengerState::ps_ptr(core::ptr::addr_of!(st)), dummy_ps);
+            assert_eq!(PippengerState::wnaf_na_ptr(core::ptr::addr_of!(st)), dummy_wnaf);
+        }
+    }
+}

@@ -16,12 +16,12 @@ impl DBImpl {
         let mut s: Status = Status::ok();
 
         loop {
-            if !self.bg_error_.is_ok() {
+            if !self.bg_error.is_ok() {
                 // Yield previous error
-                s = self.bg_error_.clone();
+                s = self.bg_error.clone();
                 break;
             } else if allow_delay
-                && unsafe { (*self.versions_).num_level_files(0) }
+                && unsafe { (*self.versions).num_level_files(0) }
                     >= config::kL0_SlowdownWritesTrigger
             {
                 // We are getting close to hitting a hard limit on the number of
@@ -31,7 +31,7 @@ impl DBImpl {
                 // this delay hands over some CPU to the compaction thread in
                 // case it is sharing the same core as the writer.
                 self.mutex.unlock();
-                self.env_.borrow_mut().sleep_for_microseconds(1000);
+                self.env.borrow_mut().sleep_for_microseconds(1000);
 
                 // Do not delay a single write more than once
                 allow_delay = false;
@@ -49,7 +49,7 @@ impl DBImpl {
                 // one is still being compacted, so we wait.
                 tracing::info!("Current memtable full; waiting...");
                 self.background_work_finished_signal_.wait();
-            } else if unsafe { (*self.versions_).num_level_files(0) }
+            } else if unsafe { (*self.versions).num_level_files(0) }
                 >= config::kL0_StopWritesTrigger
             {
                 // There are too many level-0 files.
@@ -57,12 +57,12 @@ impl DBImpl {
                 self.background_work_finished_signal_.wait();
             } else {
                 // Attempt to switch to a new memtable and trigger compaction of old
-                assert_eq!(unsafe { (*self.versions_).prev_log_number() }, 0);
+                assert_eq!(unsafe { (*self.versions).prev_log_number() }, 0);
 
-                let new_log_number: u64 = unsafe { (*self.versions_).new_file_number() };
+                let new_log_number: u64 = unsafe { (*self.versions).new_file_number() };
                 let mut lfile: *mut dyn WritableFile = core::ptr::null_mut();
 
-                s = self.env_.borrow_mut().new_writable_file(
+                s = self.env.borrow_mut().new_writable_file(
                     &log_file_name(&self.dbname_, new_log_number),
                     &mut lfile,
                 );
@@ -70,7 +70,7 @@ impl DBImpl {
                 if !s.is_ok() {
                     // Avoid chewing through file number space in a tight loop.
                     unsafe {
-                        (*self.versions_).reuse_file_number(new_log_number);
+                        (*self.versions).reuse_file_number(new_log_number);
                     }
                     break;
                 }
@@ -94,7 +94,7 @@ impl DBImpl {
                 self.imm = self.mem_;
                 self.has_imm_.store(true, core::sync::atomic::Ordering::Release);
 
-                self.mem_ = Box::into_raw(Box::new(MemTable::new(&self.internal_comparator_)));
+                self.mem_ = Box::into_raw(Box::new(MemTable::new(&self.internal_comparator)));
                 unsafe {
                     (*self.mem_).ref_();
                 }

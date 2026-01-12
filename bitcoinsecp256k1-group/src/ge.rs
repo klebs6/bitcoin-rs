@@ -47,3 +47,45 @@ mod ge_rs_exhaustive_test_suite {
         assert!(ge_is_valid_var(core::ptr::addr_of!(p)) == 0);
     }
 }
+
+#[inline(always)]
+pub fn ge_negate_in_place(p: *mut Ge) {
+    if ge_is_infinity(p) != 0 {
+        return;
+    }
+    fe_negate(
+        ge_y_mut(p),
+        ge_y(p),
+        1,
+    );
+}
+
+#[inline(always)]
+pub fn ge_x(this: *const Ge) -> *const Fe {
+    unsafe { core::ptr::addr_of!((*this).x) }
+}
+
+#[inline(always)]
+pub fn ge_x_mut(this: *mut Ge) -> *mut Fe {
+    unsafe { core::ptr::addr_of_mut!((*this).x) }
+}
+
+#[inline(always)]
+pub fn ge_y(this: *const Ge) -> *const Fe {
+    unsafe { core::ptr::addr_of!((*this).y) }
+}
+
+#[inline(always)]
+pub fn ge_y_mut(this: *mut Ge) -> *mut Fe {
+    unsafe { core::ptr::addr_of_mut!((*this).y) }
+}
+
+#[inline(always)]
+pub fn ge_infinity(this: *const Ge) -> *const i32 {
+    unsafe { core::ptr::addr_of!((*this).infinity) }
+}
+
+#[inline(always)]
+pub fn ge_infinity_mut(this: *mut Ge) -> *mut i32 {
+    unsafe { core::ptr::addr_of_mut!((*this).infinity) }
+}

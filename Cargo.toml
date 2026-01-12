@@ -166,7 +166,6 @@ members = [
     "bitcoinleveldb-db", 
     "bitcoinleveldb-dbconstructor", 
     "bitcoinleveldb-dbimpl", 
-    "bitcoinleveldb-dbimplinner", 
     "bitcoinleveldb-dbimplwriter", 
     "bitcoinleveldb-dbinterface", 
     "bitcoinleveldb-dbiter", 

@@ -16,7 +16,7 @@ impl DBImpl {
 
         if self.shutting_down_.load(core::sync::atomic::Ordering::Acquire) {
             // No more background work when shutting down.
-        } else if !self.bg_error_.is_ok() {
+        } else if !self.bg_error.is_ok() {
             // No more background work after a background error.
         } else {
             self.background_compaction();

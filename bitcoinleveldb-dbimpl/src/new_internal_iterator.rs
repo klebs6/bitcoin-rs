@@ -11,7 +11,7 @@ impl DBImpl {
     ) -> *mut LevelDBIterator {
         self.mutex.lock();
         unsafe {
-            *latest_snapshot = (*self.versions_).last_sequence();
+            *latest_snapshot = (*self.versions).last_sequence();
         }
 
         // Collect together all needed child iterators
@@ -26,7 +26,7 @@ impl DBImpl {
                 (*self.imm).ref_();
             }
 
-            let current: *mut Version = (*self.versions_).current();
+            let current: *mut Version = (*self.versions).current();
             (*current).add_iterators(options, &mut list);
 
             let internal_iter: *mut LevelDBIterator =

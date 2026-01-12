@@ -24,7 +24,7 @@ impl DBWrite for DBImpl {
 
         // May temporarily unlock and wait.
         let mut status: Status = self.make_room_for_write(updates.is_null());
-        let mut last_sequence: u64 = unsafe { (*self.versions_).last_sequence() };
+        let mut last_sequence: u64 = unsafe { (*self.versions).last_sequence() };
         let mut last_writer: *mut DBImplWriter = &mut w as *mut DBImplWriter;
 
         // nullptr batch is for compactions
@@ -75,7 +75,7 @@ impl DBWrite for DBImpl {
             }
 
             unsafe {
-                (*self.versions_).set_last_sequence(last_sequence);
+                (*self.versions).set_last_sequence(last_sequence);
             }
         }
 

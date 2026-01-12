@@ -33,7 +33,7 @@ impl DBImpl {
 
         while !manual.done
             && !self.shutting_down_.load(core::sync::atomic::Ordering::Acquire)
-            && self.bg_error_.is_ok()
+            && self.bg_error.is_ok()
         {
             if self.manual_compaction_.is_null() {
                 // Idle

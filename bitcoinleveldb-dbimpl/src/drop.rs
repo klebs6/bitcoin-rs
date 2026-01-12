@@ -14,12 +14,12 @@ impl Drop for DBImpl {
         self.mutex.unlock();
 
         if !self.db_lock_.is_null() {
-            let _ = self.env_.borrow_mut().unlock_file(self.db_lock_);
+            let _ = self.env.borrow_mut().unlock_file(self.db_lock_);
         }
 
-        if !self.versions_.is_null() {
+        if !self.versions.is_null() {
             unsafe {
-                drop(Box::from_raw(self.versions_));
+                drop(Box::from_raw(self.versions));
             }
         }
 

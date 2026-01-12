@@ -7,7 +7,7 @@ impl CompactRange for DBImpl {
         let mut max_level_with_files: i32 = 1;
 
         self.mutex.lock();
-        let base: *mut Version = unsafe { (*self.versions_).current() };
+        let base: *mut Version = unsafe { (*self.versions).current() };
 
         for level in 1..config::kNumLevels {
             if unsafe { (*base).overlap_in_level(level, begin, end) } {

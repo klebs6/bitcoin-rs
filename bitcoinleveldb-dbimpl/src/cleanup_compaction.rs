@@ -23,7 +23,7 @@ impl DBImpl {
             }
 
             for out in (*compact).outputs.iter() {
-                self.pending_outputs_.remove(&out.number);
+                self.pending_outputs.remove(&out.number);
             }
 
             drop(Box::from_raw(compact));

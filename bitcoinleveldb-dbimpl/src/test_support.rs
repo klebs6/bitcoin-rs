@@ -55,12 +55,12 @@ pub(crate) fn open_dbimpl_for_test(tag: &str) -> (String, Box<DBImpl>) {
 
     if s.is_ok() && db.mem_.is_null() {
         // Create new log and a corresponding memtable.
-        let new_log_number: u64 = unsafe { (*db.versions_).new_file_number() };
+        let new_log_number: u64 = unsafe { (*db.versions).new_file_number() };
 
         let mut lfile: *mut dyn WritableFile = core::ptr::null_mut();
         let fname: String = log_file_name(&dbname, new_log_number);
 
-        s = db.env_.borrow_mut().new_writable_file(&fname, &mut lfile);
+        s = db.env.borrow_mut().new_writable_file(&fname, &mut lfile);
 
         if s.is_ok() {
             edit.set_log_number(new_log_number);
@@ -80,7 +80,7 @@ pub(crate) fn open_dbimpl_for_test(tag: &str) -> (String, Box<DBImpl>) {
     if s.is_ok() && save_manifest {
         edit.set_prev_log_number(0);
         edit.set_log_number(db.logfile_number_);
-        s = unsafe { (*db.versions_).log_and_apply(&mut edit, &mut db.mutex_) };
+        s = unsafe { (*db.versions).log_and_apply(&mut edit, &mut db.mutex_) };
     }
 
     if s.is_ok() {
@@ -114,12 +114,12 @@ pub(crate) fn reopen_dbimpl_for_test(dbname: &String, mut opts: Options) -> Box<
     );
 
     if s.is_ok() && db.mem_.is_null() {
-        let new_log_number: u64 = unsafe { (*db.versions_).new_file_number() };
+        let new_log_number: u64 = unsafe { (*db.versions).new_file_number() };
 
         let mut lfile: *mut dyn WritableFile = core::ptr::null_mut();
         let fname: String = log_file_name(dbname, new_log_number);
 
-        s = db.env_.borrow_mut().new_writable_file(&fname, &mut lfile);
+        s = db.env.borrow_mut().new_writable_file(&fname, &mut lfile);
 
         if s.is_ok() {
             edit.set_log_number(new_log_number);
@@ -139,7 +139,7 @@ pub(crate) fn reopen_dbimpl_for_test(dbname: &String, mut opts: Options) -> Box<
     if s.is_ok() && save_manifest {
         edit.set_prev_log_number(0);
         edit.set_log_number(db.logfile_number_);
-        s = unsafe { (*db.versions_).log_and_apply(&mut edit, &mut db.mutex_) };
+        s = unsafe { (*db.versions).log_and_apply(&mut edit, &mut db.mutex_) };
     }
 
     if s.is_ok() {

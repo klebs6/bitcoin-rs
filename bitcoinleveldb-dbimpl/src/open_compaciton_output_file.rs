@@ -9,8 +9,8 @@ impl DBImpl {
         let file_number: u64;
 
         self.mutex.lock();
-        file_number = unsafe { (*self.versions_).new_file_number() };
-        self.pending_outputs_.insert(file_number);
+        file_number = unsafe { (*self.versions).new_file_number() };
+        self.pending_outputs.insert(file_number);
 
         unsafe {
             let out = CompactionStateOutput {
@@ -28,7 +28,7 @@ impl DBImpl {
         let fname: String = table_file_name(&self.dbname_, file_number);
 
         let mut s: Status = self
-            .env_
+            .env
             .borrow_mut()
             .new_writable_file(&fname, unsafe { &mut (*compact).outfile });
 

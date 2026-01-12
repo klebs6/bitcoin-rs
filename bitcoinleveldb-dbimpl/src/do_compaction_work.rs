@@ -5,7 +5,7 @@ impl DBImpl {
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
     pub fn do_compaction_work(&mut self, compact: *mut CompactionState) -> crate::Status {
 
-        let start_micros: u64 = self.env_.borrow_mut().now_micros();
+        let start_micros: u64 = self.env.borrow_mut().now_micros();
 
         // Micros spent doing imm_ compactions
         let mut imm_micros: i64 = 0;
@@ -19,14 +19,14 @@ impl DBImpl {
         );
 
         assert!(
-            unsafe { (*self.versions_).num_level_files((*(*compact).compaction).level()) } > 0
+            unsafe { (*self.versions).num_level_files((*(*compact).compaction).level()) } > 0
         );
         assert!(unsafe { (*compact).builder }.is_null());
         assert!(unsafe { (*compact).outfile }.is_null());
 
         unsafe {
             if self.snapshots_.empty() {
-                (*compact).smallest_snapshot = (*self.versions_).last_sequence();
+                (*compact).smallest_snapshot = (*self.versions).last_sequence();
             } else {
                 (*compact).smallest_snapshot =
                     self.snapshots_.oldest().sequence_number();
@@ -34,7 +34,7 @@ impl DBImpl {
         }
 
         let input: *mut LevelDBIterator =
-            unsafe { (*self.versions_).make_input_iterator((*compact).compaction) };
+            unsafe { (*self.versions).make_input_iterator((*compact).compaction) };
 
         // Release mutex while we're actually doing the compaction work
         self.mutex.unlock();
@@ -55,7 +55,7 @@ impl DBImpl {
         {
             // Prioritize immutable compaction work
             if self.has_imm_.load(core::sync::atomic::Ordering::Relaxed) {
-                let imm_start: u64 = self.env_.borrow_mut().now_micros();
+                let imm_start: u64 = self.env.borrow_mut().now_micros();
                 self.mutex.lock();
 
                 if !self.imm.is_null() {
@@ -66,7 +66,7 @@ impl DBImpl {
 
                 self.mutex.unlock();
 
-                imm_micros += (self.env_.borrow_mut().now_micros() - imm_start) as i64;
+                imm_micros += (self.env.borrow_mut().now_micros() - imm_start) as i64;
             }
 
             let key: Slice = unsafe { (*input).key() };
@@ -178,7 +178,7 @@ impl DBImpl {
         }
 
         let mut stats: CompactionStats = Default::default();
-        stats.micros = self.env_.borrow_mut().now_micros() as i64
+        stats.micros = self.env.borrow_mut().now_micros() as i64
             - start_micros as i64
             - imm_micros;
 
@@ -210,7 +210,7 @@ impl DBImpl {
         }
 
         let mut tmp: VersionSetLevelSummaryStorage = Default::default();
-        let summary: String = unsafe { (*self.versions_).level_summary(&mut tmp) };
+        let summary: String = unsafe { (*self.versions).level_summary(&mut tmp) };
         tracing::info!(summary = %summary, "Compacted to");
 
         status
