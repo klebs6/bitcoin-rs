@@ -3942,6 +3942,7 @@ dependencies = [
  "bitcoinleveldb-log",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
  "derive_builder",
  "disable_macro",
  "tracing",

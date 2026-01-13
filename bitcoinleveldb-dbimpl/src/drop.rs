@@ -15,18 +15,18 @@ impl Drop for DBImpl {
 
             // We cannot use Condvar::wait here (this mutex is a raw lock-style mutex).
             // Yield/sleep briefly to avoid a hot spin loop.
-            self.mutex.unlock();
+            unsafe { self.mutex.unlock() };
             std::thread::sleep(std::time::Duration::from_millis(1));
             self.mutex.lock();
         }
 
-        self.mutex.unlock();
+        unsafe { self.mutex.unlock() };
 
         if !self.versions.is_null() {
             unsafe {
                 drop(Box::from_raw(self.versions as *mut VersionSet));
             }
-            self.versions = core::ptr::null();
+            self.versions = core::ptr::null_mut();
         }
 
         if !self.mem.is_null() {

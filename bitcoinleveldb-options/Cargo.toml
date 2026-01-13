@@ -10,6 +10,7 @@ bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
 bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
 bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
