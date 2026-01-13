@@ -5,6 +5,9 @@ crate::ix!();
   | Information for a manual compaction
   |
   */
+#[derive(Getters,MutGetters,Setters,Builder)]
+#[getset(get = "pub", get_mut = "pub", set = "pub")]
+#[builder(pattern = "owned")]
 pub struct ManualCompaction {
     level:       i32,
     done:        bool,

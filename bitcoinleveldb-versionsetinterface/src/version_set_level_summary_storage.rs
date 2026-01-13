@@ -14,6 +14,14 @@ pub struct VersionSetLevelSummaryStorage {
     buffer: [u8; 100],
 }
 
+impl Default for VersionSetLevelSummaryStorage {
+    fn default() -> Self {
+        Self {
+            buffer: [0; 100],
+        }
+    }
+}
+
 pub trait GetLevelSummary {
 
     fn level_summary(&self, scratch: *mut VersionSetLevelSummaryStorage) -> *const u8;

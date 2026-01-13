@@ -4,7 +4,7 @@ crate::ix!();
 impl DBImpl {
     /// Delete any unneeded files and stale in-memory entries.
     /// 
-    #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
+    #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn delete_obsolete_files(&mut self) {
         self.mutex.assert_held();
 
@@ -23,7 +23,7 @@ impl DBImpl {
         let mut filenames: Vec<String> = Vec::new();
 
         // Ignoring errors on purpose
-        let _ = self.env.borrow_mut().get_children(&self.dbname_, &mut filenames);
+        let _ = self.env.borrow_mut().get_children(&self.dbname, &mut filenames);
 
         let mut files_to_delete: Vec<String> = Vec::new();
 
@@ -67,7 +67,7 @@ impl DBImpl {
                     files_to_delete.push(filename.clone());
                     if matches!(ftype, FileType::TableFile) {
                         unsafe {
-                            (*self.table_cache_).evict(number);
+                            (*self.table_cache).evict(number);
                         }
                     }
 
@@ -86,35 +86,10 @@ impl DBImpl {
         self.mutex.unlock();
 
         for filename in files_to_delete.into_iter() {
-            let full = format!("{}/{}", self.dbname_, filename);
+            let full = format!("{}/{}", self.dbname, filename);
             let _ = self.env.borrow_mut().delete_file(&full);
         }
 
         self.mutex.lock();
-    }
-}
-
-#[cfg(test)]
-#[disable]
-mod delete_obsolete_files_exhaustive_suite {
-    use super::*;
-
-    #[traced_test]
-    fn delete_obsolete_files_is_safe_to_call_and_does_not_break_followup_reads() {
-        let (dbname, mut db) =
-            open_dbimpl_for_test("delete_obsolete_files_is_safe_to_call_and_does_not_break_followup_reads");
-
-        write_kv(&mut *db, "k1", "v1");
-        write_kv(&mut *db, "k2", "v2");
-
-        db.mutex_.lock();
-        db.delete_obsolete_files();
-        db.mutex_.unlock();
-
-        assert_read_eq(&mut *db, "k1", "v1");
-        assert_read_eq(&mut *db, "k2", "v2");
-
-        drop(db);
-        remove_db_dir_best_effort(&dbname);
     }
 }

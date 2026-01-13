@@ -40,3 +40,7 @@ bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
 bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
+bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
+bitcoinleveldb-merger = { path = "../bitcoinleveldb-merger" }
+bitcoinleveldb-tablebuilder = { path = "../bitcoinleveldb-tablebuilder" }
+bitcoinleveldb-dbiterstate = { path = "../bitcoinleveldb-dbiterstate" }

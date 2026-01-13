@@ -9,36 +9,36 @@ impl DBImpl {
     ///
     /// Any changes to be made to the descriptor are added to *edit.
     ///
-    #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
+    #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn recover(&mut self, edit: *mut VersionEdit, save_manifest: *mut bool) -> crate::Status {
         self.mutex.assert_held();
 
         // Ignore error from CreateDir since the creation of the DB is
         // committed only when the descriptor is created, and this directory
         // may already exist from a previous failed creation attempt.
-        let _ = self.env.borrow_mut().create_dir(&self.dbname_);
-        assert!(self.db_lock_.is_null());
+        let _ = self.env.borrow_mut().create_dir(&self.dbname);
+        assert!(self.db_lock.is_null());
 
         let mut s: Status = self
             .env
             .borrow_mut()
-            .lock_file(&lock_file_name(&self.dbname_), &mut self.db_lock_);
+            .lock_file(&lock_file_name(&self.dbname), &mut self.db_lock);
 
         if !s.is_ok() {
             return s;
         }
 
-        if !self.env.borrow_mut().file_exists(&current_file_name(&self.dbname_)) {
-            if self.options_.create_if_missing {
+        if !self.env.borrow_mut().file_exists(&current_file_name(&self.dbname)) {
+            if self.options.create_if_missing() {
                 s = self.newdb();
                 if !s.is_ok() {
                     return s;
                 }
             } else {
-                return Status::invalid_argument(&self.dbname_, "does not exist (create_if_missing is false)");
+                return Status::invalid_argument(&self.dbname, "does not exist (create_if_missing is false)");
             }
-        } else if self.options_.error_if_exists {
-            return Status::invalid_argument(&self.dbname_, "exists (error_if_exists is true)");
+        } else if self.options.error_if_exists() {
+            return Status::invalid_argument(&self.dbname, "exists (error_if_exists is true)");
         }
 
         s = unsafe { (*self.versions).recover(save_manifest) };
@@ -59,7 +59,7 @@ impl DBImpl {
         let prev_log: u64 = unsafe { (*self.versions).prev_log_number() };
 
         let mut filenames: Vec<String> = Vec::new();
-        s = self.env.borrow_mut().get_children(&self.dbname_, &mut filenames);
+        s = self.env.borrow_mut().get_children(&self.dbname, &mut filenames);
         if !s.is_ok() {
             return s;
         }
@@ -87,7 +87,7 @@ impl DBImpl {
         if !expected.is_empty() {
             let buf = format!("{} missing files; e.g.", expected.len());
             let first = *expected.iter().next().unwrap();
-            return Status::corruption(&buf, &table_file_name(&self.dbname_, first));
+            return Status::corruption(&buf, &table_file_name(&self.dbname, first));
         }
 
         // Recover in the order in which the logs were generated
@@ -121,31 +121,5 @@ impl DBImpl {
         }
 
         Status::ok()
-    }
-}
-
-#[cfg(test)]
-#[disable]
-mod recover_exhaustive_suite {
-    use super::*;
-
-    #[traced_test]
-    fn recover_replays_logs_and_retains_user_data_across_process_lifecycle() {
-        let (dbname, mut db) =
-            open_dbimpl_for_test("recover_replays_logs_and_retains_user_data_across_process_lifecycle");
-
-        write_kv(&mut *db, "k1", "v1");
-        write_kv(&mut *db, "k2", "v2");
-
-        drop(db);
-
-        let opts: Options = default_test_options();
-        let mut db2 = reopen_dbimpl_for_test(&dbname, opts);
-
-        assert_read_eq(&mut *db2, "k1", "v1");
-        assert_read_eq(&mut *db2, "k2", "v2");
-
-        drop(db2);
-        remove_db_dir_best_effort(&dbname);
     }
 }

@@ -7,13 +7,13 @@ impl DBGet for DBImpl {
 
         self.mutex.lock();
 
-        let snapshot: SequenceNumber = if !options.snapshot.is_null() {
-            unsafe { (*(options.snapshot as *const SnapshotImpl)).sequence_number() }
+        let snapshot: SequenceNumber = if !options.snapshot().is_null() {
+            unsafe { (*(options.snapshot() as *const SnapshotImpl)).sequence_number() }
         } else {
             unsafe { (*self.versions).last_sequence() }
         };
 
-        let mem: *mut MemTable = self.mem_;
+        let mem: *mut MemTable = self.mem;
         let imm: *mut MemTable = self.imm;
         let current: *mut Version = unsafe { (*self.versions).current() };
 
@@ -62,40 +62,5 @@ impl DBGet for DBImpl {
         self.mutex.unlock();
 
         s
-    }
-}
-
-#[cfg(test)]
-#[disable]
-mod get_exhaustive_suite {
-    use super::*;
-
-    #[traced_test]
-    fn get_respects_snapshots_and_returns_stable_view() {
-        let (dbname, mut db) = open_dbimpl_for_test("get_respects_snapshots_and_returns_stable_view");
-
-        let s1 = write_kv(&mut *db, "k", "v1");
-        assert!(s1.is_ok(), "write v1 failed: {}", s1.to_string());
-        assert_read_eq(&mut *db, "k", "v1");
-
-        // Create snapshot, then overwrite, then read via snapshot.
-        let snap: Box<dyn Snapshot> = <DBImpl as DBGetSnapshot>::get_snapshot(&mut *db);
-
-        let s2 = write_kv(&mut *db, "k", "v2");
-        assert!(s2.is_ok(), "write v2 failed: {}", s2.to_string());
-        assert_read_eq(&mut *db, "k", "v2");
-
-        let mut ro: ReadOptions = Default::default();
-        ro.snapshot = (&*snap) as *const dyn Snapshot;
-
-        let (sr, v) = read_value(&mut *db, &ro, "k");
-        tracing::info!(status = %sr.to_string(), value = %v, "snapshot read");
-        assert!(sr.is_ok(), "snapshot read failed: {}", sr.to_string());
-        assert_eq!(v, "v1", "snapshot must see old value");
-
-        <DBImpl as DBReleaseSnapshot>::release_snapshot(&mut *db, snap);
-
-        drop(db);
-        remove_db_dir_best_effort(&dbname);
     }
 }

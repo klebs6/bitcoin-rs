@@ -29,6 +29,23 @@ impl Default for Slice {
     }
 }
 
+impl Slice {
+    #[inline]
+    pub fn from_bytes(bytes: &[u8]) -> Self {
+        Self::from_ptr_len(bytes.as_ptr(), bytes.len())
+    }
+
+    #[inline]
+    pub fn from_str(s: &str) -> Self {
+        Self::from_ptr_len(s.as_ptr(), s.len())
+    }
+
+    #[inline]
+    pub fn as_bytes(&self) -> &[u8] {
+        unsafe { core::slice::from_raw_parts(*self.data(), *self.size()) }
+    }
+}
+
 impl Index<usize> for Slice {
 
     type Output = u8;

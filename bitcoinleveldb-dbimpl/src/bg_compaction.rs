@@ -2,9 +2,9 @@
 crate::ix!();
 
 impl DBImpl {
-    #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
+    #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn background_compaction(&mut self) {
-        self.mutex().assert_held();
+        self.mutex.assert_held();
 
         if !self.imm.is_null() {
             self.compact_mem_table();
@@ -12,14 +12,14 @@ impl DBImpl {
         }
 
         let mut c: *mut Compaction = core::ptr::null_mut();
-        let is_manual: bool = !self.manual_compaction_.is_null();
+        let is_manual: bool = !self.manual_compaction.is_null();
         let mut manual_end: InternalKey = Default::default();
 
         if is_manual {
-            let m: *mut ManualCompaction = self.manual_compaction_;
-            c = unsafe { (*self.versions).compact_range((*m).level, (*m).begin, (*m).end) };
+            let m: *mut ManualCompaction = self.manual_compaction;
+            c = unsafe { (*self.versions).compact_range(*(*m).level(), *(*m).begin(), *(*m).end()) };
             unsafe {
-                (*m).done = c.is_null();
+                (*m).set_done(c.is_null());
             }
 
             if !c.is_null() {
@@ -30,23 +30,23 @@ impl DBImpl {
             }
 
             let begin_dbg: String = unsafe {
-                if (*m).begin.is_null() {
+                if (*m).begin().is_null() {
                     "(begin)".to_string()
                 } else {
-                    (*(*m).begin).debug_string()
+                    (*(*(*m).begin())).debug_string()
                 }
             };
 
             let end_dbg: String = unsafe {
-                if (*m).end.is_null() {
+                if (*m).end().is_null() {
                     "(end)".to_string()
                 } else {
-                    (*(*m).end).debug_string()
+                    (*(*m).end()).debug_string()
                 }
             };
 
             let stop_dbg: String = unsafe {
-                if (*m).done {
+                if *(*m).done() {
                     "(end)".to_string()
                 } else {
                     manual_end.debug_string()
@@ -54,7 +54,7 @@ impl DBImpl {
             };
 
             tracing::info!(
-                level = unsafe { (*m).level },
+                level = unsafe { (*m).level() },
                 begin = %begin_dbg,
                 end = %end_dbg,
                 stop = %stop_dbg,
@@ -74,17 +74,17 @@ impl DBImpl {
             let f: *mut FileMetaData = unsafe { (*c).input(0, 0) };
 
             unsafe {
-                (*(*c).edit()).delete_file((*c).level(), (*f).number());
+                (*(*c).edit()).delete_file((*c).level(), *(*f).number());
                 (*(*c).edit()).add_file(
                     (*c).level() + 1,
-                    (*f).number(),
-                    (*f).file_size(),
-                    (*f).smallest().clone(),
-                    (*f).largest().clone(),
+                    *(*f).number(),
+                    *(*f).file_size(),
+                    (*f).smallest(),
+                    (*f).largest(),
                 );
             }
 
-            status = unsafe { (*self.versions).log_and_apply((*c).edit(), self.mutex_mut()) };
+            status = unsafe { (*self.versions).log_and_apply((*c).edit(), self.mutex) };
             if !status.is_ok() {
                 self.record_background_error(&status);
             }
@@ -93,11 +93,11 @@ impl DBImpl {
             let summary: String = unsafe { (*self.versions).level_summary(&mut tmp) };
 
             tracing::info!(
-                file_number = (*f).number as u64,
-                to_level = unsafe { (*c).level() + 1 },
-                file_size = (*f).file_size as u64,
-                status = %status.to_string(),
-                summary = %summary,
+                file_number = *(*f).number() as u64,
+                to_level    = unsafe { (*c).level() + 1 },
+                file_size   = *(*f).file_size() as u64,
+                status      = %status.to_string(),
+                summary     = %summary,
                 "Moved file to next level"
             );
         } else {
@@ -126,53 +126,28 @@ impl DBImpl {
 
         if status.is_ok() {
             // Done
-        } else if self.shutting_down_.load(core::sync::atomic::Ordering::Acquire) {
+        } else if self.shutting_down.load(core::sync::atomic::Ordering::Acquire) {
             // Ignore compaction errors found during shutting down
         } else {
             tracing::error!(status = %status.to_string(), "Compaction error");
         }
 
         if is_manual {
-            let m: *mut ManualCompaction = self.manual_compaction_;
+            let m: *mut ManualCompaction = self.manual_compaction;
             if !status.is_ok() {
                 unsafe {
-                    (*m).done = true;
+                    (*m).set_done(true);
                 }
             }
             unsafe {
-                if !(*m).done {
+                if !(*m).done() {
                     // We only compacted part of the requested range.  Update *m
                     // to the range that is left to be compacted.
-                    (*m).tmp_storage = manual_end;
-                    (*m).begin = &mut (*m).tmp_storage;
+                    (*m).set_tmp_storage(manual_end);
+                    (*m).set_begin((*m).tmp_storage() as *const _);
                 }
             }
-            self.manual_compaction_ = core::ptr::null_mut();
+            self.set_manual_compaction(core::ptr::null_mut());
         }
-    }
-}
-
-#[cfg(test)]
-#[disable]
-mod bg_compaction_exhaustive_suite {
-    use super::*;
-
-    #[traced_test]
-    fn background_compaction_is_exercised_via_manual_full_range_compaction_smoke() {
-        let (dbname, mut db) =
-            open_dbimpl_for_test("background_compaction_is_exercised_via_manual_full_range_compaction_smoke");
-
-        // Create enough data to make compaction meaningful.
-        fill_sequential(&mut *db, "k", 500, 256);
-
-        // Manual full range compaction: exercises BackgroundCompaction() paths.
-        force_manual_compaction_full_range(&mut *db);
-
-        // Sanity: reads remain correct after compaction activity.
-        assert_read_eq(&mut *db, "k00000000", &"v".repeat(256));
-        assert_read_eq(&mut *db, "k00000499", &"v".repeat(256));
-
-        drop(db);
-        remove_db_dir_best_effort(&dbname);
     }
 }

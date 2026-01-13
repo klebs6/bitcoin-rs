@@ -10,4 +10,7 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
+tracing.workspace        = true
+getset.workspace         = true
+derive_builder.workspace = true
 bitcoin-imports = { path = "../bitcoin-imports" }

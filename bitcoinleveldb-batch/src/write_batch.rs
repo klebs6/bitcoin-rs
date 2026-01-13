@@ -54,6 +54,13 @@ pub struct WriteBatch {
     rep: String,
 }
 
+impl Default for WriteBatch {
+    #[inline]
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl WriteBatch {
 
     pub fn new() -> Self {

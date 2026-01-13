@@ -42,8 +42,13 @@ impl core::fmt::Debug for InternalKey {
     }
 }
 
-
 impl InternalKey {
+
+    #[inline]
+    pub fn new_empty() -> Self {
+        let empty_user_key: Slice = Slice::from_ptr_len(core::ptr::null(), 0);
+        InternalKey::new(&empty_user_key, 0, ValueType::TypeValue)
+    }
 
     pub fn new(user_key_: &Slice, s: SequenceNumber, t: ValueType) -> Self {
         trace!(

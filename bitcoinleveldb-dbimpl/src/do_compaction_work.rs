@@ -2,39 +2,38 @@
 crate::ix!();
 
 impl DBImpl {
-    #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
+    #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn do_compaction_work(&mut self, compact: *mut CompactionState) -> crate::Status {
 
         let start_micros: u64 = self.env.borrow_mut().now_micros();
 
-        // Micros spent doing imm_ compactions
+        // Micros spent doing imm compactions
         let mut imm_micros: i64 = 0;
 
         tracing::info!(
-            n0 = unsafe { (*(*compact).compaction).num_input_files(0) },
-            l0 = unsafe { (*(*compact).compaction).level() },
-            n1 = unsafe { (*(*compact).compaction).num_input_files(1) },
-            l1 = unsafe { (*(*compact).compaction).level() + 1 },
+            n0 = unsafe { (*(*compact).compaction()).num_input_files(0) },
+            l0 = unsafe { (*(*compact).compaction()).level() },
+            n1 = unsafe { (*(*compact).compaction()).num_input_files(1) },
+            l1 = unsafe { (*(*compact).compaction()).level() + 1 },
             "Compacting inputs"
         );
 
         assert!(
-            unsafe { (*self.versions).num_level_files((*(*compact).compaction).level()) } > 0
+            unsafe { (*self.versions).num_level_files((*(*compact).compaction()).level()) } > 0
         );
-        assert!(unsafe { (*compact).builder }.is_null());
-        assert!(unsafe { (*compact).outfile }.is_null());
+        assert!(unsafe { (*compact).builder() }.is_null());
+        assert!(unsafe { (*compact).outfile() }.is_null());
 
         unsafe {
-            if self.snapshots_.empty() {
-                (*compact).smallest_snapshot = (*self.versions).last_sequence();
+            if self.snapshots().empty() {
+                (*compact).set_smallest_snapshot((*self.versions).last_sequence());
             } else {
-                (*compact).smallest_snapshot =
-                    self.snapshots_.oldest().sequence_number();
+                (*compact).set_smallest_snapshot(self.snapshots.oldest().sequence_number());
             }
         }
 
         let input: *mut LevelDBIterator =
-            unsafe { (*self.versions).make_input_iterator((*compact).compaction) };
+            unsafe { (*self.versions).make_input_iterator((*compact).compaction()) };
 
         // Release mutex while we're actually doing the compaction work
         self.mutex.unlock();
@@ -51,17 +50,17 @@ impl DBImpl {
         let mut last_sequence_for_key: SequenceNumber = MAX_SEQUENCE_NUMBER;
 
         while unsafe { (*input).valid() }
-            && !self.shutting_down_.load(core::sync::atomic::Ordering::Acquire)
+            && !self.shutting_down.load(core::sync::atomic::Ordering::Acquire)
         {
             // Prioritize immutable compaction work
-            if self.has_imm_.load(core::sync::atomic::Ordering::Relaxed) {
+            if self.has_imm.load(core::sync::atomic::Ordering::Relaxed) {
                 let imm_start: u64 = self.env.borrow_mut().now_micros();
                 self.mutex.lock();
 
                 if !self.imm.is_null() {
                     self.compact_mem_table();
                     // Wake up MakeRoomForWrite() if necessary.
-                    self.background_work_finished_signal_.signal_all();
+                    self.background_work_finished_signal.signal_all();
                 }
 
                 self.mutex.unlock();
@@ -71,8 +70,8 @@ impl DBImpl {
 
             let key: Slice = unsafe { (*input).key() };
 
-            if unsafe { (*(*compact).compaction).should_stop_before(key) }
-                && !unsafe { (*compact).builder }.is_null()
+            if unsafe { (*(*compact).compaction()).should_stop_before(key) }
+                && !unsafe { (*compact).builder() }.is_null()
             {
                 status = self.finish_compaction_output_file(compact, input);
                 if !status.is_ok() {
@@ -93,24 +92,24 @@ impl DBImpl {
                     || self
                         .user_comparator()
                         .compare(
-                            ikey.user_key,
+                            ikey.user_key(),
                             Slice::from_bytes(&current_user_key),
                         )
                         != 0
                 {
                     // First occurrence of this user key
                     current_user_key.clear();
-                    current_user_key.extend_from_slice(ikey.user_key.as_bytes());
+                    current_user_key.extend_from_slice(ikey.user_key().as_bytes());
                     has_current_user_key = true;
                     last_sequence_for_key = MAX_SEQUENCE_NUMBER;
                 }
 
-                if last_sequence_for_key <= unsafe { (*compact).smallest_snapshot } {
+                if last_sequence_for_key <= unsafe { (*compact).smallest_snapshot() } {
                     // Hidden by an newer entry for same user key
                     drop = true;
-                } else if ikey.type_ == ValueType::TypeDeletion
-                    && ikey.sequence <= unsafe { (*compact).smallest_snapshot }
-                    && unsafe { (*(*compact).compaction).is_base_level_for_key(ikey.user_key) }
+                } else if ikey.ty() == ValueType::TypeDeletion
+                    && ikey.sequence() <= unsafe { (*compact).smallest_snapshot() }
+                    && unsafe { (*(*compact).compaction()).is_base_level_for_key(ikey.user_key()) }
                 {
                     // For this user key_:
                     // (1) there is no data in higher levels
@@ -122,32 +121,32 @@ impl DBImpl {
                     drop = true;
                 }
 
-                last_sequence_for_key = ikey.sequence;
+                last_sequence_for_key = ikey.sequence();
             }
 
             if !drop {
                 // Open output file if necessary
-                if unsafe { (*compact).builder }.is_null() {
+                if unsafe { (*compact).builder() }.is_null() {
                     status = self.open_compaction_output_file(compact);
                     if !status.is_ok() {
                         break;
                     }
                 }
 
-                if unsafe { (*(*compact).builder).num_entries() } == 0 {
+                if unsafe { (*(*compact).builder()).num_entries() } == 0 {
                     unsafe {
-                        (*compact).current_output().smallest.decode_from(key);
+                        (*compact).current_output().smallest().decode_from(key);
                     }
                 }
 
                 unsafe {
-                    (*compact).current_output().largest.decode_from(key);
-                    (*(*compact).builder).add(key, (*input).value());
+                    (*compact).current_output().largest().decode_from(key);
+                    (*(*compact).builder()).add(key, (*input).value());
                 }
 
                 // Close output file if it is big enough
-                if unsafe { (*(*compact).builder).file_size() }
-                    >= unsafe { (*(*compact).compaction).max_output_file_size() }
+                if unsafe { (*(*compact).builder()).file_size() }
+                    >= unsafe { (*(*compact).compaction()).max_output_file_size() }
                 {
                     status = self.finish_compaction_output_file(compact, input);
                     if !status.is_ok() {
@@ -161,11 +160,11 @@ impl DBImpl {
             }
         }
 
-        if status.is_ok() && self.shutting_down_.load(core::sync::atomic::Ordering::Acquire) {
+        if status.is_ok() && self.shutting_down.load(core::sync::atomic::Ordering::Acquire) {
             status = Status::io_error("Deleting DB during compaction");
         }
 
-        if status.is_ok() && !unsafe { (*compact).builder }.is_null() {
+        if status.is_ok() && !unsafe { (*compact).builder() }.is_null() {
             status = self.finish_compaction_output_file(compact, input);
         }
 
@@ -178,28 +177,30 @@ impl DBImpl {
         }
 
         let mut stats: CompactionStats = Default::default();
-        stats.micros = self.env.borrow_mut().now_micros() as i64
+        stats.set_micros(
+            self.env.borrow_mut().now_micros() as i64
             - start_micros as i64
-            - imm_micros;
+            - imm_micros
+        );
 
         for which in 0..2 {
-            let n: i32 = unsafe { (*(*compact).compaction).num_input_files(which) };
+            let n: i32 = unsafe { (*(*compact).compaction()).num_input_files(which) };
             for i in 0..n {
-                stats.bytes_read += unsafe { (*(*(*compact).compaction).input(which, i)).file_size }
+                *stats.bytes_read_mut() += unsafe { (*(*(*compact).compaction()).input(which, i)).file_size() }
                     as i64;
             }
         }
 
         unsafe {
-            for out in (*compact).outputs.iter() {
-                stats.bytes_written += out.file_size as i64;
+            for out in (*compact).outputs().iter() {
+                *stats.bytes_written_mut() += out.file_size() as i64;
             }
         }
 
         self.mutex.lock();
 
-        let level_plus_one: i32 = unsafe { (*(*compact).compaction).level() + 1 };
-        self.stats_[level_plus_one as usize].add(stats);
+        let level_plus_one: i32 = unsafe { (*(*compact).compaction()).level() + 1 };
+        self.stats[level_plus_one as usize].add(stats);
 
         if status.is_ok() {
             status = self.install_compaction_results(compact);
@@ -214,26 +215,5 @@ impl DBImpl {
         tracing::info!(summary = %summary, "Compacted to");
 
         status
-    }
-}
-
-#[cfg(test)]
-#[disable]
-mod do_compaction_work_exhaustive_suite {
-    use super::*;
-
-    #[traced_test]
-    fn do_compaction_work_is_exercised_by_forcing_full_compaction_and_reading_all_keys() {
-        let (dbname, mut db) =
-            open_dbimpl_for_test("do_compaction_work_is_exercised_by_forcing_full_compaction_and_reading_all_keys");
-
-        fill_sequential(&mut *db, "cw", 600, 256);
-        force_manual_compaction_full_range(&mut *db);
-
-        assert_read_eq(&mut *db, "cw00000000", &"v".repeat(256));
-        assert_read_eq(&mut *db, "cw00000599", &"v".repeat(256));
-
-        drop(db);
-        remove_db_dir_best_effort(&dbname);
     }
 }

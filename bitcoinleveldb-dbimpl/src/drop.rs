@@ -5,16 +5,16 @@ impl Drop for DBImpl {
     fn drop(&mut self) {
         // Wait for background work to finish.
         self.mutex.lock();
-        self.shutting_down_.store(true, core::sync::atomic::Ordering::Release);
+        self.shutting_down.store(true, core::sync::atomic::Ordering::Release);
 
-        while self.background_compaction_scheduled_ {
-            self.background_work_finished_signal_.wait();
+        while self.background_compaction_scheduled {
+            self.background_work_finished_signal.wait();
         }
 
         self.mutex.unlock();
 
-        if !self.db_lock_.is_null() {
-            let _ = self.env.borrow_mut().unlock_file(self.db_lock_);
+        if !self.db_lock.is_null() {
+            let _ = self.env.borrow_mut().unlock_file(self.db_lock);
         }
 
         if !self.versions.is_null() {
@@ -23,9 +23,9 @@ impl Drop for DBImpl {
             }
         }
 
-        if !self.mem_.is_null() {
+        if !self.mem.is_null() {
             unsafe {
-                (*self.mem_).unref();
+                (*self.mem).unref();
             }
         }
 
@@ -35,56 +35,36 @@ impl Drop for DBImpl {
             }
         }
 
-        if !self.tmp_batch_.is_null() {
+        if !self.tmp_batch.is_null() {
             unsafe {
-                drop(Box::from_raw(self.tmp_batch_));
+                drop(Box::from_raw(self.tmp_batch));
             }
         }
 
-        if !self.log_.is_null() {
+        if !self.log.is_null() {
             unsafe {
-                drop(Box::from_raw(self.log_));
+                drop(Box::from_raw(self.log));
             }
         }
 
-        if !self.logfile_.is_null() {
+        if !self.logfile.is_null() {
             unsafe {
-                drop(Box::from_raw(self.logfile_));
+                drop(Box::from_raw(self.logfile));
             }
         }
 
-        if !self.table_cache_.is_null() {
+        if !self.table_cache.is_null() {
             unsafe {
-                drop(Box::from_raw(self.table_cache_));
+                drop(Box::from_raw(self.table_cache));
             }
         }
 
-        if self.owns_info_log_ {
-            let _ = self.options_.delete_info_log_if_owned();
+        if self.owns_info_log {
+            let _ = self.options.delete_info_log_if_owned();
         }
 
-        if self.owns_cache_ {
-            let _ = self.options_.delete_block_cache_if_owned();
+        if self.owns_cache {
+            let _ = self.options.delete_block_cache_if_owned();
         }
-    }
-}
-
-#[cfg(test)]
-#[disable]
-mod drop_exhaustive_suite {
-    use super::*;
-
-    #[traced_test]
-    fn drop_waits_for_background_work_without_deadlocking_under_basic_activity() {
-        let (dbname, mut db) =
-            open_dbimpl_for_test("drop_waits_for_background_work_without_deadlocking_under_basic_activity");
-
-        fill_sequential(&mut *db, "d", 200, 256);
-        force_manual_compaction_full_range(&mut *db);
-
-        // Drop DBImpl; Drop impl should not deadlock.
-        drop(db);
-
-        remove_db_dir_best_effort(&dbname);
     }
 }

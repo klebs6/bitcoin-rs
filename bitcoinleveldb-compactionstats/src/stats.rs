@@ -4,6 +4,9 @@ crate::ix!();
 /// Per level compaction stats. stats_[level] stores the stats for compactions
 /// that produced data for the specified "level".
 /// 
+#[derive(Getters,MutGetters,Setters,Builder)]
+#[getset(get = "pub", get_mut = "pub", set = "pub")]
+#[builder(pattern = "owned")]
 pub struct CompactionStats {
     micros:        i64,
     bytes_read:    i64,

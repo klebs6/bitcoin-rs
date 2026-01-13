@@ -26,7 +26,7 @@ impl DBGetProperty for DBImpl {
             let mut level: u64 = 0;
             let ok: bool = consume_decimal_number(&mut input, &mut level) && input.empty();
 
-            if !ok || level as i32 >= config::kNumLevels {
+            if !ok || level as i32 >= NUM_LEVELS {
                 self.mutex.unlock();
                 return false;
             }
@@ -47,17 +47,17 @@ impl DBGetProperty for DBImpl {
                 );
             }
 
-            for level in 0..config::kNumLevels {
+            for level in 0..NUM_LEVELS {
                 let files: i32 = unsafe { (*self.versions).num_level_files(level) };
-                if self.stats_[level as usize].micros > 0 || files > 0 {
+                if self.stats[level as usize].micros > 0 || files > 0 {
                     let line = format!(
                         "{:3} {:8} {:8.0} {:9.0} {:8.0} {:9.0}\n",
                         level,
                         files,
                         unsafe { (*self.versions).num_level_bytes(level) } as f64 / 1048576.0,
-                        self.stats_[level as usize].micros as f64 / 1e6,
-                        self.stats_[level as usize].bytes_read as f64 / 1048576.0,
-                        self.stats_[level as usize].bytes_written as f64 / 1048576.0
+                        self.stats[level as usize].micros as f64 / 1e6,
+                        self.stats[level as usize].bytes_read as f64 / 1048576.0,
+                        self.stats[level as usize].bytes_written as f64 / 1048576.0
                     );
                     unsafe {
                         (*value).push_str(&line);
@@ -75,10 +75,10 @@ impl DBGetProperty for DBImpl {
             self.mutex.unlock();
             return true;
         } else if input.eq_str("approximate-memory-usage") {
-            let mut total_usage: usize = unsafe { (*self.options_.block_cache).total_charge() };
+            let mut total_usage: usize = unsafe { (*self.options.block_cache()).total_charge() };
 
-            if !self.mem_.is_null() {
-                total_usage += unsafe { (*self.mem_).approximate_memory_usage() };
+            if !self.mem.is_null() {
+                total_usage += unsafe { (*self.mem).approximate_memory_usage() };
             }
 
             if !self.imm.is_null() {
@@ -95,50 +95,5 @@ impl DBGetProperty for DBImpl {
 
         self.mutex.unlock();
         false
-    }
-}
-
-#[cfg(test)]
-#[disable]
-mod get_property_exhaustive_suite {
-    use super::*;
-
-    #[traced_test]
-    fn get_property_handles_known_and_unknown_properties_and_formats_values() {
-        let (dbname, mut db) = open_dbimpl_for_test("get_property_handles_known_and_unknown_properties_and_formats_values");
-
-        // Unknown property.
-        let mut out: String = String::new();
-        let ok = <DBImpl as DBGetProperty>::get_property(&mut *db, "leveldb.unknown-property", (&mut out) as *mut String);
-        tracing::info!(ok, out = %out, "unknown property");
-        assert!(!ok, "unknown property must return false");
-        assert!(out.is_empty(), "value must be cleared for unknown property");
-
-        // stats
-        let mut stats: String = String::new();
-        let ok_stats = <DBImpl as DBGetProperty>::get_property(&mut *db, "leveldb.stats", (&mut stats) as *mut String);
-        tracing::info!(ok_stats, len = stats.len(), "stats property");
-        assert!(ok_stats, "stats property should be supported");
-        assert!(stats.contains("Compactions"), "stats output should contain header");
-
-        // sstables
-        let mut sst: String = String::new();
-        let ok_sst = <DBImpl as DBGetProperty>::get_property(&mut *db, "leveldb.sstables", (&mut sst) as *mut String);
-        tracing::info!(ok_sst, len = sst.len(), "sstables property");
-        assert!(ok_sst, "sstables property should be supported");
-
-        // approximate memory usage
-        let mut mem: String = String::new();
-        let ok_mem = <DBImpl as DBGetProperty>::get_property(
-            &mut *db,
-            "leveldb.approximate-memory-usage",
-            (&mut mem) as *mut String,
-        );
-        tracing::info!(ok_mem, mem = %mem, "approximate-memory-usage");
-        assert!(ok_mem, "approximate-memory-usage should be supported");
-        assert!(!mem.is_empty(), "approximate-memory-usage should be non-empty");
-
-        drop(db);
-        remove_db_dir_best_effort(&dbname);
     }
 }

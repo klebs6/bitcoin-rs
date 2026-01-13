@@ -10,7 +10,7 @@ impl DBImpl {
         new_db.set_next_file(2);
         new_db.set_last_sequence(0);
 
-        let manifest: String = descriptor_file_name(&self.dbname_, 1);
+        let manifest: String = descriptor_file_name(&self.dbname, 1);
         let mut file: *mut dyn WritableFile = core::ptr::null_mut();
 
         let mut s: Status = self
@@ -38,41 +38,11 @@ impl DBImpl {
 
         if s.is_ok() {
             // Make "CURRENT" file that points to the new manifest file.
-            s = set_current_file(&mut *self.env.borrow_mut(), &self.dbname_, 1);
+            s = set_current_file(&mut *self.env.borrow_mut(), &self.dbname, 1);
         } else {
             let _ = self.env.borrow_mut().delete_file(&manifest);
         }
 
         s
-    }
-}
-
-#[cfg(test)]
-#[disable]
-mod new_db_exhaustive_suite {
-    use super::*;
-
-    #[traced_test]
-    fn newdb_creates_manifest_and_current_and_allows_subsequent_open() {
-        let dbname: String = unique_dbname("newdb_creates_manifest_and_current_and_allows_subsequent_open");
-        remove_db_dir_best_effort(&dbname);
-
-        let opts: Options = default_test_options();
-        let mut db: DBImpl = DBImpl::new(&opts, &dbname);
-
-        db.mutex_.lock();
-        let s: Status = db.newdb();
-        db.mutex_.unlock();
-
-        tracing::info!(status = %s.to_string(), dbname = %dbname, "newdb");
-        assert!(s.is_ok(), "newdb should succeed: {}", s.to_string());
-
-        // Reopen via the standard open path.
-        let mut db2: Box<DBImpl> = reopen_dbimpl_for_test(&dbname, opts);
-        write_kv(&mut *db2, "k", "v");
-        assert_read_eq(&mut *db2, "k", "v");
-
-        drop(db2);
-        remove_db_dir_best_effort(&dbname);
     }
 }

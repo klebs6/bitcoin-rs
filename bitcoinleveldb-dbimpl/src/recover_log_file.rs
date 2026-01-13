@@ -3,7 +3,7 @@ crate::ix!();
 
 impl DBImpl {
 
-    #[EXCLUSIVE_LOCKS_REQUIRED(mutex_)]
+    #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn recover_log_file(
         &mut self,
         log_number: u64,
@@ -16,7 +16,7 @@ impl DBImpl {
         self.mutex.assert_held();
 
         // Open the log file
-        let fname: String = log_file_name(&self.dbname_, log_number);
+        let fname: String = log_file_name(&self.dbname, log_number);
 
         let mut file: *mut dyn SequentialFile = core::ptr::null_mut();
         let mut status: Status = self.env.borrow_mut().new_sequential_file(&fname, &mut file);
@@ -28,9 +28,9 @@ impl DBImpl {
 
         // Create the log reader.
         let mut reporter = LogReporter {
-            info_log: self.options_.info_log,
+            info_log: self.options.info_log(),
             fname: fname.clone(),
-            status: if self.options_.paranoid_checks {
+            status: if self.options.paranoid_checks() {
                 &mut status as *mut Status
             } else {
                 core::ptr::null_mut()
@@ -63,14 +63,14 @@ impl DBImpl {
                 continue;
             }
 
-            WriteBatchInternal::set_contents(&mut batch, record);
+            write_batch_internal::set_contents(&mut batch, record);
 
             if mem.is_null() {
-                mem = Box::into_raw(Box::new(MemTable::new(&self.internal_comparator_)));
+                mem = Box::into_raw(Box::new(MemTable::new(&self.internal_comparator)));
                 unsafe { (*mem).ref_(); }
             }
 
-            status = WriteBatchInternal::insert_into(&batch, mem);
+            status = write_batch_internal::insert_into(&batch, mem);
             self.maybe_ignore_error(&mut status as *mut Status);
 
             if !status.is_ok() {
@@ -78,7 +78,7 @@ impl DBImpl {
             }
 
             let last_seq: SequenceNumber =
-                WriteBatchInternal::sequence(&batch) + WriteBatchInternal::count(&batch) - 1;
+                write_batch_internal::sequence(&batch) + write_batch_internal::count(&batch) - 1;
 
             unsafe {
                 if last_seq > *max_sequence {
@@ -86,7 +86,7 @@ impl DBImpl {
                 }
             }
 
-            if unsafe { (*mem).approximate_memory_usage() } > self.options_.write_buffer_size {
+            if unsafe { (*mem).approximate_memory_usage() } > self.options.write_buffer_size() {
                 compactions += 1;
                 unsafe {
                     *save_manifest = true;
@@ -112,10 +112,10 @@ impl DBImpl {
         }
 
         // See if we should keep reusing the last log file.
-        if status.is_ok() && self.options_.reuse_logs && last_log && compactions == 0 {
-            assert!(self.logfile_.is_null());
-            assert!(self.log_.is_null());
-            assert!(self.mem_.is_null());
+        if status.is_ok() && self.options.reuse_logs() && last_log && compactions == 0 {
+            assert!(self.logfile.is_null());
+            assert!(self.log.is_null());
+            assert!(self.mem.is_null());
 
             let mut lfile_size: u64 = 0;
 
@@ -123,24 +123,24 @@ impl DBImpl {
                 && self
                     .env
                     .borrow_mut()
-                    .new_appendable_file(&fname, &mut self.logfile_)
+                    .new_appendable_file(&fname, &mut self.logfile)
                     .is_ok()
             {
                 tracing::info!(file = %fname, "Reusing old log");
-                self.log_ = Box::into_raw(Box::new(LogWriter::new_with_offset(
-                    self.logfile_,
+                self.log = Box::into_raw(Box::new(LogWriter::new_with_offset(
+                    self.logfile,
                     lfile_size,
                 )));
-                self.logfile_number_ = log_number;
+                self.logfile_number = log_number;
 
                 if !mem.is_null() {
-                    self.mem_ = mem;
+                    self.mem = mem;
                     mem = core::ptr::null_mut();
                 } else {
                     // mem can be nullptr if lognum exists but was empty.
-                    self.mem_ = Box::into_raw(Box::new(MemTable::new(&self.internal_comparator_)));
+                    self.mem = Box::into_raw(Box::new(MemTable::new(&self.internal_comparator)));
                     unsafe {
-                        (*self.mem_).ref_();
+                        (*self.mem).ref_();
                     }
                 }
             }
@@ -160,77 +160,5 @@ impl DBImpl {
         }
 
         status
-    }
-}
-
-#[cfg(test)]
-#[disable]
-mod recover_log_file_exhaustive_suite {
-    use super::*;
-
-    #[traced_test]
-    fn recover_log_file_smoke_with_reuse_logs_flag_does_not_corrupt_visible_state() {
-        let dbname: String = unique_dbname("recover_log_file_smoke_with_reuse_logs_flag_does_not_corrupt_visible_state");
-        remove_db_dir_best_effort(&dbname);
-
-        let mut opts: Options = default_test_options();
-        opts.reuse_logs = true;
-
-        let mut db = {
-            // Open initial instance.
-            let mut db: Box<DBImpl> = Box::new(DBImpl::new(&opts, &dbname));
-            db.mutex_.lock();
-
-            let mut edit: VersionEdit = Default::default();
-            let mut save_manifest: bool = false;
-
-            let mut s: Status = db.recover(
-                (&mut edit) as *mut VersionEdit,
-                (&mut save_manifest) as *mut bool,
-            );
-
-            if s.is_ok() && db.mem_.is_null() {
-                let new_log_number: u64 = unsafe { (*db.versions).new_file_number() };
-                let mut lfile: *mut dyn WritableFile = core::ptr::null_mut();
-                let fname: String = log_file_name(&dbname, new_log_number);
-
-                s = db.env.borrow_mut().new_writable_file(&fname, &mut lfile);
-
-                if s.is_ok() {
-                    edit.set_log_number(new_log_number);
-                    db.logfile_ = lfile;
-                    db.logfile_number_ = new_log_number;
-                    db.log_ = Box::into_raw(Box::new(LogWriter::new(db.logfile_)));
-
-                    db.mem_ = Box::into_raw(Box::new(MemTable::new(&db.internal_comparator_)));
-                    unsafe { (*db.mem_).ref_(); }
-                }
-            }
-
-            if s.is_ok() && save_manifest {
-                edit.set_prev_log_number(0);
-                edit.set_log_number(db.logfile_number_);
-                s = unsafe { (*db.versions).log_and_apply(&mut edit, &mut db.mutex_) };
-            }
-
-            if s.is_ok() {
-                db.delete_obsolete_files();
-            }
-
-            db.mutex_.unlock();
-
-            assert!(s.is_ok(), "open failed: {}", s.to_string());
-            db
-        };
-
-        write_kv(&mut *db, "k", "v1");
-        drop(db);
-
-        // Reopen with reuse_logs; should still read correct data.
-        let mut db2 = reopen_dbimpl_for_test(&dbname, opts);
-        assert_read_eq(&mut *db2, "k", "v1");
-
-        drop(db2);
-        remove_db_dir_best_effort(&dbname);
     }
 }
