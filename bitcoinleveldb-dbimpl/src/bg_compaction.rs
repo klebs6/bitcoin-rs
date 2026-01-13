@@ -84,25 +84,33 @@ impl DBImpl {
                 );
             }
 
-            status = unsafe { (*self.versions).log_and_apply((*c).edit(), self.mutex) };
+            let mu: *mut RawMutex = core::ptr::addr_of_mut!(self.mutex);
+            status = unsafe { (*self.versions).log_and_apply((*c).edit(), mu) };
             if !status.is_ok() {
                 self.record_background_error(&status);
             }
 
             let mut tmp: VersionSetLevelSummaryStorage = Default::default();
-            let summary: String = unsafe { (*self.versions).level_summary(&mut tmp) };
+            let summary_ptr: *const u8 = unsafe { (*self.versions).level_summary(&mut tmp) };
+
+            let summary: String = if summary_ptr.is_null() {
+                "<null level summary>".to_string()
+            } else {
+                let buf: &[u8; 100] = tmp.buffer();
+                let nul = buf.iter().position(|&b| b == 0).unwrap_or(buf.len());
+                String::from_utf8_lossy(&buf[..nul]).into_owned()
+            };
 
             tracing::info!(
-                file_number = *(*f).number() as u64,
+                file_number = unsafe { *(*f).number() as u64 },
                 to_level    = unsafe { (*c).level() + 1 },
-                file_size   = *(*f).file_size() as u64,
+                file_size   = unsafe { *(*f).file_size() as u64 },
                 status      = %status.to_string(),
                 summary     = %summary,
                 "Moved file to next level"
             );
         } else {
-            let compact: *mut CompactionState =
-                Box::into_raw(Box::new(CompactionState::new(c)));
+            let compact: *mut CompactionState = Box::into_raw(Box::new(CompactionState::new(c)));
 
             status = self.do_compaction_work(compact);
             if !status.is_ok() {
@@ -147,7 +155,7 @@ impl DBImpl {
                     (*m).set_begin((*m).tmp_storage() as *const _);
                 }
             }
-            self.set_manual_compaction(core::ptr::null_mut());
+            self.manual_compaction = core::ptr::null_mut();
         }
     }
 }

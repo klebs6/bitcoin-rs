@@ -3,7 +3,7 @@ crate::ix!();
 
 impl DBImpl {
     /// REQUIRES: Writer list must be non-empty
-    /// 
+    ///
     /// REQUIRES: First writer must have a non-null
     /// batch
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
@@ -15,10 +15,11 @@ impl DBImpl {
         assert!(!self.writers.is_empty());
 
         let first: *mut DBImplWriter = *self.writers.front().unwrap();
-        let mut result: *mut WriteBatch = unsafe { (*first).batch() };
+        let mut result: *mut WriteBatch = unsafe { *(*first).batch() };
         assert!(!result.is_null());
 
-        let mut size: usize = unsafe { write_batch_internal::byte_size((*first).batch()) };
+        let mut size: usize =
+            unsafe { write_batch_internal::byte_size(result as *const WriteBatch) };
 
         // Allow the group to grow up to a maximum size, but if the
         // original write is small, limit the growth so we do not slow
@@ -38,30 +39,44 @@ impl DBImpl {
         for wptr in iter {
             let w: *mut DBImplWriter = *wptr;
 
-            if unsafe { (*w).sync() } && !unsafe { (*first).sync() } {
+            if unsafe { *(*w).sync() } && !unsafe { *(*first).sync() } {
                 // Do not include a sync write into a batch handled by a non-sync write.
                 break;
             }
 
-            if !unsafe { (*w).batch() }.is_null() {
-                size += unsafe { write_batch_internal::byte_size((*w).batch()) };
+            let wbatch: *mut WriteBatch = unsafe { *(*w).batch() };
+            if !wbatch.is_null() {
+                size += unsafe {
+                    write_batch_internal::byte_size(wbatch as *const WriteBatch)
+                };
                 if size > max_size {
                     // Do not make batch too big
                     break;
                 }
 
                 // Append to *result
-                if result == unsafe { (*first).batch() } {
+                if result == unsafe { *(*first).batch() } {
                     // Switch to temporary batch instead of disturbing caller's batch
-                    result = self.tmp_batch();
-                    assert_eq!(unsafe { write_batch_internal::count(result) }, 0);
+                    result = self.tmp_batch;
+                    assert_eq!(
+                        unsafe {
+                            write_batch_internal::count(result as *const WriteBatch)
+                        },
+                        0
+                    );
                     unsafe {
-                        write_batch_internal::append(result, (*first).batch());
+                        write_batch_internal::append(
+                            result,
+                            *(*first).batch() as *const WriteBatch,
+                        );
                     }
                 }
 
                 unsafe {
-                    write_batch_internal::append(result, (*w).batch());
+                    write_batch_internal::append(
+                        result,
+                        wbatch as *const WriteBatch,
+                    );
                 }
             }
 

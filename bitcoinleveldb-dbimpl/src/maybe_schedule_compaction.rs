@@ -5,11 +5,16 @@ impl DBImpl {
 
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn maybe_schedule_compaction(&mut self) {
+        todo!();
+        /*
         self.mutex.assert_held();
 
         if self.background_compaction_scheduled {
             // Already scheduled
-        } else if self.shutting_down.load(core::sync::atomic::Ordering::Acquire) {
+        } else if self
+            .shutting_down
+            .load(core::sync::atomic::Ordering::Acquire)
+        {
             // DB is being deleted; no more background compactions
         } else if !self.bg_error.is_ok() {
             // Already got an error; no more changes
@@ -22,9 +27,15 @@ impl DBImpl {
             self.background_compaction_scheduled = true;
 
             let arg: *mut core::ffi::c_void = (self as *mut DBImpl) as *mut core::ffi::c_void;
-            self.env
-                .borrow_mut()
-                .schedule(DBImpl::bg_work, arg);
+
+            tracing::debug!(
+                has_imm = !self.imm.is_null(),
+                has_manual = !self.manual_compaction.is_null(),
+                "Scheduling background compaction"
+            );
+
+            self.env.as_mut().schedule(DBImpl::bg_work, arg);
         }
+        */
     }
 }

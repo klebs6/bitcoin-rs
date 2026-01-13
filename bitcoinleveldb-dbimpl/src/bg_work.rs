@@ -28,6 +28,9 @@ impl DBImpl {
         // so reschedule another compaction if needed.
         self.maybe_schedule_compaction();
         self.background_work_finished_signal.signal_all();
-        self.mutex.unlock();
+
+        unsafe {
+            self.mutex.unlock();
+        }
     }
 }

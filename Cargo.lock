@@ -3406,6 +3406,7 @@ dependencies = [
  "bitcoinleveldb-dbiterstate",
  "bitcoinleveldb-env",
  "bitcoinleveldb-file",
+ "bitcoinleveldb-filter",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-key",

@@ -210,6 +210,26 @@ impl Options {
 
         InternalKeyComparator::new(user_cmp_ptr)
     }
+
+    pub fn delete_info_log_if_owned(&mut self) -> Status {
+        if let Some(ptr) = self.info_log.take() {
+            unsafe {
+                drop(Box::from_raw(ptr));
+            }
+        }
+        Status::ok()
+    }
+
+    pub fn delete_block_cache_if_owned(&mut self) -> Status {
+        let cache_ptr: *mut Cache = self.block_cache;
+        if !cache_ptr.is_null() {
+            unsafe {
+                drop(Box::from_raw(cache_ptr));
+            }
+            self.block_cache = core::ptr::null_mut();
+        }
+        Status::ok()
+    }
 }
 
 impl Default for Options {

@@ -30,6 +30,10 @@ pub(crate) use bitcoinleveldb_log::*;
 pub(crate) use bitcoinleveldb_logreader::*;
 pub(crate) use bitcoinleveldb_iteratorinner::*;
 pub(crate) use bitcoinleveldb_versionsetinterface::*;
+pub(crate) use bitcoinleveldb_cfg::*;
+pub(crate) use bitcoinleveldb_merger::*;
+pub(crate) use bitcoinleveldb_tablebuilder::*;
+pub(crate) use bitcoinleveldb_dbiterstate::*;
 
 //----------------------------------------------[extras-compat-adapt]
 pub(crate) trait OptionIsNullExt {
@@ -112,7 +116,5 @@ impl CacheMutPtrTotalChargeExt for *mut Cache {
     }
 }
 
-pub(crate) use bitcoinleveldb_cfg::*;
-pub(crate) use bitcoinleveldb_merger::*;
-pub(crate) use bitcoinleveldb_tablebuilder::*;
-pub(crate) use bitcoinleveldb_dbiterstate::*;
+
+pub(crate) use bitcoinleveldb_filter::*;

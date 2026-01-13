@@ -5,7 +5,7 @@ impl DBImpl {
     /// Compact the in-memory write buffer to disk.
     ///
     /// Switches to a new log-file/memtable and writes a new descriptor iff successful.
-    /// 
+    ///
     /// Errors are recorded in bg_error.
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn compact_mem_table(&mut self) {
@@ -26,7 +26,8 @@ impl DBImpl {
         }
 
         if s.is_ok() && self.shutting_down.load(core::sync::atomic::Ordering::Acquire) {
-            s = Status::io_error("Deleting DB during memtable compaction");
+            let msg = Slice::from_str("Deleting DB during memtable compaction");
+            s = Status::io_error(&msg, None);
         }
 
         // Replace immutable memtable with the generated Table

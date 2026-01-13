@@ -70,7 +70,7 @@ pub struct DBImpl {
     /// 
     pub background_compaction_scheduled: bool,
     pub manual_compaction: *mut ManualCompaction,
-    pub versions: *const VersionSet,
+    pub versions: *mut VersionSet,
 
     /// Have we encountered a background error
     /// in paranoid mode?

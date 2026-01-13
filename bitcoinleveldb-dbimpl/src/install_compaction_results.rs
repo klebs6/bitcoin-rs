@@ -4,25 +4,29 @@ crate::ix!();
 impl DBImpl {
 
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
-    pub fn install_compaction_results(&mut self, compact: *mut CompactionState) -> crate::Status {
+    pub fn install_compaction_results(&mut self, compact: *mut CompactionState) -> crate::Status { 
+        todo!(); 
+        /*
         self.mutex.assert_held();
 
+        let compaction: *const Compaction = (*compact).compaction();
+
         tracing::info!(
-            n0 = unsafe { (*(*compact).compaction()).num_input_files(0) },
-            l0 = unsafe { (*(*compact).compaction()).level() },
-            n1 = unsafe { (*(*compact).compaction()).num_input_files(1) },
-            l1 = unsafe { (*(*compact).compaction()).level() + 1 },
+            n0 = unsafe { (*compaction).num_input_files(0) },
+            l0 = unsafe { (*compaction).level() },
+            n1 = unsafe { (*compaction).num_input_files(1) },
+            l1 = unsafe { (*compaction).level() + 1 },
             total_bytes = unsafe { (*compact).total_bytes() },
             "Compacted inputs => outputs"
         );
 
         unsafe {
             // Add compaction outputs
-            (*(*compact).compaction()).add_input_deletions((*(*compact).compaction()).edit());
+            (*compaction).add_input_deletions((*compaction).edit());
 
-            let level: i32 = (*(*compact).compaction()).level();
+            let level: i32 = (*compaction).level();
             for out in (*compact).outputs().iter() {
-                (*(*(*compact).compaction()).edit()).add_file(
+                (*(*compaction).edit()).add_file(
                     level + 1,
                     *out.number(),
                     *out.file_size(),
@@ -31,7 +35,8 @@ impl DBImpl {
                 );
             }
 
-            (*self.versions).log_and_apply((*(*compact).compaction()).edit(), &mut self.mutex)
+            (*self.versions).log_and_apply((*compaction).edit(), &mut self.mutex)
         }
+                                                                                                   */
     }
 }

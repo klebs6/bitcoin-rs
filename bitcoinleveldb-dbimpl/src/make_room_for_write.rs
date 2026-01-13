@@ -8,7 +8,9 @@ impl DBImpl {
     /// 
     /// force - compact even if there is room?
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
-    pub fn make_room_for_write(&mut self, mut force: bool) -> crate::Status {
+    pub fn make_room_for_write(&mut self, mut force: bool) -> crate::Status { 
+        todo!(); 
+        /*
         self.mutex.assert_held();
         assert!(!self.writers.is_empty());
 
@@ -107,5 +109,6 @@ impl DBImpl {
         }
 
         s
+            */
     }
 }

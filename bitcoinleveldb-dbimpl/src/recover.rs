@@ -10,7 +10,9 @@ impl DBImpl {
     /// Any changes to be made to the descriptor are added to *edit.
     ///
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
-    pub fn recover(&mut self, edit: *mut VersionEdit, save_manifest: *mut bool) -> crate::Status {
+    pub fn recover(&mut self, edit: *mut VersionEdit, save_manifest: *mut bool) -> crate::Status { 
+        todo!(); 
+        /*
         self.mutex.assert_held();
 
         // Ignore error from CreateDir since the creation of the DB is
@@ -121,5 +123,6 @@ impl DBImpl {
         }
 
         Status::ok()
+            */
     }
 }

@@ -8,7 +8,9 @@ impl DBImpl {
         options: &ReadOptions,
         latest_snapshot: *mut SequenceNumber,
         seed: *mut u32,
-    ) -> *mut LevelDBIterator {
+    ) -> *mut LevelDBIterator { 
+        todo!(); 
+        /*
         self.mutex.lock();
         unsafe {
             *latest_snapshot = (*self.versions).last_sequence();
@@ -50,6 +52,7 @@ impl DBImpl {
 
             internal_iter
         }
+                                */
     }
 
     /// Return an internal iterator over the current

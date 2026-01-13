@@ -28,7 +28,7 @@ x!{new_iterator}
 x!{open_compaciton_output_file}
 x!{put}
 x!{record_background_error}
-x!{record_real_sample}
+x!{record_read_sample}
 x!{recover}
 x!{recover_log_file}
 x!{release_snapshot}
@@ -39,3 +39,5 @@ x!{write}
 x!{write_level0_table}
 x!{log_reporter}
 x!{open}
+x!{dbimpl_null_file_lock}
+x!{dbimpl_user_comparator_adapter}

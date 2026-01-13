@@ -3,7 +3,9 @@ crate::ix!();
 
 impl DBNewIterator for DBImpl {
 
-    fn new_iterator(&mut self, options: &ReadOptions) -> *mut LevelDBIterator {
+    fn new_iterator(&mut self, options: &ReadOptions) -> *mut LevelDBIterator { 
+        todo!(); 
+        /*
         let mut latest_snapshot: SequenceNumber = 0;
         let mut seed: u32 = 0;
 
@@ -17,5 +19,6 @@ impl DBNewIterator for DBImpl {
         };
 
         self.new_db_iterator(self, self.user_comparator(), iter, snapshot, seed)
+                                                                                    */
     }
 }

@@ -2,7 +2,9 @@
 crate::ix!();
 
 impl DBWrite for DBImpl {
-    fn write(&mut self, options: &WriteOptions, updates: *mut WriteBatch) -> crate::Status {
+    fn write(&mut self, options: &WriteOptions, updates: *mut WriteBatch) -> crate::Status { 
+        todo!(); 
+        /*
         let mut w: DBImplWriter = DBImplWriter::new(&mut self.mutex);
         w.set_batch(updates);
         w.set_sync(options.sync());
@@ -106,5 +108,6 @@ impl DBWrite for DBImpl {
 
         self.mutex.unlock();
         status
+            */
     }
 }

@@ -8,7 +8,9 @@ impl DBOpen for DBImpl {
         options: &Options,
         dbname: &String,
         dbptr: *mut *mut dyn DB,
-    ) -> crate::Status {
+    ) -> crate::Status { 
+        todo!(); 
+        /*
         unsafe {
             *dbptr = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
         }
@@ -81,5 +83,6 @@ impl DBOpen for DBImpl {
         }
 
         return s;
+        */
     }
 }

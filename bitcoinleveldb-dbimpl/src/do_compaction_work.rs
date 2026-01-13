@@ -3,7 +3,9 @@ crate::ix!();
 
 impl DBImpl {
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
-    pub fn do_compaction_work(&mut self, compact: *mut CompactionState) -> crate::Status {
+    pub fn do_compaction_work(&mut self, compact: *mut CompactionState) -> crate::Status { 
+        todo!(); 
+        /*
 
         let start_micros: u64 = self.env.borrow_mut().now_micros();
 
@@ -215,5 +217,6 @@ impl DBImpl {
         tracing::info!(summary = %summary, "Compacted to");
 
         status
+            */
     }
 }

@@ -3,7 +3,9 @@ crate::ix!();
 
 impl DBImpl {
 
-    pub fn newdb(&mut self) -> crate::Status {
+    pub fn newdb(&mut self) -> crate::Status { 
+        todo!(); 
+        /*
         let mut new_db: VersionEdit = Default::default();
         new_db.set_comparator_name(self.user_comparator().name());
         new_db.set_log_number(0);
@@ -44,5 +46,6 @@ impl DBImpl {
         }
 
         s
+                                               */
     }
 }

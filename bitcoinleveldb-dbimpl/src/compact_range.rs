@@ -10,12 +10,13 @@ impl DBCompactRange for DBImpl {
         let base: *mut Version = unsafe { (*self.versions).current() };
 
         for level in 1..NUM_LEVELS {
-            if unsafe { (*base).overlap_in_level(level, begin, end) } {
-                max_level_with_files = level;
+            let level_i32: i32 = level as i32;
+            if unsafe { (*base).overlap_in_level(level_i32, begin, end) } {
+                max_level_with_files = level_i32;
             }
         }
 
-        self.mutex.unlock();
+        unsafe { self.mutex.unlock() };
 
         // TODO(sanjay): Skip if memtable does not overlap
         let _ = self.test_compact_mem_table();

@@ -8,6 +8,8 @@ pub struct LogReporter {
 
 impl LogReaderReporter for LogReporter {
     fn corruption(&mut self, bytes: usize, s: &Status) {
+        todo!();
+        /*
         if self.status.is_null() {
             tracing::warn!(
                 file = %self.fname,
@@ -28,5 +30,6 @@ impl LogReaderReporter for LogReporter {
                 }
             }
         }
+        */
     }
 }

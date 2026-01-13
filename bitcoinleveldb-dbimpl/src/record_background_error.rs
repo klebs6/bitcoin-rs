@@ -3,7 +3,7 @@ crate::ix!();
 
 impl DBImpl {
 
-    pub fn record_background_error(&mut self, s: &Status) {
+    pub fn record_background_error(&mut self, s: &Status) { 
         self.mutex.assert_held();
 
         if self.bg_error.is_ok() {

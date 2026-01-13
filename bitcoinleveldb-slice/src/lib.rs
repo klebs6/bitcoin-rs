@@ -7,7 +7,8 @@
 x!{slice}
 
 /// A range of keys
-#[derive(Default)]
+#[derive(Default, Getters)]
+#[getset(get = "pub")]
 pub struct Range {
 
     /// Included in the range

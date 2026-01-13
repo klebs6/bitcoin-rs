@@ -4,7 +4,9 @@ crate::ix!();
 impl DBImpl {
 
     /// Compact any files in the named level that overlap [*begin,*end]
-    pub fn test_compact_range(&mut self, level: i32, begin: *const Slice, end: *const Slice) {
+    pub fn test_compact_range(&mut self, level: i32, begin: *const Slice, end: *const Slice) { 
+        todo!(); 
+        /*
         assert!(level >= 0);
         assert!(level + 1 < NUM_LEVELS);
 
@@ -51,5 +53,6 @@ impl DBImpl {
         }
 
         self.mutex.unlock();
+                                                                                               */
     }
 }

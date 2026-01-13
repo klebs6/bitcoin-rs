@@ -5,6 +5,9 @@ crate::ix!();
   | Files produced by compaction
   |
   */
+#[derive(Getters,MutGetters,Setters,Builder)]
+#[getset(get = "pub", get_mut = "pub", set = "pub")]
+#[builder(pattern = "owned")]
 pub struct CompactionStateOutput {
     number:    u64,
     file_size: u64,
@@ -12,6 +15,9 @@ pub struct CompactionStateOutput {
     largest:   InternalKey,
 }
 
+#[derive(Getters,MutGetters,Setters,Builder)]
+#[getset(get = "pub", get_mut = "pub", set = "pub")]
+#[builder(pattern = "owned")]
 pub struct CompactionState {
 
     compaction:        *const Compaction,

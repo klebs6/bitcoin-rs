@@ -11,7 +11,9 @@ impl DBImpl {
         save_manifest: *mut bool,
         edit: *mut VersionEdit,
         max_sequence: *mut SequenceNumber,
-    ) -> crate::Status {
+    ) -> crate::Status { 
+        todo!(); 
+        /*
 
         self.mutex.assert_held();
 
@@ -160,5 +162,6 @@ impl DBImpl {
         }
 
         status
+            */
     }
 }

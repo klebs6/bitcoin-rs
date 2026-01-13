@@ -44,3 +44,4 @@ bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
 bitcoinleveldb-merger = { path = "../bitcoinleveldb-merger" }
 bitcoinleveldb-tablebuilder = { path = "../bitcoinleveldb-tablebuilder" }
 bitcoinleveldb-dbiterstate = { path = "../bitcoinleveldb-dbiterstate" }
+bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }

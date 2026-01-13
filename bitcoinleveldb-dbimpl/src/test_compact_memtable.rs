@@ -4,7 +4,9 @@ crate::ix!();
 impl DBImpl {
     
     /// Force current memtable contents to be compacted.
-    pub fn test_compact_mem_table(&mut self) -> crate::Status {
+    pub fn test_compact_mem_table(&mut self) -> crate::Status { 
+        todo!(); 
+        /*
         // nullptr batch means just wait for earlier writes to be done
         let mut s: Status = <DBImpl as DBWrite>::write(self, &WriteOptions::default(), core::ptr::null_mut());
 
@@ -21,5 +23,6 @@ impl DBImpl {
         }
 
         s
+                                                                */
     }
 }

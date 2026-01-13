@@ -2,7 +2,9 @@
 crate::ix!();
 
 impl DBImpl {
-    pub fn open_compaction_output_file(&mut self, compact: *mut CompactionState) -> crate::Status {
+    pub fn open_compaction_output_file(&mut self, compact: *mut CompactionState) -> crate::Status { 
+        todo!(); 
+        /*
         assert!(!compact.is_null());
         assert!(unsafe { (*compact).builder() }.is_null());
 
@@ -41,5 +43,6 @@ impl DBImpl {
         }
 
         s
+                                                                                                    */
     }
 }

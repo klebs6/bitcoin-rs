@@ -7,7 +7,9 @@ impl DBImpl {
         &mut self,
         compact: *mut CompactionState,
         input: *mut LevelDBIterator,
-    ) -> Status {
+    ) -> Status { 
+        todo!(); 
+        /*
         assert!(!compact.is_null());
         assert!(!unsafe { (*compact).outfile() }.is_null());
         assert!(!unsafe { (*compact).builder() }.is_null());
@@ -76,5 +78,6 @@ impl DBImpl {
         }
 
         s
+                  */
     }
 }

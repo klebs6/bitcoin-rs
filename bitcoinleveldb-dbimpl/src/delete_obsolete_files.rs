@@ -3,7 +3,7 @@ crate::ix!();
 
 impl DBImpl {
     /// Delete any unneeded files and stale in-memory entries.
-    /// 
+    ///
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn delete_obsolete_files(&mut self) {
         self.mutex.assert_held();
@@ -17,19 +17,22 @@ impl DBImpl {
         // Make a set of all of the live files
         let mut live = self.pending_outputs.clone();
         unsafe {
-            (*self.versions).add_live_files(&mut live);
+            (*(self.versions as *mut VersionSet)).add_live_files(&mut live);
         }
 
         let mut filenames: Vec<String> = Vec::new();
 
         // Ignoring errors on purpose
-        let _ = self.env.borrow_mut().get_children(&self.dbname, &mut filenames);
+        let _ = self
+            .env
+            .as_mut()
+            .get_children(&self.dbname, &mut filenames);
 
         let mut files_to_delete: Vec<String> = Vec::new();
 
         for filename in filenames.into_iter() {
             let mut number: u64 = 0;
-            let mut ftype: FileType = Default::default();
+            let mut ftype: FileType = FileType::LogFile;
 
             if parse_file_name(&filename, &mut number, &mut ftype) {
                 let mut keep: bool = true;
@@ -65,15 +68,27 @@ impl DBImpl {
 
                 if !keep {
                     files_to_delete.push(filename.clone());
+
                     if matches!(ftype, FileType::TableFile) {
                         unsafe {
-                            (*self.table_cache).evict(number);
+                            (*(self.table_cache as *mut TableCache)).evict(number);
                         }
                     }
 
+                    let file_type: &'static str = match ftype {
+                        FileType::LogFile => "log",
+                        FileType::DBLockFile => "lock",
+                        FileType::TableFile => "table",
+                        FileType::DescriptorFile => "descriptor",
+                        FileType::CurrentFile => "current",
+                        FileType::TempFile => "temp",
+                        FileType::InfoLogFile => "info_log",
+                    };
+
                     tracing::info!(
-                        file_type = ?ftype,
+                        file_type = %file_type,
                         file_number = number,
+                        file_name = %filename,
                         "Delete obsolete file"
                     );
                 }
@@ -83,11 +98,11 @@ impl DBImpl {
         // While deleting all files unblock other threads. All files being deleted
         // have unique names which will not collide with newly created files and
         // are therefore safe to delete while allowing other threads to proceed.
-        self.mutex.unlock();
+        unsafe { self.mutex.unlock() };
 
         for filename in files_to_delete.into_iter() {
             let full = format!("{}/{}", self.dbname, filename);
-            let _ = self.env.borrow_mut().delete_file(&full);
+            let _ = self.env.as_mut().delete_file(&full);
         }
 
         self.mutex.lock();

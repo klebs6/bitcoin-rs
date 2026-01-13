@@ -8,7 +8,9 @@ impl DBImpl {
         mem: *mut MemTable,
         edit: *mut VersionEdit,
         base: *mut Version,
-    ) -> crate::Status {
+    ) -> crate::Status { 
+        todo!(); 
+        /*
         self.mutex.assert_held();
 
         let start_micros: u64 = self.env.borrow_mut().now_micros();
@@ -78,5 +80,6 @@ impl DBImpl {
         self.stats[level as usize].add(stats);
 
         s
+                         */
     }
 }
