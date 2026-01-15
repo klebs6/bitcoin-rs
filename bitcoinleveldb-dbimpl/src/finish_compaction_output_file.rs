@@ -2,62 +2,76 @@
 crate::ix!();
 
 impl DBImpl {
-
     pub fn finish_compaction_output_file(
         &mut self,
         compact: *mut CompactionState,
         input: *mut LevelDBIterator,
-    ) -> Status { 
-        todo!(); 
+    ) -> Status {
+        todo!();
         /*
         assert!(!compact.is_null());
-        assert!(!unsafe { (*compact).outfile() }.is_null());
-        assert!(!unsafe { (*compact).builder() }.is_null());
+        assert!(!unsafe { (*compact).outfile().borrow().is_null() });
 
-        let output_number: u64 = unsafe { (*compact).current_output().number() };
+        let builder_ptr: *mut TableBuilder = unsafe { *(*compact).builder() };
+        assert!(!builder_ptr.is_null());
+
+        let output_ptr: *mut CompactionStateOutput = unsafe { (*compact).current_output() };
+        let output_number: u64 = unsafe { *(*output_ptr).number() };
         assert_ne!(output_number, 0);
 
         // Check for iterator errors
         let mut s: Status = unsafe { (*input).status() };
-        let current_entries: u64 = unsafe { (*(*compact).builder()).num_entries() };
 
-        if s.is_ok() {
-            s = unsafe { (*(*compact).builder()).finish() };
-        } else {
-            unsafe {
-                (*(*compact).builder()).abandon();
+        let (current_entries, current_bytes): (u64, u64) = unsafe {
+            let builder: &mut TableBuilder = builder_ptr
+                .as_mut()
+                .unwrap_or_else(|| {
+                    tracing::error!("CompactionState.builder was null in finish_compaction_output_file");
+                    panic!();
+                });
+
+            let entries: u64 = builder.num_entries();
+
+            if s.is_ok() {
+                s = builder.finish();
+            } else {
+                builder.abandon();
             }
-        }
 
-        let current_bytes: u64 = unsafe { (*(*compact).builder()).file_size() };
+            let bytes: u64 = builder.file_size();
+            (entries, bytes)
+        };
+
         unsafe {
-            (*compact).current_output().set_file_size(current_bytes);
+            (*output_ptr).set_file_size(current_bytes);
             *(*compact).total_bytes_mut() += current_bytes;
         }
 
         unsafe {
-            drop(Box::from_raw((*compact).builder()));
+            drop(Box::from_raw(builder_ptr));
             (*compact).set_builder(core::ptr::null_mut());
         }
 
         // Finish and check for file errors
         if s.is_ok() {
-            s = unsafe { (*(*compact).outfile()).sync() };
+            let outfile = unsafe { (*compact).outfile() };
+            s = outfile.borrow_mut().sync();
         }
 
         if s.is_ok() {
-            s = unsafe { (*(*compact).outfile()).close() };
-        }
-
-        unsafe {
-            drop(Box::from_raw((*compact).outfile()));
-            (*compact).set_outfile(core::ptr::null_mut());
+            let outfile = unsafe { (*compact).outfile() };
+            s = outfile.borrow_mut().close();
         }
 
         if s.is_ok() && current_entries > 0 {
             // Verify that the table is usable
             let iter: *mut LevelDBIterator = unsafe {
-                (*self.table_cache).new_iterator(ReadOptions::default(), output_number, current_bytes)
+                (*(self.table_cache as *mut TableCache)).new_iterator(
+                    &ReadOptions::default(),
+                    output_number,
+                    current_bytes,
+                    core::ptr::null_mut(),
+                )
             };
 
             s = unsafe { (*iter).status() };
@@ -67,9 +81,17 @@ impl DBImpl {
             }
 
             if s.is_ok() {
+                let compaction_raw: *const Compaction = unsafe { *(*compact).compaction() };
+                assert!(
+                    !compaction_raw.is_null(),
+                    "CompactionState::compaction pointer must be non-null"
+                );
+
+                let level: i32 = unsafe { compaction_raw.as_ref().unwrap().level() };
+
                 tracing::info!(
                     output_number,
-                    level = unsafe { (*(*compact).compaction()).level() },
+                    level,
                     keys = current_entries,
                     bytes = current_bytes,
                     "Generated table"
@@ -78,6 +100,6 @@ impl DBImpl {
         }
 
         s
-                  */
+        */
     }
 }

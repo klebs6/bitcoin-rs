@@ -37,6 +37,6 @@ impl DBImpl {
 
             (*self.versions).log_and_apply((*compaction).edit(), &mut self.mutex)
         }
-                                                                                                   */
+           */
     }
 }

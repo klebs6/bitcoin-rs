@@ -3,9 +3,7 @@ crate::ix!();
 
 impl DBReleaseSnapshot for DBImpl {
 
-    fn release_snapshot(&mut self, snapshot: Box<dyn Snapshot>) { 
-        todo!(); 
-        /*
+    fn release_snapshot(&mut self, snapshot: Box<dyn Snapshot>) {
         self.mutex.lock();
 
         let raw: *mut dyn Snapshot = Box::into_raw(snapshot);
@@ -14,7 +12,8 @@ impl DBReleaseSnapshot for DBImpl {
 
         self.snapshots.delete(snap_impl);
 
-        self.mutex.unlock();
-                                                                      */
+        unsafe {
+            self.mutex.unlock();
+        }
     }
 }

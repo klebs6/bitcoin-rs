@@ -3416,6 +3416,7 @@ dependencies = [
  "bitcoinleveldb-memtable",
  "bitcoinleveldb-merger",
  "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",

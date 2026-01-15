@@ -116,5 +116,5 @@ impl CacheMutPtrTotalChargeExt for *mut Cache {
     }
 }
 
-
 pub(crate) use bitcoinleveldb_filter::*;
+pub(crate) use bitcoinleveldb_posixenv::*;

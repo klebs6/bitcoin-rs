@@ -8,10 +8,9 @@ impl DBImpl {
         options: &ReadOptions,
         latest_snapshot: *mut SequenceNumber,
         seed: *mut u32,
-    ) -> *mut LevelDBIterator { 
-        todo!(); 
-        /*
+    ) -> *mut LevelDBIterator {
         self.mutex.lock();
+
         unsafe {
             *latest_snapshot = (*self.versions).last_sequence();
         }
@@ -31,8 +30,17 @@ impl DBImpl {
             let current: *mut Version = (*self.versions).current();
             (*current).add_iterators(options, &mut list);
 
+            let n: i32 = list
+                .len()
+                .try_into()
+                .expect("DBImpl::new_internal_iterator: too many child iterators to merge");
+
+            let comparator: Box<dyn SliceComparator> = Box::new(InternalKeyComparator::new(
+                self.internal_comparator.user_comparator(),
+            ));
+
             let internal_iter: *mut LevelDBIterator =
-                new_merging_iterator(&self.internal_comparator, &list[0], list.len());
+                new_merging_iterator(comparator, list.as_mut_ptr(), n);
 
             (*current).ref_();
 
@@ -43,7 +51,11 @@ impl DBImpl {
                 current,
             )));
 
-            (*internal_iter).register_cleanup(cleanup_iterator_state, cleanup as *mut core::ffi::c_void, core::ptr::null_mut());
+            (*internal_iter).register_cleanup(
+                cleanup_iterator_state,
+                cleanup as *mut core::ffi::c_void,
+                core::ptr::null_mut(),
+            );
 
             self.seed = self.seed.wrapping_add(1);
             *seed = self.seed;
@@ -52,7 +64,6 @@ impl DBImpl {
 
             internal_iter
         }
-                                */
     }
 
     /// Return an internal iterator over the current

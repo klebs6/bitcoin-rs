@@ -26,3 +26,124 @@ impl DBCompactRange for DBImpl {
         }
     }
 }
+
+#[cfg(test)]
+mod compact_range_interface_contract_suite {
+    use super::*;
+
+    fn build_temp_db_path_for_compact_range_suite() -> String {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        let dir = std::env::temp_dir();
+        let path = dir.join(format!("bitcoinleveldb_dbimpl_compact_range_suite_{}", nanos));
+        let s = path.to_string_lossy().to_string();
+
+        tracing::info!(path = %s, "Allocated temp db path for compact_range suite");
+        s
+    }
+
+    fn build_default_options_with_env_or_panic_for_compact_range_suite() -> Options {
+        let env = PosixEnv::shared();
+        let mut options = Options::with_env(env);
+
+        if options.env().is_none() {
+            tracing::error!("Options::default() did not supply an Env; compact_range suite cannot construct DBImpl safely");
+            panic!();
+        }
+
+        options
+    }
+
+    #[traced_test]
+    fn compact_range_releases_mutex_before_invoking_compaction_helpers() {
+        let dbname = build_temp_db_path_for_compact_range_suite();
+        let options = build_default_options_with_env_or_panic_for_compact_range_suite();
+
+        // Ensure the directory exists to avoid env implementations that expect it.
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let mut db = std::mem::ManuallyDrop::new(DBImpl::new(&options, &dbname));
+
+        // Use real, non-null Slice pointers to avoid relying on null-range semantics.
+        let begin = Slice::from_str("a");
+        let end = Slice::from_str("z");
+
+        tracing::info!(
+            begin = %begin.to_string(),
+            end = %end.to_string(),
+            "Invoking DBCompactRange::compact_range; expecting panic until dependent compaction helpers are implemented"
+        );
+
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            DBCompactRange::compact_range(&mut *db, &begin as *const Slice, &end as *const Slice);
+        }));
+
+        assert!(
+            result.is_err(),
+            "compact_range is expected to panic at the current stage because it delegates into unimplemented compaction helpers"
+        );
+
+        // The contract we can validate now: the mutex must not remain locked after unwinding
+        // from within compact_range (it unlocks prior to delegating).
+        let reacquired = db.mutex.try_lock();
+        tracing::debug!(
+            reacquired,
+            "Attempted to re-lock DB mutex after compact_range panic"
+        );
+
+        assert!(
+            reacquired,
+            "compact_range must not leak the mutex lock across panic/unwind"
+        );
+
+        unsafe { db.mutex.unlock() };
+
+        // Best-effort cleanup: directory may contain files created by other components later.
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+
+    #[traced_test]
+    fn compact_range_accepts_non_empty_user_key_bounds_without_deadlocking() {
+        let dbname = build_temp_db_path_for_compact_range_suite();
+        let options = build_default_options_with_env_or_panic_for_compact_range_suite();
+
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let mut db = std::mem::ManuallyDrop::new(DBImpl::new(&options, &dbname));
+
+        let begin = Slice::from_str("begin-key");
+        let end = Slice::from_str("end-key");
+
+        tracing::info!(
+            begin = %begin.to_string(),
+            end = %end.to_string(),
+            "Invoking compact_range with non-empty bounds"
+        );
+
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            DBCompactRange::compact_range(&mut *db, &begin as *const Slice, &end as *const Slice);
+        }));
+
+        assert!(
+            result.is_err(),
+            "Until compaction helpers are reactivated, compact_range should unwind; this test validates it does not deadlock"
+        );
+
+        let reacquired = db.mutex.try_lock();
+        tracing::debug!(
+            reacquired,
+            "Attempted to re-lock DB mutex after compact_range unwind (non-empty bounds)"
+        );
+        assert!(reacquired, "Mutex must be available after unwind");
+
+        unsafe { db.mutex.unlock() };
+
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+}
