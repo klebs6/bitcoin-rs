@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/log_reporter.rs ]
 crate::ix!();
 
 pub struct LogReporter {

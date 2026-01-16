@@ -5,10 +5,8 @@ impl DBImpl {
 
     /// Compact any files in the named level that overlap [*begin,*end]
     pub fn test_compact_range(&mut self, level: i32, begin: *const Slice, end: *const Slice) { 
-        todo!(); 
-        /*
         assert!(level >= 0);
-        assert!(level + 1 < NUM_LEVELS);
+        assert!(level + 1 < NUM_LEVELS as i32);
 
         let mut begin_storage: InternalKey = Default::default();
         let mut end_storage: InternalKey = Default::default();
@@ -27,32 +25,33 @@ impl DBImpl {
         if end.is_null() {
             manual.set_end(core::ptr::null_mut());
         } else {
-            end_storage = InternalKey::new(unsafe { &*end }, 0, 0);
+            end_storage = InternalKey::new(unsafe { &*end }, 0, ValueType::TypeDeletion);
             manual.set_end(&mut end_storage);
         }
 
         self.mutex.lock();
 
         while !manual.done()
-            && !self.shutting_down_mut().load(core::sync::atomic::Ordering::Acquire)
-            && self.bg_error().is_ok()
+            && !self.shutting_down.load(core::sync::atomic::Ordering::Acquire)
+            && self.bg_error.is_ok()
         {
-            if self.manual_compaction().is_null() {
+            if self.manual_compaction.is_null() {
                 // Idle
-                self.set_manual_compaction(&mut manual);
+                self.manual_compaction = &mut manual as *mut ManualCompaction;
                 self.maybe_schedule_compaction();
             } else {
                 // Running either my compaction or another compaction.
-                self.background_work_finished_signal().wait();
+                unsafe { self.mutex.unlock() };
+                std::thread::yield_now();
+                self.mutex.lock();
             }
         }
 
-        if self.manual_compaction() == (&mut manual as *mut ManualCompaction) {
+        if self.manual_compaction == (&mut manual as *mut ManualCompaction) {
             // Cancel my manual compaction since we aborted early for some reason.
-            self.set_manual_compaction(core::ptr::null_mut());
+            self.manual_compaction = core::ptr::null_mut();
         }
 
-        self.mutex.unlock();
-                                                                                               */
+        unsafe { self.mutex.unlock() };
     }
 }

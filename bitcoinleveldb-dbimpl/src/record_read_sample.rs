@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-dbimpl/src/record_real_sample.rs ]
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/record_read_sample.rs ]
 crate::ix!();
 
 impl DBImpl {

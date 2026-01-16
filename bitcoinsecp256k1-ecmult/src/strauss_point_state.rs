@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ecmult/src/strauss_point_state.rs ]
 crate::ix!();
 
 pub struct StraussPointState {

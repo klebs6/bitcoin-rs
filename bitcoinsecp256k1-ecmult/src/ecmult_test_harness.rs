@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinsecp256k1-ecmult/src/ecmult_test_harness.rs ]
 #![cfg(test)]
 crate::ix!();
 
@@ -140,4 +141,3 @@ pub(crate) unsafe fn alloc_and_build_ecmult_context_preallocated(
 
     (buf, layout, ctx, cursor, ctx_offset)
 }
-

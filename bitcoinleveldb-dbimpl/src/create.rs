@@ -14,7 +14,8 @@ impl DBImpl {
     
     pub fn new(raw_options: &Options, dbname: &String) -> Self {
         let internal_comparator = InternalKeyComparator::new(raw_options.comparator().as_ref());
-        let internal_filter_policy = InternalFilterPolicy::new(raw_options.filter_policy().as_ref());
+        let internal_filter_policy =
+            InternalFilterPolicy::new(raw_options.filter_policy().as_ref());
 
         let options = sanitize_options(
             dbname,
@@ -36,31 +37,48 @@ impl DBImpl {
 
         let env: Box<dyn Env> = Box::new(EnvWrapper::new(env_rc));
 
-        let owns_info_log = options.info_log() != raw_options.info_log();
-        let owns_cache = options.block_cache() != raw_options.block_cache();
+        let owns_info_log: bool = options.info_log() != raw_options.info_log();
+        let owns_cache: bool = options.block_cache() != raw_options.block_cache();
 
-        let dbname = dbname.clone();
+        let dbname: String = dbname.clone();
 
-        let table_cache = Box::into_raw(Box::new(TableCache::new(
+        // IMPORTANT:
+        // VersionSet stores a raw pointer to Options. DBImpl moves by value in tests (and generally),
+        // so taking &options (stack/local) would dangle. Instead, derive a stable Options pointer
+        // from TableCache's Rc<Options> allocation.
+        let table_cache_box: Box<TableCache> = Box::new(TableCache::new(
             &dbname,
             &options,
             table_cache_size(&options),
-        )));
+        ));
+
+        let stable_options_ptr: *const Options = table_cache_box.options_ref() as *const Options;
+
+        tracing::debug!(
+            dbname = %dbname,
+            options_stack_ptr = core::ptr::addr_of!(options) as usize,
+            stable_options_ptr = stable_options_ptr as usize,
+            "DBImpl::new: derived stable Options pointer for VersionSet from TableCache"
+        );
+
+        let table_cache: *const TableCache = Box::into_raw(table_cache_box) as *const TableCache;
 
         let mutex: RawMutex = RawMutex::INIT;
-        let background_work_finished_signal = Condvar::new();
+        let background_work_finished_signal: Condvar = Condvar::new();
 
-        let versions = Box::into_raw(Box::new(VersionSet::new(
+        let versions_box: Box<VersionSet> = Box::new(VersionSet::new(
             &dbname,
-            &options,
-            table_cache,
+            stable_options_ptr,
+            table_cache as *mut TableCache,
             &internal_comparator,
-        )));
+        ));
+        let versions: *mut VersionSet = Box::into_raw(versions_box);
 
         let db_lock: Rc<RefCell<dyn FileLock>> = Rc::new(RefCell::new(DbImplNullFileLock));
 
         // Placeholder handle; real logfile is established during Open()/recovery paths.
-        let logfile: Rc<RefCell<dyn WritableFile>> = Rc::new(RefCell::new(StdoutPrinter {}));
+        let logfile: Rc<RefCell<dyn WritableFile>> =
+            Rc::new(RefCell::new(StdoutPrinter {}));
 
         Self {
             env,

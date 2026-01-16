@@ -78,6 +78,10 @@ impl Version {
         self.vset
     }
 
+    pub fn set_vset(&mut self, vset: *mut dyn VersionSetInterface) {
+        self.vset = vset;
+    }
+
     pub fn num_files(&self, level: i32) -> i32 {
         trace!("Version::num_files: level={}", level);
         assert!(

@@ -57,3 +57,40 @@ impl From<Rc<RefCell<dyn WritableFile>>> for Box<dyn WritableFile> {
         */
     }
 }
+
+//-----------------------------------[impl-for-box]
+impl WritableFile for Box<dyn WritableFile> {}
+
+impl WritableFileAppend for Box<dyn WritableFile> {
+
+    fn append(&mut self, data: &Slice) -> crate::Status {
+        (**self).append(data)
+    }
+}
+
+impl WritableFileClose for Box<dyn WritableFile> {
+
+    fn close(&mut self) -> crate::Status {
+        (**self).close()
+    }
+}
+
+impl WritableFileFlush for Box<dyn WritableFile> {
+
+    fn flush(&mut self) -> crate::Status {
+        (**self).flush()
+    }
+}
+
+impl WritableFileSync for Box<dyn WritableFile> {
+
+    fn sync(&mut self) -> crate::Status {
+        (**self).sync()
+    }
+}
+
+impl Named for Box<dyn WritableFile> {
+    fn name(&self) -> Cow<'_,str> {
+        (**self).name()
+    }
+}

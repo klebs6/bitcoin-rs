@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/dbimpl_user_comparator_adapter.rs ]
 crate::ix!();
 
 #[derive(Clone, Copy)]

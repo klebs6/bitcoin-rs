@@ -41,6 +41,7 @@ NO_FAIL_FAST := --no-fail-fast
 
 #----------------------------------------[active]
 ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
+ACTIVE := bitcoinleveldb-dbiter        #loc: 414
 
 # ---[leveldb-layer-1]
 #ACTIVE := bitcoinleveldb-harness       #loc: 297
@@ -49,7 +50,6 @@ ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 # ---[leveldb-layer-2]
 #ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
 #ACTIVE := bitcoinleveldb-db            #loc: 1049
-#ACTIVE := bitcoinleveldb-dbiter        #loc: 414
 # ---[leveldb-layer-3]
 #ACTIVE := bitcoinleveldb-bench         #loc: 2997
 #ACTIVE := bitcoinleveldb-test          #loc: 3254
@@ -443,7 +443,6 @@ bench:
 #ACTIVE := bitcoinleveldb-version
 #ACTIVE := bitcoinleveldb-versionedit
 #ACTIVE := bitcoinleveldb-versioniterator
-#ACTIVE := bitcoinleveldb-versionset
 #ACTIVE := bitcoinleveldb-versionsetinterface
 #ACTIVE := bitcoinleveldb-versionsetutil
 #ACTIVE := bitcoinsecp256k1-ecmult
@@ -457,3 +456,4 @@ bench:
 #ACTIVE := bitcoinsecp256k1-modinv64
 #ACTIVE := bitcoinsecp256k1-scalar
 #ACTIVE := bitcoinsecp256k1-scratch
+#ACTIVE := bitcoinleveldb-versionset

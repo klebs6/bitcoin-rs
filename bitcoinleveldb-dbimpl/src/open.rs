@@ -9,8 +9,6 @@ impl DBOpen for DBImpl {
         dbname: &String,
         dbptr: *mut *mut dyn DB,
     ) -> crate::Status { 
-        todo!(); 
-        /*
         unsafe {
             *dbptr = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
         }
@@ -30,26 +28,27 @@ impl DBOpen for DBImpl {
             // Create new log and a corresponding memtable.
             let new_log_number: u64 = unsafe { (*impl_.versions).new_file_number() };
 
-            let mut lfile: core::mem::MaybeUninit<*mut dyn WritableFile> =
-                core::mem::MaybeUninit::uninit();
-
             let fname: String = log_file_name(dbname, new_log_number);
+
+            let mut lfile_ptr: *mut Box<dyn WritableFile> = core::ptr::null_mut();
 
             s = options
                 .env()
                 .as_ref()
                 .unwrap()
                 .borrow_mut()
-                .new_writable_file(&fname, lfile.as_mut_ptr());
+                .new_writable_file(&fname, &mut lfile_ptr);
 
             if s.is_ok() {
                 edit.set_log_number(new_log_number);
 
-                impl_.logfile = unsafe { lfile.assume_init() };
+                let lfile_box: Box<dyn WritableFile> = unsafe { *Box::from_raw(lfile_ptr) };
+
+                impl_.logfile = Rc::new(RefCell::new(lfile_box));
                 impl_.logfile_number = new_log_number;
 
                 impl_.log =
-                    Box::into_raw(Box::new(LogWriter::new(impl_.logfile)));
+                    Box::into_raw(Box::new(LogWriter::new(impl_.logfile.clone(), 0)));
 
                 impl_.mem =
                     Box::into_raw(Box::new(MemTable::new(&impl_.internal_comparator)));
@@ -71,7 +70,7 @@ impl DBOpen for DBImpl {
             impl_.maybe_schedule_compaction();
         }
 
-        impl_.mutex.unlock();
+        unsafe { impl_.mutex.unlock() };
 
         if s.is_ok() {
             assert!(!impl_.mem.is_null());
@@ -82,7 +81,6 @@ impl DBOpen for DBImpl {
             drop(impl_);
         }
 
-        return s;
-        */
+        s
     }
 }

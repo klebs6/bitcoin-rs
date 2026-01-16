@@ -52,3 +52,39 @@ impl DBImpl {
         }
     }
 }
+
+#[cfg(test)]
+mod compact_mem_table_interface_and_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn compact_mem_table_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::compact_mem_table signature is stable");
+        type Sig = fn(&mut DBImpl);
+        let _sig: Sig = DBImpl::compact_mem_table;
+        tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn compact_mem_table_panics_if_imm_is_null_by_contract() {
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+        let dbname: String = "bitcoinleveldb_dbimpl_compact_mem_table_contract".to_string();
+
+        let mut db = std::mem::ManuallyDrop::new(DBImpl::new(&options, &dbname));
+
+        db.mutex.lock();
+
+        tracing::info!("Invoking compact_mem_table with imm=null; expecting panic");
+        let panicked = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            db.compact_mem_table();
+        }))
+        .is_err();
+
+        tracing::debug!(panicked, "Observed compact_mem_table contract panic behavior");
+
+        unsafe { db.mutex.unlock() };
+
+        assert!(panicked, "compact_mem_table must assert that imm is non-null");
+    }
+}

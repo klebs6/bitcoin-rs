@@ -3467,11 +3467,16 @@ name = "bitcoinleveldb-dbiter"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
- "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-dbinterface",
  "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-key",
+ "bitcoinleveldb-rand",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
+ "tracing",
 ]
 
 [[package]]

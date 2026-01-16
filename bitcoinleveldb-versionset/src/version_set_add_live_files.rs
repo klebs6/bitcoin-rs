@@ -2,79 +2,129 @@
 crate::ix!();
 
 impl AddLiveFiles for VersionSet {
-
     /// Add all files listed in any live version to *live.
     fn add_live_files(&mut self, live: *mut HashSet<u64>) {
-        trace!(
-            live_ptr = %format!("{:p}", live),
-            "VersionSet::add_live_files: enter"
-        );
+        tracing::trace!(dbname = %self.dbname(), "VersionSet::add_live_files: begin");
 
-        if live.is_null() {
-            error!(
-                "VersionSet::add_live_files: live out-parameter is null; nothing to do"
-            );
-            return;
-        }
+        let live_set: &mut HashSet<u64> = match unsafe { live.as_mut() } {
+            Some(s) => s,
+            None => {
+                tracing::error!(
+                    dbname = %self.dbname(),
+                    "VersionSet::add_live_files: live set pointer was null"
+                );
+                return;
+            }
+        };
 
-        let dummy_ptr: *mut Version = self.dummy_versions_mut() as *mut Version;
+        // If the VersionSet has not yet installed a current version (pre-recovery/newdb),
+        // force the dummy sentinel to be self-linked using its post-move address.
+        let dummy_ptr: *mut Version = self.dummy_versions_mut_ptr();
 
-        unsafe {
-            let live_set: &mut HashSet<u64> = &mut *live;
+        if self.current().is_null() {
+            let vset_iface: *mut dyn VersionSetInterface =
+                (self as *mut VersionSet) as *mut dyn VersionSetInterface;
 
-            let mut vptr: *mut Version = *(*dummy_ptr).next();
-
-            while vptr != dummy_ptr {
-                if vptr.is_null() {
-                    error!(
-                        "VersionSet::add_live_files: encountered null Version pointer in version list; aborting traversal"
-                    );
-                    break;
-                }
-
-                let v: &Version = &*vptr;
-
-                for level in 0..NUM_LEVELS {
-                    let files_level: &Vec<*mut FileMetaData> = &v.files()[level];
-
-                    for (idx, fptr_ref) in files_level.iter().enumerate() {
-                        let fptr: *mut FileMetaData = *fptr_ref;
-
-                        if fptr.is_null() {
-                            warn!(
-                                level,
-                                idx,
-                                "VersionSet::add_live_files: null FileMetaData pointer encountered"
-                            );
-                            continue;
-                        }
-
-                        let f: &FileMetaData = &*fptr;
-                        let number = *f.number();
-
-                        let inserted = live_set.insert(number);
-
-                        trace!(
-                            level,
-                            idx,
-                            file_number = number,
-                            inserted,
-                            "VersionSet::add_live_files: inserted live file number"
-                        );
-                    }
-                }
-
-                vptr = *v.next();
+            unsafe {
+                (*dummy_ptr).set_vset(vset_iface);
+                (*dummy_ptr).set_next(dummy_ptr);
+                (*dummy_ptr).set_prev(dummy_ptr);
             }
 
-            debug!(
-                live_len = live_set.len(),
-                "VersionSet::add_live_files: completed"
+            tracing::debug!(
+                dbname = %self.dbname(),
+                dummy_ptr = dummy_ptr as usize,
+                "VersionSet::add_live_files: initialized dummy sentinel for pre-recovery state"
             );
         }
+
+        let mut v: *mut Version = unsafe { *(*dummy_ptr).next() };
+
+        let mut versions_seen: u64 = 0;
+        let mut files_seen: u64 = 0;
+
+        let version_align: usize = core::mem::align_of::<Version>();
+        let file_align: usize = core::mem::align_of::<FileMetaData>();
+
+        while v != dummy_ptr {
+            if v.is_null() {
+                tracing::warn!(
+                    dbname = %self.dbname(),
+                    "VersionSet::add_live_files: encountered null version pointer; aborting traversal"
+                );
+                break;
+            }
+
+            if (v as usize) % version_align != 0 {
+                tracing::warn!(
+                    dbname = %self.dbname(),
+                    version_ptr = v as usize,
+                    required_align = version_align as u64,
+                    "VersionSet::add_live_files: encountered misaligned version pointer; aborting traversal"
+                );
+                break;
+            }
+
+            versions_seen = versions_seen.saturating_add(1);
+
+            let v_ref: &mut Version = unsafe { &mut *v };
+            let files_per_level: &[Vec<*mut FileMetaData>; NUM_LEVELS] = v_ref.files();
+
+            for (level, files) in files_per_level.iter().enumerate() {
+                let files: &Vec<*mut FileMetaData> = files;
+
+                for f_ptr_ref in files.iter() {
+                    let f_ptr: *mut FileMetaData = *f_ptr_ref;
+                    files_seen = files_seen.saturating_add(1);
+
+                    if f_ptr.is_null() {
+                        tracing::warn!(
+                            dbname = %self.dbname(),
+                            version_ptr = v as usize,
+                            level = level as u64,
+                            "VersionSet::add_live_files: encountered null FileMetaData pointer; skipping"
+                        );
+                        continue;
+                    }
+
+                    if (f_ptr as usize) % file_align != 0 {
+                        tracing::warn!(
+                            dbname = %self.dbname(),
+                            file_ptr = f_ptr as usize,
+                            required_align = file_align as u64,
+                            level = level as u64,
+                            "VersionSet::add_live_files: encountered misaligned FileMetaData pointer; skipping"
+                        );
+                        continue;
+                    }
+
+                    let num: u64 = unsafe { *(*f_ptr).number() };
+                    live_set.insert(num);
+                }
+            }
+
+            let next: *mut Version = *v_ref.next();
+            if next.is_null() {
+                tracing::warn!(
+                    dbname = %self.dbname(),
+                    version_ptr = v as usize,
+                    "VersionSet::add_live_files: encountered null next pointer; aborting traversal"
+                );
+                break;
+            }
+
+            v = next;
+        }
+
+        tracing::debug!(
+            dbname = %self.dbname(),
+            versions_seen,
+            files_seen,
+            live_files = live_set.len() as u64,
+            "VersionSet::add_live_files: end"
+        );
     }
 }
-
 #[cfg(test)]
 mod version_set_add_live_files_exhaustive_test_suite {
     use super::*;

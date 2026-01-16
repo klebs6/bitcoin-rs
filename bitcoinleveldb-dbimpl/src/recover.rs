@@ -11,36 +11,40 @@ impl DBImpl {
     ///
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn recover(&mut self, edit: *mut VersionEdit, save_manifest: *mut bool) -> crate::Status { 
-        todo!(); 
+        todo!();
         /*
         self.mutex.assert_held();
 
         // Ignore error from CreateDir since the creation of the DB is
         // committed only when the descriptor is created, and this directory
         // may already exist from a previous failed creation attempt.
-        let _ = self.env.borrow_mut().create_dir(&self.dbname);
+        let _ = self.env.as_mut().create_dir(&self.dbname);
         assert!(self.db_lock.is_null());
 
         let mut s: Status = self
             .env
-            .borrow_mut()
+            .as_mut()
             .lock_file(&lock_file_name(&self.dbname), &mut self.db_lock);
 
         if !s.is_ok() {
             return s;
         }
 
-        if !self.env.borrow_mut().file_exists(&current_file_name(&self.dbname)) {
-            if self.options.create_if_missing() {
+        if !self.env.as_mut().file_exists(&current_file_name(&self.dbname)) {
+            if *self.options.create_if_missing() {
                 s = self.newdb();
                 if !s.is_ok() {
                     return s;
                 }
             } else {
-                return Status::invalid_argument(&self.dbname, "does not exist (create_if_missing is false)");
+                let msg: Slice = Slice::from(&self.dbname);
+                let msg2: Slice = Slice::from_str("does not exist (create_if_missing is false)");
+                return Status::invalid_argument(&msg, Some(&msg2));
             }
-        } else if self.options.error_if_exists() {
-            return Status::invalid_argument(&self.dbname, "exists (error_if_exists is true)");
+        } else if *self.options.error_if_exists() {
+            let msg: Slice = Slice::from(&self.dbname);
+            let msg2: Slice = Slice::from_str("exists (error_if_exists is true)");
+            return Status::invalid_argument(&msg, Some(&msg2));
         }
 
         s = unsafe { (*self.versions).recover(save_manifest) };
@@ -61,21 +65,24 @@ impl DBImpl {
         let prev_log: u64 = unsafe { (*self.versions).prev_log_number() };
 
         let mut filenames: Vec<String> = Vec::new();
-        s = self.env.borrow_mut().get_children(&self.dbname, &mut filenames);
+        s = self.env.as_mut().get_children(&self.dbname, &mut filenames);
         if !s.is_ok() {
             return s;
         }
 
-        let mut expected = std::collections::BTreeSet::<u64>::new();
+        let mut expected_live: std::collections::HashSet<u64> = std::collections::HashSet::new();
         unsafe {
-            (*self.versions).add_live_files(&mut expected);
+            (*self.versions).add_live_files(&mut expected_live as *mut std::collections::HashSet<u64>);
         }
+
+        let mut expected: std::collections::BTreeSet<u64> =
+            expected_live.into_iter().collect::<std::collections::BTreeSet<u64>>();
 
         let mut logs: Vec<u64> = Vec::new();
 
         for fname in filenames.into_iter() {
             let mut number: u64 = 0;
-            let mut ftype: FileType = Default::default();
+            let mut ftype: FileType = FileType::LogFile;
 
             if parse_file_name(&fname, &mut number, &mut ftype) {
                 expected.remove(&number);
@@ -87,9 +94,14 @@ impl DBImpl {
         }
 
         if !expected.is_empty() {
-            let buf = format!("{} missing files; e.g.", expected.len());
-            let first = *expected.iter().next().unwrap();
-            return Status::corruption(&buf, &table_file_name(&self.dbname, first));
+            let buf_string: String = format!("{} missing files; e.g.", expected.len());
+            let msg: Slice = Slice::from_str(&buf_string);
+
+            let first: u64 = *expected.iter().next().unwrap();
+            let first_fname: String = table_file_name(&self.dbname, first);
+            let msg2: Slice = Slice::from(&first_fname);
+
+            return Status::corruption(&msg, Some(&msg2));
         }
 
         // Recover in the order in which the logs were generated
@@ -123,6 +135,6 @@ impl DBImpl {
         }
 
         Status::ok()
-            */
+        */
     }
 }

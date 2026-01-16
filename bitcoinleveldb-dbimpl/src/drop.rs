@@ -77,3 +77,47 @@ impl Drop for DBImpl {
         */
     }
 }
+
+#[cfg(test)]
+mod dbimpl_drop_non_panicking_suite {
+    use super::*;
+
+    fn build_temp_db_path_for_drop_suite() -> String {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        let dir = std::env::temp_dir();
+        dir.join(format!("bitcoinleveldb_dbimpl_drop_suite_{}", nanos))
+            .to_string_lossy()
+            .to_string()
+    }
+
+    #[traced_test]
+    fn dbimpl_drop_does_not_panic_for_fresh_instance() {
+        let dbname = build_temp_db_path_for_drop_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+
+        tracing::info!(dbname = %dbname, "Constructing DBImpl for drop test");
+
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let _db = DBImpl::new(&options, &dbname);
+        }));
+
+        tracing::debug!(
+            panicked = result.is_err(),
+            "DBImpl construction+drop completed"
+        );
+
+        assert!(result.is_ok(), "Dropping a freshly constructed DBImpl must not panic");
+
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+}

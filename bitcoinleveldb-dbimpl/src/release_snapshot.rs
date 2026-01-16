@@ -17,3 +17,27 @@ impl DBReleaseSnapshot for DBImpl {
         }
     }
 }
+
+#[cfg(test)]
+mod db_release_snapshot_interface_contract_suite {
+    use super::*;
+    use bitcoinleveldb_dbinterface::DBReleaseSnapshot;
+
+    fn assert_dbimpl_implements_db_release_snapshot() {
+        fn _assert<T: DBReleaseSnapshot>() {}
+        _assert::<DBImpl>();
+    }
+
+    #[traced_test]
+    fn release_snapshot_contract_dbimpl_implements_trait() {
+        tracing::info!("Asserting DBImpl implements DBReleaseSnapshot");
+        assert_dbimpl_implements_db_release_snapshot();
+    }
+
+    #[traced_test]
+    fn release_snapshot_method_item_is_addressable() {
+        tracing::info!("Asserting <DBImpl as DBReleaseSnapshot>::release_snapshot is addressable");
+        let _m = <DBImpl as DBReleaseSnapshot>::release_snapshot;
+        let _ = _m;
+    }
+}

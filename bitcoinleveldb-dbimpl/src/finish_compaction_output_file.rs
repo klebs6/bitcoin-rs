@@ -103,3 +103,25 @@ impl DBImpl {
         */
     }
 }
+
+#[cfg(test)]
+mod finish_compaction_output_file_interface_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn finish_compaction_output_file_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::finish_compaction_output_file signature is stable");
+
+        type Sig = fn(&mut DBImpl, *mut CompactionState, *mut LevelDBIterator) -> Status;
+        let _sig: Sig = DBImpl::finish_compaction_output_file;
+
+        tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn finish_compaction_output_file_method_item_is_addressable() {
+        tracing::info!("Asserting DBImpl::finish_compaction_output_file method item is addressable");
+        let _m = DBImpl::finish_compaction_output_file;
+        let _ = _m;
+    }
+}

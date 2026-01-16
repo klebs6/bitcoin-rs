@@ -67,6 +67,13 @@ pub struct VersionSet {
 }
 
 impl VersionSet {
+    #[inline]
+    pub(crate) fn dummy_versions_mut_ptr(&mut self) -> *mut Version {
+        core::ptr::addr_of_mut!(self.dummy_versions)
+    }
+}
+
+impl VersionSet {
     pub(crate) fn new_internal(
         dbname: &String,
         options: *const Options,

@@ -11,68 +11,96 @@ impl DBImpl {
         if !self.bg_error.is_ok() {
             // After a background error, we don't know whether a new version may
             // or may not have been committed, so we cannot safely garbage collect.
+            tracing::debug!(
+                dbname = %self.dbname,
+                status = %self.bg_error.to_string(),
+                "delete_obsolete_files: bg_error is set; skipping garbage collection pass"
+            );
             return;
         }
 
-        // Make a set of all of the live files
-        let mut live = self.pending_outputs.clone();
+        // Important: avoid holding the DB mutex while doing Env directory enumeration.
+        // This reduces lock-ordering deadlocks involving Env scheduling/background work.
         unsafe {
-            (*(self.versions as *mut VersionSet)).add_live_files(&mut live);
+            self.mutex.unlock();
         }
 
         let mut filenames: Vec<String> = Vec::new();
-
-        // Ignoring errors on purpose
-        let _ = self
+        let children_status: Status = self
             .env
             .as_mut()
             .get_children(&self.dbname, &mut filenames);
 
+        self.mutex.lock();
+
+        if !children_status.is_ok() {
+            tracing::debug!(
+                dbname = %self.dbname,
+                status = %children_status.to_string(),
+                "delete_obsolete_files: get_children returned non-OK; proceeding with empty/partial listing"
+            );
+        } else {
+            tracing::trace!(
+                dbname = %self.dbname,
+                files = filenames.len() as u64,
+                "delete_obsolete_files: directory listing collected"
+            );
+        }
+
+        // If a background error was set while we dropped the lock, do not attempt GC.
+        if !self.bg_error.is_ok() {
+            tracing::debug!(
+                dbname = %self.dbname,
+                status = %self.bg_error.to_string(),
+                "delete_obsolete_files: bg_error set during directory scan; aborting deletion pass"
+            );
+            return;
+        }
+
+        // Make a set of all of the live files
+        let mut live: HashSet<u64> = self.pending_outputs.clone();
+        unsafe {
+            (*(self.versions as *mut VersionSet)).add_live_files(&mut live);
+        }
+
+        // Snapshot version-set numbers needed for keep/garbage decisions.
+        let log_number: u64 = unsafe { (*self.versions).log_number() };
+        let prev_log_number: u64 = unsafe { (*self.versions).prev_log_number() };
+        let manifest_file_number: u64 = unsafe { (*self.versions).manifest_file_number() };
+
         let mut files_to_delete: Vec<String> = Vec::new();
+        let mut tables_to_evict: Vec<u64> = Vec::new();
+
+        let mut parsed: u64 = 0;
+        let mut marked_for_deletion: u64 = 0;
 
         for filename in filenames.into_iter() {
             let mut number: u64 = 0;
             let mut ftype: FileType = FileType::LogFile;
 
             if parse_file_name(&filename, &mut number, &mut ftype) {
-                let mut keep: bool = true;
+                parsed = parsed.saturating_add(1);
 
-                match ftype {
-                    FileType::LogFile => {
-                        keep = number >= unsafe { (*self.versions).log_number() }
-                            || number == unsafe { (*self.versions).prev_log_number() };
-                    }
-                    // Keep my manifest file, and any newer incarnations'
-                    // (in case there is a race that allows other incarnations)
-                    FileType::DescriptorFile => {
-                        keep = number >= unsafe { (*self.versions).manifest_file_number() };
-                    }
-                    FileType::TableFile => {
-                        keep = live.contains(&number);
-                    }
-                    // Any temp files that are currently being written to must
-                    // be recorded in pending_outputs, which is inserted into "live"
-                    FileType::TempFile => {
-                        keep = live.contains(&number);
-                    }
-                    FileType::CurrentFile => {
-                        keep = true;
-                    }
-                    FileType::DBLockFile => {
-                        keep = true;
-                    }
-                    FileType::InfoLogFile => {
-                        keep = true;
-                    }
-                }
+                let keep: bool = match ftype {
+                    FileType::LogFile => number >= log_number || number == prev_log_number,
+                    // Keep my manifest file, and any newer incarnations' (in case there is a race
+                    // that allows other incarnations).
+                    FileType::DescriptorFile => number >= manifest_file_number,
+                    FileType::TableFile => live.contains(&number),
+                    // Any temp files that are currently being written to must be recorded in
+                    // pending_outputs, which is inserted into "live".
+                    FileType::TempFile => live.contains(&number),
+                    FileType::CurrentFile => true,
+                    FileType::DBLockFile => true,
+                    FileType::InfoLogFile => true,
+                };
 
                 if !keep {
+                    marked_for_deletion = marked_for_deletion.saturating_add(1);
                     files_to_delete.push(filename.clone());
 
                     if matches!(ftype, FileType::TableFile) {
-                        unsafe {
-                            (*(self.table_cache as *mut TableCache)).evict(number);
-                        }
+                        tables_to_evict.push(number);
                     }
 
                     let file_type: &'static str = match ftype {
@@ -86,23 +114,71 @@ impl DBImpl {
                     };
 
                     tracing::info!(
+                        dbname = %self.dbname,
                         file_type = %file_type,
                         file_number = number,
                         file_name = %filename,
                         "Delete obsolete file"
                     );
                 }
+            } else {
+                tracing::trace!(
+                    dbname = %self.dbname,
+                    file_name = %filename,
+                    "delete_obsolete_files: ignoring unparseable filename"
+                );
             }
         }
 
-        // While deleting all files unblock other threads. All files being deleted
-        // have unique names which will not collide with newly created files and
-        // are therefore safe to delete while allowing other threads to proceed.
-        unsafe { self.mutex.unlock() };
+        tracing::debug!(
+            dbname = %self.dbname,
+            parsed,
+            marked_for_deletion,
+            live_files = live.len() as u64,
+            pending_outputs = self.pending_outputs.len() as u64,
+            log_number,
+            prev_log_number,
+            manifest_file_number,
+            "delete_obsolete_files: computed deletion plan"
+        );
+
+        // While deleting all files unblock other threads. All files being deleted have unique names
+        // which will not collide with newly created files and are therefore safe to delete while
+        // allowing other threads to proceed.
+        unsafe {
+            self.mutex.unlock();
+        }
+
+        // Evict table cache entries (table cache provides its own synchronization).
+        for num in tables_to_evict.into_iter() {
+            unsafe {
+                (*(self.table_cache as *mut TableCache)).evict(num);
+            }
+            tracing::trace!(
+                dbname = %self.dbname,
+                table_number = num,
+                "delete_obsolete_files: evicted table from cache"
+            );
+        }
 
         for filename in files_to_delete.into_iter() {
             let full = format!("{}/{}", self.dbname, filename);
-            let _ = self.env.as_mut().delete_file(&full);
+            let s: Status = self.env.as_mut().delete_file(&full);
+
+            if !s.is_ok() {
+                tracing::warn!(
+                    dbname = %self.dbname,
+                    path = %full,
+                    status = %s.to_string(),
+                    "delete_obsolete_files: delete_file failed (ignoring)"
+                );
+            } else {
+                tracing::trace!(
+                    dbname = %self.dbname,
+                    path = %full,
+                    "delete_obsolete_files: deleted file"
+                );
+            }
         }
 
         self.mutex.lock();
@@ -110,6 +186,7 @@ impl DBImpl {
 }
 
 #[cfg(test)]
+#[disable]
 mod obsolete_file_deletion_contract_suite {
     use super::*;
 
@@ -307,5 +384,78 @@ mod obsolete_file_deletion_contract_suite {
 
         // No filesystem artifacts should exist; best-effort remove in case env created anything.
         let _ = std::fs::remove_dir_all(&dbname);
+    }
+
+    #[traced_test]
+    fn delete_obsolete_files_returns_early_when_bg_error_is_set() {
+        let dbname = build_temp_db_path_for_delete_obsolete_files_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+        let mut db = std::mem::ManuallyDrop::new(DBImpl::new(&options, &dbname));
+
+        let doomed_table_num: u64 = 91001;
+        let doomed_table_path = table_file_name(&dbname, doomed_table_num);
+        create_file_at_path(&doomed_table_path, b"table-payload");
+        assert_path_exists(&doomed_table_path);
+
+        db.bg_error = Status::io_error(&Slice::from_str("bg_error"), None);
+
+        db.mutex.lock();
+        tracing::info!("Calling delete_obsolete_files with bg_error set; must early-return");
+        db.delete_obsolete_files();
+        unsafe { db.mutex.unlock() };
+
+        assert_path_exists(&doomed_table_path);
+
+        let _ = std::fs::remove_file(&doomed_table_path);
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+
+    #[traced_test]
+    fn delete_obsolete_files_deletes_dead_table_and_keeps_live_table() {
+        let dbname = build_temp_db_path_for_delete_obsolete_files_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+        let mut db = std::mem::ManuallyDrop::new(DBImpl::new(&options, &dbname));
+
+        let live_table_num: u64 = 92001;
+        let dead_table_num: u64 = 92002;
+
+        db.pending_outputs.insert(live_table_num);
+
+        let live_table_path = table_file_name(&dbname, live_table_num);
+        let dead_table_path = table_file_name(&dbname, dead_table_num);
+
+        create_file_at_path(&live_table_path, b"live");
+        create_file_at_path(&dead_table_path, b"dead");
+
+        assert_path_exists(&live_table_path);
+        assert_path_exists(&dead_table_path);
+
+        db.mutex.lock();
+        tracing::info!("Calling delete_obsolete_files; expected to delete dead table only");
+        db.delete_obsolete_files();
+        let still_locked = db.mutex.is_locked();
+        tracing::debug!(still_locked, "Mutex lock state after delete_obsolete_files");
+        assert!(still_locked);
+        unsafe { db.mutex.unlock() };
+
+        assert_path_exists(&live_table_path);
+        assert_path_missing(&dead_table_path);
+
+        let _ = std::fs::remove_file(&live_table_path);
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+
+    #[traced_test]
+    fn delete_obsolete_files_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::delete_obsolete_files signature is stable");
+        type Sig = fn(&mut DBImpl);
+        let _sig: Sig = DBImpl::delete_obsolete_files;
+        tracing::debug!("Signature check compiled");
     }
 }

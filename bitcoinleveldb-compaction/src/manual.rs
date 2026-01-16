@@ -31,6 +31,19 @@ pub struct ManualCompaction {
     tmp_storage: InternalKey,
 }
 
+impl Default for ManualCompaction {
+
+    fn default() -> Self {
+        Self {
+            level:       0,
+            done:        false,
+            begin:       core::ptr::null(),
+            end:         core::ptr::null(),
+            tmp_storage: InternalKey::default(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod manual_compaction_struct_tests {
     use super::*;
