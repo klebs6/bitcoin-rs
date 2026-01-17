@@ -4,12 +4,10 @@ crate::ix!();
 impl DBImpl {
 
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
-    pub fn install_compaction_results(&mut self, compact: *mut CompactionState) -> crate::Status { 
-        todo!(); 
-        /*
+    pub fn install_compaction_results(&mut self, compact: *mut CompactionState) -> crate::Status {
         self.mutex.assert_held();
 
-        let compaction: *const Compaction = (*compact).compaction();
+        let compaction: *mut Compaction = unsafe { *(*compact).compaction() as *mut Compaction };
 
         tracing::info!(
             n0 = unsafe { (*compaction).num_input_files(0) },
@@ -21,10 +19,18 @@ impl DBImpl {
         );
 
         unsafe {
-            // Add compaction outputs
-            (*compaction).add_input_deletions((*compaction).edit());
-
             let level: i32 = (*compaction).level();
+
+            // Delete compaction inputs.
+            for which in 0..2 {
+                let n: i32 = (*compaction).num_input_files(which);
+                for i in 0..n {
+                    let f: *mut FileMetaData = (*compaction).input(which, i);
+                    (*(*compaction).edit()).delete_file(level + which, *(*f).number());
+                }
+            }
+
+            // Add compaction outputs.
             for out in (*compact).outputs().iter() {
                 (*(*compaction).edit()).add_file(
                     level + 1,
@@ -37,6 +43,6 @@ impl DBImpl {
 
             (*self.versions).log_and_apply((*compaction).edit(), &mut self.mutex)
         }
-           */
+
     }
 }

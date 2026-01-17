@@ -3403,6 +3403,7 @@ dependencies = [
  "bitcoinleveldb-comparator",
  "bitcoinleveldb-dbimplwriter",
  "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
  "bitcoinleveldb-dbiterstate",
  "bitcoinleveldb-env",
  "bitcoinleveldb-file",

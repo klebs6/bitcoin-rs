@@ -4,7 +4,7 @@ crate::ix!();
 impl DBImpl {
 
     /// Compact any files in the named level that overlap [*begin,*end]
-    pub fn test_compact_range(&mut self, level: i32, begin: *const Slice, end: *const Slice) { 
+    pub fn test_compact_range(&mut self, level: i32, begin: *const Slice, end: *const Slice) {
         assert!(level >= 0);
         assert!(level + 1 < NUM_LEVELS as i32);
 
@@ -41,8 +41,21 @@ impl DBImpl {
                 self.maybe_schedule_compaction();
             } else {
                 // Running either my compaction or another compaction.
+                tracing::trace!(
+                    requested_level = level,
+                    manual_ptr = (&mut manual as *mut ManualCompaction) as usize,
+                    active_manual_ptr = self.manual_compaction as usize,
+                    "test_compact_range: waiting for background work to finish"
+                );
+
+                let mut cv_guard = self.background_work_finished_mutex.lock();
+
                 unsafe { self.mutex.unlock() };
-                std::thread::yield_now();
+
+                self.background_work_finished_signal.wait(&mut cv_guard);
+
+                drop(cv_guard);
+
                 self.mutex.lock();
             }
         }

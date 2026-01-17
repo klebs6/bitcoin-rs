@@ -124,19 +124,6 @@ pub(crate) fn make_corrupt_entry(key_bytes: &[u8], value: &[u8]) -> (Vec<u8>, Ve
     (key_bytes.to_vec(), value.to_vec())
 }
 
-pub(crate) fn make_internal_stub_iterator(
-    entries: Vec<(Vec<u8>, Vec<u8>)>,
-) -> Rc<RefCell<LevelDBIterator>> {
-    let refs: Vec<(&[u8], &[u8])> = entries
-        .iter()
-        .map(|(k, v)| (k.as_slice(), v.as_slice()))
-        .collect();
-
-    let stub = MockStubIterator::new_with_entries(&refs);
-
-    Rc::new(RefCell::new(LevelDBIterator::new(Some(Box::new(stub)))))
-}
-
 pub(crate) fn build_dbiter_direct(
     sequence: SequenceNumber,
     seed:     u32,
@@ -321,3 +308,160 @@ pub(crate) fn status_code(s: &Status) -> StatusCode {
 pub(crate) fn slice_bytes(s: &Slice) -> Vec<u8> {
     s.as_bytes().to_vec()
 }
+
+//------------------------------------------------------------------
+pub(crate) struct InternalKeyComparatorStubIterator {
+    entries: Vec<(Vec<u8>, Vec<u8>)>,
+    index:   Option<usize>,
+    status:  Status,
+}
+
+impl InternalKeyComparatorStubIterator {
+    pub(crate) fn new(entries: Vec<(Vec<u8>, Vec<u8>)>) -> Self {
+        trace!(
+            "InternalKeyComparatorStubIterator::new: entries_len={}",
+            entries.len()
+        );
+
+        Self {
+            entries,
+            index: None,
+            status: Status::ok(),
+        }
+    }
+
+    #[inline]
+    fn compare_internal_keys(a: &[u8], b: &[u8]) -> i32 {
+        if a.len() < 8 || b.len() < 8 {
+            return bytewise_compare(a, b);
+        }
+
+        let a_user = &a[..a.len() - 8];
+        let b_user = &b[..b.len() - 8];
+
+        let r = bytewise_compare(a_user, b_user);
+        if r != 0 {
+            return r;
+        }
+
+        let mut a_tag_bytes = [0u8; 8];
+        a_tag_bytes.copy_from_slice(&a[a.len() - 8..]);
+
+        let mut b_tag_bytes = [0u8; 8];
+        b_tag_bytes.copy_from_slice(&b[b.len() - 8..]);
+
+        let a_tag = u64::from_le_bytes(a_tag_bytes);
+        let b_tag = u64::from_le_bytes(b_tag_bytes);
+
+        if a_tag > b_tag {
+            -1
+        } else if a_tag < b_tag {
+            1
+        } else {
+            0
+        }
+    }
+}
+
+impl LevelDBIteratorInterface for InternalKeyComparatorStubIterator {}
+
+impl LevelDBIteratorValid for InternalKeyComparatorStubIterator {
+    fn valid(&self) -> bool {
+        self.index.is_some()
+    }
+}
+
+impl LevelDBIteratorSeekToFirst for InternalKeyComparatorStubIterator {
+    fn seek_to_first(&mut self) {
+        trace!("InternalKeyComparatorStubIterator::seek_to_first");
+        self.index = if self.entries.is_empty() { None } else { Some(0) };
+    }
+}
+
+impl LevelDBIteratorSeekToLast for InternalKeyComparatorStubIterator {
+    fn seek_to_last(&mut self) {
+        trace!("InternalKeyComparatorStubIterator::seek_to_last");
+        self.index = if self.entries.is_empty() {
+            None
+        } else {
+            Some(self.entries.len() - 1)
+        };
+    }
+}
+
+impl LevelDBIteratorSeek for InternalKeyComparatorStubIterator {
+    fn seek(&mut self, target: &Slice) {
+        let target_bytes = target.as_bytes();
+
+        trace!(
+            "InternalKeyComparatorStubIterator::seek: target_len={} entries_len={}",
+            target_bytes.len(),
+            self.entries.len()
+        );
+
+        let mut found: Option<usize> = None;
+
+        for (i, (k, _v)) in self.entries.iter().enumerate() {
+            if Self::compare_internal_keys(k.as_slice(), target_bytes) >= 0 {
+                found = Some(i);
+                break;
+            }
+        }
+
+        self.index = found;
+    }
+}
+
+impl LevelDBIteratorNext for InternalKeyComparatorStubIterator {
+    fn next(&mut self) {
+        if let Some(i) = self.index {
+            let next_i = i + 1;
+            self.index = if next_i < self.entries.len() {
+                Some(next_i)
+            } else {
+                None
+            };
+        }
+    }
+}
+
+impl LevelDBIteratorPrev for InternalKeyComparatorStubIterator {
+    fn prev(&mut self) {
+        if let Some(i) = self.index {
+            self.index = if i == 0 { None } else { Some(i - 1) };
+        }
+    }
+}
+
+impl LevelDBIteratorStatus for InternalKeyComparatorStubIterator {
+    fn status(&self) -> crate::Status {
+        self.status.clone()
+    }
+}
+
+impl LevelDBIteratorKey for InternalKeyComparatorStubIterator {
+    fn key(&self) -> Slice {
+        match self.index {
+            Some(i) => Slice::from_bytes(self.entries[i].0.as_slice()),
+            None => Slice::default(),
+        }
+    }
+}
+
+impl LevelDBIteratorValue for InternalKeyComparatorStubIterator {
+    fn value(&self) -> Slice {
+        match self.index {
+            Some(i) => Slice::from_bytes(self.entries[i].1.as_slice()),
+            None => Slice::default(),
+        }
+    }
+}
+
+pub(crate) fn make_internal_stub_iterator(
+    entries: Vec<(Vec<u8>, Vec<u8>)>,
+) -> Rc<RefCell<LevelDBIterator>> {
+    let stub = InternalKeyComparatorStubIterator::new(entries);
+    Rc::new(RefCell::new(LevelDBIterator::new(Some(Box::new(stub)))))
+}
+
+

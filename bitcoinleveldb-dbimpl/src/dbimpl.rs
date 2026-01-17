@@ -5,43 +5,44 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/db_impl.cc]
 pub struct DBImpl {
 
-    /**
-      | Constant after construction
-      |
-      */
+    /// Constant after construction
+    /// 
     pub env:                    Box<dyn Env>,
 
     pub internal_comparator:    InternalKeyComparator,
     pub internal_filter_policy: InternalFilterPolicy,
 
-    /**
-      | options.comparator == &internal_comparator
-      |
-      */
+    /// options.comparator == &internal_comparator
+    /// 
     pub options:                Options,
 
     pub owns_info_log:          bool,
     pub owns_cache:             bool,
     pub dbname:                 String,
 
-    /**
-      | table_cache provides its own synchronization
-      |
-      */
+    /// table_cache provides its own synchronization
+    /// 
     pub table_cache:            *const TableCache,
 
-    /**
-      | Lock over the persistent DB state.
-      | 
-      | Non-null iff successfully acquired.
-      |
-      */
-    pub db_lock:                Rc<RefCell<dyn FileLock>>,
+    /// Lock over the persistent DB state.
+    /// 
+    /// Non-null iff successfully acquired.
+    /// 
+    pub db_lock:                *mut Box<dyn FileLock>,
 
     /// State below is protected by mutex
     pub mutex:                  RawMutex,
 
     //--------------------------------------------[mutex-guarded-fields]
+
+    /// Dedicated mutex used only to provide a `MutexGuard` for `Condvar::wait()`,
+    /// since the DB state lock is a `RawMutex`.
+    ///
+    /// Lock-ordering rule:
+    /// - always acquire `mutex` before acquiring this mutex
+    /// - never acquire `mutex` while holding this mutex
+    pub background_work_finished_mutex: Mutex<()>,
+
     pub background_work_finished_signal: Condvar,
 
     /// Memtable being compacted
@@ -84,14 +85,13 @@ pub struct DBImpl {
 
     pub mem:                    *mut MemTable,
 
-    /**
-      | So bg thread can detect non-null imm
-      |
-      */
+    /// So bg thread can detect non-null imm
+    /// 
     pub has_imm:                AtomicBool,
 
     pub logfile:                Rc<RefCell<dyn WritableFile>>,
     pub log:                    *mut LogWriter,
+
 }
 
 impl DB for DBImpl { }

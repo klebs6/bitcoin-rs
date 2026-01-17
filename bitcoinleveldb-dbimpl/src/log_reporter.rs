@@ -2,9 +2,9 @@
 crate::ix!();
 
 pub struct LogReporter {
-    info_log: *mut dyn Logger,
-    fname:    String,
-    status:   *mut Status,
+    pub(crate) info_log: *mut dyn Logger,
+    pub(crate) fname:    String,
+    pub(crate) status:   *mut Status,
 }
 
 impl LogReaderReporter for LogReporter {

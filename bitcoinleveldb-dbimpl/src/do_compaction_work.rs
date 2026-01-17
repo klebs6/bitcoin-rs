@@ -68,7 +68,13 @@ impl DBImpl {
                 if !self.imm.is_null() {
                     self.compact_mem_table();
                     // Wake up MakeRoomForWrite() if necessary.
-                    self.background_work_finished_signal.signal_all();
+                    tracing::trace!(
+                        "do_compaction_work: notifying background_work_finished_signal after imm compaction"
+                    );
+                    {
+                        let _cv_guard = self.background_work_finished_mutex.lock();
+                        self.background_work_finished_signal.signal_all();
+                    }
                 }
 
                 unsafe {

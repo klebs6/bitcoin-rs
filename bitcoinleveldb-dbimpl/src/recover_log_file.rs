@@ -11,8 +11,6 @@ impl DBImpl {
         edit: *mut VersionEdit,
         max_sequence: *mut SequenceNumber,
     ) -> crate::Status {
-        todo!();
-        /*
         self.mutex.assert_held();
 
         // Open the log file
@@ -225,6 +223,5 @@ impl DBImpl {
         }
 
         status
-            */
     }
 }

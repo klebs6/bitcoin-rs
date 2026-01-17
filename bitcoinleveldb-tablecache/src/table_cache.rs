@@ -81,7 +81,7 @@ impl TableCache {
     }
 
     #[inline]
-    pub(crate) fn env_handle(&self) -> Rc<RefCell<dyn Env>> {
+    pub fn env_handle(&self) -> Rc<RefCell<dyn Env>> {
         trace!(
             "TableCache::env_handle: cloning Env handle for dbname='{}'",
             self.dbname
@@ -90,17 +90,17 @@ impl TableCache {
     }
 
     #[inline]
-    pub(crate) fn dbname_str(&self) -> &String {
+    pub fn dbname_str(&self) -> &String {
         &self.dbname
     }
 
     #[inline]
-    pub(crate) fn cache_raw(&self) -> *mut Cache {
+    pub fn cache_raw(&self) -> *mut Cache {
         self.cache
     }
 
     #[inline]
-    pub(crate) fn options_ref(&self) -> &Options {
+    pub fn options_ref(&self) -> &Options {
         &*self.options
     }
 }

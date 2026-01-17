@@ -9,13 +9,11 @@ impl DBImpl {
     /// force - compact even if there is room?
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn make_room_for_write(&mut self, mut force: bool) -> crate::Status {
-        todo!();
-        /*
         self.mutex.assert_held();
         assert!(!self.writers.is_empty());
 
-        let env = match self.options.env().as_ref() {
-            Some(e) => e,
+        let env: Rc<RefCell<dyn Env>> = match self.options.env().as_ref() {
+            Some(e) => e.clone(),
             None => {
                 tracing::error!("make_room_for_write: Options.env is None");
                 return Status::invalid_argument(
@@ -24,6 +22,20 @@ impl DBImpl {
                 );
             }
         };
+
+        if self.mem.is_null() {
+            tracing::error!(
+                dbname = %self.dbname,
+                force,
+                writers_len = self.writers.len() as u64,
+                "make_room_for_write: memtable pointer was null; DBImpl is not opened/initialized"
+            );
+
+            return Status::invalid_argument(
+                &Slice::from_str("mem"),
+                Some(&Slice::from_str("null memtable pointer")),
+            );
+        }
 
         let versions: *mut VersionSet = self.versions as *mut VersionSet;
 
@@ -82,7 +94,10 @@ impl DBImpl {
 
             if !self.imm.is_null() {
                 tracing::info!("Current memtable full; waiting...");
-                todo!("must fix this path -- there must be a wait");
+                {
+                    let _cv_guard = self.background_work_finished_mutex.lock();
+                    self.background_work_finished_signal.signal_all();
+                }
             }
 
             if l0_files >= (L0_STOP_WRITES_TRIGGER as i32) {
@@ -92,7 +107,10 @@ impl DBImpl {
                     "Too many L0 files; waiting..."
                 );
 
-                todo!("must fix this path -- there must be a wait");
+                {
+                    let _cv_guard = self.background_work_finished_mutex.lock();
+                    self.background_work_finished_signal.signal_all();
+                }
             }
 
             // Attempt to switch to a new memtable and trigger compaction of old
@@ -109,9 +127,10 @@ impl DBImpl {
 
             let mut new_logfile_ptr: *mut Box<dyn WritableFile> = core::ptr::null_mut();
 
-            s = env
-                .borrow_mut()
-                .new_writable_file(&fname, &mut new_logfile_ptr as *mut *mut Box<dyn WritableFile>);
+            s = env.borrow_mut().new_writable_file(
+                &fname,
+                &mut new_logfile_ptr as *mut *mut Box<dyn WritableFile>,
+            );
 
             if !s.is_ok() {
                 tracing::warn!(
@@ -179,6 +198,5 @@ impl DBImpl {
 
         tracing::debug!(status = %s.to_string(), "make_room_for_write: end");
         s
-        */
     }
 }

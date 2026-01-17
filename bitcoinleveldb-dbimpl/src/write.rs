@@ -15,10 +15,23 @@ impl DBWrite for DBImpl {
         while !*w.done()
             && (self.writers.front().copied().unwrap() != (&mut w as *mut DBImplWriter))
         {
+            tracing::trace!(
+                writers_len = self.writers.len() as u64,
+                is_done = *w.done(),
+                "DBWrite::write: waiting for writer to reach front of queue"
+            );
+
+            let mut cv_guard = self.background_work_finished_mutex.lock();
+
             unsafe {
                 self.mutex.unlock();
             }
-            std::thread::yield_now();
+
+            // Wait on this writer's condition variable while allowing others to run.
+            w.cv().wait(&mut cv_guard);
+
+            drop(cv_guard);
+
             self.mutex.lock();
         }
 
@@ -97,7 +110,12 @@ impl DBWrite for DBImpl {
                 unsafe {
                     (*ready).set_status(status.clone());
                     (*ready).set_done(true);
-                    (*ready).cv().signal();
+
+                    // Coordinate signal with the dedicated condvar mutex to prevent notify-before-wait.
+                    {
+                        let _cv_guard = self.background_work_finished_mutex.lock();
+                        (*ready).cv().signal();
+                    }
                 }
             }
 
@@ -110,7 +128,11 @@ impl DBWrite for DBImpl {
         if !self.writers.is_empty() {
             let head: *mut DBImplWriter = self.writers.front().copied().unwrap();
             unsafe {
-                (*head).cv().signal();
+                // Coordinate signal with the dedicated condvar mutex to prevent notify-before-wait.
+                {
+                    let _cv_guard = self.background_work_finished_mutex.lock();
+                    (*head).cv().signal();
+                }
             }
         }
 

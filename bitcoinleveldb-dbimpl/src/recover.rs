@@ -11,8 +11,6 @@ impl DBImpl {
     ///
     #[EXCLUSIVE_LOCKS_REQUIRED(mutex)]
     pub fn recover(&mut self, edit: *mut VersionEdit, save_manifest: *mut bool) -> crate::Status { 
-        todo!();
-        /*
         self.mutex.assert_held();
 
         // Ignore error from CreateDir since the creation of the DB is
@@ -21,10 +19,22 @@ impl DBImpl {
         let _ = self.env.as_mut().create_dir(&self.dbname);
         assert!(self.db_lock.is_null());
 
+        let lock_path: String = lock_file_name(&self.dbname);
+
         let mut s: Status = self
             .env
             .as_mut()
-            .lock_file(&lock_file_name(&self.dbname), &mut self.db_lock);
+            .lock_file(&lock_path, core::ptr::addr_of_mut!(self.db_lock));
+
+        if s.is_ok() && self.db_lock.is_null() {
+            tracing::error!(
+                file = %lock_path,
+                "Env::lock_file returned ok but output lock handle was null"
+            );
+            let msg: Slice = Slice::from_str("lock_file returned ok but output was null");
+            let fname_slice: Slice = Slice::from(&lock_path);
+            return Status::corruption(&msg, Some(&fname_slice));
+        }
 
         if !s.is_ok() {
             return s;
@@ -135,6 +145,5 @@ impl DBImpl {
         }
 
         Status::ok()
-        */
     }
 }

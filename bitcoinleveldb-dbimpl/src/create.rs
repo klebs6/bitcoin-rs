@@ -8,10 +8,10 @@ impl DBImpl {
     /// 
     pub fn user_comparator(&self) -> Box<dyn SliceComparator> {
         Box::new(DbImplUserComparatorAdapter::new(
-            self.internal_comparator.user_comparator(),
+                self.internal_comparator.user_comparator(),
         ))
     }
-    
+
     pub fn new(raw_options: &Options, dbname: &String) -> Self {
         let internal_comparator = InternalKeyComparator::new(raw_options.comparator().as_ref());
         let internal_filter_policy =
@@ -47,9 +47,9 @@ impl DBImpl {
         // so taking &options (stack/local) would dangle. Instead, derive a stable Options pointer
         // from TableCache's Rc<Options> allocation.
         let table_cache_box: Box<TableCache> = Box::new(TableCache::new(
-            &dbname,
-            &options,
-            table_cache_size(&options),
+                &dbname,
+                &options,
+                table_cache_size(&options),
         ));
 
         let stable_options_ptr: *const Options = table_cache_box.options_ref() as *const Options;
@@ -64,17 +64,21 @@ impl DBImpl {
         let table_cache: *const TableCache = Box::into_raw(table_cache_box) as *const TableCache;
 
         let mutex: RawMutex = RawMutex::INIT;
+
+        // Dedicated Condvar wait mutex (see DBImpl.background_work_finished_mutex docs).
+        let background_work_finished_mutex: Mutex<()> = Mutex::new(());
         let background_work_finished_signal: Condvar = Condvar::new();
 
         let versions_box: Box<VersionSet> = Box::new(VersionSet::new(
-            &dbname,
-            stable_options_ptr,
-            table_cache as *mut TableCache,
-            &internal_comparator,
+                &dbname,
+                stable_options_ptr,
+                table_cache as *mut TableCache,
+                &internal_comparator,
         ));
         let versions: *mut VersionSet = Box::into_raw(versions_box);
 
-        let db_lock: Rc<RefCell<dyn FileLock>> = Rc::new(RefCell::new(DbImplNullFileLock));
+        // Non-null iff successfully acquired (DBImpl::recover / DBOpen path).
+        let db_lock: *mut Box<dyn FileLock> = core::ptr::null_mut();
 
         // Placeholder handle; real logfile is established during Open()/recovery paths.
         let logfile: Rc<RefCell<dyn WritableFile>> =
@@ -94,6 +98,7 @@ impl DBImpl {
             mutex,
             shutting_down: core::sync::atomic::AtomicBool::new(false),
 
+            background_work_finished_mutex,
             background_work_finished_signal,
 
             mem: core::ptr::null_mut(),

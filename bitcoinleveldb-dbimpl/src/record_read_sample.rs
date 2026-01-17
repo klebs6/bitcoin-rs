@@ -1,13 +1,13 @@
 // ---------------- [ File: bitcoinleveldb-dbimpl/src/record_read_sample.rs ]
 crate::ix!();
 
-impl DBImpl {
+impl DBIterReadSample for DBImpl {
     /// Record a sample of bytes read at the
     /// specified internal key.
     ///
     /// Samples are taken approximately once every
     /// READ_BYTES_PERIOD bytes.
-    pub fn record_read_sample(&mut self, key_: Slice) {
+    fn record_read_sample(&mut self, key_: Slice) {
         tracing::trace!("DBImpl::record_read_sample: begin");
 
         self.mutex.lock();

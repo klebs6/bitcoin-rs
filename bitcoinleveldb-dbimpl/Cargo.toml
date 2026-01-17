@@ -46,3 +46,4 @@ bitcoinleveldb-tablebuilder = { path = "../bitcoinleveldb-tablebuilder" }
 bitcoinleveldb-dbiterstate = { path = "../bitcoinleveldb-dbiterstate" }
 bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
 bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
+bitcoinleveldb-dbiter = { path = "../bitcoinleveldb-dbiter" }

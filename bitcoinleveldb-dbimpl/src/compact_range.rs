@@ -7,7 +7,42 @@ impl DBCompactRange for DBImpl {
         let mut max_level_with_files: i32 = 1;
 
         self.mutex.lock();
+
+        if self.mem.is_null() {
+            let begin_dbg: String = unsafe {
+                begin.as_ref()
+                    .map(|s| s.to_string())
+                    .unwrap_or_else(|| "(begin)".to_string())
+            };
+
+            let end_dbg: String = unsafe {
+                end.as_ref()
+                    .map(|s| s.to_string())
+                    .unwrap_or_else(|| "(end)".to_string())
+            };
+
+            tracing::warn!(
+                dbname = %self.dbname,
+                begin = %begin_dbg,
+                end = %end_dbg,
+                "compact_range: DBImpl memtable is null; skipping compaction on an unopened instance"
+            );
+
+            unsafe { self.mutex.unlock() };
+            return;
+        }
+
         let base: *mut Version = unsafe { (*self.versions).current() };
+
+        if base.is_null() {
+            tracing::error!(
+                dbname = %self.dbname,
+                "compact_range: VersionSet::current returned null; skipping compaction"
+            );
+
+            unsafe { self.mutex.unlock() };
+            return;
+        }
 
         for level in 1..NUM_LEVELS {
             let level_i32: i32 = level as i32;
@@ -77,32 +112,31 @@ mod compact_range_interface_contract_suite {
         tracing::info!(
             begin = %begin.to_string(),
             end = %end.to_string(),
-            "Invoking DBCompactRange::compact_range; expecting panic until dependent compaction helpers are implemented"
+            "Invoking DBCompactRange::compact_range; it must not panic and must not leak the DB mutex lock"
         );
 
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             DBCompactRange::compact_range(&mut *db, &begin as *const Slice, &end as *const Slice);
         }));
 
-        assert!(
-            result.is_err(),
-            "compact_range is expected to panic at the current stage because it delegates into unimplemented compaction helpers"
-        );
-
-        // The contract we can validate now: the mutex must not remain locked after unwinding
-        // from within compact_range (it unlocks prior to delegating).
         let reacquired = db.mutex.try_lock();
         tracing::debug!(
             reacquired,
-            "Attempted to re-lock DB mutex after compact_range panic"
+            panicked = result.is_err(),
+            "Attempted to re-lock DB mutex after compact_range call"
         );
 
         assert!(
             reacquired,
-            "compact_range must not leak the mutex lock across panic/unwind"
+            "compact_range must not leak the mutex lock across call (panic or normal return)"
         );
 
         unsafe { db.mutex.unlock() };
+
+        assert!(
+            result.is_ok(),
+            "compact_range must not panic in the current implementation"
+        );
 
         // Best-effort cleanup: directory may contain files created by other components later.
         let _ = std::fs::remove_dir_all(&dbname);
@@ -123,26 +157,28 @@ mod compact_range_interface_contract_suite {
         tracing::info!(
             begin = %begin.to_string(),
             end = %end.to_string(),
-            "Invoking compact_range with non-empty bounds"
+            "Invoking compact_range with non-empty bounds; it must not panic and must not deadlock"
         );
 
         let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             DBCompactRange::compact_range(&mut *db, &begin as *const Slice, &end as *const Slice);
         }));
 
-        assert!(
-            result.is_err(),
-            "Until compaction helpers are reactivated, compact_range should unwind; this test validates it does not deadlock"
-        );
-
         let reacquired = db.mutex.try_lock();
         tracing::debug!(
             reacquired,
-            "Attempted to re-lock DB mutex after compact_range unwind (non-empty bounds)"
+            panicked = result.is_err(),
+            "Attempted to re-lock DB mutex after compact_range call (non-empty bounds)"
         );
-        assert!(reacquired, "Mutex must be available after unwind");
+
+        assert!(reacquired, "Mutex must be available after compact_range returns");
 
         unsafe { db.mutex.unlock() };
+
+        assert!(
+            result.is_ok(),
+            "compact_range must not panic for non-empty bounds"
+        );
 
         let _ = std::fs::remove_dir_all(&dbname);
     }

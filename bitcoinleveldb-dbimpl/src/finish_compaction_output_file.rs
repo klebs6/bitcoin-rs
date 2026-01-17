@@ -7,10 +7,7 @@ impl DBImpl {
         compact: *mut CompactionState,
         input: *mut LevelDBIterator,
     ) -> Status {
-        todo!();
-        /*
         assert!(!compact.is_null());
-        assert!(!unsafe { (*compact).outfile().borrow().is_null() });
 
         let builder_ptr: *mut TableBuilder = unsafe { *(*compact).builder() };
         assert!(!builder_ptr.is_null());
@@ -23,12 +20,10 @@ impl DBImpl {
         let mut s: Status = unsafe { (*input).status() };
 
         let (current_entries, current_bytes): (u64, u64) = unsafe {
-            let builder: &mut TableBuilder = builder_ptr
-                .as_mut()
-                .unwrap_or_else(|| {
-                    tracing::error!("CompactionState.builder was null in finish_compaction_output_file");
-                    panic!();
-                });
+            let builder: &mut TableBuilder = builder_ptr.as_mut().unwrap_or_else(|| {
+                tracing::error!("CompactionState.builder was null in finish_compaction_output_file");
+                panic!();
+            });
 
             let entries: u64 = builder.num_entries();
 
@@ -100,7 +95,6 @@ impl DBImpl {
         }
 
         s
-        */
     }
 }
 

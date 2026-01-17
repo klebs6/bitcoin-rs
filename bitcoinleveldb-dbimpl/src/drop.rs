@@ -3,20 +3,29 @@ crate::ix!();
 
 impl Drop for DBImpl {
     fn drop(&mut self) {
-        todo!();
-        /*
+        tracing::trace!("DBImpl::drop: begin");
+
         // Wait for background work to finish.
         self.mutex.lock();
         self.shutting_down
             .store(true, core::sync::atomic::Ordering::Release);
 
         while self.background_compaction_scheduled {
-            // We cannot use parking_lot::Condvar::wait() with RawMutex directly here without a guard.
-            // Yield while allowing the background worker to acquire the mutex and clear the flag.
+            tracing::debug!(
+                scheduled = self.background_compaction_scheduled,
+                "DBImpl::drop: waiting for background work to finish"
+            );
+
+            let mut cv_guard = self.background_work_finished_mutex.lock();
+
             unsafe {
                 self.mutex.unlock();
             }
-            std::thread::yield_now();
+
+            self.background_work_finished_signal.wait(&mut cv_guard);
+
+            drop(cv_guard);
+
             self.mutex.lock();
         }
 
@@ -25,11 +34,19 @@ impl Drop for DBImpl {
         }
 
         // Best-effort unlock (ignore errors on drop).
-        let unlock_status = self.env.as_mut().unlock_file(&self.db_lock);
-        tracing::debug!(
-            status = %unlock_status.to_string(),
-            "DBImpl::drop: unlock_file completed"
-        );
+        if !self.db_lock.is_null() {
+            let unlock_status = self.env.as_mut().unlock_file(self.db_lock);
+
+            tracing::debug!(
+                status = %unlock_status.to_string(),
+                lock_handle = self.db_lock as usize,
+                "DBImpl::drop: unlock_file completed"
+            );
+
+            self.db_lock = core::ptr::null_mut();
+        } else {
+            tracing::trace!("DBImpl::drop: db_lock was null; skipping unlock_file");
+        }
 
         if !self.versions.is_null() {
             unsafe {
@@ -74,7 +91,8 @@ impl Drop for DBImpl {
         if self.owns_cache {
             let _ = self.options.delete_block_cache_if_owned();
         }
-        */
+
+        tracing::trace!("DBImpl::drop: end");
     }
 }
 

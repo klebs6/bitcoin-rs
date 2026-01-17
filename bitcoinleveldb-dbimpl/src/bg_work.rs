@@ -27,7 +27,16 @@ impl DBImpl {
         // Previous compaction may have produced too many files in a level,
         // so reschedule another compaction if needed.
         self.maybe_schedule_compaction();
-        self.background_work_finished_signal.signal_all();
+
+        tracing::trace!(
+            scheduled = self.background_compaction_scheduled,
+            "background_call: notifying background_work_finished_signal"
+        );
+
+        {
+            let _cv_guard = self.background_work_finished_mutex.lock();
+            self.background_work_finished_signal.signal_all();
+        }
 
         unsafe {
             self.mutex.unlock();

@@ -3,12 +3,21 @@ crate::ix!();
 
 impl DBImpl {
 
-    pub fn record_background_error(&mut self, s: &Status) { 
+    pub fn record_background_error(&mut self, s: &Status) {
         self.mutex.assert_held();
 
         if self.bg_error.is_ok() {
             self.bg_error = s.clone();
-            self.background_work_finished_signal.signal_all();
+
+            tracing::trace!(
+                status = %s.to_string(),
+                "record_background_error: notifying background_work_finished_signal"
+            );
+
+            {
+                let _cv_guard = self.background_work_finished_mutex.lock();
+                self.background_work_finished_signal.signal_all();
+            }
         }
     }
 }
