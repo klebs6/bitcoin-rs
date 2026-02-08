@@ -1,3 +1,4 @@
+#![feature(ptr_metadata)]
 // ---------------- [ File: bitcoinleveldb-versionset/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
@@ -45,3 +46,4 @@ x!{version_set_reuse_manifest}
 x!{version_set_setup_other_inputs}
 x!{version_set_write_snapshot}
 x!{compare_file_meta_data_by_smallest_internal_key}
+x!{trace}

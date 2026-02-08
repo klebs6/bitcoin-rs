@@ -2,13 +2,9 @@
 crate::ix!();
 
 pub fn make_key(num: u32) -> String {
-    
-    todo!();
-        /*
-            char buf[30];
-      snprintf(buf, sizeof(buf), "%016u", num);
-      return std::string(buf);
-        */
+    tracing::trace!(num, "make_key");
+    let s = format!("{:016}", num);
+    s
 }
 
 pub fn bm_log_and_apply(

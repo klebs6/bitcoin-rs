@@ -255,3 +255,23 @@ impl DBImpl {
         status
     }
 }
+
+#[cfg(test)]
+mod do_compaction_work_interface_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn do_compaction_work_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::do_compaction_work signature is stable");
+        type Sig = fn(&mut DBImpl, *mut CompactionState) -> Status;
+        let _sig: Sig = DBImpl::do_compaction_work;
+        tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn do_compaction_work_method_item_is_addressable() {
+        tracing::info!("Asserting DBImpl::do_compaction_work method item is addressable");
+        let _m = DBImpl::do_compaction_work;
+        let _ = _m;
+    }
+}

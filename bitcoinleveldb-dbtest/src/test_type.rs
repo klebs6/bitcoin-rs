@@ -9,9 +9,9 @@ pub enum TestType {
 }
 
 pub struct TestArgs {
-    ty:               TestType,
-    reverse_compare:  bool,
-    restart_interval: i32,
+    pub ty:               TestType,
+    pub reverse_compare:  bool,
+    pub restart_interval: i32,
 }
 
 lazy_static!{

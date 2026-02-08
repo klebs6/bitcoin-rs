@@ -51,6 +51,7 @@ pub struct Version {
       | List of files per level
       |
       */
+    #[getset(skip)]
     files:                 [Vec<*mut FileMetaData>; NUM_LEVELS],
 
     /**
@@ -97,6 +98,16 @@ impl Version {
             level, count
         );
         count
+    }
+
+    #[inline]
+    pub fn files(&self) -> &[Vec<*mut FileMetaData>; NUM_LEVELS] {
+        &self.files
+    }
+
+    #[inline]
+    pub fn files_mut(&mut self) -> &mut [Vec<*mut FileMetaData>; NUM_LEVELS] {
+        &mut self.files
     }
 }
 

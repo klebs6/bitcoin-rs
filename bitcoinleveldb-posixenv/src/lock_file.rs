@@ -267,3 +267,251 @@ mod posix_env_file_locking_tests {
         let _ = std::fs::remove_file(&filename);
     }
 }
+
+#[cfg(test)]
+mod posix_env_lock_file_handle_lifetime_contract_tests {
+    use super::*;
+    use core::mem;
+
+    fn unique_lock_file_contract_path(tag: &str) -> String {
+        let base = std::env::temp_dir();
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("SystemTime must be >= UNIX_EPOCH")
+            .as_nanos();
+
+        base.join(format!(
+            "bitcoinleveldb-posixenv-lock-file-contract-{}-{}",
+            tag, stamp
+        ))
+        .to_string_lossy()
+        .to_string()
+    }
+
+    #[traced_test]
+    fn lock_file_and_unlock_file_do_not_require_filename_to_outlive_lock_handle() {
+        trace!("lock_file_and_unlock_file_do_not_require_filename_to_outlive_lock_handle: start");
+
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let filename_for_cleanup = unique_lock_file_contract_path("dropped-filename");
+
+        let mut handle: *mut Box<dyn FileLock> = core::ptr::null_mut();
+
+        {
+            let ephemeral_name = filename_for_cleanup.clone();
+
+            debug!(
+                file = %ephemeral_name,
+                "acquiring lock with ephemeral filename string"
+            );
+
+            let status = env.lock_file(
+                &ephemeral_name,
+                &mut handle as *mut *mut Box<dyn FileLock>,
+            );
+
+            assert!(
+                status.is_ok(),
+                "lock_file must succeed: {}",
+                status.to_string()
+            );
+            assert!(
+                !handle.is_null(),
+                "lock_file must populate out-parameter with non-null handle"
+            );
+
+            debug!(
+                file = %ephemeral_name,
+                handle_ptr = ?handle,
+                "lock acquired; ephemeral filename will be dropped at end of scope"
+            );
+        }
+
+        debug!(
+            file = %filename_for_cleanup,
+            handle_ptr = ?handle,
+            "attempting unlock after ephemeral filename has been dropped"
+        );
+
+        let unlock_status = env.unlock_file(handle);
+
+        assert!(
+            unlock_status.is_ok(),
+            "unlock_file must succeed even after original filename String was dropped: {}",
+            unlock_status.to_string()
+        );
+
+        // Reacquire to confirm lock was truly released and no stale borrowed data is retained.
+        let mut handle2: *mut Box<dyn FileLock> = core::ptr::null_mut();
+
+        {
+            let ephemeral_name2 = filename_for_cleanup.clone();
+
+            debug!(
+                file = %ephemeral_name2,
+                "reacquiring lock with a fresh filename allocation"
+            );
+
+            let status2 = env.lock_file(
+                &ephemeral_name2,
+                &mut handle2 as *mut *mut Box<dyn FileLock>,
+            );
+
+            assert!(
+                status2.is_ok(),
+                "second lock_file must succeed after unlock: {}",
+                status2.to_string()
+            );
+            assert!(
+                !handle2.is_null(),
+                "second lock_file must populate out-parameter with non-null handle"
+            );
+
+            debug!(
+                file = %ephemeral_name2,
+                handle_ptr = ?handle2,
+                "second lock acquired; ephemeral filename will be dropped at end of scope"
+            );
+        }
+
+        let unlock_status2 = env.unlock_file(handle2);
+
+        assert!(
+            unlock_status2.is_ok(),
+            "second unlock_file must succeed: {}",
+            unlock_status2.to_string()
+        );
+
+        let _ = std::fs::remove_file(&filename_for_cleanup);
+
+        trace!("lock_file_and_unlock_file_do_not_require_filename_to_outlive_lock_handle: done");
+    }
+
+    #[traced_test]
+    fn lock_file_zeroes_out_parameter_on_duplicate_lock_failure_even_if_preinitialized() {
+        trace!("lock_file_zeroes_out_parameter_on_duplicate_lock_failure_even_if_preinitialized: start");
+
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let filename = unique_lock_file_contract_path("outparam-reset");
+
+        let mut first: *mut Box<dyn FileLock> = core::ptr::null_mut();
+
+        let st1 = env.lock_file(&filename, &mut first as *mut *mut Box<dyn FileLock>);
+
+        assert!(
+            st1.is_ok(),
+            "first lock_file must succeed: {}",
+            st1.to_string()
+        );
+        assert!(
+            !first.is_null(),
+            "first lock_file must populate out-parameter with non-null handle"
+        );
+
+        // Preinitialize second out-parameter with a non-null junk pointer value.
+        let mut second: *mut Box<dyn FileLock> = 0x1 as *mut Box<dyn FileLock>;
+
+        debug!(
+            file = %filename,
+            preinitialized_second = ?second,
+            "attempting duplicate lock_file; out-parameter is intentionally preinitialized"
+        );
+
+        let st2 = env.lock_file(&filename, &mut second as *mut *mut Box<dyn FileLock>);
+
+        assert!(
+            !st2.is_ok(),
+            "duplicate lock_file must fail"
+        );
+        assert!(
+            second.is_null(),
+            "on failure, lock_file must leave the out-parameter as null (even if preinitialized)"
+        );
+
+        let st_unlock = env.unlock_file(first);
+        assert!(
+            st_unlock.is_ok(),
+            "unlock_file must succeed for the original handle: {}",
+            st_unlock.to_string()
+        );
+
+        let _ = std::fs::remove_file(&filename);
+
+        trace!("lock_file_zeroes_out_parameter_on_duplicate_lock_failure_even_if_preinitialized: done");
+    }
+
+    #[traced_test]
+    fn lock_file_returns_aligned_non_null_handle_pointer_on_success() {
+        trace!("lock_file_returns_aligned_non_null_handle_pointer_on_success: start");
+
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let filename = unique_lock_file_contract_path("alignment");
+
+        let mut handle: *mut Box<dyn FileLock> = core::ptr::null_mut();
+
+        let status = env.lock_file(&filename, &mut handle as *mut *mut Box<dyn FileLock>);
+
+        assert!(
+            status.is_ok(),
+            "lock_file must succeed: {}",
+            status.to_string()
+        );
+        assert!(
+            !handle.is_null(),
+            "lock_file must populate out-parameter with non-null handle"
+        );
+
+        let align = mem::align_of::<Box<dyn FileLock>>();
+        let addr = handle as usize;
+
+        debug!(
+            file = %filename,
+            handle_ptr = ?handle,
+            align,
+            addr,
+            "verifying returned handle pointer alignment"
+        );
+
+        assert!(
+            align != 0,
+            "align_of::<Box<dyn FileLock>>() must be non-zero"
+        );
+        assert!(
+            addr % align == 0,
+            "returned handle pointer must be aligned; addr={:#x}, align={}",
+            addr,
+            align
+        );
+
+        let unlock_status = env.unlock_file(handle);
+        assert!(
+            unlock_status.is_ok(),
+            "unlock_file must succeed: {}",
+            unlock_status.to_string()
+        );
+
+        let _ = std::fs::remove_file(&filename);
+
+        trace!("lock_file_returns_aligned_non_null_handle_pointer_on_success: done");
+    }
+
+    #[traced_test]
+    fn lock_file_panics_when_out_parameter_pointer_is_null() {
+        trace!("lock_file_panics_when_out_parameter_pointer_is_null: start");
+
+        let env: &'static mut PosixEnv = Box::leak(Box::new(PosixEnv::default()));
+        let filename = unique_lock_file_contract_path("null-outparam");
+
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let out: *mut *mut Box<dyn FileLock> = core::ptr::null_mut();
+            let _ = env.lock_file(&filename, out);
+        }));
+
+        assert!(
+            result.is_err(),
+            "lock_file must panic when given a null out-parameter pointer"
+        );
+
+        trace!("lock_file_panics_when_out_parameter_pointer_is_null: done");
+    }
+}

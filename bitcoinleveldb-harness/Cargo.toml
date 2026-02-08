@@ -18,3 +18,8 @@ bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-blockconstructor = { path = "../bitcoinleveldb-blockconstructor" }
 bitcoinleveldb-dbtest = { path = "../bitcoinleveldb-dbtest" }
+bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
+bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }

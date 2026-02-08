@@ -57,3 +57,122 @@ impl DBImpl {
         s
     }
 }
+
+#[cfg(test)]
+mod open_compaction_output_file_interface_and_smoke_suite {
+    use super::*;
+
+    fn build_temp_db_path_for_open_compaction_output_file_suite() -> String {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        std::env::temp_dir()
+            .join(format!(
+                "bitcoinleveldb_dbimpl_open_compaction_output_file_suite_{}",
+                nanos
+            ))
+            .to_string_lossy()
+            .to_string()
+    }
+
+    fn build_options_with_env_or_panic_for_open_compaction_output_file_suite() -> Options {
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+
+        if options.env().is_none() {
+            tracing::error!("Options::with_env(env) produced Options with env=None; cannot run open_compaction_output_file suite");
+            panic!();
+        }
+
+        options
+    }
+
+    #[traced_test]
+    fn open_compaction_output_file_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::open_compaction_output_file signature is stable");
+        type Sig = fn(&mut DBImpl, *mut CompactionState) -> Status;
+        let _sig: Sig = DBImpl::open_compaction_output_file;
+        tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn open_compaction_output_file_panics_on_null_compaction_state_pointer() {
+        let dbname = build_temp_db_path_for_open_compaction_output_file_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let options = build_options_with_env_or_panic_for_open_compaction_output_file_suite();
+        let mut db: DBImpl = DBImpl::new(&options, &dbname);
+
+        tracing::info!("Calling open_compaction_output_file(NULL); expecting panic");
+        let panicked = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let _ = db.open_compaction_output_file(core::ptr::null_mut());
+        }))
+        .is_err();
+
+        tracing::debug!(panicked, "Observed panic result for NULL compact pointer");
+        assert!(panicked, "open_compaction_output_file must assert compact is non-null");
+
+        drop(db);
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+
+    #[traced_test]
+    fn open_compaction_output_file_creates_builder_and_records_pending_output() {
+        let dbname = build_temp_db_path_for_open_compaction_output_file_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let options = build_options_with_env_or_panic_for_open_compaction_output_file_suite();
+        let mut db: DBImpl = DBImpl::new(&options, &dbname);
+
+        let compaction_ptr: *mut Compaction = Box::into_raw(Box::new(Compaction::new(
+            &options as *const Options,
+            1,
+        )));
+
+        let state: CompactionState = CompactionState::new(compaction_ptr);
+        let state_ptr: *mut CompactionState = Box::into_raw(Box::new(state));
+
+        tracing::info!("Calling DBImpl::open_compaction_output_file on fresh CompactionState");
+        let s: Status = db.open_compaction_output_file(state_ptr);
+
+        tracing::debug!(status = %s.to_string(), "open_compaction_output_file returned");
+        assert!(s.is_ok(), "open_compaction_output_file must succeed in a writable directory");
+
+        let builder_ptr: *mut TableBuilder = unsafe { *(*state_ptr).builder() };
+        tracing::debug!(builder_ptr = ?builder_ptr, "CompactionState.builder after open");
+        assert!(!builder_ptr.is_null(), "open_compaction_output_file must set a non-null builder");
+
+        let out_ptr: *mut CompactionStateOutput = unsafe { (*state_ptr).current_output() };
+        let file_number: u64 = unsafe { *(*out_ptr).number() };
+
+        tracing::debug!(file_number, "Allocated output file number");
+        assert_ne!(file_number, 0, "Allocated file numbers must be non-zero");
+
+        db.mutex.lock();
+        let pending = db.pending_outputs.contains(&file_number);
+        tracing::debug!(pending, file_number, "pending_outputs membership after open");
+        assert!(pending, "open_compaction_output_file must insert the output file into pending_outputs");
+        unsafe { db.mutex.unlock() };
+
+        let table_path: String = table_file_name(&dbname, file_number);
+
+        db.mutex.lock();
+        tracing::info!("Cleaning up CompactionState via DBImpl::cleanup_compaction");
+        db.cleanup_compaction(state_ptr);
+        unsafe { db.mutex.unlock() };
+
+        unsafe {
+            drop(Box::from_raw(compaction_ptr));
+        }
+
+        let _ = std::fs::remove_file(&table_path);
+        drop(db);
+
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+}

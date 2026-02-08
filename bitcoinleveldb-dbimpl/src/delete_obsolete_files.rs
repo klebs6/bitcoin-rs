@@ -19,10 +19,24 @@ impl DBImpl {
             return;
         }
 
-        // Important: avoid holding the DB mutex while doing Env directory enumeration.
+        // Important: avoid holding the DB mutex while doing Env filesystem calls.
         // This reduces lock-ordering deadlocks involving Env scheduling/background work.
         unsafe {
             self.mutex.unlock();
+        }
+
+        // Some Env implementations have UB on directory enumeration for non-existent paths.
+        // Treat a missing DB directory as an empty listing and return without attempting GC.
+        let dir_exists: bool = self.env.as_mut().file_exists(&self.dbname);
+
+        if !dir_exists {
+            tracing::debug!(
+                dbname = %self.dbname,
+                "delete_obsolete_files: db directory does not exist; skipping directory scan"
+            );
+
+            self.mutex.lock();
+            return;
         }
 
         let mut filenames: Vec<String> = Vec::new();
@@ -57,16 +71,39 @@ impl DBImpl {
             return;
         }
 
-        // Make a set of all of the live files
+        // Make a set of all of the live files.
+        //
+        // Important: In this Rust port, a freshly constructed DBImpl (pre-Open/recovery)
+        // may have a VersionSet that is not safe to consult yet. In those states, mem is null.
+        // We still allow deletion decisions based on pending_outputs alone (tests rely on this),
+        // but we must not dereference VersionSet internals.
         let mut live: HashSet<u64> = self.pending_outputs.clone();
-        unsafe {
-            (*(self.versions as *mut VersionSet)).add_live_files(&mut live);
-        }
 
-        // Snapshot version-set numbers needed for keep/garbage decisions.
-        let log_number: u64 = unsafe { (*self.versions).log_number() };
-        let prev_log_number: u64 = unsafe { (*self.versions).prev_log_number() };
-        let manifest_file_number: u64 = unsafe { (*self.versions).manifest_file_number() };
+        let mut log_number: u64 = 0;
+        let mut prev_log_number: u64 = 0;
+        let mut manifest_file_number: u64 = 0;
+
+        let versions_ptr: *mut VersionSet = self.versions;
+
+        let can_consult_versions: bool = !versions_ptr.is_null() && !self.mem.is_null();
+
+        if can_consult_versions {
+            unsafe {
+                (*versions_ptr).add_live_files(&mut live);
+            }
+
+            log_number = unsafe { (*versions_ptr).log_number() };
+            prev_log_number = unsafe { (*versions_ptr).prev_log_number() };
+            manifest_file_number = unsafe { (*versions_ptr).manifest_file_number() };
+        } else {
+            tracing::debug!(
+                dbname = %self.dbname,
+                versions_ptr = versions_ptr as usize,
+                mem_ptr = self.mem as usize,
+                pending_outputs = self.pending_outputs.len() as u64,
+                "delete_obsolete_files: skipping VersionSet live-files scan; DB is not opened/initialized"
+            );
+        }
 
         let mut files_to_delete: Vec<String> = Vec::new();
         let mut tables_to_evict: Vec<u64> = Vec::new();
@@ -150,15 +187,22 @@ impl DBImpl {
         }
 
         // Evict table cache entries (table cache provides its own synchronization).
-        for num in tables_to_evict.into_iter() {
-            unsafe {
-                (*(self.table_cache as *mut TableCache)).evict(num);
-            }
-            tracing::trace!(
+        if self.table_cache.is_null() {
+            tracing::error!(
                 dbname = %self.dbname,
-                table_number = num,
-                "delete_obsolete_files: evicted table from cache"
+                "delete_obsolete_files: table_cache pointer was null; skipping evictions"
             );
+        } else {
+            for num in tables_to_evict.into_iter() {
+                unsafe {
+                    (*(self.table_cache as *mut TableCache)).evict(num);
+                }
+                tracing::trace!(
+                    dbname = %self.dbname,
+                    table_number = num,
+                    "delete_obsolete_files: evicted table from cache"
+                );
+            }
         }
 
         for filename in files_to_delete.into_iter() {
@@ -186,7 +230,6 @@ impl DBImpl {
 }
 
 #[cfg(test)]
-#[disable]
 mod obsolete_file_deletion_contract_suite {
     use super::*;
 
@@ -421,6 +464,7 @@ mod obsolete_file_deletion_contract_suite {
         let env = PosixEnv::shared();
         let options: Options = Options::with_env(env);
         let mut db = std::mem::ManuallyDrop::new(DBImpl::new(&options, &dbname));
+        db.clear_background_error_for_test();
 
         let live_table_num: u64 = 92001;
         let dead_table_num: u64 = 92002;

@@ -188,9 +188,26 @@ mod build_batch_group_behavior_contract_suite {
         writers: std::collections::VecDeque<*mut DBImplWriter>,
         tmp_batch_ptr: *mut WriteBatch,
     ) -> core::mem::ManuallyDrop<DBImpl> {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        let dir = std::env::temp_dir();
+        let path = dir.join(format!(
+            "bitcoinleveldb_dbimpl_build_batch_group_test_{}_{}",
+            std::process::id(),
+            nanos
+        ));
+        let dbname = path.to_string_lossy().to_string();
+
+        tracing::info!(path = %dbname, "Allocated temp db path for build_batch_group tests");
+
         let env = PosixEnv::shared();
         let options: Options = Options::with_env(env);
-        let dbname: String = "dbimpl-build-batch-group-test".to_string();
 
         let mut db: core::mem::ManuallyDrop<DBImpl> =
             core::mem::ManuallyDrop::new(DBImpl::new(&options, &dbname));
@@ -203,6 +220,7 @@ mod build_batch_group_behavior_contract_suite {
             tracing::debug!(
                 writers_len = db_mut.writers.len() as u64,
                 tmp_batch_ptr = ?db_mut.tmp_batch,
+                dbname = %db_mut.dbname,
                 "Initialized DBImpl for build_batch_group tests"
             );
         }

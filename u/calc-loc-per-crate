@@ -1,0 +1,29 @@
+#!/usr/bin/env raku
+
+my @crates = [
+    # ---[leveldb-layer-1]
+    "bitcoinleveldb-repair",
+    "bitcoinleveldb-modeldb",
+    "bitcoinleveldb-dbconstructor",
+    "bitcoinleveldb-harness",
+    "bitcoinleveldb-dbimplwriter",
+    "bitcoinleveldb-dbinterface",
+
+    # ---[leveldb-layer-2]
+    "bitcoinleveldb-dbtest",
+    "bitcoinleveldb-db",
+    "bitcoinleveldb-dbimpl",
+    "bitcoinleveldb-dbiter",
+
+    # ---[leveldb-layer-3]
+    "bitcoinleveldb-bench",
+    "bitcoinleveldb-test",
+    "bitcoin-leveldb",
+];
+
+for @crates -> $crate {
+
+    my $cmd = "find $crate/src/ -type f -name \"*.rs\" |xargs /bin/cat | wc -l";
+    my $lines = qqx/$cmd/.chomp.trim;
+    say "#ACTIVE := $crate                   #loc: $lines";
+}

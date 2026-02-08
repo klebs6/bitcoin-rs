@@ -463,5 +463,3 @@ pub(crate) fn make_internal_stub_iterator(
     let stub = InternalKeyComparatorStubIterator::new(entries);
     Rc::new(RefCell::new(LevelDBIterator::new(Some(Box::new(stub)))))
 }
-
-

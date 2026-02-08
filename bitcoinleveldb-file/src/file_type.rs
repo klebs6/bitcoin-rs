@@ -1,6 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-file/src/file_type.rs ]
 crate::ix!();
 
+#[derive(Hash,PartialEq,Eq,Copy,Clone,Debug)]
 pub enum FileType {
     LogFile,
     DBLockFile,

@@ -1,30 +1,6 @@
 // ---------------- [ File: bitcoinleveldb-dbconstructor/src/db_constructor.rs ]
 crate::ix!();
  
-///--------------------
-pub struct ArcSliceComparatorAdapter {
-    inner: std::sync::Arc<dyn SliceComparator>,
-}
-
-impl SliceComparator for ArcSliceComparatorAdapter {
-    fn compare(&self, a: &Slice, b: &Slice) -> i32 {
-        self.inner.compare(a, b)
-    }
-
-    fn name(&self) -> &str {
-        self.inner.name()
-    }
-
-    fn find_shortest_separator(&self, start: &mut String, limit: &Slice) {
-        self.inner.find_shortest_separator(start, limit)
-    }
-
-    fn find_short_successor(&self, key: &mut String) {
-        self.inner.find_short_successor(key)
-    }
-}
-
-///--------------------
 pub struct DBConstructor {
     base:       Constructor,
     comparator: std::sync::Arc<dyn SliceComparator>,
@@ -66,9 +42,7 @@ impl DBConstructor {
 
         let comparator: std::sync::Arc<dyn SliceComparator> = std::sync::Arc::from(cmp);
 
-        let base = Constructor::new(Box::new(ArcSliceComparatorAdapter {
-            inner: comparator.clone(),
-        }));
+        let base = Constructor::new(Box::new(ArcSliceComparatorAdapter::from(comparator.clone())));
 
         let mut out = Self {
             base,
@@ -183,15 +157,16 @@ impl DBConstructor {
             "DBConstructor::newdb: using DB path"
         );
 
-        let mut options = Options::default();
+        let env = PosixEnv::shared();
+        let mut options = Options::with_env(env);
         options.set_comparator(self.comparator.clone());
 
-        let mut status = destroy_db(&name, &options);
+        let mut status = destroydb(&name, &options);
 
         tracing::debug!(
             target: "bitcoinleveldb_dbconstructor::db_constructor",
             destroy_ok = status.is_ok(),
-            "DBConstructor::newdb: destroy_db(...) completed"
+            "DBConstructor::newdb: destroydb(...) completed"
         );
 
         assert!(status.is_ok());
@@ -326,7 +301,8 @@ mod dbconstructor_exhaustive_suite {
 
         let mut ctor = make_dbconstructor_with_default_comparator();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let data = KVMap::new();
 
         let st = ctor.finish_impl(&options, &data);
@@ -360,7 +336,8 @@ mod dbconstructor_exhaustive_suite {
 
         let mut ctor = make_dbconstructor_with_default_comparator();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let data = kvmap_from_ascii_pairs(&[("k1", "v1")]);
 
         let st = ctor.finish_impl(&options, &data);
@@ -389,7 +366,8 @@ mod dbconstructor_exhaustive_suite {
 
         let mut ctor = make_dbconstructor_with_default_comparator();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let data = kvmap_from_ascii_pairs(&[
             ("alpha", "1"),
             ("beta", "2"),
@@ -434,7 +412,8 @@ mod dbconstructor_exhaustive_suite {
 
         let mut ctor = make_dbconstructor_with_default_comparator();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
 
         let data1 = kvmap_from_ascii_pairs(&[("k_old", "v_old")]);
         let st1 = ctor.finish_impl(&options, &data1);
@@ -471,7 +450,8 @@ mod dbconstructor_exhaustive_suite {
 
         let mut ctor = make_dbconstructor_with_default_comparator();
 
-        let options = Options::default();
+        let env = PosixEnv::shared();
+        let options = Options::with_env(env);
         let data = kvmap_from_ascii_pairs(&[("a", "1"), ("b", "2"), ("c", "3")]);
 
         let st = ctor.finish_impl(&options, &data);

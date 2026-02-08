@@ -225,3 +225,134 @@ impl DBImpl {
         status
     }
 }
+
+#[cfg(test)]
+mod recover_log_file_interface_and_error_handling_suite {
+    use super::*;
+
+    fn build_temp_db_path_for_recover_log_file_suite() -> String {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        std::env::temp_dir()
+            .join(format!(
+                "bitcoinleveldb_dbimpl_recover_log_file_suite_{}",
+                nanos
+            ))
+            .to_string_lossy()
+            .to_string()
+    }
+
+    fn build_options_with_env_and_paranoid_flag(paranoid: bool) -> Options {
+        let env = PosixEnv::shared();
+        let mut options: Options = Options::with_env(env);
+
+        if options.env().is_none() {
+            tracing::error!("Options::with_env(env) produced Options with env=None; cannot run recover_log_file suite");
+            panic!();
+        }
+
+        options.set_paranoid_checks(paranoid);
+        options
+    }
+
+    #[traced_test]
+    fn recover_log_file_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::recover_log_file signature is stable");
+
+        type Sig = fn(
+            &mut DBImpl,
+            u64,
+            bool,
+            *mut bool,
+            *mut VersionEdit,
+            *mut SequenceNumber,
+        ) -> Status;
+
+        let _sig: Sig = DBImpl::recover_log_file;
+
+        tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn recover_log_file_returns_ok_for_missing_log_when_paranoid_checks_is_false() {
+        let dbname = build_temp_db_path_for_recover_log_file_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let options = build_options_with_env_and_paranoid_flag(false);
+        let mut db: DBImpl = DBImpl::new(&options, &dbname);
+
+        let mut save_manifest: bool = false;
+        let mut edit: VersionEdit = Default::default();
+        let mut max_sequence: SequenceNumber = 0;
+
+        db.mutex.lock();
+
+        tracing::info!(
+            dbname = %dbname,
+            paranoid_checks = *db.options.paranoid_checks(),
+            "Calling recover_log_file on missing log; expecting OK in non-paranoid mode"
+        );
+
+        let s: Status = db.recover_log_file(
+            999_999,
+            false,
+            &mut save_manifest as *mut bool,
+            &mut edit as *mut VersionEdit,
+            &mut max_sequence as *mut SequenceNumber,
+        );
+
+        unsafe { db.mutex.unlock() };
+
+        tracing::debug!(status = %s.to_string(), "recover_log_file returned");
+        assert!(s.is_ok(), "Non-paranoid mode must ignore missing-log errors via maybe_ignore_error");
+
+        drop(db);
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+
+    #[traced_test]
+    fn recover_log_file_returns_error_for_missing_log_when_paranoid_checks_is_true() {
+        let dbname = build_temp_db_path_for_recover_log_file_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let options = build_options_with_env_and_paranoid_flag(true);
+        let mut db: DBImpl = DBImpl::new(&options, &dbname);
+
+        let mut save_manifest: bool = false;
+        let mut edit: VersionEdit = Default::default();
+        let mut max_sequence: SequenceNumber = 0;
+
+        db.mutex.lock();
+
+        tracing::info!(
+            dbname = %dbname,
+            paranoid_checks = *db.options.paranoid_checks(),
+            "Calling recover_log_file on missing log; expecting non-OK in paranoid mode"
+        );
+
+        let s: Status = db.recover_log_file(
+            999_999,
+            false,
+            &mut save_manifest as *mut bool,
+            &mut edit as *mut VersionEdit,
+            &mut max_sequence as *mut SequenceNumber,
+        );
+
+        unsafe { db.mutex.unlock() };
+
+        tracing::debug!(status = %s.to_string(), "recover_log_file returned");
+        assert!(
+            !s.is_ok(),
+            "Paranoid mode must preserve missing-log error (must not be ignored)"
+        );
+
+        drop(db);
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+}

@@ -71,3 +71,77 @@ mod store_posix_env_boxed_result_tests {
         }
     }
 }
+
+#[cfg(test)]
+mod store_posix_env_boxed_result_trait_object_drop_tests {
+    use super::*;
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Arc;
+
+    #[derive(Debug)]
+    struct DropCountingDebug {
+        drops: Arc<AtomicUsize>,
+        id:    u64,
+    }
+
+    impl Drop for DropCountingDebug {
+        fn drop(&mut self) {
+            let prev = self.drops.fetch_add(1, Ordering::SeqCst);
+            debug!(
+                id = self.id,
+                previous = prev,
+                current  = prev + 1,
+                "DropCountingDebug::drop: incremented drop counter"
+            );
+        }
+    }
+
+    #[traced_test]
+    fn store_posix_env_boxed_result_round_trips_dyn_trait_object_and_drops_exactly_once() {
+        trace!("store_posix_env_boxed_result_round_trips_dyn_trait_object_and_drops_exactly_once: start");
+
+        let drops = Arc::new(AtomicUsize::new(0));
+
+        let inner: Box<dyn core::fmt::Debug> = Box::new(DropCountingDebug {
+            drops: drops.clone(),
+            id:    7,
+        });
+
+        let mut result: *mut Box<dyn core::fmt::Debug> = core::ptr::null_mut();
+
+        let st = store_posix_env_boxed_result::<dyn core::fmt::Debug>(
+            "store_posix_env_boxed_result_trait_object_drop_tests",
+            &mut result as *mut *mut Box<dyn core::fmt::Debug>,
+            inner,
+        );
+
+        assert!(
+            st.is_ok(),
+            "store_posix_env_boxed_result must return Status::ok(): {}",
+            st.to_string()
+        );
+        assert!(
+            !result.is_null(),
+            "store_posix_env_boxed_result must populate out-parameter with non-null pointer"
+        );
+
+        debug!(
+            stored_ptr = ?result,
+            "reconstructing Box<Box<dyn Debug>> from raw pointer and dropping it"
+        );
+
+        unsafe {
+            let outer: Box<Box<dyn core::fmt::Debug>> = Box::from_raw(result);
+            drop(outer);
+        }
+
+        let observed = drops.load(Ordering::SeqCst);
+
+        assert_eq!(
+            observed, 1,
+            "dropping the outer Box<Box<dyn Debug>> must drop the inner value exactly once"
+        );
+
+        trace!("store_posix_env_boxed_result_round_trips_dyn_trait_object_and_drops_exactly_once: done");
+    }
+}

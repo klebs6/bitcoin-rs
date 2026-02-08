@@ -38,6 +38,16 @@ impl AddLiveFiles for VersionSet {
             );
         }
 
+        #[cfg(any(test, debug_assertions))]
+        {
+            self.trace_version_list_pointers_for_versionset_move_diagnostics(
+                "VersionSet::add_live_files: entry",
+            );
+            self.assert_version_list_sentinel_consistency_for_versionset_move_diagnostics(
+                "VersionSet::add_live_files: entry",
+            );
+        }
+
         let mut v: *mut Version = unsafe { *(*dummy_ptr).next() };
 
         let mut versions_seen: u64 = 0;
@@ -125,12 +135,12 @@ impl AddLiveFiles for VersionSet {
         );
     }
 }
+
 #[cfg(test)]
 mod version_set_add_live_files_exhaustive_test_suite {
     use super::*;
     use std::path::{Path, PathBuf};
     use std::time::{SystemTime, UNIX_EPOCH};
-    use tracing::{debug, error, info, trace, warn};
 
     fn make_unique_temp_db_dir(prefix: &str) -> PathBuf {
         let pid = std::process::id();

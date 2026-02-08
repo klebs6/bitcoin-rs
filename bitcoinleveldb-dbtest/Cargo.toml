@@ -10,6 +10,7 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
+tracing.workspace = true
 bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
 bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }

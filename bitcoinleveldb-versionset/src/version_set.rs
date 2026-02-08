@@ -74,11 +74,12 @@ impl VersionSet {
 }
 
 impl VersionSet {
+
     pub(crate) fn new_internal(
-        dbname: &String,
-        options: *const Options,
+        dbname:      &String,
+        options:     *const Options,
         table_cache: *mut TableCache,
-        cmp: *const InternalKeyComparator,
+        cmp:         *const InternalKeyComparator,
     ) -> Self {
         assert!(!options.is_null(), "VersionSet::new_internal: options is null");
         assert!(!cmp.is_null(), "VersionSet::new_internal: cmp is null");
@@ -95,9 +96,11 @@ impl VersionSet {
         let icmp_copy: InternalKeyComparator =
             unsafe { InternalKeyComparator::new((*cmp).user_comparator()) };
 
-        let dummy_files: [Vec<*mut FileMetaData>; NUM_LEVELS] = core::array::from_fn(|_| Vec::new());
+        let dummy_files: [Vec<*mut FileMetaData>; NUM_LEVELS] =
+            core::array::from_fn(|_| Vec::new());
 
-        let compact_pointer_init: [String; NUM_LEVELS] = core::array::from_fn(|_| String::new());
+        let compact_pointer_init: [String; NUM_LEVELS] =
+            core::array::from_fn(|_| String::new());
 
         let dummy_versions = VersionBuilder::default()
             .vset(Self::null_versionset_interface_ptr())
@@ -142,7 +145,8 @@ impl VersionSet {
                 (*dummy_ptr).set_prev(dummy_ptr);
             }
 
-            let initial_files: [Vec<*mut FileMetaData>; NUM_LEVELS] = core::array::from_fn(|_| Vec::new());
+            let initial_files: [Vec<*mut FileMetaData>; NUM_LEVELS] =
+                core::array::from_fn(|_| Vec::new());
 
             let mut initial_v = Box::new(
                 VersionBuilder::default()
@@ -181,8 +185,19 @@ impl VersionSet {
             let _ = _leaked;
         }
 
+        #[cfg(any(test, debug_assertions))]
+        {
+            vset.trace_version_list_pointers_for_versionset_move_diagnostics(
+                "VersionSet::new_internal: pre-return (stack)",
+            );
+            vset.assert_version_list_sentinel_consistency_for_versionset_move_diagnostics(
+                "VersionSet::new_internal: pre-return (stack)",
+            );
+        }
+
         vset
     }
+
 }
 
 impl VersionSetInterface for VersionSet {}

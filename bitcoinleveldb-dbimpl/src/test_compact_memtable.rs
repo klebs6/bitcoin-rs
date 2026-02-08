@@ -38,3 +38,23 @@ impl DBImpl {
 
     }
 }
+
+#[cfg(test)]
+mod test_compact_mem_table_interface_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn test_compact_mem_table_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::test_compact_mem_table signature is stable");
+        type Sig = fn(&mut DBImpl) -> Status;
+        let _sig: Sig = DBImpl::test_compact_mem_table;
+        tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn test_compact_mem_table_method_item_is_addressable() {
+        tracing::info!("Asserting DBImpl::test_compact_mem_table method item is addressable");
+        let _m = DBImpl::test_compact_mem_table;
+        let _ = _m;
+    }
+}

@@ -12,10 +12,15 @@ impl VersionEditLogAndApply for VersionSet {
     ///
     #[EXCLUSIVE_LOCKS_REQUIRED(mu)]
     fn log_and_apply(&mut self, edit: *mut VersionEdit, mu: *mut RawMutex) -> Status {
-        trace!(
-            "VersionSet::log_and_apply: enter; edit={:p} mu={:p}",
-            edit,
-            mu
+        let tid = std::thread::current().id();
+        let t_enter = std::time::Instant::now();
+
+        tracing::trace!(
+            ?tid,
+            edit_ptr = edit as usize,
+            mu_ptr = mu as usize,
+            current_ptr = self.current() as usize,
+            "VersionSet::log_and_apply: enter"
         );
 
         assert!(!edit.is_null(), "VersionSet::log_and_apply: edit is null");
@@ -52,7 +57,8 @@ impl VersionEditLogAndApply for VersionSet {
             let vset_iface_ptr: *mut dyn VersionSetInterface =
                 (self as &mut dyn VersionSetInterface) as *mut dyn VersionSetInterface;
 
-            let v_files: [Vec<*mut FileMetaData>; NUM_LEVELS] = core::array::from_fn(|_| Vec::new());
+            let v_files: [Vec<*mut FileMetaData>; NUM_LEVELS] =
+                core::array::from_fn(|_| Vec::new());
 
             let v_ptr: *mut Version = Box::into_raw(Box::new(
                 VersionBuilder::default()
@@ -71,9 +77,27 @@ impl VersionEditLogAndApply for VersionSet {
 
             {
                 // Builder builder(this, current_);
+                tracing::trace!(
+                    ?tid,
+                    v_ptr = v_ptr as usize,
+                    base_ptr = self.current() as usize,
+                    "VersionSet::log_and_apply: constructing builder/applying edit"
+                );
+
                 let mut builder = VersionSetBuilder::new(self, self.current());
                 builder.apply(edit);
+
+                tracing::trace!(
+                    ?tid,
+                    v_ptr = v_ptr as usize,
+                    "VersionSet::log_and_apply: builder.save_to begin"
+                );
                 builder.save_to(v_ptr);
+                tracing::trace!(
+                    ?tid,
+                    v_ptr = v_ptr as usize,
+                    "VersionSet::log_and_apply: builder.save_to end"
+                );
             }
 
             self.finalize(v_ptr);
@@ -84,6 +108,12 @@ impl VersionEditLogAndApply for VersionSet {
             let mut s: Status = Status::ok();
 
             if self.descriptor_log().is_null() {
+                tracing::trace!(
+                    ?tid,
+                    dbname = %self.dbname(),
+                    "VersionSet::log_and_apply: descriptor_log is null; creating new MANIFEST"
+                );
+
                 // No reason to unlock *mu here since we only hit this path in the
                 // first call to LogAndApply (when opening the database).
                 assert!(
@@ -103,14 +133,27 @@ impl VersionEditLogAndApply for VersionSet {
 
                 let mut file_box_ptr: *mut Box<dyn WritableFile> = core::ptr::null_mut();
 
-                trace!(
-                    "VersionSet::log_and_apply: creating new MANIFEST file '{}'",
-                    new_manifest_file
+                tracing::info!(
+                    ?tid,
+                    dbname = %self.dbname(),
+                    manifest = %new_manifest_file,
+                    "VersionSet::log_and_apply: Env::new_writable_file begin"
                 );
 
+                let t_create_manifest = std::time::Instant::now();
                 s = env_rc
                     .borrow_mut()
                     .new_writable_file(&new_manifest_file, &mut file_box_ptr);
+
+                tracing::info!(
+                    ?tid,
+                    dbname = %self.dbname(),
+                    manifest = %new_manifest_file,
+                    status_ok = s.is_ok(),
+                    status = %s.to_string(),
+                    elapsed_ms = t_create_manifest.elapsed().as_millis() as u64,
+                    "VersionSet::log_and_apply: Env::new_writable_file end"
+                );
 
                 if s.is_ok() {
                     assert!(
@@ -132,36 +175,99 @@ impl VersionEditLogAndApply for VersionSet {
                     let lw = LogWriter::new(dest, 0);
                     self.set_descriptor_log(Box::into_raw(Box::new(lw)));
 
+                    tracing::info!(
+                        ?tid,
+                        dbname = %self.dbname(),
+                        descriptor_log_ptr = self.descriptor_log() as usize,
+                        descriptor_file_ptr = (self.descriptor_file() as *mut ()) as usize,
+                        "VersionSet::log_and_apply: write_snapshot begin"
+                    );
+
+                    let t_snapshot = std::time::Instant::now();
                     s = self.write_snapshot();
+
+                    tracing::info!(
+                        ?tid,
+                        dbname = %self.dbname(),
+                        status_ok = s.is_ok(),
+                        status = %s.to_string(),
+                        elapsed_ms = t_snapshot.elapsed().as_millis() as u64,
+                        "VersionSet::log_and_apply: write_snapshot end"
+                    );
                 }
             }
 
             // Unlock during expensive MANIFEST log write
             {
+                tracing::info!(
+                    ?tid,
+                    mu_ptr = mu as usize,
+                    "VersionSet::log_and_apply: about to unlock mu for MANIFEST write"
+                );
+
                 (*mu).unlock();
+
+                let t_unlocked = std::time::Instant::now();
+
+                tracing::info!(
+                    ?tid,
+                    mu_ptr = mu as usize,
+                    "VersionSet::log_and_apply: mu unlocked"
+                );
 
                 // Write new record to MANIFEST log
                 if s.is_ok() {
                     let mut record: String = String::new();
                     e.encode_to(&mut record as *mut String);
 
-                    trace!(
-                        "VersionSet::log_and_apply: adding MANIFEST record; bytes={}",
-                        record.len()
+                    tracing::info!(
+                        ?tid,
+                        dbname = %self.dbname(),
+                        bytes = record.len() as u64,
+                        descriptor_log_ptr = self.descriptor_log() as usize,
+                        "VersionSet::log_and_apply: descriptor_log.add_record begin"
                     );
 
+                    let t_add_record = std::time::Instant::now();
                     let rec_slice = Slice::from(record.as_bytes());
-
                     s = (*self.descriptor_log()).add_record(&rec_slice);
 
+                    tracing::info!(
+                        ?tid,
+                        dbname = %self.dbname(),
+                        status_ok = s.is_ok(),
+                        status = %s.to_string(),
+                        elapsed_ms = t_add_record.elapsed().as_millis() as u64,
+                        "VersionSet::log_and_apply: descriptor_log.add_record end"
+                    );
+
                     if s.is_ok() {
+                        tracing::info!(
+                            ?tid,
+                            dbname = %self.dbname(),
+                            descriptor_file_ptr = (self.descriptor_file() as *mut ()) as usize,
+                            "VersionSet::log_and_apply: descriptor_file.sync begin"
+                        );
+
+                        let t_sync = std::time::Instant::now();
                         s = (*self.descriptor_file()).sync();
+
+                        tracing::info!(
+                            ?tid,
+                            dbname = %self.dbname(),
+                            status_ok = s.is_ok(),
+                            status = %s.to_string(),
+                            elapsed_ms = t_sync.elapsed().as_millis() as u64,
+                            "VersionSet::log_and_apply: descriptor_file.sync end"
+                        );
                     }
 
                     if !s.is_ok() {
-                        error!(
-                            "VersionSet::log_and_apply: MANIFEST write failed: {}",
-                            s.to_string()
+                        tracing::error!(
+                            ?tid,
+                            dbname = %self.dbname(),
+                            status = %s.to_string(),
+                            "VersionSet::log_and_apply: MANIFEST write failed"
                         );
                     }
                 }
@@ -175,15 +281,64 @@ impl VersionEditLogAndApply for VersionSet {
                         .expect("VersionSet::log_and_apply: Options.env is None")
                         .clone();
 
+                    tracing::info!(
+                        ?tid,
+                        dbname = %self.dbname(),
+                        manifest_file_number = self.manifest_file_number(),
+                        "VersionSet::log_and_apply: set_current_file begin"
+                    );
+
+                    let t_set_current = std::time::Instant::now();
                     s = set_current_file(env_rc, self.dbname(), self.manifest_file_number());
+
+                    tracing::info!(
+                        ?tid,
+                        dbname = %self.dbname(),
+                        status_ok = s.is_ok(),
+                        status = %s.to_string(),
+                        elapsed_ms = t_set_current.elapsed().as_millis() as u64,
+                        "VersionSet::log_and_apply: set_current_file end"
+                    );
                 }
 
+                tracing::info!(
+                    ?tid,
+                    mu_ptr = mu as usize,
+                    unlocked_elapsed_ms = t_unlocked.elapsed().as_millis() as u64,
+                    "VersionSet::log_and_apply: about to re-lock mu after MANIFEST write"
+                );
+
+                let t_relock_wait = std::time::Instant::now();
                 (*mu).lock();
+
+                tracing::info!(
+                    ?tid,
+                    mu_ptr = mu as usize,
+                    relock_wait_ms = t_relock_wait.elapsed().as_millis() as u64,
+                    "VersionSet::log_and_apply: mu re-locked"
+                );
             }
 
             // Install the new version
             if s.is_ok() {
+                tracing::info!(
+                    ?tid,
+                    dbname = %self.dbname(),
+                    v_ptr = v_ptr as usize,
+                    "VersionSet::log_and_apply: append_version begin"
+                );
+
+                let t_append = std::time::Instant::now();
                 self.append_version(v_ptr);
+
+                tracing::info!(
+                    ?tid,
+                    dbname = %self.dbname(),
+                    v_ptr = v_ptr as usize,
+                    elapsed_ms = t_append.elapsed().as_millis() as u64,
+                    "VersionSet::log_and_apply: append_version end"
+                );
+
                 self.set_log_number(*e.log_number());
                 self.set_prev_log_number(*e.prev_log_number());
             } else {
@@ -208,16 +363,25 @@ impl VersionEditLogAndApply for VersionSet {
 
                     let del_status = env_rc.borrow_mut().delete_file(&new_manifest_file);
                     if !del_status.is_ok() {
-                        warn!(
-                            "VersionSet::log_and_apply: failed to delete new manifest '{}' after error: {}",
-                            new_manifest_file,
-                            del_status.to_string()
+                        tracing::warn!(
+                            ?tid,
+                            dbname = %self.dbname(),
+                            manifest = %new_manifest_file,
+                            status = %del_status.to_string(),
+                            "VersionSet::log_and_apply: failed to delete new manifest after error"
                         );
                     }
                 }
             }
 
-            trace!("VersionSet::log_and_apply: exit; status_ok={}", s.is_ok());
+            tracing::info!(
+                ?tid,
+                dbname = %self.dbname(),
+                status_ok = s.is_ok(),
+                status = %s.to_string(),
+                elapsed_ms = t_enter.elapsed().as_millis() as u64,
+                "VersionSet::log_and_apply: exit"
+            );
 
             s
         }

@@ -200,3 +200,84 @@ impl DBImpl {
         s
     }
 }
+
+#[cfg(test)]
+mod make_room_for_write_interface_contract_suite {
+    use super::*;
+
+    fn build_temp_db_path_for_make_room_for_write_suite() -> String {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        std::env::temp_dir()
+            .join(format!(
+                "bitcoinleveldb_dbimpl_make_room_for_write_suite_{}",
+                nanos
+            ))
+            .to_string_lossy()
+            .to_string()
+    }
+
+    fn build_options_with_env_or_panic_for_make_room_for_write_suite() -> Options {
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+
+        if options.env().is_none() {
+            tracing::error!("Options::with_env(env) produced Options with env=None; cannot run make_room_for_write suite");
+            panic!();
+        }
+
+        options
+    }
+
+    #[traced_test]
+    fn make_room_for_write_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::make_room_for_write signature is stable");
+        type Sig = fn(&mut DBImpl, bool) -> Status;
+        let _sig: Sig = DBImpl::make_room_for_write;
+        tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn make_room_for_write_method_item_is_addressable() {
+        tracing::info!("Asserting DBImpl::make_room_for_write method item is addressable");
+        let _m = DBImpl::make_room_for_write;
+        let _ = _m;
+    }
+
+    #[traced_test]
+    fn make_room_for_write_returns_error_when_options_env_is_none_without_touching_memtable() {
+        let dbname = build_temp_db_path_for_make_room_for_write_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let options = build_options_with_env_or_panic_for_make_room_for_write_suite();
+        let mut db: DBImpl = DBImpl::new(&options, &dbname);
+
+        let mut writer: DBImplWriter = DBImplWriter::new(&mut db.mutex);
+
+        db.mutex.lock();
+        db.writers.push_back(&mut writer as *mut DBImplWriter);
+
+        db.options.set_env(None);
+
+        tracing::info!("Calling make_room_for_write with Options.env=None; expecting non-OK Status");
+        let s: Status = db.make_room_for_write(false);
+
+        tracing::debug!(status = %s.to_string(), "make_room_for_write returned");
+        assert!(
+            !s.is_ok(),
+            "make_room_for_write must return non-OK when Options.env is None"
+        );
+
+        db.writers.clear();
+        unsafe { db.mutex.unlock() };
+
+        drop(db);
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+}

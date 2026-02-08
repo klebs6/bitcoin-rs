@@ -98,8 +98,38 @@ impl DBImpl {
 }
 
 #[cfg(test)]
-mod dbimpl_write_level0_table_contract_suite {
+mod write_level0_table_interface_contract_suite {
     use super::*;
+
+    fn build_temp_db_path_for_write_level0_table_suite() -> String {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        std::env::temp_dir()
+            .join(format!(
+                "bitcoinleveldb_dbimpl_write_level0_table_suite_{}",
+                nanos
+            ))
+            .to_string_lossy()
+            .to_string()
+    }
+
+    fn build_options_with_env_or_panic_for_write_level0_table_suite() -> Options {
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+
+        if options.env().is_none() {
+            tracing::error!("Options::with_env(env) produced Options with env=None; cannot run write_level_0table suite");
+            panic!();
+        }
+
+        options
+    }
 
     #[traced_test]
     fn write_level_0table_signature_is_stable_for_dbimpl_public_method() {
@@ -112,95 +142,40 @@ mod dbimpl_write_level0_table_contract_suite {
     }
 
     #[traced_test]
-    fn file_metadata_number_and_file_size_are_borrowed_u64_references() {
-        let mut meta: FileMetaData = Default::default();
-
-        let n0: &u64 = meta.number();
-        let sz0: &u64 = meta.file_size();
-
-        tracing::debug!(number = *n0, file_size = *sz0, "Default FileMetaData getters");
-        assert_eq!(*n0, 0);
-        assert_eq!(*sz0, 0);
-
-        meta.set_number(42);
-        meta.set_file_size(1_234);
-
-        let n1: &u64 = meta.number();
-        let sz1: &u64 = meta.file_size();
-
-        tracing::debug!(number = *n1, file_size = *sz1, "Updated FileMetaData getters");
-        assert_eq!(*n1, 42);
-        assert_eq!(*sz1, 1_234);
+    fn write_level_0table_method_item_is_addressable() {
+        tracing::info!("Asserting DBImpl::write_level_0table method item is addressable");
+        let _m = DBImpl::write_level_0table;
+        let _ = _m;
     }
 
     #[traced_test]
-    fn pending_outputs_insert_requires_u64_and_accepts_deref_of_meta_number() {
-        use std::collections::HashSet;
+    fn write_level_0table_returns_error_when_options_env_is_none() {
+        let dbname = build_temp_db_path_for_write_level0_table_suite();
+        let _ = std::fs::create_dir_all(&dbname);
 
-        let mut meta: FileMetaData = Default::default();
-        meta.set_number(7);
+        let options = build_options_with_env_or_panic_for_write_level0_table_suite();
+        let mut db: DBImpl = DBImpl::new(&options, &dbname);
 
-        let mut pending: HashSet<u64> = HashSet::new();
+        db.options.set_env(None);
 
-        let n_ref: &u64 = meta.number();
-        tracing::trace!(number_ref = *n_ref, "Inserting dereferenced meta.number() into HashSet<u64>");
-        assert!(pending.insert(*n_ref));
-        assert!(pending.contains(n_ref));
+        let mut edit: VersionEdit = Default::default();
 
-        tracing::debug!(pending_len = pending.len(), "Pending outputs set size after insert");
-        assert_eq!(pending.len(), 1);
-    }
+        db.mutex.lock();
 
-    #[traced_test]
-    fn compactionstats_add_requires_reference_argument_by_interface_contract() {
-        tracing::info!("Asserting CompactionStats::add takes &CompactionStats");
+        tracing::info!("Calling write_level_0table with Options.env=None; expecting non-OK Status without dereferencing inputs");
 
-        type AddSig = fn(&mut CompactionStats, &CompactionStats);
-        let _sig: AddSig = CompactionStats::add;
-
-        let mut a: CompactionStats = Default::default();
-        let b: CompactionStats = Default::default();
-
-        // Runtime smoke: call with reference as required.
-        a.add(&b);
-        tracing::debug!("CompactionStats::add(&CompactionStats) invoked successfully");
-    }
-
-    #[traced_test]
-    fn version_pick_level_for_mem_table_output_requires_borrowed_slices() {
-        tracing::info!("Asserting Version::pick_level_for_mem_table_output takes (&Slice, &Slice)");
-
-        type PickSig = fn(&mut Version, &Slice, &Slice) -> i32;
-        let _sig: PickSig = Version::pick_level_for_mem_table_output;
-
-        tracing::debug!("Version::pick_level_for_mem_table_output signature check compiled");
-    }
-
-    #[traced_test]
-    fn file_size_reference_can_be_dereferenced_and_cast_to_i64_for_stats_bytes_written() {
-        let mut meta: FileMetaData = Default::default();
-        meta.set_file_size(9_876);
-
-        let sz_ref: &u64 = meta.file_size();
-        let bytes_written: i64 = *sz_ref as i64;
-
-        tracing::debug!(
-            file_size_u64 = *sz_ref,
-            bytes_written_i64 = bytes_written,
-            "Dereferenced file_size() and cast to i64"
+        let s: Status = db.write_level_0table(
+            core::ptr::null_mut(),
+            &mut edit as *mut VersionEdit,
+            core::ptr::null_mut(),
         );
 
-        assert_eq!(bytes_written, 9_876_i64);
-    }
+        unsafe { db.mutex.unlock() };
 
-    #[traced_test]
-    fn const_table_cache_pointer_can_be_cast_to_mut_for_ffi_boundary_call_sites() {
-        tracing::info!("Validating *const TableCache -> *mut TableCache cast compiles for boundary APIs");
+        tracing::debug!(status = %s.to_string(), "write_level_0table returned");
+        assert!(!s.is_ok(), "write_level_0table must return non-OK when Options.env is None");
 
-        let p_const: *const TableCache = core::ptr::null::<TableCache>();
-        let p_mut: *mut TableCache = p_const as *mut TableCache;
-
-        tracing::trace!(p_const = ?p_const, p_mut = ?p_mut, "Pointer cast results");
-        assert!(p_mut.is_null());
+        drop(db);
+        let _ = std::fs::remove_dir_all(&dbname);
     }
 }

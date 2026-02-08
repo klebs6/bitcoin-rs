@@ -3,44 +3,43 @@ crate::ix!();
 
 impl DBImpl {
 
-    pub fn bg_work(db: *mut core::ffi::c_void) {
-        unsafe {
-            let dbimpl: &mut DBImpl = &mut *(db as *mut DBImpl);
-            dbimpl.background_call();
-        }
+    pub fn bg_work_trampoline(arg: *mut core::ffi::c_void) -> core::ffi::c_void {
+        DBImpl::bg_work(arg);
+        bitcoinleveldb_dbimplinner::env_schedule_trampoline_return_value_zeroed_c_void()
     }
 
-    pub fn background_call(&mut self) {
-        self.mutex.lock();
-        assert!(self.background_compaction_scheduled);
+    pub fn bg_work(db: *mut core::ffi::c_void) {
+        let tid = std::thread::current().id();
+        let t0 = std::time::Instant::now();
 
-        if self.shutting_down.load(core::sync::atomic::Ordering::Acquire) {
-            // No more background work when shutting down.
-        } else if !self.bg_error.is_ok() {
-            // No more background work after a background error.
-        } else {
-            self.background_compaction();
-        }
+        bitcoinleveldb_dbimplinner::log_dbimpl_bg_work_entry(tid, db as usize);
 
-        self.background_compaction_scheduled = false;
-
-        // Previous compaction may have produced too many files in a level,
-        // so reschedule another compaction if needed.
-        self.maybe_schedule_compaction();
-
-        tracing::trace!(
-            scheduled = self.background_compaction_scheduled,
-            "background_call: notifying background_work_finished_signal"
-        );
-
-        {
-            let _cv_guard = self.background_work_finished_mutex.lock();
-            self.background_work_finished_signal.signal_all();
-        }
+        let db = bitcoinleveldb_dbimplinner::bg_work_requires_non_null_db_pointer_or_panics(db, tid);
 
         unsafe {
-            self.mutex.unlock();
+            let dbimpl: &mut DBImpl = &mut *(db as *mut DBImpl);
+
+            bitcoinleveldb_dbimplinner::log_dbimpl_bg_work_dispatch_state_snapshot(
+                tid,
+                db as usize,
+                &dbimpl.dbname,
+                dbimpl.background_compaction_scheduled,
+                &dbimpl.bg_error,
+                dbimpl.shutting_down.load(core::sync::atomic::Ordering::Acquire),
+                core::ptr::addr_of_mut!(dbimpl.mutex) as usize,
+                dbimpl.versions as usize,
+                dbimpl.mem as usize,
+                dbimpl.imm as usize,
+            );
+
+            dbimpl.background_call();
         }
+
+        bitcoinleveldb_dbimplinner::log_dbimpl_bg_work_exit(
+            tid,
+            db as usize,
+            t0.elapsed().as_millis() as u64,
+        );
     }
 }
 

@@ -13,72 +13,90 @@ impl DBImpl {
 }
 
 #[cfg(test)]
-mod dbimpl_max_next_level_overlap_contract_suite {
+mod max_next_level_overlapping_bytes_interface_suite {
     use super::*;
 
+    fn build_temp_db_path_for_max_next_level_overlap_suite() -> String {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        std::env::temp_dir()
+            .join(format!(
+                "bitcoinleveldb_dbimpl_max_next_level_overlap_suite_{}",
+                nanos
+            ))
+            .to_string_lossy()
+            .to_string()
+    }
+
+    fn build_options_with_env_or_panic_for_max_next_level_overlap_suite() -> Options {
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+
+        if options.env().is_none() {
+            tracing::error!(
+                "Options::with_env(env) produced Options with env=None; cannot run max_next_level overlap suite"
+            );
+            panic!();
+        }
+
+        options
+    }
+
     #[traced_test]
-    fn dbimpl_test_max_next_level_overlapping_bytes_signature_is_stable() {
-        tracing::info!("Asserting DBImpl::test_max_next_level_overlapping_bytes signature is stable");
+    fn test_max_next_level_overlapping_bytes_signature_is_stable() {
+        tracing::info!(
+            "Asserting DBImpl::test_max_next_level_overlapping_bytes signature is stable"
+        );
 
         type Sig = fn(&mut DBImpl) -> i64;
         let _sig: Sig = DBImpl::test_max_next_level_overlapping_bytes;
 
-        tracing::debug!("DBImpl::test_max_next_level_overlapping_bytes signature check compiled");
+        tracing::debug!("Signature check compiled");
     }
 
     #[traced_test]
-    fn versionset_max_next_level_overlapping_bytes_requires_mut_self_by_contract() {
-        tracing::info!("Asserting VersionSet::max_next_level_overlapping_bytes requires &mut self");
+    fn test_max_next_level_overlapping_bytes_method_item_is_addressable() {
+        tracing::info!(
+            "Asserting DBImpl::test_max_next_level_overlapping_bytes method item is addressable"
+        );
 
-        type Sig = fn(&mut VersionSet) -> i64;
-        let _sig: Sig = VersionSet::max_next_level_overlapping_bytes;
-
-        tracing::debug!("VersionSet::max_next_level_overlapping_bytes signature check compiled");
+        let _m = DBImpl::test_max_next_level_overlapping_bytes;
+        let _ = _m;
     }
 
     #[traced_test]
-    fn max_next_level_overlapping_bytes_trait_is_implemented_for_versionset() {
-        tracing::info!("Asserting MaxNextLevelOverlappingBytes is implemented for VersionSet");
+    fn test_max_next_level_overlapping_bytes_can_be_called_on_fresh_dbimpl_without_deadlocking() {
+        let dbname = build_temp_db_path_for_max_next_level_overlap_suite();
+        let _ = std::fs::create_dir_all(&dbname);
 
-        fn _assert_impl<T: MaxNextLevelOverlappingBytes>() {}
-        _assert_impl::<VersionSet>();
+        let options = build_options_with_env_or_panic_for_max_next_level_overlap_suite();
+        let mut db = DBImpl::new(&options, &dbname);
 
-        tracing::debug!("Trait implementation constraint compiled");
-    }
+        tracing::info!(
+            dbname = %dbname,
+            "Calling DBImpl::test_max_next_level_overlapping_bytes on a fresh DBImpl"
+        );
 
-    #[traced_test]
-    fn raw_mutex_unlock_is_unsafe_and_must_be_called_under_unsafe_block() {
-        tracing::info!("Validating RawMutex unlock requires unsafe and is usable in a lock/unlock cycle");
+        let v: i64 = db.test_max_next_level_overlapping_bytes();
 
-        let mut mu: RawMutex = RawMutex::INIT;
+        tracing::debug!(value = v, "Observed max_next_level_overlapping_bytes");
+        assert!(v >= 0, "Overlapping bytes should never be negative");
 
-        tracing::trace!("Locking RawMutex");
-        mu.lock();
+        let reacquired = db.mutex.try_lock();
+        tracing::debug!(reacquired, "RawMutex try_lock after max_next_level_overlapping_bytes");
+        assert!(
+            reacquired,
+            "DB mutex must be unlocked after test_max_next_level_overlapping_bytes"
+        );
+        unsafe { db.mutex.unlock() };
 
-        tracing::trace!("Unlocking RawMutex (unsafe)");
-        unsafe {
-            mu.unlock();
-        }
-
-        tracing::trace!("Re-locking RawMutex after unsafe unlock");
-        mu.lock();
-
-        tracing::trace!("Final unlock (unsafe)");
-        unsafe {
-            mu.unlock();
-        }
-
-        tracing::debug!("RawMutex lock/unlock cycle completed");
-    }
-
-    #[traced_test]
-    fn const_versionset_pointer_can_be_cast_to_mut_pointer_for_mut_method_dispatch() {
-        tracing::info!("Validating *const VersionSet -> *mut VersionSet cast compiles for call sites");
-
-        let p_const: *const VersionSet = core::ptr::null::<VersionSet>();
-        let p_mut: *mut VersionSet = p_const as *mut VersionSet;
-
-        tracing::trace!(p_const = ?p_const, p_mut = ?p_mut, "Pointer cast results");
-        assert!(p_mut.is_null());
+        drop(db);
+        let _ = std::fs::remove_dir_all(&dbname);
     }
 }

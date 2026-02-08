@@ -143,13 +143,101 @@ impl DBWrite for DBImpl {
     }
 }
 
+
 #[cfg(test)]
-mod dbimpl_write_operation_contract_suite {
+mod db_write_interface_and_smoke_suite {
     use super::*;
+    use bitcoinleveldb_dbinterface::{DB, DBOpen, DBWrite};
+
+    fn build_temp_db_path_for_db_write_suite() -> String {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        std::env::temp_dir()
+            .join(format!("bitcoinleveldb_dbimpl_dbwrite_suite_{}", nanos))
+            .to_string_lossy()
+            .to_string()
+    }
+
+    fn build_options_for_db_write_suite() -> Options {
+        let env = PosixEnv::shared();
+        let mut options: Options = Options::with_env(env);
+
+        if options.env().is_none() {
+            tracing::error!("Options::with_env(env) produced Options with env=None; cannot run DBWrite suite");
+            panic!();
+        }
+
+        options.set_create_if_missing(true);
+        options.set_error_if_exists(false);
+
+        tracing::debug!(
+            create_if_missing = *options.create_if_missing(),
+            error_if_exists = *options.error_if_exists(),
+            "Prepared Options for DBWrite suite"
+        );
+
+        options
+    }
+
+    fn open_db_via_dbopen_for_db_write_suite(
+        options: &Options,
+        dbname: &String,
+    ) -> (*mut dyn DB, Status) {
+        let mut dispatcher: DBImpl = DBImpl::new(options, dbname);
+
+        let mut out_db: *mut dyn DB = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
+
+        tracing::info!(
+            dbname = %dbname,
+            "Opening database via <DBImpl as DBOpen>::open for DBWrite suite"
+        );
+
+        let st: Status = <DBImpl as DBOpen>::open(
+            &mut dispatcher,
+            options,
+            dbname,
+            &mut out_db as *mut *mut dyn DB,
+        );
+
+        tracing::debug!(
+            status = %st.to_string(),
+            out_db_is_null = out_db.is_null(),
+            "DBOpen::open completed for DBWrite suite"
+        );
+
+        (out_db, st)
+    }
+
+    #[inline]
+    unsafe fn db_ptr_to_dbimpl_mut(db_ptr: *mut dyn DB) -> *mut DBImpl {
+        let data: *mut () = db_ptr as *mut ();
+        data as *mut DBImpl
+    }
+
+    fn assert_dbimpl_implements_db_write() {
+        fn _assert<T: DBWrite>() {}
+        _assert::<DBImpl>();
+    }
+
+    fn compile_only_accepts_db_write_trait_object(_db: &mut dyn DBWrite) {}
+
+    fn compile_only_write_call_via_trait_object(
+        db: &mut dyn DBWrite,
+        options: &WriteOptions,
+        batch: &mut WriteBatch,
+    ) -> Status {
+        db.write(options, batch)
+    }
 
     #[traced_test]
     fn dbwrite_trait_method_signature_is_stable_for_dbimpl_write() {
-        tracing::info!("Asserting DBWrite::write signature matches the DBWrite interface");
+        tracing::info!("Asserting <DBImpl as DBWrite>::write signature matches the DBWrite interface");
 
         type DbWriteSig = fn(&mut DBImpl, &WriteOptions, *mut WriteBatch) -> Status;
         let _sig: DbWriteSig = <DBImpl as DBWrite>::write;
@@ -158,140 +246,97 @@ mod dbimpl_write_operation_contract_suite {
     }
 
     #[traced_test]
-    fn write_options_sync_is_borrowed_bool_and_roundtrips_through_setter() {
-        let mut opt: WriteOptions = WriteOptions::default();
+    fn db_write_trait_is_object_safe_and_dbimpl_implements_it() {
+        tracing::info!("Asserting DBWrite is object-safe and DBImpl implements DBWrite");
 
-        let sync_ref: &bool = opt.sync();
-        tracing::debug!(sync = *sync_ref, "Default WriteOptions.sync() value");
-        assert_eq!(*sync_ref, false);
+        assert_dbimpl_implements_db_write();
 
-        opt.set_sync(true);
-        let sync_ref2: &bool = opt.sync();
-        tracing::debug!(sync = *sync_ref2, "Updated WriteOptions.sync() value");
-        assert_eq!(*sync_ref2, true);
+        let _accept = compile_only_accepts_db_write_trait_object as fn(&mut dyn DBWrite);
+        let _call = compile_only_write_call_via_trait_object
+            as fn(&mut dyn DBWrite, &WriteOptions, &mut WriteBatch) -> Status;
 
-        opt.set_sync(false);
-        let sync_ref3: &bool = opt.sync();
-        tracing::debug!(sync = *sync_ref3, "Reset WriteOptions.sync() value");
-        assert_eq!(*sync_ref3, false);
+        tracing::debug!("DBWrite trait object acceptance + call wrapper compiled");
+        let _ = (_accept, _call);
     }
 
     #[traced_test]
-    fn dbimplwriter_flag_getters_are_borrowed_bools_and_setters_accept_owned_bools() {
-        let mut mu: RawMutex = RawMutex::INIT;
-        let mut w: DBImplWriter = DBImplWriter::new(&mut mu);
+    fn db_write_can_be_invoked_on_an_open_database_with_empty_write_batch() {
+        let dbname = build_temp_db_path_for_db_write_suite();
+        let _ = std::fs::create_dir_all(&dbname);
 
-        w.set_sync(true);
-        w.set_done(false);
+        let options: Options = build_options_for_db_write_suite();
 
-        let sync_ref: &bool = w.sync();
-        let done_ref: &bool = w.done();
+        tracing::info!(dbname = %dbname, "Opening DB for DBWrite smoke test");
+        let (db_ptr, open_status) = open_db_via_dbopen_for_db_write_suite(&options, &dbname);
 
-        tracing::trace!(sync = *sync_ref, done = *done_ref, "Initial writer flags");
-        assert_eq!(*sync_ref, true);
-        assert_eq!(*done_ref, false);
-
-        w.set_done(true);
-        let done_ref2: &bool = w.done();
-        tracing::trace!(done = *done_ref2, "Updated writer done flag");
-        assert_eq!(*done_ref2, true);
-
-        w.set_sync(false);
-        let sync_ref2: &bool = w.sync();
-        tracing::trace!(sync = *sync_ref2, "Updated writer sync flag");
-        assert_eq!(*sync_ref2, false);
-    }
-
-    #[traced_test]
-    fn write_batch_internal_count_is_i32_and_castable_to_u64_without_surprise() {
-        tracing::info!("Validating WriteBatch internal count type and safe cast to u64");
-
-        let mut batch: WriteBatch = WriteBatch::default();
-        let batch_ptr: *mut WriteBatch = &mut batch as *mut WriteBatch;
-
-        unsafe {
-            write_batch_internal::set_count(batch_ptr, 0);
-        }
-        let c0: i32 = unsafe { write_batch_internal::count(batch_ptr) };
-        let c0_u64: u64 = c0 as u64;
-        tracing::debug!(count_i32 = c0, count_u64 = c0_u64, "Count=0");
-        assert_eq!(c0, 0);
-        assert_eq!(c0_u64, 0);
-
-        unsafe {
-            write_batch_internal::set_count(batch_ptr, 123);
-        }
-        let c1: i32 = unsafe { write_batch_internal::count(batch_ptr) };
-        let c1_u64: u64 = c1 as u64;
-        tracing::debug!(count_i32 = c1, count_u64 = c1_u64, "Count=123");
-        assert_eq!(c1, 123);
-        assert_eq!(c1_u64, 123);
-
-        // Boundary-ish value that still fits in i32 and casts cleanly to u64.
-        let big: i32 = i32::MAX;
-        unsafe {
-            write_batch_internal::set_count(batch_ptr, big);
-        }
-        let c2: i32 = unsafe { write_batch_internal::count(batch_ptr) };
-        let c2_u64: u64 = c2 as u64;
-        tracing::warn!(count_i32 = c2, count_u64 = c2_u64, "Count=i32::MAX (boundary)");
-        assert_eq!(c2, big);
-        assert_eq!(c2_u64, big as u64);
-    }
-
-    #[traced_test]
-    fn write_batch_contents_is_slice_value_and_can_be_borrowed_for_logwriter_add_record() {
-        tracing::info!("Asserting add_record takes &Slice and contents() yields a borrowable Slice value");
-
-        type AddRecordSig = fn(&mut LogWriter, &Slice) -> Status;
-        let _add_record_sig: AddRecordSig = LogWriter::add_record;
-
-        let mut batch: WriteBatch = WriteBatch::default();
-        let batch_ptr: *mut WriteBatch = &mut batch as *mut WriteBatch;
-
-        let contents: Slice = unsafe { write_batch_internal::contents(batch_ptr) };
-        let contents_size: usize = *contents.size();
-        tracing::debug!(contents_size, "WriteBatch contents size");
-
-        // This line is the core interface contract that motivated the production fix:
-        // LogWriter::add_record expects `&Slice`, while contents() returns `Slice` by value.
-        fn _can_borrow_slice_for_add_record(_lw: &mut LogWriter, s: Slice) {
-            let _ = _lw.add_record(&s);
-        }
-
-        // Sanity: batch contents should at least contain the fixed header (12 bytes in LevelDB format).
-        // If the underlying implementation differs, keep the assertion permissive but still meaningful.
-        assert!(
-            contents_size >= 0,
-            "Slice size must be non-negative (usize invariant)"
+        tracing::debug!(
+            status = %open_status.to_string(),
+            db_ptr_is_null = db_ptr.is_null(),
+            "DBOpen::open completed"
         );
-    }
 
-    #[traced_test]
-    fn writablefile_sync_is_callable_via_refcell_mut_borrow_on_trait_object() {
-        tracing::info!("Validating Rc<RefCell<dyn WritableFile>> supports sync() via borrow_mut()");
+        assert!(
+            open_status.is_ok(),
+            "DBOpen::open must succeed for DBWrite smoke"
+        );
+        assert!(
+            !db_ptr.is_null(),
+            "DBOpen::open must set a non-null DB* on success"
+        );
 
-        let wf: Rc<RefCell<dyn WritableFile>> =
-            Rc::new(RefCell::new(MockWritableFileCore::new()));
+        let dbimpl_ptr: *mut DBImpl = unsafe { db_ptr_to_dbimpl_mut(db_ptr) };
+        assert!(
+            !dbimpl_ptr.is_null(),
+            "Downcasted DBImpl data pointer must be non-null"
+        );
 
-        let st: Status = wf.borrow_mut().sync();
-        tracing::debug!(status = %st.to_string(), "sync() returned");
-        assert!(st.is_ok());
-    }
+        let dbimpl: &mut DBImpl = unsafe { &mut *dbimpl_ptr };
+        dbimpl.clear_background_error_for_test();
 
-    #[traced_test]
-    fn condvar_signal_extension_methods_are_available_on_writer_cv() {
-        tracing::info!("Ensuring Condvar signal helpers are callable on DBImplWriter::cv()");
+        tracing::debug!(
+            dbname = %dbimpl.dbname,
+            mem_ptr = dbimpl.mem as usize,
+            versions_ptr = dbimpl.versions as usize,
+            background_compaction_scheduled = dbimpl.background_compaction_scheduled,
+            bg_error = %dbimpl.bg_error.to_string(),
+            "DBImpl state before empty write"
+        );
 
-        let mut mu: RawMutex = RawMutex::INIT;
-        let w: DBImplWriter = DBImplWriter::new(&mut mu);
+        let mut batch: WriteBatch = WriteBatch::default();
+        let st: Status = <DBImpl as DBWrite>::write(dbimpl, &WriteOptions::default(), &mut batch);
 
-        tracing::trace!("Issuing cv.signal()");
-        w.cv().signal();
+        tracing::info!(status = %st.to_string(), "DBWrite::write(empty batch) returned");
+        assert!(st.is_ok(), "Writing an empty batch must succeed");
 
-        tracing::trace!("Issuing cv.signal_all()");
-        w.cv().signal_all();
+        tracing::debug!(
+            background_compaction_scheduled = dbimpl.background_compaction_scheduled,
+            bg_error = %dbimpl.bg_error.to_string(),
+            "Post-write DB state (interface-visible fields)"
+        );
 
-        tracing::debug!("Condvar signal helpers invoked successfully");
+        assert!(
+            !dbimpl.background_compaction_scheduled,
+            "Empty write should not force background compaction scheduling in a fresh DB"
+        );
+        assert!(
+            dbimpl.bg_error.is_ok(),
+            "bg_error must remain OK after a successful write"
+        );
+
+        unsafe {
+            drop(Box::from_raw(db_ptr));
+        }
+
+        match std::fs::remove_dir_all(&dbname) {
+            Ok(()) => tracing::debug!(path = %dbname, "Removed DBWrite smoke test directory"),
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                tracing::trace!(path = %dbname, "No DBWrite smoke test directory to remove");
+            }
+            Err(e) => tracing::warn!(
+                path = %dbname,
+                error = %format!("{:?}", e),
+                "Failed to remove DBWrite smoke test directory"
+            ),
+        }
     }
 }

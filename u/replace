@@ -1,0 +1,55 @@
+#!/usr/bin/env python3
+import sys
+import re
+
+TOKENS = [
+    "background_compaction_scheduled_",
+    "background_work_finished_signal_",
+    "bg_error_",
+    "db_lock_",
+    "dbname_",
+    "env_",
+    "has_imm_",
+    "imm_",
+    "internal_comparator_",
+    "internal_filter_policy_",
+    "log_",
+    "logfile_",
+    "logfile_number_",
+    "manual_compaction_",
+    "mem_",
+    "mutex_",
+    "options_",
+    "owns_cache_",
+    "owns_info_log_",
+    "pending_outputs_",
+    "seed_",
+    "shutting_down_",
+    "snapshots_",
+    "stats_",
+    "table_cache_",
+    "tmp_batch_",
+    "versions_",
+    "writers_",
+]
+
+# Build one regex:
+# - (?<!\w)   : not preceded by an identifier char
+# - (TOKEN)   : exact token
+# - (?!\w)    : not followed by an identifier char
+pattern = re.compile(
+    r'(?<![A-Za-z0-9_])(' + '|'.join(map(re.escape, TOKENS)) + r')(?![A-Za-z0-9_])'
+)
+
+def repl(match: re.Match) -> str:
+    token = match.group(1)
+    # Trim exactly one trailing underscore
+    return token[:-1]
+
+def main() -> None:
+    text = sys.stdin.read()
+    sys.stdout.write(pattern.sub(repl, text))
+
+if __name__ == "__main__":
+    main()
+

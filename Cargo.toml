@@ -265,8 +265,24 @@ members = [
     "bitcoinwallet-spend", 
     "bitcoinleveldb-versionsetutil", 
     "bitcoinleveldb-versionsetinterface", 
-    "bitcoinleveldb-mockversionset"
-, "bitcoinsecp256k1-modinv64", "bitcoinsecp256k1-modinv32", "bitcoinsecp256k1-fe10x26", "bitcoinsecp256k1-fe5x52", "bitcoinsecp256k1-eccontext", "bitcoinsecp256k1-ecdh", "bitcoinsecp256k1-ecdsa", "bitcoinsecp256k1-ecdsasignature", "bitcoinsecp256k1-eckey", "bitcoinsecp256k1-ecmult", "bitcoinsecp256k1-ecmultgen", "bitcoinsecp256k1-ecmultconst"]
+    "bitcoinleveldb-mockversionset", 
+    "bitcoinsecp256k1-modinv64", 
+    "bitcoinsecp256k1-modinv32", 
+    "bitcoinsecp256k1-fe10x26", 
+    "bitcoinsecp256k1-fe5x52", 
+    "bitcoinsecp256k1-eccontext", 
+    "bitcoinsecp256k1-ecdh", 
+    "bitcoinsecp256k1-ecdsa", 
+    "bitcoinsecp256k1-ecdsasignature", 
+    "bitcoinsecp256k1-eckey", 
+    "bitcoinsecp256k1-ecmult", 
+    "bitcoinsecp256k1-ecmultgen", 
+    "bitcoinsecp256k1-ecmultconst"
+, "bitcoinleveldb-dbimplinner"]
+
+[profile.dev]
+debug = 2
+opt-level = 0
 
 [workspace.dependencies]
 #qmetaobject            = "0.2.7"
@@ -332,6 +348,8 @@ traced-test             = "1.0.4"
 tracing                 = { version = "0.1.41", features = ["log"] }
 tracing-setup           = "1.0.4"
 tracing-subscriber      = { version = "0.3.19", default-features = false, features = ["fmt", "std", "env-filter", "json"] }
+tracing-appender = "0.2"
+signal-hook = "*"
 try-catch               = "0.2.2"
 usdt                    = "0.5.0"
 usdt-impl               = "0.5.0"

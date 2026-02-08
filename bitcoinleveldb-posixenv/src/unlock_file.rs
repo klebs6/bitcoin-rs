@@ -175,3 +175,143 @@ mod posix_env_unlock_file_tests {
         debug!("unlock_file_allows_reacquiring_lock: completed");
     }
 }
+#[cfg(test)]
+mod posix_env_unlock_file_rc_and_lifetime_contract_tests {
+    use super::*;
+
+    fn unique_unlock_file_contract_path(tag: &str) -> String {
+        let base = std::env::temp_dir();
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("SystemTime must be >= UNIX_EPOCH")
+            .as_nanos();
+
+        base.join(format!(
+            "bitcoinleveldb-posixenv-unlock-file-contract-{}-{}",
+            tag, stamp
+        ))
+        .to_string_lossy()
+        .to_string()
+    }
+
+    #[traced_test]
+    fn lock_and_unlock_work_through_dyn_env_and_rc_clones_even_with_dropped_filename() {
+        trace!("lock_and_unlock_work_through_dyn_env_and_rc_clones_even_with_dropped_filename: start");
+
+        let env_a = crate::posix_default_env();
+        let env_b = env_a.clone();
+
+        let filename_for_cleanup = unique_unlock_file_contract_path("dyn-env-rc");
+        let mut handle: *mut Box<dyn FileLock> = core::ptr::null_mut();
+
+        {
+            let ephemeral_name = filename_for_cleanup.clone();
+
+            debug!(
+                file = %ephemeral_name,
+                "locking via dyn Env (Rc clone A) with ephemeral filename allocation"
+            );
+
+            let mut env_mut = env_a.borrow_mut();
+            let st = env_mut.lock_file(
+                &ephemeral_name,
+                &mut handle as *mut *mut Box<dyn FileLock>,
+            );
+
+            assert!(
+                st.is_ok(),
+                "lock_file via dyn Env must succeed: {}",
+                st.to_string()
+            );
+            assert!(
+                !handle.is_null(),
+                "lock_file must populate out-parameter with non-null handle"
+            );
+
+            debug!(
+                file = %ephemeral_name,
+                handle_ptr = ?handle,
+                "lock acquired via dyn Env; ephemeral filename will be dropped at end of scope"
+            );
+        }
+
+        {
+            debug!(
+                file = %filename_for_cleanup,
+                handle_ptr = ?handle,
+                "unlocking via dyn Env (Rc clone B) after ephemeral filename dropped"
+            );
+
+            let mut env_mut = env_b.borrow_mut();
+            let st = env_mut.unlock_file(handle);
+
+            assert!(
+                st.is_ok(),
+                "unlock_file via dyn Env must succeed: {}",
+                st.to_string()
+            );
+        }
+
+        // Reacquire to prove the unlock actually released the process-local lock state.
+        let mut handle2: *mut Box<dyn FileLock> = core::ptr::null_mut();
+
+        {
+            let ephemeral_name2 = filename_for_cleanup.clone();
+
+            debug!(
+                file = %ephemeral_name2,
+                "re-locking via dyn Env to confirm the previous unlock released the lock"
+            );
+
+            let mut env_mut = env_a.borrow_mut();
+            let st = env_mut.lock_file(
+                &ephemeral_name2,
+                &mut handle2 as *mut *mut Box<dyn FileLock>,
+            );
+
+            assert!(
+                st.is_ok(),
+                "second lock_file via dyn Env must succeed: {}",
+                st.to_string()
+            );
+            assert!(
+                !handle2.is_null(),
+                "second lock_file must populate out-parameter with non-null handle"
+            );
+        }
+
+        {
+            let mut env_mut = env_b.borrow_mut();
+            let st = env_mut.unlock_file(handle2);
+
+            assert!(
+                st.is_ok(),
+                "second unlock_file via dyn Env must succeed: {}",
+                st.to_string()
+            );
+        }
+
+        let _ = std::fs::remove_file(&filename_for_cleanup);
+
+        trace!("lock_and_unlock_work_through_dyn_env_and_rc_clones_even_with_dropped_filename: done");
+    }
+
+    #[traced_test]
+    fn unlock_file_panics_when_lock_handle_pointer_is_null() {
+        trace!("unlock_file_panics_when_lock_handle_pointer_is_null: start");
+
+        let env = crate::posix_default_env();
+
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let mut env_mut = env.borrow_mut();
+            let _ = env_mut.unlock_file(core::ptr::null_mut());
+        }));
+
+        assert!(
+            result.is_err(),
+            "unlock_file must panic when invoked with a null lock handle pointer"
+        );
+
+        trace!("unlock_file_panics_when_lock_handle_pointer_is_null: done");
+    }
+}

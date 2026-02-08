@@ -68,3 +68,85 @@ impl DBImpl {
         unsafe { self.mutex.unlock() };
     }
 }
+
+#[cfg(test)]
+mod test_compact_range_interface_and_precondition_suite {
+    use super::*;
+
+    fn build_temp_db_path_for_test_compact_range_suite() -> String {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        std::env::temp_dir()
+            .join(format!(
+                "bitcoinleveldb_dbimpl_test_compact_range_suite_{}",
+                nanos
+            ))
+            .to_string_lossy()
+            .to_string()
+    }
+
+    #[traced_test]
+    fn test_compact_range_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::test_compact_range signature is stable");
+        type Sig = fn(&mut DBImpl, i32, *const Slice, *const Slice) -> ();
+        let _sig: Sig = DBImpl::test_compact_range;
+        tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn test_compact_range_method_item_is_addressable() {
+        tracing::info!("Asserting DBImpl::test_compact_range method item is addressable");
+        let _m = DBImpl::test_compact_range;
+        let _ = _m;
+    }
+
+    #[traced_test]
+    fn test_compact_range_panics_on_negative_level_precondition() {
+        let dbname = build_temp_db_path_for_test_compact_range_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+        let mut db: DBImpl = DBImpl::new(&options, &dbname);
+
+        let panicked = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            db.test_compact_range(-1, core::ptr::null(), core::ptr::null());
+        }))
+        .is_err();
+
+        tracing::debug!(panicked, "Observed panic for level=-1");
+        assert!(panicked, "test_compact_range must assert level >= 0");
+
+        drop(db);
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+
+    #[traced_test]
+    fn test_compact_range_panics_on_top_level_precondition() {
+        let dbname = build_temp_db_path_for_test_compact_range_suite();
+        let _ = std::fs::create_dir_all(&dbname);
+
+        let env = PosixEnv::shared();
+        let options: Options = Options::with_env(env);
+        let mut db: DBImpl = DBImpl::new(&options, &dbname);
+
+        let invalid_level: i32 = (NUM_LEVELS as i32) - 1;
+
+        let panicked = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            db.test_compact_range(invalid_level, core::ptr::null(), core::ptr::null());
+        }))
+        .is_err();
+
+        tracing::debug!(panicked, invalid_level, "Observed panic for level=NUM_LEVELS-1");
+        assert!(panicked, "test_compact_range must assert level+1 < NUM_LEVELS");
+
+        drop(db);
+        let _ = std::fs::remove_dir_all(&dbname);
+    }
+}

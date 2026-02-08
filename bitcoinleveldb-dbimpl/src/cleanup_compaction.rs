@@ -7,20 +7,10 @@ impl DBImpl {
         self.mutex.assert_held();
 
         unsafe {
-            let builder_ptr: *mut TableBuilder = *(*compact).builder();
-
-            if let Some(builder) = builder_ptr.as_mut() {
-                // May happen if shutdown occurs mid-compaction
-                builder.abandon();
-                drop(Box::from_raw(builder_ptr));
-                (*compact).set_builder(core::ptr::null_mut());
-            }
-
-            for out in (*compact).outputs().iter() {
-                self.pending_outputs.remove(out.number());
-            }
-
-            drop(Box::from_raw(compact));
+            bitcoinleveldb_dbimplinner::cleanup_compaction_state_builder_and_pending_outputs_then_drop(
+                compact,
+                &mut self.pending_outputs,
+            );
         }
     }
 }
@@ -29,10 +19,29 @@ impl DBImpl {
 mod cleanup_compaction_contract_suite {
     use super::*;
 
-    fn make_dbimpl_for_cleanup(pending_outputs: std::collections::HashSet<u64>) -> core::mem::ManuallyDrop<DBImpl> {
+    fn make_dbimpl_for_cleanup(
+        pending_outputs: std::collections::HashSet<u64>,
+    ) -> core::mem::ManuallyDrop<DBImpl> {
+        let nanos = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_else(|e| {
+                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
+                panic!();
+            })
+            .as_nanos();
+
+        let dir = std::env::temp_dir();
+        let path = dir.join(format!(
+            "bitcoinleveldb_dbimpl_cleanup_compaction_test_{}_{}",
+            std::process::id(),
+            nanos
+        ));
+        let dbname = path.to_string_lossy().to_string();
+
+        tracing::info!(path = %dbname, "Allocated temp db path for cleanup_compaction tests");
+
         let env = PosixEnv::shared();
         let options: Options = Options::with_env(env);
-        let dbname: String = "dbimpl-cleanup-compaction-test".to_string();
 
         let mut db: core::mem::ManuallyDrop<DBImpl> =
             core::mem::ManuallyDrop::new(DBImpl::new(&options, &dbname));
@@ -43,6 +52,7 @@ mod cleanup_compaction_contract_suite {
 
             tracing::debug!(
                 pending_outputs_len = db_mut.pending_outputs.len() as u64,
+                dbname = %db_mut.dbname,
                 "Initialized DBImpl for cleanup_compaction tests"
             );
         }

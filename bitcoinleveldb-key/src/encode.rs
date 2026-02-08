@@ -111,9 +111,12 @@ pub fn escape_for_debug(input: &[u8]) -> String {
 /// We never dereference this; it is used only to exercise the
 /// "no user comparator provided" code paths.
 pub fn null_slice_comparator() -> *const dyn SliceComparator {
-    unsafe {
-        std::mem::transmute::<(usize, usize), *const dyn SliceComparator>((0, 0))
-    }
+    use std::sync::OnceLock;
+
+    static BYTEWISE: OnceLock<BytewiseComparatorImpl> = OnceLock::new();
+
+    let cmp: &BytewiseComparatorImpl = BYTEWISE.get_or_init(BytewiseComparatorImpl::default);
+    (cmp as &dyn SliceComparator) as *const dyn SliceComparator
 }
 
 /// Helper: decode a varint32 from a byte slice.

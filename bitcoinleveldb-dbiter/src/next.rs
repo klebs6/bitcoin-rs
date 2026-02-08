@@ -137,4 +137,3 @@ mod dbiter_next_suite {
         assert!(!it.borrow().valid());
     }
 }
-

@@ -1,6 +1,7 @@
 // ---------------- [ File: bitcoinsecp256k1-eccontext/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
+x!{flags}
 x!{context}
 x!{context_clone}
 x!{context_create}

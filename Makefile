@@ -27,10 +27,10 @@ RUST_LOG := bitcoinleveldb_crc32=off,debug
 
 #DEFAULT := hack_test
 #DEFAULT := test_one_release
+DEFAULT := test_one
 DEFAULT := test_active
 #DEFAULT := build
 #DEFAULT := build_active
-#DEFAULT := test_one
 #DEFAULT := test_ignored
 #DEFAULT := test_one_ignored
 
@@ -40,12 +40,12 @@ FEATURES :=
 NO_FAIL_FAST := --no-fail-fast
 
 #----------------------------------------[active]
+ACTIVE := bitcoinsecp256k1-eccontext
+ACTIVE := bitcoinleveldb-harness       #loc: 297
+ACTIVE := bitcoinleveldb-dbconstructor #loc: 99
 ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 
 # ---[leveldb-layer-1]
-#ACTIVE := bitcoinleveldb-harness       #loc: 297
-#ACTIVE := bitcoinleveldb-modeldb       #loc: 281
-#ACTIVE := bitcoinleveldb-dbconstructor #loc: 99
 #ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
 #ACTIVE := bitcoinleveldb-db            #loc: 1049
 
@@ -56,7 +56,6 @@ ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 
 #-------------------------------[active-below]
 # ---[secp-layer-4]
-#ACTIVE := bitcoinsecp256k1-eccontext
 #ACTIVE := bitcoinsecp256k1-ecmultconst
 # ---[secp-layer-4b]
 #ACTIVE := bitcoinsecp256k1-ecdh
@@ -251,18 +250,16 @@ ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 
 #-------------------------------DONE
 
-INDIVIDUAL_TEST := propagate_26bit_carries_once
-INDIVIDUAL_TEST := poly1305
-INDIVIDUAL_TEST := final_carry_and_sub_p
-INDIVIDUAL_TEST := decrypt_matches_reference_aes128
-INDIVIDUAL_TEST := load_byte_validation
-INDIVIDUAL_TEST := load_byte
-INDIVIDUAL_TEST := save_byte
-INDIVIDUAL_TEST := shift_row
-INDIVIDUAL_TEST := aes_setup_round_key_validation
-INDIVIDUAL_TEST := compute_g_plus5_minus_p
-INDIVIDUAL_TEST := populate_round_zero
-INDIVIDUAL_TEST := sha256_round
+INDIVIDUAL_TEST := log_reporter
+INDIVIDUAL_TEST := new_internal_iterator_interface_and_smoke_suite
+INDIVIDUAL_TEST := db_write_can_be_invoked_on_an_open_database_with_empty_write_batch
+INDIVIDUAL_TEST := db_open_succeeds_and_sets_non_null_dbptr_for_fresh_directory
+INDIVIDUAL_TEST := db_open_fails_with_error_if_exists_and_leaves_dbptr_null
+INDIVIDUAL_TEST := new_iterator_returns_non_null_iterator_on_open_database
+INDIVIDUAL_TEST := test_new_internal_iterator_returns_non_null_iterator
+INDIVIDUAL_TEST := new_internal_iterator_increments_seed_and_returns_non_null_iterators
+#INDIVIDUAL_TEST := delete_obsolete_files
+
 
 default: $(DEFAULT)
 
@@ -370,7 +367,6 @@ bench:
 #ACTIVE := bitcoinchain-interface
 #ACTIVE := bitcoinchain-notifications
 #ACTIVE := bitcoinleveldb-arena
-#ACTIVE := bitcoinleveldb-batch
 #ACTIVE := bitcoinleveldb-block
 #ACTIVE := bitcoinleveldb-blockbuilder
 #ACTIVE := bitcoinleveldb-blockconstructor
@@ -414,7 +410,6 @@ bench:
 #ACTIVE := bitcoinleveldb-mockversionset
 #ACTIVE := bitcoinleveldb-options
 #ACTIVE := bitcoinleveldb-posix
-#ACTIVE := bitcoinleveldb-posixenv
 #ACTIVE := bitcoinleveldb-posixlogger
 #ACTIVE := bitcoinleveldb-posixmmaprfile
 #ACTIVE := bitcoinleveldb-posixrafile
@@ -425,7 +420,6 @@ bench:
 #ACTIVE := bitcoinleveldb-repair
 #ACTIVE := bitcoinleveldb-reversekeycomparator
 #ACTIVE := bitcoinleveldb-skiplist
-#ACTIVE := bitcoinleveldb-slice
 #ACTIVE := bitcoinleveldb-snapshot
 #ACTIVE := bitcoinleveldb-specialenv
 #ACTIVE := bitcoinleveldb-status
@@ -457,3 +451,7 @@ bench:
 #ACTIVE := bitcoinsecp256k1-scratch
 #ACTIVE := bitcoinleveldb-versionset
 #ACTIVE := bitcoinleveldb-dbiter        #loc: 414
+#ACTIVE := bitcoinleveldb-modeldb       #loc: 281
+#ACTIVE := bitcoinleveldb-batch
+#ACTIVE := bitcoinleveldb-posixenv
+#ACTIVE := bitcoinleveldb-slice

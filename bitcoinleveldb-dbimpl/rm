@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+rm -rf bitcoinleveldb_dbimpl_compact_mem_table_contract
+rm -rf bitcoinleveldb_dbimpl_maybe_ignore_error_nonparanoid
+rm -rf bitcoinleveldb_dbimpl_maybe_ignore_error_ok
+rm -rf bitcoinleveldb_dbimpl_maybe_ignore_error_paranoid
+rm -rf dbimpl-build-batch-group-test
+rm -rf dbimpl-cleanup-compaction-test

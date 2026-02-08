@@ -46,3 +46,23 @@ impl DBImpl {
 
     }
 }
+
+#[cfg(test)]
+mod install_compaction_results_interface_contract_suite {
+    use super::*;
+
+    #[traced_test]
+    fn install_compaction_results_signature_is_stable() {
+        tracing::info!("Asserting DBImpl::install_compaction_results signature is stable");
+        type Sig = fn(&mut DBImpl, *mut CompactionState) -> Status;
+        let _sig: Sig = DBImpl::install_compaction_results;
+        tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn install_compaction_results_method_item_is_addressable() {
+        tracing::info!("Asserting DBImpl::install_compaction_results method item is addressable");
+        let _m = DBImpl::install_compaction_results;
+        let _ = _m;
+    }
+}

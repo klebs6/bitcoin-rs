@@ -12,105 +12,60 @@ impl DBImpl {
         }
 
         let mut c: *mut Compaction = core::ptr::null_mut();
-        let is_manual: bool = !self.manual_compaction.is_null();
+
+        let is_manual: bool =
+            bitcoinleveldb_dbimplinner::background_compaction_is_manual_requested(self.manual_compaction);
+
         let mut manual_end: InternalKey = Default::default();
 
         if is_manual {
-            let m: *mut ManualCompaction = self.manual_compaction;
-            c = unsafe { (*self.versions).compact_range(*(*m).level(), *(*m).begin(), *(*m).end()) };
-            unsafe {
-                (*m).set_done(c.is_null());
-            }
-
-            if !c.is_null() {
-                let n0: i32 = unsafe { (*c).num_input_files(0) };
-                if n0 > 0 {
-                    manual_end = unsafe { (*(*c).input(0, n0 - 1)).largest().clone() };
-                }
-            }
-
-            let begin_dbg: String = unsafe {
-                if (*m).begin().is_null() {
-                    "(begin)".to_string()
-                } else {
-                    (*(*(*m).begin())).debug_string()
-                }
+            let (picked, end_key): (*mut Compaction, InternalKey) = unsafe {
+                bitcoinleveldb_dbimplinner::select_manual_compaction_from_request_and_log_plan(
+                    self.versions,
+                    self.manual_compaction,
+                )
             };
-
-            let end_dbg: String = unsafe {
-                if (*m).end().is_null() {
-                    "(end)".to_string()
-                } else {
-                    (*(*m).end()).debug_string()
-                }
-            };
-
-            let stop_dbg: String = unsafe {
-                if *(*m).done() {
-                    "(end)".to_string()
-                } else {
-                    manual_end.debug_string()
-                }
-            };
-
-            tracing::info!(
-                level = unsafe { (*m).level() },
-                begin = %begin_dbg,
-                end = %end_dbg,
-                stop = %stop_dbg,
-                "Manual compaction"
-            );
+            c = picked;
+            manual_end = end_key;
         } else {
-            c = unsafe { (*self.versions).pick_compaction() };
+            c = unsafe { bitcoinleveldb_dbimplinner::select_automatic_compaction_from_versionset(self.versions) };
         }
 
         let mut status: Status = Status::ok();
 
         if c.is_null() {
             // Nothing to do
-        } else if !is_manual && unsafe { (*c).is_trivial_move() } {
-            // Move file to next level
-            assert_eq!(unsafe { (*c).num_input_files(0) }, 1);
-            let f: *mut FileMetaData = unsafe { (*c).input(0, 0) };
+        } else if unsafe { bitcoinleveldb_dbimplinner::background_compaction_is_trivial_move_candidate(is_manual, c) } {
+            let mu: *mut parking_lot::RawMutex = core::ptr::addr_of_mut!(self.mutex);
 
-            unsafe {
-                (*(*c).edit()).delete_file((*c).level(), *(*f).number());
-                (*(*c).edit()).add_file(
-                    (*c).level() + 1,
-                    *(*f).number(),
-                    *(*f).file_size(),
-                    (*f).smallest(),
-                    (*f).largest(),
-                );
-            }
+            let (f, st): (*mut FileMetaData, Status) = unsafe {
+                bitcoinleveldb_dbimplinner::execute_trivial_move_compaction_to_next_level_and_apply_version_edit(
+                    self.versions,
+                    mu,
+                    c,
+                )
+            };
 
-            let mu: *mut RawMutex = core::ptr::addr_of_mut!(self.mutex);
-            status = unsafe { (*self.versions).log_and_apply((*c).edit(), mu) };
+            status = st;
+
             if !status.is_ok() {
                 self.record_background_error(&status);
             }
 
-            let mut tmp: VersionSetLevelSummaryStorage = Default::default();
-            let summary_ptr: *const u8 = unsafe { (*self.versions).level_summary(&mut tmp) };
+            let summary: String =
+                unsafe { bitcoinleveldb_dbimplinner::versionset_level_summary_string_or_placeholder(self.versions) };
 
-            let summary: String = if summary_ptr.is_null() {
-                "<null level summary>".to_string()
-            } else {
-                let buf: &[u8; 100] = tmp.buffer();
-                let nul = buf.iter().position(|&b| b == 0).unwrap_or(buf.len());
-                String::from_utf8_lossy(&buf[..nul]).into_owned()
-            };
-
-            tracing::info!(
-                file_number = unsafe { *(*f).number() as u64 },
-                to_level    = unsafe { (*c).level() + 1 },
-                file_size   = unsafe { *(*f).file_size() as u64 },
-                status      = %status.to_string(),
-                summary     = %summary,
-                "Moved file to next level"
-            );
+            unsafe {
+                bitcoinleveldb_dbimplinner::log_trivial_move_compaction_to_next_level(
+                    f,
+                    c,
+                    &status,
+                    &summary,
+                );
+            }
         } else {
-            let compact: *mut CompactionState = Box::into_raw(Box::new(CompactionState::new(c)));
+            let compact: *mut CompactionState =
+                bitcoinleveldb_dbimplinner::allocate_compaction_state_for_compaction(c);
 
             status = self.do_compaction_work(compact);
             if !status.is_ok() {
@@ -120,16 +75,14 @@ impl DBImpl {
             self.cleanup_compaction(compact);
 
             unsafe {
-                (*c).release_inputs();
+                bitcoinleveldb_dbimplinner::release_compaction_inputs(c);
             }
 
             self.delete_obsolete_files();
         }
 
-        if !c.is_null() {
-            unsafe {
-                drop(Box::from_raw(c));
-            }
+        unsafe {
+            bitcoinleveldb_dbimplinner::drop_boxed_compaction_if_non_null(c);
         }
 
         if status.is_ok() {
@@ -141,21 +94,13 @@ impl DBImpl {
         }
 
         if is_manual {
-            let m: *mut ManualCompaction = self.manual_compaction;
-            if !status.is_ok() {
-                unsafe {
-                    (*m).set_done(true);
-                }
-            }
             unsafe {
-                if !(*m).done() {
-                    // We only compacted part of the requested range.  Update *m
-                    // to the range that is left to be compacted.
-                    (*m).set_tmp_storage(manual_end);
-                    (*m).set_begin((*m).tmp_storage() as *const _);
-                }
+                bitcoinleveldb_dbimplinner::finalize_manual_compaction_request_state_and_clear_pointer(
+                    &mut self.manual_compaction,
+                    &status,
+                    manual_end,
+                );
             }
-            self.manual_compaction = core::ptr::null_mut();
         }
     }
 }

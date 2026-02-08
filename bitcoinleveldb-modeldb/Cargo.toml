@@ -10,6 +10,7 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
+tracing.workspace = true
 bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
 bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
@@ -18,3 +19,4 @@ bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
 bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }

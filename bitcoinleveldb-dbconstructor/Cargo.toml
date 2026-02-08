@@ -22,3 +22,6 @@ bitcoinleveldb-status           = { path = "../bitcoinleveldb-status" }
 bitcoinleveldb-batch            = { path = "../bitcoinleveldb-batch" }
 bitcoinleveldb-iteratorinner    = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-dbimpl           = { path = "../bitcoinleveldb-dbimpl" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
