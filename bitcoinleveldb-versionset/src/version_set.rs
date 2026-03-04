@@ -74,13 +74,35 @@ impl VersionSet {
 }
 
 impl VersionSet {
+    pub fn new(
+        dbname:      &String,
+        options:     *const Options,
+        table_cache: *mut TableCache,
+        cmp:         *const InternalKeyComparator,
+    ) -> Box<Self> {
+        trace!(
+            "VersionSet::new(boxed): enter; dbname='{}' options_ptr={:p} table_cache_ptr={:p} cmp_ptr={:p}",
+            dbname, options, table_cache, cmp
+        );
+
+        let vset = VersionSet::new_internal(dbname, options, table_cache, cmp);
+
+        trace!(
+            "VersionSet::new(boxed): exit; next_file_number={} manifest_file_number={} current={:p}",
+            vset.next_file_number(),
+            vset.manifest_file_number(),
+            vset.current()
+        );
+
+        vset
+    }
 
     pub(crate) fn new_internal(
         dbname:      &String,
         options:     *const Options,
         table_cache: *mut TableCache,
         cmp:         *const InternalKeyComparator,
-    ) -> Self {
+    ) -> Box<Self> {
         assert!(!options.is_null(), "VersionSet::new_internal: options is null");
         assert!(!cmp.is_null(), "VersionSet::new_internal: cmp is null");
 
@@ -102,6 +124,7 @@ impl VersionSet {
         let compact_pointer_init: [String; NUM_LEVELS] =
             core::array::from_fn(|_| String::new());
 
+        // Build the dummy sentinel with null links; we will patch links *after* boxing.
         let dummy_versions = VersionBuilder::default()
             .vset(Self::null_versionset_interface_ptr())
             .next(core::ptr::null_mut())
@@ -115,89 +138,94 @@ impl VersionSet {
             .build()
             .unwrap();
 
-        let mut vset: VersionSet = VersionSetStateBuilder::default()
-            .env(env_box)
-            .dbname(dbname.clone())
-            .options(options)
-            .table_cache(table_cache as *const TableCache)
-            .icmp(icmp_copy)
-            .next_file_number(2)
-            .manifest_file_number(0)
-            .last_sequence(0)
-            .log_number(0)
-            .prev_log_number(0)
-            .descriptor_file(Self::null_writable_file_ptr())
-            .descriptor_log(core::ptr::null_mut())
-            .dummy_versions(dummy_versions)
-            .current(core::ptr::null_mut())
-            .compact_pointer(compact_pointer_init)
-            .build()
-            .unwrap();
+        // IMPORTANT: heap-allocate first so that &mut *vset has a stable address.
+        let mut vset: Box<VersionSet> = Box::new(
+            VersionSetStateBuilder::default()
+                .env(env_box)
+                .dbname(dbname.clone())
+                .options(options)
+                .table_cache(table_cache as *const TableCache)
+                .icmp(icmp_copy)
+                .next_file_number(2)
+                .manifest_file_number(0)
+                .last_sequence(0)
+                .log_number(0)
+                .prev_log_number(0)
+                .descriptor_file(Self::null_writable_file_ptr())
+                .descriptor_log(core::ptr::null_mut())
+                .dummy_versions(dummy_versions)
+                .current(core::ptr::null_mut())
+                .compact_pointer(compact_pointer_init)
+                .build()
+                .unwrap(),
+        );
 
-        {
-            let vset_iface_ptr: *mut dyn VersionSetInterface =
-                (&mut vset as &mut dyn VersionSetInterface) as *mut dyn VersionSetInterface;
+        // Now it is safe to take self-referential pointers.
+        let vset_iface_ptr: *mut dyn VersionSetInterface =
+            (&mut *vset as &mut dyn VersionSetInterface) as *mut dyn VersionSetInterface;
 
-            let dummy_ptr: *mut Version = vset.dummy_versions_mut() as *mut Version;
+        let dummy_ptr: *mut Version = vset.dummy_versions_mut_ptr();
 
-            unsafe {
-                (*dummy_ptr).set_next(dummy_ptr);
-                (*dummy_ptr).set_prev(dummy_ptr);
-            }
-
-            let initial_files: [Vec<*mut FileMetaData>; NUM_LEVELS] =
-                core::array::from_fn(|_| Vec::new());
-
-            let mut initial_v = Box::new(
-                VersionBuilder::default()
-                    .vset(vset_iface_ptr)
-                    .next(core::ptr::null_mut())
-                    .prev(core::ptr::null_mut())
-                    .refs(0)
-                    .files(initial_files)
-                    .file_to_compact(core::ptr::null_mut())
-                    .file_to_compact_level(-1)
-                    .compaction_score(-1.0)
-                    .compaction_level(-1)
-                    .build()
-                    .unwrap(),
-            );
-
-            assert!(
-                *initial_v.refs() == 0,
-                "VersionSet::new_internal: initial version refs must be 0"
-            );
-
-            let v_ptr: *mut Version = &mut *initial_v;
-
-            vset.set_current(v_ptr);
-            initial_v.ref_();
-
-            initial_v.set_prev(dummy_ptr);
-            initial_v.set_next(dummy_ptr);
-
-            unsafe {
-                (*dummy_ptr).set_next(v_ptr);
-                (*dummy_ptr).set_prev(v_ptr);
-            }
-
-            let _leaked: *mut Version = Box::into_raw(initial_v);
-            let _ = _leaked;
+        unsafe {
+            // Make dummy a proper sentinel at its final (boxed) address.
+            (*dummy_ptr).set_vset(vset_iface_ptr);
+            (*dummy_ptr).set_next(dummy_ptr);
+            (*dummy_ptr).set_prev(dummy_ptr);
         }
+
+        // Create the initial current version (heap) and link it to the sentinel.
+        let initial_files: [Vec<*mut FileMetaData>; NUM_LEVELS] =
+            core::array::from_fn(|_| Vec::new());
+
+        let mut initial_v = Box::new(
+            VersionBuilder::default()
+                .vset(vset_iface_ptr)
+                .next(core::ptr::null_mut())
+                .prev(core::ptr::null_mut())
+                .refs(0)
+                .files(initial_files)
+                .file_to_compact(core::ptr::null_mut())
+                .file_to_compact_level(-1)
+                .compaction_score(-1.0)
+                .compaction_level(-1)
+                .build()
+                .unwrap(),
+        );
+
+        assert_eq!(
+            unsafe { *initial_v.refs() },
+            0,
+            "VersionSet::new_internal: initial version refs must be 0"
+        );
+
+        let v_ptr: *mut Version = &mut *initial_v;
+
+        vset.set_current(v_ptr);
+        initial_v.ref_();
+
+        initial_v.set_prev(dummy_ptr);
+        initial_v.set_next(dummy_ptr);
+
+        unsafe {
+            (*dummy_ptr).set_next(v_ptr);
+            (*dummy_ptr).set_prev(v_ptr);
+        }
+
+        let _leaked: *mut Version = Box::into_raw(initial_v);
+        let _ = _leaked;
 
         #[cfg(any(test, debug_assertions))]
         {
             vset.trace_version_list_pointers_for_versionset_move_diagnostics(
-                "VersionSet::new_internal: pre-return (stack)",
+                "VersionSet::new_internal: post-box init",
             );
             vset.assert_version_list_sentinel_consistency_for_versionset_move_diagnostics(
-                "VersionSet::new_internal: pre-return (stack)",
+                "VersionSet::new_internal: post-box init",
             );
         }
 
         vset
     }
-
 }
 
 impl VersionSetInterface for VersionSet {}

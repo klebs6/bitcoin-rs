@@ -242,7 +242,7 @@ mod version_set_builder_apply_exhaustive_test_suite {
         assert_status_ok(&st, "recover");
 
         let base = vs.current();
-        let mut builder = VersionSetBuilder::new(&mut vs as *mut VersionSet, base);
+        let mut builder = VersionSetBuilder::new(vs.as_mut() as *mut VersionSet, base);
 
         // Null edit must be a total function.
         builder.apply(core::ptr::null_mut());

@@ -143,7 +143,6 @@ impl DBWrite for DBImpl {
     }
 }
 
-
 #[cfg(test)]
 mod db_write_interface_and_smoke_suite {
     use super::*;
@@ -259,16 +258,81 @@ mod db_write_interface_and_smoke_suite {
         let _ = (_accept, _call);
     }
 
-    #[traced_test]
+    #[test]
     fn db_write_can_be_invoked_on_an_open_database_with_empty_write_batch() {
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.entry",
+            "phase=entry"
+        );
+
         let dbname = build_temp_db_path_for_db_write_suite();
-        let _ = std::fs::create_dir_all(&dbname);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.dbname.built",
+            "dbname={}",
+            dbname
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.create_dir_all.begin",
+            "dbname={}",
+            dbname
+        );
+        let __mkdir_res = std::fs::create_dir_all(&dbname);
+        match __mkdir_res {
+            Ok(()) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_write.empty_batch.create_dir_all.ok",
+                    "dbname={}",
+                    dbname
+                );
+            }
+            Err(e) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_write.empty_batch.create_dir_all.err",
+                    "dbname={} error_kind={:?} error={:?}",
+                    dbname,
+                    e.kind(),
+                    e
+                );
+            }
+        }
 
         let options: Options = build_options_for_db_write_suite();
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.options.built",
+            "dbname={}",
+            dbname
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.open_db.trace_info.before",
+            "dbname={}",
+            dbname
+        );
         tracing::info!(dbname = %dbname, "Opening DB for DBWrite smoke test");
-        let (db_ptr, open_status) = open_db_via_dbopen_for_db_write_suite(&options, &dbname);
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.open_db.call.begin",
+            "dbname={}",
+            dbname
+        );
+        let (db_ptr, open_status) = open_db_via_dbopen_for_db_write_suite(&options, &dbname);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.open_db.call.end",
+            "dbname={} open_status={} open_ok={} db_ptr_is_null={} db_ptr_data=0x{:x}",
+            dbname,
+            open_status.to_string(),
+            open_status.is_ok(),
+            db_ptr.is_null(),
+            (db_ptr as *mut ()) as usize
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.open_db.trace_debug.after",
+            "status={} db_ptr_is_null={}",
+            open_status.to_string(),
+            db_ptr.is_null()
+        );
         tracing::debug!(
             status = %open_status.to_string(),
             db_ptr_is_null = db_ptr.is_null(),
@@ -284,15 +348,47 @@ mod db_write_interface_and_smoke_suite {
             "DBOpen::open must set a non-null DB* on success"
         );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.downcast.begin",
+            "db_ptr_data=0x{:x}",
+            (db_ptr as *mut ()) as usize
+        );
         let dbimpl_ptr: *mut DBImpl = unsafe { db_ptr_to_dbimpl_mut(db_ptr) };
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.downcast.end",
+            "dbimpl_ptr=0x{:x} dbimpl_ptr_is_null={}",
+            dbimpl_ptr as usize,
+            dbimpl_ptr.is_null()
+        );
+
         assert!(
             !dbimpl_ptr.is_null(),
             "Downcasted DBImpl data pointer must be non-null"
         );
 
         let dbimpl: &mut DBImpl = unsafe { &mut *dbimpl_ptr };
-        dbimpl.clear_background_error_for_test();
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.clear_background_error.begin",
+            "dbname={}",
+            dbimpl.dbname
+        );
+        dbimpl.clear_background_error_for_test();
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.clear_background_error.end",
+            "bg_error={}",
+            dbimpl.bg_error.to_string()
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.db_state.trace_debug",
+            "dbname={} mem_ptr=0x{:x} versions_ptr=0x{:x} background_compaction_scheduled={} bg_error={}",
+            dbimpl.dbname,
+            dbimpl.mem as usize,
+            dbimpl.versions as usize,
+            dbimpl.background_compaction_scheduled,
+            dbimpl.bg_error.to_string()
+        );
         tracing::debug!(
             dbname = %dbimpl.dbname,
             mem_ptr = dbimpl.mem as usize,
@@ -303,11 +399,33 @@ mod db_write_interface_and_smoke_suite {
         );
 
         let mut batch: WriteBatch = WriteBatch::default();
-        let st: Status = <DBImpl as DBWrite>::write(dbimpl, &WriteOptions::default(), &mut batch);
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.call_write.begin",
+            "phase=call_write"
+        );
+        let st: Status = <DBImpl as DBWrite>::write(dbimpl, &WriteOptions::default(), &mut batch);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.call_write.end",
+            "status={} ok={}",
+            st.to_string(),
+            st.is_ok()
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.call_write.trace_info.after",
+            "status={}",
+            st.to_string()
+        );
         tracing::info!(status = %st.to_string(), "DBWrite::write(empty batch) returned");
         assert!(st.is_ok(), "Writing an empty batch must succeed");
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.post_state.trace_debug",
+            "background_compaction_scheduled={} bg_error={}",
+            dbimpl.background_compaction_scheduled,
+            dbimpl.bg_error.to_string()
+        );
         tracing::debug!(
             background_compaction_scheduled = dbimpl.background_compaction_scheduled,
             bg_error = %dbimpl.bg_error.to_string(),
@@ -323,20 +441,61 @@ mod db_write_interface_and_smoke_suite {
             "bg_error must remain OK after a successful write"
         );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.drop.db_ptr.begin",
+            "db_ptr_data=0x{:x}",
+            (db_ptr as *mut ()) as usize
+        );
         unsafe {
             drop(Box::from_raw(db_ptr));
         }
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.drop.db_ptr.end",
+            "db_ptr_data=0x{:x}",
+            (db_ptr as *mut ()) as usize
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.remove_dir_all.begin",
+            "dbname={}",
+            dbname
+        );
         match std::fs::remove_dir_all(&dbname) {
-            Ok(()) => tracing::debug!(path = %dbname, "Removed DBWrite smoke test directory"),
+            Ok(()) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_write.empty_batch.remove_dir_all.ok.trace_debug",
+                    "path={}",
+                    dbname
+                );
+                tracing::debug!(path = %dbname, "Removed DBWrite smoke test directory");
+            }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_write.empty_batch.remove_dir_all.not_found.trace_trace",
+                    "path={}",
+                    dbname
+                );
                 tracing::trace!(path = %dbname, "No DBWrite smoke test directory to remove");
             }
-            Err(e) => tracing::warn!(
-                path = %dbname,
-                error = %format!("{:?}", e),
-                "Failed to remove DBWrite smoke test directory"
-            ),
+            Err(e) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_write.empty_batch.remove_dir_all.err.trace_warn",
+                    "path={} error_kind={:?} error={:?}",
+                    dbname,
+                    e.kind(),
+                    e
+                );
+                tracing::warn!(
+                    path = %dbname,
+                    error = %format!("{:?}", e),
+                    "Failed to remove DBWrite smoke test directory"
+                );
+            }
         }
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_write.empty_batch.exit",
+            "phase=exit"
+        );
     }
 }

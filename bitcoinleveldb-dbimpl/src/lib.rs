@@ -45,3 +45,6 @@ x!{background_call}
 
 #[cfg(test)]
 x!{test_hooks}
+
+#[cfg(test)]
+x!{rt_probe}

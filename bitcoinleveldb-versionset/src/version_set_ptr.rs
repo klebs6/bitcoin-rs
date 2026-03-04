@@ -76,7 +76,7 @@ mod version_set_ptr_exhaustive_test_suite {
             icmp.as_ref() as *const InternalKeyComparator,
         );
 
-        let vs_ptr: *mut VersionSet = &mut vs as *mut VersionSet;
+        let vs_ptr: *mut VersionSet = vs.as_mut() as *mut VersionSet;
         let p = VersionSetPtr::new(vs_ptr);
         assert_eq!(p.as_mut_ptr() as *mut (), vs_ptr as *mut (), "VersionSetPtr must preserve the raw pointer");
 

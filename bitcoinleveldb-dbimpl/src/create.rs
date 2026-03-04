@@ -69,12 +69,12 @@ impl DBImpl {
         let background_work_finished_mutex: Mutex<()> = Mutex::new(());
         let background_work_finished_signal: Condvar = Condvar::new();
 
-        let versions_box: Box<VersionSet> = Box::new(VersionSet::new(
+        let versions_box: Box<VersionSet> = VersionSet::new(
                 &dbname,
                 stable_options_ptr,
                 table_cache as *mut TableCache,
                 &internal_comparator,
-        ));
+        );
         let versions: *mut VersionSet = Box::into_raw(versions_box);
 
         // Non-null iff successfully acquired (DBImpl::recover / DBOpen path).

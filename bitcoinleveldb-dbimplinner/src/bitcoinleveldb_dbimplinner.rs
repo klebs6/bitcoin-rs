@@ -80,58 +80,145 @@ pub unsafe fn background_compaction_required_by_memtable_or_manual_request(
     }
 }
 
+/// Invariant:
+/// - Background compaction work must not execute if `shutting_down=true`.
+/// - Background compaction work must not execute if `bg_error` is non-OK.
+/// - This decision must be deterministic w.r.t. its inputs.
 pub fn background_call_should_execute_background_compaction(shutting_down: bool, bg_error: &Status) -> bool {
-    !shutting_down && bg_error.is_ok()
+    let bg_error_ok: bool = bg_error.is_ok();
+    let should: bool = !shutting_down && bg_error_ok;
+
+    tracing::trace!(
+        target: "bitcoinleveldb.dbimplinner",
+        label = "dbimpl.background_call.should_execute",
+        shutting_down,
+        bg_error_ok,
+        should_execute = should
+    );
+
+    should
 }
 
+/// Invariant:
+/// - Must set `background_compaction_scheduled=false`.
+/// - Must be idempotent.
+/// - Must not allocate.
+/// - Must never panic.
 pub fn clear_background_compaction_scheduled_flag(background_compaction_scheduled: &mut bool) {
+    let was: bool = *background_compaction_scheduled;
     *background_compaction_scheduled = false;
+
+    tracing::trace!(
+        target: "bitcoinleveldb.dbimplinner",
+        label = "dbimpl.background_compaction_scheduled.clear",
+        was,
+        now = *background_compaction_scheduled
+    );
 }
 
+/// Invariant:
+/// - Must notify all waiters using `background_work_finished_signal`.
+/// - The notify must be coordinated via `background_work_finished_mutex` to prevent notify-before-wait.
+/// - Must not allocate.
+/// - Must never panic.
 pub fn signal_all_background_work_finished_waiters_using_coordinating_mutex(
-    background_work_finished_mutex: &parking_lot::Mutex<()>,
+    background_work_finished_mutex:  &parking_lot::Mutex<()>,
     background_work_finished_signal: &parking_lot::Condvar,
-    reason: &'static str,
+    reason: &'static str
 ) {
-    let tid = std::thread::current().id();
-
     tracing::trace!(
-        ?tid,
+        target: "bitcoinleveldb.dbimplinner",
+        label = "dbimpl.background_work_finished.notify_all.enter",
         reason,
-        "signal_all_background_work_finished_waiters_using_coordinating_mutex: begin"
+        mutex_ptr = (background_work_finished_mutex as *const parking_lot::Mutex<()>) as usize,
+        condvar_ptr = (background_work_finished_signal as *const parking_lot::Condvar) as usize
     );
 
-    {
-        let _guard = background_work_finished_mutex.lock();
-        background_work_finished_signal.notify_all();
-    }
+    let _guard = background_work_finished_mutex.lock();
+    background_work_finished_signal.notify_all();
 
     tracing::trace!(
-        ?tid,
+        target: "bitcoinleveldb.dbimplinner",
+        label = "dbimpl.background_work_finished.notify_all.exit",
         reason,
-        "signal_all_background_work_finished_waiters_using_coordinating_mutex: end"
+        mutex_ptr = (background_work_finished_mutex as *const parking_lot::Mutex<()>) as usize,
+        condvar_ptr = (background_work_finished_signal as *const parking_lot::Condvar) as usize
     );
 }
 
+/// Invariant:
+/// - `bg_error` must capture the first non-OK error and must not be overwritten by later errors.
+/// - If `bg_error` transitions from OK to non-OK, waiters on `background_work_finished_signal` must be notified.
+/// - The notification must be coordinated via `background_work_finished_mutex`.
 pub fn record_first_background_error_and_signal_waiters_if_needed(
-    bg_error: &mut Status,
-    new_error: &Status,
-    background_work_finished_mutex: &parking_lot::Mutex<()>,
-    background_work_finished_signal: &parking_lot::Condvar,
+    bg_error:                        &mut Status,
+    new_error:                       &Status,
+    background_work_finished_mutex:  &parking_lot::Mutex<()>,
+    background_work_finished_signal: &parking_lot::Condvar
 ) {
-    if bg_error.is_ok() {
+    let bg_ok_before: bool = bg_error.is_ok();
+    let new_ok: bool = new_error.is_ok();
+
+    tracing::debug!(
+        target: "bitcoinleveldb.dbimplinner",
+        label = "dbimpl.bg_error.record_first.enter",
+        bg_ok_before,
+        new_ok,
+        mutex_ptr = (background_work_finished_mutex as *const parking_lot::Mutex<()>) as usize,
+        condvar_ptr = (background_work_finished_signal as *const parking_lot::Condvar) as usize
+    );
+
+    if bg_ok_before && !new_ok {
         *bg_error = new_error.clone();
 
-        tracing::trace!(
-            status = %new_error.to_string(),
-            "record_background_error: notifying background_work_finished_signal"
+        tracing::warn!(
+            target: "bitcoinleveldb.dbimplinner",
+            label = "dbimpl.bg_error.record_first.set",
+            bg_ok_after = bg_error.is_ok()
         );
 
         signal_all_background_work_finished_waiters_using_coordinating_mutex(
             background_work_finished_mutex,
             background_work_finished_signal,
-            "record_background_error",
+            "record_first_background_error_and_signal_waiters_if_needed",
         );
+    } else {
+        tracing::trace!(
+            target: "bitcoinleveldb.dbimplinner",
+            label = "dbimpl.bg_error.record_first.noop",
+            bg_ok_before,
+            new_ok
+        );
+    }
+
+    tracing::debug!(
+        target: "bitcoinleveldb.dbimplinner",
+        label = "dbimpl.bg_error.record_first.exit",
+        bg_ok_after = bg_error.is_ok()
+    );
+}
+
+#[cfg(test)]
+mod background_compaction_scheduled_flag_clear_contract_suite_20260303 {
+    use super::*;
+
+    /// Invariant:
+    /// - Clearing the scheduled flag must set it to false.
+    /// - Clearing must be idempotent.
+    #[traced_test]
+    fn clear_background_compaction_scheduled_flag_sets_false_idempotently_20260303() {
+        tracing::info!(
+            target: "bitcoinleveldb.dbimplinner.test",
+            label = "dbimpl.background_compaction_scheduled.clear.idempotent",
+            case = "scheduled_flag_clear"
+        );
+
+        let mut scheduled: bool = true;
+        clear_background_compaction_scheduled_flag(&mut scheduled);
+        assert!(!scheduled);
+
+        clear_background_compaction_scheduled_flag(&mut scheduled);
+        assert!(!scheduled);
     }
 }
 

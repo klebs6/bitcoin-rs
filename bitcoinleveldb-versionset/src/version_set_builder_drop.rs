@@ -136,7 +136,7 @@ mod version_set_builder_drop_exhaustive_test_suite {
         let base_refs_before: i32 = unsafe { *(*base).refs() };
         debug!(base_refs_before, "base refs before builder");
 
-        let mut builder = VersionSetBuilder::new(&mut vs as *mut VersionSet, base);
+        let mut builder = VersionSetBuilder::new(vs.as_mut() as *mut VersionSet, base);
 
         // Apply an edit that queues a new file (owned by builder).
         let mut edit = VersionEdit::default();

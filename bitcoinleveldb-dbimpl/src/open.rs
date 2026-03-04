@@ -203,23 +203,101 @@ mod db_open_interface_and_smoke_suite {
 
     #[traced_test]
     fn db_open_succeeds_and_sets_non_null_dbptr_for_fresh_directory() {
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.entry",
+            "phase=entry"
+        );
+
         let dbname = build_temp_db_path_for_db_open_suite();
-        let _ = std::fs::create_dir_all(&dbname);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.dbname.built",
+            "dbname={}",
+            dbname
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.create_dir_all.begin",
+            "dbname={}",
+            dbname
+        );
+        let __mkdir_res = std::fs::create_dir_all(&dbname);
+        match __mkdir_res {
+            Ok(()) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.success_fresh_dir.create_dir_all.ok",
+                    "dbname={}",
+                    dbname
+                );
+            }
+            Err(e) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.success_fresh_dir.create_dir_all.err",
+                    "dbname={} error_kind={:?} error={:?}",
+                    dbname,
+                    e.kind(),
+                    e
+                );
+            }
+        }
 
         let options = build_options_for_db_open_suite(true, false);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.options.built",
+            "dbname={}",
+            dbname
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.opener_new.begin",
+            "dbname={}",
+            dbname
+        );
         let mut opener: DBImpl = DBImpl::new(&options, &dbname);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.opener_new.end",
+            "dbname={}",
+            dbname
+        );
 
         let mut out_db: *mut dyn DB = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.open.trace_info.before",
+            "dbname={} out_db_is_null={}",
+            dbname,
+            out_db.is_null()
+        );
         tracing::info!(dbname = %dbname, "Calling DBOpen::open(create_if_missing=true)");
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.open.call.begin",
+            "dbname={} out_db_is_null={}",
+            dbname,
+            out_db.is_null()
+        );
         let st: Status = <DBImpl as DBOpen>::open(
             &mut opener,
             &options,
             &dbname,
             &mut out_db as *mut *mut dyn DB,
         );
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.open.call.end",
+            "dbname={} status={} ok={} out_db_is_null={} out_db_data_ptr=0x{:x}",
+            dbname,
+            st.to_string(),
+            st.is_ok(),
+            out_db.is_null(),
+            (out_db as *mut ()) as usize
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.open.trace_debug.after",
+            "status={} out_db_is_null={} out_db_data_ptr=0x{:x}",
+            st.to_string(),
+            out_db.is_null(),
+            (out_db as *mut ()) as usize
+        );
         tracing::debug!(
             status = %st.to_string(),
             out_db_is_null = out_db.is_null(),
@@ -236,42 +314,160 @@ mod db_open_interface_and_smoke_suite {
             "DBOpen::open must set dbptr to a non-null DB on success"
         );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.drop.out_db.begin",
+            "out_db_data_ptr=0x{:x}",
+            (out_db as *mut ()) as usize
+        );
         unsafe {
             drop(Box::from_raw(out_db));
         }
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.drop.out_db.end",
+            "out_db_data_ptr=0x{:x}",
+            (out_db as *mut ()) as usize
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.remove_dir_all.begin",
+            "dbname={}",
+            dbname
+        );
         match std::fs::remove_dir_all(&dbname) {
-            Ok(()) => tracing::debug!(path = %dbname, "Removed DBOpen success test directory"),
+            Ok(()) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.success_fresh_dir.remove_dir_all.ok.trace_debug",
+                    "path={}",
+                    dbname
+                );
+                tracing::debug!(path = %dbname, "Removed DBOpen success test directory");
+            }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.success_fresh_dir.remove_dir_all.not_found.trace_trace",
+                    "path={}",
+                    dbname
+                );
                 tracing::trace!(path = %dbname, "No DBOpen success test directory to remove");
             }
-            Err(e) => tracing::warn!(
-                path = %dbname,
-                error = %format!("{:?}", e),
-                "Failed to remove DBOpen success test directory"
-            ),
+            Err(e) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.success_fresh_dir.remove_dir_all.err.trace_warn",
+                    "path={} error_kind={:?} error={:?}",
+                    dbname,
+                    e.kind(),
+                    e
+                );
+                tracing::warn!(
+                    path = %dbname,
+                    error = %format!("{:?}", e),
+                    "Failed to remove DBOpen success test directory"
+                );
+            }
         }
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.success_fresh_dir.exit",
+            "phase=exit"
+        );
     }
 
     #[traced_test]
     fn db_open_fails_with_error_if_exists_and_leaves_dbptr_null() {
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.entry",
+            "phase=entry"
+        );
+
         let dbname = build_temp_db_path_for_db_open_suite();
-        let _ = std::fs::create_dir_all(&dbname);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.dbname.built",
+            "dbname={}",
+            dbname
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.create_dir_all.begin",
+            "dbname={}",
+            dbname
+        );
+        let __mkdir_res = std::fs::create_dir_all(&dbname);
+        match __mkdir_res {
+            Ok(()) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.fail_if_exists.create_dir_all.ok",
+                    "dbname={}",
+                    dbname
+                );
+            }
+            Err(e) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.fail_if_exists.create_dir_all.err",
+                    "dbname={} error_kind={:?} error={:?}",
+                    dbname,
+                    e.kind(),
+                    e
+                );
+            }
+        }
 
         // First open: create the DB.
         let options_create = build_options_for_db_open_suite(true, false);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.options_create.built",
+            "dbname={}",
+            dbname
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.opener1_new.begin",
+            "phase=opener1_new"
+        );
         let mut opener1: DBImpl = DBImpl::new(&options_create, &dbname);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.opener1_new.end",
+            "phase=opener1_new_done"
+        );
+
         let mut created_db: *mut dyn DB = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.create_db.trace_info.before",
+            "dbname={} created_db_is_null={}",
+            dbname,
+            created_db.is_null()
+        );
         tracing::info!(dbname = %dbname, "Creating DB via DBOpen::open(create_if_missing=true)");
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.create_db.call.begin",
+            "dbname={} created_db_is_null={}",
+            dbname,
+            created_db.is_null()
+        );
         let st1: Status = <DBImpl as DBOpen>::open(
             &mut opener1,
             &options_create,
             &dbname,
             &mut created_db as *mut *mut dyn DB,
         );
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.create_db.call.end",
+            "dbname={} status={} ok={} created_db_is_null={} created_db_data_ptr=0x{:x}",
+            dbname,
+            st1.to_string(),
+            st1.is_ok(),
+            created_db.is_null(),
+            (created_db as *mut ()) as usize
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.create_db.trace_debug.after",
+            "status={} created_db_is_null={} created_db_data_ptr=0x{:x}",
+            st1.to_string(),
+            created_db.is_null(),
+            (created_db as *mut ()) as usize
+        );
         tracing::debug!(
             status = %st1.to_string(),
             created_db_is_null = created_db.is_null(),
@@ -282,19 +478,56 @@ mod db_open_interface_and_smoke_suite {
         assert!(st1.is_ok());
         assert!(!created_db.is_null());
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.drop.created_db.begin",
+            "created_db_data_ptr=0x{:x}",
+            (created_db as *mut ()) as usize
+        );
         unsafe {
             drop(Box::from_raw(created_db));
         }
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.drop.created_db.end",
+            "created_db_data_ptr=0x{:x}",
+            (created_db as *mut ()) as usize
+        );
 
         // Second open: error_if_exists=true should cause failure.
         let options_fail = build_options_for_db_open_suite(true, true);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.options_fail.built",
+            "dbname={}",
+            dbname
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.opener2_new.begin",
+            "phase=opener2_new"
+        );
         let mut opener2: DBImpl = DBImpl::new(&options_fail, &dbname);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.opener2_new.end",
+            "phase=opener2_new_done"
+        );
+
         let mut out_db: *mut dyn DB = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.second_open.trace_info.before",
+            "dbname={} out_db_is_null={}",
+            dbname,
+            out_db.is_null()
+        );
         tracing::info!(
             dbname = %dbname,
             "Calling DBOpen::open(error_if_exists=true); expecting failure"
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.second_open.call.begin",
+            "dbname={} out_db_is_null={}",
+            dbname,
+            out_db.is_null()
         );
         let st2: Status = <DBImpl as DBOpen>::open(
             &mut opener2,
@@ -302,7 +535,23 @@ mod db_open_interface_and_smoke_suite {
             &dbname,
             &mut out_db as *mut *mut dyn DB,
         );
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.second_open.call.end",
+            "dbname={} status={} ok={} out_db_is_null={} out_db_data_ptr=0x{:x}",
+            dbname,
+            st2.to_string(),
+            st2.is_ok(),
+            out_db.is_null(),
+            (out_db as *mut ()) as usize
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.second_open.trace_debug.after",
+            "status={} out_db_is_null={} out_db_data_ptr=0x{:x}",
+            st2.to_string(),
+            out_db.is_null(),
+            (out_db as *mut ()) as usize
+        );
         tracing::debug!(
             status = %st2.to_string(),
             out_db_is_null = out_db.is_null(),
@@ -319,16 +568,47 @@ mod db_open_interface_and_smoke_suite {
             "DBOpen::open must leave dbptr null on failure"
         );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.remove_dir_all.begin",
+            "dbname={}",
+            dbname
+        );
         match std::fs::remove_dir_all(&dbname) {
-            Ok(()) => tracing::debug!(path = %dbname, "Removed DBOpen failure test directory"),
+            Ok(()) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.fail_if_exists.remove_dir_all.ok.trace_debug",
+                    "path={}",
+                    dbname
+                );
+                tracing::debug!(path = %dbname, "Removed DBOpen failure test directory");
+            }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.fail_if_exists.remove_dir_all.not_found.trace_trace",
+                    "path={}",
+                    dbname
+                );
                 tracing::trace!(path = %dbname, "No DBOpen failure test directory to remove");
             }
-            Err(e) => tracing::warn!(
-                path = %dbname,
-                error = %format!("{:?}", e),
-                "Failed to remove DBOpen failure test directory"
-            ),
+            Err(e) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "db_open.fail_if_exists.remove_dir_all.err.trace_warn",
+                    "path={} error_kind={:?} error={:?}",
+                    dbname,
+                    e.kind(),
+                    e
+                );
+                tracing::warn!(
+                    path = %dbname,
+                    error = %format!("{:?}", e),
+                    "Failed to remove DBOpen failure test directory"
+                );
+            }
         }
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "db_open.fail_if_exists.exit",
+            "phase=exit"
+        );
     }
 }

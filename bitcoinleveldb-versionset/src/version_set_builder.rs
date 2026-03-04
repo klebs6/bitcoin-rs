@@ -179,7 +179,7 @@ mod version_set_builder_exhaustive_test_suite {
         debug!(refs_before, "base refs before builder");
 
         {
-            let builder = VersionSetBuilder::new(&mut vs as *mut VersionSet, base);
+            let builder = VersionSetBuilder::new(vs.as_mut() as *mut VersionSet, base);
 
             let refs_after: i32 = unsafe { *(*base).refs() };
             debug!(refs_after, "base refs after builder::new");

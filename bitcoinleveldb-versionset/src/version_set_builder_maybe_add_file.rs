@@ -187,9 +187,9 @@ mod version_set_builder_maybe_add_file_exhaustive_test_suite {
         assert_status_ok(&st, "recover");
 
         let base = vs.current();
-        let mut builder = VersionSetBuilder::new(&mut vs as *mut VersionSet, base);
+        let mut builder = VersionSetBuilder::new(vs.as_mut() as *mut VersionSet, base);
 
-        let vs_ptr: *mut VersionSet = &mut vs as *mut VersionSet;
+        let vs_ptr: *mut VersionSet = vs.as_mut() as *mut VersionSet;
         let v = Version::from(VersionSetPtr::new(vs_ptr));
         let v_ptr: *mut Version = Box::into_raw(Box::new(v));
 

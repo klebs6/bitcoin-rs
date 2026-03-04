@@ -229,7 +229,6 @@ members = [
     "bitcoinleveldb-versioniterator", 
     "bitcoinleveldb-versionset", 
     "bitcoinleveldb-writebatch", 
-    "bitcoinleveldb-writeoptions", 
     "bitcoinnode-interface", 
     "bitcoinnode-stats", 
     "bitcoinnode-txrelay", 

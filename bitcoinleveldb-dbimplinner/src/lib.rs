@@ -2,3 +2,4 @@
 
 x!{bitcoinleveldb_dbimplinner}
 x!{compat}
+x!{condvar_signal_ext}

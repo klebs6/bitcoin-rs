@@ -207,7 +207,7 @@ mod version_set_append_version_exhaustive_test_suite {
         debug!(old_refs_before, old_refs_after_ref, "old current refs after extra ref");
         assert_eq!(old_refs_after_ref, old_refs_before + 1, "ref_ must increment refs");
 
-        let vs_ptr: *mut VersionSet = &mut vs as *mut VersionSet;
+        let vs_ptr: *mut VersionSet = vs.as_mut() as *mut VersionSet;
         let new_v = Version::from(VersionSetPtr::new(vs_ptr));
         let new_v_ptr: *mut Version = Box::into_raw(Box::new(new_v));
 

@@ -112,7 +112,8 @@ mod current_version_exhaustive_test_suite {
         let old_cur = cur_inherent;
         unsafe { (*old_cur).ref_() };
 
-        let vs_ptr: *mut VersionSet = &mut vs as *mut VersionSet;
+        let vs_ptr: *mut VersionSet = vs.as_mut() as *mut VersionSet;
+
         let new_v = Version::from(VersionSetPtr::new(vs_ptr));
         let new_v_ptr: *mut Version = Box::into_raw(Box::new(new_v));
 

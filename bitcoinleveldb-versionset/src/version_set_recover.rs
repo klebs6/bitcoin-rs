@@ -394,7 +394,7 @@ mod version_set_recover_exhaustive_test_suite {
         options: Box<Options>,
         icmp: Box<InternalKeyComparator>,
         table_cache: Box<TableCache>,
-        versionset: Option<VersionSet>,
+        versionset: Option<Box<VersionSet>>,
     }
 
     impl VersionSetRecoverHarness {

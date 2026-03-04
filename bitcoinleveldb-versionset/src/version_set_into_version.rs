@@ -187,7 +187,7 @@ mod version_set_into_version_exhaustive_test_suite {
             );
 
             trace!(
-                vset_ptr = %format!("{:p}", &vset as *const VersionSet),
+                vset_ptr = %format!("{:p}", vset.as_ref() as *const VersionSet),
                 dbname = %dbname.as_str(),
                 "constructed VersionSet for into_version test"
             );
@@ -241,7 +241,7 @@ mod version_set_into_version_exhaustive_test_suite {
             );
 
             let expected_iface: *const dyn VersionSetInterface =
-                (&vset as &dyn VersionSetInterface) as *const dyn VersionSetInterface;
+                (vset.as_ref() as &dyn VersionSetInterface) as *const dyn VersionSetInterface;
             let expected_data: *const () = expected_iface as *const ();
             let got_data: *const () = (v.vset() as *const dyn VersionSetInterface) as *const ();
 

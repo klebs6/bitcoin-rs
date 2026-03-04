@@ -3,6 +3,12 @@ crate::ix!();
 
 impl Drop for DBImpl {
     fn drop(&mut self) {
+
+        eprintln!("DBImpl::drop enter: scheduled={} bg_error_ok={} shutting_down={}",
+          self.background_compaction_scheduled,
+          self.bg_error.is_ok(),
+          self.shutting_down.load(atomic::Ordering::Acquire));
+
         let tid = std::thread::current().id();
         let t0 = std::time::Instant::now();
 
@@ -53,6 +59,8 @@ impl Drop for DBImpl {
             unsafe {
                 self.mutex.unlock();
             }
+
+            eprintln!("DBImpl::drop waiting: scheduled still true (wait_iters={})", wait_iters);
 
             self.background_work_finished_signal.wait(&mut cv_guard);
 

@@ -343,14 +343,14 @@ mod version_set_builder_save_to_exhaustive_test_suite {
         assert!(!base.is_null(), "base must not be null");
 
         // Builder on top of base: add B=[d,f]
-        let mut builder = VersionSetBuilder::new(&mut vs as *mut VersionSet, base);
+        let mut builder = VersionSetBuilder::new(vs.as_mut() as *mut VersionSet, base);
 
         let f_b = vs.new_file_number();
         let mut edit = VersionEdit::default();
         edit.add_file(1, f_b, 10, &make_ikey("d", 1), &make_ikey("f", 1));
         builder.apply(&mut edit as *mut VersionEdit);
 
-        let vs_ptr: *mut VersionSet = &mut vs as *mut VersionSet;
+        let vs_ptr: *mut VersionSet = vs.as_mut() as *mut VersionSet;
         let out_v = Version::from(VersionSetPtr::new(vs_ptr));
         let out_ptr: *mut Version = Box::into_raw(Box::new(out_v));
 
@@ -368,7 +368,7 @@ mod version_set_builder_save_to_exhaustive_test_suite {
         }
 
         // Now test deletion: delete A, keep B and C.
-        let mut builder2 = VersionSetBuilder::new(&mut vs as *mut VersionSet, base);
+        let mut builder2 = VersionSetBuilder::new(vs.as_mut() as *mut VersionSet, base);
 
         let mut edit2 = VersionEdit::default();
         edit2.delete_file(1, f_a);

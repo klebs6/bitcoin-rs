@@ -44,6 +44,7 @@ ACTIVE := bitcoinsecp256k1-eccontext
 ACTIVE := bitcoinleveldb-harness       #loc: 297
 ACTIVE := bitcoinleveldb-dbconstructor #loc: 99
 ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
+#ACTIVE := bitcoinleveldb-versionset        
 
 # ---[leveldb-layer-1]
 #ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
@@ -260,6 +261,13 @@ INDIVIDUAL_TEST := test_new_internal_iterator_returns_non_null_iterator
 INDIVIDUAL_TEST := new_internal_iterator_increments_seed_and_returns_non_null_iterators
 #INDIVIDUAL_TEST := delete_obsolete_files
 
+#-----------------[hangs]
+INDIVIDUAL_TEST := new_internal_iterator_increments_seed_and_returns_non_null_iterators
+#INDIVIDUAL_TEST := test_new_internal_iterator_returns_non_null_iterator
+#INDIVIDUAL_TEST := new_iterator_returns_non_null_iterator_on_open_database
+#INDIVIDUAL_TEST := db_open_fails_with_error_if_exists_and_leaves_dbptr_null
+#INDIVIDUAL_TEST := db_open_succeeds_and_sets_non_null_dbptr_for_fresh_directory
+#INDIVIDUAL_TEST := db_write_can_be_invoked_on_an_open_database_with_empty_write_batch
 
 default: $(DEFAULT)
 

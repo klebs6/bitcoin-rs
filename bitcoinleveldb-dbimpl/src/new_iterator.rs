@@ -236,14 +236,79 @@ mod new_iterator_interface_and_smoke_suite {
 
     #[traced_test]
     fn new_iterator_returns_non_null_iterator_on_open_database() {
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.entry",
+            "phase=entry"
+        );
+
         let dbname = build_temp_db_path_for_new_iterator_suite();
-        let _ = std::fs::create_dir_all(&dbname);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.dbname.built",
+            "dbname={}",
+            dbname
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.create_dir_all.begin",
+            "dbname={}",
+            dbname
+        );
+        let __mkdir_res = std::fs::create_dir_all(&dbname);
+        match __mkdir_res {
+            Ok(()) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "new_iterator.smoke_non_null.create_dir_all.ok",
+                    "dbname={}",
+                    dbname
+                );
+            }
+            Err(e) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "new_iterator.smoke_non_null.create_dir_all.err",
+                    "dbname={} error_kind={:?} error={:?}",
+                    dbname,
+                    e.kind(),
+                    e
+                );
+            }
+        }
 
         let options = build_options_for_open_for_new_iterator_suite();
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.options.built",
+            "dbname={}",
+            dbname
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.open_db.trace_info.before",
+            "dbname={}",
+            dbname
+        );
         tracing::info!(dbname = %dbname, "Opening database for new_iterator smoke test");
-        let (db_ptr, open_status) = open_db_for_new_iterator_suite(&options, &dbname);
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.open_db.call.begin",
+            "dbname={}",
+            dbname
+        );
+        let (db_ptr, open_status) = open_db_for_new_iterator_suite(&options, &dbname);
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.open_db.call.end",
+            "dbname={} open_status={} open_ok={} db_ptr_is_null={} db_ptr_data=0x{:x}",
+            dbname,
+            open_status.to_string(),
+            open_status.is_ok(),
+            db_ptr.is_null(),
+            (db_ptr as *mut ()) as usize
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.open_db.trace_debug.after",
+            "status={} db_ptr_is_null={}",
+            open_status.to_string(),
+            db_ptr.is_null()
+        );
         tracing::debug!(
             status = %open_status.to_string(),
             db_ptr_is_null = db_ptr.is_null(),
@@ -253,10 +318,40 @@ mod new_iterator_interface_and_smoke_suite {
         assert!(open_status.is_ok());
         assert!(!db_ptr.is_null());
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.downcast.begin",
+            "db_ptr_data=0x{:x}",
+            (db_ptr as *mut ()) as usize
+        );
         let dbimpl_ptr: *mut DBImpl = unsafe { db_ptr_to_dbimpl_mut(db_ptr) };
-        let dbimpl: &mut DBImpl = unsafe { &mut *dbimpl_ptr };
-        dbimpl.clear_background_error_for_test();
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.downcast.end",
+            "dbimpl_ptr=0x{:x} dbimpl_ptr_is_null={}",
+            dbimpl_ptr as usize,
+            dbimpl_ptr.is_null()
+        );
 
+        let dbimpl: &mut DBImpl = unsafe { &mut *dbimpl_ptr };
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.clear_background_error.begin",
+            "dbname={}",
+            dbimpl.dbname
+        );
+        dbimpl.clear_background_error_for_test();
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.clear_background_error.end",
+            "bg_error={}",
+            dbimpl.bg_error.to_string()
+        );
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.db_state.trace_debug",
+            "dbname={} mem_ptr=0x{:x} versions_ptr=0x{:x}",
+            dbimpl.dbname,
+            dbimpl.mem as usize,
+            dbimpl.versions as usize
+        );
         tracing::debug!(
             dbname = %dbimpl.dbname,
             mem_ptr = dbimpl.mem as usize,
@@ -264,31 +359,110 @@ mod new_iterator_interface_and_smoke_suite {
             "DBImpl state before calling new_iterator"
         );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.call.trace_info.before",
+            "phase=call_new_iterator"
+        );
         tracing::info!("Calling <DBImpl as DBNewIterator>::new_iterator");
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.call.begin",
+            "phase=call_new_iterator"
+        );
         let it: *mut LevelDBIterator =
             <DBImpl as DBNewIterator>::new_iterator(dbimpl, &ReadOptions::default());
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.call.end",
+            "it_is_null={} it_data=0x{:x}",
+            it.is_null(),
+            (it as *mut ()) as usize
+        );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.call.trace_debug.after",
+            "it_is_null={} it_data=0x{:x}",
+            it.is_null(),
+            (it as *mut ()) as usize
+        );
         tracing::debug!(it_is_null = it.is_null(), "new_iterator result");
         assert!(
             !it.is_null(),
             "new_iterator must return non-null iterator on open DB"
         );
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.drop.begin",
+            "it_data=0x{:x} db_ptr_data=0x{:x}",
+            (it as *mut ()) as usize,
+            (db_ptr as *mut ()) as usize
+        );
         unsafe {
+            bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                "new_iterator.smoke_non_null.drop.it.begin",
+                "it_data=0x{:x}",
+                (it as *mut ()) as usize
+            );
             drop(Box::from_raw(it));
+            bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                "new_iterator.smoke_non_null.drop.it.end",
+                "it_data=0x{:x}",
+                (it as *mut ()) as usize
+            );
+
+            bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                "new_iterator.smoke_non_null.drop.db_ptr.begin",
+                "db_ptr_data=0x{:x}",
+                (db_ptr as *mut ()) as usize
+            );
             drop(Box::from_raw(db_ptr));
+            bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                "new_iterator.smoke_non_null.drop.db_ptr.end",
+                "db_ptr_data=0x{:x}",
+                (db_ptr as *mut ()) as usize
+            );
         }
 
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.remove_dir_all.begin",
+            "dbname={}",
+            dbname
+        );
         match std::fs::remove_dir_all(&dbname) {
-            Ok(()) => tracing::debug!(path = %dbname, "Removed new_iterator test directory"),
+            Ok(()) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "new_iterator.smoke_non_null.remove_dir_all.ok.trace_debug",
+                    "path={}",
+                    dbname
+                );
+                tracing::debug!(path = %dbname, "Removed new_iterator test directory");
+            }
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "new_iterator.smoke_non_null.remove_dir_all.not_found.trace_trace",
+                    "path={}",
+                    dbname
+                );
                 tracing::trace!(path = %dbname, "No new_iterator test directory to remove");
             }
-            Err(e) => tracing::warn!(
-                path = %dbname,
-                error = %format!("{:?}", e),
-                "Failed to remove new_iterator test directory"
-            ),
+            Err(e) => {
+                bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+                    "new_iterator.smoke_non_null.remove_dir_all.err.trace_warn",
+                    "path={} error_kind={:?} error={:?}",
+                    dbname,
+                    e.kind(),
+                    e
+                );
+                tracing::warn!(
+                    path = %dbname,
+                    error = %format!("{:?}", e),
+                    "Failed to remove new_iterator test directory"
+                );
+            }
         }
+
+        bitcoinleveldb_dbimpl_realtime_probe_20260303!(
+            "new_iterator.smoke_non_null.exit",
+            "phase=exit"
+        );
     }
 }

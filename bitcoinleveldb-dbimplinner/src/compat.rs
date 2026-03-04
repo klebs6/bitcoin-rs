@@ -27,23 +27,6 @@ impl RawMutexAssertHeldExt for RawMutex {
     }
 }
 
-pub trait CondvarSignalExt {
-    fn signal(&self);
-    fn signal_all(&self);
-}
-
-impl CondvarSignalExt for Condvar {
-    #[inline]
-    fn signal(&self) {
-        self.notify_one();
-    }
-
-    #[inline]
-    fn signal_all(&self) {
-        self.notify_all();
-    }
-}
-
 pub trait InternalKeyConstPtrDebugExt {
     fn debug_string(self) -> String;
 }

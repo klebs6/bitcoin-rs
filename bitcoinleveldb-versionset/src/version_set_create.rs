@@ -3,33 +3,6 @@ crate::ix!();
 
 impl VersionSet {
 
-    pub fn new(
-        dbname:      &String,
-        options:     *const Options,
-        table_cache: *mut TableCache,
-        cmp:         *const InternalKeyComparator
-    ) -> Self {
-
-        trace!(
-            "VersionSet::new: enter; dbname='{}' options_ptr={:p} table_cache_ptr={:p} cmp_ptr={:p}",
-            dbname,
-            options,
-            table_cache,
-            cmp
-        );
-
-        let vset = VersionSet::new_internal(dbname, options, table_cache, cmp);
-
-        trace!(
-            "VersionSet::new: exit; next_file_number={} manifest_file_number={} current={:p}",
-            vset.next_file_number(),
-            vset.manifest_file_number(),
-            vset.current()
-        );
-
-        vset
-    }
-
     #[inline]
     pub(crate) fn null_versionset_interface_ptr() -> *mut dyn VersionSetInterface {
         core::ptr::null_mut::<VersionSet>() as *mut dyn VersionSetInterface
@@ -129,7 +102,7 @@ mod version_set_create_exhaustive_test_suite {
         options: Box<Options>,
         icmp: Box<InternalKeyComparator>,
         table_cache: Box<TableCache>,
-        versionset: Option<VersionSet>,
+        versionset: Option<Box<VersionSet>>,
     }
 
     impl VersionSetCreateHarness {
@@ -249,5 +222,40 @@ mod version_set_create_exhaustive_test_suite {
 
         h.drop_versionset_now();
         remove_dir_all_best_effort(&h.dir);
+    }
+
+    #[traced_test]
+    fn versionset_remains_valid_when_box_is_moved() {
+        let dir = make_unique_temp_db_dir("versionset_move_box_check");
+        std::fs::create_dir_all(&dir).unwrap();
+        let dbname = dir.to_string_lossy().to_string();
+
+        let env = PosixEnv::shared();
+        let options_ptr = Box::new(Options::with_env(env));
+        let cmp_ptr = Box::new(make_internal_key_comparator_from_options(options_ptr.as_ref()));
+        let mut table_cache_ptr = Box::new(TableCache::new(&dbname, options_ptr.as_ref(), 4));
+
+        // construct boxed
+        let mut vset = VersionSet::new(
+            &dbname,
+            options_ptr.as_ref() as *const Options,
+            table_cache_ptr.as_mut() as *mut TableCache,
+            cmp_ptr.as_ref() as *const InternalKeyComparator,
+        );
+
+        // perform a basic operation that walks the list
+        let mut live = std::collections::HashSet::new();
+        vset.add_live_files(&mut live as *mut _);
+
+        // move the box around
+        let mut vec = Vec::new();
+        vec.push(vset);
+        let mut vset = vec.pop().unwrap();
+
+        // list traversal still works
+        let mut live2 = std::collections::HashSet::new();
+        vset.add_live_files(&mut live2 as *mut _);
+
+        assert_eq!(live, live2);
     }
 }
