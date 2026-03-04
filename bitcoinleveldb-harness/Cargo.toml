@@ -23,3 +23,4 @@ bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
 bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }

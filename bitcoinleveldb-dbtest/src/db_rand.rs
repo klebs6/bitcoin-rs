@@ -1,29 +1,6 @@
 // ---------------- [ File: bitcoinleveldb-dbtest/src/db_rand.rs ]
 crate::ix!();
 
-pub fn random_string(
-        rnd: *mut Random,
-        len: i32) -> String {
-    
-    todo!();
-        /*
-            std::string r;
-      test::RandomString(rnd, len, &r);
-      return r;
-        */
-}
-
-pub fn random_key(rnd: *mut Random) -> String {
-    
-    todo!();
-        /*
-            int len =
-          (rnd->OneIn(3) ? 1  // Short sometimes to encourage collisions
-                         : (rnd->OneIn(100) ? rnd->Skewed(10) : rnd->Uniform(10)));
-      return test::RandomKey(rnd, len);
-        */
-}
-
 #[test] fn db_test_randomized() {
     todo!();
     /*

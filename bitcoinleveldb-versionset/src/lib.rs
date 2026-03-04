@@ -1,5 +1,5 @@
-#![feature(ptr_metadata)]
 // ---------------- [ File: bitcoinleveldb-versionset/src/lib.rs ]
+#![feature(ptr_metadata)]
 #[macro_use] mod imports; use imports::*;
 
 x!{borrowed_writable_file_for_manifest}

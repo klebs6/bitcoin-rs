@@ -1076,16 +1076,6 @@ impl DBTest {
     */
 }
 
-fn key(i: i32) -> String {
-    
-    todo!();
-        /*
-            char buf[100];
-      snprintf(buf, sizeof(buf), "key%06d", i);
-      return std::string(buf);
-        */
-}
-
 #[test] fn db_test_minor_compactions_happen() {
     todo!();
     /*

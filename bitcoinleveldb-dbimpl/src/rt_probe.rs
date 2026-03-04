@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/rt_probe.rs ]
 crate::ix!();
 
 // NOTE: can reenable this in the future if we ever need it.
@@ -167,4 +168,3 @@ pub fn bitcoinleveldb_dbimpl_realtime_tracing_subscriber_install_20260303() -> b
     BITCOINLEVELDB_DBIMPL_REALTIME_TRACING_INSTALLED_20260303
         .load(std::sync::atomic::Ordering::SeqCst)
 }
-

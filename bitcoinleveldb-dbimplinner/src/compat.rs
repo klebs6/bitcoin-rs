@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimplinner/src/compat.rs ]
 crate::ix!();
 
 //----------------------------------------------[extras-compat-adapt]
@@ -63,4 +64,3 @@ impl CacheMutPtrTotalChargeExt for *mut Cache {
         unsafe { self.as_mut().map(|c| c.total_charge()).unwrap_or(0) }
     }
 }
-
