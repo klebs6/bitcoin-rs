@@ -67,20 +67,9 @@ mod compact_range_interface_contract_suite {
     use super::*;
 
     fn build_temp_db_path_for_compact_range_suite() -> String {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|e| {
-                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
-                panic!();
-            })
-            .as_nanos();
-
-        let dir = std::env::temp_dir();
-        let path = dir.join(format!("bitcoinleveldb_dbimpl_compact_range_suite_{}", nanos));
-        let s = path.to_string_lossy().to_string();
-
-        tracing::info!(path = %s, "Allocated temp db path for compact_range suite");
-        s
+        let tmp = TempDir::new().unwrap();
+        let dbname = tmp.path().to_string_lossy().to_string();
+        dbname
     }
 
     fn build_default_options_with_env_or_panic_for_compact_range_suite() -> Options {

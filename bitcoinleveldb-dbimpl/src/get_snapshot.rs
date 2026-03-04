@@ -33,18 +33,9 @@ mod db_get_snapshot_behavior_and_interface_suite {
     use bitcoinleveldb_dbinterface::{DBGetSnapshot, DBReleaseSnapshot};
 
     fn build_temp_db_path_for_snapshot_suite() -> String {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|e| {
-                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
-                panic!();
-            })
-            .as_nanos();
-
-        std::env::temp_dir()
-            .join(format!("bitcoinleveldb_dbimpl_snapshot_suite_{}", nanos))
-            .to_string_lossy()
-            .to_string()
+        let tmp = TempDir::new().unwrap();
+        let dbname = tmp.path().to_string_lossy().to_string();
+        dbname
     }
 
     #[traced_test]

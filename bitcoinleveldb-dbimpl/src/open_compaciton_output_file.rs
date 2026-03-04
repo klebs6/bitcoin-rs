@@ -63,21 +63,9 @@ mod open_compaction_output_file_interface_and_smoke_suite {
     use super::*;
 
     fn build_temp_db_path_for_open_compaction_output_file_suite() -> String {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|e| {
-                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
-                panic!();
-            })
-            .as_nanos();
-
-        std::env::temp_dir()
-            .join(format!(
-                "bitcoinleveldb_dbimpl_open_compaction_output_file_suite_{}",
-                nanos
-            ))
-            .to_string_lossy()
-            .to_string()
+        let tmp = TempDir::new().unwrap();
+        let dbname = tmp.path().to_string_lossy().to_string();
+        dbname
     }
 
     fn build_options_with_env_or_panic_for_open_compaction_output_file_suite() -> Options {

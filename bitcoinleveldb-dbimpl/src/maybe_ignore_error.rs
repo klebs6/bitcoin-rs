@@ -27,22 +27,8 @@ mod maybe_ignore_error_behavior_suite {
 
     #[traced_test]
     fn maybe_ignore_error_preserves_ok_status() {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|e| {
-                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
-                panic!();
-            })
-            .as_nanos();
-
-        let dbname: String = std::env::temp_dir()
-            .join(format!(
-                "bitcoinleveldb_dbimpl_maybe_ignore_error_ok_{}_{}",
-                std::process::id(),
-                nanos
-            ))
-            .to_string_lossy()
-            .to_string();
+        let tmp = TempDir::new().unwrap();
+        let dbname = tmp.path().to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
         let options = build_options_with_paranoid_checks(env, false);
@@ -73,22 +59,8 @@ mod maybe_ignore_error_behavior_suite {
 
     #[traced_test]
     fn maybe_ignore_error_ignores_non_ok_when_paranoid_checks_false() {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|e| {
-                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
-                panic!();
-            })
-            .as_nanos();
-
-        let dbname: String = std::env::temp_dir()
-            .join(format!(
-                "bitcoinleveldb_dbimpl_maybe_ignore_error_nonparanoid_{}_{}",
-                std::process::id(),
-                nanos
-            ))
-            .to_string_lossy()
-            .to_string();
+        let tmp = TempDir::new().unwrap();
+        let dbname = tmp.path().to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
         let options = build_options_with_paranoid_checks(env, false);
@@ -135,22 +107,8 @@ mod maybe_ignore_error_behavior_suite {
 
     #[traced_test]
     fn maybe_ignore_error_preserves_non_ok_when_paranoid_checks_true() {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|e| {
-                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
-                panic!();
-            })
-            .as_nanos();
-
-        let dbname: String = std::env::temp_dir()
-            .join(format!(
-                "bitcoinleveldb_dbimpl_maybe_ignore_error_paranoid_{}_{}",
-                std::process::id(),
-                nanos
-            ))
-            .to_string_lossy()
-            .to_string();
+        let tmp = TempDir::new().unwrap();
+        let dbname = tmp.path().to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
         let options = build_options_with_paranoid_checks(env, true);

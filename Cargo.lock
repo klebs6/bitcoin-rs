@@ -3434,6 +3434,7 @@ dependencies = [
  "bitcoinleveldb-writebatch",
  "disable_macro",
  "signal-hook",
+ "tempfile",
  "tracing",
  "tracing-appender",
  "tracing-subscriber",
@@ -3538,8 +3539,13 @@ name = "bitcoinleveldb-dbiterstate"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-key",
  "bitcoinleveldb-memtable",
  "bitcoinleveldb-version",
+ "bitcoinleveldb-versionsetinterface",
  "tracing",
 ]
 

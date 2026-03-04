@@ -52,4 +52,5 @@ bitcoinleveldb-dbimplinner = { path = "../bitcoinleveldb-dbimplinner" }
 [dev-dependencies]
 tracing-subscriber.workspace = true
 tracing-appender.workspace = true
+tempfile.workspace = true
 signal-hook.workspace = true

@@ -36,3 +36,6 @@ pub(crate) use bitcoinleveldb_filter::*;
 pub(crate) use bitcoinleveldb_posixenv::*;
 pub(crate) use bitcoinleveldb_dbiter::*;
 pub(crate) use bitcoinleveldb_dbimplinner::*;
+
+#[cfg(test)]
+pub(crate) use tempfile::TempDir;

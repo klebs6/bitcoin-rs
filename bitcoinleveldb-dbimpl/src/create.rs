@@ -131,20 +131,9 @@ mod dbimpl_construction_and_user_comparator_suite {
     use super::*;
 
     fn build_temp_db_path_for_dbimpl_create_suite() -> String {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|e| {
-                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
-                panic!();
-            })
-            .as_nanos();
-
-        let dir = std::env::temp_dir();
-        let path = dir.join(format!("bitcoinleveldb_dbimpl_create_suite_{}", nanos));
-        let s = path.to_string_lossy().to_string();
-
-        tracing::info!(path = %s, "Allocated temp db path for DBImpl::new suite");
-        s
+        let tmp = TempDir::new().unwrap();
+        let dbname = tmp.path().to_string_lossy().to_string();
+        dbname
     }
 
     fn build_options_with_explicit_bytewise_comparator_for_dbimpl_create_suite() -> Options {

@@ -44,7 +44,6 @@ ACTIVE := bitcoinsecp256k1-eccontext
 ACTIVE := bitcoinleveldb-harness       #loc: 297
 ACTIVE := bitcoinleveldb-dbconstructor #loc: 99
 ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
-#ACTIVE := bitcoinleveldb-versionset        
 
 # ---[leveldb-layer-1]
 #ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
@@ -463,3 +462,4 @@ bench:
 #ACTIVE := bitcoinleveldb-batch
 #ACTIVE := bitcoinleveldb-posixenv
 #ACTIVE := bitcoinleveldb-slice
+#ACTIVE := bitcoinleveldb-dbiterstate        #loc: 1883

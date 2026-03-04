@@ -188,21 +188,8 @@ mod build_batch_group_behavior_contract_suite {
         writers: std::collections::VecDeque<*mut DBImplWriter>,
         tmp_batch_ptr: *mut WriteBatch,
     ) -> core::mem::ManuallyDrop<DBImpl> {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|e| {
-                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
-                panic!();
-            })
-            .as_nanos();
-
-        let dir = std::env::temp_dir();
-        let path = dir.join(format!(
-            "bitcoinleveldb_dbimpl_build_batch_group_test_{}_{}",
-            std::process::id(),
-            nanos
-        ));
-        let dbname = path.to_string_lossy().to_string();
+        let tmp = TempDir::new().unwrap();
+        let dbname = tmp.path().to_string_lossy().to_string();
 
         tracing::info!(path = %dbname, "Allocated temp db path for build_batch_group tests");
 

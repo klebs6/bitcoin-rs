@@ -72,22 +72,8 @@ mod compact_mem_table_interface_and_contract_suite {
 
     #[traced_test]
     fn compact_mem_table_panics_if_imm_is_null_by_contract() {
-        let nanos = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_else(|e| {
-                tracing::error!(error = %format!("{:?}", e), "SystemTime before UNIX_EPOCH");
-                panic!();
-            })
-            .as_nanos();
-
-        let dbname = std::env::temp_dir()
-            .join(format!(
-                "bitcoinleveldb_dbimpl_compact_mem_table_contract_{}_{}",
-                std::process::id(),
-                nanos
-            ))
-            .to_string_lossy()
-            .to_string();
+        let tmp = TempDir::new().unwrap();
+        let dbname = tmp.path().to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
         let options: Options = Options::with_env(env);
