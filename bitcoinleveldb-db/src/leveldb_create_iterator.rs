@@ -67,13 +67,14 @@ mod bitcoinleveldb_db__leveldb_create_iterator_rs__exhaustive_test_suite {
     }
 
     #[traced_test]
-    fn bitcoinleveldb_db__leveldb_create_iterator_rs__valid_inputs_return_non_null_iterator() {
+    fn bitcoinleveldb_db__leveldb_create_iterator_rs__valid_inputs_return_non_null_iterator_after_first_write() {
         unsafe {
             let options: *mut LevelDBOptions = crate::leveldb_options::leveldb_options_create();
             assert!(!options.is_null());
             crate::leveldb_options::leveldb_options_set_create_if_missing(options, 1u8);
 
-            let dbname_bytes: Vec<u8> = bitcoinleveldb_db__leveldb_create_iterator_rs__make_unique_dbname_bytes();
+            let dbname_bytes: Vec<u8> =
+                bitcoinleveldb_db__leveldb_create_iterator_rs__make_unique_dbname_bytes();
             let mut err: *mut u8 = core::ptr::null_mut();
 
             let db: *mut LevelDB = crate::leveldb_open::leveldb_open(
@@ -85,14 +86,31 @@ mod bitcoinleveldb_db__leveldb_create_iterator_rs__exhaustive_test_suite {
             assert!(err.is_null());
             assert!(!db.is_null());
 
+            let wopt: *mut LevelDBWriteOptions = crate::leveldb_writeoptions::leveldb_writeoptions_create();
             let ropt: *mut LevelDBReadOptions = crate::leveldb_readoptions::leveldb_readoptions_create();
+            assert!(!wopt.is_null());
             assert!(!ropt.is_null());
+
+            let key: [u8; 2] = [b'k', b'1'];
+            let val: [u8; 2] = [b'v', b'1'];
+
+            crate::leveldb_put::leveldb_put(
+                db,
+                wopt,
+                key.as_ptr(),
+                key.len(),
+                val.as_ptr(),
+                val.len(),
+                (&mut err) as *mut *mut u8,
+            );
+            assert!(err.is_null());
 
             let it: *mut LevelDBIterator = leveldb_create_iterator(db, ropt);
             assert!(!it.is_null());
 
             crate::leveldb_iter_destroy::leveldb_iter_destroy(it);
             crate::leveldb_readoptions::leveldb_readoptions_destroy(ropt);
+            crate::leveldb_writeoptions::leveldb_writeoptions_destroy(wopt);
 
             crate::leveldb_close::leveldb_close(db);
 

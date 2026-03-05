@@ -3,7 +3,6 @@ crate::ix!();
 
 #[derive(Builder,Getters)]
 #[getset(get="pub")]
-#[builder(setter(into))]
 pub struct LevelDBComparator {
     state:      *mut c_void,
     destructor: fn(_0: *mut c_void),
@@ -122,7 +121,6 @@ impl bitcoinleveldb_comparator::SliceComparator for LevelDBComparator {
 }
 
 #[cfg(test)]
-#[disable]
 mod bitcoinleveldb_db__comparator_rs__exhaustive_test_suite {
     use super::*;
 
@@ -232,7 +230,9 @@ mod bitcoinleveldb_db__comparator_rs__exhaustive_test_suite {
     fn bitcoinleveldb_db__comparator_rs__build_comparator_or_panic(
         state_ptr: *mut c_void,
     ) -> LevelDBComparator {
-        let builder = LevelDBComparatorBuilder::default()
+        let mut binding = LevelDBComparatorBuilder::default();
+
+        let builder = binding
             .state(state_ptr)
             .destructor(bitcoinleveldb_db__comparator_rs__callback_destructor)
             .compare(bitcoinleveldb_db__comparator_rs__callback_compare)
@@ -265,7 +265,8 @@ mod bitcoinleveldb_db__comparator_rs__exhaustive_test_suite {
 
         let state_ptr: *mut c_void = Box::into_raw(state) as *mut c_void;
 
-        let cmp: LevelDBComparator = bitcoinleveldb_db__comparator_rs__build_comparator_or_panic(state_ptr);
+        let cmp: LevelDBComparator =
+            bitcoinleveldb_db__comparator_rs__build_comparator_or_panic(state_ptr);
 
         let a_bytes: Vec<u8> = vec![b'a', b'1'];
         let b_bytes: Vec<u8> = vec![b'a', b'2'];
@@ -329,7 +330,8 @@ mod bitcoinleveldb_db__comparator_rs__exhaustive_test_suite {
 
         let state_ptr: *mut c_void = Box::into_raw(state) as *mut c_void;
 
-        let cmp: LevelDBComparator = bitcoinleveldb_db__comparator_rs__build_comparator_or_panic(state_ptr);
+        let cmp: LevelDBComparator =
+            bitcoinleveldb_db__comparator_rs__build_comparator_or_panic(state_ptr);
 
         let name: Cow<'_, str> = Named::name(&cmp);
         assert_eq!(name.as_ref(), "");
@@ -366,7 +368,8 @@ mod bitcoinleveldb_db__comparator_rs__exhaustive_test_suite {
 
         let state_ptr: *mut c_void = Box::into_raw(state) as *mut c_void;
 
-        let cmp: LevelDBComparator = bitcoinleveldb_db__comparator_rs__build_comparator_or_panic(state_ptr);
+        let cmp: LevelDBComparator =
+            bitcoinleveldb_db__comparator_rs__build_comparator_or_panic(state_ptr);
 
         let name: Cow<'_, str> = Named::name(&cmp);
         assert_eq!(name.as_ref(), "bitcoinleveldb_db__comparator_rs__test_comparator");
@@ -403,7 +406,8 @@ mod bitcoinleveldb_db__comparator_rs__exhaustive_test_suite {
 
         let state_ptr: *mut c_void = Box::into_raw(state) as *mut c_void;
 
-        let cmp: LevelDBComparator = bitcoinleveldb_db__comparator_rs__build_comparator_or_panic(state_ptr);
+        let cmp: LevelDBComparator =
+            bitcoinleveldb_db__comparator_rs__build_comparator_or_panic(state_ptr);
 
         let mut key: Vec<u8> = vec![b'k', b'e', b'y'];
         let before_key: Vec<u8> = key.clone();

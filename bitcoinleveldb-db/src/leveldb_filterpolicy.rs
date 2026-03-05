@@ -26,16 +26,27 @@ pub fn leveldb_filterpolicy_create(
         "leveldb_filterpolicy_create entry"
     );
 
-    let result = Arc::new(LevelDBFilterPolicyBuilder::default()
+    let mut binding = LevelDBFilterPolicyBuilder::default();
+
+    let builder = binding
         .state(state)
         .destructor(destructor)
         .name(name)
         .create(create_filter)
-        .key_match(key_may_match)
-        .build()
-        .unwrap()
-    );
+        .key_match(key_may_match);
 
+    let built = match builder.build() {
+        Ok(policy) => policy,
+        Err(_) => {
+            error!(
+                target: "bitcoinleveldb_db::c_api",
+                "leveldb_filterpolicy_create builder failed"
+            );
+            return core::ptr::null_mut();
+        }
+    };
+
+    let result = Arc::new(built);
     let p = Arc::into_raw(result) as *mut LevelDBFilterPolicy;
 
     trace!(

@@ -3,7 +3,6 @@ crate::ix!();
 
 #[derive(Builder,Getters)]
 #[getset(get = "pub")]
-#[builder(setter(into))]
 pub struct LevelDBFilterPolicy {
     state:      *mut c_void,
     destructor: fn(_0: *mut c_void),
@@ -172,7 +171,6 @@ impl KeyMayMatch for LevelDBFilterPolicy {
 }
 
 #[cfg(test)]
-#[disable]
 mod bitcoinleveldb_db__filter_policy_rs__exhaustive_test_suite {
     use super::*;
 
@@ -333,7 +331,8 @@ mod bitcoinleveldb_db__filter_policy_rs__exhaustive_test_suite {
     fn bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(
         state_ptr: *mut c_void,
     ) -> LevelDBFilterPolicy {
-        let builder = LevelDBFilterPolicyBuilder::default()
+        let mut binding = LevelDBFilterPolicyBuilder::default();
+        let builder = binding
             .state(state_ptr)
             .destructor(bitcoinleveldb_db__filter_policy_rs__callback_destructor)
             .name(bitcoinleveldb_db__filter_policy_rs__callback_name)
@@ -366,7 +365,8 @@ mod bitcoinleveldb_db__filter_policy_rs__exhaustive_test_suite {
         });
 
         let state_ptr: *mut c_void = Box::into_raw(state) as *mut c_void;
-        let policy: LevelDBFilterPolicy = bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
+        let policy: LevelDBFilterPolicy =
+            bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
 
         let n: Cow<'_, str> = Named::name(&policy);
         assert_eq!(n.as_ref(), "bitcoinleveldb_db__filter_policy_rs__test_policy");
@@ -402,7 +402,8 @@ mod bitcoinleveldb_db__filter_policy_rs__exhaustive_test_suite {
         });
 
         let state_ptr: *mut c_void = Box::into_raw(state) as *mut c_void;
-        let policy: LevelDBFilterPolicy = bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
+        let policy: LevelDBFilterPolicy =
+            bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
 
         let k1_buf: Vec<u8> = vec![1u8, 2u8];
         let k2_buf: Vec<u8> = vec![3u8];
@@ -456,7 +457,8 @@ mod bitcoinleveldb_db__filter_policy_rs__exhaustive_test_suite {
         });
 
         let state_ptr: *mut c_void = Box::into_raw(state) as *mut c_void;
-        let policy: LevelDBFilterPolicy = bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
+        let policy: LevelDBFilterPolicy =
+            bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
 
         let mut dst: Vec<u8> = vec![9u8, 9u8];
         let before: Vec<u8> = dst.clone();
@@ -495,7 +497,8 @@ mod bitcoinleveldb_db__filter_policy_rs__exhaustive_test_suite {
         });
 
         let state_ptr: *mut c_void = Box::into_raw(state) as *mut c_void;
-        let policy: LevelDBFilterPolicy = bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
+        let policy: LevelDBFilterPolicy =
+            bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
 
         let k1_buf: Vec<u8> = vec![7u8];
         let k1: Slice = Slice::from_ptr_len(k1_buf.as_ptr(), k1_buf.len());
@@ -538,7 +541,8 @@ mod bitcoinleveldb_db__filter_policy_rs__exhaustive_test_suite {
         });
 
         let state_ptr: *mut c_void = Box::into_raw(state) as *mut c_void;
-        let policy: LevelDBFilterPolicy = bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
+        let policy: LevelDBFilterPolicy =
+            bitcoinleveldb_db__filter_policy_rs__build_policy_or_panic(state_ptr);
 
         let filter_buf: Vec<u8> = vec![0u8, 1u8];
         let filter: Slice = Slice::from_ptr_len(filter_buf.as_ptr(), filter_buf.len());

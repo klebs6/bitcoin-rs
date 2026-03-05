@@ -3375,6 +3375,7 @@ dependencies = [
  "bitcoinleveldb-log",
  "bitcoinleveldb-options",
  "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-repair",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",

@@ -27,6 +27,7 @@ bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
+bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

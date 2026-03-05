@@ -13,15 +13,26 @@ pub fn leveldb_comparator_create(
         "leveldb_comparator_create entry"
     );
 
-    let result = Arc::new(LevelDBComparatorBuilder::default()
+    let mut binding = LevelDBComparatorBuilder::default();
+
+    let builder = binding
         .state(state)
         .destructor(destructor)
         .compare(compare)
-        .name(name)
-        .build()
-        .unwrap()
-    );
+        .name(name);
 
+    let built = match builder.build() {
+        Ok(comparator) => comparator,
+        Err(_) => {
+            error!(
+                target: "bitcoinleveldb_db::c_api",
+                "leveldb_comparator_create builder failed"
+            );
+            return core::ptr::null_mut();
+        }
+    };
+
+    let result = Arc::new(built);
     let p = Arc::into_raw(result) as *mut LevelDBComparator;
 
     trace!(
