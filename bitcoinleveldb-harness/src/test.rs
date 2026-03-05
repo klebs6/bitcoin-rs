@@ -4,15 +4,6 @@ crate::ix!();
 impl Harness {
 
     pub fn test(&mut self, rnd: *mut Random) {
-        /*
-            std::vector<std::string> keys;
-        KVMap data;
-        constructor_->Finish(options_, &keys, &data);
-
-        TestForwardScan(keys, data);
-        TestBackwardScan(keys, data);
-        TestRandomAccess(rnd, keys, data);
-        */
         trace!(target: "bitcoinleveldb_harness", label = "bitcoinleveldb_harness.harness.test.entry");
 
         const TAG_MASK: usize = BITCOINLEVELDB_HARNESS_CONSTRUCTOR_PTR_TAG_MASK;

@@ -2,18 +2,24 @@
 crate::ix!();
 
 pub fn leveldb_cache_create_lru(capacity: usize) -> *mut LevelDBCache {
-    trace!(target: "bitcoinleveldb_db::c_api", "leveldb_cache_create_lru entry"; "capacity" => capacity);
+    trace!(
+        target: "bitcoinleveldb_db::c_api",
+        capacity = capacity,
+        "leveldb_cache_create_lru entry"
+    );
 
     unsafe {
         let raw: *mut Cache = new_lru_cache(capacity);
         if raw.is_null() {
-            error!(target: "bitcoinleveldb_db::c_api", "new_lru_cache returned null");
+            error!(
+                target: "bitcoinleveldb_db::c_api",
+                "new_lru_cache returned null"
+            );
             return core::ptr::null_mut();
         }
 
-        // Take ownership of the allocated Cache and move it into Rc<RefCell<Cache>>.
         let boxed: Box<Cache> = Box::from_raw(raw);
-        let cache_val: Cache = Box::into_inner(boxed);
+        let cache_val: Cache = *boxed;
 
         let wrapper = Box::new(LevelDBCache {
             rep: Rc::new(RefCell::new(cache_val)),
@@ -21,23 +27,29 @@ pub fn leveldb_cache_create_lru(capacity: usize) -> *mut LevelDBCache {
 
         let p = Box::into_raw(wrapper);
 
-        trace!(target: "bitcoinleveldb_db::c_api", "leveldb_cache_create_lru exit"; "ptr" => (p as usize));
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            ptr = (p as usize),
+            "leveldb_cache_create_lru exit"
+        );
         p
     }
 
-    /*
-        leveldb_cache_t* c = new leveldb_cache_t;
-      c->rep = NewLRUCache(capacity);
-      return c;
-    */
 }
 
 pub fn leveldb_cache_destroy(cache: *mut LevelDBCache) {
-    trace!(target: "bitcoinleveldb_db::c_api", "leveldb_cache_destroy entry"; "cache_is_null" => cache.is_null());
+    trace!(
+        target: "bitcoinleveldb_db::c_api",
+        cache_is_null = cache.is_null(),
+        "leveldb_cache_destroy entry"
+    );
 
     unsafe {
         if cache.is_null() {
-            warn!(target: "bitcoinleveldb_db::c_api", "leveldb_cache_destroy called with null cache");
+            warn!(
+                target: "bitcoinleveldb_db::c_api",
+                "leveldb_cache_destroy called with null cache"
+            );
             return;
         }
 

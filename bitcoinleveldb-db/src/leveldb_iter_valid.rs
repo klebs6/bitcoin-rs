@@ -2,15 +2,11 @@
 crate::ix!();
 
 pub fn leveldb_iter_valid(iter: *const LevelDBIterator) -> u8 {
-    
-    todo!();
-        /*
-            return iter->rep->Valid();
-        */
-}
-
-pub fn leveldb_iter_valid(iter: *const LevelDBIterator) -> u8 {
-    trace!(target: "bitcoinleveldb_db::c_api", "leveldb_iter_valid entry"; "iter_is_null" => iter.is_null());
+    trace!(
+        target: "bitcoinleveldb_db::c_api",
+        iter_is_null = iter.is_null(),
+        "leveldb_iter_valid entry"
+    );
 
     unsafe {
         if iter.is_null() {
@@ -18,7 +14,7 @@ pub fn leveldb_iter_valid(iter: *const LevelDBIterator) -> u8 {
         }
 
         let v = (*iter).valid();
-        (v as u8)
+        v as u8
     }
 
     /*

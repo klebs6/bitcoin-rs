@@ -2,25 +2,35 @@
 crate::ix!();
 
 pub fn leveldb_create_snapshot(db: *mut LevelDB) -> *const LevelDBSnapshot {
-    trace!(target: "bitcoinleveldb_db::c_api", "leveldb_create_snapshot entry"; "db_is_null" => db.is_null());
+    trace!(
+        target: "bitcoinleveldb_db::c_api",
+        db_is_null = db.is_null(),
+        "leveldb_create_snapshot entry"
+    );
 
     unsafe {
         if db.is_null() {
-            error!(target: "bitcoinleveldb_db::c_api", "leveldb_create_snapshot received null db");
+            error!(
+                target: "bitcoinleveldb_db::c_api",
+                "leveldb_create_snapshot received null db"
+            );
             return core::ptr::null();
         }
 
-        let snap: Rc<dyn Snapshot> = (*db).rep.borrow_mut().get_snapshot();
-        let wrapper = Box::new(LevelDBSnapshot { rep: snap });
-        let p = Box::into_raw(wrapper) as *const LevelDBSnapshot;
+        let snap: Box<dyn Snapshot> = (*db).rep().borrow_mut().get_snapshot();
+        let wrapper = Arc::new(LevelDBSnapshot {
+            db_rep: (*db).rep().clone(),
+            snap: Some(snap),
+        });
 
-        trace!(target: "bitcoinleveldb_db::c_api", "leveldb_create_snapshot exit"; "ptr" => (p as usize));
+        let p = Arc::into_raw(wrapper) as *const LevelDBSnapshot;
+
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            ptr = (p as usize),
+            "leveldb_create_snapshot exit"
+        );
         p
     }
 
-    /*
-        leveldb_snapshot_t* result = new leveldb_snapshot_t;
-      result->rep = db->rep->GetSnapshot();
-      return result;
-    */
 }

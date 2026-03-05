@@ -10,3 +10,6 @@ pub(crate) use bitcoinleveldb_iterator::*;
 pub(crate) use bitcoinleveldb_rand::*;
 pub(crate) use bitcoinleveldb_dbimpl::*;
 pub(crate) use bitcoinleveldb_filter::*;
+//pub(crate) use bitcoinleveldb_test::*;
+pub(crate) use bitcoinleveldb_env::*;
+pub(crate) use bitcoinleveldb_posixenv::*;

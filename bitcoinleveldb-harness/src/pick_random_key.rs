@@ -4,32 +4,6 @@ crate::ix!();
 impl Harness {
 
     pub fn pick_random_key(&mut self, rnd: *mut Random, keys: &[String]) -> String {
-        /*
-            if (keys.empty()) {
-          return "foo";
-        } else {
-          const int index = rnd->Uniform(keys.size());
-          std::string result = keys[index];
-          switch (rnd->Uniform(3)) {
-            case 0:
-              // Return an existing key
-              break;
-            case 1: {
-              // Attempt to return something smaller than an existing key
-              if (!result.empty() && result[result.size() - 1] > '\0') {
-                result[result.size() - 1]--;
-              }
-              break;
-            }
-            case 2: {
-              // Return something larger than an existing key
-              Increment(options_.comparator, &result);
-              break;
-            }
-          }
-          return result;
-        }
-        */
         if keys.is_empty() {
             "foo".to_owned()
         } else {
@@ -70,7 +44,8 @@ impl Harness {
                     const BYTEWISE: &str = "leveldb.BytewiseComparator";
                     const REVERSE: &str = "leveldb.ReverseBytewiseComparator";
 
-                    let name: &str = self.options.comparator().name();
+                    let comparator_name: Cow<'_, str> = self.options.comparator().name();
+                    let name: &str = comparator_name.as_ref();
 
                     if name == BYTEWISE {
                         result.push('\0');

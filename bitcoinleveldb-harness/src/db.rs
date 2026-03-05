@@ -7,9 +7,6 @@ impl Harness {
        Returns nullptr if not running against a DB
       */
     pub fn db(&self) -> Option<*mut dyn DB> {
-        /*
-            return constructor_->db();
-        */
         const TAG_MASK: usize = BITCOINLEVELDB_HARNESS_CONSTRUCTOR_PTR_TAG_MASK;
 
         let tagged: usize = self.constructor as usize;

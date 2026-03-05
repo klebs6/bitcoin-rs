@@ -16,16 +16,6 @@ pub fn between(val: u64, low: u64, high: u64) -> bool {
         high = high
     );
 
-    /*
-        bool result = (val >= low) && (val <= high);
-        if (!result) {
-          fprintf(stderr, "Value %llu is not in range [%llu, %llu]\n",
-                  (unsigned long long)(val), (unsigned long long)(low),
-                  (unsigned long long)(high));
-        }
-        return result;
-    */
-
     let result: bool = (val >= low) && (val <= high);
 
     match result {

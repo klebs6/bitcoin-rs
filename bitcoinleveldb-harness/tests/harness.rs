@@ -4,6 +4,16 @@ use bitcoinleveldb_dbtest::{TestArgs, TestType};
 use bitcoinleveldb_harness::Harness;
 use bitcoinleveldb_iterator::{LevelDBIterator, MockStubIterator};
 use bitcoinleveldb_rand::Random;
+use bitcoinleveldb_slice::*;
+use bitcoinleveldb_dbimplinner::*;
+use bitcoinleveldb_block::*;
+use bitcoinleveldb_blockcontents::*;
+use bitcoinleveldb_iteratorinner::*;
+
+/// Stable LevelDB constant used by the upstream harness.
+///
+/// Invariant: LevelDB uses 7 levels by default (`config::kNumLevels == 7` in C++).
+const BITCOINLEVELDB_HARNESS_TEST_K_NUM_LEVELS: i32 = 7;
 
 fn c_atoi_decimal_i32(bytes: &[u8]) -> i32 {
     let mut i: usize = 0;
@@ -57,29 +67,32 @@ fn leveldb_test_random_seed() -> u32 {
         return seed_i32 as u32;
     }
 
-    let now = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_else(|_| std::time::Duration::from_secs(0));
+    let now = match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
+        Ok(d) => d,
+        Err(_e) => std::time::Duration::from_secs(0),
+    };
 
     now.as_secs() as u32
 }
 
 fn leveldb_test_random_string_into(rnd: &mut Random, len: u32, dst: &mut String) -> Slice {
     let n: usize = len as usize;
+
     dst.clear();
-    dst.resize(n, 0);
+    dst.reserve(n);
 
     let mut i: usize = 0;
     while i < n {
-        dst[i] = b' ' + (rnd.uniform(95) as u8);
+        let b: u8 = b' ' + (rnd.uniform(95) as u8);
+        dst.push(b as char);
         i += 1;
     }
 
-    Slice::from(dst.as_slice())
+    Slice::from(dst.as_bytes())
 }
 
 fn leveldb_test_random_key(rnd: &mut Random, len: u32) -> String {
-    let mut dst: String = Vec::new();
+    let mut dst: String = String::new();
     let _ = leveldb_test_random_string_into(rnd, len, &mut dst);
     dst
 }
@@ -183,7 +196,10 @@ fn harness_empty() {
         Test(&rnd);
       }
     */
-    tracing::info!(target: "bitcoinleveldb_harness_tests", "harness_empty");
+    tracing::info!(
+        target: "bitcoinleveldb_harness_tests",
+        label = "bitcoinleveldb_harness_tests.harness_empty",
+    );
 
     let mut harness = Harness::default();
     let test_args = harness_test_arg_matrix();
@@ -227,19 +243,19 @@ fn harness_zero_restart_points_in_block() {
     */
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
-        "harness_zero_restart_points_in_block"
+        label = "bitcoinleveldb_harness_tests.harness_zero_restart_points_in_block",
     );
 
     let mut data: [u8; core::mem::size_of::<u32>()] = [0u8; core::mem::size_of::<u32>()];
 
     let mut contents: BlockContents = BlockContents::default();
-    contents.data = Slice::from(data.as_slice());
-    contents.cachable = false;
-    contents.heap_allocated = false;
+    contents.set_data(Slice::from(data.as_slice()));
+    contents.set_cachable(false);
+    contents.set_heap_allocated(false);
 
-    let block: Block = Block::new(contents);
+    let block: Block = Block::new(&contents);
 
-    let iter: *mut LevelDBIterator = block.new_iterator(BytewiseComparator());
+    let iter: *mut LevelDBIterator = block.new_iterator(bytewise_comparator());
     unsafe {
         (&mut *iter).seek_to_first();
         assert!(!(&*iter).valid());
@@ -269,7 +285,10 @@ fn harness_simple_empty_key() {
         Test(&rnd);
       }
     */
-    tracing::info!(target: "bitcoinleveldb_harness_tests", "harness_simple_empty_key");
+    tracing::info!(
+        target: "bitcoinleveldb_harness_tests",
+        label = "bitcoinleveldb_harness_tests.harness_simple_empty_key",
+    );
 
     let mut harness = Harness::default();
     let test_args = harness_test_arg_matrix();
@@ -280,8 +299,8 @@ fn harness_simple_empty_key() {
         harness.init(&test_args[i as usize]);
 
         let mut rnd = Random::new(leveldb_test_random_seed().wrapping_add(1));
-        let k: String = Vec::new();
-        let v: String = b"v".to_vec();
+        let k: String = String::new();
+        let v: String = "v".to_owned();
         harness.add(&k, &v);
         harness.test(&mut rnd as *mut Random);
 
@@ -299,7 +318,10 @@ fn harness_simple_single() {
         Test(&rnd);
       }
     */
-    tracing::info!(target: "bitcoinleveldb_harness_tests", "harness_simple_single");
+    tracing::info!(
+        target: "bitcoinleveldb_harness_tests",
+        label = "bitcoinleveldb_harness_tests.harness_simple_single",
+    );
 
     let mut harness = Harness::default();
     let test_args = harness_test_arg_matrix();
@@ -310,8 +332,8 @@ fn harness_simple_single() {
         harness.init(&test_args[i as usize]);
 
         let mut rnd = Random::new(leveldb_test_random_seed().wrapping_add(2));
-        let k: String = b"abc".to_vec();
-        let v: String = b"v".to_vec();
+        let k: String = "abc".to_owned();
+        let v: String = "v".to_owned();
         harness.add(&k, &v);
         harness.test(&mut rnd as *mut Random);
 
@@ -331,7 +353,10 @@ fn harness_simple_multi() {
         Test(&rnd);
       }
     */
-    tracing::info!(target: "bitcoinleveldb_harness_tests", "harness_simple_multi");
+    tracing::info!(
+        target: "bitcoinleveldb_harness_tests",
+        label = "bitcoinleveldb_harness_tests.harness_simple_multi",
+    );
 
     let mut harness = Harness::default();
     let test_args = harness_test_arg_matrix();
@@ -343,16 +368,16 @@ fn harness_simple_multi() {
 
         let mut rnd = Random::new(leveldb_test_random_seed().wrapping_add(3));
 
-        let k1: String = b"abc".to_vec();
-        let v1: String = b"v".to_vec();
+        let k1: String = "abc".to_owned();
+        let v1: String = "v".to_owned();
         harness.add(&k1, &v1);
 
-        let k2: String = b"abcd".to_vec();
-        let v2: String = b"v".to_vec();
+        let k2: String = "abcd".to_owned();
+        let v2: String = "v".to_owned();
         harness.add(&k2, &v2);
 
-        let k3: String = b"ac".to_vec();
-        let v3: String = b"v2".to_vec();
+        let k3: String = "ac".to_owned();
+        let v3: String = "v2".to_owned();
         harness.add(&k3, &v3);
 
         harness.test(&mut rnd as *mut Random);
@@ -373,7 +398,7 @@ fn harness_simple_special_key() {
     */
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
-        "harness_simple_special_key"
+        label = "bitcoinleveldb_harness_tests.harness_simple_special_key",
     );
 
     let mut harness = Harness::default();
@@ -386,8 +411,9 @@ fn harness_simple_special_key() {
 
         let mut rnd = Random::new(leveldb_test_random_seed().wrapping_add(4));
 
-        let k: String = vec![0xff, 0xff];
-        let v: String = b"v3".to_vec();
+        // Rust `String` must be valid UTF-8; use a non-ASCII key to exercise unusual byte sequences.
+        let k: String = "\u{00FF}\u{00FF}".to_owned();
+        let v: String = "v3".to_owned();
         harness.add(&k, &v);
 
         harness.test(&mut rnd as *mut Random);
@@ -417,7 +443,10 @@ fn harness_randomized() {
         }
       }
     */
-    tracing::info!(target: "bitcoinleveldb_harness_tests", "harness_randomized");
+    tracing::info!(
+        target: "bitcoinleveldb_harness_tests",
+        label = "bitcoinleveldb_harness_tests.harness_randomized",
+    );
 
     let mut harness = Harness::default();
     let test_args = harness_test_arg_matrix();
@@ -434,23 +463,23 @@ fn harness_randomized() {
             if (num_entries % 10) == 0 {
                 tracing::info!(
                     target: "bitcoinleveldb_harness_tests",
-                    "case {} of {}: num_entries = {}",
-                    (i + 1),
-                    k_num_test_args,
-                    num_entries
+                    label = "bitcoinleveldb_harness_tests.harness_randomized.case_progress",
+                    case_index = (i + 1),
+                    case_count = k_num_test_args,
+                    num_entries = num_entries,
                 );
             }
 
             let mut e: i32 = 0;
             while e < num_entries {
-                let mut v: String = Vec::new();
+                let mut v: String = String::new();
 
                 let klen: u32 = rnd.skewed(4);
                 let vlen: u32 = rnd.skewed(5);
 
                 let key: String = leveldb_test_random_key(&mut rnd, klen);
-                let value: String =
-                    leveldb_test_random_string_into(&mut rnd, vlen, &mut v).to_string();
+                let _ = leveldb_test_random_string_into(&mut rnd, vlen, &mut v);
+                let value: String = v.clone();
 
                 harness.add(&key, &value);
 
@@ -493,7 +522,7 @@ fn harness_randomized_longdb() {
     */
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
-        "harness_randomized_longdb"
+        label = "bitcoinleveldb_harness_tests.harness_randomized_longdb",
     );
 
     let mut rnd = Random::new(leveldb_test_random_seed());
@@ -511,13 +540,14 @@ fn harness_randomized_longdb() {
 
     let mut e: i32 = 0;
     while e < num_entries {
-        let mut v: String = Vec::new();
+        let mut v: String = String::new();
 
         let klen: u32 = rnd.skewed(4);
         let vlen: u32 = rnd.skewed(5);
 
         let key: String = leveldb_test_random_key(&mut rnd, klen);
-        let value: String = leveldb_test_random_string_into(&mut rnd, vlen, &mut v).to_string();
+        let _ = leveldb_test_random_string_into(&mut rnd, vlen, &mut v);
+        let value: String = v.clone();
 
         harness.add(&key, &value);
 
@@ -529,20 +559,27 @@ fn harness_randomized_longdb() {
     // We must have created enough data to force merging
     let mut files: i32 = 0;
 
-    let db_ptr = harness.db();
-    assert!(!db_ptr.is_null());
+    let db_ptr = match harness.db() {
+        Some(p) => p,
+        None => {
+            tracing::error!(
+                target: "bitcoinleveldb_harness_tests",
+                label = "bitcoinleveldb_harness_tests.harness_randomized_longdb.db_pointer_missing",
+            );
+            panic!();
+        }
+    };
 
     let mut level: i32 = 0;
-    while level < config::kNumLevels {
-        let mut value: String = Vec::new();
-
-        let name: std::string::String = format!("leveldb.num-files-at-level{}", level);
+    while level < BITCOINLEVELDB_HARNESS_TEST_K_NUM_LEVELS {
+        let mut value: String = String::new();
+        let name: String = format!("leveldb.num-files-at-level{}", level);
 
         unsafe {
             assert!((&mut *db_ptr).get_property(&name, &mut value as *mut String));
         }
 
-        files += c_atoi_decimal_i32(value.as_slice());
+        files += c_atoi_decimal_i32(value.as_bytes());
 
         level += 1;
     }
@@ -554,7 +591,7 @@ fn harness_randomized_longdb() {
 fn harness_db_pointer_is_null_when_not_db_test() {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
-        "harness_db_pointer_is_null_when_not_db_test"
+        label = "bitcoinleveldb_harness_tests.harness_db_pointer_is_null_when_not_db_test",
     );
 
     let mut harness = Harness::default();
@@ -567,7 +604,7 @@ fn harness_db_pointer_is_null_when_not_db_test() {
 
         if args.ty != TestType::DB_TEST {
             let db_ptr = harness.db();
-            assert!(db_ptr.is_null());
+            assert!(db_ptr.is_none());
         }
 
         i += 1;
@@ -578,7 +615,7 @@ fn harness_db_pointer_is_null_when_not_db_test() {
 fn harness_reinitialization_switches_constructor_types_without_panicking() {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
-        "harness_reinitialization_switches_constructor_types_without_panicking"
+        label = "bitcoinleveldb_harness_tests.harness_reinitialization_switches_constructor_types_without_panicking",
     );
 
     let mut harness = Harness::default();
@@ -592,8 +629,8 @@ fn harness_reinitialization_switches_constructor_types_without_panicking() {
 
     let mut rnd1 = Random::new(leveldb_test_random_seed().wrapping_add(11));
 
-    let k1: String = b"k1".to_vec();
-    let v1: String = b"v1".to_vec();
+    let k1: String = "k1".to_owned();
+    let v1: String = "v1".to_owned();
     harness.add(&k1, &v1);
 
     harness.test(&mut rnd1 as *mut Random);
@@ -613,7 +650,7 @@ fn harness_reinitialization_switches_constructor_types_without_panicking() {
 fn harness_duplicate_keys_overwrite_previous_value() {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
-        "harness_duplicate_keys_overwrite_previous_value"
+        label = "bitcoinleveldb_harness_tests.harness_duplicate_keys_overwrite_previous_value",
     );
 
     let mut harness = Harness::default();
@@ -626,9 +663,9 @@ fn harness_duplicate_keys_overwrite_previous_value() {
 
         let mut rnd = Random::new(leveldb_test_random_seed().wrapping_add(21));
 
-        let k: String = b"dup".to_vec();
-        let v1: String = b"v1".to_vec();
-        let v2: String = b"v2".to_vec();
+        let k: String = "dup".to_owned();
+        let v1: String = "v1".to_owned();
+        let v2: String = "v2".to_owned();
 
         harness.add(&k, &v1);
         harness.add(&k, &v2);
@@ -643,7 +680,7 @@ fn harness_duplicate_keys_overwrite_previous_value() {
 fn harness_handles_embedded_nul_and_empty_values() {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
-        "harness_handles_embedded_nul_and_empty_values"
+        label = "bitcoinleveldb_harness_tests.harness_handles_embedded_nul_and_empty_values",
     );
 
     let mut harness = Harness::default();
@@ -656,12 +693,12 @@ fn harness_handles_embedded_nul_and_empty_values() {
 
         let mut rnd = Random::new(leveldb_test_random_seed().wrapping_add(31));
 
-        let k1: String = vec![0x00, 0x01, 0x00];
-        let v1: String = Vec::new();
+        let k1: String = "\u{0000}\u{0001}\u{0000}".to_owned();
+        let v1: String = String::new();
         harness.add(&k1, &v1);
 
-        let k2: String = vec![0x00, 0x01, 0x00, 0xff];
-        let v2: String = vec![0xff];
+        let k2: String = "\u{0000}\u{0001}\u{0000}\u{00FF}".to_owned();
+        let v2: String = "\u{00FF}".to_owned();
         harness.add(&k2, &v2);
 
         harness.test(&mut rnd as *mut Random);
@@ -674,7 +711,7 @@ fn harness_handles_embedded_nul_and_empty_values() {
 fn harness_pick_random_key_returns_foo_on_empty_keyset() {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
-        "harness_pick_random_key_returns_foo_on_empty_keyset"
+        label = "bitcoinleveldb_harness_tests.harness_pick_random_key_returns_foo_on_empty_keyset",
     );
 
     let mut harness = Harness::default();
@@ -691,14 +728,14 @@ fn harness_pick_random_key_returns_foo_on_empty_keyset() {
     let keys: Vec<String> = Vec::new();
     let k = harness.pick_random_key(&mut rnd as *mut Random, &keys);
 
-    assert_eq!(k, b"foo".to_vec());
+    assert_eq!(k, "foo");
 }
 
 #[traced_test]
 fn harness_to_string_formats_iterator_entries_and_end_sentinel() {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
-        "harness_to_string_formats_iterator_entries_and_end_sentinel"
+        label = "bitcoinleveldb_harness_tests.harness_to_string_formats_iterator_entries_and_end_sentinel",
     );
 
     let mut harness = Harness::default();
@@ -706,11 +743,11 @@ fn harness_to_string_formats_iterator_entries_and_end_sentinel() {
     let inner = MockStubIterator::new_with_entries(&[(b"k".as_slice(), b"v".as_slice())]);
     let mut iter = LevelDBIterator::new(Some(Box::new(inner)));
 
-    let end = harness.to_string((&iter as *const LevelDBIterator) as *const LevelDBIterator);
-    assert_eq!(end, b"END".to_vec());
+    let end = harness.to_string(&iter as *const LevelDBIterator);
+    assert_eq!(end, "END");
 
     iter.seek_to_first();
 
-    let got = harness.to_string((&iter as *const LevelDBIterator) as *const LevelDBIterator);
-    assert_eq!(got, b"'k->v'".to_vec());
+    let got = harness.to_string(&iter as *const LevelDBIterator);
+    assert_eq!(got, "'k->v'");
 }

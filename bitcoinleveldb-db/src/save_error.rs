@@ -1,28 +1,12 @@
 // ---------------- [ File: bitcoinleveldb-db/src/save_error.rs ]
 crate::ix!();
 
-pub fn save_error(
-        errptr: *mut *mut u8,
-        s:      &Status) -> bool {
-    
-    todo!();
-        /*
-            assert(errptr != nullptr);
-          if (s.ok()) {
-            return false;
-          } else if (*errptr == nullptr) {
-            *errptr = strdup(s.ToString().c_str());
-          } else {
-            // TODO(sanjay): Merge with existing error?
-            free(*errptr);
-            *errptr = strdup(s.ToString().c_str());
-          }
-          return true;
-        */
-}
-
 pub fn save_error(errptr: *mut *mut u8, s: &Status) -> bool {
-    trace!(target: "bitcoinleveldb_db::c_api", "SaveError entry"; "status_ok" => s.is_ok());
+    trace!(
+        target: "bitcoinleveldb_db::c_api",
+        status_ok = s.is_ok(),
+        "SaveError entry"
+    );
 
     assert!(!errptr.is_null());
 
@@ -39,7 +23,11 @@ pub fn save_error(errptr: *mut *mut u8, s: &Status) -> bool {
     unsafe {
         let new_err: *mut u8 = libc::malloc(len + 1) as *mut u8;
         if new_err.is_null() {
-            error!(target: "bitcoinleveldb_db::c_api", "SaveError malloc failed"; "len" => len + 1);
+            error!(
+                target: "bitcoinleveldb_db::c_api",
+                len = (len + 1),
+                "SaveError malloc failed"
+            );
             // Best-effort: keep existing errptr unchanged.
             return true;
         }
@@ -58,7 +46,11 @@ pub fn save_error(errptr: *mut *mut u8, s: &Status) -> bool {
         }
     }
 
-    trace!(target: "bitcoinleveldb_db::c_api", "SaveError exit (error stored)"; "msg_len" => len);
+    trace!(
+        target: "bitcoinleveldb_db::c_api",
+        msg_len = len,
+        "SaveError exit (error stored)"
+    );
 
     true
 

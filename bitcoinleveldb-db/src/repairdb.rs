@@ -10,18 +10,12 @@ crate::ix!();
   | calling this function on a database that
   | contains important information.
   */
-pub fn repairdb(
-        dbname:  &String,
-        options: &Options) -> crate::Status {
-    
-    todo!();
-        /*
-        
-        */
-}
-
 pub fn repairdb(dbname: &String, options: &Options) -> crate::Status {
-    trace!(target: "bitcoinleveldb_db::db", "RepairDB entry"; "dbname" => %dbname);
+    trace!(
+        target: "bitcoinleveldb_db::db",
+        dbname = %dbname,
+        "RepairDB entry"
+    );
 
     // NOTE: A full line-for-line port of LevelDB's RepairDB requires the translated
     // repairer implementation (repair.cc and its dependencies). If/when that module
@@ -32,11 +26,13 @@ pub fn repairdb(dbname: &String, options: &Options) -> crate::Status {
     let msg = Slice::from_str("RepairDB not supported (repair implementation unavailable)");
     let result = crate::Status::not_supported(&msg, None);
 
-    warn!(target: "bitcoinleveldb_db::db", "RepairDB not supported"; "dbname" => %dbname, "status" => %result.to_string(), "has_env" => options.env().is_some());
+    warn!(
+        target: "bitcoinleveldb_db::db",
+        dbname = %dbname,
+        status = %result.to_string(),
+        has_env = options.env().is_some(),
+        "RepairDB not supported"
+    );
 
     result
-
-    /*
-    
-    */
 }

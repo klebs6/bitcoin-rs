@@ -4,9 +4,6 @@ crate::ix!();
 impl Harness {
 
     pub fn add(&mut self, key_: &String, value: &String) {
-        /*
-            constructor_->Add(key, value);
-        */
         trace!(
             target: "bitcoinleveldb_harness",
             label = "bitcoinleveldb_harness.harness.add.entry",

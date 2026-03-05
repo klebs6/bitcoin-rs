@@ -4,18 +4,6 @@ crate::ix!();
 impl Harness {
 
     pub fn test_backward_scan(&mut self, keys: &[String], data: &KVMap) {
-        /*
-            Iterator* iter = constructor_->NewIterator();
-        ASSERT_TRUE(!iter->Valid());
-        iter->SeekToLast();
-        for (KVMap::const_reverse_iterator model_iter = data.rbegin();
-             model_iter != data.rend(); ++model_iter) {
-          ASSERT_EQ(ToString(data, model_iter), ToString(iter));
-          iter->Prev();
-        }
-        ASSERT_TRUE(!iter->Valid());
-        delete iter;
-        */
         trace!(
             target: "bitcoinleveldb_harness",
             label = "bitcoinleveldb_harness.harness.test_backward_scan.entry",

@@ -4,7 +4,7 @@
 x!{comparator}
 x!{copy_string}
 x!{db}
-x!{destroy_db}
+//x!{destroy_db}
 x!{filter_policy}
 x!{leveldb_approximate_sizes}
 x!{leveldb_cache}

@@ -4,18 +4,6 @@ crate::ix!();
 impl Harness {
 
     pub fn test_forward_scan(&mut self, keys: &[String], data: &KVMap) {
-        /*
-            Iterator* iter = constructor_->NewIterator();
-        ASSERT_TRUE(!iter->Valid());
-        iter->SeekToFirst();
-        for (KVMap::const_iterator model_iter = data.begin();
-             model_iter != data.end(); ++model_iter) {
-          ASSERT_EQ(ToString(data, model_iter), ToString(iter));
-          iter->Next();
-        }
-        ASSERT_TRUE(!iter->Valid());
-        delete iter;
-        */
         trace!(
             target: "bitcoinleveldb_harness",
             label = "bitcoinleveldb_harness.harness.test_forward_scan.entry",

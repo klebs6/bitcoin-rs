@@ -14,3 +14,6 @@ pub(crate) use bitcoinleveldb_slice::*;
 pub(crate) use bitcoinleveldb_iteratorinner::*;
 pub(crate) use core::slice;
 pub(crate) use bitcoinleveldb_status::*;
+pub(crate) use bitcoinleveldb_dbimplinner::*;
+pub(crate) use bitcoinleveldb_blockcontents::*;
+pub(crate) use bitcoinleveldb_block::*;

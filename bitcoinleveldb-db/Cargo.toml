@@ -11,6 +11,14 @@ bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
 bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
+bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
+bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
+bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

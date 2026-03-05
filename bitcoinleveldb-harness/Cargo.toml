@@ -24,3 +24,10 @@ bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+tracing.workspace = true
+traced-test.workspace = true
+tracing-subscriber.workspace = true
+tracing-setup.workspace = true
+bitcoinleveldb-dbimplinner = { path = "../bitcoinleveldb-dbimplinner" }
+bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents" }
+bitcoinleveldb-block = { path = "../bitcoinleveldb-block" }

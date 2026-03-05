@@ -3,31 +3,25 @@ crate::ix!();
 
 pub struct LevelDBFilterPolicy {
     state:      *mut c_void,
-
-    destructor: fn(_0: *mut c_void) -> c_void,
-
+    destructor: fn(_0: *mut c_void),
     name:       fn(_0: *mut c_void) -> *const u8,
-
     create:     fn(
-            _0:               *mut c_void,
-            key_array:        *const *const u8,
-            key_length_array: *const usize,
-            num_keys:         i32,
-            filter_length:    *mut usize
+        _0:               *mut c_void,
+        key_array:        *const *const u8,
+        key_length_array: *const usize,
+        num_keys:         i32,
+        filter_length:    *mut usize,
     ) -> *mut u8,
-
     key_match:  fn(
-            _0:            *mut c_void,
-            key_:           *const u8,
-            length:        usize,
-            filter:        *const u8,
-            filter_length: usize
+        *0:            *mut c_void,
+        key*:          *const u8,
+        length:        usize,
+        filter:        *const u8,
+        filter_length: usize,
     ) -> u8,
 }
 
-impl FilterPolicy for LevelDBFilterPolicy {
-
-}
+impl FilterPolicy for LevelDBFilterPolicy {}
 
 impl Drop for LevelDBFilterPolicy {
     fn drop(&mut self) {
@@ -37,21 +31,41 @@ impl Drop for LevelDBFilterPolicy {
     }
 }
 
-impl Name for LevelDBFilterPolicy {
-    fn name(&self) -> *const u8 {
+impl Named for LevelDBFilterPolicy {
+    fn name(&self) -> Cow<'_, str> {
         trace!(target: "bitcoinleveldb_db::c_api", "LevelDBFilterPolicy::name entry");
         let p = (self.name)(self.state);
-        trace!(target: "bitcoinleveldb_db::c_api", "LevelDBFilterPolicy::name exit"; "ptr_is_null" => p.is_null());
-        p
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            ptr_is_null = p.is_null(),
+            "LevelDBFilterPolicy::name exit"
+        );
+
+        if p.is_null() {
+            return Cow::Borrowed("");
+        }
+
+        unsafe {
+            let cstr = std::ffi::CStr::from_ptr(p as *const core::ffi::c_char);
+            Cow::Owned(cstr.to_string_lossy().into_owned())
+        }
     }
+
 }
 
 impl CreateFilter for LevelDBFilterPolicy {
     fn create_filter(&self, keys: *const Slice, n: i32, dst: &mut Vec<u8>) {
-        trace!(target: "bitcoinleveldb_db::c_api", "LevelDBFilterPolicy::create_filter entry"; "n" => n);
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            n = n,
+            "LevelDBFilterPolicy::create_filter entry"
+        );
 
         if n <= 0 {
-            trace!(target: "bitcoinleveldb_db::c_api", "LevelDBFilterPolicy::create_filter early-exit (n<=0)");
+            trace!(
+                target: "bitcoinleveldb_db::c_api",
+                "LevelDBFilterPolicy::create_filter early-exit (n<=0)"
+            );
             return;
         }
 
@@ -79,17 +93,17 @@ impl CreateFilter for LevelDBFilterPolicy {
 
             trace!(
                 target: "bitcoinleveldb_db::c_api",
-                "LevelDBFilterPolicy::create_filter callback returned";
-                "len" => len,
-                "filter_is_null" => filter.is_null()
+                len = len,
+                filter_is_null = filter.is_null(),
+                "LevelDBFilterPolicy::create_filter callback returned"
             );
 
             if len > 0 {
                 if filter.is_null() {
                     error!(
                         target: "bitcoinleveldb_db::c_api",
-                        "LevelDBFilterPolicy::create_filter callback returned null with nonzero length";
-                        "len" => len
+                        len = len,
+                        "LevelDBFilterPolicy::create_filter callback returned null with nonzero length"
                     );
                 } else {
                     let bytes: &[u8] = core::slice::from_raw_parts(filter as *const u8, len);
@@ -102,7 +116,11 @@ impl CreateFilter for LevelDBFilterPolicy {
             }
         }
 
-        trace!(target: "bitcoinleveldb_db::c_api", "LevelDBFilterPolicy::create_filter exit"; "dst_len" => dst.len());
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            dst_len = dst.len(),
+            "LevelDBFilterPolicy::create_filter exit"
+        );
 
         /*
             std::vector<const char*> key_pointers(n);
@@ -123,9 +141,9 @@ impl KeyMayMatch for LevelDBFilterPolicy {
     fn key_may_match(&self, key_: &Slice, filter: &Slice) -> bool {
         trace!(
             target: "bitcoinleveldb_db::c_api",
-            "LevelDBFilterPolicy::key_may_match entry";
-            "key_len" => *key_.size(),
-            "filter_len" => *filter.size()
+            key_len = *key_.size(),
+            filter_len = *filter.size(),
+            "LevelDBFilterPolicy::key_may_match entry"
         );
 
         let r = (self.key_match)(
@@ -138,7 +156,12 @@ impl KeyMayMatch for LevelDBFilterPolicy {
 
         let ok = r != 0;
 
-        trace!(target: "bitcoinleveldb_db::c_api", "LevelDBFilterPolicy::key_may_match exit"; "result_u8" => r, "ok" => ok);
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            result_u8 = r,
+            ok = ok,
+            "LevelDBFilterPolicy::key_may_match exit"
+        );
 
         ok
     }

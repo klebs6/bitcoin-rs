@@ -8,13 +8,6 @@ impl Harness {
         _data: &KVMap,
         it: Option<(&'a String, &'a String)>,
     ) -> String {
-        /*
-            if (it == data.end()) {
-          return "END";
-        } else {
-          return "'" + it->first + "->" + it->second + "'";
-        }
-        */
         match it {
             None => "END".to_owned(),
             Some((k, v)) => {
@@ -30,24 +23,10 @@ impl Harness {
     }
 
     pub fn to_string_rev<'a>(&self, data: &KVMap, it: Option<(&'a String, &'a String)>) -> String {
-        /*
-            if (it == data.rend()) {
-          return "END";
-        } else {
-          return "'" + it->first + "->" + it->second + "'";
-        }
-        */
         self.to_string_with_data(data, it)
     }
 
     pub fn to_string(&self, it: *const LevelDBIterator) -> String {
-        /*
-            if (!it->Valid()) {
-          return "END";
-        } else {
-          return "'" + it->key().ToString() + "->" + it->value().ToString() + "'";
-        }
-        */
         unsafe {
             if !(&*it).valid() {
                 "END".to_owned()

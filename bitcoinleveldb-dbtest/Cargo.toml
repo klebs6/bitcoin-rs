@@ -22,3 +22,6 @@ bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand" }
 bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl" }
 bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
+#bitcoinleveldb-test = { path = "../bitcoinleveldb-test" }

@@ -1,33 +1,20 @@
 // ---------------- [ File: bitcoinleveldb-db/src/leveldb_property_value.rs ]
 crate::ix!();
 
-pub fn leveldb_property_value(
-        db:       *mut LevelDB,
-        propname: *const u8) -> *mut u8 {
-    
-    todo!();
-        /*
-            std::string tmp;
-          if (db->rep->GetProperty(Slice(propname), &tmp)) {
-            // We use strdup() since we expect human readable output.
-            return strdup(tmp.c_str());
-          } else {
-            return nullptr;
-          }
-        */
-}
-
 pub fn leveldb_property_value(db: *mut LevelDB, propname: *const u8) -> *mut u8 {
     trace!(
         target: "bitcoinleveldb_db::c_api",
-        "leveldb_property_value entry";
-        "db_is_null" => db.is_null(),
-        "propname_is_null" => propname.is_null()
+        db_is_null = db.is_null(),
+        propname_is_null = propname.is_null(),
+        "leveldb_property_value entry"
     );
 
     unsafe {
         if db.is_null() || propname.is_null() {
-            error!(target: "bitcoinleveldb_db::c_api", "leveldb_property_value received null input");
+            error!(
+                target: "bitcoinleveldb_db::c_api",
+                "leveldb_property_value received null input"
+            );
             return core::ptr::null_mut();
         }
 
@@ -36,18 +23,21 @@ pub fn leveldb_property_value(db: *mut LevelDB, propname: *const u8) -> *mut u8 
 
         let mut tmp: String = String::new();
         let ok = (*db)
-            .rep
+            .rep()
             .borrow_mut()
             .get_property(prop.as_str(), (&mut tmp) as *mut String);
 
         if ok {
-            // strdup-like: allocate NUL-terminated copy.
             let bytes = tmp.as_bytes();
             let len = bytes.len();
 
             let out = libc::malloc(len + 1) as *mut u8;
             if out.is_null() {
-                error!(target: "bitcoinleveldb_db::c_api", "leveldb_property_value malloc failed"; "len" => len + 1);
+                error!(
+                    target: "bitcoinleveldb_db::c_api",
+                    len = (len + 1),
+                    "leveldb_property_value malloc failed"
+                );
                 return core::ptr::null_mut();
             }
 
@@ -56,21 +46,21 @@ pub fn leveldb_property_value(db: *mut LevelDB, propname: *const u8) -> *mut u8 
             }
             *out.add(len) = 0;
 
-            trace!(target: "bitcoinleveldb_db::c_api", "leveldb_property_value ok"; "len" => len, "ptr" => (out as usize));
+            trace!(
+                target: "bitcoinleveldb_db::c_api",
+                len = len,
+                ptr = (out as usize),
+                "leveldb_property_value ok"
+            );
             out
         } else {
-            trace!(target: "bitcoinleveldb_db::c_api", "leveldb_property_value not found/unsupported"; "property" => %prop);
+            trace!(
+                target: "bitcoinleveldb_db::c_api",
+                property = %prop,
+                "leveldb_property_value not found/unsupported"
+            );
             core::ptr::null_mut()
         }
     }
 
-    /*
-        std::string tmp;
-      if (db->rep->GetProperty(Slice(propname), &tmp)) {
-        // We use strdup() since we expect human readable output.
-        return strdup(tmp.c_str());
-      } else {
-        return nullptr;
-      }
-    */
 }

@@ -1,6 +1,7 @@
 // ---------------- [ File: bitcoinleveldb-dbtest/src/test_type.rs ]
 crate::ix!();
 
+#[derive(Debug,Copy,Clone,PartialEq,Hash,Eq)]
 pub enum TestType { 
     TABLE_TEST, 
     BLOCK_TEST, 

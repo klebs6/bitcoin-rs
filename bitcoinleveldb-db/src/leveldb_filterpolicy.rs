@@ -3,7 +3,7 @@ crate::ix!();
 
 pub fn leveldb_filterpolicy_create(
     state: *mut core::ffi::c_void,
-    destructor: fn(_0: *mut core::ffi::c_void) -> core::ffi::c_void,
+    destructor: fn(_0: *mut core::ffi::c_void),
     create_filter: fn(
         _0: *mut core::ffi::c_void,
         key_array: *const *const u8,
@@ -20,7 +20,11 @@ pub fn leveldb_filterpolicy_create(
     ) -> u8,
     name: fn(_0: *mut core::ffi::c_void) -> *const u8,
 ) -> *mut LevelDBFilterPolicy {
-    trace!(target: "bitcoinleveldb_db::c_api", "leveldb_filterpolicy_create entry"; "state_is_null" => state.is_null());
+    trace!(
+        target: "bitcoinleveldb_db::c_api",
+        state_is_null = state.is_null(),
+        "leveldb_filterpolicy_create entry"
+    );
 
     let result = Arc::new(LevelDBFilterPolicy {
         state,
@@ -32,16 +36,27 @@ pub fn leveldb_filterpolicy_create(
 
     let p = Arc::into_raw(result) as *mut LevelDBFilterPolicy;
 
-    trace!(target: "bitcoinleveldb_db::c_api", "leveldb_filterpolicy_create exit"; "ptr" => (p as usize));
+    trace!(
+        target: "bitcoinleveldb_db::c_api",
+        ptr = (p as usize),
+        "leveldb_filterpolicy_create exit"
+    );
     p
 }
 
 pub fn leveldb_filterpolicy_destroy(filter: *mut LevelDBFilterPolicy) {
-    trace!(target: "bitcoinleveldb_db::c_api", "leveldb_filterpolicy_destroy entry"; "filter_is_null" => filter.is_null());
+    trace!(
+        target: "bitcoinleveldb_db::c_api",
+        filter_is_null = filter.is_null(),
+        "leveldb_filterpolicy_destroy entry"
+    );
 
     unsafe {
         if filter.is_null() {
-            warn!(target: "bitcoinleveldb_db::c_api", "leveldb_filterpolicy_destroy called with null filter");
+            warn!(
+                target: "bitcoinleveldb_db::c_api",
+                "leveldb_filterpolicy_destroy called with null filter"
+            );
             return;
         }
 

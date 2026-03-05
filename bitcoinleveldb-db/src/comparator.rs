@@ -2,25 +2,26 @@
 crate::ix!();
 
 pub struct LevelDBComparator {
-
     state:      *mut c_void,
-
-    destructor: fn(_0: *mut c_void) -> c_void,
-
+    destructor: fn(_0: *mut c_void),
     compare:    fn(
-            _0:   *mut c_void,
-            a:    *const u8,
-            alen: usize,
-            b:    *const u8,
-            blen: usize
+        _0:   *mut c_void,
+        a:    *const u8,
+        alen: usize,
+        b:    *const u8,
+        blen: usize,
     ) -> i32,
-
     name:       fn(_0: *mut c_void) -> *const u8,
 }
 
 impl Comparator<Slice> for LevelDBComparator {
     fn compare(&self, a: &Slice, b: &Slice) -> core::cmp::Ordering {
-        trace!(target: "bitcoinleveldb_db::c_api", "LevelDBComparator::compare entry"; "alen" => *a.size(), "blen" => *b.size());
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            alen = *a.size(),
+            blen = *b.size(),
+            "LevelDBComparator::compare entry"
+        );
 
         let r = (self.compare)(
             self.state,
@@ -38,17 +39,24 @@ impl Comparator<Slice> for LevelDBComparator {
             core::cmp::Ordering::Equal
         };
 
-        trace!(target: "bitcoinleveldb_db::c_api", "LevelDBComparator::compare exit"; "result" => r, "ordering" => ?ord);
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            result = r,
+            ordering = ?ord,
+            "LevelDBComparator::compare exit"
+        );
 
         ord
     }
+
 }
 
 impl FindShortestSeparator for LevelDBComparator {
-    /// No-ops since the C binding does not support
-    /// key shortening methods.
     fn find_shortest_separator(&self, _0: &mut Vec<u8>, _1: &[u8]) {
-        trace!(target: "bitcoinleveldb_db::c_api", "LevelDBComparator::find_shortest_separator noop");
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            "LevelDBComparator::find_shortest_separator noop"
+        );
     }
 }
 
@@ -60,11 +68,26 @@ impl Drop for LevelDBComparator {
     }
 }
 
-impl Name for LevelDBComparator {
-    fn name(&self) -> *const u8 {
+impl Named for LevelDBComparator {
+    fn name(&self) -> Cow<'_, str> {
         trace!(target: "bitcoinleveldb_db::c_api", "LevelDBComparator::name entry");
         let p = (self.name)(self.state);
-        trace!(target: "bitcoinleveldb_db::c_api", "LevelDBComparator::name exit"; "ptr_is_null" => p.is_null());
-        p
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            ptr_is_null = p.is_null(),
+            "LevelDBComparator::name exit"
+        );
+
+        if p.is_null() {
+            return Cow::Borrowed("");
+        }
+
+        unsafe {
+            let cstr = std::ffi::CStr::from_ptr(p as *const core::ffi::c_char);
+            Cow::Owned(cstr.to_string_lossy().into_owned())
+        }
     }
+
 }
+
+impl SliceComparator for LevelDBComparator {}

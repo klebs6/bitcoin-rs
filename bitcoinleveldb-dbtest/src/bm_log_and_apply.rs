@@ -1,22 +1,22 @@
 // ---------------- [ File: bitcoinleveldb-dbtest/src/bm_log_and_apply.rs ]
 crate::ix!();
 
-/// Deterministically renders `num` as **exactly 16** base-10 digits with leading zeros.
-/// Invariant: output is ASCII-only and stable across refactors; no locale dependence.
+/// Invariant: the returned key is exactly 16 ASCII decimal digits, left-padded with `0`.
+/// Postcondition: `make_key(num).len() == 16` for all `num`.
 pub fn make_key(num: u32) -> String {
-    tracing::trace!(
-        target: "bitcoinleveldb.dbtest",
-        event = "bm_log_and_apply.make_key.entry",
-        num = num
+    trace!(
+        target: "bitcoinleveldb-dbtest",
+        label = "make_key.entry",
+        num
     );
 
     let s = format!("{:016}", num);
 
-    tracing::trace!(
-        target: "bitcoinleveldb.dbtest",
-        event = "bm_log_and_apply.make_key.exit",
-        num = num,
-        key = %s
+    trace!(
+        target: "bitcoinleveldb-dbtest",
+        label = "make_key.exit",
+        num,
+        out_len = s.len()
     );
 
     s

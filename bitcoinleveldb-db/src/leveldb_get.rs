@@ -11,16 +11,19 @@ pub fn leveldb_get(
 ) -> *mut u8 {
     trace!(
         target: "bitcoinleveldb_db::c_api",
-        "leveldb_get entry";
-        "db_is_null" => db.is_null(),
-        "options_is_null" => options.is_null(),
-        "vallen_is_null" => vallen.is_null(),
-        "keylen" => keylen
+        db_is_null = db.is_null(),
+        options_is_null = options.is_null(),
+        vallen_is_null = vallen.is_null(),
+        keylen = keylen,
+        "leveldb_get entry"
     );
 
     unsafe {
         if db.is_null() || options.is_null() || vallen.is_null() {
-            error!(target: "bitcoinleveldb_db::c_api", "leveldb_get received null input pointer");
+            error!(
+                target: "bitcoinleveldb_db::c_api",
+                "leveldb_get received null input pointer"
+            );
             let msg = Slice::from_str("leveldb_get: null input");
             let s = crate::Status::invalid_argument(&msg, None);
             let _ = save_error(errptr, &s);
@@ -30,25 +33,34 @@ pub fn leveldb_get(
             return core::ptr::null_mut();
         }
 
-        let ropt: &ReadOptions = &(*options).rep;
+        let ropt: &ReadOptions = (*options).rep();
         let k = Slice::from_ptr_len(key_, keylen);
 
         let mut tmp: String = String::new();
         let status = (*db)
-            .rep
+            .rep()
             .borrow_mut()
             .get(ropt, &k, (&mut tmp) as *mut String);
 
         if status.is_ok() {
             *vallen = tmp.as_bytes().len();
             let out = copy_string(&tmp);
-            trace!(target: "bitcoinleveldb_db::c_api", "leveldb_get ok"; "vallen" => *vallen, "out_is_null" => out.is_null());
+            trace!(
+                target: "bitcoinleveldb_db::c_api",
+                vallen = *vallen,
+                out_is_null = out.is_null(),
+                "leveldb_get ok"
+            );
             out
         } else {
             *vallen = 0;
             if !status.is_not_found() {
                 let _ = save_error(errptr, &status);
-                warn!(target: "bitcoinleveldb_db::c_api", "leveldb_get failed (non-NotFound)"; "status" => %status.to_string());
+                warn!(
+                    target: "bitcoinleveldb_db::c_api",
+                    status = %status.to_string(),
+                    "leveldb_get failed (non-NotFound)"
+                );
             } else {
                 trace!(target: "bitcoinleveldb_db::c_api", "leveldb_get not found");
             }
@@ -56,19 +68,4 @@ pub fn leveldb_get(
         }
     }
 
-    /*
-        char* result = nullptr;
-      std::string tmp;
-      Status s = db->rep->Get(options->rep, Slice(key, keylen), &tmp);
-      if (s.ok()) {
-        *vallen = tmp.size();
-        result = CopyString(tmp);
-      } else {
-        *vallen = 0;
-        if (!s.IsNotFound()) {
-          SaveError(errptr, s);
-        }
-      }
-      return result;
-    */
 }

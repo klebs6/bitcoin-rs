@@ -12,12 +12,6 @@ pub fn key(i: i32) -> String {
         i = i
     );
 
-    /*
-        char buf[100];
-        snprintf(buf, sizeof(buf), "key%06d", i);
-        return std::string(buf);
-    */
-
     let s = format!("key{:06}", i);
 
     tracing::trace!(
