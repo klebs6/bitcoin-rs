@@ -55,3 +55,25 @@ pub fn leveldb_cache_destroy(cache: *mut LevelDBCache) {
 
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_cache_destroy exit");
 }
+
+#[cfg(test)]
+mod bitcoinleveldb_db__leveldb_cache_rs__exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_cache_rs__create_destroy_lru_cache_roundtrip_is_safe() {
+        unsafe {
+            let cache: *mut LevelDBCache = leveldb_cache_create_lru(0usize);
+            assert!(!cache.is_null());
+            leveldb_cache_destroy(cache);
+        }
+    }
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_cache_rs__destroy_null_cache_is_safe() {
+        unsafe {
+            leveldb_cache_destroy(core::ptr::null_mut());
+        }
+        assert!(true);
+    }
+}

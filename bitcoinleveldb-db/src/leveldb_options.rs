@@ -395,3 +395,109 @@ pub fn leveldb_options_set_compression(opt: *mut LevelDBOptions, t: i32) {
     }
 
 }
+
+#[cfg(test)]
+mod bitcoinleveldb_db__leveldb_options_rs__exhaustive_test_suite {
+    use super::*;
+
+    fn bitcoinleveldb_db__leveldb_options_rs__make_unique_dbname_bytes() -> Vec<u8> {
+        let unique_box: Box<u8> = Box::new(0u8);
+        let unique_ptr: *mut u8 = Box::into_raw(unique_box);
+        let unique_tag: usize = unique_ptr as usize;
+        unsafe {
+            drop(Box::from_raw(unique_ptr));
+        }
+
+        let name: String = format!("bitcoinleveldb_db__options_rs__testdb_{}", unique_tag);
+        let mut bytes: Vec<u8> = name.into_bytes();
+        bytes.push(0u8);
+        bytes
+    }
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_options_rs__create_destroy_roundtrip_is_safe() {
+        unsafe {
+            let opt: *mut LevelDBOptions = leveldb_options_create();
+            assert!(!opt.is_null());
+            leveldb_options_destroy(opt);
+        }
+    }
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_options_rs__all_setters_handle_null_opt_pointer_without_crashing() {
+        unsafe {
+            leveldb_options_set_comparator(core::ptr::null_mut(), core::ptr::null_mut());
+            leveldb_options_set_filter_policy(core::ptr::null_mut(), core::ptr::null_mut());
+            leveldb_options_set_create_if_missing(core::ptr::null_mut(), 1u8);
+            leveldb_options_set_error_if_exists(core::ptr::null_mut(), 1u8);
+            leveldb_options_set_paranoid_checks(core::ptr::null_mut(), 1u8);
+            leveldb_options_set_env(core::ptr::null_mut(), core::ptr::null_mut());
+            leveldb_options_set_info_log(core::ptr::null_mut(), core::ptr::null_mut());
+            leveldb_options_set_write_buffer_size(core::ptr::null_mut(), 4096usize);
+            leveldb_options_set_max_open_files(core::ptr::null_mut(), 100);
+            leveldb_options_set_cache(core::ptr::null_mut(), core::ptr::null_mut());
+            leveldb_options_set_block_size(core::ptr::null_mut(), 4096usize);
+            leveldb_options_set_block_restart_interval(core::ptr::null_mut(), 16);
+            leveldb_options_set_max_file_size(core::ptr::null_mut(), 2 * 1024 * 1024usize);
+            leveldb_options_set_compression(core::ptr::null_mut(), 0);
+        }
+
+        assert!(true);
+    }
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_options_rs__setters_accept_valid_handles_and_open_smoke_works() {
+        unsafe {
+            let opt: *mut LevelDBOptions = leveldb_options_create();
+            assert!(!opt.is_null());
+
+            leveldb_options_set_create_if_missing(opt, 1u8);
+            leveldb_options_set_error_if_exists(opt, 0u8);
+            leveldb_options_set_paranoid_checks(opt, 0u8);
+            leveldb_options_set_write_buffer_size(opt, 64 * 1024usize);
+            leveldb_options_set_max_open_files(opt, 32);
+            leveldb_options_set_block_size(opt, 4096usize);
+            leveldb_options_set_block_restart_interval(opt, 16);
+            leveldb_options_set_max_file_size(opt, 2 * 1024 * 1024usize);
+            leveldb_options_set_compression(opt, 99);
+
+            let env: *mut LevelDBEnv = crate::leveldb_env::leveldb_create_default_env();
+            assert!(!env.is_null());
+            leveldb_options_set_env(opt, env);
+            crate::leveldb_env::leveldb_env_destroy(env);
+
+            let cache: *mut LevelDBCache = crate::leveldb_cache::leveldb_cache_create_lru(8 * 1024usize);
+            assert!(!cache.is_null());
+            leveldb_options_set_cache(opt, cache);
+
+            let dbname_bytes: Vec<u8> = bitcoinleveldb_db__leveldb_options_rs__make_unique_dbname_bytes();
+            let mut err: *mut u8 = core::ptr::null_mut();
+
+            let db: *mut LevelDB = crate::leveldb_open::leveldb_open(
+                opt,
+                dbname_bytes.as_ptr(),
+                (&mut err) as *mut *mut u8,
+            );
+
+            assert!(err.is_null());
+            assert!(!db.is_null());
+
+            crate::leveldb_close::leveldb_close(db);
+
+            let mut derr: *mut u8 = core::ptr::null_mut();
+            crate::leveldb_destroy_db::leveldb_destroy_db(
+                opt,
+                dbname_bytes.as_ptr(),
+                (&mut derr) as *mut *mut u8,
+            );
+
+            if !derr.is_null() {
+                crate::leveldb_free::leveldb_free(derr as *mut core::ffi::c_void);
+            }
+
+            leveldb_options_destroy(opt);
+
+            crate::leveldb_cache::leveldb_cache_destroy(cache);
+        }
+    }
+}

@@ -3374,10 +3374,16 @@ dependencies = [
  "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-log",
  "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",
  "derive_builder",
+ "disable_macro",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+ "tracing-subscriber",
 ]
 
 [[package]]

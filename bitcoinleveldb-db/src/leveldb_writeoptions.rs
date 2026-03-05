@@ -65,3 +65,25 @@ pub fn leveldb_writeoptions_set_sync(opt: *mut LevelDBWriteOptions, v: u8) {
     }
 
 }
+
+#[cfg(test)]
+mod bitcoinleveldb_db__leveldb_writeoptions_rs__exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_writeoptions_rs__create_destroy_roundtrip_is_safe() {
+        unsafe {
+            let wopt: *mut LevelDBWriteOptions = leveldb_writeoptions_create();
+            assert!(!wopt.is_null());
+            leveldb_writeoptions_destroy(wopt);
+        }
+    }
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_writeoptions_rs__set_sync_handles_null_opt_safely() {
+        unsafe {
+            leveldb_writeoptions_set_sync(core::ptr::null_mut(), 1u8);
+        }
+        assert!(true);
+    }
+}

@@ -17,3 +17,17 @@ pub(crate) use bitcoinleveldb_options::*;
 pub(crate) use bitcoinleveldb_slice::*;
 pub(crate) use bitcoinleveldb_snapshot::*;
 pub(crate) use bitcoinleveldb_status::*;
+
+#[cfg(test)]
+mod bitcoinleveldb_db__imports_rs__exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn bitcoinleveldb_db__imports_rs__dependency_membrane_smoke_is_resolvable() {
+        let _opt_rc: Option<Rc<RefCell<usize>>> = None;
+        let s: Slice = Slice::from_str("membrane");
+        let _n: usize = *s.size();
+        assert!(true);
+    }
+}
+pub(crate) use bitcoinleveldb_posixenv::*;

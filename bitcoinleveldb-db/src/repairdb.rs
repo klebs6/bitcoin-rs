@@ -36,3 +36,23 @@ pub fn repairdb(dbname: &String, options: &Options) -> crate::Status {
 
     result
 }
+
+#[cfg(test)]
+#[disable]
+mod bitcoinleveldb_db__repairdb_rs__exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn bitcoinleveldb_db__repairdb_rs__returns_not_supported_status() {
+        let env = PosixEnv::shared();
+        let opts: Options = Options::with_env(env);
+        let name: String = String::from("bitcoinleveldb_db__repairdb_rs__in_memory_name");
+
+        let st: crate::Status = repairdb(&name, &opts);
+
+        assert!(!st.is_ok());
+
+        let not_supported: bool = st.is_not_supported();
+        assert!(not_supported);
+    }
+}

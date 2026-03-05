@@ -67,3 +67,14 @@ pub fn leveldb_filterpolicy_destroy(filter: *mut LevelDBFilterPolicy) {
 
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_filterpolicy_destroy exit");
 }
+
+#[cfg(test)]
+mod bitcoinleveldb_db__leveldb_filterpolicy_create_bloom_rs__exhaustive_test_suite {
+    use super::*;
+
+    #[test]
+    #[should_panic]
+    fn bitcoinleveldb_db__leveldb_filterpolicy_create_bloom_rs__panics_until_implemented() {
+        let _p: *mut LevelDBFilterPolicy = leveldb_filterpolicy_create_bloom(10);
+    }
+}

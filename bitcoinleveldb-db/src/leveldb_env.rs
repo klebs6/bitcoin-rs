@@ -4,7 +4,8 @@ crate::ix!();
 pub fn leveldb_create_default_env() -> *mut LevelDBEnv {
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_create_default_env entry");
 
-    let default_opts = Options::default();
+    let env = PosixEnv::shared();
+    let default_opts = Options::with_env(env);
 
     let env_rc = match default_opts.env().as_ref() {
         Some(e) => e.clone(),
@@ -126,4 +127,62 @@ pub fn leveldb_env_get_test_directory(env: *mut LevelDBEnv) -> *mut u8 {
         buffer
     }
 
+}
+
+#[cfg(test)]
+mod bitcoinleveldb_db__leveldb_env_rs__exhaustive_test_suite {
+    use super::*;
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_env_rs__create_default_env_and_destroy_is_safe() {
+        unsafe {
+            let env: *mut LevelDBEnv = leveldb_create_default_env();
+            assert!(!env.is_null());
+            leveldb_env_destroy(env);
+        }
+    }
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_env_rs__env_get_test_directory_null_env_returns_null() {
+        unsafe {
+            let p: *mut u8 = leveldb_env_get_test_directory(core::ptr::null_mut());
+            assert!(p.is_null());
+        }
+    }
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_env_rs__env_get_test_directory_returns_nul_terminated_string_when_ok() {
+        unsafe {
+            let env: *mut LevelDBEnv = leveldb_create_default_env();
+            assert!(!env.is_null());
+
+            let p: *mut u8 = leveldb_env_get_test_directory(env);
+            assert!(!p.is_null());
+
+            let mut found_nul: bool = false;
+            let mut i: usize = 0usize;
+            while i < 4096usize {
+                let b: u8 = *p.add(i);
+                if b == 0u8 {
+                    found_nul = true;
+                    break;
+                }
+                i = i + 1;
+            }
+
+            assert!(found_nul);
+
+            crate::leveldb_free::leveldb_free(p as *mut core::ffi::c_void);
+
+            leveldb_env_destroy(env);
+        }
+    }
+
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_env_rs__destroy_null_env_is_safe() {
+        unsafe {
+            leveldb_env_destroy(core::ptr::null_mut());
+        }
+        assert!(true);
+    }
 }
