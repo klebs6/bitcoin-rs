@@ -10,11 +10,27 @@ pub struct LevelDB {
     rep: Rc<RefCell<DBImpl>>,
 }
 
+impl LevelDB {
+
+    pub fn new(rep: Rc<RefCell<DBImpl>>) -> Self {
+        Self { rep }
+    }
+}
+
 #[derive(Getters)]
 #[getset(get = "pub")]
 pub struct LevelDBSnapshot {
     db_rep: Rc<RefCell<DBImpl>>,
     snap:   Option<Box<dyn Snapshot>>,
+}
+
+impl LevelDBSnapshot {
+    pub fn new(
+        db_rep: Rc<RefCell<DBImpl>>,
+        snap:   Option<Box<dyn Snapshot>>
+    ) -> Self {
+        Self { db_rep, snap }
+    }
 }
 
 impl Snapshot for LevelDBSnapshot {}
@@ -28,28 +44,34 @@ impl Drop for LevelDBSnapshot {
     }
 }
 
-#[derive(Getters,MutGetters)]
+#[derive(Default,Getters,MutGetters)]
 #[getset(get="pub",get_mut="pub")]
 pub struct LevelDBReadOptions {
     rep: ReadOptions,
 }
 
-#[derive(Getters,MutGetters)]
+#[derive(Default,Getters,MutGetters)]
 #[getset(get="pub",get_mut="pub")]
 pub struct LevelDBWriteOptions {
     rep: WriteOptions,
 }
 
-#[derive(Getters,MutGetters)]
+#[derive(Default,Getters,MutGetters)]
 #[getset(get="pub",get_mut="pub")]
 pub struct LevelDBOptions {
     rep: Options,
 }
 
-#[derive(Getters)]
+#[derive(Default,Getters)]
 #[getset(get="pub")]
 pub struct LevelDBCache {
     rep: Rc<RefCell<crate::Cache>>,
+}
+
+impl LevelDBCache {
+    pub fn new(cache: crate::Cache) -> Self {
+        Self { rep: Rc::new(RefCell::new(cache)) }
+    }
 }
 
 #[derive(Getters)]
@@ -82,15 +104,16 @@ pub struct LevelDBFileLock {
     rep: Rc<RefCell<Box<dyn FileLock>>>,
 }
 
-#[derive(Getters,MutGetters)]
+#[derive(Default,Getters,MutGetters)]
 #[getset(get="pub",get_mut="pub")]
 pub struct LevelDBWriteBatch {
     rep: WriteBatch,
 }
 
 ///-----------------
-#[derive(Getters)]
+#[derive(Builder,Getters)]
 #[getset(get="pub")]
+#[builder(setter(into))]
 pub struct LevelDBEnv {
     rep:        Rc<RefCell<dyn Env>>,
     is_default: bool,

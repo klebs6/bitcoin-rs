@@ -42,16 +42,9 @@ pub fn leveldb_compact_range(
             (&b) as *const Slice
         };
 
+        // Pass null Slice if corresponding "const char*" is null
         (*db).rep().borrow_mut().compact_range(begin, end);
 
         trace!(target: "bitcoinleveldb_db::c_api", "leveldb_compact_range exit");
     }
-
-    /*
-        Slice a, b;
-      db->rep->CompactRange(
-          // Pass null Slice if corresponding "const char*" is null
-          (start_key ? (a = Slice(start_key, start_key_len), &a) : nullptr),
-          (limit_key ? (b = Slice(limit_key, limit_key_len), &b) : nullptr));
-    */
 }

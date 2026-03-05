@@ -4,9 +4,7 @@ crate::ix!();
 pub fn leveldb_options_create() -> *mut LevelDBOptions {
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_options_create entry");
 
-    let result = Box::new(LevelDBOptions {
-        rep: Options::default(),
-    });
+    let result = Box::new(LevelDBOptions::default());
 
     let p = Box::into_raw(result);
 
@@ -16,10 +14,6 @@ pub fn leveldb_options_create() -> *mut LevelDBOptions {
         "leveldb_options_create exit"
     );
     p
-
-    /*
-        return new leveldb_options_t;
-    */
 }
 
 pub fn leveldb_options_destroy(options: *mut LevelDBOptions) {
@@ -42,10 +36,6 @@ pub fn leveldb_options_destroy(options: *mut LevelDBOptions) {
     }
 
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_options_destroy exit");
-
-    /*
-        delete options;
-    */
 }
 
 pub fn leveldb_options_set_comparator(opt: *mut LevelDBOptions, cmp: *mut LevelDBComparator) {

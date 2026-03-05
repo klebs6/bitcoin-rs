@@ -18,10 +18,9 @@ pub fn leveldb_create_snapshot(db: *mut LevelDB) -> *const LevelDBSnapshot {
         }
 
         let snap: Box<dyn Snapshot> = (*db).rep().borrow_mut().get_snapshot();
-        let wrapper = Arc::new(LevelDBSnapshot {
-            db_rep: (*db).rep().clone(),
-            snap: Some(snap),
-        });
+        let wrapper = Arc::new(
+            LevelDBSnapshot::new((*db).rep().clone(), Some(snap))
+        );
 
         let p = Arc::into_raw(wrapper) as *const LevelDBSnapshot;
 

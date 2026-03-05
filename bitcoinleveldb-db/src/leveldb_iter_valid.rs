@@ -16,8 +16,4 @@ pub fn leveldb_iter_valid(iter: *const LevelDBIterator) -> u8 {
         let v = (*iter).valid();
         v as u8
     }
-
-    /*
-        return iter->rep->Valid();
-    */
 }

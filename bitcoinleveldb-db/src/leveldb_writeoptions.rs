@@ -4,9 +4,7 @@ crate::ix!();
 pub fn leveldb_writeoptions_create() -> *mut LevelDBWriteOptions {
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_writeoptions_create entry");
 
-    let result = Box::new(LevelDBWriteOptions {
-        rep: WriteOptions::default(),
-    });
+    let result = Box::new(LevelDBWriteOptions::default());
 
     let p = Box::into_raw(result);
 

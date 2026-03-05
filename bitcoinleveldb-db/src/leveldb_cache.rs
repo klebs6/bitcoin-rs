@@ -21,9 +21,7 @@ pub fn leveldb_cache_create_lru(capacity: usize) -> *mut LevelDBCache {
         let boxed: Box<Cache> = Box::from_raw(raw);
         let cache_val: Cache = *boxed;
 
-        let wrapper = Box::new(LevelDBCache {
-            rep: Rc::new(RefCell::new(cache_val)),
-        });
+        let wrapper = Box::new(LevelDBCache::new(cache_val));
 
         let p = Box::into_raw(wrapper);
 
@@ -34,7 +32,6 @@ pub fn leveldb_cache_create_lru(capacity: usize) -> *mut LevelDBCache {
         );
         p
     }
-
 }
 
 pub fn leveldb_cache_destroy(cache: *mut LevelDBCache) {
@@ -57,9 +54,4 @@ pub fn leveldb_cache_destroy(cache: *mut LevelDBCache) {
     }
 
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_cache_destroy exit");
-
-    /*
-        delete cache->rep;
-      delete cache;
-    */
 }

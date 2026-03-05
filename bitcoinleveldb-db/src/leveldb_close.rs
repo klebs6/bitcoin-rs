@@ -21,9 +21,4 @@ pub fn leveldb_close(db: *mut LevelDB) {
     }
 
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_close exit");
-
-    /*
-        delete db->rep;
-      delete db;
-    */
 }

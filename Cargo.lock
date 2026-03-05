@@ -3377,6 +3377,7 @@ dependencies = [
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",
+ "derive_builder",
 ]
 
 [[package]]

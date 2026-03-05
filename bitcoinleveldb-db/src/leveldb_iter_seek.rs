@@ -19,10 +19,6 @@ pub fn leveldb_iter_seek_to_first(iter: *mut LevelDBIterator) {
 
         (*iter).seek_to_first();
     }
-
-    /*
-        iter->rep->SeekToFirst();
-    */
 }
 
 pub fn leveldb_iter_seek_to_last(iter: *mut LevelDBIterator) {
@@ -43,10 +39,6 @@ pub fn leveldb_iter_seek_to_last(iter: *mut LevelDBIterator) {
 
         (*iter).seek_to_last();
     }
-
-    /*
-        iter->rep->SeekToLast();
-    */
 }
 
 pub fn leveldb_iter_seek(iter: *mut LevelDBIterator, k: *const u8, klen: usize) {
@@ -70,8 +62,4 @@ pub fn leveldb_iter_seek(iter: *mut LevelDBIterator, k: *const u8, klen: usize) 
         let target = Slice::from_ptr_len(k, klen);
         (*iter).seek(&target);
     }
-
-    /*
-        iter->rep->Seek(Slice(k, klen));
-    */
 }

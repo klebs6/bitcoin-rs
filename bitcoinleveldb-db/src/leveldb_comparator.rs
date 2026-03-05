@@ -13,12 +13,14 @@ pub fn leveldb_comparator_create(
         "leveldb_comparator_create entry"
     );
 
-    let result = Arc::new(LevelDBComparator {
-        state,
-        destructor,
-        compare,
-        name,
-    });
+    let result = Arc::new(LevelDBComparatorBuilder::default()
+        .state(state)
+        .destructor(destructor)
+        .compare(compare)
+        .name(name)
+        .build()
+        .unwrap()
+    );
 
     let p = Arc::into_raw(result) as *mut LevelDBComparator;
 
@@ -28,15 +30,6 @@ pub fn leveldb_comparator_create(
         "leveldb_comparator_create exit"
     );
     p
-
-    /*
-        leveldb_comparator_t* result = new leveldb_comparator_t;
-      result->state_ = state;
-      result->destructor_ = destructor;
-      result->compare_ = compare;
-      result->name_ = name;
-      return result;
-    */
 }
 
 pub fn leveldb_comparator_destroy(cmp: *mut LevelDBComparator) {
@@ -59,8 +52,4 @@ pub fn leveldb_comparator_destroy(cmp: *mut LevelDBComparator) {
     }
 
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_comparator_destroy exit");
-
-    /*
-        delete cmp;
-    */
 }

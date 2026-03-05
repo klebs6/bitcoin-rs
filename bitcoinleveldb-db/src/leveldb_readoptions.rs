@@ -4,9 +4,7 @@ crate::ix!();
 pub fn leveldb_readoptions_create() -> *mut LevelDBReadOptions {
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_readoptions_create entry");
 
-    let result = Box::new(LevelDBReadOptions {
-        rep: ReadOptions::default(),
-    });
+    let result = Box::new(LevelDBReadOptions::default());
 
     let p = Box::into_raw(result);
 
@@ -16,10 +14,6 @@ pub fn leveldb_readoptions_create() -> *mut LevelDBReadOptions {
         "leveldb_readoptions_create exit"
     );
     p
-
-    /*
-        return new leveldb_readoptions_t;
-    */
 }
 
 pub fn leveldb_readoptions_destroy(opt: *mut LevelDBReadOptions) {
@@ -41,10 +35,6 @@ pub fn leveldb_readoptions_destroy(opt: *mut LevelDBReadOptions) {
     }
 
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_readoptions_destroy exit");
-
-    /*
-        delete opt;
-    */
 }
 
 pub fn leveldb_readoptions_set_verify_checksums(opt: *mut LevelDBReadOptions, v: u8) {
@@ -65,7 +55,6 @@ pub fn leveldb_readoptions_set_verify_checksums(opt: *mut LevelDBReadOptions, v:
         }
         (*opt).rep_mut().set_verify_checksums(v != 0);
     }
-
 }
 
 pub fn leveldb_readoptions_set_fill_cache(opt: *mut LevelDBReadOptions, v: u8) {
@@ -86,7 +75,6 @@ pub fn leveldb_readoptions_set_fill_cache(opt: *mut LevelDBReadOptions, v: u8) {
         }
         (*opt).rep_mut().set_fill_cache(v != 0);
     }
-
 }
 
 pub fn leveldb_readoptions_set_snapshot(opt: *mut LevelDBReadOptions, snap: *const LevelDBSnapshot) {
@@ -116,5 +104,4 @@ pub fn leveldb_readoptions_set_snapshot(opt: *mut LevelDBReadOptions, snap: *con
         (*opt).rep_mut().set_snapshot(Some(cloned));
         let _ = Arc::into_raw(arc);
     }
-
 }

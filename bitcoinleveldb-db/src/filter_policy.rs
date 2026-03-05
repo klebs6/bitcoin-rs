@@ -1,6 +1,9 @@
 // ---------------- [ File: bitcoinleveldb-db/src/filter_policy.rs ]
 crate::ix!();
 
+#[derive(Builder,Getters)]
+#[getset(get = "pub")]
+#[builder(setter(into))]
 pub struct LevelDBFilterPolicy {
     state:      *mut c_void,
     destructor: fn(_0: *mut c_void),
@@ -13,13 +16,14 @@ pub struct LevelDBFilterPolicy {
         filter_length:    *mut usize,
     ) -> *mut u8,
     key_match:  fn(
-        *0:            *mut c_void,
-        key*:          *const u8,
+        _0:            *mut c_void,
+        key_:          *const u8,
         length:        usize,
         filter:        *const u8,
         filter_length: usize,
     ) -> u8,
 }
+
 
 impl FilterPolicy for LevelDBFilterPolicy {}
 

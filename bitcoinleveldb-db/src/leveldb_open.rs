@@ -38,7 +38,7 @@ pub fn leveldb_open(
 
         let rep: Rc<RefCell<DBImpl>> = Rc::new(RefCell::new(DBImpl::new(opts, &dbname)));
 
-        let result = Box::new(LevelDB { rep });
+        let result = Box::new(LevelDB::new(rep));
         let p = Box::into_raw(result);
 
         info!(

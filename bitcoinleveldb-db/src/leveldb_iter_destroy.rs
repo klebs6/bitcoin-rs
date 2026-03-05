@@ -21,9 +21,4 @@ pub fn leveldb_iter_destroy(iter: *mut LevelDBIterator) {
     }
 
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_iter_destroy exit");
-
-    /*
-        delete iter->rep;
-      delete iter;
-    */
 }

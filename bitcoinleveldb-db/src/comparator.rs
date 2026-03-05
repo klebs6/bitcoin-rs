@@ -1,6 +1,9 @@
 // ---------------- [ File: bitcoinleveldb-db/src/comparator.rs ]
 crate::ix!();
 
+#[derive(Builder,Getters)]
+#[getset(get="pub")]
+#[builder(setter(into))]
 pub struct LevelDBComparator {
     state:      *mut c_void,
     destructor: fn(_0: *mut c_void),
@@ -12,6 +15,27 @@ pub struct LevelDBComparator {
         blen: usize,
     ) -> i32,
     name:       fn(_0: *mut c_void) -> *const u8,
+}
+
+impl bitcoinleveldb_comparator::Compare for LevelDBComparator {
+    fn compare(&self, a: &Slice, b: &Slice) -> i32 {
+        (self.compare)(
+            self.state,
+            *a.data(),
+            *a.size(),
+            *b.data(),
+            *b.size(),
+        )
+    }
+}
+
+impl bitcoinleveldb_comparator::FindShortSuccessor for LevelDBComparator {
+    fn find_short_successor(&self, _key: &mut Vec<u8>) {
+        trace!(
+            target: "bitcoinleveldb_db::c_api",
+            "LevelDBComparator::find_short_successor noop"
+        );
+    }
 }
 
 impl Comparator<Slice> for LevelDBComparator {
@@ -90,4 +114,10 @@ impl Named for LevelDBComparator {
 
 }
 
-impl SliceComparator for LevelDBComparator {}
+
+impl bitcoinleveldb_comparator::SliceComparator for LevelDBComparator {
+    fn bytewise_comparator(&self) -> *const dyn bitcoinleveldb_comparator::SliceComparator {
+        bitcoinleveldb_comparator::bytewise_comparator()
+    }
+}
+

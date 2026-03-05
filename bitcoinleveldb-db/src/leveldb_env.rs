@@ -17,10 +17,12 @@ pub fn leveldb_create_default_env() -> *mut LevelDBEnv {
         }
     };
 
-    let result = Box::new(LevelDBEnv {
-        rep: env_rc,
-        is_default: true,
-    });
+    let result = Box::new(LevelDBEnvBuilder::default()
+        .rep(env_rc)
+        .is_default(true)
+        .build()
+        .unwrap()
+    );
 
     let p = Box::into_raw(result);
 
@@ -30,13 +32,6 @@ pub fn leveldb_create_default_env() -> *mut LevelDBEnv {
         "leveldb_create_default_env exit"
     );
     p
-
-    /*
-        leveldb_env_t* result = new leveldb_env_t;
-      result->rep = Env::Default();
-      result->is_default = true;
-      return result;
-    */
 }
 
 pub fn leveldb_env_destroy(env: *mut LevelDBEnv) {

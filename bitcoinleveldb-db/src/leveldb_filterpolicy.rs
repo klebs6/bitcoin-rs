@@ -26,13 +26,15 @@ pub fn leveldb_filterpolicy_create(
         "leveldb_filterpolicy_create entry"
     );
 
-    let result = Arc::new(LevelDBFilterPolicy {
-        state,
-        destructor,
-        name,
-        create: create_filter,
-        key_match: key_may_match,
-    });
+    let result = Arc::new(LevelDBFilterPolicyBuilder::default()
+        .state(state)
+        .destructor(destructor)
+        .name(name)
+        .create(create_filter)
+        .key_match(key_may_match)
+        .build()
+        .unwrap()
+    );
 
     let p = Arc::into_raw(result) as *mut LevelDBFilterPolicy;
 
