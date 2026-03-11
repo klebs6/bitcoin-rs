@@ -14,13 +14,11 @@ pub fn compare_iterators(
     step: i32,
     model: *mut dyn DB,
     db: *mut dyn DB,
-    model_snap: *const dyn Snapshot,
-    db_snap: *const dyn Snapshot,
+    model_snap: Option<&dyn Snapshot>,
+    db_snap: Option<&dyn Snapshot>,
 ) -> bool {
     let model_ptr_usize: usize = model as *const () as usize;
     let db_ptr_usize: usize = db as *const () as usize;
-    let model_snap_ptr_usize: usize = model_snap as *const () as usize;
-    let db_snap_ptr_usize: usize = db_snap as *const () as usize;
 
     trace!(
         target: "bitcoinleveldb-dbtest",
@@ -28,33 +26,25 @@ pub fn compare_iterators(
         step,
         model_ptr_usize,
         db_ptr_usize,
-        model_snap_ptr_usize,
-        db_snap_ptr_usize
+        model_has_snapshot = model_snap.is_some(),
+        db_has_snapshot = db_snap.is_some()
     );
 
     let mut options = ReadOptions::default();
 
     // options.snapshot = model_snap;
-    let model_snapshot_opt: Option<Arc<dyn Snapshot>> = if model_snap.is_null() {
-        None
-    } else {
-        unsafe {
-            Arc::increment_strong_count(model_snap);
-            Some(Arc::from_raw(model_snap))
-        }
+    let model_snapshot_opt: Option<Arc<dyn Snapshot>> = match model_snap {
+        Some(s) => Some(dbtest_snapshot_read_arc_from_snapshot_ref(s)),
+        None => None,
     };
     options.set_snapshot(model_snapshot_opt);
 
     let miter: *mut LevelDBIterator = unsafe { (&mut *model).new_iterator(&options) };
 
     // options.snapshot = db_snap;
-    let db_snapshot_opt: Option<Arc<dyn Snapshot>> = if db_snap.is_null() {
-        None
-    } else {
-        unsafe {
-            Arc::increment_strong_count(db_snap);
-            Some(Arc::from_raw(db_snap))
-        }
+    let db_snapshot_opt: Option<Arc<dyn Snapshot>> = match db_snap {
+        Some(s) => Some(dbtest_snapshot_read_arc_from_snapshot_ref(s)),
+        None => None,
     };
     options.set_snapshot(db_snapshot_opt);
 
@@ -74,8 +64,8 @@ pub fn compare_iterators(
                 eprintln!(
                     "step {}: Key mismatch: '{}' vs. '{}'",
                     step,
-                    escape_string(&(*miter).key()),  // defined elsewhere in codebase
-                    escape_string(&(*dbiter).key())  // defined elsewhere in codebase
+                    escape_string(&(*miter).key()),
+                    escape_string(&(*dbiter).key())
                 );
                 ok = false;
                 break;
@@ -85,9 +75,9 @@ pub fn compare_iterators(
                 eprintln!(
                     "step {}: Value mismatch for key '{}': '{}' vs. '{}'",
                     step,
-                    escape_string(&(*miter).key()),    // defined elsewhere in codebase
-                    escape_string(&(*miter).value()),  // defined elsewhere in codebase
-                    escape_string(&(*miter).value())   // NOTE: mirrors C++ (prints miter value twice)
+                    escape_string(&(*miter).key()),
+                    escape_string(&(*miter).value()),
+                    escape_string(&(*miter).value()) // NOTE: mirrors C++
                 );
                 ok = false;
             }
@@ -96,16 +86,14 @@ pub fn compare_iterators(
             (*dbiter).next();
         }
 
-        if ok {
-            if (*miter).valid() != (*dbiter).valid() {
-                eprintln!(
-                    "step {}: Mismatch at end of iterators: {} vs. {}",
-                    step,
-                    (*miter).valid() as i32,
-                    (*dbiter).valid() as i32
-                );
-                ok = false;
-            }
+        if ok && ((*miter).valid() != (*dbiter).valid()) {
+            eprintln!(
+                "step {}: Mismatch at end of iterators: {} vs. {}",
+                step,
+                (*miter).valid() as i32,
+                (*dbiter).valid() as i32
+            );
+            ok = false;
         }
 
         eprintln!("{} entries compared: ok={}", count, ok as i32);

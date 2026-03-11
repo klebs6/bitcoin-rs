@@ -1,8 +1,6 @@
 // ---------------- [ File: bitcoinleveldb-test/src/harness.rs ]
 crate::ix!();
 
-
-
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/testharness.h]
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/testharness.cc]
 
@@ -14,36 +12,48 @@ crate::ix!();
   */
 pub struct Tester {
     ok:    bool,
-    fname: *const u8,
+    fname: &'static str,
     line:  i32,
-    ss:    Box<dyn std::io::Write>,
+    ss:    String,
 }
 
 impl Drop for Tester {
     fn drop(&mut self) {
-        todo!();
-        /*
-            if (!ok_) {
-          fprintf(stderr, "%s:%d:%s\n", fname_, line_, ss_.str().c_str());
-          exit(1);
+        if !self.ok {
+            error!(
+                target: "bitcoinleveldb_test::harness",
+                event = "tester_drop_failure",
+                file = self.fname,
+                line = self.line,
+                message = %self.ss
+            );
+
+            eprintln!("{}:{}:{}", self.fname, self.line, self.ss);
+            exit(1);
         }
-        */
     }
 }
 
 macro_rules! binary_op {
     ($name:ident, $op:tt) => {
-        /*
-        
-          template <class X, class Y>                        
-          Tester& name(const X& x, const Y& y) {             
-            if (!(x op y)) {                                 
-              ss_ << " failed: " << x << (" " #op " ") << y; 
-              ok_ = false;                                   
-            }                                                
-            return *this;                                    
-          }
-        */
+        impl Tester {
+            pub fn $name<X, Y>(mut self, x: &X, y: &Y) -> Tester
+            where
+                X: Display + ?Sized,
+                Y: Display + ?Sized,
+                for<'a> &'a X: PartialEq<&'a Y> + PartialOrd<&'a Y>,
+            {
+                if !(x $op y) {
+                    self.ss.push_str(" failed: ");
+                    self.ss.push_str(format!("{}", x).as_str());
+                    self.ss.push_str(concat!(" ", stringify!($op), " "));
+                    self.ss.push_str(format!("{}", y).as_str());
+                    self.ok = false;
+                }
+
+                self
+            }
+        }
     }
 }
 
@@ -57,180 +67,141 @@ binary_op!{ IsLt, < }
 impl Tester {
 
     pub fn new(
-        f: *const u8,
-        l: i32) -> Self {
-    
-        todo!();
-        /*
-        : ok(true),
-        : fname(f),
-        : line(l),
+        f: &'static str,
+        l: i32,
+    ) -> Self {
+        trace!(
+            target: "bitcoinleveldb_test::harness",
+            event = "tester_new_entry",
+            file = f,
+            line = l
+        );
 
-        
-        */
+        let out = Self {
+            ok: true,
+            fname: f,
+            line: l,
+            ss: String::new(),
+        };
+
+        trace!(
+            target: "bitcoinleveldb_test::harness",
+            event = "tester_new_exit",
+            file = out.fname,
+            line = out.line
+        );
+
+        out
     }
-    
-    pub fn is(&mut self, 
+
+    pub fn is(
+        mut self,
         b:   bool,
-        msg: *const u8) -> &mut Tester {
-        
-        todo!();
-        /*
-            if (!b) {
-          ss_ << " Assertion failure " << msg;
-          ok_ = false;
+        msg: &'static str,
+    ) -> Tester {
+        if !b {
+            self.ss.push_str(" Assertion failure ");
+            self.ss.push_str(msg);
+            self.ok = false;
         }
-        return *this;
-        */
+
+        self
     }
-    
-    pub fn is_ok(&mut self, s: &Status) -> &mut Tester {
-        
-        todo!();
-        /*
-            if (!s.ok()) {
-          ss_ << " " << s.ToString();
-          ok_ = false;
+
+    pub fn is_ok(
+        mut self,
+        s: &Status,
+    ) -> Tester {
+        if !s.is_ok() {
+            self.ss.push(' ');
+            self.ss.push_str(s.to_string().as_str());
+            self.ok = false;
         }
-        return *this;
-        */
+
+        self
     }
 }
 
-impl<V> Shl<&V> for Tester {
+impl<V> Shl<&V> for Tester
+where
+    V: Display + ?Sized,
+{
     type Output = Tester;
-    
+
     /**
       | Attach the specified value to the error
       | message if an error has occurred
       |
       */
-    #[inline] fn shl(self, rhs: &V) -> Self::Output {
-        todo!();
-        /*
-            if (!ok_) {
-          ss_ << " " << value;
+    #[inline]
+    fn shl(mut self, rhs: &V) -> Self::Output {
+        if !self.ok {
+            self.ss.push(' ');
+            self.ss.push_str(format!("{}", rhs).as_str());
         }
-        return *this;
-        */
+
+        self
     }
 }
 
 macro_rules! assert_true {
     ($c:ident) => {
-        /*
-                ::leveldb::test::Tester(__FILE__, __LINE__).Is((c), #c)
-        */
+        crate::harness::Tester::new(file!(), line!() as i32).is(($c), stringify!($c))
     }
 }
 
 macro_rules! assert_ok {
     ($s:ident) => {
-        /*
-                ::leveldb::test::Tester(__FILE__, __LINE__).IsOk((s))
-        */
+        crate::harness::Tester::new(file!(), line!() as i32).is_ok(&($s))
     }
 }
 
 macro_rules! assert_eq {
     ($a:ident, $b:ident) => {
-        /*
-        
-          ::leveldb::test::Tester(__FILE__, __LINE__).IsEq((a), (b))
-        */
+        crate::harness::Tester::new(file!(), line!() as i32).IsEq(&($a), &($b))
     }
 }
 
 macro_rules! assert_ne {
     ($a:ident, $b:ident) => {
-        /*
-        
-          ::leveldb::test::Tester(__FILE__, __LINE__).IsNe((a), (b))
-        */
+        crate::harness::Tester::new(file!(), line!() as i32).IsNe(&($a), &($b))
     }
 }
 
 macro_rules! assert_ge {
     ($a:ident, $b:ident) => {
-        /*
-        
-          ::leveldb::test::Tester(__FILE__, __LINE__).IsGe((a), (b))
-        */
+        crate::harness::Tester::new(file!(), line!() as i32).IsGe(&($a), &($b))
     }
 }
 
 macro_rules! assert_gt {
     ($a:ident, $b:ident) => {
-        /*
-        
-          ::leveldb::test::Tester(__FILE__, __LINE__).IsGt((a), (b))
-        */
+        crate::harness::Tester::new(file!(), line!() as i32).IsGt(&($a), &($b))
     }
 }
 
 macro_rules! assert_le {
     ($a:ident, $b:ident) => {
-        /*
-        
-          ::leveldb::test::Tester(__FILE__, __LINE__).IsLe((a), (b))
-        */
+        crate::harness::Tester::new(file!(), line!() as i32).IsLe(&($a), &($b))
     }
 }
 
 macro_rules! assert_lt {
     ($a:ident, $b:ident) => {
-        /*
-        
-          ::leveldb::test::Tester(__FILE__, __LINE__).IsLt((a), (b))
-        */
+        crate::harness::Tester::new(file!(), line!() as i32).IsLt(&($a), &($b))
     }
 }
 
-macro_rules! tconcat {
-    ($a:ident, $b:ident) => {
-        /*
-                TCONCAT1(a, b)
-        */
-    }
-}
-
-macro_rules! tconcat1 {
-    ($a:ident, $b:ident) => {
-        /*
-                a##b
-        */
-    }
-}
-
-macro_rules! test {
-    ($base:ident, $name:ident) => {
-        /*
-        
-          class TCONCAT(_Test_, name) : public base {                         
-                                                                       
-            c_void _Run();                                                      
-            static c_void _RunIt() {                                            
-              TCONCAT(_Test_, name) t;                                        
-              t._Run();                                                       
-            }                                                                 
-          };                                                                  
-          bool TCONCAT(_Test_ignored_, name) = ::leveldb::test::RegisterTest( 
-              #base, #name, &TCONCAT(_Test_, name)::_RunIt);                  
-          c_void TCONCAT(_Test_, name)::_Run()
-        */
-    }
-}
-
+#[derive(Clone)]
 pub struct Test {
-    base: *const u8,
-    name: *const u8,
-    func: fn() -> c_void,
+    base: String,
+    name: String,
+    func: fn(),
 }
 
 lazy_static!{
-    /*
-    std::vector<Test>* tests;
-    */
+    static ref BITCOINLEVELDB_TEST_HARNESS_REGISTERED_TESTS: Mutex<Vec<Test>> =
+        Mutex::new(Vec::new());
 }
 
 /**
@@ -240,22 +211,51 @@ lazy_static!{
   |
   */
 pub fn register_test(
-        base: *const u8,
-        name: *const u8,
-        func: fn() -> c_void) -> bool {
-    
-    todo!();
-        /*
-            if (tests == nullptr) {
-        tests = new std::vector<Test>;
-      }
-      Test t;
-      t.base = base;
-      t.name = name;
-      t.func = func;
-      tests->push_back(t);
-      return true;
-        */
+    base: *const u8,
+    name: *const u8,
+    func: fn(),
+) -> bool {
+    trace!(
+        target: "bitcoinleveldb_test::harness",
+        event = "register_test_entry",
+        base_ptr = (base as usize),
+        name_ptr = (name as usize)
+    );
+
+    let base_label = if base.is_null() {
+        String::new()
+    } else {
+        unsafe {
+            CStr::from_ptr(base as *const c_char)
+                .to_string_lossy()
+                .into_owned()
+        }
+    };
+
+    let name_label = if name.is_null() {
+        String::new()
+    } else {
+        unsafe {
+            CStr::from_ptr(name as *const c_char)
+                .to_string_lossy()
+                .into_owned()
+        }
+    };
+
+    let mut guard = BITCOINLEVELDB_TEST_HARNESS_REGISTERED_TESTS.lock();
+    guard.push(Test {
+        base: base_label,
+        name: name_label,
+        func,
+    });
+
+    trace!(
+        target: "bitcoinleveldb_test::harness",
+        event = "register_test_exit",
+        registered_count = guard.len()
+    );
+
+    true
 }
 
 /**
@@ -280,64 +280,151 @@ pub fn register_test(
   | fails.
   */
 pub fn run_all_tests() -> i32 {
-    
-    todo!();
-        /*
-            const char* matcher = getenv("LEVELDB_TESTS");
+    trace!(
+        target: "bitcoinleveldb_test::harness",
+        event = "run_all_tests_entry"
+    );
 
-      int num = 0;
-      if (tests != nullptr) {
-        for (size_t i = 0; i < tests->size(); i++) {
-          const Test& t = (*tests)[i];
-          if (matcher != nullptr) {
-            std::string name = t.base;
-            name.push_back('.');
-            name.append(t.name);
-            if (strstr(name.c_str(), matcher) == nullptr) {
-              continue;
-            }
-          }
-          fprintf(stderr, "==== Test %s.%s\n", t.base, t.name);
-          (*t.func)();
-          ++num;
+    let matcher: Option<String> = unsafe {
+        let p = libc::getenv(b"LEVELDB_TESTS\0".as_ptr() as *const c_char);
+        if p.is_null() {
+            None
+        } else {
+            Some(CStr::from_ptr(p).to_string_lossy().into_owned())
         }
-      }
-      fprintf(stderr, "==== PASSED %d tests\n", num);
-      return 0;
-        */
+    };
+
+    let tests_snapshot: Vec<Test> = {
+        let guard = BITCOINLEVELDB_TEST_HARNESS_REGISTERED_TESTS.lock();
+        guard.clone()
+    };
+
+    let mut num: i32 = 0;
+
+    for t in tests_snapshot.iter() {
+        let mut full_name = t.base.clone();
+        full_name.push('.');
+        full_name.push_str(t.name.as_str());
+
+        match matcher.as_ref() {
+            Some(m) => {
+                if !full_name.contains(m.as_str()) {
+                    trace!(
+                        target: "bitcoinleveldb_test::harness",
+                        event = "run_all_tests_skip",
+                        test_name = %full_name,
+                        matcher = %m
+                    );
+                    continue;
+                }
+            }
+            None => {}
+        }
+
+        eprintln!("==== Test {}.{}", t.base, t.name);
+
+        trace!(
+            target: "bitcoinleveldb_test::harness",
+            event = "run_all_tests_invoke",
+            test_name = %full_name
+        );
+
+        (t.func)();
+        num += 1;
+    }
+
+    eprintln!("==== PASSED {} tests", num);
+
+    trace!(
+        target: "bitcoinleveldb_test::harness",
+        event = "run_all_tests_exit",
+        executed = num
+    );
+
+    0
 }
 
-/**
-  | Return the directory to use for temporary
-  | storage.
-  |
-  */
+/// Return the directory to use for temporary storage.
+///
+/// Invariant: the returned path is copied into owned Rust storage before any
+/// C-allocated buffer is released, so callers never observe borrowed storage.
 pub fn tmp_dir() -> String {
-    
-    todo!();
-        /*
-            std::string dir;
-      crate::Status s = Env::Default()->GetTestDirectory(&dir);
-      ASSERT_TRUE(s.ok()) << s.ToString();
-      return dir;
-        */
+    trace!(
+        target: "bitcoinleveldb_test::harness",
+        event = "tmp_dir_entry"
+    );
+
+    unsafe {
+        let env: *mut LevelDBEnv = leveldb_create_default_env();
+        if env.is_null() {
+            error!(
+                target: "bitcoinleveldb_test::harness",
+                event = "tmp_dir_env_create_failed"
+            );
+            panic!("bitcoinleveldb_test__harness_rs__tmp_dir_env_create_failed");
+        }
+
+        let p: *mut u8 = leveldb_env_get_test_directory(env);
+        leveldb_env_destroy(env);
+
+        if p.is_null() {
+            error!(
+                target: "bitcoinleveldb_test::harness",
+                event = "tmp_dir_get_test_directory_failed"
+            );
+            panic!("bitcoinleveldb_test__harness_rs__tmp_dir_get_test_directory_failed");
+        }
+
+        let dir = CStr::from_ptr(p as *const c_char)
+            .to_string_lossy()
+            .into_owned();
+
+        leveldb_free(p as *mut c_void);
+
+        trace!(
+            target: "bitcoinleveldb_test::harness",
+            event = "tmp_dir_exit",
+            dir_len = dir.len()
+        );
+
+        dir
+    }
 }
 
-/**
-  | Return a randomization seed for this run.
-  | Typically returns the same number on repeated
-  | invocations of this binary, but automated runs
-  | may be able to vary the seed.
-  */
+/// Return a randomization seed for this run.
+///
+/// Invariant: non-positive or unparsable environment overrides collapse to the
+/// stable fallback value `301`, preserving deterministic behavior.
 pub fn random_seed() -> i32 {
-    
-    todo!();
-        /*
-            const char* env = getenv("TEST_RANDOM_SEED");
-      int result = (env != nullptr ? atoi(env) : 301);
-      if (result <= 0) {
-        result = 301;
-      }
-      return result;
-        */
+    trace!(
+        target: "bitcoinleveldb_test::harness",
+        event = "random_seed_entry"
+    );
+
+    let result = unsafe {
+        let env_ptr = libc::getenv(b"TEST_RANDOM_SEED\0".as_ptr() as *const c_char);
+        if env_ptr.is_null() {
+            301
+        } else {
+            let raw = CStr::from_ptr(env_ptr).to_string_lossy().into_owned();
+            match raw.parse::<i32>() {
+                Ok(parsed) => {
+                    if parsed <= 0 {
+                        301
+                    } else {
+                        parsed
+                    }
+                }
+                Err(_) => 301,
+            }
+        }
+    };
+
+    trace!(
+        target: "bitcoinleveldb_test::harness",
+        event = "random_seed_exit",
+        result = result
+    );
+
+    result
 }

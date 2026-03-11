@@ -53,20 +53,6 @@ pub fn save_error(errptr: *mut *mut u8, s: &Status) -> bool {
     );
 
     true
-
-    /*
-        assert(errptr != nullptr);
-      if (s.ok()) {
-        return false;
-      } else if (*errptr == nullptr) {
-        *errptr = strdup(s.ToString().c_str());
-      } else {
-        // TODO(sanjay): Merge with existing error?
-        free(*errptr);
-        *errptr = strdup(s.ToString().c_str());
-      }
-      return true;
-    */
 }
 
 #[cfg(test)]

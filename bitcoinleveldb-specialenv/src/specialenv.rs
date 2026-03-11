@@ -6,7 +6,7 @@ crate::ix!();
   | operations.
   |
   */
-#[derive(Getters,Setters)]
+#[derive(MutGetters,Getters,Setters)]
 #[getset(get="pub",get_mut="pub",set="pub")]
 pub struct SpecialEnv {
 

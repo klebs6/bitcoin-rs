@@ -2,6 +2,24 @@
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
+[lib]
+bench = false
+
+[[bench]]
+name = "db_bench"
+path = "benches/db_bench.rs"
+harness = false
+
+[[bench]]
+name = "db_bench_sqlite3"
+path = "benches/db_bench_sqlite3.rs"
+harness = false
+
+[dependencies]
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
+bitcoinleveldb-compat = { path = "../bitcoinleveldb-compat" }
+bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
+
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
 version = "0.1.19"
@@ -38,8 +56,11 @@ version = "0.1.19"
 path = "../bitcoinleveldb-slice"
 version = "0.1.19"
 
-[dependencies.rust-sqlite]
-version = "0.3.0"
+[dependencies.sqlite3-sys]
+workspace = true
+
+[dependencies.sqlite3]
+workspace = true
 
 [package]
 authors = ["klebs <none>"]

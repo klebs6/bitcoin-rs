@@ -31,15 +31,11 @@ impl DBImpl {
             );
         }
 
-        println!("recover -- mark0");
-
         // Ignore error from CreateDir since the creation of the DB is
         // committed only when the descriptor is created, and this directory
         // may already exist from a previous failed creation attempt.
         let _ = self.env.as_mut().create_dir(&self.dbname);
         assert!(self.db_lock.is_null());
-
-        println!("recover -- mark1");
 
         let lock_path: String = lock_file_name(&self.dbname);
 
@@ -59,8 +55,6 @@ impl DBImpl {
             .env
             .as_mut()
             .lock_file(&lock_path, core::ptr::addr_of_mut!(self.db_lock));
-
-        println!("recover -- mark2");
 
         #[cfg(any(test, debug_assertions))]
         {
@@ -85,8 +79,6 @@ impl DBImpl {
             let fname_slice: Slice = Slice::from(&lock_path);
             return Status::corruption(&msg, Some(&fname_slice));
         }
-
-        println!("recover -- mark3");
 
         if !s.is_ok() {
             #[cfg(any(test, debug_assertions))]
@@ -158,8 +150,6 @@ impl DBImpl {
             return Status::invalid_argument(&msg, Some(&msg2));
         }
 
-        println!("recover -- mark4");
-
         #[cfg(any(test, debug_assertions))]
         {
             tracing::info!(
@@ -211,8 +201,6 @@ impl DBImpl {
         let min_log: u64 = unsafe { (*self.versions).log_number() };
         let prev_log: u64 = unsafe { (*self.versions).prev_log_number() };
 
-        println!("recover -- mark5");
-
         let mut filenames: Vec<String> = Vec::new();
 
         #[cfg(any(test, debug_assertions))]
@@ -244,8 +232,6 @@ impl DBImpl {
             return s;
         }
 
-        println!("recover -- mark5a");
-
         let mut expected_live: std::collections::HashSet<u64> = std::collections::HashSet::new();
 
         #[cfg(any(test, debug_assertions))]
@@ -276,14 +262,10 @@ impl DBImpl {
             );
         }
 
-        println!("recover -- mark5b");
-
         let mut expected: std::collections::BTreeSet<u64> =
             expected_live.into_iter().collect::<std::collections::BTreeSet<u64>>();
 
         let mut logs: Vec<u64> = Vec::new();
-
-        println!("recover -- mark6");
 
         for fname in filenames.into_iter() {
             let mut number: u64 = 0;
@@ -298,8 +280,6 @@ impl DBImpl {
                 }
             }
         }
-
-        println!("recover -- mark7");
 
         if !expected.is_empty() {
             let buf_string: String = format!("{} missing files; e.g.", expected.len());
@@ -322,8 +302,6 @@ impl DBImpl {
 
             return Status::corruption(&msg, Some(&msg2));
         }
-
-        println!("recover -- mark8");
 
         // Recover in the order in which the logs were generated
         logs.sort();
@@ -375,8 +353,6 @@ impl DBImpl {
                 (*self.versions).mark_file_number_used(log_number);
             }
         }
-
-        println!("recover -- mark9");
 
         if unsafe { (*self.versions).last_sequence() } < max_sequence {
             unsafe {

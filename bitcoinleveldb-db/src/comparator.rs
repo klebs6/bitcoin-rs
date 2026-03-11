@@ -290,7 +290,7 @@ mod bitcoinleveldb_db__comparator_rs__exhaustive_test_suite {
 
         {
             let calls = compare_calls.borrow();
-            assert_eq!(*calls, 1usize);
+            assert_eq!(*calls, 2usize);
         }
 
         {

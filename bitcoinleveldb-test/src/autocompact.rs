@@ -11,29 +11,81 @@ struct AutoCompactTest {
 }
 
 impl Default for AutoCompactTest {
-    
     fn default() -> Self {
-        todo!();
-        /*
-           dbname_ = test::TmpDir() + "/autocompact_test";
-           tiny_cache_ = NewLRUCache(100);
-           options_.block_cache = tiny_cache_;
-           DestroyDB(dbname_, options_);
-           options_.create_if_missing = true;
-           options_.compression = kNoCompression;
-           ASSERT_OK(DB::Open(options_, dbname_, &db_));
-        */
+        trace!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_default_entry"
+        );
+
+        let dbname = format!("{}/autocompact_test", crate::harness::tmp_dir());
+        let tiny_cache = new_lru_cache(100usize);
+
+        let mut options = Options::default();
+        options.set_env(Some(posix_default_env()));
+        options.set_block_cache(tiny_cache);
+
+        let destroy_status = destroydb(&dbname, &options);
+        assert!(destroy_status.is_ok());
+
+        options.set_create_if_missing(true);
+        options.set_compression(CompressionType::None);
+
+        let mut db: *mut dyn DB = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
+        let mut opener = DBImpl::new(&options, &dbname);
+        let open_status = open(
+            &mut opener,
+            &options,
+            &dbname,
+            (&mut db) as *mut *mut dyn DB,
+        );
+        assert!(open_status.is_ok());
+
+        let out = Self {
+            dbname,
+            tiny_cache,
+            options,
+            db,
+        };
+
+        trace!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_default_exit",
+            db_is_null = out.db.is_null()
+        );
+
+        out
     }
 }
 
 impl Drop for AutoCompactTest {
     fn drop(&mut self) {
-        todo!();
-        /*
-           delete db_;
-           DestroyDB(dbname_, Options());
-           delete tiny_cache_;
-           */
+        debug!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_drop_entry",
+            db_is_null = self.db.is_null(),
+            cache_is_null = self.tiny_cache.is_null()
+        );
+
+        if !self.db.is_null() {
+            unsafe {
+                drop(Box::from_raw(self.db));
+            }
+            self.db = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
+        }
+
+        let _ = destroydb(&self.dbname, &Options::default());
+
+        if !self.tiny_cache.is_null() {
+            unsafe {
+                drop(Box::from_raw(self.tiny_cache));
+            }
+            self.tiny_cache = core::ptr::null_mut();
+        }
+
+        debug!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_drop_exit"
+        );
     }
 }
 
@@ -42,108 +94,215 @@ const TOTAL_SIZE: i32 = 100 * 1024 * 1024;
 const COUNT:      i32 = TOTAL_SIZE / VALUE_SIZE;
 
 impl AutoCompactTest {
-
     pub fn key(&mut self, i: i32) -> String {
-        
-        todo!();
-        /*
-            char buf[100];
-        snprintf(buf, sizeof(buf), "key%06d", i);
-        return std::string(buf);
-        */
+        trace!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_key_entry",
+            i = i
+        );
+
+        let out = format!("key{:06}", i);
+
+        trace!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_key_exit",
+            key_len = out.len()
+        );
+
+        out
     }
     
-    pub fn size(&mut self, 
+    pub fn size(
+        &mut self,
         start: &Slice,
-        limit: &Slice) -> u64 {
-        
-        todo!();
-        /*
-            Range r(start, limit);
-        uint64_t size;
-        db_->GetApproximateSizes(&r, 1, &size);
-        return size;
-        */
+        limit: &Slice,
+    ) -> u64 {
+        trace!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_size_entry",
+            start_len = *start.size(),
+            limit_len = *limit.size()
+        );
+
+        let range = Range::new(
+            Slice::from_ptr_len(*start.data(), *start.size()),
+            Slice::from_ptr_len(*limit.data(), *limit.size()),
+        );
+
+        let mut size: u64 = 0u64;
+        unsafe {
+            (&mut *self.db).get_approximate_sizes(
+                (&range) as *const Range,
+                1i32,
+                (&mut size) as *mut u64,
+            );
+        }
+
+        trace!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_size_exit",
+            size = size
+        );
+
+        size
     }
-    
+   
     /**
       | Read through the first n keys repeatedly
       | and check that they get compacted (verified
       | by checking the size of the key space).
       |
       */
-    pub fn do_reads(&mut self, n: i32)  {
-        
-        todo!();
-        /*
-            std::string value(kValueSize, 'x');
-      DBImpl* dbi = reinterpret_cast<DBImpl*>(db_);
+    pub fn do_reads(&mut self, n: i32) {
+        trace!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_do_reads_entry",
+            n = n
+        );
 
-      // Fill database
-      for (int i = 0; i < kCount; i++) {
-        ASSERT_OK(db_->Put(WriteOptions(), Key(i), value));
-      }
-      ASSERT_OK(dbi->TEST_CompactMemTable());
+        let value = "x".repeat(VALUE_SIZE as usize);
+        let dbi: *mut DBImpl = (self.db as *mut ()) as *mut DBImpl;
 
-      // Delete everything
-      for (int i = 0; i < kCount; i++) {
-        ASSERT_OK(db_->Delete(WriteOptions(), Key(i)));
-      }
-      ASSERT_OK(dbi->TEST_CompactMemTable());
-
-      // Get initial measurement of the space we will be reading.
-      const int64_t initial_size = Size(Key(0), Key(n));
-      const int64_t initial_other_size = Size(Key(n), Key(kCount));
-
-      // Read until size drops significantly.
-      std::string limit_key = Key(n);
-      for (int read = 0; true; read++) {
-        ASSERT_LT(read, 100) << "Taking too long to compact";
-        Iterator* iter = db_->NewIterator(ReadOptions());
-        for (iter->SeekToFirst();
-             iter->Valid() && iter->key().ToString() < limit_key; iter->Next()) {
-          // Drop data
+        // Fill database
+        let mut i: i32 = 0i32;
+        while i < COUNT {
+            let key = self.key(i);
+            let status = unsafe {
+                (&mut *self.db).put(
+                    &WriteOptions::default(),
+                    &Slice::from(&key),
+                    &Slice::from(&value),
+                )
+            };
+            assert!(status.is_ok());
+            i += 1i32;
         }
-        delete iter;
-        // Wait a little bit to allow any triggered compactions to complete.
-        Env::Default()->SleepForMicroseconds(1000000);
-        uint64_t size = Size(Key(0), Key(n));
-        fprintf(stderr, "iter %3d => %7.3f MB [other %7.3f MB]\n", read + 1,
-                size / 1048576.0, Size(Key(n), Key(kCount)) / 1048576.0);
-        if (size <= initial_size / 10) {
-          break;
-        }
-      }
 
-      // Verify that the size of the key space not touched by the reads
-      // is pretty much unchanged.
-      const int64_t final_other_size = Size(Key(n), Key(kCount));
-      ASSERT_LE(final_other_size, initial_other_size + 1048576);
-      ASSERT_GE(final_other_size, initial_other_size / 5 - 1048576);
-        */
+        let compact_status = unsafe { (&mut *dbi).test_compact_mem_table() };
+        assert!(compact_status.is_ok());
+
+        // Delete everything
+        i = 0i32;
+        while i < COUNT {
+            let key = self.key(i);
+            let status = unsafe {
+                (&mut *self.db).delete(
+                    &WriteOptions::default(),
+                    &Slice::from(&key),
+                )
+            };
+            assert!(status.is_ok());
+            i += 1i32;
+        }
+
+        let compact_status = unsafe { (&mut *dbi).test_compact_mem_table() };
+        assert!(compact_status.is_ok());
+
+        // Get initial measurement of the space we will be reading.
+        let initial_size = self.size(
+            &Slice::from(&self.key(0)),
+            &Slice::from(&self.key(n)),
+        );
+        let initial_other_size = self.size(
+            &Slice::from(&self.key(n)),
+            &Slice::from(&self.key(COUNT)),
+        );
+
+        // Read until size drops significantly.
+        let limit_key = self.key(n);
+
+        let mut read: i32 = 0i32;
+        loop {
+            assert!(read < 100, "Taking too long to compact");
+
+            let iter_ptr = unsafe { (&mut *self.db).new_iterator(&ReadOptions::default()) };
+            assert!(!iter_ptr.is_null());
+
+            {
+                let iter = unsafe { &mut *iter_ptr };
+                iter.seek_to_first();
+                while iter.valid() && iter.key().to_string() < limit_key {
+                    // Drop data
+                    iter.next();
+                }
+            }
+
+            unsafe {
+                drop(Box::from_raw(iter_ptr));
+            }
+
+            // Wait a little bit to allow any triggered compactions to complete.
+            let env = posix_default_env();
+            env.borrow_mut().sleep_for_microseconds(1_000_000);
+
+            let size = self.size(
+                &Slice::from(&self.key(0)),
+                &Slice::from(&self.key(n)),
+            );
+
+            eprintln!(
+                "iter {:3} => {:7.3} MB [other {:7.3} MB]",
+                read + 1,
+                size as f64 / 1_048_576.0,
+                self.size(
+                    &Slice::from(&self.key(n)),
+                    &Slice::from(&self.key(COUNT)),
+                ) as f64 / 1_048_576.0,
+            );
+
+            if size <= initial_size / 10 {
+                break;
+            }
+
+            read += 1i32;
+        }
+
+        // Verify that the size of the key space not touched by the reads
+        // is pretty much unchanged.
+        let final_other_size = self.size(
+            &Slice::from(&self.key(n)),
+            &Slice::from(&self.key(COUNT)),
+        );
+
+        assert!(final_other_size <= initial_other_size + 1_048_576u64);
+        assert!(final_other_size >= initial_other_size / 5u64 - 1_048_576u64);
+
+        trace!(
+            target: "bitcoinleveldb_test::autocompact_test",
+            event = "auto_compact_test_do_reads_exit",
+            n = n
+        );
     }
 }
 
-#[test] fn auto_compact_test_read_all() {
-    todo!();
-    /*
-     DoReads(kCount); 
-    */
+#[traced_test]
+fn auto_compact_test_read_all() {
+    let mut t = AutoCompactTest::default();
+    t.do_reads(COUNT);
 }
 
-#[test] fn auto_compact_test_read_half() {
-    todo!();
-    /*
-     DoReads(kCount / 2); 
-    */
+#[traced_test]
+fn auto_compact_test_read_half() {
+    let mut t = AutoCompactTest::default();
+    t.do_reads(COUNT / 2);
 }
 
-fn dbautocompact_test_main (
-        argc: i32,
-        argv: *mut *mut u8) -> i32 {
-    
-    todo!();
-        /*
-            return leveldb::test::RunAllTests();
-        */
+fn dbautocompact_test_main(
+    _argc: i32,
+    _argv: *mut *mut u8,
+) -> i32 {
+    trace!(
+        target: "bitcoinleveldb_test::autocompact_test",
+        event = "dbautocompact_test_main_entry"
+    );
+
+    let rc = crate::harness::run_all_tests();
+
+    trace!(
+        target: "bitcoinleveldb_test::autocompact_test",
+        event = "dbautocompact_test_main_exit",
+        result = rc
+    );
+
+    rc
 }

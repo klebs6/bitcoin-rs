@@ -1,75 +1,138 @@
 // ---------------- [ File: bitcoinleveldb-dbtest/src/db_rand.rs ]
 crate::ix!();
 
-#[test] fn db_test_randomized() {
-    todo!();
-    /*
-    
-      Random rnd(test::RandomSeed());
-      do {
-        ModelDB model(CurrentOptions());
-        const int N = 10000;
-        const Snapshot* model_snap = nullptr;
-        const Snapshot* db_snap = nullptr;
-        std::string k, v;
-        for (int step = 0; step < N; step++) {
-          if (step % 100 == 0) {
-            fprintf(stderr, "Step %d of %d\n", step, N);
-          }
-          // TODO(sanjay): Test Get() works
-          int p = rnd.Uniform(100);
-          if (p < 45) {  // Put
-            k = RandomKey(&rnd);
-            v = RandomString(
-                &rnd, rnd.OneIn(20) ? 100 + rnd.Uniform(100) : rnd.Uniform(8));
-            ASSERT_OK(model.Put(WriteOptions(), k, v));
-            ASSERT_OK(db_->Put(WriteOptions(), k, v));
+#[traced_test]
+fn db_test_randomized() {
+    let mut rnd = Random::new(bitcoinleveldb_test::random_seed() as u32);
 
-          } else if (p < 90) {  // Delete
-            k = RandomKey(&rnd);
-            ASSERT_OK(model.Delete(WriteOptions(), k));
-            ASSERT_OK(db_->Delete(WriteOptions(), k));
+    let mut body = |dbtest: &mut DBTest| {
+        let mut model = ModelDB::new(dbtest.current_options());
+        const N: i32 = 10000;
 
-          } else {  // Multi-element batch
-            WriteBatch b;
-            const int num = rnd.Uniform(8);
-            for (int i = 0; i < num; i++) {
-              if (i == 0 || !rnd.OneIn(10)) {
-                k = RandomKey(&rnd);
-              } else {
-                // Periodically re-use the same key from the previous iter, so
-                // we have multiple entries in the write batch for the same key
-              }
-              if (rnd.OneIn(2)) {
-                v = RandomString(&rnd, rnd.Uniform(10));
-                b.Put(k, v);
-              } else {
-                b.Delete(k);
-              }
+        let mut model_snap: Option<Box<dyn Snapshot>> = None;
+        let mut db_snap: Option<Box<dyn Snapshot>> = None;
+
+        let mut k = String::new();
+        let mut v = String::new();
+
+        let mut step: i32 = 0;
+        while step < N {
+            if step % 100 == 0 {
+                eprintln!("Step {} of {}", step, N);
             }
-            ASSERT_OK(model.Write(WriteOptions(), &b));
-            ASSERT_OK(db_->Write(WriteOptions(), &b));
-          }
 
-          if ((step % 100) == 0) {
-            ASSERT_TRUE(CompareIterators(step, &model, db_, nullptr, nullptr));
-            ASSERT_TRUE(CompareIterators(step, &model, db_, model_snap, db_snap));
-            // Save a snapshot from each DB this time that we'll use next
-            // time we compare things, to make sure the current state is
-            // preserved with the snapshot
-            if (model_snap != nullptr) model.ReleaseSnapshot(model_snap);
-            if (db_snap != nullptr) db_->ReleaseSnapshot(db_snap);
+            // TODO(sanjay): Test Get() works
+            let p = rnd.uniform(100);
 
-            Reopen();
-            ASSERT_TRUE(CompareIterators(step, &model, db_, nullptr, nullptr));
+            if p < 45 {
+                // Put
+                k = dbtest_random_key((&mut rnd) as *mut Random);
+                v = dbtest_random_string(
+                    (&mut rnd) as *mut Random,
+                    if rnd.one_in(20) {
+                        100 + (rnd.uniform(100) as i32)
+                    } else {
+                        rnd.uniform(8) as i32
+                    },
+                );
 
-            model_snap = model.GetSnapshot();
-            db_snap = db_->GetSnapshot();
-          }
+                let write_options = WriteOptions::default();
+                let ks = Slice::from(&k);
+                let vs = Slice::from(&v);
+
+                assert!(model.put(&write_options, &ks, &vs).is_ok());
+                assert!(dbtest.put(&k, &v).is_ok());
+
+            } else if p < 90 {
+                // Delete
+                k = dbtest_random_key((&mut rnd) as *mut Random);
+
+                let write_options = WriteOptions::default();
+                let ks = Slice::from(&k);
+
+                assert!(model.delete(&write_options, &ks).is_ok());
+                assert!(dbtest.delete(&k).is_ok());
+
+            } else {
+                // Multi-element batch
+                let mut b = WriteBatch::default();
+                let num = rnd.uniform(8) as i32;
+
+                let mut i: i32 = 0;
+                while i < num {
+                    if i == 0 || !rnd.one_in(10) {
+                        k = dbtest_random_key((&mut rnd) as *mut Random);
+                    } else {
+                        // Periodically re-use the same key from the previous iter, so
+                        // we have multiple entries in the write batch for the same key
+                    }
+
+                    if rnd.one_in(2) {
+                        v = dbtest_random_string((&mut rnd) as *mut Random, rnd.uniform(10) as i32);
+                        let ks = Slice::from(&k);
+                        let vs = Slice::from(&v);
+                        b.put(&ks, &vs);
+                    } else {
+                        let ks = Slice::from(&k);
+                        b.delete(&ks);
+                    }
+
+                    i += 1;
+                }
+
+                let write_options = WriteOptions::default();
+                assert!(model.write(&write_options, (&mut b) as *mut WriteBatch).is_ok());
+                assert!(unsafe {
+                    (*dbtest.dbfull()).write(&write_options, (&mut b) as *mut WriteBatch)
+                }.is_ok());
+            }
+
+            if (step % 100) == 0 {
+                let model_ptr: *mut dyn DB = (&mut model as *mut ModelDB) as *mut dyn DB;
+                let db_ptr: *mut dyn DB = dbtest.dbfull() as *mut dyn DB;
+
+                assert!(compare_iterators(step, model_ptr, db_ptr, None, None));
+                assert!(compare_iterators(
+                    step,
+                    model_ptr,
+                    db_ptr,
+                    model_snap.as_deref(),
+                    db_snap.as_deref(),
+                ));
+
+                // Save a snapshot from each DB this time that we'll use next
+                // time we compare things, to make sure the current state is
+                // preserved with the snapshot
+                if let Some(snapshot) = model_snap.take() {
+                    model.release_snapshot(snapshot);
+                }
+                if let Some(snapshot) = db_snap.take() {
+                    unsafe {
+                        (*dbtest.dbfull()).release_snapshot(snapshot);
+                    }
+                }
+
+                dbtest.reopen(None);
+
+                let reopened_db_ptr: *mut dyn DB = dbtest.dbfull() as *mut dyn DB;
+                assert!(compare_iterators(step, model_ptr, reopened_db_ptr, None, None));
+
+                model_snap = Some(model.get_snapshot());
+                db_snap = Some(unsafe { (*dbtest.dbfull()).get_snapshot() });
+            }
+
+            step += 1;
         }
-        if (model_snap != nullptr) model.ReleaseSnapshot(model_snap);
-        if (db_snap != nullptr) db_->ReleaseSnapshot(db_snap);
-      } while (ChangeOptions());
 
-    */
+        if let Some(snapshot) = model_snap.take() {
+            model.release_snapshot(snapshot);
+        }
+        if let Some(snapshot) = db_snap.take() {
+            unsafe {
+                (*dbtest.dbfull()).release_snapshot(snapshot);
+            }
+        }
+    };
+
+    dbtest_fixture_run_across_option_configurations(&mut body);
 }

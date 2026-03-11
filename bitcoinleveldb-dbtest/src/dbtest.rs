@@ -1,6 +1,135 @@
 // ---------------- [ File: bitcoinleveldb-dbtest/src/dbtest.rs ]
 crate::ix!();
 
+/// Invariant: returns `true` iff the optional raw DB pointer carries no live allocation.
+pub trait DBTestOptionalRawDbPointerExt {
+    /// Precondition: none.
+    /// Postcondition: reports the closed/open state without touching ownership.
+    fn is_null(&self) -> bool;
+}
+
+impl DBTestOptionalRawDbPointerExt for Option<*mut dyn DB> {
+    #[inline]
+    fn is_null(&self) -> bool {
+        match self {
+            Some(_) => false,
+            None => true,
+        }
+    }
+}
+
+/// Invariant: preserves `SpecialEnv` delegation semantics while adapting the call signatures
+/// expected by this crate.
+pub trait DBTestSpecialEnvCompatibilitySurface {
+    /// Precondition: `dir` names a directory in the wrapped environment.
+    /// Postcondition: forwards enumeration to `base_mut()` and preserves returned `Status`.
+    fn get_children(&mut self, dir: &String, result: &mut Vec<String>) -> Status;
+
+    /// Precondition: `filename` names a file path in the wrapped environment.
+    /// Postcondition: forwards deletion to `base_mut()` and preserves returned `Status`.
+    fn delete_file(&mut self, filename: &String) -> Status;
+
+    /// Precondition: `from` and `to` are filesystem paths in the wrapped environment.
+    /// Postcondition: forwards rename to `base_mut()` and preserves returned `Status`.
+    fn rename_file(&mut self, from: &String, to: &String) -> Status;
+}
+
+impl DBTestSpecialEnvCompatibilitySurface for SpecialEnv {
+    fn get_children(&mut self, dir: &String, result: &mut Vec<String>) -> Status {
+        tracing::trace!(
+            target: "bitcoinleveldb_dbtest::dbtest",
+            label = "dbtest.specialenv_compat.get_children.enter",
+            dir_len = dir.len()
+        );
+
+        let s = self.base_mut().get_children(dir, result as *mut Vec<String>);
+
+        tracing::trace!(
+            target: "bitcoinleveldb_dbtest::dbtest",
+            label = "dbtest.specialenv_compat.get_children.exit",
+            ok = s.is_ok(),
+            result_len = result.len()
+        );
+
+        s
+    }
+
+    fn delete_file(&mut self, filename: &String) -> Status {
+        tracing::trace!(
+            target: "bitcoinleveldb_dbtest::dbtest",
+            label = "dbtest.specialenv_compat.delete_file.enter",
+            filename_len = filename.len()
+        );
+
+        let s = self.base_mut().delete_file(filename);
+
+        tracing::trace!(
+            target: "bitcoinleveldb_dbtest::dbtest",
+            label = "dbtest.specialenv_compat.delete_file.exit",
+            ok = s.is_ok()
+        );
+
+        s
+    }
+
+    fn rename_file(&mut self, from: &String, to: &String) -> Status {
+        tracing::trace!(
+            target: "bitcoinleveldb_dbtest::dbtest",
+            label = "dbtest.specialenv_compat.rename_file.enter",
+            from_len = from.len(),
+            to_len = to.len()
+        );
+
+        let s = self.base_mut().rename_file(from, to);
+
+        tracing::trace!(
+            target: "bitcoinleveldb_dbtest::dbtest",
+            label = "dbtest.specialenv_compat.rename_file.exit",
+            ok = s.is_ok()
+        );
+
+        s
+    }
+}
+
+/// Invariant: this placeholder exists only to preserve out-parameter initialization shape for
+/// filename parsing; the parsed result overwrites it before observation on the success path.
+pub fn dbtest_default_file_type_for_outparam() -> FileType {
+    tracing::trace!(
+        target: "bitcoinleveldb_dbtest::dbtest",
+        label = "dbtest.file_type.default_outparam"
+    );
+
+    FileType::LogFile
+}
+
+/// Invariant: converts a NUL-terminated label pointer into an owned Rust string without mutating
+/// the pointed-to bytes.
+pub fn dbtest_c_string_label_to_owned_string(label: *const u8) -> String {
+    tracing::trace!(
+        target: "bitcoinleveldb_dbtest::dbtest",
+        label = "dbtest.c_string_label_to_owned_string.enter",
+        label_is_null = label.is_null()
+    );
+
+    let out = match label.is_null() {
+        true => "(null)".to_string(),
+        false => unsafe {
+            CStr::from_ptr(label as *const c_char)
+                .to_string_lossy()
+                .into_owned()
+        },
+    };
+
+    tracing::trace!(
+        target: "bitcoinleveldb_dbtest::dbtest",
+        label = "dbtest.c_string_label_to_owned_string.exit",
+        out_len = out.len()
+    );
+
+    out
+}
+
 /// Invariant: the discriminant order is relied upon by `DBTest::change_options`,
 /// which advances through configurations by integer increment.
 #[repr(i32)]
@@ -20,7 +149,10 @@ pub enum DBTestOptionConfig {
 
 /// Invariant: owns the on-disk database directory at `dbname` for the lifetime of the value.
 /// Invariant: `env` points to a heap-allocated `SpecialEnv` until `Drop`.
-/// Invariant: `db` is either null or points to a heap-allocated DB instance returned by Open.
+/// Invariant: `db` is `None` when closed and `Some(ptr)` only while that heap allocation is owned
+/// by this harness.
+/// Invariant: the filter policy slot remains empty until the workspace bloom-policy constructor is
+/// available; this slot must not be silently filled with a different policy.
 pub struct DBTest {
     /// Invariant: filesystem path of the database directory used by this test harness.
     dbname: String,
@@ -28,17 +160,33 @@ pub struct DBTest {
     /// Invariant: non-null after construction; freed exactly once in `Drop`.
     env: *mut SpecialEnv,
 
-    /// Invariant: null when closed; otherwise points to an open DB instance.
-    db: *mut dyn DB,
+    /// Invariant: `None` when closed; `Some(ptr)` only when an open DB allocation is owned here.
+    db: Option<*mut dyn DB>,
 
     /// Invariant: exact options used for the most recent successful (or attempted) open.
     last_options: Options,
 
-    /// Invariant: shared filter policy instance used for the filter configuration.
-    filter_policy: Arc<dyn FilterPolicy>,
+    /// Invariant: `None` until the real bloom-policy constructor is linked from the workspace.
+    filter_policy: Option<Arc<dyn FilterPolicy>>,
 
     /// Invariant: integer index corresponding to `DBTestOptionConfig` discriminants.
     option_config: i32,
+}
+
+impl DBTest {
+    /// Precondition: none.
+    /// Postcondition: returns the raw pointer view of the fixture-owned `SpecialEnv`
+    /// without transferring ownership or mutating its state.
+    pub fn special_env(&mut self) -> *mut SpecialEnv {
+        tracing::trace!(
+            target: "bitcoinleveldb_dbtest::dbtest",
+            label = "dbtest.special_env",
+            phase = "return",
+            env_is_null = self.env.is_null()
+        );
+
+        self.env
+    }
 }
 
 impl Default for DBTest {
@@ -50,12 +198,9 @@ impl Default for DBTest {
         );
 
         // NOTE: translated from: env_(new SpecialEnv(Env::Default()))
-        let base_env = Env::default(); // defined elsewhere in codebase
+        let base_env = PosixEnv::shared();
         let env_box = Box::new(SpecialEnv::new(base_env));
         let env_ptr: *mut SpecialEnv = Box::into_raw(env_box);
-
-        // NOTE: translated from: filter_policy_ = NewBloomFilterPolicy(10);
-        let filter_policy: Arc<dyn FilterPolicy> = Arc::from(new_bloom_filter_policy(10));
 
         // NOTE: translated from: dbname_ = bitcoinleveldb_test::TmpDir() + "/db_test";
         let mut dbname = bitcoinleveldb_test::tmp_dir();
@@ -63,14 +208,14 @@ impl Default for DBTest {
 
         // NOTE: translated from: DestroyDB(dbname_, Options());
         // Ignore status as in the C++ original.
-        let _ = destroy_db(&dbname, &Options::default()); // defined elsewhere in codebase
+        let _ = destroy_db(&dbname, &Options::default());
 
         let mut this = Self {
             dbname,
             env: env_ptr,
-            db: null_mut::<dyn DB>(),
+            db: None,
             last_options: Options::default(),
-            filter_policy,
+            filter_policy: None,
             option_config: DBTestOptionConfig::Default as i32,
         };
 
@@ -97,16 +242,16 @@ impl Drop for DBTest {
         );
 
         // NOTE: translated from: delete db_;
-        unsafe {
-            if !self.db.is_null() {
-                drop(Box::from_raw(self.db));
-                self.db = null_mut::<dyn DB>();
-            }
+        match self.db.take() {
+            Some(db_ptr) => unsafe {
+                drop(Box::from_raw(db_ptr));
+            },
+            None => {}
         }
 
         // NOTE: translated from: DestroyDB(dbname_, Options());
         // Ignore status as in the C++ original.
-        let _ = destroy_db(&self.dbname, &Options::default()); // defined elsewhere in codebase
+        let _ = destroy_db(&self.dbname, &Options::default());
 
         // NOTE: translated from: delete env_;
         unsafe {
@@ -179,15 +324,21 @@ impl DBTest {
             option_config = self.option_config
         );
 
-        // translated from: Options options; options.reuse_logs = false;
+        // translated from:
+        // Options options;
+        // options.reuse_logs = false;
+        // options.env = env_;
         let mut options = Options::default();
         options.set_reuse_logs(false);
+        options.set_env(Some(dbtest_special_env_delegating_env_rc(self.env)));
 
         // translated from: switch(option_config_) { ... }
         if self.option_config == (DBTestOptionConfig::Reuse as i32) {
             options.set_reuse_logs(true);
         } else if self.option_config == (DBTestOptionConfig::Filter as i32) {
-            options.set_filter_policy(Arc::clone(&self.filter_policy));
+            if let Some(ref fp) = self.filter_policy {
+                options.set_filter_policy(Arc::clone(fp));
+            }
         } else if self.option_config == (DBTestOptionConfig::Uncompressed as i32) {
             options.set_compression(CompressionType::None);
         } else {
@@ -204,8 +355,8 @@ impl DBTest {
         options
     }
     
-    /// Precondition: `self.db` is either null or points to a `DBImpl` instance.
-    /// Postcondition: returns the raw pointer view of the underlying implementation.
+    /// Precondition: `self.db` is either `None` or holds a pointer to a `DBImpl` instance.
+    /// Postcondition: returns the raw pointer view of the underlying implementation, or null if closed.
     pub fn dbfull(&mut self) -> *mut DBImpl {
         tracing::trace!(
             target: "bitcoinleveldb_dbtest::dbtest",
@@ -214,7 +365,10 @@ impl DBTest {
             db_is_null = self.db.is_null()
         );
 
-        self.db as *mut DBImpl
+        match self.db {
+            Some(db_ptr) => db_ptr as *mut DBImpl,
+            None => null_mut::<DBImpl>(),
+        }
     }
     
     /// Precondition: none.
@@ -235,7 +389,7 @@ impl DBTest {
 
         // translated from: ASSERT_OK(TryReopen(options));
         let s = self.try_reopen(options_ptr);
-        assert_ok!(&s);
+        assert!(s.is_ok());
 
         tracing::trace!(
             target: "bitcoinleveldb_dbtest::dbtest",
@@ -255,12 +409,11 @@ impl DBTest {
             db_is_null = self.db.is_null()
         );
 
-        // translated from: delete db_; db_ = nullptr;
-        unsafe {
-            if !self.db.is_null() {
-                drop(Box::from_raw(self.db));
-                self.db = null_mut::<dyn DB>();
-            }
+        match self.db.take() {
+            Some(db_ptr) => unsafe {
+                drop(Box::from_raw(db_ptr));
+            },
+            None => {}
         }
 
         tracing::trace!(
@@ -270,7 +423,7 @@ impl DBTest {
             db_is_null = self.db.is_null()
         );
     }
-   
+       
     /// Precondition: none.
     /// Postcondition: on-disk database directory is destroyed and a fresh DB is opened (asserted).
     pub fn destroy_and_reopen(&mut self, mut options: Option<&mut Options>) {
@@ -282,15 +435,14 @@ impl DBTest {
             dbname = self.dbname.as_str()
         );
 
-        // translated from: delete db_; db_=nullptr; DestroyDB(...); ASSERT_OK(TryReopen(...));
-        unsafe {
-            if !self.db.is_null() {
-                drop(Box::from_raw(self.db));
-                self.db = null_mut::<dyn DB>();
-            }
+        match self.db.take() {
+            Some(db_ptr) => unsafe {
+                drop(Box::from_raw(db_ptr));
+            },
+            None => {}
         }
 
-        let _ = destroy_db(&self.dbname, &Options::default()); // defined elsewhere in codebase
+        let _ = destroy_db(&self.dbname, &Options::default());
 
         let options_ptr: *mut Options = match options.as_mut() {
             Some(o) => (*o) as *mut Options,
@@ -298,7 +450,7 @@ impl DBTest {
         };
 
         let s = self.try_reopen(options_ptr);
-        assert_ok!(&s);
+        assert!(s.is_ok());
 
         tracing::trace!(
             target: "bitcoinleveldb_dbtest::dbtest",
@@ -308,9 +460,9 @@ impl DBTest {
             db_is_null = self.db.is_null()
         );
     }
-    
+        
     /// Precondition: `options` is either null or points to an initialized `Options`.
-    /// Postcondition: `self.db` is replaced with the newly opened DB pointer (or null on failure),
+    /// Postcondition: `self.db` is replaced with the newly opened DB pointer (or `None` on failure),
     /// and `self.last_options` is set to the attempted options.
     pub fn try_reopen(&mut self, options: *mut Options) -> crate::Status {
         tracing::trace!(
@@ -321,33 +473,37 @@ impl DBTest {
             dbname = self.dbname.as_str()
         );
 
-        // translated from: delete db_; db_ = nullptr;
-        unsafe {
-            if !self.db.is_null() {
-                drop(Box::from_raw(self.db));
-                self.db = null_mut::<dyn DB>();
-            }
+        match self.db.take() {
+            Some(db_ptr) => unsafe {
+                drop(Box::from_raw(db_ptr));
+            },
+            None => {}
         }
 
-        // translated from:
-        // Options opts;
-        // if (options != nullptr) { opts = *options; }
-        // else { opts = CurrentOptions(); opts.create_if_missing = true; }
-        let mut opts: Options = if !options.is_null() {
-            unsafe { (*options).clone() }
-        } else {
-            let mut o = self.current_options();
-            o.set_create_if_missing(true);
-            o
+        let opts: Options = match options.is_null() {
+            false => unsafe { (*options).clone() },
+            true => {
+                let mut o = self.current_options();
+                o.set_create_if_missing(true);
+                o
+            }
         };
 
-        // translated from: last_options_ = opts;
         self.last_options = opts.clone();
 
-        // translated from: return DB::Open(opts, dbname_, &db_);
-        // NOTE: implemented via the `DBOpen` surface; `DBImpl::open` performs the actual open.
         let mut opener = DBImpl::new(&opts, &self.dbname);
-        let s = opener.open(&opts, &self.dbname, (&mut self.db) as *mut *mut dyn DB);
+        let mut opened_db_slot: MaybeUninit<*mut dyn DB> = MaybeUninit::uninit();
+        let s = opener.open(&opts, &self.dbname, opened_db_slot.as_mut_ptr());
+
+        match s.is_ok() {
+            true => {
+                let opened_db_ptr = unsafe { opened_db_slot.assume_init() };
+                self.db = Some(opened_db_ptr);
+            }
+            false => {
+                self.db = None;
+            }
+        }
 
         tracing::trace!(
             target: "bitcoinleveldb_dbtest::dbtest",
@@ -431,15 +587,15 @@ impl DBTest {
         // ReadOptions options; options.snapshot = snapshot;
         let mut options = ReadOptions::default();
 
-        // NOTE: snapshot plumbing: `ReadOptions::snapshot` is carried as `Option<Arc<dyn Snapshot>>`
-        // in this codebase. The C++ surface passes `const Snapshot*`; the Rust surface passes
-        // `&dyn Snapshot` where the concrete value is an `Arc<dyn Snapshot>` handle.
+        // NOTE: snapshot plumbing:
+        // - The workspace DB surface returns `Box<dyn Snapshot>`.
+        // - `ReadOptions` carries snapshots as `Option<Arc<dyn Snapshot>>`.
+        // - The only concrete snapshot type in the workspace is `SnapshotImpl`, whose
+        //   load-bearing datum for reads is the captured sequence number.
+        // Therefore we preserve read semantics by materializing an `Arc<SnapshotImpl>`
+        // carrying the same sequence number for the duration of this call.
         let snap_arc: Option<Arc<dyn Snapshot>> = match snapshot {
-            Some(s) => {
-                let arc_ref: &Arc<dyn Snapshot> =
-                    unsafe { &*(s as *const dyn Snapshot as *const Arc<dyn Snapshot>) };
-                Some(Arc::clone(arc_ref))
-            }
+            Some(s) => Some(dbtest_snapshot_read_arc_from_snapshot_ref(s)),
             None => None,
         };
         options.set_snapshot(snap_arc);
@@ -508,7 +664,7 @@ impl DBTest {
             let mut matched: usize = 0;
             iter.seek_to_last();
             while iter.valid() {
-                assert_lt!(matched, forward.len());
+                assert!(matched < forward.len());
                 assert_eq!(
                     self.iter_status(iter_ptr),
                     forward[forward.len() - matched - 1]
@@ -548,7 +704,7 @@ impl DBTest {
 
         // translated from: InternalKey target(user_key, kMaxSequenceNumber, kTypeValue);
         //                  iter->Seek(target.Encode());
-        let target = InternalKey::new(user_key_.clone(), k_max_sequence_number(), ValueType::Value);
+        let target = InternalKey::new(&user_key_, MAX_SEQUENCE_NUMBER, ValueType::TypeValue);
         unsafe { (&mut *iter_ptr).seek(&target.encode()) };
 
         let mut result = String::new();
@@ -583,11 +739,11 @@ impl DBTest {
                         }
                         first = false;
 
-                        match ikey.value_type() {
-                            ValueType::Value => {
+                        match ikey.ty() {
+                            ValueType::TypeValue => {
                                 result.push_str(&iter.value().to_string());
                             }
-                            ValueType::Deletion => {
+                            ValueType::TypeDeletion => {
                                 result.push_str("DEL");
                             }
                         }
@@ -634,12 +790,12 @@ impl DBTest {
         key.push_str(&level.to_string());
 
         let ok = unsafe { (*self.dbfull()).get_property(&key, (&mut property) as *mut String) };
-        assert_true!(ok);
+        assert!(ok);
 
         let parsed = match property.parse::<i32>() {
             Ok(v) => v,
             Err(_) => {
-                assert_true!(false);
+                assert!(false);
                 0
             }
         };
@@ -667,7 +823,7 @@ impl DBTest {
         // for (int level = 0; level < config::kNumLevels; level++) { result += NumTableFilesAtLevel(level); }
         let mut result: i32 = 0;
         let mut level: i32 = 0;
-        while level < (config::k_num_levels() as i32) {
+        while level < (bitcoinleveldb_cfg::NUM_LEVELS as i32) {
             result += self.num_table_files_at_level(level);
             level += 1;
         }
@@ -701,7 +857,7 @@ impl DBTest {
         let mut last_non_zero_offset: usize = 0;
 
         let mut level: i32 = 0;
-        while level < (config::k_num_levels() as i32) {
+        while level < (bitcoinleveldb_cfg::NUM_LEVELS as i32) {
             let f = self.num_table_files_at_level(level);
             let mut buf = String::new();
             if level != 0 {
@@ -742,7 +898,7 @@ impl DBTest {
         // return static_cast<int>(files.size());
         let mut files: Vec<String> = Vec::new();
         let s = unsafe { (*self.env).get_children(&self.dbname, &mut files) }; // defined elsewhere in codebase
-        assert_ok!(&s);
+        assert!(s.is_ok());
 
         let n = files.len() as i32;
 
@@ -756,22 +912,21 @@ impl DBTest {
         n
     }
 
-    pub fn size(&mut self, start: &Slice, limit: &Slice) -> u64 {
+    pub fn size(&mut self, start: Slice, limit: Slice) -> u64 {
         tracing::trace!(
             target: "bitcoinleveldb_dbtest::dbtest",
             label = "dbtest.size.enter",
             phase = "enter"
         );
 
-        // translated from:
-        // Range r(start, limit);
-        // uint64_t size;
-        // db_->GetApproximateSizes(&r, 1, &size);
-        // return size;
-        let r = Range::new(start.clone(), limit.clone());
+        let r = LevelDbSliceRange::new(start, limit);
         let mut size: u64 = 0;
         unsafe {
-            (*self.dbfull()).get_approximate_sizes((&r) as *const Range, 1, (&mut size) as *mut u64);
+            (*self.dbfull()).get_approximate_sizes(
+                (&r) as *const LevelDbSliceRange,
+                1,
+                (&mut size) as *mut u64,
+            );
         }
 
         tracing::trace!(
@@ -783,7 +938,7 @@ impl DBTest {
 
         size
     }
-   
+       
     pub fn compact(&mut self, start: &Slice, limit: &Slice) {
         tracing::trace!(
             target: "bitcoinleveldb_dbtest::dbtest",
@@ -854,7 +1009,7 @@ impl DBTest {
         );
 
         // translated from: MakeTables(config::kNumLevels, smallest, largest);
-        self.make_tables(config::k_num_levels() as i32, smallest, largest);
+        self.make_tables(bitcoinleveldb_cfg::NUM_LEVELS as i32, smallest, largest);
 
         tracing::trace!(
             target: "bitcoinleveldb_dbtest::dbtest",
@@ -862,7 +1017,7 @@ impl DBTest {
             phase = "exit"
         );
     }
-
+ 
     pub fn dump_file_counts(&mut self, label: *const u8) {
         tracing::trace!(
             target: "bitcoinleveldb_dbtest::dbtest",
@@ -870,20 +1025,16 @@ impl DBTest {
             phase = "enter"
         );
 
-        // translated from:
-        // fprintf(stderr, "---\n%s:\n", label);
-        // fprintf(stderr, "maxoverlap: %lld\n", ...);
-        // for ... print per-level file counts
-        unsafe {
-            eprintln!("---");
-            eprintln!("{}:", ptr_to_string!(label));
-        }
+        let label_string = dbtest_c_string_label_to_owned_string(label);
+
+        eprintln!("---");
+        eprintln!("{}:", label_string);
 
         let max_overlap = unsafe { (*self.dbfull()).test_max_next_level_overlapping_bytes() };
         eprintln!("maxoverlap: {}", max_overlap);
 
         let mut level: i32 = 0;
-        while level < (config::k_num_levels() as i32) {
+        while level < (bitcoinleveldb_cfg::NUM_LEVELS as i32) {
             let num = self.num_table_files_at_level(level);
             if num > 0 {
                 eprintln!("  level {:3} : {} files", level, num);
@@ -897,7 +1048,7 @@ impl DBTest {
             phase = "exit"
         );
     }
- 
+
     pub fn dump_ss_table_list(&mut self) -> String {
         tracing::trace!(
             target: "bitcoinleveldb_dbtest::dbtest",
@@ -968,25 +1119,21 @@ impl DBTest {
             dbname = self.dbname.as_str()
         );
 
-        // translated from:
-        // std::vector<std::string> filenames;
-        // ASSERT_OK(env_->GetChildren(dbname_, &filenames));
-        // uint64_t number; FileType type;
-        // for (...) { if(ParseFileName(...) && type==kTableFile) { ASSERT_OK(DeleteFile(TableFileName(...))); return true; } }
-        // return false;
         let mut filenames: Vec<String> = Vec::new();
-        let s = unsafe { (*self.env).get_children(&self.dbname, &mut filenames) }; // defined elsewhere
-        assert_ok!(&s);
+        let s = unsafe { (*self.env).get_children(&self.dbname, &mut filenames) };
+        assert!(s.is_ok());
 
         let mut i: usize = 0;
         while i < filenames.len() {
             let mut number: u64 = 0;
-            let mut file_type = FileType::default();
-            if parse_file_name(&filenames[i], &mut number, &mut file_type) && file_type == FileType::TableFile
+            let mut file_type = dbtest_default_file_type_for_outparam();
+
+            if parse_file_name(&filenames[i], &mut number, &mut file_type)
+                && file_type == FileType::TableFile
             {
                 let fname = table_file_name(&self.dbname, number);
-                let ds = unsafe { (*self.env).delete_file(&fname) }; // defined elsewhere
-                assert_ok!(&ds);
+                let ds = unsafe { (*self.env).delete_file(&fname) };
+                assert!(ds.is_ok());
 
                 tracing::trace!(
                     target: "bitcoinleveldb_dbtest::dbtest",
@@ -998,6 +1145,7 @@ impl DBTest {
 
                 return true;
             }
+
             i += 1;
         }
 
@@ -1023,30 +1171,26 @@ impl DBTest {
             dbname = self.dbname.as_str()
         );
 
-        // translated from:
-        // std::vector<std::string> filenames;
-        // ASSERT_OK(env_->GetChildren(dbname_, &filenames));
-        // uint64_t number; FileType type;
-        // int files_renamed = 0;
-        // for (...) { if(ParseFileName(...) && type==kTableFile) { from=TableFileName(...); to=SSTTableFileName(...); ASSERT_OK(RenameFile(from,to)); files_renamed++; } }
-        // return files_renamed;
         let mut filenames: Vec<String> = Vec::new();
-        let s = unsafe { (*self.env).get_children(&self.dbname, &mut filenames) }; // defined elsewhere
-        assert_ok!(&s);
+        let s = unsafe { (*self.env).get_children(&self.dbname, &mut filenames) };
+        assert!(s.is_ok());
 
         let mut files_renamed: i32 = 0;
         let mut i: usize = 0;
         while i < filenames.len() {
             let mut number: u64 = 0;
-            let mut file_type = FileType::default();
-            if parse_file_name(&filenames[i], &mut number, &mut file_type) && file_type == FileType::TableFile
+            let mut file_type = dbtest_default_file_type_for_outparam();
+
+            if parse_file_name(&filenames[i], &mut number, &mut file_type)
+                && file_type == FileType::TableFile
             {
                 let from = table_file_name(&self.dbname, number);
                 let to = sst_table_file_name(&self.dbname, number);
-                let rs = unsafe { (*self.env).rename_file(&from, &to) }; // defined elsewhere
-                assert_ok!(&rs);
+                let rs = unsafe { (*self.env).rename_file(&from, &to) };
+                assert!(rs.is_ok());
                 files_renamed += 1;
             }
+
             i += 1;
         }
 

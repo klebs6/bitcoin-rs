@@ -13,3 +13,4 @@ description = "todo: write a description here"
 bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
 bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }

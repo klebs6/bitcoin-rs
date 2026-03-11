@@ -14,10 +14,6 @@ pub fn leveldb_writeoptions_create() -> *mut LevelDBWriteOptions {
         "leveldb_writeoptions_create exit"
     );
     p
-
-    /*
-        return new leveldb_writeoptions_t;
-    */
 }
 
 pub fn leveldb_writeoptions_destroy(opt: *mut LevelDBWriteOptions) {
@@ -39,10 +35,6 @@ pub fn leveldb_writeoptions_destroy(opt: *mut LevelDBWriteOptions) {
     }
 
     trace!(target: "bitcoinleveldb_db::c_api", "leveldb_writeoptions_destroy exit");
-
-    /*
-        delete opt;
-    */
 }
 
 pub fn leveldb_writeoptions_set_sync(opt: *mut LevelDBWriteOptions, v: u8) {
@@ -63,7 +55,6 @@ pub fn leveldb_writeoptions_set_sync(opt: *mut LevelDBWriteOptions, v: u8) {
         }
         (*opt).rep_mut().set_sync(v != 0);
     }
-
 }
 
 #[cfg(test)]

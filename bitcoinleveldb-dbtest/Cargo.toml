@@ -24,4 +24,13 @@ bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl" }
 bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
 bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
 bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
-#bitcoinleveldb-test = { path = "../bitcoinleveldb-test" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-test = { path = "../bitcoinleveldb-test" }
+bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
+bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
+bitcoinleveldb-logtools = { path = "../bitcoinleveldb-logtools" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom" }
+bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }

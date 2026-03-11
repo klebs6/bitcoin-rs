@@ -1,6 +1,9 @@
 // ---------------- [ File: bitcoinleveldb-bench/src/db_bench.rs ]
 crate::ix!();
 
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+use std::ptr;
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/benchmarks/db_bench.cc]
 
 /**
@@ -48,169 +51,414 @@ pub const FLAGS_benchmarks: &'static str = concat!{
     "snappyuncomp,"
 };
 
-/**
-  | Number of key/values to place in database
-  |
-  */
-lazy_static!{
-    /*
-    static int FLAGS_num = 1000000;
-    */
-}
+/// Number of key/values to place in database
+pub static BITCOINLEVELDB_BENCH_FLAGS_NUM: AtomicI32 = AtomicI32::new(1_000_000);
 
-/**
-  | Number of read operations to do. If negative,
-  | do FLAGS_num reads.
-  |
-  */
-lazy_static!{
-    /*
-    static int FLAGS_reads = -1;
-    */
-}
+/// Number of read operations to do. If negative, do FLAGS_num reads.
+pub static BITCOINLEVELDB_BENCH_FLAGS_READS: AtomicI32 = AtomicI32::new(-1);
 
-/**
-   Number of concurrent threads to run.
-  */
-lazy_static!{
-    /*
-    static int FLAGS_threads = 1;
-    */
-}
+/// Number of concurrent threads to run.
+pub static BITCOINLEVELDB_BENCH_FLAGS_THREADS: AtomicI32 = AtomicI32::new(1);
 
-/**
-   Size of each value
-  */
-lazy_static!{
-    /*
-    static int FLAGS_value_size = 100;
-    */
-}
+/// Size of each value
+pub static BITCOINLEVELDB_BENCH_FLAGS_VALUE_SIZE: AtomicI32 = AtomicI32::new(100);
 
-/**
-  | Arrange to generate values that shrink to this
-  | fraction of their original size after
-  | compression
-  */
-lazy_static!{
-    /*
-    static double FLAGS_compression_ratio = 0.5;
-    */
-}
+/// Print histogram of operation timings
+pub static BITCOINLEVELDB_BENCH_FLAGS_HISTOGRAM: AtomicBool = AtomicBool::new(false);
 
-/**
-   Print histogram of operation timings
-  */
-lazy_static!{
-    /*
-    static bool FLAGS_histogram = false;
-    */
-}
+/// Number of bytes to buffer in memtable before compacting (initialized to default value by "main")
+pub static BITCOINLEVELDB_BENCH_FLAGS_WRITE_BUFFER_SIZE: AtomicI32 = AtomicI32::new(0);
 
-/**
-  | Number of bytes to buffer in memtable before
-  | compacting (initialized to default value by
-  | "main")
-  */
-lazy_static!{
-    /*
-    static int FLAGS_write_buffer_size = 0;
-    */
-}
+/// Number of bytes written to each file. (initialized to default value by "main")
+pub static BITCOINLEVELDB_BENCH_FLAGS_MAX_FILE_SIZE: AtomicI32 = AtomicI32::new(0);
 
-/**
-   Number of bytes written to each file.
-   (initialized to default value by "main")
-  */
-lazy_static!{
-    /*
-    static int FLAGS_max_file_size = 0;
-    */
-}
+/// Approximate size of user data packed per block (before compression.  (initialized to default value by "main")
+pub static BITCOINLEVELDB_BENCH_FLAGS_BLOCK_SIZE: AtomicI32 = AtomicI32::new(0);
 
-/**
-  | Approximate size of user data packed per block
-  | (before compression.  (initialized to default
-  | value by "main")
-  */
-lazy_static!{
-    /*
-    static int FLAGS_block_size = 0;
-    */
-}
+/// Number of bytes to use as a cache of uncompressed data.  Negative means use default settings.
+pub static BITCOINLEVELDB_BENCH_FLAGS_CACHE_SIZE: AtomicI32 = AtomicI32::new(-1);
 
-/**
-  | Number of bytes to use as a cache of
-  | uncompressed data.  Negative means use default
-  | settings.
-  */
-lazy_static!{
-    /*
-    static int FLAGS_cache_size = -1;
-    */
-}
+/// Maximum number of files to keep open at the same time (use default if == 0)
+pub static BITCOINLEVELDB_BENCH_FLAGS_OPEN_FILES: AtomicI32 = AtomicI32::new(0);
 
-/**
-   Maximum number of files to keep open at the
-   same time (use default if == 0)
-  */
-lazy_static!{
-    /*
-    static int FLAGS_open_files = 0;
-    */
-}
+/// Bloom filter bits per key. Negative means use default settings.
+pub static BITCOINLEVELDB_BENCH_FLAGS_BLOOM_BITS: AtomicI32 = AtomicI32::new(-1);
 
-/**
-   Bloom filter bits per key.
+/// If true, do not destroy the existing database.
+/// If you set this flag and also specify a benchmark that wants a fresh database, that benchmark will fail.
+pub static BITCOINLEVELDB_BENCH_FLAGS_USE_EXISTING_DB: AtomicBool = AtomicBool::new(false);
 
-   Negative means use default settings.
-  */
-lazy_static!{
-    /*
-    static int FLAGS_bloom_bits = -1;
-    */
-}
+/// If true, reuse existing log/MANIFEST files when re-opening a database.
+pub static BITCOINLEVELDB_BENCH_FLAGS_REUSE_LOGS: AtomicBool = AtomicBool::new(false);
 
-/**
-  | If true, do not destroy the existing database.
-  | If you set this flag and also specify
-  | a benchmark that wants a fresh database, that
-  | benchmark will fail.
-  */
 lazy_static!{
-    /*
-    static bool FLAGS_use_existing_db = false;
-    */
-}
-
-/**
-   If true, reuse existing log/MANIFEST files when
-   re-opening a database.
-  */
-lazy_static!{
-    /*
-    static bool FLAGS_reuse_logs = false;
-    */
-}
-
-/**
-   Use the db with the following name.
-  */
-lazy_static!{
-    /*
-    static const char* FLAGS_db = nullptr;
-    */
+    pub static ref BITCOINLEVELDB_BENCH_FLAGS_BENCHMARKS_TEXT: Mutex<String> =
+        Mutex::new(String::from(FLAGS_benchmarks));
 }
 
 lazy_static!{
-    /*
-    leveldb::Env* g_env = nullptr;
-    */
+    /// Arrange to generate values that shrink to this fraction of their original size after compression
+    pub static ref BITCOINLEVELDB_BENCH_FLAGS_COMPRESSION_RATIO: Mutex<f64> =
+        Mutex::new(0.5_f64);
 }
 
-/**
-   Helper for quickly generating random data.
-  */
+lazy_static!{
+    /// Use the db with the following name.
+    pub static ref BITCOINLEVELDB_BENCH_FLAGS_DB_PATH: Mutex<Option<String>> =
+        Mutex::new(None);
+}
+
+pub fn bitcoinleveldb_bench_flag_benchmarks_get() -> String {
+    BITCOINLEVELDB_BENCH_FLAGS_BENCHMARKS_TEXT.lock().clone()
+}
+
+pub fn bitcoinleveldb_bench_flag_benchmarks_set(value: String) {
+    *BITCOINLEVELDB_BENCH_FLAGS_BENCHMARKS_TEXT.lock() = value;
+}
+
+pub fn bitcoinleveldb_bench_flag_compression_ratio_get() -> f64 {
+    *BITCOINLEVELDB_BENCH_FLAGS_COMPRESSION_RATIO.lock()
+}
+
+pub fn bitcoinleveldb_bench_flag_compression_ratio_set(value: f64) {
+    *BITCOINLEVELDB_BENCH_FLAGS_COMPRESSION_RATIO.lock() = value;
+}
+
+pub fn bitcoinleveldb_bench_flag_db_path_get() -> Option<String> {
+    BITCOINLEVELDB_BENCH_FLAGS_DB_PATH.lock().clone()
+}
+
+pub fn bitcoinleveldb_bench_flag_db_path_set(value: Option<String>) {
+    *BITCOINLEVELDB_BENCH_FLAGS_DB_PATH.lock() = value;
+}
+
+pub fn bitcoinleveldb_bench_parse_i32_flag(
+    argument: &str,
+    prefix:   &str) -> Option<i32> {
+
+    match argument.strip_prefix(prefix) {
+        Some(rest) => match rest.parse::<i32>() {
+            Ok(value) => Some(value),
+            Err(_) => None,
+        },
+        None => None,
+    }
+}
+
+pub fn bitcoinleveldb_bench_parse_f64_flag(
+    argument: &str,
+    prefix:   &str) -> Option<f64> {
+
+    match argument.strip_prefix(prefix) {
+        Some(rest) => match rest.parse::<f64>() {
+            Ok(value) => Some(value),
+            Err(_) => None,
+        },
+        None => None,
+    }
+}
+
+pub fn bitcoinleveldb_bench_parse_bool01_flag(
+    argument: &str,
+    prefix:   &str) -> Option<bool> {
+
+    match bitcoinleveldb_bench_parse_i32_flag(argument, prefix) {
+        Some(0) => Some(false),
+        Some(1) => Some(true),
+        Some(_) => None,
+        None => None,
+    }
+}
+
+pub fn bitcoinleveldb_bench_now_seconds() -> f64 {
+    match SystemTime::now().duration_since(UNIX_EPOCH) {
+        Ok(duration) => duration.as_secs_f64(),
+        Err(_) => 0.0,
+    }
+}
+
+pub fn bitcoinleveldb_bench_get_test_directory() -> Option<String> {
+    unsafe {
+        let env = leveldb_create_default_env();
+        if env.is_null() {
+            return None;
+        }
+
+        let dir_ptr = leveldb_env_get_test_directory(env);
+        let result = if dir_ptr.is_null() {
+            None
+        } else {
+            Some(Slice::from(dir_ptr as *const u8).to_string())
+        };
+
+        if !dir_ptr.is_null() {
+            leveldb_free(dir_ptr as *mut c_void);
+        }
+        leveldb_env_destroy(env);
+        result
+    }
+}
+
+pub fn bitcoinleveldb_bench_cstring_or_exit(input: &str) -> CString {
+    match CString::new(input) {
+        Ok(value) => value,
+        Err(_) => {
+            eprintln!("leveldb string contains interior NUL");
+            unsafe {
+                exit(1);
+            }
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_leveldb_error_to_string(errptr: *mut u8) -> String {
+    if errptr.is_null() {
+        String::new()
+    } else {
+        Slice::from(errptr as *const u8).to_string()
+    }
+}
+
+pub fn bitcoinleveldb_bench_leveldb_error_clear(errptr: *mut u8) {
+    unsafe {
+        if !errptr.is_null() {
+            leveldb_free(errptr as *mut c_void);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_leveldb_error_check_or_exit(
+    context: &str,
+    errptr:  *mut u8) {
+
+    if !errptr.is_null() {
+        let rendered_message = bitcoinleveldb_bench_leveldb_error_to_string(errptr);
+        eprintln!("{} error: {}", context, rendered_message);
+        bitcoinleveldb_bench_leveldb_error_clear(errptr);
+        unsafe {
+            exit(1);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_destroy_db_ignore_error(dbname: &str) {
+    let options = LevelDBOptions::default();
+    let c_dbname = bitcoinleveldb_bench_cstring_or_exit(dbname);
+    let mut errptr: *mut u8 = ptr::null_mut();
+
+    unsafe {
+        leveldb_destroy_db(
+            &options as *const LevelDBOptions,
+            c_dbname.as_ptr() as *const u8,
+            &mut errptr,
+        );
+    }
+
+    bitcoinleveldb_bench_leveldb_error_clear(errptr);
+}
+
+pub fn bitcoinleveldb_bench_make_write_options_from_rep(
+    rep: &WriteOptions) -> LevelDBWriteOptions {
+
+    let mut result = LevelDBWriteOptions::default();
+    *result.rep_mut() = rep.clone();
+    result
+}
+
+pub fn bitcoinleveldb_bench_crc32c_value(data: &[u8]) -> u32 {
+    let mut crc: u32 = !0u32;
+
+    for byte in data {
+        crc ^= u32::from(*byte);
+        let mut bit_index = 0usize;
+        while bit_index < 8 {
+            let mask = 0u32.wrapping_sub(crc & 1);
+            crc = (crc >> 1) ^ (0x82F63B78u32 & mask);
+            bit_index += 1;
+        }
+    }
+
+    !crc
+}
+
+pub fn bitcoinleveldb_bench_dispatch_open_bench(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.open_bench(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_write_seq(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.write_seq(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_write_random(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.write_random(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_read_sequential(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.read_sequential(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_read_reverse(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.read_reverse(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_read_random(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.read_random(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_read_missing(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.read_missing(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_seek_random(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.seek_random(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_read_hot(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.read_hot(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_delete_seq(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.delete_seq(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_delete_random(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.delete_random(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_read_while_writing(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.read_while_writing(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_compact(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.compact(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_crc32c(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.crc_32c(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_snappy_compress(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.snappy_compress(thread);
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_dispatch_snappy_uncompress(
+    bm:     *mut Benchmark,
+    thread: *mut ThreadState) {
+
+    unsafe {
+        if let Some(benchmark_ref) = bm.as_mut() {
+            benchmark_ref.snappy_uncompress(thread);
+        }
+    }
+}
+
+
+/// Helper for quickly generating random data.
 pub struct RandomGenerator {
     data: String,
     pos:  i32,
@@ -219,71 +467,122 @@ pub struct RandomGenerator {
 impl Default for RandomGenerator {
     
     fn default() -> Self {
-        todo!();
-        /*
-
-
-            // We use a limited amount of data over and over again and ensure
+        // We use a limited amount of data over and over again and ensure
         // that it is larger than the compression window (32KB), and also
         // large enough to serve all typical value sizes we want to write.
-        Random rnd(301);
-        std::string piece;
-        while (data_.size() < 1048576) {
-          // Add a short fragment that is as compressible as specified
-          // by FLAGS_compression_ratio.
-          test::CompressibleString(&rnd, FLAGS_compression_ratio, 100, &piece);
-          data_.append(piece);
+        let mut rnd = Random::new(301);
+        let compression_ratio = bitcoinleveldb_bench_flag_compression_ratio_get();
+
+        let raw_fragment_len_f64 = (compression_ratio * 100.0).round();
+        let raw_fragment_len = if raw_fragment_len_f64 < 1.0 {
+            1usize
+        } else if raw_fragment_len_f64 > 100.0 {
+            100usize
+        } else {
+            raw_fragment_len_f64 as usize
+        };
+
+        let mut data = String::with_capacity(1_048_576);
+
+        while data.len() < 1_048_576 {
+            // Add a short fragment that is as compressible as specified
+            // by FLAGS_compression_ratio.
+            let mut raw_fragment = String::with_capacity(raw_fragment_len);
+            let mut raw_index = 0usize;
+
+            while raw_index < raw_fragment_len {
+                let byte = b'a' + (rnd.uniform(26) as u8);
+                raw_fragment.push(char::from(byte));
+                raw_index += 1;
+            }
+
+            let mut piece = String::with_capacity(100);
+            while piece.len() < 100 {
+                let remaining = 100usize - piece.len();
+                if remaining >= raw_fragment.len() {
+                    piece.push_str(&raw_fragment);
+                } else {
+                    piece.push_str(&raw_fragment[..remaining]);
+                }
+            }
+
+            data.push_str(&piece);
         }
-        pos_ = 0;
-        */
+
+        Self {
+            data,
+            pos: 0,
+        }
     }
 }
 
 impl RandomGenerator {
 
     pub fn generate(&mut self, len: usize) -> Slice {
-        
-        todo!();
-        /*
-            if (pos_ + len > data_.size()) {
-          pos_ = 0;
-          assert(len < data_.size());
+        let pos = if self.pos < 0 {
+            0usize
+        } else {
+            self.pos as usize
+        };
+
+        if pos + len > self.data.len() {
+            self.pos = 0;
+            assert!(len < self.data.len());
         }
-        pos_ += len;
-        return Slice(data_.data() + pos_ - len, len);
-        */
+
+        assert!(len <= i32::MAX as usize);
+
+        let start = if self.pos < 0 {
+            0usize
+        } else {
+            self.pos as usize
+        };
+
+        self.pos += len as i32;
+
+        unsafe {
+            Slice::from_ptr_len(self.data.as_ptr().add(start), len)
+        }
     }
 }
 
-#[cfg(__linux)]
+#[cfg(target_os = "linux")]
 pub fn trim_space(s: Slice) -> Slice {
-    
-    todo!();
-        /*
-            size_t start = 0;
-      while (start < s.size() && isspace(s[start])) {
-        start++;
-      }
-      size_t limit = s.size();
-      while (limit > start && isspace(s[limit - 1])) {
-        limit--;
-      }
-      return Slice(s.data() + start, limit - start);
-        */
+    let bytes = s.as_bytes();
+
+    let mut start = 0usize;
+    while start < bytes.len() && bytes[start].is_ascii_whitespace() {
+        start += 1;
+    }
+
+    let mut limit = bytes.len();
+    while limit > start && bytes[limit - 1].is_ascii_whitespace() {
+        limit -= 1;
+    }
+
+    unsafe {
+        Slice::from_ptr_len(bytes.as_ptr().add(start), limit - start)
+    }
 }
 
 pub fn append_with_space(
-        str_: *mut String,
-        msg:  Slice)  {
-    
-    todo!();
-        /*
-            if (msg.empty()) return;
-      if (!str->empty()) {
-        str->push_back(' ');
-      }
-      str->append(msg.data(), msg.size());
-        */
+    str_: *mut String,
+    msg:  Slice)  {
+
+    if msg.empty() {
+        return;
+    }
+
+    assert!(!str_.is_null());
+
+    unsafe {
+        if let Some(target) = str_.as_mut() {
+            if !target.is_empty() {
+                target.push(' ');
+            }
+            target.push_str(&msg.to_string());
+        }
+    }
 }
 
 ///--------------------------
@@ -302,136 +601,129 @@ pub struct Stats {
 impl Default for Stats {
     
     fn default() -> Self {
-        todo!();
-        /*
+        let mut result = Self {
+            start: 0.0,
+            finish: 0.0,
+            seconds: 0.0,
+            done: 0,
+            next_report: 100,
+            bytes: 0,
+            last_op_finish: 0.0,
+            hist: Histogram::default(),
+            message: String::new(),
+        };
 
-
-            Start();
-        */
+        result.start();
+        result
     }
 }
 
 impl Stats {
 
     pub fn start(&mut self)  {
-        
-        todo!();
-        /*
-            next_report_ = 100;
-        hist_.Clear();
-        done_ = 0;
-        bytes_ = 0;
-        seconds_ = 0;
-        message_.clear();
-        start_ = finish_ = last_op_finish_ = g_env->NowMicros();
-        */
+        self.next_report = 100;
+        self.hist.clear();
+        self.done = 0;
+        self.bytes = 0;
+        self.seconds = 0.0;
+        self.message.clear();
+        self.start = bitcoinleveldb_bench_now_seconds();
+        self.finish = self.start;
+        self.last_op_finish = self.start;
     }
-    
+   
     pub fn merge(&mut self, other: &Stats)  {
-        
-        todo!();
-        /*
-            hist_.Merge(other.hist_);
-        done_ += other.done_;
-        bytes_ += other.bytes_;
-        seconds_ += other.seconds_;
-        if (other.start_ < start_) start_ = other.start_;
-        if (other.finish_ > finish_) finish_ = other.finish_;
+        self.hist.merge(&other.hist);
+        self.done += other.done;
+        self.bytes += other.bytes;
+        self.seconds += other.seconds;
+
+        if other.start < self.start {
+            self.start = other.start;
+        }
+
+        if other.finish > self.finish {
+            self.finish = other.finish;
+        }
 
         // Just keep the messages from one thread
-        if (message_.empty()) message_ = other.message_;
-        */
+        if self.message.is_empty() {
+            self.message = other.message.clone();
+        }
     }
     
     pub fn stop(&mut self)  {
-        
-        todo!();
-        /*
-            finish_ = g_env->NowMicros();
-        seconds_ = (finish_ - start_) * 1e-6;
-        */
+        self.finish = bitcoinleveldb_bench_now_seconds();
+        self.seconds = self.finish - self.start;
     }
-    
+
     pub fn add_message(&mut self, msg: Slice)  {
-        
-        todo!();
-        /*
-            AppendWithSpace(&message_, msg);
-        */
+        append_with_space(&mut self.message as *mut String, msg);
     }
-    
+
     pub fn finished_single_op(&mut self)  {
-        
-        todo!();
-        /*
-            if (FLAGS_histogram) {
-          double now = g_env->NowMicros();
-          double micros = now - last_op_finish_;
-          hist_.Add(micros);
-          if (micros > 20000) {
-            fprintf(stderr, "long op: %.1f micros%30s\r", micros, "");
-            fflush(stderr);
-          }
-          last_op_finish_ = now;
+        if BITCOINLEVELDB_BENCH_FLAGS_HISTOGRAM.load(Relaxed) {
+            let now = bitcoinleveldb_bench_now_seconds();
+            let micros = (now - self.last_op_finish) * 1e6;
+            self.hist.add(micros);
+            if micros > 20000.0 {
+                eprint!("long op: {:.1} micros{:30}\r", micros, "");
+            }
+            self.last_op_finish = now;
         }
 
-        done_++;
-        if (done_ >= next_report_) {
-          if (next_report_ < 1000)
-            next_report_ += 100;
-          else if (next_report_ < 5000)
-            next_report_ += 500;
-          else if (next_report_ < 10000)
-            next_report_ += 1000;
-          else if (next_report_ < 50000)
-            next_report_ += 5000;
-          else if (next_report_ < 100000)
-            next_report_ += 10000;
-          else if (next_report_ < 500000)
-            next_report_ += 50000;
-          else
-            next_report_ += 100000;
-          fprintf(stderr, "... finished %d ops%30s\r", done_, "");
-          fflush(stderr);
+        self.done += 1;
+        if self.done >= self.next_report {
+            if self.next_report < 1000 {
+                self.next_report += 100;
+            } else if self.next_report < 5000 {
+                self.next_report += 500;
+            } else if self.next_report < 10000 {
+                self.next_report += 1000;
+            } else if self.next_report < 50000 {
+                self.next_report += 5000;
+            } else if self.next_report < 100000 {
+                self.next_report += 10000;
+            } else if self.next_report < 500000 {
+                self.next_report += 50000;
+            } else {
+                self.next_report += 100000;
+            }
+            eprint!("... finished {} ops{:30}\r", self.done, "");
         }
-        */
     }
     
     pub fn add_bytes(&mut self, n: i64)  {
-        
-        todo!();
-        /*
-            bytes_ += n;
-        */
+        self.bytes += n;
     }
-    
+
     pub fn report(&mut self, name: &Slice)  {
-        
-        todo!();
-        /*
-            // Pretend at least one op was done in case we are running a benchmark
+        // Pretend at least one op was done in case we are running a benchmark
         // that does not call FinishedSingleOp().
-        if (done_ < 1) done_ = 1;
-
-        std::string extra;
-        if (bytes_ > 0) {
-          // Rate is computed on actual elapsed time, not the sum of per-thread
-          // elapsed times.
-          double elapsed = (finish_ - start_) * 1e-6;
-          char rate[100];
-          snprintf(rate, sizeof(rate), "%6.1f MB/s",
-                   (bytes_ / 1048576.0) / elapsed);
-          extra = rate;
+        if self.done < 1 {
+            self.done = 1;
         }
-        AppendWithSpace(&extra, message_);
 
-        fprintf(stdout, "%-12s : %11.3f micros/op;%s%s\n", name.ToString().c_str(),
-                seconds_ * 1e6 / done_, (extra.empty() ? "" : " "), extra.c_str());
-        if (FLAGS_histogram) {
-          fprintf(stdout, "Microseconds per op:\n%s\n", hist_.ToString().c_str());
+        let mut extra = String::new();
+        if self.bytes > 0 {
+            // Rate is computed on actual elapsed time, not the sum of per-thread
+            // elapsed times.
+            let elapsed = self.finish - self.start;
+            let rate = format!("{:6.1} MB/s", (self.bytes as f64 / 1048576.0) / elapsed);
+            extra = rate;
         }
-        fflush(stdout);
-        */
+        append_with_space(&mut extra as *mut String, Slice::from(&self.message));
+
+        println!(
+            "{:<12} : {:11.3} micros/op;{}{}",
+            name.to_string(),
+            self.seconds * 1e6 / self.done as f64,
+            if extra.is_empty() { "" } else { " " },
+            extra
+        );
+        if BITCOINLEVELDB_BENCH_FLAGS_HISTOGRAM.load(Relaxed) {
+            println!("Microseconds per op:\n{}\n", self.hist.to_string());
+        }
     }
 }
 
@@ -440,18 +732,15 @@ impl Stats {
    the same benchmark.
   */
 pub struct SharedState {
-
-    mu:    Mutex<shared_state::Inner>,
+    mu: Mutex<shared_state::Inner>,
+    cv: Condvar,
 }
 
 pub mod shared_state {
-
     use super::*;
 
     pub struct Inner {
-
-        cv:    Condvar,
-        total: i32,
+        pub total: i32,
 
         /*
           | Each thread goes through the following states:
@@ -465,25 +754,25 @@ pub mod shared_state {
           |    (4) done
           */
 
-        num_initialized: i32,
-        num_done:        i32,
-        start:           bool,
+        pub num_initialized: i32,
+        pub num_done:        i32,
+        pub start:           bool,
     }
 }
 
 impl SharedState {
 
     pub fn new(total: i32) -> Self {
-    
-        todo!();
-        /*
-        : cv(&mu),
-        : total(total),
-        : num_initialized(0),
-        : num_done(0),
-        : start(false),
-        
-        */
+
+        Self {
+            mu: Mutex::new(shared_state::Inner {
+                total,
+                num_initialized: 0,
+                num_done: 0,
+                start: false,
+            }),
+            cv: Condvar::new(),
+        }
     }
 }
 
@@ -508,23 +797,23 @@ pub struct ThreadState {
 }
 
 impl ThreadState {
-    
+
     pub fn new(index: i32) -> Self {
-    
-        todo!();
-        /*
 
-
-            : tid(index), rand(1000 + index), shared(nullptr)
-        */
+        Self {
+            tid: index,
+            rand: Random::new((1000 + index) as u32),
+            stats: Stats::default(),
+            shared: 0 as *mut SharedState,
+        }
     }
 }
 
 ///-------------------------
 pub struct Benchmark {
-    cache:             *mut Cache,
-    filter_policy:     Box<dyn FilterPolicy>,
-    db:                *mut dyn DB,
+    cache:             *mut LevelDBCache,
+    filter_policy:     *mut LevelDBFilterPolicy,
+    db:                *mut LevelDB,
     num:               i32,
     value_size:        i32,
     entries_per_batch: i32,
@@ -537,812 +826,1265 @@ pub mod benchmark {
     use super::*;
 
     pub struct ThreadArg {
-        bm:     *mut Benchmark,
-        shared: *mut SharedState,
-        thread: *mut ThreadState,
-        method: fn(_0: *mut ThreadState) -> c_void,
+        pub bm:     *mut Benchmark,
+        pub shared: *mut SharedState,
+        pub thread: *mut ThreadState,
+        pub method: fn(_0: *mut Benchmark, _1: *mut ThreadState),
     }
 }
 
 impl Default for Benchmark {
     
     fn default() -> Self {
-        todo!();
-        /*
+        let cache_size = BITCOINLEVELDB_BENCH_FLAGS_CACHE_SIZE.load(Relaxed);
+        let bloom_bits = BITCOINLEVELDB_BENCH_FLAGS_BLOOM_BITS.load(Relaxed);
+        let num = BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed);
+        let reads_flag = BITCOINLEVELDB_BENCH_FLAGS_READS.load(Relaxed);
 
+        let cache = if cache_size >= 0 {
+            leveldb_cache_create_lru(cache_size as usize)
+        } else {
+            ptr::null_mut()
+        };
 
-            : cache_(FLAGS_cache_size >= 0 ? NewLRUCache(FLAGS_cache_size) : nullptr),
-            filter_policy_(FLAGS_bloom_bits >= 0
-                               ? NewBloomFilterPolicy(FLAGS_bloom_bits)
-                               : nullptr),
-            db_(nullptr),
-            num_(FLAGS_num),
-            value_size_(FLAGS_value_size),
-            entries_per_batch_(1),
-            reads_(FLAGS_reads < 0 ? FLAGS_num : FLAGS_reads),
-            heap_counter_(0) 
+        let filter_policy = if bloom_bits >= 0 {
+            leveldb_filterpolicy_create_bloom(bloom_bits)
+        } else {
+            ptr::null_mut()
+        };
 
-        std::vector<std::string> files;
-        g_env->GetChildren(FLAGS_db, &files);
-        for (size_t i = 0; i < files.size(); i++) {
-          if (Slice(files[i]).starts_with("heap-")) {
-            g_env->DeleteFile(std::string(FLAGS_db) + "/" + files[i]);
-          }
+        if let Some(db_path) = bitcoinleveldb_bench_flag_db_path_get() {
+            match fs::read_dir(&db_path) {
+                Ok(entries) => {
+                    for entry_result in entries {
+                        match entry_result {
+                            Ok(entry) => {
+                                let file_name_os = entry.file_name();
+                                match file_name_os.to_str() {
+                                    Some(file_name) => {
+                                        if file_name.starts_with("heap-") {
+                                            let _ = fs::remove_file(entry.path());
+                                        }
+                                    }
+                                    None => {}
+                                }
+                            }
+                            Err(_) => {}
+                        }
+                    }
+                }
+                Err(_) => {}
+            }
+
+            if !BITCOINLEVELDB_BENCH_FLAGS_USE_EXISTING_DB.load(Relaxed) {
+                bitcoinleveldb_bench_destroy_db_ignore_error(&db_path);
+            }
         }
-        if (!FLAGS_use_existing_db) {
-          DestroyDB(FLAGS_db, Options());
+
+        Self {
+            cache,
+            filter_policy,
+            db: ptr::null_mut(),
+            num,
+            value_size: BITCOINLEVELDB_BENCH_FLAGS_VALUE_SIZE.load(Relaxed),
+            entries_per_batch: 1,
+            write_options: WriteOptions::default(),
+            reads: if reads_flag < 0 { num } else { reads_flag },
+            heap_counter: 0,
         }
-        */
     }
 }
 
 impl Drop for Benchmark {
     fn drop(&mut self) {
-        todo!();
-        /*
-            delete db_;
-        delete cache_;
-        delete filter_policy_;
-        */
+        if !self.db.is_null() {
+            leveldb_close(self.db);
+            self.db = ptr::null_mut();
+        }
+
+        if !self.cache.is_null() {
+            leveldb_cache_destroy(self.cache);
+            self.cache = ptr::null_mut();
+        }
+
+        if !self.filter_policy.is_null() {
+            leveldb_filterpolicy_destroy(self.filter_policy);
+            self.filter_policy = ptr::null_mut();
+        }
     }
 }
 
 impl Benchmark {
 
     pub fn print_header(&mut self)  {
-        
-        todo!();
-        /*
-            const int kKeySize = 16;
-        PrintEnvironment();
-        fprintf(stdout, "Keys:       %d bytes each\n", kKeySize);
-        fprintf(stdout, "Values:     %d bytes each (%d bytes after compression)\n",
-                FLAGS_value_size,
-                static_cast<int>(FLAGS_value_size * FLAGS_compression_ratio + 0.5));
-        fprintf(stdout, "Entries:    %d\n", num_);
-        fprintf(stdout, "RawSize:    %.1f MB (estimated)\n",
-                ((static_cast<int64_t>(kKeySize + FLAGS_value_size) * num_) /
-                 1048576.0));
-        fprintf(stdout, "FileSize:   %.1f MB (estimated)\n",
-                (((kKeySize + FLAGS_value_size * FLAGS_compression_ratio) * num_) /
-                 1048576.0));
-        PrintWarnings();
-        fprintf(stdout, "------------------------------------------------\n");
-        */
+        const K_KEY_SIZE: i32 = 16;
+        let value_size = BITCOINLEVELDB_BENCH_FLAGS_VALUE_SIZE.load(Relaxed);
+        let compression_ratio = bitcoinleveldb_bench_flag_compression_ratio_get();
+
+        self.print_environment();
+        println!("Keys:       {} bytes each", K_KEY_SIZE);
+        println!(
+            "Values:     {} bytes each ({} bytes after compression)",
+            value_size,
+            ((value_size as f64) * compression_ratio + 0.5) as i32
+        );
+        println!("Entries:    {}", self.num);
+        println!(
+            "RawSize:    {:.1} MB (estimated)",
+            (((i64::from(K_KEY_SIZE) + i64::from(value_size)) * i64::from(self.num)) as f64)
+                / 1048576.0
+        );
+        println!(
+            "FileSize:   {:.1} MB (estimated)",
+            (((f64::from(K_KEY_SIZE) + (f64::from(value_size) * compression_ratio))
+                * f64::from(self.num))
+                / 1048576.0)
+        );
+        self.print_warnings();
+        println!("------------------------------------------------");
     }
-    
+
+    /// Preserves benchmark identity by emitting only environment warnings that
+    /// remain valid across refactors: debug assertions and snappy availability.
     pub fn print_warnings(&mut self)  {
-        
-        todo!();
-        /*
-            #if defined(__GNUC__) && !defined(__OPTIMIZE__)
-        fprintf(
-            stdout,
-            "WARNING: Optimization is disabled: benchmarks unnecessarily slow\n");
-    #endif
-    #ifndef NDEBUG
-        fprintf(stdout,
-                "WARNING: Assertions are enabled; benchmarks unnecessarily slow\n");
-    #endif
+
+        if cfg!(debug_assertions) {
+            println!("WARNING: Assertions are enabled; benchmarks unnecessarily slow");
+        }
 
         // See if snappy is working by attempting to compress a compressible string
-        const char text[] = "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
-        std::string compressed;
-        if (!Snappy_Compress(text, sizeof(text), &compressed)) {
-          fprintf(stdout, "WARNING: Snappy compression is not enabled\n");
-        } else if (compressed.size() >= sizeof(text)) {
-          fprintf(stdout, "WARNING: Snappy compression is not effective\n");
+        let text = b"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
+        let mut compressed = String::new();
+
+        if !bitcoinleveldb_compat::snappy_compress(
+            text.as_ptr(),
+            text.len(),
+            &mut compressed as *mut String,
+        ) {
+            println!("WARNING: Snappy compression is not enabled");
+        } else if compressed.len() >= text.len() {
+            println!("WARNING: Snappy compression is not effective");
         }
-        */
     }
     
     pub fn print_environment(&mut self)  {
-        
-        todo!();
-        /*
-            fprintf(stderr, "LevelDB:    version %d.%d\n", kMajorVersion,
-                kMinorVersion);
+        eprintln!(
+            "LevelDB:    version {}.{}",
+            leveldb_major_version(),
+            leveldb_minor_version()
+        );
 
-    #if defined(__linux)
-        time_t now = time(nullptr);
-        fprintf(stderr, "Date:       %s", ctime(&now));  // ctime() adds newline
+        #[cfg(target_os = "linux")]
+        {
+            match fs::read_to_string("/proc/cpuinfo") {
+                Ok(cpuinfo) => {
+                    let mut num_cpus = 0_i32;
+                    let mut cpu_type = String::new();
+                    let mut cache_size = String::new();
 
-        FILE* cpuinfo = fopen("/proc/cpuinfo", "r");
-        if (cpuinfo != nullptr) {
-          char line[1000];
-          int num_cpus = 0;
-          std::string cpu_type;
-          std::string cache_size;
-          while (fgets(line, sizeof(line), cpuinfo) != nullptr) {
-            const char* sep = strchr(line, ':');
-            if (sep == nullptr) {
-              continue;
+                    for line in cpuinfo.lines() {
+                        match line.split_once(':') {
+                            Some((key_text, value_text)) => {
+                                let key = trim_space(Slice::from_str(key_text)).to_string();
+                                let value = trim_space(Slice::from_str(value_text)).to_string();
+
+                                if key == "model name" {
+                                    num_cpus += 1;
+                                    cpu_type = value;
+                                } else if key == "cache size" {
+                                    cache_size = value;
+                                }
+                            }
+                            None => {}
+                        }
+                    }
+
+                    if num_cpus > 0 {
+                        eprintln!("CPU:        {} * {}", num_cpus, cpu_type);
+                    }
+                    if !cache_size.is_empty() {
+                        eprintln!("CPUCache:   {}", cache_size);
+                    }
+                }
+                Err(_) => {}
             }
-            Slice key = TrimSpace(Slice(line, sep - 1 - line));
-            Slice val = TrimSpace(Slice(sep + 1));
-            if (key == "model name") {
-              ++num_cpus;
-              cpu_type = val.ToString();
-            } else if (key == "cache size") {
-              cache_size = val.ToString();
-            }
-          }
-          fclose(cpuinfo);
-          fprintf(stderr, "CPU:        %d * %s\n", num_cpus, cpu_type.c_str());
-          fprintf(stderr, "CPUCache:   %s\n", cache_size.c_str());
         }
-    #endif
-        */
     }
-    
+
     pub fn run(&mut self)  {
-        
-        todo!();
-        /*
-            PrintHeader();
-        Open();
+        self.print_header();
+        self.open();
 
-        const char* benchmarks = FLAGS_benchmarks;
-        while (benchmarks != nullptr) {
-          const char* sep = strchr(benchmarks, ',');
-          Slice name;
-          if (sep == nullptr) {
-            name = benchmarks;
-            benchmarks = nullptr;
-          } else {
-            name = Slice(benchmarks, sep - benchmarks);
-            benchmarks = sep + 1;
-          }
+        let benchmarks_text = bitcoinleveldb_bench_flag_benchmarks_get();
+        for name in benchmarks_text.split(',') {
+            // Reset parameters that may be overridden below
+            self.num = BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed);
+            self.reads = {
+                let reads_flag = BITCOINLEVELDB_BENCH_FLAGS_READS.load(Relaxed);
+                if reads_flag < 0 {
+                    BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed)
+                } else {
+                    reads_flag
+                }
+            };
+            self.value_size = BITCOINLEVELDB_BENCH_FLAGS_VALUE_SIZE.load(Relaxed);
+            self.entries_per_batch = 1;
+            self.write_options = WriteOptions::default();
 
-          // Reset parameters that may be overridden below
-          num_ = FLAGS_num;
-          reads_ = (FLAGS_reads < 0 ? FLAGS_num : FLAGS_reads);
-          value_size_ = FLAGS_value_size;
-          entries_per_batch_ = 1;
-          write_options_ = WriteOptions();
+            let mut method: Option<fn(*mut Benchmark, *mut ThreadState)> = None;
+            let mut fresh_db = false;
+            let mut num_threads = BITCOINLEVELDB_BENCH_FLAGS_THREADS.load(Relaxed);
 
-          c_void (Benchmark::*method)(ThreadState*) = nullptr;
-          bool fresh_db = false;
-          int num_threads = FLAGS_threads;
-
-          if (name == Slice("open")) {
-            method = &Benchmark::OpenBench;
-            num_ /= 10000;
-            if (num_ < 1) num_ = 1;
-          } else if (name == Slice("fillseq")) {
-            fresh_db = true;
-            method = &Benchmark::WriteSeq;
-          } else if (name == Slice("fillbatch")) {
-            fresh_db = true;
-            entries_per_batch_ = 1000;
-            method = &Benchmark::WriteSeq;
-          } else if (name == Slice("fillrandom")) {
-            fresh_db = true;
-            method = &Benchmark::WriteRandom;
-          } else if (name == Slice("overwrite")) {
-            fresh_db = false;
-            method = &Benchmark::WriteRandom;
-          } else if (name == Slice("fillsync")) {
-            fresh_db = true;
-            num_ /= 1000;
-            write_options_.sync = true;
-            method = &Benchmark::WriteRandom;
-          } else if (name == Slice("fill100K")) {
-            fresh_db = true;
-            num_ /= 1000;
-            value_size_ = 100 * 1000;
-            method = &Benchmark::WriteRandom;
-          } else if (name == Slice("readseq")) {
-            method = &Benchmark::ReadSequential;
-          } else if (name == Slice("readreverse")) {
-            method = &Benchmark::ReadReverse;
-          } else if (name == Slice("readrandom")) {
-            method = &Benchmark::ReadRandom;
-          } else if (name == Slice("readmissing")) {
-            method = &Benchmark::ReadMissing;
-          } else if (name == Slice("seekrandom")) {
-            method = &Benchmark::SeekRandom;
-          } else if (name == Slice("readhot")) {
-            method = &Benchmark::ReadHot;
-          } else if (name == Slice("readrandomsmall")) {
-            reads_ /= 1000;
-            method = &Benchmark::ReadRandom;
-          } else if (name == Slice("deleteseq")) {
-            method = &Benchmark::DeleteSeq;
-          } else if (name == Slice("deleterandom")) {
-            method = &Benchmark::DeleteRandom;
-          } else if (name == Slice("readwhilewriting")) {
-            num_threads++;  // Add extra thread for writing
-            method = &Benchmark::ReadWhileWriting;
-          } else if (name == Slice("compact")) {
-            method = &Benchmark::Compact;
-          } else if (name == Slice("crc32c")) {
-            method = &Benchmark::Crc32c;
-          } else if (name == Slice("snappycomp")) {
-            method = &Benchmark::SnappyCompress;
-          } else if (name == Slice("snappyuncomp")) {
-            method = &Benchmark::SnappyUncompress;
-          } else if (name == Slice("heapprofile")) {
-            HeapProfile();
-          } else if (name == Slice("stats")) {
-            PrintStats("leveldb.stats");
-          } else if (name == Slice("sstables")) {
-            PrintStats("leveldb.sstables");
-          } else {
-            if (!name.empty()) {  // No error message for empty name
-              fprintf(stderr, "unknown benchmark '%s'\n", name.ToString().c_str());
-            }
-          }
-
-          if (fresh_db) {
-            if (FLAGS_use_existing_db) {
-              fprintf(stdout, "%-12s : skipped (--use_existing_db is true)\n",
-                      name.ToString().c_str());
-              method = nullptr;
+            if name == "open" {
+                method = Some(bitcoinleveldb_bench_dispatch_open_bench);
+                self.num /= 10000;
+                if self.num < 1 {
+                    self.num = 1;
+                }
+            } else if name == "fillseq" {
+                fresh_db = true;
+                method = Some(bitcoinleveldb_bench_dispatch_write_seq);
+            } else if name == "fillbatch" {
+                fresh_db = true;
+                self.entries_per_batch = 1000;
+                method = Some(bitcoinleveldb_bench_dispatch_write_seq);
+            } else if name == "fillrandom" {
+                fresh_db = true;
+                method = Some(bitcoinleveldb_bench_dispatch_write_random);
+            } else if name == "overwrite" {
+                fresh_db = false;
+                method = Some(bitcoinleveldb_bench_dispatch_write_random);
+            } else if name == "fillsync" {
+                fresh_db = true;
+                self.num /= 1000;
+                self.write_options.set_sync(true);
+                method = Some(bitcoinleveldb_bench_dispatch_write_random);
+            } else if name == "fill100K" {
+                fresh_db = true;
+                self.num /= 1000;
+                self.value_size = 100 * 1000;
+                method = Some(bitcoinleveldb_bench_dispatch_write_random);
+            } else if name == "readseq" {
+                method = Some(bitcoinleveldb_bench_dispatch_read_sequential);
+            } else if name == "readreverse" {
+                method = Some(bitcoinleveldb_bench_dispatch_read_reverse);
+            } else if name == "readrandom" {
+                method = Some(bitcoinleveldb_bench_dispatch_read_random);
+            } else if name == "readmissing" {
+                method = Some(bitcoinleveldb_bench_dispatch_read_missing);
+            } else if name == "seekrandom" {
+                method = Some(bitcoinleveldb_bench_dispatch_seek_random);
+            } else if name == "readhot" {
+                method = Some(bitcoinleveldb_bench_dispatch_read_hot);
+            } else if name == "readrandomsmall" {
+                self.reads /= 1000;
+                method = Some(bitcoinleveldb_bench_dispatch_read_random);
+            } else if name == "deleteseq" {
+                method = Some(bitcoinleveldb_bench_dispatch_delete_seq);
+            } else if name == "deleterandom" {
+                method = Some(bitcoinleveldb_bench_dispatch_delete_random);
+            } else if name == "readwhilewriting" {
+                num_threads += 1;  // Add extra thread for writing
+                method = Some(bitcoinleveldb_bench_dispatch_read_while_writing);
+            } else if name == "compact" {
+                method = Some(bitcoinleveldb_bench_dispatch_compact);
+            } else if name == "crc32c" {
+                method = Some(bitcoinleveldb_bench_dispatch_crc32c);
+            } else if name == "snappycomp" {
+                method = Some(bitcoinleveldb_bench_dispatch_snappy_compress);
+            } else if name == "snappyuncomp" {
+                method = Some(bitcoinleveldb_bench_dispatch_snappy_uncompress);
+            } else if name == "heapprofile" {
+                self.heap_profile();
+            } else if name == "stats" {
+                self.print_stats(b"leveldb.stats\0".as_ptr());
+            } else if name == "sstables" {
+                self.print_stats(b"leveldb.sstables\0".as_ptr());
             } else {
-              delete db_;
-              db_ = nullptr;
-              DestroyDB(FLAGS_db, Options());
-              Open();
+                if !name.is_empty() {
+                    // No error message for empty name
+                    eprintln!("unknown benchmark '{}'", name);
+                }
             }
-          }
 
-          if (method != nullptr) {
-            RunBenchmark(num_threads, name, method);
-          }
+            if fresh_db {
+                if BITCOINLEVELDB_BENCH_FLAGS_USE_EXISTING_DB.load(Relaxed) {
+                    println!("{:<12} : skipped (--use_existing_db is true)", name);
+                    method = None;
+                } else {
+                    if !self.db.is_null() {
+                        leveldb_close(self.db);
+                        self.db = ptr::null_mut();
+                    }
+
+                    if let Some(db_path) = bitcoinleveldb_bench_flag_db_path_get() {
+                        bitcoinleveldb_bench_destroy_db_ignore_error(&db_path);
+                    }
+
+                    self.open();
+                }
+            }
+
+            if let Some(method_fn) = method {
+                let name_slice = Slice::from_str(name);
+                self.run_benchmark(num_threads, name_slice, method_fn);
+            }
         }
-        */
     }
     
     pub fn thread_body(v: *mut c_void)  {
-        
-        todo!();
-        /*
-            ThreadArg* arg = reinterpret_cast<ThreadArg*>(v);
-        SharedState* shared = arg->shared;
-        ThreadState* thread = arg->thread;
-        {
-          MutexLock l(&shared->mu);
-          shared->num_initialized++;
-          if (shared->num_initialized >= shared->total) {
-            shared->cv.SignalAll();
-          }
-          while (!shared->start) {
-            shared->cv.Wait();
-          }
-        }
+        unsafe {
+            let arg = &mut *(v as *mut benchmark::ThreadArg);
+            let shared = &mut *arg.shared;
+            let thread = &mut *arg.thread;
 
-        thread->stats.Start();
-        (arg->bm->*(arg->method))(thread);
-        thread->stats.Stop();
+            {
+                let mut guard = shared.mu.lock();
+                guard.num_initialized += 1;
 
-        {
-          MutexLock l(&shared->mu);
-          shared->num_done++;
-          if (shared->num_done >= shared->total) {
-            shared->cv.SignalAll();
-          }
+                if guard.num_initialized >= guard.total {
+                    shared.cv.notify_all();
+                }
+
+                while !guard.start {
+                    shared.cv.wait(&mut guard);
+                }
+            }
+
+            thread.stats.start();
+            (arg.method)(arg.bm, arg.thread);
+            thread.stats.stop();
+
+            {
+                let mut guard = shared.mu.lock();
+                guard.num_done += 1;
+
+                if guard.num_done >= guard.total {
+                    shared.cv.notify_all();
+                }
+            }
         }
-        */
     }
-    
-    pub fn run_benchmark(&mut self, 
+
+    /// Preserves the original start-barrier and completion-barrier semantics:
+    /// every worker blocks until all workers are initialized, and the reported
+    /// stats are the merged result of all threads for the named benchmark.
+    pub fn run_benchmark(
+        &mut self,
         n:      i32,
         name:   Slice,
-        method: fn(_0: *mut ThreadState) -> c_void)  {
-        
-        todo!();
-        /*
-            SharedState shared(n);
+        method: fn(_0: *mut Benchmark, _1: *mut ThreadState),
+    )  {
 
-        ThreadArg* arg = new ThreadArg[n];
-        for (int i = 0; i < n; i++) {
-          arg[i].bm = this;
-          arg[i].method = method;
-          arg[i].shared = &shared;
-          arg[i].thread = new ThreadState(i);
-          arg[i].thread->shared = &shared;
-          g_env->StartThread(ThreadBody, &arg[i]);
+        if n <= 0 {
+            eprintln!("invalid thread count '{}'", n);
+            unsafe {
+                exit(1);
+            }
         }
 
-        shared.mu.Lock();
-        while (shared.num_initialized < n) {
-          shared.cv.Wait();
+        let shared = SharedState::new(n);
+        let bm_ptr = self as *mut Benchmark;
+        let shared_ptr = (&shared as *const SharedState) as *mut SharedState;
+
+        let mut thread_states: Vec<Box<ThreadState>> = Vec::with_capacity(n as usize);
+        let mut i = 0_i32;
+        while i < n {
+            let mut thread_state = Box::new(ThreadState::new(i));
+            thread_state.shared = shared_ptr;
+            thread_states.push(thread_state);
+            i += 1;
         }
 
-        shared.start = true;
-        shared.cv.SignalAll();
-        while (shared.num_done < n) {
-          shared.cv.Wait();
+        let mut args: Vec<benchmark::ThreadArg> = Vec::with_capacity(n as usize);
+        let mut j = 0_i32;
+        while j < n {
+            let thread_ptr = thread_states[j as usize].as_mut() as *mut ThreadState;
+            args.push(benchmark::ThreadArg {
+                bm: bm_ptr,
+                shared: shared_ptr,
+                thread: thread_ptr,
+                method,
+            });
+            j += 1;
         }
-        shared.mu.Unlock();
 
-        for (int i = 1; i < n; i++) {
-          arg[0].thread->stats.Merge(arg[i].thread->stats);
-        }
-        arg[0].thread->stats.Report(name);
+        std::thread::scope(|scope| {
+            let mut handles = Vec::with_capacity(n as usize);
 
-        for (int i = 0; i < n; i++) {
-          delete arg[i].thread;
+            let mut k = 0_i32;
+            while k < n {
+                let arg_addr = (&mut args[k as usize] as *mut benchmark::ThreadArg) as usize;
+                handles.push(scope.spawn(move || {
+                    Benchmark::thread_body(arg_addr as *mut c_void);
+                }));
+                k += 1;
+            }
+
+            {
+                let mut guard = shared.mu.lock();
+                while guard.num_initialized < n {
+                    shared.cv.wait(&mut guard);
+                }
+
+                guard.start = true;
+                shared.cv.notify_all();
+
+                while guard.num_done < n {
+                    shared.cv.wait(&mut guard);
+                }
+            }
+
+            while let Some(handle) = handles.pop() {
+                match handle.join() {
+                    Ok(()) => {}
+                    Err(_) => {
+                        eprintln!("benchmark thread terminated unexpectedly");
+                        unsafe {
+                            exit(1);
+                        }
+                    }
+                }
+            }
+        });
+
+        let (first_slice, rest) = thread_states.split_at_mut(1);
+        let first_thread = &mut first_slice[0];
+
+        let mut index = 0usize;
+        while index < rest.len() {
+            first_thread.stats.merge(&rest[index].stats);
+            index += 1;
         }
-        delete[] arg;
-        */
+
+        first_thread.stats.report(&name);
     }
-    
+
     pub fn crc_32c(&mut self, thread: *mut ThreadState)  {
         
-        todo!();
-        /*
-            // Checksum about 500MB of data total
-        const int size = 4096;
-        const char* label = "(4K per op)";
-        std::string data(size, 'x');
-        int64_t bytes = 0;
-        uint32_t crc = 0;
-        while (bytes < 500 * 1048576) {
-          crc = crc32c::Value(data.data(), size);
-          thread->stats.FinishedSingleOp();
-          bytes += size;
-        }
-        // Print so result is not dead
-        fprintf(stderr, "... crc=0x%x\r", static_cast<unsigned int>(crc));
+        unsafe {
+            let thread_ref = &mut *thread;
 
-        thread->stats.AddBytes(bytes);
-        thread->stats.AddMessage(label);
-        */
+            // Checksum about 500MB of data total
+            const SIZE: usize = 4096;
+            let label = Slice::from_str("(4K per op)");
+            let data = vec![b'x'; SIZE];
+            let mut bytes: i64 = 0;
+            let mut crc: u32 = 0;
+
+            while bytes < 500 * 1048576 {
+                crc = bitcoinleveldb_bench_crc32c_value(&data);
+                thread_ref.stats.finished_single_op();
+                bytes += SIZE as i64;
+            }
+
+            // Print so result is not dead
+            eprint!("... crc=0x{:x}\r", crc);
+
+            thread_ref.stats.add_bytes(bytes);
+            thread_ref.stats.add_message(label);
+        }
     }
     
     pub fn snappy_compress(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            RandomGenerator gen;
-        Slice input = gen.Generate(Options().block_size);
-        int64_t bytes = 0;
-        int64_t produced = 0;
-        bool ok = true;
-        std::string compressed;
-        while (ok && bytes < 1024 * 1048576) {  // Compress 1G
-          ok = Snappy_Compress(input.data(), input.size(), &compressed);
-          produced += compressed.size();
-          bytes += input.size();
-          thread->stats.FinishedSingleOp();
-        }
 
-        if (!ok) {
-          thread->stats.AddMessage("(snappy failure)");
-        } else {
-          char buf[100];
-          snprintf(buf, sizeof(buf), "(output: %.1f%%)",
-                   (produced * 100.0) / bytes);
-          thread->stats.AddMessage(buf);
-          thread->stats.AddBytes(bytes);
+        unsafe {
+            let thread_ref = &mut *thread;
+            let mut gen = RandomGenerator::default();
+            let block_size = *Options::default().block_size();
+            let input = gen.generate(block_size);
+            let input_bytes = input.as_bytes();
+
+            let mut bytes: i64 = 0;
+            let mut produced: i64 = 0;
+            let mut ok = true;
+            let mut compressed = String::new();
+
+            while ok && bytes < 1024 * 1048576 {
+                ok = bitcoinleveldb_compat::snappy_compress(
+                    input_bytes.as_ptr(),
+                    input_bytes.len(),
+                    &mut compressed as *mut String,
+                );
+                produced += compressed.len() as i64;
+                bytes += input_bytes.len() as i64;
+                thread_ref.stats.finished_single_op();
+            }
+
+            if !ok {
+                thread_ref
+                    .stats
+                    .add_message(Slice::from_str("(snappy failure)"));
+            } else {
+                let msg = format!(
+                    "(output: {:.1}%)",
+                    (produced as f64 * 100.0) / bytes as f64
+                );
+                thread_ref.stats.add_message(Slice::from(&msg));
+                thread_ref.stats.add_bytes(bytes);
+            }
         }
-        */
     }
-    
-    pub fn snappy_uncompress(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            RandomGenerator gen;
-        Slice input = gen.Generate(Options().block_size);
-        std::string compressed;
-        bool ok = Snappy_Compress(input.data(), input.size(), &compressed);
-        int64_t bytes = 0;
-        char* uncompressed = new char[input.size()];
-        while (ok && bytes < 1024 * 1048576) {  // Compress 1G
-          ok = Snappy_Uncompress(compressed.data(), compressed.size(),
-                                       uncompressed);
-          bytes += input.size();
-          thread->stats.FinishedSingleOp();
-        }
-        delete[] uncompressed;
 
-        if (!ok) {
-          thread->stats.AddMessage("(snappy failure)");
-        } else {
-          thread->stats.AddBytes(bytes);
+    pub fn snappy_uncompress(&mut self, thread: *mut ThreadState)  {
+
+        unsafe {
+            let thread_ref = &mut *thread;
+            let mut gen = RandomGenerator::default();
+            let block_size = *Options::default().block_size();
+            let input = gen.generate(block_size);
+            let input_bytes = input.as_bytes();
+
+            let mut compressed = String::new();
+            let mut ok = bitcoinleveldb_compat::snappy_compress(
+                input_bytes.as_ptr(),
+                input_bytes.len(),
+                &mut compressed as *mut String,
+            );
+
+            let mut bytes: i64 = 0;
+            let mut uncompressed = vec![0_u8; input_bytes.len()];
+
+            while ok && bytes < 1024 * 1048576 {
+                ok = bitcoinleveldb_compat::snappy_uncompress(
+                    compressed.as_ptr(),
+                    compressed.len(),
+                    uncompressed.as_mut_ptr(),
+                );
+                bytes += input_bytes.len() as i64;
+                thread_ref.stats.finished_single_op();
+            }
+
+            if !ok {
+                thread_ref
+                    .stats
+                    .add_message(Slice::from_str("(snappy failure)"));
+            } else {
+                thread_ref.stats.add_bytes(bytes);
+            }
         }
-        */
     }
     
     pub fn open(&mut self)  {
         
-        todo!();
-        /*
-            assert(db_ == nullptr);
-        Options options;
-        options.env = g_env;
-        options.create_if_missing = !FLAGS_use_existing_db;
-        options.block_cache = cache_;
-        options.write_buffer_size = FLAGS_write_buffer_size;
-        options.max_file_size = FLAGS_max_file_size;
-        options.block_size = FLAGS_block_size;
-        options.max_open_files = FLAGS_open_files;
-        options.filter_policy = filter_policy_;
-        options.reuse_logs = FLAGS_reuse_logs;
-        crate::Status s = DB::Open(options, FLAGS_db, &db_);
-        if (!s.ok()) {
-          fprintf(stderr, "open error: %s\n", s.ToString().c_str());
-          exit(1);
+        assert!(self.db.is_null());
+
+        let db_path = match bitcoinleveldb_bench_flag_db_path_get() {
+            Some(path) => path,
+            None => {
+                eprintln!("open error: missing db path");
+                unsafe {
+                    exit(1);
+                }
+            }
+        };
+
+        let c_db_path = bitcoinleveldb_bench_cstring_or_exit(&db_path);
+        let mut options = LevelDBOptions::default();
+
+        unsafe {
+            leveldb_options_set_create_if_missing(
+                &mut options as *mut LevelDBOptions,
+                if BITCOINLEVELDB_BENCH_FLAGS_USE_EXISTING_DB.load(Relaxed) {
+                    0
+                } else {
+                    1
+                },
+            );
+
+            if !self.cache.is_null() {
+                leveldb_options_set_cache(&mut options as *mut LevelDBOptions, self.cache);
+            }
+
+            if !self.filter_policy.is_null() {
+                leveldb_options_set_filter_policy(
+                    &mut options as *mut LevelDBOptions,
+                    self.filter_policy,
+                );
+            }
+
+            leveldb_options_set_write_buffer_size(
+                &mut options as *mut LevelDBOptions,
+                BITCOINLEVELDB_BENCH_FLAGS_WRITE_BUFFER_SIZE.load(Relaxed).max(0) as usize,
+            );
+            leveldb_options_set_max_file_size(
+                &mut options as *mut LevelDBOptions,
+                BITCOINLEVELDB_BENCH_FLAGS_MAX_FILE_SIZE.load(Relaxed).max(0) as usize,
+            );
+            leveldb_options_set_block_size(
+                &mut options as *mut LevelDBOptions,
+                BITCOINLEVELDB_BENCH_FLAGS_BLOCK_SIZE.load(Relaxed).max(0) as usize,
+            );
+            leveldb_options_set_max_open_files(
+                &mut options as *mut LevelDBOptions,
+                BITCOINLEVELDB_BENCH_FLAGS_OPEN_FILES.load(Relaxed),
+            );
         }
-        */
+
+        options
+            .rep_mut()
+            .set_reuse_logs(BITCOINLEVELDB_BENCH_FLAGS_REUSE_LOGS.load(Relaxed));
+
+        let mut errptr: *mut u8 = ptr::null_mut();
+
+        unsafe {
+            self.db = leveldb_open(
+                &options as *const LevelDBOptions,
+                c_db_path.as_ptr() as *const u8,
+                &mut errptr,
+            );
+        }
+
+        bitcoinleveldb_bench_leveldb_error_check_or_exit("open", errptr);
+
+        if self.db.is_null() {
+            eprintln!("open error: null db");
+            unsafe {
+                exit(1);
+            }
+        }
     }
     
     pub fn open_bench(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            for (int i = 0; i < num_; i++) {
-          delete db_;
-          Open();
-          thread->stats.FinishedSingleOp();
+
+        unsafe {
+            let thread_ref = &mut *thread;
+
+            let mut i = 0;
+            while i < self.num {
+                if !self.db.is_null() {
+                    leveldb_close(self.db);
+                    self.db = ptr::null_mut();
+                }
+                self.open();
+                thread_ref.stats.finished_single_op();
+                i += 1;
+            }
         }
-        */
     }
     
     pub fn write_seq(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            DoWrite(thread, true);
-        */
+        self.do_write(thread, true);
     }
     
     pub fn write_random(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            DoWrite(thread, false);
-        */
+        self.do_write(thread, false);
     }
-    
+
+    /// Preserves write ordering and batch boundaries exactly: keys are generated
+    /// in the same order as the source benchmark and each batch is committed by
+    /// a single LevelDB write call.
     pub fn do_write(&mut self, 
         thread: *mut ThreadState,
         seq:    bool)  {
-        
-        todo!();
-        /*
-            if (num_ != FLAGS_num) {
-          char msg[100];
-          snprintf(msg, sizeof(msg), "(%d ops)", num_);
-          thread->stats.AddMessage(msg);
-        }
 
-        RandomGenerator gen;
-        WriteBatch batch;
-        crate::Status s;
-        int64_t bytes = 0;
-        for (int i = 0; i < num_; i += entries_per_batch_) {
-          batch.Clear();
-          for (int j = 0; j < entries_per_batch_; j++) {
-            const int k = seq ? i + j : (thread->rand.Next() % FLAGS_num);
-            char key[100];
-            snprintf(key, sizeof(key), "%016d", k);
-            batch.Put(key, gen.Generate(value_size_));
-            bytes += value_size_ + strlen(key);
-            thread->stats.FinishedSingleOp();
-          }
-          s = db_->Write(write_options_, &batch);
-          if (!s.ok()) {
-            fprintf(stderr, "put error: %s\n", s.ToString().c_str());
-            exit(1);
-          }
+        unsafe {
+            let thread_ref = &mut *thread;
+
+            if self.num != BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed) {
+                let msg = format!("({} ops)", self.num);
+                thread_ref.stats.add_message(Slice::from(&msg));
+            }
+
+            let mut gen = RandomGenerator::default();
+            let write_options =
+                bitcoinleveldb_bench_make_write_options_from_rep(&self.write_options);
+            let batch = leveldb_writebatch_create();
+
+            let mut bytes: i64 = 0;
+            let mut i = 0_i32;
+
+            while i < self.num {
+                leveldb_writebatch_clear(batch);
+
+                let mut j = 0_i32;
+                while j < self.entries_per_batch {
+                    let k = if seq {
+                        i + j
+                    } else {
+                        (thread_ref.rand.next()
+                            % (BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed) as u32)) as i32
+                    };
+
+                    let key = format!("{:016}", k);
+                    let value = gen.generate(self.value_size as usize);
+                    let value_bytes = value.as_bytes();
+
+                    leveldb_writebatch_put(
+                        batch,
+                        key.as_ptr(),
+                        key.len(),
+                        value_bytes.as_ptr(),
+                        value_bytes.len(),
+                    );
+
+                    bytes += i64::from(self.value_size) + key.len() as i64;
+                    thread_ref.stats.finished_single_op();
+                    j += 1;
+                }
+
+                let mut errptr: *mut u8 = ptr::null_mut();
+                leveldb_write(
+                    self.db,
+                    &write_options as *const LevelDBWriteOptions,
+                    batch,
+                    &mut errptr,
+                );
+                bitcoinleveldb_bench_leveldb_error_check_or_exit("put", errptr);
+
+                i += self.entries_per_batch;
+            }
+
+            leveldb_writebatch_destroy(batch);
+            thread_ref.stats.add_bytes(bytes);
         }
-        thread->stats.AddBytes(bytes);
-        */
     }
-    
+
     pub fn read_sequential(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            Iterator* iter = db_->NewIterator(ReadOptions());
-        int i = 0;
-        int64_t bytes = 0;
-        for (iter->SeekToFirst(); i < reads_ && iter->Valid(); iter->Next()) {
-          bytes += iter->key().size() + iter->value().size();
-          thread->stats.FinishedSingleOp();
-          ++i;
+
+        unsafe {
+            let thread_ref = &mut *thread;
+            let options = LevelDBReadOptions::default();
+            let iter = leveldb_create_iterator(
+                self.db,
+                &options as *const LevelDBReadOptions,
+            );
+
+            let mut i = 0;
+            let mut bytes: i64 = 0;
+            leveldb_iter_seek_to_first(iter);
+
+            while i < self.reads && leveldb_iter_valid(iter) != 0 {
+                let mut klen: usize = 0;
+                let mut vlen: usize = 0;
+
+                let _kptr = leveldb_iter_key(iter, &mut klen as *mut usize);
+                let _vptr = leveldb_iter_value(iter, &mut vlen as *mut usize);
+
+                bytes += klen as i64 + vlen as i64;
+                thread_ref.stats.finished_single_op();
+                i += 1;
+                leveldb_iter_next(iter);
+            }
+
+            let mut errptr: *mut u8 = ptr::null_mut();
+            leveldb_iter_get_error(iter, &mut errptr);
+            bitcoinleveldb_bench_leveldb_error_check_or_exit("iterator", errptr);
+
+            leveldb_iter_destroy(iter);
+            thread_ref.stats.add_bytes(bytes);
         }
-        delete iter;
-        thread->stats.AddBytes(bytes);
-        */
     }
-    
+
     pub fn read_reverse(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            Iterator* iter = db_->NewIterator(ReadOptions());
-        int i = 0;
-        int64_t bytes = 0;
-        for (iter->SeekToLast(); i < reads_ && iter->Valid(); iter->Prev()) {
-          bytes += iter->key().size() + iter->value().size();
-          thread->stats.FinishedSingleOp();
-          ++i;
+
+        unsafe {
+            let thread_ref = &mut *thread;
+            let options = LevelDBReadOptions::default();
+            let iter = leveldb_create_iterator(
+                self.db,
+                &options as *const LevelDBReadOptions,
+            );
+
+            let mut i = 0;
+            let mut bytes: i64 = 0;
+            leveldb_iter_seek_to_last(iter);
+
+            while i < self.reads && leveldb_iter_valid(iter) != 0 {
+                let mut klen: usize = 0;
+                let mut vlen: usize = 0;
+
+                let _kptr = leveldb_iter_key(iter, &mut klen as *mut usize);
+                let _vptr = leveldb_iter_value(iter, &mut vlen as *mut usize);
+
+                bytes += klen as i64 + vlen as i64;
+                thread_ref.stats.finished_single_op();
+                i += 1;
+                leveldb_iter_prev(iter);
+            }
+
+            let mut errptr: *mut u8 = ptr::null_mut();
+            leveldb_iter_get_error(iter, &mut errptr);
+            bitcoinleveldb_bench_leveldb_error_check_or_exit("iterator", errptr);
+
+            leveldb_iter_destroy(iter);
+            thread_ref.stats.add_bytes(bytes);
         }
-        delete iter;
-        thread->stats.AddBytes(bytes);
-        */
-    }
-    
+    }   
+
     pub fn read_random(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            ReadOptions options;
-        std::string value;
-        int found = 0;
-        for (int i = 0; i < reads_; i++) {
-          char key[100];
-          const int k = thread->rand.Next() % FLAGS_num;
-          snprintf(key, sizeof(key), "%016d", k);
-          if (db_->Get(options, key, &value).ok()) {
-            found++;
-          }
-          thread->stats.FinishedSingleOp();
+
+        unsafe {
+            let thread_ref = &mut *thread;
+            let options = LevelDBReadOptions::default();
+            let mut found = 0;
+
+            let mut i = 0;
+            while i < self.reads {
+                let k = (thread_ref.rand.next() % (BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed) as u32)) as i32;
+                let key = format!("{:016}", k);
+
+                let mut vallen: usize = 0;
+                let mut errptr: *mut u8 = ptr::null_mut();
+                let value_ptr = leveldb_get(
+                    self.db,
+                    &options as *const LevelDBReadOptions,
+                    key.as_ptr(),
+                    key.len(),
+                    &mut vallen as *mut usize,
+                    &mut errptr,
+                );
+                bitcoinleveldb_bench_leveldb_error_check_or_exit("get", errptr);
+
+                if !value_ptr.is_null() {
+                    found += 1;
+                    leveldb_free(value_ptr as *mut c_void);
+                }
+
+                thread_ref.stats.finished_single_op();
+                i += 1;
+            }
+
+            let msg = format!("({} of {} found)", found, self.num);
+            thread_ref.stats.add_message(Slice::from(&msg));
         }
-        char msg[100];
-        snprintf(msg, sizeof(msg), "(%d of %d found)", found, num_);
-        thread->stats.AddMessage(msg);
-        */
     }
-    
+
     pub fn read_missing(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            ReadOptions options;
-        std::string value;
-        for (int i = 0; i < reads_; i++) {
-          char key[100];
-          const int k = thread->rand.Next() % FLAGS_num;
-          snprintf(key, sizeof(key), "%016d.", k);
-          db_->Get(options, key, &value);
-          thread->stats.FinishedSingleOp();
+
+        unsafe {
+            let thread_ref = &mut *thread;
+            let options = LevelDBReadOptions::default();
+
+            let mut i = 0;
+            while i < self.reads {
+                let k = (thread_ref.rand.next() % (BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed) as u32)) as i32;
+                let key = format!("{:016}.", k);
+
+                let mut vallen: usize = 0;
+                let mut errptr: *mut u8 = ptr::null_mut();
+                let value_ptr = leveldb_get(
+                    self.db,
+                    &options as *const LevelDBReadOptions,
+                    key.as_ptr(),
+                    key.len(),
+                    &mut vallen as *mut usize,
+                    &mut errptr,
+                );
+                bitcoinleveldb_bench_leveldb_error_check_or_exit("get", errptr);
+
+                if !value_ptr.is_null() {
+                    leveldb_free(value_ptr as *mut c_void);
+                }
+
+                thread_ref.stats.finished_single_op();
+                i += 1;
+            }
         }
-        */
     }
-    
+
     pub fn read_hot(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            ReadOptions options;
-        std::string value;
-        const int range = (FLAGS_num + 99) / 100;
-        for (int i = 0; i < reads_; i++) {
-          char key[100];
-          const int k = thread->rand.Next() % range;
-          snprintf(key, sizeof(key), "%016d", k);
-          db_->Get(options, key, &value);
-          thread->stats.FinishedSingleOp();
+
+        unsafe {
+            let thread_ref = &mut *thread;
+            let options = LevelDBReadOptions::default();
+            let range = (BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed) + 99) / 100;
+
+            let mut i = 0;
+            while i < self.reads {
+                let k = (thread_ref.rand.next() % (range as u32)) as i32;
+                let key = format!("{:016}", k);
+
+                let mut vallen: usize = 0;
+                let mut errptr: *mut u8 = ptr::null_mut();
+                let value_ptr = leveldb_get(
+                    self.db,
+                    &options as *const LevelDBReadOptions,
+                    key.as_ptr(),
+                    key.len(),
+                    &mut vallen as *mut usize,
+                    &mut errptr,
+                );
+                bitcoinleveldb_bench_leveldb_error_check_or_exit("get", errptr);
+
+                if !value_ptr.is_null() {
+                    leveldb_free(value_ptr as *mut c_void);
+                }
+
+                thread_ref.stats.finished_single_op();
+                i += 1;
+            }
         }
-        */
     }
-    
-    pub fn seek_random(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            ReadOptions options;
-        int found = 0;
-        for (int i = 0; i < reads_; i++) {
-          Iterator* iter = db_->NewIterator(options);
-          char key[100];
-          const int k = thread->rand.Next() % FLAGS_num;
-          snprintf(key, sizeof(key), "%016d", k);
-          iter->Seek(key);
-          if (iter->Valid() && iter->key() == key) found++;
-          delete iter;
-          thread->stats.FinishedSingleOp();
+
+     pub fn seek_random(&mut self, thread: *mut ThreadState)  {
+
+        unsafe {
+            let thread_ref = &mut *thread;
+            let options = LevelDBReadOptions::default();
+            let mut found = 0;
+
+            let mut i = 0;
+            while i < self.reads {
+                let iter = leveldb_create_iterator(
+                    self.db,
+                    &options as *const LevelDBReadOptions,
+                );
+
+                let k = (thread_ref.rand.next() % (BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed) as u32)) as i32;
+                let key = format!("{:016}", k);
+
+                leveldb_iter_seek(iter, key.as_ptr(), key.len());
+
+                if leveldb_iter_valid(iter) != 0 {
+                    let mut klen: usize = 0;
+                    let kptr = leveldb_iter_key(iter, &mut klen as *mut usize);
+                    let iter_key = Slice::from_ptr_len(kptr, klen);
+                    if iter_key.as_bytes() == key.as_bytes() {
+                        found += 1;
+                    }
+                }
+
+                let mut errptr: *mut u8 = ptr::null_mut();
+                leveldb_iter_get_error(iter, &mut errptr);
+                bitcoinleveldb_bench_leveldb_error_check_or_exit("iterator", errptr);
+
+                leveldb_iter_destroy(iter);
+                thread_ref.stats.finished_single_op();
+                i += 1;
+            }
+
+            let msg = format!("({} of {} found)", found, self.num);
+            thread_ref.stats.add_message(Slice::from(&msg));
         }
-        char msg[100];
-        snprintf(msg, sizeof(msg), "(%d of %d found)", found, num_);
-        thread->stats.AddMessage(msg);
-        */
-    }
+    }   
     
+    /// Preserves delete ordering and batch boundaries exactly: keys are generated
+    /// in the same sequence as the source benchmark and each batch is committed
+    /// by a single LevelDB write call.
     pub fn do_delete(&mut self, 
         thread: *mut ThreadState,
         seq:    bool)  {
-        
-        todo!();
-        /*
-            RandomGenerator gen;
-        WriteBatch batch;
-        crate::Status s;
-        for (int i = 0; i < num_; i += entries_per_batch_) {
-          batch.Clear();
-          for (int j = 0; j < entries_per_batch_; j++) {
-            const int k = seq ? i + j : (thread->rand.Next() % FLAGS_num);
-            char key[100];
-            snprintf(key, sizeof(key), "%016d", k);
-            batch.Delete(key);
-            thread->stats.FinishedSingleOp();
-          }
-          s = db_->Write(write_options_, &batch);
-          if (!s.ok()) {
-            fprintf(stderr, "del error: %s\n", s.ToString().c_str());
-            exit(1);
-          }
+
+        unsafe {
+            let thread_ref = &mut *thread;
+
+            let _gen = RandomGenerator::default();
+            let write_options =
+                bitcoinleveldb_bench_make_write_options_from_rep(&self.write_options);
+            let batch = leveldb_writebatch_create();
+
+            let mut i = 0_i32;
+            while i < self.num {
+                leveldb_writebatch_clear(batch);
+
+                let mut j = 0_i32;
+                while j < self.entries_per_batch {
+                    let k = if seq {
+                        i + j
+                    } else {
+                        (thread_ref.rand.next()
+                            % (BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed) as u32)) as i32
+                    };
+
+                    let key = format!("{:016}", k);
+                    leveldb_writebatch_delete(
+                        batch,
+                        key.as_ptr(),
+                        key.len(),
+                    );
+
+                    thread_ref.stats.finished_single_op();
+                    j += 1;
+                }
+
+                let mut errptr: *mut u8 = ptr::null_mut();
+                leveldb_write(
+                    self.db,
+                    &write_options as *const LevelDBWriteOptions,
+                    batch,
+                    &mut errptr,
+                );
+                bitcoinleveldb_bench_leveldb_error_check_or_exit("del", errptr);
+
+                i += self.entries_per_batch;
+            }
+
+            leveldb_writebatch_destroy(batch);
         }
-        */
     }
-    
+
     pub fn delete_seq(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            DoDelete(thread, true);
-        */
+        self.do_delete(thread, true);
     }
     
     pub fn delete_random(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            DoDelete(thread, false);
-        */
+        self.do_delete(thread, false);
     }
-    
+
+    /// Preserves the mixed-mode benchmark invariant: thread zero performs blind
+    /// writes until every reader thread has reached completion, and its own
+    /// timing is reset before reporting.
     pub fn read_while_writing(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            if (thread->tid > 0) {
-          ReadRandom(thread);
-        } else {
-          // Special thread that keeps writing until other threads are done.
-          RandomGenerator gen;
-          while (true) {
-            {
-              MutexLock l(&thread->shared->mu);
-              if (thread->shared->num_done + 1 >= thread->shared->num_initialized) {
-                // Other threads have finished
-                break;
-              }
-            }
 
-            const int k = thread->rand.Next() % FLAGS_num;
-            char key[100];
-            snprintf(key, sizeof(key), "%016d", k);
-            crate::Status s = db_->Put(write_options_, key, gen.Generate(value_size_));
-            if (!s.ok()) {
-              fprintf(stderr, "put error: %s\n", s.ToString().c_str());
-              exit(1);
-            }
-          }
+        unsafe {
+            let thread_ref = &mut *thread;
 
-          // Do not count any of the preceding work/delay in stats.
-          thread->stats.Start();
+            if thread_ref.tid > 0 {
+                self.read_random(thread);
+            } else {
+                // Special thread that keeps writing until other threads are done.
+                let mut gen = RandomGenerator::default();
+                let write_options =
+                    bitcoinleveldb_bench_make_write_options_from_rep(&self.write_options);
+
+                let shared_ref = match thread_ref.shared.as_ref() {
+                    Some(value) => value,
+                    None => {
+                        eprintln!("readwhilewriting error: missing shared state");
+                        exit(1);
+                    }
+                };
+
+                loop {
+                    let should_break = {
+                        let guard = shared_ref.mu.lock();
+                        guard.num_done + 1 >= guard.num_initialized
+                    };
+
+                    if should_break {
+                        break;
+                    }
+
+                    let k = (thread_ref.rand.next()
+                        % (BITCOINLEVELDB_BENCH_FLAGS_NUM.load(Relaxed) as u32)) as i32;
+                    let key = format!("{:016}", k);
+                    let value = gen.generate(self.value_size as usize);
+                    let value_bytes = value.as_bytes();
+
+                    let mut errptr: *mut u8 = ptr::null_mut();
+                    leveldb_put(
+                        self.db,
+                        &write_options as *const LevelDBWriteOptions,
+                        key.as_ptr(),
+                        key.len(),
+                        value_bytes.as_ptr(),
+                        value_bytes.len(),
+                        &mut errptr,
+                    );
+                    bitcoinleveldb_bench_leveldb_error_check_or_exit("put", errptr);
+                }
+
+                // Do not count any of the preceding work/delay in stats.
+                thread_ref.stats.start();
+            }
         }
-        */
     }
-    
+
     pub fn compact(&mut self, thread: *mut ThreadState)  {
-        
-        todo!();
-        /*
-            db_->CompactRange(nullptr, nullptr);
-        */
+
+        let _ = thread;
+        leveldb_compact_range(self.db, ptr::null(), 0, ptr::null(), 0);
     }
-    
+
     pub fn print_stats(&mut self, key_: *const u8)  {
-        
-        todo!();
-        /*
-            std::string stats;
-        if (!db_->GetProperty(key, &stats)) {
-          stats = "(failed)";
+
+        let stats_ptr = leveldb_property_value(self.db, key_);
+        if stats_ptr.is_null() {
+            println!("\n(failed)");
+        } else {
+            let stats = Slice::from(stats_ptr as *const u8).to_string();
+            println!("\n{}", stats);
+            unsafe {
+                leveldb_free(stats_ptr as *mut c_void);
+            }
         }
-        fprintf(stdout, "\n%s\n", stats.c_str());
-        */
     }
-    
+
     pub fn write_to_file(
         arg: *mut c_void,
         buf: *const u8,
         n:   i32)  {
-        
-        todo!();
-        /*
-            reinterpret_cast<WritableFile*>(arg)->Append(Slice(buf, n));
-        */
+
+        if arg.is_null() {
+            return;
+        }
+
+        if buf.is_null() {
+            return;
+        }
+
+        if n <= 0 {
+            return;
+        }
+
+        unsafe {
+            let file_ptr = arg as *mut fs::File;
+            if let Some(file_ref) = file_ptr.as_mut() {
+                let bytes = Slice::from_ptr_len(buf, n as usize);
+                let _ = std::io::Write::write_all(file_ref, bytes.as_bytes());
+            }
+        }
     }
-    
+   
     pub fn heap_profile(&mut self)  {
-        
-        todo!();
-        /*
-            char fname[100];
-        snprintf(fname, sizeof(fname), "%s/heap-%04d", FLAGS_db, ++heap_counter_);
-        WritableFile* file;
-        crate::Status s = g_env->NewWritableFile(fname, &file);
-        if (!s.ok()) {
-          fprintf(stderr, "%s\n", s.ToString().c_str());
-          return;
+
+        let db_path = match bitcoinleveldb_bench_flag_db_path_get() {
+            Some(path) => path,
+            None => {
+                eprintln!("heap profile error: missing db path");
+                return;
+            }
+        };
+
+        self.heap_counter += 1;
+        let fname = format!("{}/heap-{:04}", db_path, self.heap_counter);
+
+        match fs::File::create(&fname) {
+            Ok(mut file) => {
+                let ok = get_heap_profile(
+                    Benchmark::write_to_file,
+                    (&mut file as *mut fs::File) as *mut c_void,
+                );
+
+                drop(file);
+
+                if !ok {
+                    eprintln!("heap profiling not supported");
+                    let _ = fs::remove_file(&fname);
+                }
+            }
+            Err(error_value) => {
+                eprintln!("{}", error_value);
+            }
         }
-        bool ok = GetHeapProfile(WriteToFile, file);
-        delete file;
-        if (!ok) {
-          fprintf(stderr, "heap profiling not supported\n");
-          g_env->DeleteFile(fname);
-        }
-        */
     }
 }
 
-pub fn benchdb_bench_main (
+pub fn bitcoinleveldb_bench_saturating_i32_from_usize(value: usize) -> i32 {
+    if value > i32::MAX as usize {
+        i32::MAX
+    } else {
+        value as i32
+    }
+}
+
+pub fn benchdb_bench_main(
     argc: i32,
     argv: *mut *mut u8) -> i32 {
 
-    todo!();
-        /*
-            FLAGS_write_buffer_size = leveldb::Options().write_buffer_size;
-      FLAGS_max_file_size = leveldb::Options().max_file_size;
-      FLAGS_block_size = leveldb::Options().block_size;
-      FLAGS_open_files = leveldb::Options().max_open_files;
-      std::string default_db_path;
+    let default_options = Options::default();
 
-      for (int i = 1; i < argc; i++) {
-        double d;
-        int n;
-        char junk;
-        if (leveldb::Slice(argv[i]).starts_with("--benchmarks=")) {
-          FLAGS_benchmarks = argv[i] + strlen("--benchmarks=");
-        } else if (sscanf(argv[i], "--compression_ratio=%lf%c", &d, &junk) == 1) {
-          FLAGS_compression_ratio = d;
-        } else if (sscanf(argv[i], "--histogram=%d%c", &n, &junk) == 1 &&
-                   (n == 0 || n == 1)) {
-          FLAGS_histogram = n;
-        } else if (sscanf(argv[i], "--use_existing_db=%d%c", &n, &junk) == 1 &&
-                   (n == 0 || n == 1)) {
-          FLAGS_use_existing_db = n;
-        } else if (sscanf(argv[i], "--reuse_logs=%d%c", &n, &junk) == 1 &&
-                   (n == 0 || n == 1)) {
-          FLAGS_reuse_logs = n;
-        } else if (sscanf(argv[i], "--num=%d%c", &n, &junk) == 1) {
-          FLAGS_num = n;
-        } else if (sscanf(argv[i], "--reads=%d%c", &n, &junk) == 1) {
-          FLAGS_reads = n;
-        } else if (sscanf(argv[i], "--threads=%d%c", &n, &junk) == 1) {
-          FLAGS_threads = n;
-        } else if (sscanf(argv[i], "--value_size=%d%c", &n, &junk) == 1) {
-          FLAGS_value_size = n;
-        } else if (sscanf(argv[i], "--write_buffer_size=%d%c", &n, &junk) == 1) {
-          FLAGS_write_buffer_size = n;
-        } else if (sscanf(argv[i], "--max_file_size=%d%c", &n, &junk) == 1) {
-          FLAGS_max_file_size = n;
-        } else if (sscanf(argv[i], "--block_size=%d%c", &n, &junk) == 1) {
-          FLAGS_block_size = n;
-        } else if (sscanf(argv[i], "--cache_size=%d%c", &n, &junk) == 1) {
-          FLAGS_cache_size = n;
-        } else if (sscanf(argv[i], "--bloom_bits=%d%c", &n, &junk) == 1) {
-          FLAGS_bloom_bits = n;
-        } else if (sscanf(argv[i], "--open_files=%d%c", &n, &junk) == 1) {
-          FLAGS_open_files = n;
-        } else if (strncmp(argv[i], "--db=", 5) == 0) {
-          FLAGS_db = argv[i] + 5;
-        } else {
-          fprintf(stderr, "Invalid flag '%s'\n", argv[i]);
-          exit(1);
+    BITCOINLEVELDB_BENCH_FLAGS_WRITE_BUFFER_SIZE.store(
+        bitcoinleveldb_bench_saturating_i32_from_usize(*default_options.write_buffer_size()),
+        Relaxed,
+    );
+    BITCOINLEVELDB_BENCH_FLAGS_MAX_FILE_SIZE.store(
+        bitcoinleveldb_bench_saturating_i32_from_usize(*default_options.max_file_size()),
+        Relaxed,
+    );
+    BITCOINLEVELDB_BENCH_FLAGS_BLOCK_SIZE.store(
+        bitcoinleveldb_bench_saturating_i32_from_usize(*default_options.block_size()),
+        Relaxed,
+    );
+    BITCOINLEVELDB_BENCH_FLAGS_OPEN_FILES.store(*default_options.max_open_files(), Relaxed);
+
+    let mut default_db_path = String::new();
+
+    if !argv.is_null() {
+        let mut i = 1_i32;
+        while i < argc {
+            let arg_ptr = unsafe { *argv.offset(i as isize) };
+            let argument = if arg_ptr.is_null() {
+                String::new()
+            } else {
+                Slice::from(arg_ptr as *const u8).to_string()
+            };
+
+            if let Some(rest) = argument.strip_prefix("--benchmarks=") {
+                bitcoinleveldb_bench_flag_benchmarks_set(rest.to_owned());
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_f64_flag(&argument, "--compression_ratio=")
+            {
+                bitcoinleveldb_bench_flag_compression_ratio_set(value);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_bool01_flag(&argument, "--histogram=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_HISTOGRAM.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_bool01_flag(&argument, "--use_existing_db=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_USE_EXISTING_DB.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_bool01_flag(&argument, "--reuse_logs=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_REUSE_LOGS.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--num=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_NUM.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--reads=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_READS.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--threads=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_THREADS.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--value_size=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_VALUE_SIZE.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--write_buffer_size=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_WRITE_BUFFER_SIZE.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--max_file_size=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_MAX_FILE_SIZE.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--block_size=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_BLOCK_SIZE.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--cache_size=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_CACHE_SIZE.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--bloom_bits=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_BLOOM_BITS.store(value, Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_parse_i32_flag(&argument, "--open_files=")
+            {
+                BITCOINLEVELDB_BENCH_FLAGS_OPEN_FILES.store(value, Relaxed);
+            } else if let Some(rest) = argument.strip_prefix("--db=") {
+                bitcoinleveldb_bench_flag_db_path_set(Some(rest.to_owned()));
+            } else {
+                eprintln!("Invalid flag '{}'", argument);
+                unsafe {
+                    exit(1);
+                }
+            }
+
+            i += 1;
         }
-      }
+    }
 
-      leveldb::g_env = leveldb::Env::Default();
+    // Choose a location for the test database if none given with --db=<path>
+    if bitcoinleveldb_bench_flag_db_path_get().is_none() {
+        match bitcoinleveldb_bench_get_test_directory() {
+            Some(test_directory) => {
+                default_db_path = test_directory;
+                default_db_path.push_str("/dbbench");
+                bitcoinleveldb_bench_flag_db_path_set(Some(default_db_path));
+            }
+            None => {}
+        }
+    }
 
-      // Choose a location for the test database if none given with --db=<path>
-      if (FLAGS_db == nullptr) {
-        leveldb::g_env->GetTestDirectory(&default_db_path);
-        default_db_path += "/dbbench";
-        FLAGS_db = default_db_path.c_str();
-      }
-
-      leveldb::Benchmark benchmark;
-      benchmark.Run();
-      return 0;
-        */
+    let mut benchmark = Benchmark::default();
+    benchmark.run();
+    0
 }

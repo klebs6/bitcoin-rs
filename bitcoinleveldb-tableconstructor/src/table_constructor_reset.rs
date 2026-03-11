@@ -41,9 +41,24 @@ impl TableConstructor {
         }
     }
 
+    fn reset_source_owner_and_backing_bytes(&mut self) {
+        let had_owner: bool = self.source_owner().is_some();
+        let source_bytes_len: usize = self.source_bytes().len();
+
+        trace!(
+            "TableConstructor::reset_source_owner_and_backing_bytes: had_owner={}, source_bytes_len={}",
+            had_owner,
+            source_bytes_len
+        );
+
+        self.set_source_owner(None);
+        self.source_bytes_mut().clear();
+    }
+
     pub fn reset(&mut self) {
         trace!("TableConstructor::reset: begin");
         self.reset_table_ptr();
         self.reset_source_ptr();
+        self.reset_source_owner_and_backing_bytes();
     }
 }

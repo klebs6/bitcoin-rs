@@ -1,7 +1,10 @@
 // ---------------- [ File: bitcoinleveldb-bench/src/db_bench_sqlite3.rs ]
 crate::ix!();
 
-
+use atomic::Ordering;
+use std::ptr;
+use std::ffi::{c_char};
+use std::time::{UNIX_EPOCH,SystemTime};
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/benchmarks/db_bench_sqlite3.cc]
 
@@ -76,104 +79,45 @@ pub const FLAGS_benchmarks: &'static str = concat!{
     "readrand100K,"
 };
 
-/**
-   Number of key/values to place in database
-  */
+/// Number of key/values to place in database
+pub static BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_NUM: AtomicI32 = AtomicI32::new(1_000_000);
+
+/// Number of read operations to do.  If negative, do FLAGS_num reads.
+pub static BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_READS: AtomicI32 = AtomicI32::new(-1);
+
+/// Size of each value
+pub static BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE: AtomicI32 = AtomicI32::new(100);
+
+/// Print histogram of operation timings
+pub static BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_HISTOGRAM: AtomicBool = AtomicBool::new(false);
+
+/// Arrange to generate values that shrink to this fraction of their original size after
+/// compression
 lazy_static!{
-    /*
-    static int FLAGS_num = 1000000;
-    */
+    pub static ref BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_COMPRESSION_RATIO: Mutex<f64> =
+        Mutex::new(0.5_f64);
 }
 
-/**
-   Number of read operations to do.  If negative,
-   do FLAGS_num reads.
-  */
-lazy_static!{
-    /*
-    static int FLAGS_reads = -1;
-    */
-}
+/// Page size. Default 1 KB.
+pub static BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_PAGE_SIZE: AtomicI32 = AtomicI32::new(1024);
 
-/**
-   Size of each value
-  */
-lazy_static!{
-    /*
-    static int FLAGS_value_size = 100;
-    */
-}
+/// Number of pages.
+/// 
+/// Default cache size = FLAGS_page_size * FLAGS_num_pages = 4 MB.
+pub static BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_NUM_PAGES: AtomicI32 = AtomicI32::new(4096);
 
-/**
-   Print histogram of operation timings
-  */
-lazy_static!{
-    /*
-    static bool FLAGS_histogram = false;
-    */
-}
+/// If true, do not destroy the existing database.
+///
+/// If you set this flag and also specify a benchmark that wants a fresh database, that benchmark
+/// will fail.
+///
+pub static BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_USE_EXISTING_DB: AtomicBool = AtomicBool::new(false);
 
-/**
-  | Arrange to generate values that shrink to this
-  | fraction of their original size after
-  | compression
-  */
-lazy_static!{
-    /*
-    static double FLAGS_compression_ratio = 0.5;
-    */
-}
+/// If true, we allow batch writes to occur
+pub static BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_TRANSACTION: AtomicBool = AtomicBool::new(true);
 
-/**
-   Page size. Default 1 KB.
-  */
-lazy_static!{
-    /*
-    static int FLAGS_page_size = 1024;
-    */
-}
-
-/**
-  | Number of pages.
-  |
-  | Default cache size =
-  | FLAGS_page_size * FLAGS_num_pages = 4 MB.
-  */
-lazy_static!{
-    /*
-    static int FLAGS_num_pages = 4096;
-    */
-}
-
-/**
-  | If true, do not destroy the existing database.
-  | If you set this flag and also specify
-  | a benchmark that wants a fresh database, that
-  | benchmark will fail.
-  */
-lazy_static!{
-    /*
-    static bool FLAGS_use_existing_db = false;
-    */
-}
-
-/**
-   If true, we allow batch writes to occur
-  */
-lazy_static!{
-    /*
-    static bool FLAGS_transaction = true;
-    */
-}
-
-/**
-   If true, we enable Write-Ahead Logging
-  */
-lazy_static!{
-    /*
-    static bool FLAGS_WAL_enabled = true;
-    */
-}
+/// If true, we enable Write-Ahead Logging
+pub static BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_WAL_ENABLED: AtomicBool = AtomicBool::new(true);
 
 /**
    Use the db with the following name.
@@ -185,53 +129,214 @@ lazy_static!{
 }
 
 #[inline] pub fn exec_error_check(
-        status:  i32,
-        err_msg: *mut u8)  {
-    
-    todo!();
-        /*
-            if (status != SQLITE_OK) {
-        fprintf(stderr, "SQL error: %s\n", err_msg);
-        sqlite3_free(err_msg);
-        exit(1);
-      }
-        */
+    status:  i32,
+    err_msg: *mut u8)  {
+
+    if status != sqlite3_sys::SQLITE_OK {
+        let rendered_message = if err_msg.is_null() {
+            String::new()
+        } else {
+            Slice::from(err_msg as *const u8).to_string()
+        };
+
+        eprintln!("SQL error: {}", rendered_message);
+
+        unsafe {
+            if !err_msg.is_null() {
+                sqlite3_sys::sqlite3_free(err_msg as *mut c_void);
+            }
+        }
+
+        unsafe {
+            exit(1);
+        }
+    }
 }
 
 #[inline] pub fn step_error_check(status: i32)  {
-    
-    todo!();
-        /*
-            if (status != SQLITE_DONE) {
-        fprintf(stderr, "SQL step error: status = %d\n", status);
-        exit(1);
-      }
-        */
+    if status != sqlite3_sys::SQLITE_DONE {
+        eprintln!("SQL step error: status = {}", status);
+        unsafe {
+            exit(1);
+        }
+    }
 }
 
 #[inline] pub fn error_check(status: i32)  {
-    
-    todo!();
-        /*
-            if (status != SQLITE_OK) {
-        fprintf(stderr, "sqlite3 error: status = %d\n", status);
-        exit(1);
-      }
-        */
+    if status != sqlite3_sys::SQLITE_OK {
+        eprintln!("sqlite3 error: status = {}", status);
+        unsafe {
+            exit(1);
+        }
+    }
 }
 
-#[inline] pub fn wal_checkpoint(db: *mut sqlite3::ffi::sqlite3)  {
-    
-    todo!();
-        /*
-            // Flush all writes to disk
-      if (FLAGS_WAL_enabled) {
-        sqlite3_wal_checkpoint_v2(db_, nullptr, SQLITE_CHECKPOINT_FULL, nullptr,
-                                  nullptr);
-      }
-        */
+lazy_static!{
+    pub static ref BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_BENCHMARKS_TEXT: Mutex<String> =
+        Mutex::new(String::from(FLAGS_benchmarks));
 }
 
+lazy_static!{
+    pub static ref BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_DB_PATH: Mutex<Option<String>> =
+        Mutex::new(None);
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_flag_benchmarks_get() -> String {
+    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_BENCHMARKS_TEXT.lock().clone()
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_flag_benchmarks_set(value: String) {
+    *BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_BENCHMARKS_TEXT.lock() = value;
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_flag_compression_ratio_get() -> f64 {
+    *BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_COMPRESSION_RATIO.lock()
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_flag_compression_ratio_set(value: f64) {
+    *BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_COMPRESSION_RATIO.lock() = value;
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_flag_db_path_get() -> Option<String> {
+    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_DB_PATH.lock().clone()
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_flag_db_path_set(value: Option<String>) {
+    *BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_DB_PATH.lock() = value;
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_parse_i32_flag(
+    argument: &str,
+    prefix:   &str) -> Option<i32> {
+
+    match argument.strip_prefix(prefix) {
+        Some(rest) => match rest.parse::<i32>() {
+            Ok(value) => Some(value),
+            Err(_) => None,
+        },
+        None => None,
+    }
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_parse_f64_flag(
+    argument: &str,
+    prefix:   &str) -> Option<f64> {
+
+    match argument.strip_prefix(prefix) {
+        Some(rest) => match rest.parse::<f64>() {
+            Ok(value) => Some(value),
+            Err(_) => None,
+        },
+        None => None,
+    }
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_parse_bool01_flag(
+    argument: &str,
+    prefix:   &str) -> Option<bool> {
+
+    match bitcoinleveldb_bench_sqlite3_parse_i32_flag(argument, prefix) {
+        Some(0) => Some(false),
+        Some(1) => Some(true),
+        Some(_) => None,
+        None => None,
+    }
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_now_seconds() -> f64 {
+    match SystemTime::now().duration_since(UNIX_EPOCH) {
+        Ok(duration) => duration.as_secs_f64(),
+        Err(_) => 0.0,
+    }
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_get_test_directory() -> Option<String> {
+    unsafe {
+        let env = leveldb_create_default_env();
+        if env.is_null() {
+            return None;
+        }
+
+        let dir_ptr = leveldb_env_get_test_directory(env);
+        let result = if dir_ptr.is_null() {
+            None
+        } else {
+            Some(Slice::from(dir_ptr as *const u8).to_string())
+        };
+
+        if !dir_ptr.is_null() {
+            leveldb_free(dir_ptr as *mut c_void);
+        }
+        leveldb_env_destroy(env);
+        result
+    }
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_cstring_or_exit(input: &str) -> CString {
+    match CString::new(input) {
+        Ok(value) => value,
+        Err(_) => {
+            eprintln!("sqlite3 string contains interior NUL");
+            unsafe {
+                exit(1);
+            }
+        }
+    }
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_exec_statement(
+    db:        *mut sqlite3_sys::sqlite3,
+    statement: &str)  {
+
+    let c_statement = bitcoinleveldb_bench_sqlite3_cstring_or_exit(statement);
+
+    unsafe {
+        let mut err_msg: *mut c_char = ptr::null_mut();
+        let status = sqlite3_sys::sqlite3_exec(
+            db,
+            c_statement.as_ptr(),
+            None,
+            ptr::null_mut(),
+            &mut err_msg,
+        );
+        exec_error_check(status, err_msg as *mut u8);
+    }
+}
+
+pub fn bitcoinleveldb_bench_sqlite3_prepare_statement(
+    db:        *mut sqlite3_sys::sqlite3,
+    statement: &str) -> *mut sqlite3_sys::sqlite3_stmt {
+
+    let c_statement = bitcoinleveldb_bench_sqlite3_cstring_or_exit(statement);
+
+    unsafe {
+        let mut stmt: *mut sqlite3_sys::sqlite3_stmt = ptr::null_mut();
+        let status = sqlite3_sys::sqlite3_prepare_v2(
+            db,
+            c_statement.as_ptr(),
+            -1,
+            &mut stmt,
+            ptr::null_mut(),
+        );
+        error_check(status);
+        stmt
+    }
+}
+
+#[inline] pub fn wal_checkpoint(db: *mut sqlite3_sys::sqlite3)  {
+    unsafe {
+        // Flush all writes to disk
+        if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_WAL_ENABLED.load(Ordering::Relaxed) {
+            let _ = sqlite3_sys::sqlite3_wal_checkpoint_v2(
+                db,
+                ptr::null(),
+                sqlite3_sys::SQLITE_CHECKPOINT_FULL,
+                ptr::null_mut(),
+                ptr::null_mut(),
+            );
+        }
+    }
+}
 /**
   | Helper for quickly generating random
   | data.
@@ -245,61 +350,108 @@ pub struct RandomGenerator {
 impl Default for RandomGenerator {
     
     fn default() -> Self {
-        todo!();
-        /*
-
 
             // We use a limited amount of data over and over again and ensure
         // that it is larger than the compression window (32KB), and also
         // large enough to serve all typical value sizes we want to write.
-        Random rnd(301);
-        std::string piece;
-        while (data_.size() < 1048576) {
-          // Add a short fragment that is as compressible as specified
-          // by FLAGS_compression_ratio.
-          test::CompressibleString(&rnd, FLAGS_compression_ratio, 100, &piece);
-          data_.append(piece);
+        let mut rnd = Random::new(301);
+        let compression_ratio = bitcoinleveldb_bench_sqlite3_flag_compression_ratio_get();
+
+        let raw_fragment_len_f64 = (compression_ratio * 100.0).round();
+        let raw_fragment_len = if raw_fragment_len_f64 < 1.0 {
+            1usize
+        } else if raw_fragment_len_f64 > 100.0 {
+            100usize
+        } else {
+            raw_fragment_len_f64 as usize
+        };
+
+        let mut data = String::with_capacity(1_048_576);
+
+        while data.len() < 1_048_576 {
+            // Add a short fragment that is as compressible as specified
+            // by FLAGS_compression_ratio.
+            let mut raw_fragment = String::with_capacity(raw_fragment_len);
+            let mut raw_index = 0usize;
+
+            while raw_index < raw_fragment_len {
+                let byte = b'a' + (rnd.uniform(26) as u8);
+                raw_fragment.push(char::from(byte));
+                raw_index += 1;
+            }
+
+            let mut piece = String::with_capacity(100);
+            while piece.len() < 100 {
+                let remaining = 100usize - piece.len();
+                if remaining >= raw_fragment.len() {
+                    piece.push_str(&raw_fragment);
+                } else {
+                    piece.push_str(&raw_fragment[..remaining]);
+                }
+            }
+
+            data.push_str(&piece);
         }
-        pos_ = 0;
-        */
+
+        Self {
+            data,
+            pos: 0,
+        }
     }
 }
 
 impl RandomGenerator {
-    
+
     pub fn generate(&mut self, len: i32) -> Slice {
-        
-        todo!();
-        /*
-            if (pos_ + len > data_.size()) {
-          pos_ = 0;
-          assert(len < data_.size());
+        assert!(len >= 0);
+
+        let len_usize = len as usize;
+        let pos_usize = if self.pos < 0 {
+            0usize
+        } else {
+            self.pos as usize
+        };
+
+        if pos_usize + len_usize > self.data.len() {
+            self.pos = 0;
+            assert!(len_usize < self.data.len());
         }
-        pos_ += len;
-        return Slice(data_.data() + pos_ - len, len);
-        */
+
+        let start = if self.pos < 0 {
+            0usize
+        } else {
+            self.pos as usize
+        };
+
+        self.pos += len;
+
+        unsafe {
+            Slice::from_ptr_len(self.data.as_ptr().add(start), len_usize)
+        }
     }
 }
 
 pub fn trim_space(s: Slice) -> Slice {
-    
-    todo!();
-        /*
-            int start = 0;
-      while (start < s.size() && isspace(s[start])) {
-        start++;
-      }
-      int limit = s.size();
-      while (limit > start && isspace(s[limit - 1])) {
-        limit--;
-      }
-      return Slice(s.data() + start, limit - start);
-        */
+    let bytes = s.as_bytes();
+
+    let mut start = 0usize;
+    while start < bytes.len() && bytes[start].is_ascii_whitespace() {
+        start += 1;
+    }
+
+    let mut limit = bytes.len();
+    while limit > start && bytes[limit - 1].is_ascii_whitespace() {
+        limit -= 1;
+    }
+
+    unsafe {
+        Slice::from_ptr_len(bytes.as_ptr().add(start), limit - start)
+    }
 }
 
 ///-----------------------
 pub struct Benchmark {
-    db:             *mut sqlite3::core::DatabaseConnection,
+    db:             *mut sqlite3_sys::sqlite3,
     db_num:         i32,
     num:            i32,
     reads:          i32,
@@ -336,605 +488,791 @@ pub mod benchmark {
 }
  
 impl Default for Benchmark {
-    
+
     fn default() -> Self {
-        todo!();
-        /*
+        let num = BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_NUM.load(Ordering::Relaxed);
+        let reads_flag = BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_READS.load(Ordering::Relaxed);
+        let reads = if reads_flag < 0 { num } else { reads_flag };
 
+        let result = Self {
+            db: ptr::null_mut(),
+            db_num: 0,
+            num,
+            reads,
+            start: 0.0,
+            last_op_finish: 0.0,
+            bytes: 0,
+            message: String::new(),
+            hist: Histogram::default(),
+            gen: RandomGenerator::default(),
+            rand: Random::new(301),
+            done: 0,
+            next_report: 100,
+        };
 
-            : db_(nullptr),
-            db_num_(0),
-            num_(FLAGS_num),
-            reads_(FLAGS_reads < 0 ? FLAGS_num : FLAGS_reads),
-            bytes_(0),
-            rand_(301) 
-        std::vector<std::string> files;
-        std::string test_dir;
-        Env::Default()->GetTestDirectory(&test_dir);
-        Env::Default()->GetChildren(test_dir, &files);
-        if (!FLAGS_use_existing_db) {
-          for (int i = 0; i < files.size(); i++) {
-            if (Slice(files[i]).starts_with("dbbench_sqlite3")) {
-              std::string file_name(test_dir);
-              file_name += "/";
-              file_name += files[i];
-              Env::Default()->DeleteFile(file_name.c_str());
+        if !BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_USE_EXISTING_DB.load(Ordering::Relaxed) {
+            match bitcoinleveldb_bench_sqlite3_get_test_directory() {
+                Some(test_dir) => {
+                    match fs::read_dir(&test_dir) {
+                        Ok(entries) => {
+                            for entry_result in entries {
+                                match entry_result {
+                                    Ok(entry) => {
+                                        let file_name_os = entry.file_name();
+                                        match file_name_os.to_str() {
+                                            Some(file_name) => {
+                                                if file_name.starts_with("dbbench_sqlite3") {
+                                                    let _ = fs::remove_file(entry.path());
+                                                }
+                                            }
+                                            None => {}
+                                        }
+                                    }
+                                    Err(_) => {}
+                                }
+                            }
+                        }
+                        Err(_) => {}
+                    }
+                }
+                None => {}
             }
-          }
         }
-        */
+
+        result
     }
 }
 
 impl Drop for Benchmark {
     fn drop(&mut self) {
-        todo!();
-        /*
-            int status = sqlite3_close(db_);
-        ErrorCheck(status);
-        */
+        let raw_db = self.db;
+        if !raw_db.is_null() {
+            unsafe {
+                let status = sqlite3_sys::sqlite3_close(raw_db);
+                error_check(status);
+            }
+            self.db = ptr::null_mut();
+        }
     }
 }
 
 impl Benchmark {
     
     pub fn print_header(&mut self)  {
-        
-        todo!();
-        /*
-            const int kKeySize = 16;
-        PrintEnvironment();
-        fprintf(stdout, "Keys:       %d bytes each\n", kKeySize);
-        fprintf(stdout, "Values:     %d bytes each\n", FLAGS_value_size);
-        fprintf(stdout, "Entries:    %d\n", num_);
-        fprintf(stdout, "RawSize:    %.1f MB (estimated)\n",
-                ((static_cast<int64_t>(kKeySize + FLAGS_value_size) * num_) /
-                 1048576.0));
-        PrintWarnings();
-        fprintf(stdout, "------------------------------------------------\n");
-        */
+        const K_KEY_SIZE: i32 = 16;
+        self.print_environment();
+        println!("Keys:       {} bytes each", K_KEY_SIZE);
+        println!(
+            "Values:     {} bytes each",
+            BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed)
+        );
+        println!("Entries:    {}", self.num);
+        println!(
+            "RawSize:    {:.1} MB (estimated)",
+            (((i64::from(K_KEY_SIZE)
+                + i64::from(BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed)))
+                * i64::from(self.num)) as f64)
+                / 1048576.0
+        );
+        self.print_warnings();
+        println!("------------------------------------------------");
     }
-    
+
     pub fn print_warnings(&mut self)  {
-        
-        todo!();
-        /*
-            #if defined(__GNUC__) && !defined(__OPTIMIZE__)
-        fprintf(
-            stdout,
-            "WARNING: Optimization is disabled: benchmarks unnecessarily slow\n");
-    #endif
-    #ifndef NDEBUG
-        fprintf(stdout,
-                "WARNING: Assertions are enabled; benchmarks unnecessarily slow\n");
-    #endif
-        */
+        if cfg!(debug_assertions) {
+            println!("WARNING: Assertions are enabled; benchmarks unnecessarily slow");
+        }
     }
     
     pub fn print_environment(&mut self)  {
-        
-        todo!();
-        /*
-            fprintf(stderr, "SQLite:     version %s\n", SQLITE_VERSION);
-
-    #if defined(__linux)
-        time_t now = time(nullptr);
-        fprintf(stderr, "Date:       %s", ctime(&now));  // ctime() adds newline
-
-        FILE* cpuinfo = fopen("/proc/cpuinfo", "r");
-        if (cpuinfo != nullptr) {
-          char line[1000];
-          int num_cpus = 0;
-          std::string cpu_type;
-          std::string cache_size;
-          while (fgets(line, sizeof(line), cpuinfo) != nullptr) {
-            const char* sep = strchr(line, ':');
-            if (sep == nullptr) {
-              continue;
+        unsafe {
+            let version_ptr = sqlite3_sys::sqlite3_libversion();
+            if version_ptr.is_null() {
+                eprintln!("SQLite:     version unknown");
+            } else {
+                let version = CStr::from_ptr(version_ptr).to_string_lossy().into_owned();
+                eprintln!("SQLite:     version {}", version);
             }
-            Slice key = TrimSpace(Slice(line, sep - 1 - line));
-            Slice val = TrimSpace(Slice(sep + 1));
-            if (key == "model name") {
-              ++num_cpus;
-              cpu_type = val.ToString();
-            } else if (key == "cache size") {
-              cache_size = val.ToString();
-            }
-          }
-          fclose(cpuinfo);
-          fprintf(stderr, "CPU:        %d * %s\n", num_cpus, cpu_type.c_str());
-          fprintf(stderr, "CPUCache:   %s\n", cache_size.c_str());
         }
-    #endif
-        */
+
+        #[cfg(target_os = "linux")]
+        {
+            match fs::read_to_string("/proc/cpuinfo") {
+                Ok(cpuinfo) => {
+                    let mut num_cpus = 0_i32;
+                    let mut cpu_type = String::new();
+                    let mut cache_size = String::new();
+
+                    for line in cpuinfo.lines() {
+                        match line.split_once(':') {
+                            Some((key_text, value_text)) => {
+                                let key = trim_space(Slice::from_str(key_text)).to_string();
+                                let value = trim_space(Slice::from_str(value_text)).to_string();
+
+                                if key == "model name" {
+                                    num_cpus += 1;
+                                    cpu_type = value;
+                                } else if key == "cache size" {
+                                    cache_size = value;
+                                }
+                            }
+                            None => {}
+                        }
+                    }
+
+                    if num_cpus > 0 {
+                        eprintln!("CPU:        {} * {}", num_cpus, cpu_type);
+                    }
+                    if !cache_size.is_empty() {
+                        eprintln!("CPUCache:   {}", cache_size);
+                    }
+                }
+                Err(_) => {}
+            }
+        }
     }
-    
+   
     pub fn start(&mut self)  {
-        
-        todo!();
-        /*
-            start_ = Env::Default()->NowMicros() * 1e-6;
-        bytes_ = 0;
-        message_.clear();
-        last_op_finish_ = start_;
-        hist_.Clear();
-        done_ = 0;
-        next_report_ = 100;
-        */
+        self.start = bitcoinleveldb_bench_sqlite3_now_seconds();
+        self.bytes = 0;
+        self.message.clear();
+        self.last_op_finish = self.start;
+        self.hist.clear();
+        self.done = 0;
+        self.next_report = 100;
     }
-    
+   
     pub fn finished_single_op(&mut self)  {
-        
-        todo!();
-        /*
-            if (FLAGS_histogram) {
-          double now = Env::Default()->NowMicros() * 1e-6;
-          double micros = (now - last_op_finish_) * 1e6;
-          hist_.Add(micros);
-          if (micros > 20000) {
-            fprintf(stderr, "long op: %.1f micros%30s\r", micros, "");
-            fflush(stderr);
-          }
-          last_op_finish_ = now;
+        if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_HISTOGRAM.load(Ordering::Relaxed) {
+            let now = bitcoinleveldb_bench_sqlite3_now_seconds();
+            let micros = (now - self.last_op_finish) * 1e6;
+            self.hist.add(micros);
+            if micros > 20000.0 {
+                eprint!("long op: {:.1} micros{:30}\r", micros, "");
+            }
+            self.last_op_finish = now;
         }
 
-        done_++;
-        if (done_ >= next_report_) {
-          if (next_report_ < 1000)
-            next_report_ += 100;
-          else if (next_report_ < 5000)
-            next_report_ += 500;
-          else if (next_report_ < 10000)
-            next_report_ += 1000;
-          else if (next_report_ < 50000)
-            next_report_ += 5000;
-          else if (next_report_ < 100000)
-            next_report_ += 10000;
-          else if (next_report_ < 500000)
-            next_report_ += 50000;
-          else
-            next_report_ += 100000;
-          fprintf(stderr, "... finished %d ops%30s\r", done_, "");
-          fflush(stderr);
+        self.done += 1;
+        if self.done >= self.next_report {
+            if self.next_report < 1000 {
+                self.next_report += 100;
+            } else if self.next_report < 5000 {
+                self.next_report += 500;
+            } else if self.next_report < 10000 {
+                self.next_report += 1000;
+            } else if self.next_report < 50000 {
+                self.next_report += 5000;
+            } else if self.next_report < 100000 {
+                self.next_report += 10000;
+            } else if self.next_report < 500000 {
+                self.next_report += 50000;
+            } else {
+                self.next_report += 100000;
+            }
+            eprint!("... finished {} ops{:30}\r", self.done, "");
         }
-        */
     }
-    
+   
     pub fn stop(&mut self, name: &Slice)  {
-        
-        todo!();
-        /*
-            double finish = Env::Default()->NowMicros() * 1e-6;
+        let finish = bitcoinleveldb_bench_sqlite3_now_seconds();
 
         // Pretend at least one op was done in case we are running a benchmark
         // that does not call FinishedSingleOp().
-        if (done_ < 1) done_ = 1;
-
-        if (bytes_ > 0) {
-          char rate[100];
-          snprintf(rate, sizeof(rate), "%6.1f MB/s",
-                   (bytes_ / 1048576.0) / (finish - start_));
-          if (!message_.empty()) {
-            message_ = std::string(rate) + " " + message_;
-          } else {
-            message_ = rate;
-          }
+        if self.done < 1 {
+            self.done = 1;
         }
 
-        fprintf(stdout, "%-12s : %11.3f micros/op;%s%s\n", name.ToString().c_str(),
-                (finish - start_) * 1e6 / done_, (message_.empty() ? "" : " "),
-                message_.c_str());
-        if (FLAGS_histogram) {
-          fprintf(stdout, "Microseconds per op:\n%s\n", hist_.ToString().c_str());
+        if self.bytes > 0 {
+            let rate = format!(
+                "{:6.1} MB/s",
+                (self.bytes as f64 / 1048576.0) / (finish - self.start)
+            );
+            if !self.message.is_empty() {
+                self.message = format!("{} {}", rate, self.message);
+            } else {
+                self.message = rate;
+            }
         }
-        fflush(stdout);
-        */
+
+        println!(
+            "{:<12} : {:11.3} micros/op;{}{}",
+            name.to_string(),
+            (finish - self.start) * 1e6 / self.done as f64,
+            if self.message.is_empty() { "" } else { " " },
+            self.message
+        );
+        if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_HISTOGRAM.load(Ordering::Relaxed) {
+            println!("Microseconds per op:\n{}\n", self.hist.to_string());
+        }
     }
     
     pub fn run(&mut self)  {
-        
-        todo!();
-        /*
-            PrintHeader();
-        Open();
+        self.print_header();
+        self.open();
 
-        const char* benchmarks = FLAGS_benchmarks;
-        while (benchmarks != nullptr) {
-          const char* sep = strchr(benchmarks, ',');
-          Slice name;
-          if (sep == nullptr) {
-            name = benchmarks;
-            benchmarks = nullptr;
-          } else {
-            name = Slice(benchmarks, sep - benchmarks);
-            benchmarks = sep + 1;
-          }
+        let benchmarks_text = bitcoinleveldb_bench_sqlite3_flag_benchmarks_get();
+        for name in benchmarks_text.split(',') {
+            self.bytes = 0;
+            self.start();
 
-          bytes_ = 0;
-          Start();
+            let mut known = true;
+            let mut write_sync = false;
 
-          bool known = true;
-          bool write_sync = false;
-          if (name == Slice("fillseq")) {
-            Write(write_sync, SEQUENTIAL, FRESH, num_, FLAGS_value_size, 1);
-            WalCheckpoint(db_);
-          } else if (name == Slice("fillseqbatch")) {
-            Write(write_sync, SEQUENTIAL, FRESH, num_, FLAGS_value_size, 1000);
-            WalCheckpoint(db_);
-          } else if (name == Slice("fillrandom")) {
-            Write(write_sync, RANDOM, FRESH, num_, FLAGS_value_size, 1);
-            WalCheckpoint(db_);
-          } else if (name == Slice("fillrandbatch")) {
-            Write(write_sync, RANDOM, FRESH, num_, FLAGS_value_size, 1000);
-            WalCheckpoint(db_);
-          } else if (name == Slice("overwrite")) {
-            Write(write_sync, RANDOM, EXISTING, num_, FLAGS_value_size, 1);
-            WalCheckpoint(db_);
-          } else if (name == Slice("overwritebatch")) {
-            Write(write_sync, RANDOM, EXISTING, num_, FLAGS_value_size, 1000);
-            WalCheckpoint(db_);
-          } else if (name == Slice("fillrandsync")) {
-            write_sync = true;
-            Write(write_sync, RANDOM, FRESH, num_ / 100, FLAGS_value_size, 1);
-            WalCheckpoint(db_);
-          } else if (name == Slice("fillseqsync")) {
-            write_sync = true;
-            Write(write_sync, SEQUENTIAL, FRESH, num_ / 100, FLAGS_value_size, 1);
-            WalCheckpoint(db_);
-          } else if (name == Slice("fillrand100K")) {
-            Write(write_sync, RANDOM, FRESH, num_ / 1000, 100 * 1000, 1);
-            WalCheckpoint(db_);
-          } else if (name == Slice("fillseq100K")) {
-            Write(write_sync, SEQUENTIAL, FRESH, num_ / 1000, 100 * 1000, 1);
-            WalCheckpoint(db_);
-          } else if (name == Slice("readseq")) {
-            ReadSequential();
-          } else if (name == Slice("readrandom")) {
-            Read(RANDOM, 1);
-          } else if (name == Slice("readrand100K")) {
-            int n = reads_;
-            reads_ /= 1000;
-            Read(RANDOM, 1);
-            reads_ = n;
-          } else {
-            known = false;
-            if (name != Slice()) {  // No error message for empty name
-              fprintf(stderr, "unknown benchmark '%s'\n", name.ToString().c_str());
+            if name == "fillseq" {
+                self.write(
+                    write_sync,
+                    benchmark::Order::SEQUENTIAL,
+                    benchmark::DBState::FRESH,
+                    self.num,
+                    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed),
+                    1,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "fillseqbatch" {
+                self.write(
+                    write_sync,
+                    benchmark::Order::SEQUENTIAL,
+                    benchmark::DBState::FRESH,
+                    self.num,
+                    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed),
+                    1000,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "fillrandom" {
+                self.write(
+                    write_sync,
+                    benchmark::Order::RANDOM,
+                    benchmark::DBState::FRESH,
+                    self.num,
+                    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed),
+                    1,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "fillrandbatch" {
+                self.write(
+                    write_sync,
+                    benchmark::Order::RANDOM,
+                    benchmark::DBState::FRESH,
+                    self.num,
+                    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed),
+                    1000,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "overwrite" {
+                self.write(
+                    write_sync,
+                    benchmark::Order::RANDOM,
+                    benchmark::DBState::EXISTING,
+                    self.num,
+                    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed),
+                    1,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "overwritebatch" {
+                self.write(
+                    write_sync,
+                    benchmark::Order::RANDOM,
+                    benchmark::DBState::EXISTING,
+                    self.num,
+                    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed),
+                    1000,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "fillrandsync" {
+                write_sync = true;
+                self.write(
+                    write_sync,
+                    benchmark::Order::RANDOM,
+                    benchmark::DBState::FRESH,
+                    self.num / 100,
+                    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed),
+                    1,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "fillseqsync" {
+                write_sync = true;
+                self.write(
+                    write_sync,
+                    benchmark::Order::SEQUENTIAL,
+                    benchmark::DBState::FRESH,
+                    self.num / 100,
+                    BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.load(Ordering::Relaxed),
+                    1,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "fillrand100K" {
+                self.write(
+                    write_sync,
+                    benchmark::Order::RANDOM,
+                    benchmark::DBState::FRESH,
+                    self.num / 1000,
+                    100 * 1000,
+                    1,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "fillseq100K" {
+                self.write(
+                    write_sync,
+                    benchmark::Order::SEQUENTIAL,
+                    benchmark::DBState::FRESH,
+                    self.num / 1000,
+                    100 * 1000,
+                    1,
+                );
+                wal_checkpoint(self.db as *mut sqlite3_sys::sqlite3);
+            } else if name == "readseq" {
+                self.read_sequential();
+            } else if name == "readrandom" {
+                self.read(benchmark::Order::RANDOM, 1);
+            } else if name == "readrand100K" {
+                let n = self.reads;
+                self.reads /= 1000;
+                self.read(benchmark::Order::RANDOM, 1);
+                self.reads = n;
+            } else {
+                known = false;
+                if !name.is_empty() {
+                    // No error message for empty name
+                    eprintln!("unknown benchmark '{}'", name);
+                }
             }
-          }
-          if (known) {
-            Stop(name);
-          }
+
+            if known {
+                let name_slice = Slice::from_str(name);
+                self.stop(&name_slice);
+            }
         }
-        */
     }
-    
+
     pub fn open(&mut self)  {
-        
-        todo!();
-        /*
-            assert(db_ == nullptr);
+        assert!(self.db.is_null());
 
-        int status;
-        char file_name[100];
-        char* err_msg = nullptr;
-        db_num_++;
+        let file_name = match bitcoinleveldb_bench_sqlite3_get_test_directory() {
+            Some(mut tmp_dir) => {
+                self.db_num += 1;
+                tmp_dir.push_str("/");
+                tmp_dir.push_str(&format!("dbbench_sqlite3-{}.db", self.db_num));
+                tmp_dir
+            }
+            None => {
+                eprintln!("open error: missing test directory");
+                unsafe {
+                    exit(1);
+                }
+            }
+        };
 
-        // Open database
-        std::string tmp_dir;
-        Env::Default()->GetTestDirectory(&tmp_dir);
-        snprintf(file_name, sizeof(file_name), "%s/dbbench_sqlite3-%d.db",
-                 tmp_dir.c_str(), db_num_);
-        status = sqlite3_open(file_name, &db_);
-        if (status) {
-          fprintf(stderr, "open error: %s\n", sqlite3_errmsg(db_));
-          exit(1);
+        let c_file_name = bitcoinleveldb_bench_sqlite3_cstring_or_exit(&file_name);
+
+        unsafe {
+            let mut raw_db: *mut sqlite3_sys::sqlite3 = ptr::null_mut();
+
+            // Open database
+            let status = sqlite3_sys::sqlite3_open(c_file_name.as_ptr(), &mut raw_db);
+            if status != sqlite3_sys::SQLITE_OK {
+                let message = if raw_db.is_null() {
+                    String::from("sqlite3_open failed")
+                } else {
+                    let err_ptr = sqlite3_sys::sqlite3_errmsg(raw_db);
+                    if err_ptr.is_null() {
+                        String::from("sqlite3_open failed")
+                    } else {
+                        CStr::from_ptr(err_ptr).to_string_lossy().into_owned()
+                    }
+                };
+                eprintln!("open error: {}", message);
+                exit(1);
+            }
+
+            self.db = raw_db;
         }
+
+        let raw_db = self.db;
 
         // Change SQLite cache size
-        char cache_size[100];
-        snprintf(cache_size, sizeof(cache_size), "PRAGMA cache_size = %d",
-                 FLAGS_num_pages);
-        status = sqlite3_exec(db_, cache_size, nullptr, nullptr, &err_msg);
-        ExecErrorCheck(status, err_msg);
+        let cache_size = format!(
+            "PRAGMA cache_size = {}",
+            BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_NUM_PAGES.load(Ordering::Relaxed)
+        );
+        bitcoinleveldb_bench_sqlite3_exec_statement(raw_db, &cache_size);
 
         // FLAGS_page_size is defaulted to 1024
-        if (FLAGS_page_size != 1024) {
-          char page_size[100];
-          snprintf(page_size, sizeof(page_size), "PRAGMA page_size = %d",
-                   FLAGS_page_size);
-          status = sqlite3_exec(db_, page_size, nullptr, nullptr, &err_msg);
-          ExecErrorCheck(status, err_msg);
+        if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_PAGE_SIZE.load(Ordering::Relaxed) != 1024 {
+            let page_size = format!(
+                "PRAGMA page_size = {}",
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_PAGE_SIZE.load(Ordering::Relaxed)
+            );
+            bitcoinleveldb_bench_sqlite3_exec_statement(raw_db, &page_size);
         }
 
         // Change journal mode to WAL if WAL enabled flag is on
-        if (FLAGS_WAL_enabled) {
-          std::string WAL_stmt = "PRAGMA journal_mode = WAL";
-
-          // LevelDB's default cache size is a combined 4 MB
-          std::string WAL_checkpoint = "PRAGMA wal_autocheckpoint = 4096";
-          status = sqlite3_exec(db_, WAL_stmt.c_str(), nullptr, nullptr, &err_msg);
-          ExecErrorCheck(status, err_msg);
-          status =
-              sqlite3_exec(db_, WAL_checkpoint.c_str(), nullptr, nullptr, &err_msg);
-          ExecErrorCheck(status, err_msg);
+        if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_WAL_ENABLED.load(Ordering::Relaxed) {
+            let wal_stmt = "PRAGMA journal_mode = WAL";
+            let wal_checkpoint_stmt = "PRAGMA wal_autocheckpoint = 4096";
+            bitcoinleveldb_bench_sqlite3_exec_statement(raw_db, wal_stmt);
+            bitcoinleveldb_bench_sqlite3_exec_statement(raw_db, wal_checkpoint_stmt);
         }
 
         // Change locking mode to exclusive and create tables/index for database
-        std::string locking_stmt = "PRAGMA locking_mode = EXCLUSIVE";
-        std::string create_stmt =
-            "CREATE TABLE test (key blob, value blob, PRIMARY KEY(key))";
-        std::string stmt_array[] = {locking_stmt, create_stmt};
-        int stmt_array_length = sizeof(stmt_array) / sizeof(std::string);
-        for (int i = 0; i < stmt_array_length; i++) {
-          status =
-              sqlite3_exec(db_, stmt_array[i].c_str(), nullptr, nullptr, &err_msg);
-          ExecErrorCheck(status, err_msg);
+        let locking_stmt = "PRAGMA locking_mode = EXCLUSIVE";
+        let create_stmt = "CREATE TABLE test (key blob, value blob, PRIMARY KEY(key))";
+        let stmt_array = [locking_stmt, create_stmt];
+
+        for statement in stmt_array {
+            bitcoinleveldb_bench_sqlite3_exec_statement(raw_db, statement);
         }
-        */
     }
-    
-    pub fn write(&mut self, 
+
+    pub fn write(&mut self,
         write_sync:        bool,
         order:             benchmark::Order,
         state:             benchmark::DBState,
         num_entries:       i32,
         value_size:        i32,
         entries_per_batch: i32)  {
-        
-        todo!();
-        /*
-            // Create new database if state == FRESH
-        if (state == FRESH) {
-          if (FLAGS_use_existing_db) {
-            message_ = "skipping (--use_existing_db is true)";
-            return;
-          }
-          sqlite3_close(db_);
-          db_ = nullptr;
-          Open();
-          Start();
+
+        // Create new database if state == FRESH
+        match state {
+            benchmark::DBState::FRESH => {
+                if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_USE_EXISTING_DB.load(Ordering::Relaxed) {
+                    self.message = String::from("skipping (--use_existing_db is true)");
+                    return;
+                }
+
+                let raw_db = self.db as *mut sqlite3_sys::sqlite3;
+                if !raw_db.is_null() {
+                    unsafe {
+                        let status = sqlite3_sys::sqlite3_close(raw_db);
+                        error_check(status);
+                    }
+                    self.db = ptr::null_mut();
+                }
+
+                self.open();
+                self.start();
+            }
+            benchmark::DBState::EXISTING => {}
         }
 
-        if (num_entries != num_) {
-          char msg[100];
-          snprintf(msg, sizeof(msg), "(%d ops)", num_entries);
-          message_ = msg;
+        if num_entries != self.num {
+            self.message = format!("({} ops)", num_entries);
         }
 
-        char* err_msg = nullptr;
-        int status;
-
-        sqlite3_stmt *replace_stmt, *begin_trans_stmt, *end_trans_stmt;
-        std::string replace_str = "REPLACE INTO test (key, value) VALUES (?, ?)";
-        std::string begin_trans_str = "BEGIN TRANSACTION;";
-        std::string end_trans_str = "END TRANSACTION;";
+        let raw_db = self.db as *mut sqlite3_sys::sqlite3;
 
         // Check for synchronous flag in options
-        std::string sync_stmt =
-            (write_sync) ? "PRAGMA synchronous = FULL" : "PRAGMA synchronous = OFF";
-        status = sqlite3_exec(db_, sync_stmt.c_str(), nullptr, nullptr, &err_msg);
-        ExecErrorCheck(status, err_msg);
+        let sync_stmt = if write_sync {
+            "PRAGMA synchronous = FULL"
+        } else {
+            "PRAGMA synchronous = OFF"
+        };
+        bitcoinleveldb_bench_sqlite3_exec_statement(raw_db, sync_stmt);
 
         // Preparing sqlite3 statements
-        status = sqlite3_prepare_v2(db_, replace_str.c_str(), -1, &replace_stmt,
-                                    nullptr);
-        ErrorCheck(status);
-        status = sqlite3_prepare_v2(db_, begin_trans_str.c_str(), -1,
-                                    &begin_trans_stmt, nullptr);
-        ErrorCheck(status);
-        status = sqlite3_prepare_v2(db_, end_trans_str.c_str(), -1, &end_trans_stmt,
-                                    nullptr);
-        ErrorCheck(status);
+        let replace_stmt = bitcoinleveldb_bench_sqlite3_prepare_statement(
+            raw_db,
+            "REPLACE INTO test (key, value) VALUES (?, ?)",
+        );
+        let begin_trans_stmt = bitcoinleveldb_bench_sqlite3_prepare_statement(
+            raw_db,
+            "BEGIN TRANSACTION;",
+        );
+        let end_trans_stmt = bitcoinleveldb_bench_sqlite3_prepare_statement(
+            raw_db,
+            "END TRANSACTION;",
+        );
 
-        bool transaction = (entries_per_batch > 1);
-        for (int i = 0; i < num_entries; i += entries_per_batch) {
-          // Begin write transaction
-          if (FLAGS_transaction && transaction) {
-            status = sqlite3_step(begin_trans_stmt);
-            StepErrorCheck(status);
-            status = sqlite3_reset(begin_trans_stmt);
-            ErrorCheck(status);
-          }
+        let transaction = entries_per_batch > 1;
+        let mut i = 0_i32;
 
-          // Create and execute SQL statements
-          for (int j = 0; j < entries_per_batch; j++) {
-            const char* value = gen_.Generate(value_size).data();
+        while i < num_entries {
+            // Begin write transaction
+            if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_TRANSACTION.load(Ordering::Relaxed) && transaction {
+                unsafe {
+                    let status = sqlite3_sys::sqlite3_step(begin_trans_stmt);
+                    step_error_check(status);
+                    let reset_status = sqlite3_sys::sqlite3_reset(begin_trans_stmt);
+                    error_check(reset_status);
+                }
+            }
 
-            // Create values for key-value pair
-            const int k =
-                (order == SEQUENTIAL) ? i + j : (rand_.Next() % num_entries);
-            char key[100];
-            snprintf(key, sizeof(key), "%016d", k);
+            // Create and execute SQL statements
+            let mut j = 0_i32;
+            while j < entries_per_batch {
+                let value_slice = self.gen.generate(value_size);
+                let value_bytes = value_slice.as_bytes();
 
-            // Bind KV values into replace_stmt
-            status = sqlite3_bind_blob(replace_stmt, 1, key, 16, SQLITE_STATIC);
-            ErrorCheck(status);
-            status = sqlite3_bind_blob(replace_stmt, 2, value, value_size,
-                                       SQLITE_STATIC);
-            ErrorCheck(status);
+                // Create values for key-value pair
+                let k = match order {
+                    benchmark::Order::SEQUENTIAL => i + j,
+                    benchmark::Order::RANDOM => (self.rand.next() % (num_entries as u32)) as i32,
+                };
 
-            // Execute replace_stmt
-            bytes_ += value_size + strlen(key);
-            status = sqlite3_step(replace_stmt);
-            StepErrorCheck(status);
+                let key = format!("{:016}", k);
+                let key_bytes = key.as_bytes();
 
-            // Reset SQLite statement for another use
-            status = sqlite3_clear_bindings(replace_stmt);
-            ErrorCheck(status);
-            status = sqlite3_reset(replace_stmt);
-            ErrorCheck(status);
+                unsafe {
+                    // Bind KV values into replace_stmt
+                    let bind_key_status = sqlite3_sys::sqlite3_bind_blob(
+                        replace_stmt,
+                        1,
+                        key_bytes.as_ptr() as *const c_void,
+                        16,
+                        None,
+                    );
+                    error_check(bind_key_status);
 
-            FinishedSingleOp();
-          }
+                    let bind_value_status = sqlite3_sys::sqlite3_bind_blob(
+                        replace_stmt,
+                        2,
+                        value_bytes.as_ptr() as *const c_void,
+                        value_size,
+                        None,
+                    );
+                    error_check(bind_value_status);
 
-          // End write transaction
-          if (FLAGS_transaction && transaction) {
-            status = sqlite3_step(end_trans_stmt);
-            StepErrorCheck(status);
-            status = sqlite3_reset(end_trans_stmt);
-            ErrorCheck(status);
-          }
+                    // Execute replace_stmt
+                    self.bytes += i64::from(value_size) + key_bytes.len() as i64;
+                    let step_status = sqlite3_sys::sqlite3_step(replace_stmt);
+                    step_error_check(step_status);
+
+                    // Reset SQLite statement for another use
+                    let clear_status = sqlite3_sys::sqlite3_clear_bindings(replace_stmt);
+                    error_check(clear_status);
+                    let reset_status = sqlite3_sys::sqlite3_reset(replace_stmt);
+                    error_check(reset_status);
+                }
+
+                self.finished_single_op();
+                j += 1;
+            }
+
+            // End write transaction
+            if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_TRANSACTION.load(Ordering::Relaxed) && transaction {
+                unsafe {
+                    let status = sqlite3_sys::sqlite3_step(end_trans_stmt);
+                    step_error_check(status);
+                    let reset_status = sqlite3_sys::sqlite3_reset(end_trans_stmt);
+                    error_check(reset_status);
+                }
+            }
+
+            i += entries_per_batch;
         }
 
-        status = sqlite3_finalize(replace_stmt);
-        ErrorCheck(status);
-        status = sqlite3_finalize(begin_trans_stmt);
-        ErrorCheck(status);
-        status = sqlite3_finalize(end_trans_stmt);
-        ErrorCheck(status);
-        */
+        unsafe {
+            let finalize_replace_status = sqlite3_sys::sqlite3_finalize(replace_stmt);
+            error_check(finalize_replace_status);
+            let finalize_begin_status = sqlite3_sys::sqlite3_finalize(begin_trans_stmt);
+            error_check(finalize_begin_status);
+            let finalize_end_status = sqlite3_sys::sqlite3_finalize(end_trans_stmt);
+            error_check(finalize_end_status);
+        }
     }
     
-    pub fn read(&mut self, 
+    pub fn read(&mut self,
         order:             benchmark::Order,
         entries_per_batch: i32)  {
-        
-        todo!();
-        /*
-            int status;
-        sqlite3_stmt *read_stmt, *begin_trans_stmt, *end_trans_stmt;
 
-        std::string read_str = "SELECT * FROM test WHERE key = ?";
-        std::string begin_trans_str = "BEGIN TRANSACTION;";
-        std::string end_trans_str = "END TRANSACTION;";
+        let raw_db = self.db as *mut sqlite3_sys::sqlite3;
 
         // Preparing sqlite3 statements
-        status = sqlite3_prepare_v2(db_, begin_trans_str.c_str(), -1,
-                                    &begin_trans_stmt, nullptr);
-        ErrorCheck(status);
-        status = sqlite3_prepare_v2(db_, end_trans_str.c_str(), -1, &end_trans_stmt,
-                                    nullptr);
-        ErrorCheck(status);
-        status = sqlite3_prepare_v2(db_, read_str.c_str(), -1, &read_stmt, nullptr);
-        ErrorCheck(status);
+        let begin_trans_stmt = bitcoinleveldb_bench_sqlite3_prepare_statement(
+            raw_db,
+            "BEGIN TRANSACTION;",
+        );
+        let end_trans_stmt = bitcoinleveldb_bench_sqlite3_prepare_statement(
+            raw_db,
+            "END TRANSACTION;",
+        );
+        let read_stmt = bitcoinleveldb_bench_sqlite3_prepare_statement(
+            raw_db,
+            "SELECT * FROM test WHERE key = ?",
+        );
 
-        bool transaction = (entries_per_batch > 1);
-        for (int i = 0; i < reads_; i += entries_per_batch) {
-          // Begin read transaction
-          if (FLAGS_transaction && transaction) {
-            status = sqlite3_step(begin_trans_stmt);
-            StepErrorCheck(status);
-            status = sqlite3_reset(begin_trans_stmt);
-            ErrorCheck(status);
-          }
+        let transaction = entries_per_batch > 1;
+        let mut i = 0_i32;
 
-          // Create and execute SQL statements
-          for (int j = 0; j < entries_per_batch; j++) {
-            // Create key value
-            char key[100];
-            int k = (order == SEQUENTIAL) ? i + j : (rand_.Next() % reads_);
-            snprintf(key, sizeof(key), "%016d", k);
-
-            // Bind key value into read_stmt
-            status = sqlite3_bind_blob(read_stmt, 1, key, 16, SQLITE_STATIC);
-            ErrorCheck(status);
-
-            // Execute read statement
-            while ((status = sqlite3_step(read_stmt)) == SQLITE_ROW) {
+        while i < self.reads {
+            // Begin read transaction
+            if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_TRANSACTION.load(Ordering::Relaxed) && transaction {
+                unsafe {
+                    let status = sqlite3_sys::sqlite3_step(begin_trans_stmt);
+                    step_error_check(status);
+                    let reset_status = sqlite3_sys::sqlite3_reset(begin_trans_stmt);
+                    error_check(reset_status);
+                }
             }
-            StepErrorCheck(status);
 
-            // Reset SQLite statement for another use
-            status = sqlite3_clear_bindings(read_stmt);
-            ErrorCheck(status);
-            status = sqlite3_reset(read_stmt);
-            ErrorCheck(status);
-            FinishedSingleOp();
-          }
+            // Create and execute SQL statements
+            let mut j = 0_i32;
+            while j < entries_per_batch {
+                // Create key value
+                let k = match order {
+                    benchmark::Order::SEQUENTIAL => i + j,
+                    benchmark::Order::RANDOM => (self.rand.next() % (self.reads as u32)) as i32,
+                };
 
-          // End read transaction
-          if (FLAGS_transaction && transaction) {
-            status = sqlite3_step(end_trans_stmt);
-            StepErrorCheck(status);
-            status = sqlite3_reset(end_trans_stmt);
-            ErrorCheck(status);
-          }
+                let key = format!("{:016}", k);
+                let key_bytes = key.as_bytes();
+
+                unsafe {
+                    // Bind key value into read_stmt
+                    let bind_status = sqlite3_sys::sqlite3_bind_blob(
+                        read_stmt,
+                        1,
+                        key_bytes.as_ptr() as *const c_void,
+                        16,
+                        None,
+                    );
+                    error_check(bind_status);
+
+                    // Execute read statement
+                    let mut step_status = sqlite3_sys::SQLITE_ROW;
+                    while step_status == sqlite3_sys::SQLITE_ROW {
+                        step_status = sqlite3_sys::sqlite3_step(read_stmt);
+                    }
+                    step_error_check(step_status);
+
+                    // Reset SQLite statement for another use
+                    let clear_status = sqlite3_sys::sqlite3_clear_bindings(read_stmt);
+                    error_check(clear_status);
+                    let reset_status = sqlite3_sys::sqlite3_reset(read_stmt);
+                    error_check(reset_status);
+                }
+
+                self.finished_single_op();
+                j += 1;
+            }
+
+            // End read transaction
+            if BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_TRANSACTION.load(Ordering::Relaxed) && transaction {
+                unsafe {
+                    let status = sqlite3_sys::sqlite3_step(end_trans_stmt);
+                    step_error_check(status);
+                    let reset_status = sqlite3_sys::sqlite3_reset(end_trans_stmt);
+                    error_check(reset_status);
+                }
+            }
+
+            i += entries_per_batch;
         }
 
-        status = sqlite3_finalize(read_stmt);
-        ErrorCheck(status);
-        status = sqlite3_finalize(begin_trans_stmt);
-        ErrorCheck(status);
-        status = sqlite3_finalize(end_trans_stmt);
-        ErrorCheck(status);
-        */
+        unsafe {
+            let finalize_read_status = sqlite3_sys::sqlite3_finalize(read_stmt);
+            error_check(finalize_read_status);
+            let finalize_begin_status = sqlite3_sys::sqlite3_finalize(begin_trans_stmt);
+            error_check(finalize_begin_status);
+            let finalize_end_status = sqlite3_sys::sqlite3_finalize(end_trans_stmt);
+            error_check(finalize_end_status);
+        }
     }
-    
+
     pub fn read_sequential(&mut self)  {
-        
-        todo!();
-        /*
-            int status;
-        sqlite3_stmt* pStmt;
-        std::string read_str = "SELECT * FROM test ORDER BY key";
+        let raw_db = self.db as *mut sqlite3_sys::sqlite3;
+        let p_stmt = bitcoinleveldb_bench_sqlite3_prepare_statement(
+            raw_db,
+            "SELECT * FROM test ORDER BY key",
+        );
 
-        status = sqlite3_prepare_v2(db_, read_str.c_str(), -1, &pStmt, nullptr);
-        ErrorCheck(status);
-        for (int i = 0; i < reads_ && SQLITE_ROW == sqlite3_step(pStmt); i++) {
-          bytes_ += sqlite3_column_bytes(pStmt, 1) + sqlite3_column_bytes(pStmt, 2);
-          FinishedSingleOp();
+        let mut i = 0_i32;
+        unsafe {
+            while i < self.reads && sqlite3_sys::sqlite3_step(p_stmt) == sqlite3_sys::SQLITE_ROW {
+                self.bytes += i64::from(sqlite3_sys::sqlite3_column_bytes(p_stmt, 1))
+                    + i64::from(sqlite3_sys::sqlite3_column_bytes(p_stmt, 2));
+                self.finished_single_op();
+                i += 1;
+            }
+
+            let finalize_status = sqlite3_sys::sqlite3_finalize(p_stmt);
+            error_check(finalize_status);
         }
-
-        status = sqlite3_finalize(pStmt);
-        ErrorCheck(status);
-        */
     }
 }
 
-pub fn benchdb_bench_sqlite3_main (
-        argc: i32,
-        argv: *mut *mut u8) -> i32 {
-    
-    todo!();
-        /*
-            std::string default_db_path;
-      for (int i = 1; i < argc; i++) {
-        double d;
-        int n;
-        char junk;
-        if (leveldb::Slice(argv[i]).starts_with("--benchmarks=")) {
-          FLAGS_benchmarks = argv[i] + strlen("--benchmarks=");
-        } else if (sscanf(argv[i], "--histogram=%d%c", &n, &junk) == 1 &&
-                   (n == 0 || n == 1)) {
-          FLAGS_histogram = n;
-        } else if (sscanf(argv[i], "--compression_ratio=%lf%c", &d, &junk) == 1) {
-          FLAGS_compression_ratio = d;
-        } else if (sscanf(argv[i], "--use_existing_db=%d%c", &n, &junk) == 1 &&
-                   (n == 0 || n == 1)) {
-          FLAGS_use_existing_db = n;
-        } else if (sscanf(argv[i], "--num=%d%c", &n, &junk) == 1) {
-          FLAGS_num = n;
-        } else if (sscanf(argv[i], "--reads=%d%c", &n, &junk) == 1) {
-          FLAGS_reads = n;
-        } else if (sscanf(argv[i], "--value_size=%d%c", &n, &junk) == 1) {
-          FLAGS_value_size = n;
-        } else if (leveldb::Slice(argv[i]) == leveldb::Slice("--no_transaction")) {
-          FLAGS_transaction = false;
-        } else if (sscanf(argv[i], "--page_size=%d%c", &n, &junk) == 1) {
-          FLAGS_page_size = n;
-        } else if (sscanf(argv[i], "--num_pages=%d%c", &n, &junk) == 1) {
-          FLAGS_num_pages = n;
-        } else if (sscanf(argv[i], "--WAL_enabled=%d%c", &n, &junk) == 1 &&
-                   (n == 0 || n == 1)) {
-          FLAGS_WAL_enabled = n;
-        } else if (strncmp(argv[i], "--db=", 5) == 0) {
-          FLAGS_db = argv[i] + 5;
-        } else {
-          fprintf(stderr, "Invalid flag '%s'\n", argv[i]);
-          exit(1);
+pub fn benchdb_bench_sqlite3_main(
+    argc: i32,
+    argv: *mut *mut u8) -> i32 {
+
+    let mut default_db_path = String::new();
+
+    if !argv.is_null() {
+        let mut i = 1_i32;
+        while i < argc {
+            let arg_ptr = unsafe { *argv.offset(i as isize) };
+            let argument = if arg_ptr.is_null() {
+                String::new()
+            } else {
+                Slice::from(arg_ptr as *const u8).to_string()
+            };
+
+            if let Some(rest) = argument.strip_prefix("--benchmarks=") {
+                bitcoinleveldb_bench_sqlite3_flag_benchmarks_set(rest.to_owned());
+            } else if let Some(value) =
+                bitcoinleveldb_bench_sqlite3_parse_bool01_flag(&argument, "--histogram=")
+            {
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_HISTOGRAM.store(value, Ordering::Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_sqlite3_parse_f64_flag(&argument, "--compression_ratio=")
+            {
+                bitcoinleveldb_bench_sqlite3_flag_compression_ratio_set(value);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_sqlite3_parse_bool01_flag(&argument, "--use_existing_db=")
+            {
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_USE_EXISTING_DB.store(value, Ordering::Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_sqlite3_parse_i32_flag(&argument, "--num=")
+            {
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_NUM.store(value, Ordering::Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_sqlite3_parse_i32_flag(&argument, "--reads=")
+            {
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_READS.store(value, Ordering::Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_sqlite3_parse_i32_flag(&argument, "--value_size=")
+            {
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_VALUE_SIZE.store(value, Ordering::Relaxed);
+            } else if argument == "--no_transaction" {
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_TRANSACTION.store(false, Ordering::Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_sqlite3_parse_i32_flag(&argument, "--page_size=")
+            {
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_PAGE_SIZE.store(value, Ordering::Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_sqlite3_parse_i32_flag(&argument, "--num_pages=")
+            {
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_NUM_PAGES.store(value, Ordering::Relaxed);
+            } else if let Some(value) =
+                bitcoinleveldb_bench_sqlite3_parse_bool01_flag(&argument, "--WAL_enabled=")
+            {
+                BITCOINLEVELDB_BENCH_SQLITE3_FLAGS_WAL_ENABLED.store(value, Ordering::Relaxed);
+            } else if let Some(rest) = argument.strip_prefix("--db=") {
+                bitcoinleveldb_bench_sqlite3_flag_db_path_set(Some(rest.to_owned()));
+            } else {
+                eprintln!("Invalid flag '{}'", argument);
+                unsafe {
+                    exit(1);
+                }
+            }
+
+            i += 1;
         }
-      }
+    }
 
-      // Choose a location for the test database if none given with --db=<path>
-      if (FLAGS_db == nullptr) {
-        leveldb::Env::Default()->GetTestDirectory(&default_db_path);
-        default_db_path += "/dbbench";
-        FLAGS_db = default_db_path.c_str();
-      }
+    // Choose a location for the test database if none given with --db=<path>
+    if bitcoinleveldb_bench_sqlite3_flag_db_path_get().is_none() {
+        match bitcoinleveldb_bench_sqlite3_get_test_directory() {
+            Some(test_directory) => {
+                default_db_path = test_directory;
+                default_db_path.push_str("/dbbench");
+                bitcoinleveldb_bench_sqlite3_flag_db_path_set(Some(default_db_path));
+            }
+            None => {}
+        }
+    }
 
-      leveldb::Benchmark benchmark;
-      benchmark.Run();
-      return 0;
-        */
+    let mut benchmark = Benchmark::default();
+    benchmark.run();
+    0
 }

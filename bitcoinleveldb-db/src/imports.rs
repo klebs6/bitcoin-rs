@@ -32,3 +32,5 @@ mod bitcoinleveldb_db__imports_rs__exhaustive_test_suite {
 }
 pub(crate) use bitcoinleveldb_posixenv::*;
 pub(crate) use bitcoinleveldb_repair::*;
+pub(crate) use bitcoinleveldb_bloom::*;
+pub(crate) use bitcoinleveldb_writebatch::*;

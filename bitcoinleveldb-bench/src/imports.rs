@@ -8,3 +8,7 @@ pub(crate) use bitcoinleveldb_histogram::*;
 pub(crate) use bitcoinleveldb_options::*;
 pub(crate) use bitcoinleveldb_rand::*;
 pub(crate) use bitcoinleveldb_slice::*;
+pub(crate) use bitcoinleveldb_dbinterface::*;
+pub(crate) use atomic::Ordering::Relaxed;
+pub(crate) use bitcoinleveldb_compat::*;
+pub(crate) use bitcoinleveldb_writebatch::*;

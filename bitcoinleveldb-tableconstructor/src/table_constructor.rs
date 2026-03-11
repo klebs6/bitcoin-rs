@@ -3,21 +3,23 @@ crate::ix!();
 
 #[derive(Getters,Setters,MutGetters)]
 #[getset(get="pub",set="pub",get_mut="pub")]
-pub struct TableConstructor {
-    base:   Constructor,
-    // Non‑owning pointer into the in‑memory table data source.
-    // Lifetime is tied to the RandomAccessFile stored inside the Table.
-    source: *mut StringSource,
-    // Owning pointer to the opened Table (allocated in Table::open).
-    table:  *mut Table,
+pub struct TableConstructor  {
+    base:         Constructor,
+    source:       *mut StringSource,
+    source_owner: Option<Rc<RefCell<StringSource>>>,
+    source_bytes: Vec<u8>,
+    table:        *mut Table,
 }
 
 impl Drop for TableConstructor {
+
     fn drop(&mut self) {
         trace!(
-            "TableConstructor::drop: dropping with table={:?}, source={:?}",
+            "TableConstructor::drop: dropping with table={:?}, source={:?}, source_owner_present={}, source_bytes_len={}",
             self.table,
-            self.source
+            self.source,
+            self.source_owner.is_some(),
+            self.source_bytes.len()
         );
         self.reset();
     }
@@ -30,9 +32,11 @@ impl TableConstructor {
             "TableConstructor::new: creating constructor with custom comparator"
         );
         TableConstructor {
-            base:   Constructor::new(cmp),
-            source: core::ptr::null_mut(),
-            table:  core::ptr::null_mut(),
+            base:         Constructor::new(cmp),
+            source:       core::ptr::null_mut(),
+            source_owner: None,
+            source_bytes: Vec::new(),
+            table:        core::ptr::null_mut(),
         }
     }
 
@@ -43,8 +47,8 @@ impl TableConstructor {
                 "TableConstructor::new_iterator: table pointer is null"
             );
 
-            let table_ref = &mut *self.table;
-            let read_options = ReadOptions::default();
+            let table_ref: &mut Table = &mut *self.table;
+            let read_options: ReadOptions = ReadOptions::default();
 
             trace!(
                 "TableConstructor::new_iterator: creating iterator for table @ {:?}",
@@ -62,8 +66,8 @@ impl TableConstructor {
                 "TableConstructor::approximate_offset_of: table pointer is null"
             );
 
-            let table_ref = &*self.table;
-            let off = table_ref.approximate_offset_of(key_);
+            let table_ref: &Table = &*self.table;
+            let off: u64 = table_ref.approximate_offset_of(key_);
 
             trace!(
                 "TableConstructor::approximate_offset_of: key_offset={}",

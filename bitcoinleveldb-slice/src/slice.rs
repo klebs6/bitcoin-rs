@@ -8,7 +8,7 @@ use crate::_core::intrinsics::compare_bytes;
 /// A simple structure containing a pointer into some external storage and a size.
 /// The user of a Slice must ensure that the referenced data is valid
 /// for the lifetime of this struct.
-#[derive(Debug, Getters, Setters)]
+#[derive(Copy,Clone,Debug, Getters, Setters)]
 #[getset(get = "pub", set = "pub")]
 pub struct Slice {
     /// Pointer to the data (not owned here).

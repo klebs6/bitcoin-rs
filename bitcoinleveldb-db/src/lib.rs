@@ -36,23 +36,43 @@ x!{leveldb_write}
 x!{leveldb_writeoptions}
 x!{repairdb}
 x!{save_error}
-#[cfg(test)]
 
+pub(crate) fn bitcoinleveldb_db__make_temp_dbname_bytes(prefix: &str) -> Vec<u8> {
+    let unique_box: Box<u8> = Box::new(0u8);
+    let unique_ptr: *mut u8 = Box::into_raw(unique_box);
+    let unique_tag: usize = unique_ptr as usize;
+
+    unsafe {
+        drop(Box::from_raw(unique_ptr));
+    }
+
+    let mut root: std::path::PathBuf = std::env::temp_dir();
+    root.push("bitcoinleveldb-db");
+
+    let _ = std::fs::create_dir_all(&root);
+
+    root.push(format!("{}_{}", prefix, unique_tag));
+
+    let mut bytes: Vec<u8> = root.to_string_lossy().into_owned().into_bytes();
+    bytes.push(0u8);
+    bytes
+}
+
+#[macro_export]
+macro_rules! bitcoinleveldb_db__define_unique_dbname_bytes_fn {
+    ($name:ident, $prefix:expr) => {
+        fn $name() -> Vec<u8> {
+            $crate::bitcoinleveldb_db__make_temp_dbname_bytes($prefix)
+        }
+    }
+}
+
+#[cfg(test)]
 mod bitcoinleveldb_db__lib_rs__exhaustive_test_suite {
     use super::*;
 
     fn bitcoinleveldb_db__lib_rs__make_unique_dbname_bytes() -> Vec<u8> {
-        let unique_box: Box<u8> = Box::new(0u8);
-        let unique_ptr: *mut u8 = Box::into_raw(unique_box);
-        let unique_tag: usize = unique_ptr as usize;
-        unsafe {
-            drop(Box::from_raw(unique_ptr));
-        }
-
-        let name: String = format!("bitcoinleveldb_db__lib_rs__integration_testdb_{}", unique_tag);
-        let mut bytes: Vec<u8> = name.into_bytes();
-        bytes.push(0u8);
-        bytes
+        crate::bitcoinleveldb_db__make_temp_dbname_bytes("bitcoinleveldb_db__lib_rs__integration_testdb")
     }
 
     unsafe fn bitcoinleveldb_db__lib_rs__free_err_if_non_null(err: *mut u8) {
@@ -68,7 +88,9 @@ mod bitcoinleveldb_db__lib_rs__exhaustive_test_suite {
             assert!(!opt.is_null());
             crate::leveldb_options::leveldb_options_set_create_if_missing(opt, 1u8);
 
-            let dbname_bytes: Vec<u8> = bitcoinleveldb_db__lib_rs__make_unique_dbname_bytes();
+            let dbname_bytes: Vec<u8> =
+                bitcoinleveldb_db__lib_rs__make_unique_dbname_bytes();
+
             let mut oerr: *mut u8 = core::ptr::null_mut();
 
             let db: *mut LevelDB = crate::leveldb_open::leveldb_open(
@@ -140,7 +162,11 @@ mod bitcoinleveldb_db__lib_rs__exhaustive_test_suite {
             crate::leveldb_close::leveldb_close(db);
 
             let mut derr: *mut u8 = core::ptr::null_mut();
-            crate::leveldb_destroy_db::leveldb_destroy_db(opt, dbname_bytes.as_ptr(), (&mut derr) as *mut *mut u8);
+            crate::leveldb_destroy_db::leveldb_destroy_db(
+                opt,
+                dbname_bytes.as_ptr(),
+                (&mut derr) as *mut *mut u8,
+            );
 
             bitcoinleveldb_db__lib_rs__free_err_if_non_null(derr);
             crate::leveldb_options::leveldb_options_destroy(opt);

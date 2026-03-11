@@ -124,19 +124,6 @@ impl CreateFilter for LevelDBFilterPolicy {
             dst_len = dst.len(),
             "LevelDBFilterPolicy::create_filter exit"
         );
-
-        /*
-            std::vector<const char*> key_pointers(n);
-            std::vector<size_t> key_sizes(n);
-            for (int i = 0; i < n; i++) {
-              key_pointers[i] = keys[i].data();
-              key_sizes[i] = keys[i].size();
-            }
-            size_t len;
-            char* filter = (*create_)(state_, &key_pointers[0], &key_sizes[0], n, &len);
-            dst->append(filter, len);
-            free(filter);
-        */
     }
 }
 

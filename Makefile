@@ -41,13 +41,13 @@ NO_FAIL_FAST := --no-fail-fast
 
 #----------------------------------------[active]
 ACTIVE := bitcoinsecp256k1-eccontext
+
+ACTIVE := bitcoinleveldb-bench         #loc: 2997
 ACTIVE := bitcoinleveldb-test          #loc: 3254
 ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
 ACTIVE := bitcoinleveldb-harness       #loc: 297
-ACTIVE := bitcoinleveldb-db            #loc: 1049
 
 # ---[leveldb-layer-3]
-#ACTIVE := bitcoinleveldb-bench         #loc: 2997
 #ACTIVE := bitcoin-leveldb              #loc: 36
 
 #-------------------------------[active-below]
@@ -301,6 +301,10 @@ timings:
 bench:
 	RUSTFLAGS="-Awarnings -C target-cpu=native" $(CARGO) $(BENCH) -p $(ACTIVE)
 
+leveldb_bench: 
+	RUSTFLAGS="-Awarnings -C target-cpu=native" $(CARGO) $(BENCH) -p bitcoinleveldb-bench --bench db_bench -- --benchmarks=fillseq --num=100000 
+	RUSTFLAGS="-Awarnings -C target-cpu=native" $(CARGO) $(BENCH) -p bitcoinleveldb-bench --bench db_bench_sqlite3 -- --benchmarks=fillseq --num=100000
+
 #-------------------------------[done-below]
 #ACTIVE := bitcoin-amt
 #ACTIVE := bitcoin-arena
@@ -457,3 +461,4 @@ bench:
 #ACTIVE := bitcoinleveldb-dbiterstate        #loc: 1883
 #ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 #ACTIVE := bitcoinleveldb-dbconstructor #loc: 99
+#ACTIVE := bitcoinleveldb-db            #loc: 1049

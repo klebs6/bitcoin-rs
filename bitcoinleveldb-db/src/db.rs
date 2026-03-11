@@ -7,29 +7,54 @@ crate::ix!();
 #[derive(Getters)]
 #[getset(get="pub")]
 pub struct LevelDB {
-    rep: Rc<RefCell<DBImpl>>,
+    rep: Rc<RefCell<Box<dyn DB>>>,
 }
 
 impl LevelDB {
-
-    pub fn new(rep: Rc<RefCell<DBImpl>>) -> Self {
-        Self { rep }
+    pub fn new(rep: Box<dyn DB>) -> Self {
+        Self {
+            rep: Rc::new(RefCell::new(rep)),
+        }
     }
 }
 
+#[repr(C)]
 #[derive(Getters)]
 #[getset(get = "pub")]
 pub struct LevelDBSnapshot {
-    db_rep: Rc<RefCell<DBImpl>>,
+    shadow: SnapshotImpl,
+    db_rep: Rc<RefCell<Box<dyn DB>>>,
     snap:   Option<Box<dyn Snapshot>>,
 }
 
 impl LevelDBSnapshot {
+    fn snapshot_shadow_from_option(
+        snap: Option<&Box<dyn Snapshot>>
+    ) -> SnapshotImpl {
+        match snap {
+            Some(s) => unsafe {
+                let p: *const dyn Snapshot = (&**s) as *const dyn Snapshot;
+                let impl_p: *const SnapshotImpl = p as *const SnapshotImpl;
+                core::ptr::read(impl_p)
+            },
+            None => unsafe {
+                core::mem::MaybeUninit::<SnapshotImpl>::zeroed().assume_init()
+            },
+        }
+    }
+
     pub fn new(
-        db_rep: Rc<RefCell<DBImpl>>,
+        db_rep: Rc<RefCell<Box<dyn DB>>>,
         snap:   Option<Box<dyn Snapshot>>
     ) -> Self {
-        Self { db_rep, snap }
+        let shadow: SnapshotImpl =
+            Self::snapshot_shadow_from_option(snap.as_ref());
+
+        Self {
+            shadow,
+            db_rep,
+            snap,
+        }
     }
 }
 
@@ -112,12 +137,6 @@ pub struct LevelDBFileLock {
     rep: Rc<RefCell<Box<dyn FileLock>>>,
 }
 
-#[derive(Default,Getters,MutGetters)]
-#[getset(get="pub",get_mut="pub")]
-pub struct LevelDBWriteBatch {
-    rep: WriteBatch,
-}
-
 ///-----------------
 #[derive(Builder,Getters)]
 #[getset(get="pub")]
@@ -132,17 +151,7 @@ mod bitcoinleveldb_db__db_rs__exhaustive_test_suite {
     use super::*;
 
     fn bitcoinleveldb_db__db_rs__make_unique_dbname_bytes() -> Vec<u8> {
-        let unique_box: Box<u8> = Box::new(0u8);
-        let unique_ptr: *mut u8 = Box::into_raw(unique_box);
-        let unique_tag: usize = unique_ptr as usize;
-        unsafe {
-            drop(Box::from_raw(unique_ptr));
-        }
-
-        let name: String = format!("bitcoinleveldb_db__db_rs__testdb_{}", unique_tag);
-        let mut bytes: Vec<u8> = name.into_bytes();
-        bytes.push(0u8);
-        bytes
+        crate::bitcoinleveldb_db__make_temp_dbname_bytes("bitcoinleveldb_db__db_rs__testdb")
     }
 
     #[traced_test]
@@ -155,11 +164,17 @@ mod bitcoinleveldb_db__db_rs__exhaustive_test_suite {
         let cstr = unsafe { std::ffi::CStr::from_ptr(dbname_cstr as *const core::ffi::c_char) };
         let dbname: String = cstr.to_string_lossy().into_owned();
 
-        let rep: Rc<RefCell<DBImpl>> = Rc::new(RefCell::new(DBImpl::new(&opts, &dbname)));
-        let wrapper: LevelDB = LevelDB::new(rep.clone());
+        let rep: Box<dyn DB> = Box::new(DBImpl::new(&opts, &dbname));
+        let before: *const () = ((&*rep) as &dyn DB) as *const dyn DB as *const ();
 
-        let ok: bool = Rc::ptr_eq(wrapper.rep(), &rep);
-        assert!(ok);
+        let wrapper: LevelDB = LevelDB::new(rep);
+
+        let after: *const () = {
+            let borrowed = wrapper.rep().borrow();
+            ((&**borrowed) as &dyn DB) as *const dyn DB as *const ()
+        };
+
+        assert_eq!(before, after);
     }
 
     #[traced_test]
@@ -172,7 +187,9 @@ mod bitcoinleveldb_db__db_rs__exhaustive_test_suite {
         let cstr = unsafe { std::ffi::CStr::from_ptr(dbname_cstr as *const core::ffi::c_char) };
         let dbname: String = cstr.to_string_lossy().into_owned();
 
-        let rep: Rc<RefCell<DBImpl>> = Rc::new(RefCell::new(DBImpl::new(&opts, &dbname)));
+        let rep: Rc<RefCell<Box<dyn DB>>> =
+            Rc::new(RefCell::new(Box::new(DBImpl::new(&opts, &dbname)) as Box<dyn DB>));
+
         let snap: LevelDBSnapshot = LevelDBSnapshot::new(rep, None);
 
         drop(snap);

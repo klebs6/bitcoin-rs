@@ -13,11 +13,16 @@ impl Harness {
         let raw: *mut Constructor = (tagged & !TAG_MASK) as *mut Constructor;
 
         if raw.is_null() {
+            let released_db_test_execution_guard: bool = self.db_test_execution_guard.is_some();
+
             self.constructor = 0 as *mut Constructor;
+            self.db_test_execution_guard = None;
+
             debug!(
                 target: "bitcoinleveldb_harness",
                 label = "bitcoinleveldb_harness.harness.constructor.dispose.noop",
                 reason = reason,
+                released_db_test_execution_guard = released_db_test_execution_guard,
             );
             return;
         }
@@ -29,6 +34,7 @@ impl Harness {
             tag = tag,
             tag_label = bitcoinleveldb_harness_constructor_tag_machine_label(tag),
             raw_ptr = (raw as usize),
+            db_test_execution_guard_held = self.db_test_execution_guard.is_some(),
         );
 
         unsafe {
@@ -60,12 +66,16 @@ impl Harness {
             }
         }
 
+        let released_db_test_execution_guard: bool = self.db_test_execution_guard.is_some();
+
         self.constructor = 0 as *mut Constructor;
+        self.db_test_execution_guard = None;
 
         debug!(
             target: "bitcoinleveldb_harness",
             label = "bitcoinleveldb_harness.harness.constructor.dispose.end",
             reason = reason,
+            released_db_test_execution_guard = released_db_test_execution_guard,
         );
     }
 }

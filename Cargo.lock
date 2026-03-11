@@ -3072,13 +3072,17 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinleveldb-cache",
+ "bitcoinleveldb-compat",
  "bitcoinleveldb-db",
+ "bitcoinleveldb-dbinterface",
  "bitcoinleveldb-filter",
  "bitcoinleveldb-histogram",
  "bitcoinleveldb-options",
  "bitcoinleveldb-rand",
  "bitcoinleveldb-slice",
- "rust-sqlite",
+ "bitcoinleveldb-writebatch",
+ "sqlite3",
+ "sqlite3-sys",
 ]
 
 [[package]]
@@ -3362,6 +3366,7 @@ dependencies = [
  "bitcoin-derive",
  "bitcoin-imports",
  "bitcoinleveldb-batch",
+ "bitcoinleveldb-bloom",
  "bitcoinleveldb-cache",
  "bitcoinleveldb-comparator",
  "bitcoinleveldb-dbconstructor",
@@ -3379,6 +3384,7 @@ dependencies = [
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",
+ "bitcoinleveldb-writebatch",
  "derive_builder",
  "disable_macro",
  "traced-test",
@@ -3570,11 +3576,20 @@ name = "bitcoinleveldb-dbtest"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-bloom",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-dbconstructor",
  "bitcoinleveldb-dbimpl",
  "bitcoinleveldb-dbinterface",
  "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
  "bitcoinleveldb-filter",
  "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-logtools",
  "bitcoinleveldb-options",
  "bitcoinleveldb-posixenv",
  "bitcoinleveldb-rand",
@@ -3582,6 +3597,7 @@ dependencies = [
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-specialenv",
  "bitcoinleveldb-status",
+ "bitcoinleveldb-test",
  "tracing",
 ]
 
@@ -4488,17 +4504,34 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoin-derive",
  "bitcoin-imports",
+ "bitcoinleveldb-batch",
  "bitcoinleveldb-cache",
  "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
  "bitcoinleveldb-env",
  "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
  "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
  "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
  "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",
  "bitcoinleveldb-table",
  "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
 ]
 
 [[package]]
@@ -4663,6 +4696,7 @@ dependencies = [
  "bitcoin-imports",
  "bitcoinleveldb-batch",
  "bitcoinleveldb-memtable",
+ "bitcoinleveldb-slice",
 ]
 
 [[package]]
@@ -6098,15 +6132,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75030f3c4f45dafd7586dd6780965a8c7e8e285a5ecb86713e63a79c5b2766f3"
 dependencies = [
  "cfg-if",
-]
-
-[[package]]
-name = "enum_primitive"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "be4551092f4d519593039259a9ed8daedf0da12e5109c5280338073eaeb81180"
-dependencies = [
- "num-traits 0.1.43",
 ]
 
 [[package]]
@@ -7896,18 +7921,6 @@ dependencies = [
  "memoffset 0.9.1",
  "rustc-hash 1.1.0",
  "text-size",
-]
-
-[[package]]
-name = "rust-sqlite"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b7bfffcb0c817390ec867e7ee898c13767322ca1f63af7a916c6fc5cb51885d3"
-dependencies = [
- "bitflags 0.1.1",
- "enum_primitive",
- "libc",
- "time 0.1.45",
 ]
 
 [[package]]

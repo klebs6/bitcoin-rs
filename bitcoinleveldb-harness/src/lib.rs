@@ -15,3 +15,4 @@ x!{test_forward_scan}
 x!{test_random_access}
 x!{test}
 x!{to_string}
+x!{global_state}

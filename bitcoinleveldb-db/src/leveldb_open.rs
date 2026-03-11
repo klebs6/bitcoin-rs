@@ -36,9 +36,36 @@ pub fn leveldb_open(
             "leveldb_open dbname parsed"
         );
 
-        let rep: Rc<RefCell<DBImpl>> = Rc::new(RefCell::new(DBImpl::new(opts, &dbname)));
+        let mut opener: DBImpl = DBImpl::new(opts, &dbname);
+        let mut out: *mut dyn DB = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
 
-        let result = Box::new(LevelDB::new(rep));
+        let status: crate::Status =
+            bitcoinleveldb_dbinterface::DBOpen::open(&mut opener, opts, &dbname, (&mut out) as *mut *mut dyn DB);
+
+        if save_error(errptr, &status) {
+            warn!(
+                target: "bitcoinleveldb_db::c_api",
+                dbname = %dbname,
+                status = %status.to_string(),
+                "leveldb_open failed"
+            );
+            return core::ptr::null_mut();
+        }
+
+        if out.is_null() {
+            error!(
+                target: "bitcoinleveldb_db::c_api",
+                dbname = %dbname,
+                "leveldb_open succeeded but returned null db pointer"
+            );
+            let msg = Slice::from_str("leveldb_open: DBOpen::open returned null db on success");
+            let s = crate::Status::corruption(&msg, None);
+            let _ = save_error(errptr, &s);
+            return core::ptr::null_mut();
+        }
+
+        let boxed_db: Box<dyn DB> = Box::from_raw(out);
+        let result = Box::new(LevelDB::new(boxed_db));
         let p = Box::into_raw(result);
 
         info!(
@@ -50,7 +77,6 @@ pub fn leveldb_open(
 
         p
     }
-
 }
 
 #[cfg(test)]
@@ -58,24 +84,15 @@ mod bitcoinleveldb_db__leveldb_open_rs__exhaustive_test_suite {
     use super::*;
 
     fn bitcoinleveldb_db__leveldb_open_rs__make_unique_dbname_bytes() -> Vec<u8> {
-        let unique_box: Box<u8> = Box::new(0u8);
-        let unique_ptr: *mut u8 = Box::into_raw(unique_box);
-        let unique_tag: usize = unique_ptr as usize;
-        unsafe {
-            drop(Box::from_raw(unique_ptr));
-        }
-
-        let name: String = format!("bitcoinleveldb_db__open_rs__testdb_{}", unique_tag);
-        let mut bytes: Vec<u8> = name.into_bytes();
-        bytes.push(0u8);
-        bytes
+        crate::bitcoinleveldb_db__make_temp_dbname_bytes("bitcoinleveldb_db__open_rs__testdb")
     }
 
     #[traced_test]
     fn bitcoinleveldb_db__leveldb_open_rs__null_inputs_set_error_and_return_null() {
         unsafe {
             let mut err: *mut u8 = core::ptr::null_mut();
-            let db: *mut LevelDB = leveldb_open(core::ptr::null(), core::ptr::null(), (&mut err) as *mut *mut u8);
+            let db: *mut LevelDB =
+                leveldb_open(core::ptr::null(), core::ptr::null(), (&mut err) as *mut *mut u8);
             assert!(db.is_null());
             assert!(!err.is_null());
             crate::leveldb_free::leveldb_free(err as *mut core::ffi::c_void);
@@ -89,7 +106,8 @@ mod bitcoinleveldb_db__leveldb_open_rs__exhaustive_test_suite {
             assert!(!options.is_null());
             crate::leveldb_options::leveldb_options_set_create_if_missing(options, 1u8);
 
-            let dbname_bytes: Vec<u8> = bitcoinleveldb_db__leveldb_open_rs__make_unique_dbname_bytes();
+            let dbname_bytes: Vec<u8> =
+                bitcoinleveldb_db__leveldb_open_rs__make_unique_dbname_bytes();
 
             let mut err: *mut u8 = core::ptr::null_mut();
             let db: *mut LevelDB =

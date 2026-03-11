@@ -6,6 +6,7 @@ use bitcoinleveldb_iterator::{LevelDBIterator, MockStubIterator};
 use bitcoinleveldb_rand::Random;
 use bitcoinleveldb_slice::*;
 use bitcoinleveldb_dbimplinner::*;
+use bitcoinleveldb_comparator::*;
 use bitcoinleveldb_block::*;
 use bitcoinleveldb_blockcontents::*;
 use bitcoinleveldb_iteratorinner::*;

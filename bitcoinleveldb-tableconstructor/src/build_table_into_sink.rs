@@ -4,10 +4,7 @@ crate::ix!();
 /// Build an sstable into an in‑memory `StringSink` using a `TableBuilder`.
 ///
 /// Returns `(status, sink, file_size_bytes)`.
-pub(crate) fn build_table_into_sink(
-    options: &Options,
-    data:    &KVMap,
-) -> (crate::Status, StringSink, u64) {
+pub(crate) fn build_table_into_sink(options: &Options, data: &KVMap) -> (crate::Status, StringSink, u64) {
     // Build table into an in‑memory StringSink.
     let mut sink = StringSink::new();
 
@@ -15,14 +12,23 @@ pub(crate) fn build_table_into_sink(
 
     let mut builder = TableBuilder::new(options, file_ptr);
 
-    // Ensure keys are presented to TableBuilder in strictly increasing order.
-    // This is required by the underlying LevelDB table builder.
+    // Ensure keys are presented to TableBuilder in strictly increasing order
+    // according to the active comparator. This must remain comparator-driven,
+    // not UTF-8 lexical-order driven, so reverse-comparator harness cases keep
+    // the original LevelDB ordering contract.
+    let comparator: &Arc<dyn SliceComparator> = options.comparator();
+
     let mut entries: Vec<(&String, &String)> = data.iter().collect();
-    entries.sort_by(|(k1, _), (k2, _)| k1.cmp(k2));
+    entries.sort_by(|(k1, _), (k2, _)| {
+        let key1: Slice = Slice::from(k1.as_bytes());
+        let key2: Slice = Slice::from(k2.as_bytes());
+        let cmp: i32 = comparator.compare(&key1, &key2);
+        cmp.cmp(&0)
+    });
 
     for (k, v) in entries.into_iter() {
-        let key_slice   = Slice::from(k.as_bytes());
-        let value_slice = Slice::from(v.as_bytes());
+        let key_slice: Slice = Slice::from(k.as_bytes());
+        let value_slice: Slice = Slice::from(v.as_bytes());
 
         trace!(
             "build_table_into_sink: adding entry key_len={}, value_len={}",
@@ -47,7 +53,7 @@ pub(crate) fn build_table_into_sink(
         }
     }
 
-    let mut status = builder.finish();
+    let status: crate::Status = builder.finish();
 
     trace!(
         "build_table_into_sink: builder.finish status_ok={}, file_size={}",
@@ -63,10 +69,10 @@ pub(crate) fn build_table_into_sink(
     }
 
     // Logical table size as reported by the TableBuilder.
-    let file_size_bytes = builder.file_size();
+    let file_size_bytes: u64 = builder.file_size();
 
     // Physical backing buffer size.
-    let sink_size = sink.contents().len() as u64;
+    let sink_size: u64 = sink.contents().len() as u64;
 
     // In practice, StringSink may contain pre‑existing data or additional
     // bookkeeping bytes. The TableBuilder's file_size tracks the logical

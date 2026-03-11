@@ -4,3 +4,4 @@
 pub(crate) use bitcoin_imports::*;
 pub(crate) use bitcoinleveldb_batch::*;
 pub(crate) use bitcoinleveldb_memtable::*;
+pub(crate) use bitcoinleveldb_slice::*;

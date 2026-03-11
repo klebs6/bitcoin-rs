@@ -83,9 +83,29 @@ pub fn leveldb_filterpolicy_destroy(filter: *mut LevelDBFilterPolicy) {
 mod bitcoinleveldb_db__leveldb_filterpolicy_create_bloom_rs__exhaustive_test_suite {
     use super::*;
 
-    #[test]
-    #[should_panic]
-    fn bitcoinleveldb_db__leveldb_filterpolicy_create_bloom_rs__panics_until_implemented() {
-        let _p: *mut LevelDBFilterPolicy = leveldb_filterpolicy_create_bloom(10);
+    #[traced_test]
+    fn bitcoinleveldb_db__leveldb_filterpolicy_create_bloom_rs__builtin_bloom_policy_is_constructible_and_usable() {
+        unsafe {
+            let policy: *mut LevelDBFilterPolicy = leveldb_filterpolicy_create_bloom(10);
+            assert!(!policy.is_null());
+
+            let pref: &LevelDBFilterPolicy = &*policy;
+            let name = Named::name(pref);
+            assert_eq!(name.as_ref(), "leveldb.BuiltinBloomFilter2");
+
+            let key_buf = b"alpha";
+            let key = Slice::from_ptr_len(key_buf.as_ptr(), key_buf.len());
+            let key2 = Slice::from_ptr_len(key_buf.as_ptr(), key_buf.len());
+            let keys = vec![key];
+
+            let mut filter = Vec::<u8>::new();
+            CreateFilter::create_filter(pref, keys.as_ptr(), 1, &mut filter);
+            assert!(!filter.is_empty());
+
+            let filter_slice = Slice::from_ptr_len(filter.as_ptr(), filter.len());
+            assert!(KeyMayMatch::key_may_match(pref, &key2, &filter_slice));
+
+            leveldb_filterpolicy_destroy(policy);
+        }
     }
 }

@@ -28,6 +28,8 @@ bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
 bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair" }
+bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom" }
+bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

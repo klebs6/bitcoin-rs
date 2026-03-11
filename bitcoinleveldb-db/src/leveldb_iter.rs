@@ -113,17 +113,7 @@ mod bitcoinleveldb_db__leveldb_iter_rs__exhaustive_test_suite {
     use super::*;
 
     fn bitcoinleveldb_db__leveldb_iter_rs__make_unique_dbname_bytes() -> Vec<u8> {
-        let unique_box: Box<u8> = Box::new(0u8);
-        let unique_ptr: *mut u8 = Box::into_raw(unique_box);
-        let unique_tag: usize = unique_ptr as usize;
-        unsafe {
-            drop(Box::from_raw(unique_ptr));
-        }
-
-        let name: String = format!("bitcoinleveldb_db__iter_rs__testdb_{}", unique_tag);
-        let mut bytes: Vec<u8> = name.into_bytes();
-        bytes.push(0u8);
-        bytes
+        crate::bitcoinleveldb_db__make_temp_dbname_bytes("bitcoinleveldb_db__iter_rs__testdb")
     }
 
     unsafe fn bitcoinleveldb_db__leveldb_iter_rs__free_err_if_non_null(err: *mut u8) {
@@ -158,7 +148,9 @@ mod bitcoinleveldb_db__leveldb_iter_rs__exhaustive_test_suite {
             assert!(!options.is_null());
             crate::leveldb_options::leveldb_options_set_create_if_missing(options, 1u8);
 
-            let dbname_bytes: Vec<u8> = bitcoinleveldb_db__leveldb_iter_rs__make_unique_dbname_bytes();
+            let dbname_bytes: Vec<u8> =
+                bitcoinleveldb_db__leveldb_iter_rs__make_unique_dbname_bytes();
+
             let mut oerr: *mut u8 = core::ptr::null_mut();
 
             let db: *mut LevelDB = crate::leveldb_open::leveldb_open(
@@ -203,7 +195,8 @@ mod bitcoinleveldb_db__leveldb_iter_rs__exhaustive_test_suite {
             );
             assert!(perr.is_null());
 
-            let it: *mut LevelDBIterator = crate::leveldb_create_iterator::leveldb_create_iterator(db, ropt);
+            let it: *mut LevelDBIterator =
+                crate::leveldb_create_iterator::leveldb_create_iterator(db, ropt);
             assert!(!it.is_null());
 
             crate::leveldb_iter_seek::leveldb_iter_seek_to_first(it);
@@ -212,7 +205,8 @@ mod bitcoinleveldb_db__leveldb_iter_rs__exhaustive_test_suite {
             assert_eq!(valid0, 1u8);
 
             let mut klen0: usize = 0usize;
-            let kptr0: *const u8 = leveldb_iter_key(it as *const LevelDBIterator, (&mut klen0) as *mut usize);
+            let kptr0: *const u8 =
+                leveldb_iter_key(it as *const LevelDBIterator, (&mut klen0) as *mut usize);
             assert!(!kptr0.is_null());
             assert_eq!(klen0, 2usize);
 
@@ -220,7 +214,8 @@ mod bitcoinleveldb_db__leveldb_iter_rs__exhaustive_test_suite {
             assert_eq!(kbytes0.as_slice(), k1.as_slice());
 
             let mut vlen0: usize = 0usize;
-            let vptr0: *const u8 = leveldb_iter_value(it as *const LevelDBIterator, (&mut vlen0) as *mut usize);
+            let vptr0: *const u8 =
+                leveldb_iter_value(it as *const LevelDBIterator, (&mut vlen0) as *mut usize);
             assert!(!vptr0.is_null());
             assert_eq!(vlen0, 2usize);
 
@@ -233,7 +228,8 @@ mod bitcoinleveldb_db__leveldb_iter_rs__exhaustive_test_suite {
             assert_eq!(valid1, 1u8);
 
             let mut klen1: usize = 0usize;
-            let kptr1: *const u8 = leveldb_iter_key(it as *const LevelDBIterator, (&mut klen1) as *mut usize);
+            let kptr1: *const u8 =
+                leveldb_iter_key(it as *const LevelDBIterator, (&mut klen1) as *mut usize);
             assert!(!kptr1.is_null());
 
             let kbytes1: Vec<u8> = core::slice::from_raw_parts(kptr1, klen1).to_vec();

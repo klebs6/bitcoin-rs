@@ -1,6 +1,42 @@
 // ---------------- [ File: bitcoinleveldb-test/src/recovery_test.rs ]
 crate::ix!();
 
+struct BitcoinLevelDbTestRecoveryWritableFileRcAdapter {
+    inner: Box<dyn WritableFile>,
+}
+
+impl Named for BitcoinLevelDbTestRecoveryWritableFileRcAdapter {
+    fn name(&self) -> Cow<'_,str> {
+        self.inner.name()
+    }
+}
+
+impl WritableFileAppend for BitcoinLevelDbTestRecoveryWritableFileRcAdapter {
+    fn append(&mut self, data: &Slice) -> crate::Status {
+        self.inner.append(data)
+    }
+}
+
+impl WritableFileClose for BitcoinLevelDbTestRecoveryWritableFileRcAdapter {
+    fn close(&mut self) -> crate::Status {
+        self.inner.close()
+    }
+}
+
+impl WritableFileFlush for BitcoinLevelDbTestRecoveryWritableFileRcAdapter {
+    fn flush(&mut self) -> crate::Status {
+        self.inner.flush()
+    }
+}
+
+impl WritableFileSync for BitcoinLevelDbTestRecoveryWritableFileRcAdapter {
+    fn sync(&mut self) -> crate::Status {
+        self.inner.sync()
+    }
+}
+
+impl WritableFile for BitcoinLevelDbTestRecoveryWritableFileRcAdapter { }
+
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/recovery_test.cc]
 
 struct RecoveryTest {
@@ -10,471 +46,838 @@ struct RecoveryTest {
 }
 
 impl Default for RecoveryTest {
-    
     fn default() -> Self {
-        todo!();
-        /*
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_default_entry"
+        );
 
+        let env = posix_default_env();
+        let dbname = format!("{}/recovery_test", crate::harness::tmp_dir());
+        let _ = destroydb(&dbname, &Options::default());
 
-            : env_(Env::Default()), db_(nullptr) 
+        let mut out = Self {
+            dbname,
+            env,
+            db: core::ptr::null_mut::<DBImpl>() as *mut dyn DB,
+        };
 
-        dbname_ = test::TmpDir() + "/recovery_test";
-        DestroyDB(dbname_, Options());
-        Open();
-        */
+        out.open(None);
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_default_exit",
+            db_is_null = out.db.is_null()
+        );
+
+        out
     }
 }
 
 impl Drop for RecoveryTest {
     fn drop(&mut self) {
-        todo!();
-        /*
-            Close();
-        DestroyDB(dbname_, Options());
-        */
+        debug!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_drop_entry",
+            db_is_null = self.db.is_null()
+        );
+
+        self.close();
+        let _ = destroydb(&self.dbname, &Options::default());
+
+        debug!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_drop_exit"
+        );
     }
 }
 
 impl RecoveryTest {
 
     pub fn dbfull(&self) -> *mut DBImpl {
-        
-        todo!();
-        /*
-            return reinterpret_cast<DBImpl*>(db_);
-        */
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_dbfull_entry",
+            db_is_null = self.db.is_null()
+        );
+
+        let out = (self.db as *mut ()) as *mut DBImpl;
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_dbfull_exit",
+            dbimpl_is_null = out.is_null()
+        );
+
+        out
     }
     
     pub fn env(&self) -> Rc<RefCell<dyn Env>> {
-        
-        todo!();
-        /*
-            return env_;
-        */
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_env_entry"
+        );
+
+        let out = Rc::clone(&self.env);
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_env_exit",
+            strong_count = Rc::strong_count(&out)
+        );
+
+        out
     }
-    
+
     pub fn can_append(&mut self) -> bool {
-        
-        todo!();
-        /*
-            WritableFile* tmp;
-        Status s = env_->NewAppendableFile(CurrentFileName(dbname_), &tmp);
-        delete tmp;
-        if (s.IsNotSupportedError()) {
-          return false;
-        } else {
-          return true;
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_can_append_entry"
+        );
+
+        let current = current_file_name(&self.dbname);
+        let mut tmp: *mut Box<dyn WritableFile> = core::ptr::null_mut();
+
+        let status = self.env.borrow_mut().new_appendable_file(
+            &current,
+            (&mut tmp) as *mut *mut Box<dyn WritableFile>,
+        );
+
+        if !tmp.is_null() {
+            let mut tmp_holder: Box<Box<dyn WritableFile>> = unsafe {
+                Box::from_raw(tmp)
+            };
+            let tmp_ref: &mut Box<dyn WritableFile> = tmp_holder.as_mut();
+            let _ = tmp_ref.close();
         }
-        */
+
+        let out = if status.is_not_supported_error() {
+            false
+        } else {
+            true
+        };
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_can_append_exit",
+            status_ok = status.is_ok(),
+            status_not_supported = status.is_not_supported_error(),
+            result = out
+        );
+
+        out
     }
-    
-    pub fn close(&mut self)  {
-        
-        todo!();
-        /*
-            delete db_;
-        db_ = nullptr;
-        */
+
+    pub fn close(&mut self) {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_close_entry",
+            db_is_null = self.db.is_null()
+        );
+
+        if !self.db.is_null() {
+            unsafe {
+                drop(Box::from_raw(self.db));
+            }
+            self.db = core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
+        }
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_close_exit",
+            db_is_null = self.db.is_null()
+        );
     }
-    
+   
     pub fn open_with_status(&mut self, options: Option<*mut Options>) -> crate::Status {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_open_with_status_entry",
+            dbname = %self.dbname,
+            has_options = options.is_some()
+        );
 
-        todo!();
-        /*
-            Close();
-        Options opts;
-        if (options != nullptr) {
-          opts = *options;
-        } else {
-          opts.reuse_logs = true;  // TODO(sanjay): test both ways
-          opts.create_if_missing = true;
-        }
-        if (opts.env == nullptr) {
-          opts.env = env_;
-        }
-        return DB::Open(opts, dbname_, &db_);
-        */
-    }
-    
-    pub fn open(&mut self, options: Option<*mut Options>)  {
+        self.close();
 
-        todo!();
-        /*
-            ASSERT_OK(OpenWithStatus(options));
-        ASSERT_EQ(1, NumLogs());
-        */
+        let mut opts = match options {
+            Some(ptr) => unsafe { (*ptr).clone() },
+            None => {
+                let mut default_opts = Options::default();
+                default_opts.set_reuse_logs(true);
+                default_opts.set_create_if_missing(true);
+                default_opts
+            }
+        };
+
+        if opts.env().is_none() {
+            opts.set_env(Some(Rc::clone(&self.env)));
+        }
+
+        let mut opener = DBImpl::new(&opts, &self.dbname);
+        let status = opener.open(
+            &opts,
+            &self.dbname,
+            (&mut self.db) as *mut *mut dyn DB,
+        );
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_open_with_status_exit",
+            ok = status.is_ok(),
+            db_is_null = self.db.is_null()
+        );
+
+        status
     }
-    
-    pub fn put(&mut self, 
+
+    pub fn open(&mut self, options: Option<*mut Options>) {
+        let status = self.open_with_status(options);
+        assert!(status.is_ok());
+        assert_eq!(1i32, self.num_logs());
+    }
+   
+    pub fn put(
+        &mut self,
         k: &String,
-        v: &String) -> crate::Status {
-        
-        todo!();
-        /*
-            return db_->Put(WriteOptions(), k, v);
-        */
+        v: &String,
+    ) -> crate::Status {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_put_entry",
+            key_len = k.len(),
+            value_len = v.len()
+        );
+
+        let status = unsafe {
+            (&mut *self.db).put(
+                &WriteOptions::default(),
+                &Slice::from(k),
+                &Slice::from(v),
+            )
+        };
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_put_exit",
+            ok = status.is_ok()
+        );
+
+        status
     }
-    
-    pub fn get(&mut self, 
+   
+    pub fn get(
+        &mut self,
         k:        &String,
-        snapshot: Option<*const dyn Snapshot>) -> String {
+        snapshot: Option<*const dyn Snapshot>,
+    ) -> String {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_get_entry",
+            key_len = k.len(),
+            has_snapshot = snapshot.is_some()
+        );
 
-        todo!();
-        /*
-            std::string result;
-        Status s = db_->Get(ReadOptions(), k, &result);
-        if (s.IsNotFound()) {
-          result = "NOT_FOUND";
-        } else if (!s.ok()) {
-          result = s.ToString();
+        let mut result = String::new();
+        let s = unsafe {
+            (&mut *self.db).get(
+                &ReadOptions::default(),
+                &Slice::from(k),
+                (&mut result) as *mut String,
+            )
+        };
+
+        if s.is_not_found() {
+            result = "NOT_FOUND".to_string();
+        } else if !s.is_ok() {
+            result = s.to_string();
         }
-        return result;
-        */
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_get_exit",
+            result_len = result.len()
+        );
+
+        result
     }
-    
+
     pub fn manifest_file_name(&mut self) -> String {
-        
-        todo!();
-        /*
-            std::string current;
-        ASSERT_OK(ReadFileToString(env_, CurrentFileName(dbname_), &current));
-        size_t len = current.size();
-        if (len > 0 && current[len - 1] == '\n') {
-          current.resize(len - 1);
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_manifest_file_name_entry"
+        );
+
+        let current_file = current_file_name(&self.dbname);
+        let mut current = String::new();
+        let status = read_file_to_string(
+            Rc::clone(&self.env),
+            &current_file,
+            (&mut current) as *mut String,
+        );
+
+        assert!(status.is_ok());
+
+        if current.ends_with('\n') {
+            let _ = current.pop();
         }
-        return dbname_ + "/" + current;
-        */
-    }
-    
-    pub fn log_name(&mut self, number: u64) -> String {
-        
-        todo!();
-        /*
-            return LogFileName(dbname_, number);
-        */
-    }
-    
-    pub fn delete_log_files(&mut self) -> usize {
-        
-        todo!();
-        /*
-            // Linux allows unlinking open files, but Windows does not.
-        // Closing the db allows for file deletion.
-        Close();
-        std::vector<uint64_t> logs = GetFiles(kLogFile);
-        for (size_t i = 0; i < logs.size(); i++) {
-          ASSERT_OK(env_->DeleteFile(LogName(logs[i]))) << LogName(logs[i]);
-        }
-        return logs.size();
-        */
-    }
-    
-    pub fn delete_manifest_file(&mut self)  {
-        
-        todo!();
-        /*
-            ASSERT_OK(env_->DeleteFile(ManifestFileName()));
-        */
-    }
-    
-    pub fn first_log_file(&mut self) -> u64 {
-        
-        todo!();
-        /*
-            return GetFiles(kLogFile)[0];
-        */
-    }
-    
-    pub fn get_files(&mut self, t: FileType) -> Vec<u64> {
-        
-        todo!();
-        /*
-            std::vector<std::string> filenames;
-        ASSERT_OK(env_->GetChildren(dbname_, &filenames));
-        std::vector<uint64_t> result;
-        for (size_t i = 0; i < filenames.size(); i++) {
-          uint64_t number;
-          FileType type;
-          if (ParseFileName(filenames[i], &number, &type) && type == t) {
-            result.push_back(number);
-          }
-        }
-        return result;
-        */
-    }
-    
-    pub fn num_logs(&mut self) -> i32 {
-        
-        todo!();
-        /*
-            return GetFiles(kLogFile).size();
-        */
-    }
-    
-    pub fn num_tables(&mut self) -> i32 {
-        
-        todo!();
-        /*
-            return GetFiles(kTableFile).size();
-        */
-    }
-    
-    pub fn file_size(&mut self, fname: &String) -> u64 {
-        
-        todo!();
-        /*
-            uint64_t result;
-        ASSERT_OK(env_->GetFileSize(fname, &result)) << fname;
-        return result;
-        */
-    }
-    
-    pub fn compact_mem_table(&mut self)  {
-        
-        todo!();
-        /*
-            dbfull()->TEST_CompactMemTable();
-        */
+
+        let out = format!("{}/{}", self.dbname, current);
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_manifest_file_name_exit",
+            manifest = %out
+        );
+
+        out
     }
 
-    /**
-      | Directly construct a log file that sets
-      | key to val.
-      |
-      */
-    pub fn make_log_file(&mut self, 
+    pub fn log_name(&mut self, number: u64) -> String {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_log_name_entry",
+            number = number
+        );
+
+        let out = log_file_name(&self.dbname, number);
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_log_name_exit",
+            filename = %out
+        );
+
+        out
+    }
+
+    pub fn delete_log_files(&mut self) -> usize {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_delete_log_files_entry"
+        );
+
+        // Linux allows unlinking open files, but Windows does not.
+        // Closing the db allows for file deletion.
+        self.close();
+
+        let logs = self.get_files(FileType::LogFile);
+
+        for number in logs.iter() {
+            let fname = self.log_name(*number);
+            let status = self.env.borrow_mut().delete_file(&fname);
+            assert!(status.is_ok());
+        }
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_delete_log_files_exit",
+            deleted = logs.len()
+        );
+
+        logs.len()
+    }
+
+    pub fn delete_manifest_file(&mut self) {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_delete_manifest_file_entry"
+        );
+
+        let manifest = self.manifest_file_name();
+        let status = self.env.borrow_mut().delete_file(&manifest);
+        assert!(status.is_ok());
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_delete_manifest_file_exit"
+        );
+    }
+
+    pub fn first_log_file(&mut self) -> u64 {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_first_log_file_entry"
+        );
+
+        let out = self.get_files(FileType::LogFile)[0];
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_first_log_file_exit",
+            number = out
+        );
+
+        out
+    }
+   
+    pub fn get_files(&mut self, t: FileType) -> Vec<u64> {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_get_files_entry"
+        );
+
+        let mut filenames: Vec<String> = Vec::new();
+        let status = self.env.borrow_mut().get_children(
+            &self.dbname,
+            (&mut filenames) as *mut Vec<String>,
+        );
+
+        assert!(status.is_ok());
+
+        let mut result: Vec<u64> = Vec::new();
+
+        for filename in filenames.iter() {
+            let mut number: u64 = 0u64;
+            let mut ty = FileType::TempFile;
+
+            if parse_file_name(
+                filename,
+                (&mut number) as *mut u64,
+                (&mut ty) as *mut FileType,
+            ) && core::mem::discriminant(&ty) == core::mem::discriminant(&t)
+            {
+                result.push(number);
+            }
+        }
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_get_files_exit",
+            count = result.len()
+        );
+
+        result
+    }
+   
+    pub fn num_logs(&mut self) -> i32 {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_num_logs_entry"
+        );
+
+        let out = self.get_files(FileType::LogFile).len() as i32;
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_num_logs_exit",
+            count = out
+        );
+
+        out
+    }
+
+    pub fn num_tables(&mut self) -> i32 {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_num_tables_entry"
+        );
+
+        let out = self.get_files(FileType::TableFile).len() as i32;
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_num_tables_exit",
+            count = out
+        );
+
+        out
+    }
+
+    pub fn file_size(&mut self, fname: &String) -> u64 {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_file_size_entry",
+            filename = %fname
+        );
+
+        let mut result: u64 = 0u64;
+        let status = self.env.borrow_mut().get_file_size(
+            fname,
+            (&mut result) as *mut u64,
+        );
+
+        assert!(status.is_ok());
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_file_size_exit",
+            filename = %fname,
+            size = result
+        );
+
+        result
+    }
+    
+    pub fn compact_mem_table(&mut self) {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_compact_mem_table_entry"
+        );
+
+        let status = unsafe { (&mut *self.dbfull()).test_compact_mem_table() };
+        assert!(status.is_ok());
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_compact_mem_table_exit",
+            ok = status.is_ok()
+        );
+    }
+
+    /// Directly construct a log file that sets key to val.
+    ///
+    pub fn make_log_file(
+        &mut self,
         lognum: u64,
         seq:    SequenceNumber,
         key_:   Slice,
-        val:    Slice)  {
-        
-        todo!();
-        /*
-            std::string fname = LogFileName(dbname_, lognum);
-        WritableFile* file;
-        ASSERT_OK(env_->NewWritableFile(fname, &file));
-        LogWriter writer(file);
-        WriteBatch batch;
-        batch.Put(key, val);
-        WriteBatchInternal::SetSequence(&batch, seq);
-        ASSERT_OK(writer.AddRecord(WriteBatchInternal::Contents(&batch)));
-        ASSERT_OK(file->Flush());
-        delete file;
-        */
+        val:    Slice,
+    ) {
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_make_log_file_entry",
+            lognum = lognum,
+            seq = seq
+        );
+
+        let fname = self.log_name(lognum);
+
+        let mut file: *mut Box<dyn WritableFile> = core::ptr::null_mut();
+        let status = self.env.borrow_mut().new_writable_file(
+            &fname,
+            (&mut file) as *mut *mut Box<dyn WritableFile>,
+        );
+        assert!(status.is_ok());
+        assert!(!file.is_null());
+
+        let file_inner: Box<dyn WritableFile> = unsafe { *Box::from_raw(file) };
+
+        let writer_dest: Rc<RefCell<dyn WritableFile>> =
+            Rc::new(RefCell::new(BitcoinLevelDbTestRecoveryWritableFileRcAdapter {
+                inner: file_inner,
+            }));
+
+        let mut writer = LogWriter::new(writer_dest.clone(), 0u64);
+
+        let mut batch = WriteBatch::new();
+        batch.put(&key_, &val);
+        write_batch_internal::set_sequence(
+            (&mut batch) as *mut WriteBatch,
+            seq,
+        );
+
+        let contents = write_batch_internal::contents(
+            (&batch) as *const WriteBatch,
+        );
+
+        let add_status = writer.add_record(&contents);
+        assert!(add_status.is_ok());
+
+        drop(writer);
+
+        {
+            let mut writable = writer_dest.borrow_mut();
+            let flush_status = writable.flush();
+            assert!(flush_status.is_ok());
+
+            let close_status = writable.close();
+            assert!(close_status.is_ok());
+        }
+
+        trace!(
+            target: "bitcoinleveldb_test::recovery_test",
+            event = "recovery_test_make_log_file_exit",
+            lognum = lognum
+        );
     }
 }
 
-#[test] fn recovery_test_manifest_reused() {
-    todo!();
-    /*
-    
-      if (!CanAppend()) {
-        fprintf(stderr, "skipping test because env does not support appending\n");
-        return;
-      }
-      ASSERT_OK(Put("foo", "bar"));
-      Close();
-      std::string old_manifest = ManifestFileName();
-      Open();
-      ASSERT_EQ(old_manifest, ManifestFileName());
-      ASSERT_EQ("bar", Get("foo"));
-      Open();
-      ASSERT_EQ(old_manifest, ManifestFileName());
-      ASSERT_EQ("bar", Get("foo"));
+#[traced_test]
+fn recovery_test_manifest_reused() {
+    let mut t = RecoveryTest::default();
 
-    */
+    if !t.can_append() {
+        eprintln!("skipping test because env does not support appending");
+        return;
+    }
+
+    assert!(t.put(&"foo".to_string(), &"bar".to_string()).is_ok());
+    t.close();
+
+    let old_manifest = t.manifest_file_name();
+
+    t.open(None);
+    assert_eq!(old_manifest, t.manifest_file_name());
+    assert_eq!("bar".to_string(), t.get(&"foo".to_string(), None));
+
+    t.open(None);
+    assert_eq!(old_manifest, t.manifest_file_name());
+    assert_eq!("bar".to_string(), t.get(&"foo".to_string(), None));
 }
 
-#[test] fn recovery_test_large_manifest_compacted() {
-    todo!();
-    /*
-    
-      if (!CanAppend()) {
-        fprintf(stderr, "skipping test because env does not support appending\n");
+#[traced_test]
+fn recovery_test_large_manifest_compacted() {
+    let mut t = RecoveryTest::default();
+
+    if !t.can_append() {
+        eprintln!("skipping test because env does not support appending");
         return;
-      }
-      ASSERT_OK(Put("foo", "bar"));
-      Close();
-      std::string old_manifest = ManifestFileName();
+    }
 
-      // Pad with zeroes to make manifest file very big.
-      {
-        uint64_t len = FileSize(old_manifest);
-        WritableFile* file;
-        ASSERT_OK(env()->NewAppendableFile(old_manifest, &file));
-        std::string zeroes(3 * 1048576 - static_cast<size_t>(len), 0);
-        ASSERT_OK(file->Append(zeroes));
-        ASSERT_OK(file->Flush());
-        delete file;
-      }
+    assert!(t.put(&"foo".to_string(), &"bar".to_string()).is_ok());
+    t.close();
 
-      Open();
-      std::string new_manifest = ManifestFileName();
-      ASSERT_NE(old_manifest, new_manifest);
-      ASSERT_GT(10000, FileSize(new_manifest));
-      ASSERT_EQ("bar", Get("foo"));
+    let old_manifest = t.manifest_file_name();
 
-      Open();
-      ASSERT_EQ(new_manifest, ManifestFileName());
-      ASSERT_EQ("bar", Get("foo"));
+    // Pad with zeroes to make manifest file very big.
+    {
+        let len = t.file_size(&old_manifest) as usize;
 
-    */
+        let mut file: *mut Box<dyn WritableFile> = core::ptr::null_mut();
+        let status = t.env().borrow_mut().new_appendable_file(
+            &old_manifest,
+            (&mut file) as *mut *mut Box<dyn WritableFile>,
+        );
+        assert!(status.is_ok());
+        assert!(!file.is_null());
+
+        let mut file_holder: Box<Box<dyn WritableFile>> = unsafe {
+            Box::from_raw(file)
+        };
+        let file_ref: &mut Box<dyn WritableFile> = file_holder.as_mut();
+
+        let pad_len = (3usize * 1_048_576usize).saturating_sub(len);
+        let zeroes = vec![0u8; pad_len];
+        let zeroes_slice = Slice::from(zeroes.as_slice());
+
+        let append_status = file_ref.append(&zeroes_slice);
+        assert!(append_status.is_ok());
+
+        let flush_status = file_ref.flush();
+        assert!(flush_status.is_ok());
+
+        let close_status = file_ref.close();
+        assert!(close_status.is_ok());
+    }
+
+    t.open(None);
+
+    let new_manifest = t.manifest_file_name();
+    assert_ne!(old_manifest, new_manifest);
+    assert!(10_000u64 > t.file_size(&new_manifest));
+    assert_eq!("bar".to_string(), t.get(&"foo".to_string(), None));
+
+    t.open(None);
+    assert_eq!(new_manifest, t.manifest_file_name());
+    assert_eq!("bar".to_string(), t.get(&"foo".to_string(), None));
 }
 
-#[test] fn recovery_test_no_log_files() {
-    todo!();
-    /*
-    
-      ASSERT_OK(Put("foo", "bar"));
-      ASSERT_EQ(1, DeleteLogFiles());
-      Open();
-      ASSERT_EQ("NOT_FOUND", Get("foo"));
-      Open();
-      ASSERT_EQ("NOT_FOUND", Get("foo"));
+#[traced_test]
+fn recovery_test_no_log_files() {
+    let mut t = RecoveryTest::default();
 
-    */
+    assert!(t.put(&"foo".to_string(), &"bar".to_string()).is_ok());
+    assert_eq!(1usize, t.delete_log_files());
+
+    t.open(None);
+    assert_eq!("NOT_FOUND".to_string(), t.get(&"foo".to_string(), None));
+
+    t.open(None);
+    assert_eq!("NOT_FOUND".to_string(), t.get(&"foo".to_string(), None));
 }
 
-#[test] fn recovery_test_log_file_reuse() {
-    todo!();
-    /*
-    
-      if (!CanAppend()) {
-        fprintf(stderr, "skipping test because env does not support appending\n");
+#[traced_test]
+fn recovery_test_log_file_reuse() {
+    let mut t = RecoveryTest::default();
+
+    if !t.can_append() {
+        eprintln!("skipping test because env does not support appending");
         return;
-      }
-      for (int i = 0; i < 2; i++) {
-        ASSERT_OK(Put("foo", "bar"));
-        if (i == 0) {
-          // Compact to ensure current log is empty
-          CompactMemTable();
+    }
+
+    let mut i: i32 = 0i32;
+    while i < 2i32 {
+        assert!(t.put(&"foo".to_string(), &"bar".to_string()).is_ok());
+
+        if i == 0i32 {
+            // Compact to ensure current log is empty
+            t.compact_mem_table();
         }
-        Close();
-        ASSERT_EQ(1, NumLogs());
-        uint64_t number = FirstLogFile();
-        if (i == 0) {
-          ASSERT_EQ(0, FileSize(LogName(number)));
+
+        t.close();
+        assert_eq!(1i32, t.num_logs());
+
+        let number = t.first_log_file();
+        let log_name = t.log_name(number);
+        if i == 0i32 {
+            assert_eq!(0u64, t.file_size(&log_name));
         } else {
-          ASSERT_LT(0, FileSize(LogName(number)));
+            assert!(0u64 < t.file_size(&log_name));
         }
-        Open();
-        ASSERT_EQ(1, NumLogs());
-        ASSERT_EQ(number, FirstLogFile()) << "did not reuse log file";
-        ASSERT_EQ("bar", Get("foo"));
-        Open();
-        ASSERT_EQ(1, NumLogs());
-        ASSERT_EQ(number, FirstLogFile()) << "did not reuse log file";
-        ASSERT_EQ("bar", Get("foo"));
-      }
 
-    */
+        t.open(None);
+        assert_eq!(1i32, t.num_logs());
+        assert_eq!(number, t.first_log_file(), "did not reuse log file");
+        assert_eq!("bar".to_string(), t.get(&"foo".to_string(), None));
+
+        t.open(None);
+        assert_eq!(1i32, t.num_logs());
+        assert_eq!(number, t.first_log_file(), "did not reuse log file");
+        assert_eq!("bar".to_string(), t.get(&"foo".to_string(), None));
+
+        i += 1i32;
+    }
 }
 
-#[test] fn recovery_test_multiple_mem_tables() {
-    todo!();
-    /*
-    
-      // Make a large log.
-      const int kNum = 1000;
-      for (int i = 0; i < kNum; i++) {
-        char buf[100];
-        snprintf(buf, sizeof(buf), "%050d", i);
-        ASSERT_OK(Put(buf, buf));
-      }
-      ASSERT_EQ(0, NumTables());
-      Close();
-      ASSERT_EQ(0, NumTables());
-      ASSERT_EQ(1, NumLogs());
-      uint64_t old_log_file = FirstLogFile();
+#[traced_test]
+fn recovery_test_multiple_mem_tables() {
+    let mut t = RecoveryTest::default();
 
-      // Force creation of multiple memtables by reducing the write buffer size.
-      Options opt;
-      opt.reuse_logs = true;
-      opt.write_buffer_size = (kNum * 100) / 2;
-      Open(&opt);
-      ASSERT_LE(2, NumTables());
-      ASSERT_EQ(1, NumLogs());
-      ASSERT_NE(old_log_file, FirstLogFile()) << "must not reuse log";
-      for (int i = 0; i < kNum; i++) {
-        char buf[100];
-        snprintf(buf, sizeof(buf), "%050d", i);
-        ASSERT_EQ(buf, Get(buf));
-      }
+    // Make a large log.
+    const BITCOINLEVELDB_TEST_RECOVERY_TEST_K_NUM: i32 = 1000;
 
-    */
+    let mut i: i32 = 0i32;
+    while i < BITCOINLEVELDB_TEST_RECOVERY_TEST_K_NUM {
+        let buf = format!("{:050}", i);
+        assert!(t.put(&buf, &buf).is_ok());
+        i += 1i32;
+    }
+
+    assert_eq!(0i32, t.num_tables());
+    t.close();
+    assert_eq!(0i32, t.num_tables());
+    assert_eq!(1i32, t.num_logs());
+
+    let old_log_file = t.first_log_file();
+
+    // Force creation of multiple memtables by reducing the write buffer size.
+    let mut opt = Options::default();
+    opt.set_reuse_logs(true);
+    opt.set_write_buffer_size((BITCOINLEVELDB_TEST_RECOVERY_TEST_K_NUM * 100 / 2) as usize);
+    t.open(Some((&mut opt) as *mut Options));
+
+    assert!(2i32 <= t.num_tables());
+    assert_eq!(1i32, t.num_logs());
+    assert_ne!(old_log_file, t.first_log_file(), "must not reuse log");
+
+    i = 0i32;
+    while i < BITCOINLEVELDB_TEST_RECOVERY_TEST_K_NUM {
+        let buf = format!("{:050}", i);
+        assert_eq!(buf, t.get(&buf, None));
+        i += 1i32;
+    }
 }
 
-#[test] fn recovery_test_multiple_log_files() {
-    todo!();
-    /*
-    
-      ASSERT_OK(Put("foo", "bar"));
-      Close();
-      ASSERT_EQ(1, NumLogs());
+#[traced_test]
+fn recovery_test_multiple_log_files() {
+    let mut t = RecoveryTest::default();
 
-      // Make a bunch of uncompacted log files.
-      uint64_t old_log = FirstLogFile();
-      MakeLogFile(old_log + 1, 1000, "hello", "world");
-      MakeLogFile(old_log + 2, 1001, "hi", "there");
-      MakeLogFile(old_log + 3, 1002, "foo", "bar2");
+    assert!(t.put(&"foo".to_string(), &"bar".to_string()).is_ok());
+    t.close();
+    assert_eq!(1i32, t.num_logs());
 
-      // Recover and check that all log files were processed.
-      Open();
-      ASSERT_LE(1, NumTables());
-      ASSERT_EQ(1, NumLogs());
-      uint64_t new_log = FirstLogFile();
-      ASSERT_LE(old_log + 3, new_log);
-      ASSERT_EQ("bar2", Get("foo"));
-      ASSERT_EQ("world", Get("hello"));
-      ASSERT_EQ("there", Get("hi"));
+    // Make a bunch of uncompacted log files.
+    let old_log = t.first_log_file();
 
-      // Test that previous recovery produced recoverable state.
-      Open();
-      ASSERT_LE(1, NumTables());
-      ASSERT_EQ(1, NumLogs());
-      if (CanAppend()) {
-        ASSERT_EQ(new_log, FirstLogFile());
-      }
-      ASSERT_EQ("bar2", Get("foo"));
-      ASSERT_EQ("world", Get("hello"));
-      ASSERT_EQ("there", Get("hi"));
+    let hello = "hello".to_string();
+    let world = "world".to_string();
+    t.make_log_file(
+        old_log + 1u64,
+        1000u64,
+        Slice::from(&hello),
+        Slice::from(&world),
+    );
 
-      // Check that introducing an older log file does not cause it to be re-read.
-      Close();
-      MakeLogFile(old_log + 1, 2000, "hello", "stale write");
-      Open();
-      ASSERT_LE(1, NumTables());
-      ASSERT_EQ(1, NumLogs());
-      if (CanAppend()) {
-        ASSERT_EQ(new_log, FirstLogFile());
-      }
-      ASSERT_EQ("bar2", Get("foo"));
-      ASSERT_EQ("world", Get("hello"));
-      ASSERT_EQ("there", Get("hi"));
+    let hi = "hi".to_string();
+    let there = "there".to_string();
+    t.make_log_file(
+        old_log + 2u64,
+        1001u64,
+        Slice::from(&hi),
+        Slice::from(&there),
+    );
 
-    */
+    let foo = "foo".to_string();
+    let bar2 = "bar2".to_string();
+    t.make_log_file(
+        old_log + 3u64,
+        1002u64,
+        Slice::from(&foo),
+        Slice::from(&bar2),
+    );
+
+    // Recover and check that all log files were processed.
+    t.open(None);
+    assert!(1i32 <= t.num_tables());
+    assert_eq!(1i32, t.num_logs());
+
+    let new_log = t.first_log_file();
+    assert!(old_log + 3u64 <= new_log);
+    assert_eq!("bar2".to_string(), t.get(&"foo".to_string(), None));
+    assert_eq!("world".to_string(), t.get(&"hello".to_string(), None));
+    assert_eq!("there".to_string(), t.get(&"hi".to_string(), None));
+
+    // Test that previous recovery produced recoverable state.
+    t.open(None);
+    assert!(1i32 <= t.num_tables());
+    assert_eq!(1i32, t.num_logs());
+    if t.can_append() {
+        assert_eq!(new_log, t.first_log_file());
+    }
+    assert_eq!("bar2".to_string(), t.get(&"foo".to_string(), None));
+    assert_eq!("world".to_string(), t.get(&"hello".to_string(), None));
+    assert_eq!("there".to_string(), t.get(&"hi".to_string(), None));
+
+    // Check that introducing an older log file does not cause it to be re-read.
+    t.close();
+
+    let stale_write = "stale write".to_string();
+    t.make_log_file(
+        old_log + 1u64,
+        2000u64,
+        Slice::from(&hello),
+        Slice::from(&stale_write),
+    );
+
+    t.open(None);
+    assert!(1i32 <= t.num_tables());
+    assert_eq!(1i32, t.num_logs());
+    if t.can_append() {
+        assert_eq!(new_log, t.first_log_file());
+    }
+    assert_eq!("bar2".to_string(), t.get(&"foo".to_string(), None));
+    assert_eq!("world".to_string(), t.get(&"hello".to_string(), None));
+    assert_eq!("there".to_string(), t.get(&"hi".to_string(), None));
 }
 
-#[test] fn recovery_test_manifest_missing() {
-    todo!();
-    /*
-    
-      ASSERT_OK(Put("foo", "bar"));
-      Close();
-      DeleteManifestFile();
+#[traced_test]
+fn recovery_test_manifest_missing() {
+    let mut t = RecoveryTest::default();
 
-      Status status = OpenWithStatus();
-      ASSERT_TRUE(status.IsCorruption());
+    assert!(t.put(&"foo".to_string(), &"bar".to_string()).is_ok());
+    t.close();
+    t.delete_manifest_file();
 
-    */
+    let status = t.open_with_status(None);
+    assert!(status.is_corruption());
 }
 
-fn dbrecovery_test_main (
-        argc: i32,
-        argv: *mut *mut u8) -> i32 {
-    
-    todo!();
-        /*
-            return leveldb::test::RunAllTests();
-        */
+fn dbrecovery_test_main(
+    _argc: i32,
+    _argv: *mut *mut u8,
+) -> i32 {
+    trace!(
+        target: "bitcoinleveldb_test::recovery_test",
+        event = "dbrecovery_test_main_entry"
+    );
+
+    let rc = crate::harness::run_all_tests();
+
+    trace!(
+        target: "bitcoinleveldb_test::recovery_test",
+        event = "dbrecovery_test_main_exit",
+        result = rc
+    );
+
+    rc
 }
