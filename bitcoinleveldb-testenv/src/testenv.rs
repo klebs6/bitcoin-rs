@@ -11,6 +11,50 @@ pub struct TestEnv {
     ignore_dot_files: bool,
 }
 
+impl GetChildren for TestEnv {
+    fn get_children(&mut self, dir: &String, result: *mut Vec<String>) -> Status {
+        tracing::trace!(
+            dir = %dir,
+            ignore_dot_files = self.ignore_dot_files,
+            "TestEnv::get_children: entering"
+        );
+
+        let mut delegated: Vec<String> = Vec::new();
+        let s = self.base.get_children(dir, &mut delegated as *mut Vec<String>);
+        if !s.is_ok() || result.is_null() {
+            return s;
+        }
+
+        let out: &mut Vec<String> = unsafe { &mut *result };
+        out.clear();
+
+        if !self.ignore_dot_files {
+            out.push(".".to_string());
+            out.push("..".to_string());
+        }
+
+        for child in delegated.into_iter() {
+            if child == "." || child == ".." {
+                if self.ignore_dot_files {
+                    continue;
+                }
+                // avoid duplicates if the backend ever starts returning them
+                continue;
+            }
+            out.push(child);
+        }
+
+        tracing::debug!(
+            dir = %dir,
+            count = out.len(),
+            ignore_dot_files = self.ignore_dot_files,
+            "TestEnv::get_children: exit"
+        );
+
+        s
+    }
+}
+
 impl TestEnv {
     pub fn new(base: Rc<RefCell<dyn Env>>) -> Self {
         trace!(
@@ -44,73 +88,6 @@ impl TestEnv {
             "TestEnv::set_ignore_dot_files: updated configuration"
         );
     }
-
-    pub fn get_children(&mut self, dir: &String, result: *mut Vec<String>) -> Status {
-        trace!(
-            target: "bitcoinleveldb_testenv::testenv",
-            dir = %dir,
-            ignore_dot_files = self.ignore_dot_files,
-            "TestEnv::get_children: entering"
-        );
-
-        let s = self.base.get_children(dir, result);
-
-        debug!(
-            target: "bitcoinleveldb_testenv::testenv",
-            dir = %dir,
-            ok = s.is_ok(),
-            code = ?s.code(),
-            ignore_dot_files = self.ignore_dot_files,
-            "TestEnv::get_children: target GetChildren returned"
-        );
-
-        if !s.is_ok() || !self.ignore_dot_files {
-            trace!(
-                target: "bitcoinleveldb_testenv::testenv",
-                dir = %dir,
-                ok = s.is_ok(),
-                ignore_dot_files = self.ignore_dot_files,
-                "TestEnv::get_children: returning without filtering"
-            );
-            return s;
-        }
-
-        unsafe {
-            let v: &mut Vec<String> = &mut *result;
-
-            trace!(
-                target: "bitcoinleveldb_testenv::testenv",
-                dir = %dir,
-                initial_len = v.len(),
-                "TestEnv::get_children: filtering dot entries"
-            );
-
-            let mut i: usize = 0;
-            while i != v.len() {
-                if (v[i] == ".") || (v[i] == "..") {
-                    trace!(
-                        target: "bitcoinleveldb_testenv::testenv",
-                        dir = %dir,
-                        entry = %v[i],
-                        index = i,
-                        "TestEnv::get_children: removing dot entry"
-                    );
-                    v.remove(i);
-                } else {
-                    i += 1;
-                }
-            }
-
-            debug!(
-                target: "bitcoinleveldb_testenv::testenv",
-                dir = %dir,
-                final_len = v.len(),
-                "TestEnv::get_children: finished filtering dot entries"
-            );
-        }
-
-        s
-    }
 }
 
 impl std::ops::Deref for TestEnv {
@@ -124,12 +101,6 @@ impl std::ops::Deref for TestEnv {
 impl std::ops::DerefMut for TestEnv {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.base
-    }
-}
-
-impl GetChildren for TestEnv {
-    fn get_children(&mut self, dir: &String, r: *mut Vec<String>) -> Status {
-        TestEnv::get_children(self, dir, r)
     }
 }
 

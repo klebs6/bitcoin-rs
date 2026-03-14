@@ -23,61 +23,120 @@ pub fn make_key(num: u32) -> String {
 }
 
 pub fn bm_log_and_apply(
-        iters:          i32,
-        num_base_files: i32)  {
-    
-    todo!();
-        /*
-            std::string dbname = test::TmpDir() + "/leveldb_test_benchmark";
-      DestroyDB(dbname, Options());
+    iters:          i32,
+    num_base_files: i32)  {
 
-      DB* db = nullptr;
-      Options opts;
-      opts.create_if_missing = true;
-      Status s = DB::Open(opts, dbname, &db);
-      ASSERT_OK(s);
-      ASSERT_TRUE(db != nullptr);
+    trace!(
+        target: "bitcoinleveldb-dbtest",
+        label = "bm_log_and_apply.entry",
+        iters,
+        num_base_files
+    );
 
-      delete db;
-      db = nullptr;
+    use lock_api::RawMutex as _;
 
-      Env* env = Env::Default();
+    let mut dbname = bitcoinleveldb_test::tmp_dir();
+    dbname.push_str("/leveldb_test_benchmark");
+    let _ = destroy_db(&dbname, &Options::default());
 
-      Mutex mu;
-      MutexLock l(&mu);
+    let mut db_slot: MaybeUninit<*mut dyn DB> = MaybeUninit::uninit();
+    let mut open_opts = Options::default();
+    open_opts.set_create_if_missing(true);
 
-      InternalKeyComparator cmp(BytewiseComparator());
-      Options options;
-      VersionSet vset(dbname, &options, nullptr, &cmp);
-      bool save_manifest;
-      ASSERT_OK(vset.Recover(&save_manifest));
-      VersionEdit vbase;
-      uint64_t fnum = 1;
-      for (int i = 0; i < num_base_files; i++) {
-        InternalKey start(MakeKey(2 * fnum), 1, kTypeValue);
-        InternalKey limit(MakeKey(2 * fnum + 1), 1, kTypeDeletion);
-        vbase.AddFile(2, fnum++, 1 /* file size */, start, limit);
-      }
-      ASSERT_OK(vset.LogAndApply(&vbase, &mu));
+    let mut opener = DBImpl::new(&open_opts, &dbname);
+    let s = opener.open(&open_opts, &dbname, db_slot.as_mut_ptr());
+    assert!(s.is_ok());
 
-      uint64_t start_micros = env->NowMicros();
+    let db_ptr = unsafe { db_slot.assume_init() };
+    assert!(!db_ptr.is_null());
 
-      for (int i = 0; i < iters; i++) {
-        VersionEdit vedit;
-        vedit.DeleteFile(2, fnum);
-        InternalKey start(MakeKey(2 * fnum), 1, kTypeValue);
-        InternalKey limit(MakeKey(2 * fnum + 1), 1, kTypeDeletion);
-        vedit.AddFile(2, fnum++, 1 /* file size */, start, limit);
-        vset.LogAndApply(&vedit, &mu);
-      }
-      uint64_t stop_micros = env->NowMicros();
-      unsigned int us = stop_micros - start_micros;
-      char buf[16];
-      snprintf(buf, sizeof(buf), "%d", num_base_files);
-      fprintf(stderr,
-              "BM_LogAndApply/%-6s   %8d iters : %9u us (%7.0f us / iter)\n", buf,
-              iters, us, ((float)us) / iters);
-        */
+    unsafe {
+        drop(Box::from_raw(db_ptr));
+    }
+
+    let env = PosixEnv::shared();
+
+    let mut mu = RawMutex::INIT;
+    mu.lock();
+
+    let options = Options::with_env(env.clone());
+    let cmp = InternalKeyComparator::new(bytewise_comparator());
+    let mut vset = VersionSet::new(
+        &dbname,
+        (&options) as *const Options,
+        null_mut(),
+        (&cmp) as *const InternalKeyComparator,
+    );
+
+    let mut save_manifest = false;
+    assert!(vset.recover(&mut save_manifest as *mut bool).is_ok());
+
+    let mut vbase = VersionEdit::default();
+    let mut fnum: u64 = 1;
+
+    let mut i: i32 = 0;
+    while i < num_base_files {
+        let start_key = make_key((2 * fnum) as u32);
+        let limit_key = make_key((2 * fnum + 1) as u32);
+
+        let start_slice = Slice::from(&start_key);
+        let limit_slice = Slice::from(&limit_key);
+
+        let start = InternalKey::new(&start_slice, 1 as SequenceNumber, ValueType::TypeValue);
+        let limit = InternalKey::new(&limit_slice, 1 as SequenceNumber, ValueType::TypeDeletion);
+
+        vbase.add_file(2, fnum, 1, &start, &limit);
+        fnum += 1;
+        i += 1;
+    }
+
+    assert!(vset.log_and_apply(&mut vbase as *mut VersionEdit, &mut mu as *mut RawMutex).is_ok());
+
+    let start_micros = env.borrow_mut().now_micros();
+
+    let mut iter: i32 = 0;
+    while iter < iters {
+        let mut vedit = VersionEdit::default();
+        vedit.delete_file(2, fnum);
+
+        let start_key = make_key((2 * fnum) as u32);
+        let limit_key = make_key((2 * fnum + 1) as u32);
+
+        let start_slice = Slice::from(&start_key);
+        let limit_slice = Slice::from(&limit_key);
+
+        let start = InternalKey::new(&start_slice, 1 as SequenceNumber, ValueType::TypeValue);
+        let limit = InternalKey::new(&limit_slice, 1 as SequenceNumber, ValueType::TypeDeletion);
+
+        vedit.add_file(2, fnum, 1, &start, &limit);
+        assert!(vset.log_and_apply(&mut vedit as *mut VersionEdit, &mut mu as *mut RawMutex).is_ok());
+
+        fnum += 1;
+        iter += 1;
+    }
+
+    let stop_micros = env.borrow_mut().now_micros();
+    let us = (stop_micros - start_micros) as u32;
+
+    eprintln!(
+        "BM_LogAndApply/{:<6}   {:8} iters : {:9} us ({:7.0} us / iter)",
+        format!("{}", num_base_files),
+        iters,
+        us,
+        (us as f32) / (iters as f32)
+    );
+
+    unsafe {
+        mu.unlock();
+    }
+
+    trace!(
+        target: "bitcoinleveldb-dbtest",
+        label = "bm_log_and_apply.exit",
+        iters,
+        num_base_files,
+        elapsed_us = us
+    );
 }
 
 /// Precondition: `argv` is either null or points to an array of NUL-terminated C strings.

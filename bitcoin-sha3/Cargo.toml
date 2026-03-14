@@ -1192,9 +1192,3 @@ cpp-authors = [
     "฿tcDrak <btcdrak@users.noreply.github.com>",
     "“jkcd” <“jkreadsemail@gmail.com”>",
 ]
-
-[profile.bench]
-codegen-units = 1
-debug = false
-lto = "fat"
-opt-level = 3

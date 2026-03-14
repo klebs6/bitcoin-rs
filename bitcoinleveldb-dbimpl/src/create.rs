@@ -24,15 +24,16 @@ impl DBImpl {
             raw_options,
         );
 
-        let env_rc: Rc<RefCell<dyn Env>> = match options.env().as_ref() {
-            Some(e) => e.clone(),
-            None => match raw_options.env().as_ref() {
-                Some(e) => e.clone(),
-                None => {
-                    tracing::error!("Options.env was None in DBImpl::new");
-                    panic!();
-                }
-            },
+        // before constructing internal state in DBImpl::new(...)
+        let env_rc: Rc<RefCell<dyn Env>> = match raw_options.env().as_ref() {
+            Some(env) => Rc::clone(env),
+            None => {
+                tracing::trace!(
+                    target: "bitcoinleveldb_dbimpl::create",
+                    label = "dbimpl.new.default_env_fallback"
+                );
+                PosixEnv::shared()
+            }
         };
 
         let env: Box<dyn Env> = Box::new(EnvWrapper::new(env_rc));

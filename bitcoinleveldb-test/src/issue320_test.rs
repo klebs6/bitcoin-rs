@@ -9,11 +9,13 @@ crate::ix!();
   |
   */
 fn generate_random_number(max: i32) -> i32 {
+    /*
     trace!(
         target: "bitcoinleveldb_test::issue320_test",
         event = "generate_random_number_entry",
         max = max
     );
+    */
 
     let out = if max <= 0 {
         0i32
@@ -21,11 +23,13 @@ fn generate_random_number(max: i32) -> i32 {
         unsafe { libc::rand() % max }
     };
 
+    /*
     trace!(
         target: "bitcoinleveldb_test::issue320_test",
         event = "generate_random_number_exit",
         result = out
     );
+    */
 
     out
 }

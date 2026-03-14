@@ -37,7 +37,7 @@ impl TableBuilder {
 
             let raw = block_ref.finish();
 
-            let options_ptr = r.options();
+            let options_ptr = *r.options();
             assert!(
                 !options_ptr.is_null(),
                 "TableBuilder::write_block: options pointer is null"

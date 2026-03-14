@@ -43,7 +43,7 @@ impl TableBuilder {
             let rep_ptr: *mut TableBuilderRep = Box::into_raw(rep_box);
 
             let rep_ref: &mut TableBuilderRep = &mut *rep_ptr;
-            let filter_block_ptr: *mut FilterBlockBuilder = rep_ref.filter_block();
+            let filter_block_ptr: *mut FilterBlockBuilder = *rep_ref.filter_block();
 
             if !filter_block_ptr.is_null() {
                 trace!(

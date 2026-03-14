@@ -11,6 +11,8 @@ description = "todo: write a description here"
 
 [dependencies]
 tracing.workspace = true
+snap.workspace = true
+lock_api.workspace = true
 bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
 bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
@@ -34,3 +36,10 @@ bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
 bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom" }
 bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
+bitcoinleveldb-tableconstructor = { path = "../bitcoinleveldb-tableconstructor" }
+bitcoinleveldb-testenv = { path = "../bitcoinleveldb-testenv" }
+bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
+bitcoinleveldb-versionset = { path = "../bitcoinleveldb-versionset" }
+bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
+bitcoinleveldb-modeldb = { path = "../bitcoinleveldb-modeldb" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }

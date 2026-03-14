@@ -1,7 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-dbconstructor/src/db_constructor.rs ]
 crate::ix!();
  
-pub struct DBConstructor {
+#[repr(C)]
+pub struct DBConstructor  {
     base:       Constructor,
     comparator: std::sync::Arc<dyn SliceComparator>,
     db:         Option<*mut dyn DB>,

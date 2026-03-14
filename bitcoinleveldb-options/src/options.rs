@@ -243,7 +243,7 @@ impl Default for Options {
             create_if_missing:      false,
             error_if_exists:        false,
             paranoid_checks:        false,
-            env:                    None,
+            env:                    Some(bitcoinleveldb_posixenv::PosixEnv::shared()),
             info_log:               None,
 
             // -------- Performance parameters --------

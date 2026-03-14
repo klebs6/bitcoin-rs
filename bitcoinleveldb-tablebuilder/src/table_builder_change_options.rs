@@ -30,7 +30,7 @@ impl TableBuilder {
                 new_interval
             );
 
-            let old_options_ptr = rep.options();
+            let old_options_ptr = *rep.options();
             assert!(
                 !old_options_ptr.is_null(),
                 "TableBuilder::change_options: existing options pointer is null"

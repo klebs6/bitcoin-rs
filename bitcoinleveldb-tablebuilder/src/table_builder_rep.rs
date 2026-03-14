@@ -5,9 +5,7 @@ crate::ix!();
 
 #[derive(Getters,MutGetters,Setters)]
 #[getset(get="pub",get_mut="pub",set="pub")]
-pub struct TableBuilderRep {
-
-    #[getset(skip)]
+pub struct TableBuilderRep  {
     options:             *const Options,
 
     #[getset(skip)]
@@ -17,15 +15,12 @@ pub struct TableBuilderRep {
     status:              Status,
     data_block:          BlockBuilder,
     index_block:         BlockBuilder,
-    last_key_:           String,
+    last_key_:           Vec<u8>,
     num_entries:         i64,
-
     /// Either Finish() or Abandon() has been called.
     /// 
     closed:              bool,
-    #[getset(skip)]
     filter_block:        *mut FilterBlockBuilder,
-
     /// We do not emit the index entry for a block until we have seen the first
     /// key for the next data block.  
     ///
@@ -40,7 +35,6 @@ pub struct TableBuilderRep {
     /// Invariant: r->pending_index_entry is true only if data_block is empty.
     ///
     pending_index_entry: bool,
-
     /// Handle to add to index block
     /// 
     pending_handle:      BlockHandle,
@@ -48,6 +42,10 @@ pub struct TableBuilderRep {
 }
 
 impl TableBuilderRep {
+
+    pub fn file(&self) -> *mut dyn WritableFile {
+        self.file
+    }
 
     pub fn new(opt: &Options, f: *mut dyn WritableFile) -> Self {
         trace!(
@@ -64,11 +62,17 @@ impl TableBuilderRep {
         let mut index_block = BlockBuilder::new(options_ptr);
         index_block.set_block_restart_interval(1);
 
-        let filter_block_ptr = {
+        let filter_block_ptr: *mut FilterBlockBuilder = {
+            let policy_ptr: *const dyn FilterPolicy =
+                (&**opt.filter_policy()) as *const dyn FilterPolicy;
+
             trace!(
-                "TableBuilderRep::new: creating FilterBlockBuilder with default NullFilterPolicy"
+                "TableBuilderRep::new: creating FilterBlockBuilder with configured policy={:p}",
+                policy_ptr
             );
-            let policy: Box<dyn FilterPolicy> = Box::new(NullFilterPolicy::default());
+
+            let policy: Box<dyn FilterPolicy> =
+                Box::new(BitcoinLevelDbTableBuilderBorrowedFilterPolicyAdapter::new(policy_ptr));
             let fb = FilterBlockBuilder::new(policy);
             Box::into_raw(Box::new(fb))
         };
@@ -80,7 +84,7 @@ impl TableBuilderRep {
             status:              Status::ok(),
             data_block,
             index_block,
-            last_key_:           String::new(),
+            last_key_:           Vec::new(),
             num_entries:         0,
             closed:              false,
             filter_block:        filter_block_ptr,
@@ -88,53 +92,6 @@ impl TableBuilderRep {
             pending_handle:      BlockHandle::default(),
             compressed_output:   String::new(),
         }
-    }
-
-    #[inline]
-    pub fn options(&self) -> *const Options {
-        // return the raw pointer field, do NOT call self.options() again
-        self.options
-    }
-
-    #[inline]
-    pub fn set_options(&mut self, options: *const Options) {
-        // update the raw pointer field, do NOT call self.set_options() again
-        self.options = options;
-    }
-
-    #[inline]
-    pub fn file(&self) -> *mut dyn WritableFile {
-        self.file
-    }
-
-    #[inline]
-    pub fn file_mut(&mut self) -> *mut dyn WritableFile {
-        self.file
-    }
-
-    #[inline]
-    pub fn set_file(&mut self, file: *mut dyn WritableFile) {
-        self.file = file;
-    }
-
-    #[inline]
-    pub fn filter_block(&self) -> *mut FilterBlockBuilder {
-        self.filter_block
-    }
-
-    #[inline]
-    pub fn filter_block_mut(&mut self) -> *mut FilterBlockBuilder {
-        self.filter_block
-    }
-
-    #[inline]
-    pub fn set_filter_block(&mut self, fb: *mut FilterBlockBuilder) {
-        self.filter_block = fb;
-    }
-
-    #[inline]
-    pub fn last_key_mut(&mut self) -> &mut String {
-        self.last_key__mut()
     }
 }
 

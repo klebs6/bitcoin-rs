@@ -6,31 +6,21 @@ pub struct LevelFileNumIterator {
     files:     *const *mut FileMetaData,
     num_files: usize,
     index:     usize,
+    value_buf: UnsafeCell<[u8; 16]>,
 }
 
 impl LevelFileNumIterator {
-    pub fn new(
-        icmp:  *const InternalKeyComparator,
-        files: &[*mut FileMetaData],
-    ) -> Self {
-        let num_files = files.len();
-        debug!(
-            "LevelFileNumIterator_new: num_files={}",
-            num_files
-        );
 
-        let files_ptr = if num_files == 0 {
-            core::ptr::null()
-        } else {
-            files.as_ptr()
-        };
+    pub fn new(icmp: *const InternalKeyComparator, files: &[*mut FileMetaData]) -> Self {
+        let num_files = files.len();
+        let files_ptr = if num_files == 0 { core::ptr::null() } else { files.as_ptr() };
 
         Self {
             icmp,
             files: files_ptr,
             num_files,
-            // start invalid, like the C++ version
             index: num_files,
+            value_buf: UnsafeCell::new([0; 16]),
         }
     }
 
@@ -151,8 +141,6 @@ impl LevelDBIteratorKey for LevelFileNumIterator {
 
 impl LevelDBIteratorValue for LevelFileNumIterator {
     fn value(&self) -> Slice {
-        debug!("LevelFileNumIterator_value");
-
         let f_ptr = match self.current_file() {
             Some(f) => f,
             None => {
@@ -162,8 +150,13 @@ impl LevelDBIteratorValue for LevelFileNumIterator {
         };
 
         unsafe {
-            // Same as key() in LevelDB: largest internal key.
-            (*f_ptr).largest().encode()
+            let f = &*f_ptr;
+            let buf = &mut *self.value_buf.get();
+
+            buf[0..8].copy_from_slice(&encode_fixed64_le(*f.number()));
+            buf[8..16].copy_from_slice(&encode_fixed64_le(*f.file_size()));
+
+            Slice::from_ptr_len(buf.as_ptr(), 16)
         }
     }
 }
@@ -238,18 +231,33 @@ mod version_level_file_num_iterator_tests {
         assert!(iter.valid(), "Iterator must be valid after seek_to_first");
 
         unsafe {
-            let expected = (*files_vec[0]).largest().encode();
+            let f = &*files_vec[0];
+
+            // key() must be the encoded largest internal key
+            let expected_key = f.largest().encode();
             let key = iter.key();
-            let value = iter.value();
             assert_eq!(
-                slice_as_bytes(&expected),
+                slice_as_bytes(&expected_key),
                 slice_as_bytes(&key),
                 "Key slice for first file must match its largest key"
             );
+
+            // value() must be the 16-byte file handle
+            let value = iter.value();
+            let raw = slice_as_bytes(&value);
+
+            assert_eq!(raw.len(), 16, "Value must encode file number and file size");
+
             assert_eq!(
-                slice_as_bytes(&expected),
-                slice_as_bytes(&value),
-                "Value slice must mirror key slice (largest key)"
+                decode_fixed64_le(raw.as_ptr()),
+                *f.number(),
+                "First 8 bytes of value must be file number"
+            );
+
+            assert_eq!(
+                decode_fixed64_le(raw.as_ptr().add(8)),
+                *f.file_size(),
+                "Second 8 bytes of value must be file size"
             );
         }
 
@@ -376,5 +384,157 @@ mod version_level_file_num_iterator_tests {
             0,
             "Value from invalid iterator must be an empty slice"
         );
+    }
+}
+
+#[cfg(test)]
+mod version_create_concatenating_iterator_pipeline_tests {
+    use super::*;
+    use super::version_test_helpers as helpers;
+
+    struct SingleEntryIter {
+        key: Vec<u8>,
+        value: Vec<u8>,
+        valid: bool,
+    }
+
+    impl LevelDBIteratorInterface for SingleEntryIter {}
+
+    impl LevelDBIteratorValid for SingleEntryIter {
+        fn valid(&self) -> bool {
+            self.valid
+        }
+    }
+
+    impl LevelDBIteratorSeekToFirst for SingleEntryIter {
+        fn seek_to_first(&mut self) {
+            self.valid = true;
+        }
+    }
+
+    impl LevelDBIteratorSeekToLast for SingleEntryIter {
+        fn seek_to_last(&mut self) {
+            self.valid = true;
+        }
+    }
+
+    impl LevelDBIteratorSeek for SingleEntryIter {
+        fn seek(&mut self, _target: &Slice) {
+            self.valid = true;
+        }
+    }
+
+    impl LevelDBIteratorNext for SingleEntryIter {
+        fn next(&mut self) {
+            self.valid = false;
+        }
+    }
+
+    impl LevelDBIteratorPrev for SingleEntryIter {
+        fn prev(&mut self) {
+            self.valid = false;
+        }
+    }
+
+    impl LevelDBIteratorStatus for SingleEntryIter {
+        fn status(&self) -> crate::Status {
+            crate::Status::ok()
+        }
+    }
+
+    impl LevelDBIteratorKey for SingleEntryIter {
+        fn key(&self) -> Slice {
+            if self.valid {
+                Slice::from(self.key.as_slice())
+            } else {
+                Slice::default()
+            }
+        }
+    }
+
+    impl LevelDBIteratorValue for SingleEntryIter {
+        fn value(&self) -> Slice {
+            if self.valid {
+                Slice::from(self.value.as_slice())
+            } else {
+                Slice::default()
+            }
+        }
+    }
+
+    fn build_icmp() -> InternalKeyComparator {
+        let user_cmp = bitcoinleveldb_comparator::bytewise_comparator();
+        InternalKeyComparator::new(user_cmp)
+    }
+
+    #[traced_test]
+    fn two_level_iterator_pipeline_decodes_file_handle_and_yields_expected_entries() {
+        let icmp = build_icmp();
+
+        let files_vec = vec![
+            helpers::build_file_meta_boxed(10, 100, "a", "b"),
+            helpers::build_file_meta_boxed(20, 200, "c", "d"),
+            helpers::build_file_meta_boxed(30, 300, "e", "f"),
+        ];
+
+        let index_iter: Box<dyn LevelDBIteratorInterface> =
+            Box::new(LevelFileNumIterator::new(
+                &icmp as *const InternalKeyComparator,
+                &files_vec,
+            ));
+
+        let block_fn: BlockFunction = |_arg, _opts, handle| {
+            let raw = handle.as_bytes();
+
+            assert_eq!(
+                raw.len(),
+                16,
+                "LevelFileNumIterator value() must be a 16-byte file handle"
+            );
+
+            let file_number = unsafe { decode_fixed64_le(raw.as_ptr()) };
+            let file_size = unsafe { decode_fixed64_le(unsafe { raw.as_ptr().add(8) }) };
+
+            let key = format!("file:{file_number}").into_bytes();
+            let value = format!("size:{file_size}").into_bytes();
+
+            Some(Box::new(SingleEntryIter {
+                key,
+                value,
+                valid: false,
+            }))
+        };
+
+        let two_level: Box<dyn LevelDBIteratorInterface> =
+            new_two_level_iterator(
+                index_iter,
+                block_fn,
+                core::ptr::null_mut(),
+                &ReadOptions::default(),
+            );
+
+        let mut iter = LevelDBIterator::new(Some(two_level));
+
+        iter.seek_to_first();
+        assert!(iter.valid());
+        assert_eq!(iter.key().to_string(), "file:10");
+        assert_eq!(iter.value().to_string(), "size:100");
+
+        iter.next();
+        assert!(iter.valid());
+        assert_eq!(iter.key().to_string(), "file:20");
+        assert_eq!(iter.value().to_string(), "size:200");
+
+        iter.next();
+        assert!(iter.valid());
+        assert_eq!(iter.key().to_string(), "file:30");
+        assert_eq!(iter.value().to_string(), "size:300");
+
+        iter.next();
+        assert!(!iter.valid());
+
+        unsafe {
+            helpers::free_file_meta_slice(&files_vec);
+        }
     }
 }

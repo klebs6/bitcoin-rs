@@ -3403,6 +3403,7 @@ dependencies = [
  "bitcoinleveldb-comparator",
  "bitcoinleveldb-dbimpl",
  "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-env",
  "bitcoinleveldb-file",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-iteratorinner",
@@ -3576,6 +3577,7 @@ name = "bitcoinleveldb-dbtest"
 version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
+ "bitcoinleveldb-batch",
  "bitcoinleveldb-bloom",
  "bitcoinleveldb-cache",
  "bitcoinleveldb-cfg",
@@ -3590,6 +3592,7 @@ dependencies = [
  "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-key",
  "bitcoinleveldb-logtools",
+ "bitcoinleveldb-modeldb",
  "bitcoinleveldb-options",
  "bitcoinleveldb-posixenv",
  "bitcoinleveldb-rand",
@@ -3597,7 +3600,14 @@ dependencies = [
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-specialenv",
  "bitcoinleveldb-status",
+ "bitcoinleveldb-tableconstructor",
  "bitcoinleveldb-test",
+ "bitcoinleveldb-testenv",
+ "bitcoinleveldb-versionedit",
+ "bitcoinleveldb-versionset",
+ "bitcoinleveldb-versionsetinterface",
+ "lock_api",
+ "snap",
  "tracing",
 ]
 
@@ -4056,6 +4066,7 @@ dependencies = [
  "bitcoinleveldb-filter",
  "bitcoinleveldb-key",
  "bitcoinleveldb-log",
+ "bitcoinleveldb-posixenv",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",

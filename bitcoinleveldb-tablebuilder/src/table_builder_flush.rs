@@ -78,7 +78,7 @@ impl TableBuilder {
                 );
             }
 
-            let filter_block_ptr = r.filter_block();
+            let filter_block_ptr = *r.filter_block();
             if !filter_block_ptr.is_null() {
                 let fb: &mut FilterBlockBuilder = &mut *filter_block_ptr;
                 trace!(

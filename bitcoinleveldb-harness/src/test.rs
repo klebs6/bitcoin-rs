@@ -49,6 +49,16 @@ impl Harness {
 
         let finish_impl_ok: bool = finish_impl_status.is_ok();
 
+        assert!(finish_impl_ok);
+
+        let comparator: &Arc<dyn SliceComparator> = self.options.comparator();
+        keys.sort_by(|a, b| {
+            let a_slice: Slice = Slice::from(a.as_bytes());
+            let b_slice: Slice = Slice::from(b.as_bytes());
+            let cmp: i32 = comparator.compare(&a_slice, &b_slice);
+            cmp.cmp(&0)
+        });
+
         trace!(
             target: "bitcoinleveldb_harness",
             label = "bitcoinleveldb_harness.harness.test.finish.end",
@@ -57,8 +67,6 @@ impl Harness {
             num_keys = keys.len(),
             finish_impl_ok = finish_impl_ok,
         );
-
-        assert!(finish_impl_ok);
 
         self.test_forward_scan(&keys, &data);
         self.test_backward_scan(&keys, &data);

@@ -10,7 +10,10 @@ HACK_CLANG := env LD_LIBRARY_PATH=/usr/local/opt/llvm/lib/
 HACK_CLANG := 
 
 RUSTFLAGS := -Awarnings
-CARGO     := env CARGO_MSG_LIMIT=15 \
+CARGO     := env \
+			 RUSTFLAGS=-Awarnings \
+			 RUST_LOG=debug \
+			 CARGO_MSG_LIMIT=15 \
 			 CARGO_BUILD_JOBS=12 \
 			 NUM_JOBS=12 \
 			 cargo 
@@ -43,9 +46,10 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoinsecp256k1-eccontext
 
 ACTIVE := bitcoinleveldb-bench         #loc: 2997
-ACTIVE := bitcoinleveldb-test          #loc: 3254
-ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
 ACTIVE := bitcoinleveldb-harness       #loc: 297
+
+ACTIVE := bitcoinleveldb-test          #loc: 3254
+#ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
 
 # ---[leveldb-layer-3]
 #ACTIVE := bitcoin-leveldb              #loc: 36
@@ -304,6 +308,56 @@ bench:
 leveldb_bench: 
 	RUSTFLAGS="-Awarnings -C target-cpu=native" $(CARGO) $(BENCH) -p bitcoinleveldb-bench --bench db_bench -- --benchmarks=fillseq --num=100000 
 	RUSTFLAGS="-Awarnings -C target-cpu=native" $(CARGO) $(BENCH) -p bitcoinleveldb-bench --bench db_bench_sqlite3 -- --benchmarks=fillseq --num=100000
+
+
+check_these:
+	-$(CARGO) $(TEST) -p bitcoinleveldb-test --lib c_test::bitcoinleveldb_test__c_test_rs__upstream_c_api_roundtrip_passes -- --nocapture
+	-$(CARGO) $(TEST) -p bitcoinleveldb-test --lib issue320_test::issue320_test -- --nocapture 
+
+check_these2:
+	-$(CARGO) $(TEST) -p bitcoinleveldb-dbtest --lib db_test_files_deleted_after_compaction -- --nocapture
+	#-$(CARGO) $(TEST) -p bitcoinleveldb-dbtest --lib db_test_deletion_markers1 -- --nocapture
+	#-$(CARGO) $(TEST) -p bitcoinleveldb-dbtest --lib db_test_deletion_markers2 -- --nocapture
+	#-$(CARGO) $(TEST) -p bitcoinleveldb-dbtest --lib db_test_get_encounters_empty_level -- --nocapture
+	#-$(CARGO) $(TEST) -p bitcoinleveldb-dbtest --lib db_test_custom_comparator -- --nocapture
+	#-$(CARGO) $(TEST) -p bitcoinleveldb-dbtest --lib db_test_get_identical_snapshots -- --nocapture
+	#-$(CARGO) $(TEST) -p bitcoinleveldb-dbtest --lib db_test_get_snapshot -- --nocapture
+	#-$(CARGO) $(TEST) -p bitcoinleveldb-dbtest --lib db_test_get_picks_correct_file -- --nocapture
+
+
+check_these3:
+	- $(CARGO) $(TEST) -p bitcoinleveldb-dbtest fixture::db_test_destroy_opendb -- --nocapture
+	- $(CARGO) $(TEST) -p bitcoinleveldb-dbtest fixture::db_test_destroy_empty_dir -- --nocapture
+	- $(CARGO) $(TEST) -p bitcoinleveldb-dbtest fixture::db_test_open_options -- --nocapture
+	- $(CARGO) $(TEST) -p bitcoinleveldb-dbtest fixture::db_test_locking -- --nocapture
+
+check_test:
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test fault_injection_test_no_log_reuse -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test recovery_test_manifest_missing -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test recovery_test_large_manifest_compacted -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test recovery_test_multiple_log_files -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test corruption_test_compaction_input_error -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test recovery_test_multiple_mem_tables -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test recovery_test_no_log_files -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test recovery_test_manifest_reused -- --nocapture
+	- $(CARGO) $(TEST) -p bitcoinleveldb-test recovery_test_log_file_reuse -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test bitcoinleveldb_test__c_test_rs__upstream_c_api_roundtrip_passes -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test corruption_test_table_file -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test corruption_test_table_file_repair -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test issue320_test -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test fault_injection_test_with_log_reuse -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-test corruption_test_table_file_index_data -- --nocapture
+
+check_dbtest:
+	- $(CARGO) $(TEST) -p bitcoinleveldb-dbtest db_test_randomized -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-dbtest db_test_l0_compaction_bug_issue44_a -- --nocapture
+	#- $(CARGO) $(TEST) -p bitcoinleveldb-dbtest db_test_l0_compaction_bug_issue44_b -- --nocapture
+
+recovery_cluster: 
+	- $(CARGO) $(TEST) -p bitcoinleveldb-test recovery_test -- --nocapture --test-threads=1
+
+serial_suite: 
+	- $(CARGO) $(TEST) -p bitcoinleveldb-test -- --nocapture --test-threads=1 $(NO_FAIL_FAST)
 
 #-------------------------------[done-below]
 #ACTIVE := bitcoin-amt

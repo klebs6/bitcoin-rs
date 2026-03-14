@@ -1,11 +1,16 @@
 // ---------------- [ File: bitcoinleveldb-dbtest/src/fixture.rs ]
 crate::ix!();
 
-/// Invariant: produces a deterministic temporary database pathname by appending `suffix` to the
-/// test harness temporary directory without further normalization.
+use std::sync::atomic::{AtomicU64, Ordering};
+
+static DBTEST_TMP_COUNTER: AtomicU64 = AtomicU64::new(0);
+
+/// Invariant: produces a deterministic-per-process unique temporary database pathname by
+/// appending `suffix` plus a monotone instance id to the test harness temporary directory.
 ///
 /// Precondition: `suffix` is a byte-stable path suffix.
-/// Postcondition: the returned pathname begins with `bitcoinleveldb_test::tmp_dir()`.
+/// Postcondition: the returned pathname begins with `bitcoinleveldb_test::tmp_dir()` and is
+/// distinct from prior calls in this process.
 pub fn dbtest_fixture_tmp_dbname_with_suffix(suffix: &str) -> String {
     tracing::trace!(
         target: "bitcoinleveldb_dbtest::tests",
@@ -13,13 +18,20 @@ pub fn dbtest_fixture_tmp_dbname_with_suffix(suffix: &str) -> String {
         suffix_len = suffix.len()
     );
 
+    let id = DBTEST_TMP_COUNTER.fetch_add(1, Ordering::Relaxed);
+
     let mut dbname = bitcoinleveldb_test::tmp_dir();
     dbname.push_str(suffix);
+    dbname.push('.');
+    dbname.push_str(&std::process::id().to_string());
+    dbname.push('.');
+    dbname.push_str(&id.to_string());
 
     tracing::trace!(
         target: "bitcoinleveldb_dbtest::tests",
         label = "dbtest_fixture_tmp_dbname_with_suffix.exit",
-        dbname_len = dbname.len()
+        dbname_len = dbname.len(),
+        id = id
     );
 
     dbname
@@ -2332,8 +2344,7 @@ fn db_test_manual_compaction() {
 
 #[traced_test]
 fn db_test_open_options() {
-    let mut dbname = bitcoinleveldb_test::tmp_dir();
-    dbname.push_str("/db_options_test");
+    let mut dbname = dbtest_fixture_tmp_dbname_with_suffix("/db_options_test");
     let _ = destroy_db(&dbname, &Options::default());
 
     let mut open_db = |options: &Options| -> (Status, Option<*mut dyn DB>) {
@@ -2385,43 +2396,49 @@ fn db_test_open_options() {
         None => {}
     }
 }
-#[test] fn db_test_destroy_empty_dir() {
-    todo!();
-    /*
-    
-      std::string dbname = test::TmpDir() + "/db_empty_dir";
-      TestEnv env(Env::Default());
-      env.DeleteDir(dbname);
-      ASSERT_TRUE(!env.FileExists(dbname));
 
-      Options opts;
-      opts.env = &env;
+#[traced_test]
+fn db_test_destroy_empty_dir() {
+    let mut dbname = dbtest_fixture_tmp_dbname_with_suffix("/db_empty_dir");
 
-      ASSERT_OK(env.CreateDir(dbname));
-      ASSERT_TRUE(env.FileExists(dbname));
-      std::vector<std::string> children;
-      ASSERT_OK(env.GetChildren(dbname, &children));
-      // The stock Env's do not filter out '.' and '..' special files.
-      ASSERT_EQ(2, children.size());
-      ASSERT_OK(DestroyDB(dbname, opts));
-      ASSERT_TRUE(!env.FileExists(dbname));
+    let env: Rc<RefCell<TestEnv>> =
+        Rc::new(RefCell::new(TestEnv::new(PosixEnv::shared())));
 
-      // Should also be destroyed if Env is filtering out dot files.
-      env.SetIgnoreDotFiles(true);
-      ASSERT_OK(env.CreateDir(dbname));
-      ASSERT_TRUE(env.FileExists(dbname));
-      ASSERT_OK(env.GetChildren(dbname, &children));
-      ASSERT_EQ(0, children.size());
-      ASSERT_OK(DestroyDB(dbname, opts));
-      ASSERT_TRUE(!env.FileExists(dbname));
+    let _ = env.borrow_mut().delete_dir(&dbname);
+    assert!(!env.borrow_mut().file_exists(&dbname));
 
-    */
+    let env_for_options: Rc<RefCell<dyn Env>> = env.clone();
+    let opts = Options::with_env(env_for_options);
+
+    assert!(env.borrow_mut().create_dir(&dbname).is_ok());
+    assert!(env.borrow_mut().file_exists(&dbname));
+
+    let mut children: Vec<String> = Vec::new();
+    assert!(env.borrow_mut().get_children(&dbname, &mut children as *mut Vec<String>).is_ok());
+
+    // The stock Env's do not filter out '.' and '..' special files.
+    assert_eq!(2, children.len());
+
+    assert!(destroy_db(&dbname, &opts).is_ok());
+    assert!(!env.borrow_mut().file_exists(&dbname));
+
+    // Should also be destroyed if Env is filtering out dot files.
+    env.borrow_mut().set_ignore_dot_files(true);
+
+    assert!(env.borrow_mut().create_dir(&dbname).is_ok());
+    assert!(env.borrow_mut().file_exists(&dbname));
+
+    children.clear();
+    assert!(env.borrow_mut().get_children(&dbname, &mut children as *mut Vec<String>).is_ok());
+    assert_eq!(0, children.len());
+
+    assert!(destroy_db(&dbname, &opts).is_ok());
+    assert!(!env.borrow_mut().file_exists(&dbname));
 }
 
 #[traced_test]
 fn db_test_destroy_opendb() {
-    let mut dbname = bitcoinleveldb_test::tmp_dir();
-    dbname.push_str("/open_db_dir");
+    let mut dbname = dbtest_fixture_tmp_dbname_with_suffix("/open_db_dir");
 
     let env = PosixEnv::shared();
     let _ = env.borrow_mut().delete_dir(&dbname);
@@ -2455,8 +2472,7 @@ fn db_test_destroy_opendb() {
 
 #[traced_test]
 fn db_test_locking() {
-    let mut dbname = bitcoinleveldb_test::tmp_dir();
-    dbname.push_str("/locking_test");
+    let mut dbname = dbtest_fixture_tmp_dbname_with_suffix("/locking_test");
     let _ = destroy_db(&dbname, &Options::default());
 
     let mut opts = Options::default();

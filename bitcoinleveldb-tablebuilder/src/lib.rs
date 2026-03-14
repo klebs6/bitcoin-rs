@@ -15,3 +15,4 @@ x!{table_builder_status}
 x!{table_builder_write_block}
 x!{table_builder_write_raw_block}
 x!{test_util}
+x!{table_builder_borrowed_filter_policy_adapter}

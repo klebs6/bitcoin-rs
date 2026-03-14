@@ -13,3 +13,4 @@ pub(crate) use bitcoinleveldb_dbimpl::*;
 pub(crate) use bitcoinleveldb_slice::*;
 pub(crate) use bitcoinleveldb_file::*;
 pub(crate) use bitcoinleveldb_posixenv::*;
+pub(crate) use bitcoinleveldb_env::*;

@@ -6,7 +6,8 @@ fn db_test_randomized() {
     let mut rnd = Random::new(bitcoinleveldb_test::random_seed() as u32);
 
     let mut body = |dbtest: &mut DBTest| {
-        let mut model = ModelDB::new(dbtest.current_options());
+        let opts = dbtest.current_options();
+        let mut model = ModelDB::new(&opts);
         const N: i32 = 10000;
 
         let mut model_snap: Option<Box<dyn Snapshot>> = None;

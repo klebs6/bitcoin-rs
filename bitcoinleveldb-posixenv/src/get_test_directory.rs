@@ -20,13 +20,18 @@ impl GetTestDirectory for PosixEnv {
                 env
             }
             _ => {
-                let uid = unsafe { libc::geteuid() as i32 };
-                let path = format!("/tmp/leveldbtest-{uid}");
+                let uid = unsafe { libc::geteuid() as u32 };
+                let pid = std::process::id();
+
+                let path = format!("/tmp/leveldbtest-{}-{}", uid, pid);
+
                 debug!(
                     dir = %path,
                     uid,
-                    "PosixEnv::get_test_directory: using default test directory path"
+                    pid,
+                    "PosixEnv::get_test_directory: using uid+pid-scoped default test directory path"
                 );
+
                 path
             }
         };
@@ -36,23 +41,22 @@ impl GetTestDirectory for PosixEnv {
             (*result).push_str(&chosen);
         }
 
-        // Best-effort to create the directory. Status is ignored exactly
-        // like the original C++, since it may already exist.
         let create_status = self.create_dir(&chosen);
-        if !create_status.is_ok() && !create_status.is_io_error() && !create_status.is_not_found() {
-            // Only log truly unexpected errors; callers are not supposed to
-            // rely on this succeeding.
+
+        if !create_status.is_ok()
+            && !create_status.is_io_error()
+            && !create_status.is_not_found()
+        {
             warn!(
-                dir    = %chosen,
+                dir = %chosen,
                 status = %create_status.to_string(),
-                "PosixEnv::get_test_directory: CreateDir returned non-OK status (ignored)"
+                "PosixEnv::get_test_directory: CreateDir returned unexpected non-OK status (ignored)"
             );
         }
 
         crate::Status::ok()
     }
 }
-
 #[cfg(test)]
 mod posix_env_get_test_directory_tests {
     use super::*;

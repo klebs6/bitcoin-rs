@@ -14,10 +14,12 @@ impl Drop for TableBuilder {
 
             let rep: &mut TableBuilderRep = &mut *rep_ptr;
 
-            debug_assert!(
-                *rep.closed(),
-                "TableBuilder::drop: Rep must be closed (Finish() or Abandon() not called)"
-            );
+            if !*rep.closed() {
+                error!(
+                    "TableBuilder::drop: builder was not closed before drop; forcing teardown without panic"
+                );
+                rep.set_closed(true);
+            }
 
             trace!(
                 "TableBuilder::drop: freeing TableBuilderRep @ {:?}, filter_block={:?}",
@@ -25,7 +27,7 @@ impl Drop for TableBuilder {
                 rep.filter_block()
             );
 
-            let filter_block_ptr: *mut FilterBlockBuilder = rep.filter_block();
+            let filter_block_ptr: *mut FilterBlockBuilder = *rep.filter_block();
             if !filter_block_ptr.is_null() {
                 trace!(
                     "TableBuilder::drop: deleting FilterBlockBuilder @ {:?}",

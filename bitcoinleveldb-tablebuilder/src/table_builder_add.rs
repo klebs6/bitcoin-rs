@@ -9,11 +9,7 @@ impl TableBuilder {
     ///
     /// REQUIRES: Finish(), Abandon() have not been called
     ///
-    pub fn add(
-        &mut self,
-        key_:  &Slice,
-        value: &Slice,
-    ) {
+    pub fn add(&mut self, key_: &Slice, value: &Slice) {
         unsafe {
             let rep_ptr = self.rep_ptr_mut();
             assert!(
@@ -50,7 +46,7 @@ impl TableBuilder {
             }
 
             if num_entries > 0 {
-                let options_ptr = r.options();
+                let options_ptr = *r.options();
                 assert!(
                     !options_ptr.is_null(),
                     "TableBuilder::add: options pointer is null"
@@ -59,8 +55,7 @@ impl TableBuilder {
                 let cmp_box: &Arc<dyn SliceComparator> = opts.comparator();
                 let cmp: &dyn SliceComparator = &**cmp_box;
 
-                let last_key_bytes = r.last_key_().as_bytes();
-                let last_key_slice = Slice::from(last_key_bytes);
+                let last_key_slice = Slice::from(r.last_key_().as_slice());
                 let cmp_result = cmp.compare(key_, &last_key_slice);
 
                 assert!(
@@ -75,7 +70,7 @@ impl TableBuilder {
                     "TableBuilder::add: data_block must be empty when pending_index_entry is true"
                 );
 
-                let options_ptr = r.options();
+                let options_ptr = *r.options();
                 assert!(
                     !options_ptr.is_null(),
                     "TableBuilder::add: options pointer is null while building pending index entry"
@@ -84,8 +79,7 @@ impl TableBuilder {
                 let cmp_box: &Arc<dyn SliceComparator> = opts.comparator();
                 let cmp: &dyn SliceComparator = &**cmp_box;
 
-                let mut last_key_bytes: Vec<u8> =
-                    r.last_key_().as_bytes().to_vec();
+                let mut last_key_bytes: Vec<u8> = r.last_key_().clone();
 
                 let key_bytes: &[u8] = {
                     let ptr = *key_.data();
@@ -95,7 +89,7 @@ impl TableBuilder {
 
                 cmp.find_shortest_separator(&mut last_key_bytes, key_bytes);
 
-                r.set_last_key_(String::from_utf8_lossy(&last_key_bytes).to_string());
+                r.set_last_key_(last_key_bytes);
 
                 let mut handle_encoding = String::new();
                 {
@@ -104,8 +98,7 @@ impl TableBuilder {
                     handle.encode_to(enc_ptr);
                 }
 
-                let last_key_slice =
-                    Slice::from(r.last_key_().as_bytes());
+                let last_key_slice = Slice::from(r.last_key_().as_slice());
                 let handle_slice =
                     Slice::from(handle_encoding.as_bytes());
 
@@ -119,7 +112,7 @@ impl TableBuilder {
                 r.set_pending_index_entry(false);
             }
 
-            let filter_block_ptr: *mut FilterBlockBuilder = r.filter_block();
+            let filter_block_ptr: *mut FilterBlockBuilder = *r.filter_block();
             if !filter_block_ptr.is_null() {
                 let fb: &mut FilterBlockBuilder = &mut *filter_block_ptr;
                 trace!(
@@ -136,9 +129,8 @@ impl TableBuilder {
                     core::slice::from_raw_parts(ptr, len)
                 };
 
-                r.set_last_key_(String::new());
-                r.last_key_mut()
-                    .push_str(&String::from_utf8_lossy(key_bytes));
+                r.last_key__mut().clear();
+                r.last_key__mut().extend_from_slice(key_bytes);
             }
 
             let new_num = num_entries.saturating_add(1);
@@ -156,7 +148,7 @@ impl TableBuilder {
             let estimated_block_size =
                 r.data_block().current_size_estimate();
 
-            let options_ptr = r.options();
+            let options_ptr = *r.options();
             assert!(
                 !options_ptr.is_null(),
                 "TableBuilder::add: options pointer is null when computing block size"

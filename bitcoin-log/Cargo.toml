@@ -1197,6 +1197,3 @@ cpp-authors = [
     "฿tcDrak <btcdrak@users.noreply.github.com>",
     "“jkcd” <“jkreadsemail@gmail.com”>",
 ]
-
-[profile.test]
-test-threads = 1

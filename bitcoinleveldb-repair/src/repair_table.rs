@@ -23,14 +23,14 @@ impl Repairer {
         let copy_no: u64 = *self.next_file_number();
         *self.next_file_number_mut() = copy_no.wrapping_add(1);
 
-        let copy = table_file_name(self.dbname(), copy_no);
+        let copy_target = table_file_name(self.dbname(), copy_no);
 
         let mut file_ptr: *mut Box<dyn WritableFile> = ptr::null_mut();
-        let mut s = self.env_mut().new_writable_file(&copy, &mut file_ptr);
+        let mut s = self.env_mut().new_writable_file(&copy_target, &mut file_ptr);
 
         if !s.is_ok() {
             debug!(
-                file = %copy,
+                file = %copy_target,
                 status = %s.to_string(),
                 "Repairer::repair_table: NewWritableFile failed"
             );
@@ -104,7 +104,7 @@ impl Repairer {
 
         if counter > 0 && s.is_ok() {
             let orig = table_file_name(self.dbname(), table_no);
-            s = self.env_mut().rename_file(&copy, &orig);
+            s = self.env_mut().rename_file(&copy_target, &orig);
             if s.is_ok() {
                 info!(
                     table_no,
@@ -116,12 +116,12 @@ impl Repairer {
         }
 
         if !s.is_ok() {
-            let s_del = self.env_mut().delete_file(&copy);
+            let s_del = self.env_mut().delete_file(&copy_target);
             debug!(
-                file = %copy,
+                file = %copy_target,
                 ok = s_del.is_ok(),
                 status = %s_del.to_string(),
-                "Repairer::repair_table: cleanup delete copy"
+                "Repairer::repair_table: cleanup delete copy_target"
             );
         }
 

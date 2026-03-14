@@ -4,12 +4,16 @@ crate::ix!();
 impl Version {
 
     /// Call func(arg, level, f) for every file that overlaps user_key in order
-    /// from newest to oldest.  
+    /// from newest to oldest.
     ///
     /// If an invocation of func returns false, makes no more calls.
-    /// 
+    ///
     /// REQUIRES: user portion of internal_key == user_key.
     ///
+    /// Invariant:
+    /// level selection for files above level 0 must use the exact internal-key
+    /// comparator owned by the active VersionSet. This forbids comparator drift
+    /// between memtable ordering and persisted-file ordering.
     pub fn for_each_overlapping(
         &mut self,
         user_key_:     &Slice,
@@ -27,7 +31,19 @@ impl Version {
             internal_key_.size()
         );
 
-        let ucmp = unsafe { (*self.vset()).icmp().user_comparator() };
+        let vset_ptr = self.vset();
+        assert!(
+            !vset_ptr.is_null(),
+            "Version::for_each_overlapping: vset pointer must not be null"
+        );
+
+        let icmp: &InternalKeyComparator = unsafe { (*vset_ptr).icmp() };
+        let ucmp = icmp.user_comparator();
+
+        assert!(
+            !ucmp.is_null(),
+            "Version::for_each_overlapping: user comparator pointer must not be null"
+        );
 
         // Search level-0 in order from newest to oldest.
         let mut tmp: Vec<*mut FileMetaData> = Vec::with_capacity(self.files()[0].len());
@@ -71,8 +87,6 @@ impl Version {
         }
 
         // Search other levels.
-        let icmp = InternalKeyComparator::new(null_slice_comparator());
-
         for level in 1..(NUM_LEVELS as i32) {
             let files_level = &self.files()[level as usize];
             let num_files   = files_level.len();
@@ -81,7 +95,7 @@ impl Version {
             }
 
             // Binary search to find earliest index whose largest key >= internal_key.
-            let index = find_file(&icmp, files_level, internal_key_) as usize;
+            let index = find_file(icmp, files_level, internal_key_) as usize;
             if index < num_files {
                 let fptr = files_level[index];
                 if fptr.is_null() {

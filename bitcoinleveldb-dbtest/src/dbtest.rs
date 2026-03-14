@@ -202,9 +202,7 @@ impl Default for DBTest {
         let env_box = Box::new(SpecialEnv::new(base_env));
         let env_ptr: *mut SpecialEnv = Box::into_raw(env_box);
 
-        // NOTE: translated from: dbname_ = bitcoinleveldb_test::TmpDir() + "/db_test";
-        let mut dbname = bitcoinleveldb_test::tmp_dir();
-        dbname.push_str("/db_test");
+        let dbname = crate::dbtest_fixture_tmp_dbname_with_suffix("/db_test");
 
         // NOTE: translated from: DestroyDB(dbname_, Options());
         // Ignore status as in the C++ original.

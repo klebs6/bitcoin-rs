@@ -1186,8 +1186,3 @@ cpp-authors = [
     "“jkcd” <“jkreadsemail@gmail.com”>",
 ]
 
-[profile.test]
-codegen-units = 1
-debug = true
-lto = false
-opt-level = 3

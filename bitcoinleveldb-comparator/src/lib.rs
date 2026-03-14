@@ -7,3 +7,4 @@ x!{find_shortest_separator}
 x!{interface}
 x!{mock_comparator}
 x!{mock_corrupt_comparator}
+x!{borrowed_slice_comparator_adapter}

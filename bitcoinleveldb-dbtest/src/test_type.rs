@@ -47,87 +47,103 @@ lazy_static!{
 
 pub struct TableTest {}
 
-#[test] fn table_test_approximate_offset_of_plain() {
-    todo!();
-    /*
-    
-      TableConstructor c(BytewiseComparator());
-      c.Add("k01", "hello");
-      c.Add("k02", "hello2");
-      c.Add("k03", std::string(10000, 'x'));
-      c.Add("k04", std::string(200000, 'x'));
-      c.Add("k05", std::string(300000, 'x'));
-      c.Add("k06", "hello3");
-      c.Add("k07", std::string(100000, 'x'));
-      std::vector<std::string> keys;
-      KVMap kvmap;
-      Options options;
-      options.block_size = 1024;
-      options.compression = kNoCompression;
-      c.Finish(options, &keys, &kvmap);
+#[traced_test]
+fn table_test_approximate_offset_of_plain() {
+    let mut c = TableConstructor::new(Box::new(BytewiseComparatorImpl::default()));
 
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("abc"), 0, 0));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k01"), 0, 0));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k01a"), 0, 0));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k02"), 0, 0));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k03"), 0, 0));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k04"), 10000, 11000));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k04a"), 210000, 211000));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k05"), 210000, 211000));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k06"), 510000, 511000));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k07"), 510000, 511000));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("xyz"), 610000, 612000));
+    c.base_mut().add(&"k01".to_string(), &Slice::from("hello"));
+    c.base_mut().add(&"k02".to_string(), &Slice::from("hello2"));
 
-    */
+    let v3 = "x".repeat(10000);
+    let v4 = "x".repeat(200000);
+    let v5 = "x".repeat(300000);
+    let v7 = "x".repeat(100000);
+
+    c.base_mut().add(&"k03".to_string(), &Slice::from(&v3));
+    c.base_mut().add(&"k04".to_string(), &Slice::from(&v4));
+    c.base_mut().add(&"k05".to_string(), &Slice::from(&v5));
+    c.base_mut().add(&"k06".to_string(), &Slice::from("hello3"));
+    c.base_mut().add(&"k07".to_string(), &Slice::from(&v7));
+
+    let mut options = Options::default();
+    options.set_block_size(1024);
+    options.set_compression(CompressionType::None);
+
+    let data = c.base().data().clone();
+    let s = c.finish_impl(&options, &data);
+    assert!(s.is_ok());
+
+    assert!(between(c.approximate_offset_of(&Slice::from("abc")), 0, 0));
+    assert!(between(c.approximate_offset_of(&Slice::from("k01")), 0, 0));
+    assert!(between(c.approximate_offset_of(&Slice::from("k01a")), 0, 0));
+    assert!(between(c.approximate_offset_of(&Slice::from("k02")), 0, 0));
+    assert!(between(c.approximate_offset_of(&Slice::from("k03")), 0, 0));
+    assert!(between(c.approximate_offset_of(&Slice::from("k04")), 10000, 11000));
+    assert!(between(c.approximate_offset_of(&Slice::from("k04a")), 210000, 211000));
+    assert!(between(c.approximate_offset_of(&Slice::from("k05")), 210000, 211000));
+    assert!(between(c.approximate_offset_of(&Slice::from("k06")), 510000, 511000));
+    assert!(between(c.approximate_offset_of(&Slice::from("k07")), 510000, 511000));
+    assert!(between(c.approximate_offset_of(&Slice::from("xyz")), 610000, 612000));
 }
 
 pub fn snappy_compression_supported() -> bool {
-    
-    todo!();
-        /*
-            std::string out;
-      Slice in = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-      return Snappy_Compress(in.data(), in.size(), &out);
-        */
+    cfg!(feature = "leveldb_snappy")
 }
 
-#[test] fn table_test_approximate_offset_of_compressed() {
-    todo!();
-    /*
-    
-      if (!SnappyCompressionSupported()) {
-        fprintf(stderr, "skipping compression tests\n");
+#[traced_test]
+fn table_test_approximate_offset_of_compressed() {
+    if !snappy_compression_supported() {
+        eprintln!("skipping compression tests");
         return;
-      }
+    }
 
-      Random rnd(301);
-      TableConstructor c(BytewiseComparator());
-      std::string tmp;
-      c.Add("k01", "hello");
-      c.Add("k02", test::CompressibleString(&rnd, 0.25, 10000, &tmp));
-      c.Add("k03", "hello3");
-      c.Add("k04", test::CompressibleString(&rnd, 0.25, 10000, &tmp));
-      std::vector<std::string> keys;
-      KVMap kvmap;
-      Options options;
-      options.block_size = 1024;
-      options.compression = kSnappyCompression;
-      c.Finish(options, &keys, &kvmap);
+    let mut rnd = Random::new(301);
+    let mut c = TableConstructor::new(Box::new(BytewiseComparatorImpl::default()));
+    let mut tmp = String::new();
 
-      // Expected upper and lower bounds of space used by compressible strings.
-      static const int kSlop = 1000;  // Compressor effectiveness varies.
-      const int expected = 2500;      // 10000 * compression ratio (0.25)
-      const int min_z = expected - kSlop;
-      const int max_z = expected + kSlop;
+    c.base_mut().add(&"k01".to_string(), &Slice::from("hello"));
 
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("abc"), 0, kSlop));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k01"), 0, kSlop));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k02"), 0, kSlop));
-      // Have now emitted a large compressible string, so adjust expected offset.
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k03"), min_z, max_z));
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("k04"), min_z, max_z));
-      // Have now emitted two large compressible strings, so adjust expected offset.
-      ASSERT_TRUE(Between(c.ApproximateOffsetOf("xyz"), 2 * min_z, 2 * max_z));
+    let k02 = bitcoinleveldb_test::compressible_string(
+        (&mut rnd) as *mut Random,
+        0.25,
+        10000,
+        &mut tmp as *mut String,
+    ).to_string();
 
-    */
+    c.base_mut().add(&"k02".to_string(), &Slice::from(&k02));
+    c.base_mut().add(&"k03".to_string(), &Slice::from("hello3"));
+
+    let k04 = bitcoinleveldb_test::compressible_string(
+        (&mut rnd) as *mut Random,
+        0.25,
+        10000,
+        &mut tmp as *mut String,
+    ).to_string();
+
+    c.base_mut().add(&"k04".to_string(), &Slice::from(&k04));
+
+    let mut options = Options::default();
+    options.set_block_size(1024);
+    options.set_compression(CompressionType::Snappy);
+
+    let data = c.base().data().clone();
+    let s = c.finish_impl(&options, &data);
+    assert!(s.is_ok());
+
+    // Expected upper and lower bounds of space used by compressible strings.
+    static K_SLOP: u64 = 1000; // Compressor effectiveness varies.
+    let expected: u64 = 2500;  // 10000 * compression ratio (0.25)
+    let min_z: u64 = expected - K_SLOP;
+    let max_z: u64 = expected + K_SLOP;
+
+    assert!(between(c.approximate_offset_of(&Slice::from("abc")), 0, K_SLOP));
+    assert!(between(c.approximate_offset_of(&Slice::from("k01")), 0, K_SLOP));
+    assert!(between(c.approximate_offset_of(&Slice::from("k02")), 0, K_SLOP));
+
+    // Have now emitted a large compressible string, so adjust expected offset.
+    assert!(between(c.approximate_offset_of(&Slice::from("k03")), min_z, max_z));
+    assert!(between(c.approximate_offset_of(&Slice::from("k04")), min_z, max_z));
+
+    // Have now emitted two large compressible strings, so adjust expected offset.
+    assert!(between(c.approximate_offset_of(&Slice::from("xyz")), 2 * min_z, 2 * max_z));
 }

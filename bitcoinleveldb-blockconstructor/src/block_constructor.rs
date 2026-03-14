@@ -1,7 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-blockconstructor/src/block_constructor.rs ]
 crate::ix!();
 
-pub struct BlockConstructor {
+#[repr(C)]
+pub struct BlockConstructor  {
     base:       Constructor,
     comparator: Box<dyn SliceComparator>,
     data:       String,

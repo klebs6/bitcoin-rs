@@ -2,11 +2,21 @@
 crate::ix!();
 
 impl Table {
-
+    /// Preconditions:
+    /// - `size` is the authoritative byte length of `file`.
+    ///
+    /// Postconditions:
+    /// - On success, the returned table reads index and data blocks under the exact comparator
+    ///   and filter policy carried by `options`.
+    ///
+    /// Invariant:
+    /// - Replacing the caller-supplied comparator or filter policy with bytewise or null
+    ///   defaults is forbidden. SSTable lookup order must remain identical to the ordering
+    ///   regime active when the table was built or recovered.
     pub fn open(
         options: &Options,
-        file:    Rc<RefCell<dyn RandomAccessFile>>,
-        size:    u64,
+        file: Rc<RefCell<dyn RandomAccessFile>>,
+        size: u64,
     ) -> Result<Box<Table>, Status> {
         trace!(
             "Table::open: size={}, footer_len={}",
@@ -15,7 +25,7 @@ impl Table {
         );
 
         if size < FOOTER_ENCODED_LENGTH as u64 {
-            let msg       = b"file is too short to be an sstable";
+            let msg = b"file is too short to be an sstable";
             let msg_slice = Slice::from(&msg[..]);
             error!(
                 "Table::open: file too short to be an sstable (size={}, required_min={})",
@@ -25,14 +35,11 @@ impl Table {
             return Err(Status::corruption(&msg_slice, None));
         }
 
-        let mut footer_buf   = vec![0u8; FOOTER_ENCODED_LENGTH];
+        let mut footer_buf = vec![0u8; FOOTER_ENCODED_LENGTH];
         let mut footer_input = Slice::default();
-
         let read_offset = size - FOOTER_ENCODED_LENGTH as u64;
 
         let s_read_footer = {
-            use bitcoinleveldb_file::RandomAccessFileRead;
-
             let file_ref = file.borrow();
             trace!(
                 "Table::open: reading footer from file='{}' at offset={} size={}",
@@ -40,7 +47,6 @@ impl Table {
                 read_offset,
                 FOOTER_ENCODED_LENGTH
             );
-
             RandomAccessFileRead::read(
                 &*file_ref,
                 read_offset,
@@ -51,25 +57,21 @@ impl Table {
         };
 
         if !s_read_footer.is_ok() {
-            error!(
-                "Table::open: RandomAccessFile::read for footer returned non-OK status"
-            );
+            error!("Table::open: RandomAccessFile::read for footer returned non-OK status");
             return Err(s_read_footer);
         }
 
-        let mut footer           = Footer::default();
+        let mut footer = Footer::default();
         let mut footer_input_mut = footer_input;
-        let s_footer             = footer.decode_from(&mut footer_input_mut as *mut Slice);
+        let s_footer = footer.decode_from(&mut footer_input_mut as *mut Slice);
 
         if !s_footer.is_ok() {
-            error!(
-                "Table::open: Footer::decode_from returned non-OK status"
-            );
+            error!("Table::open: Footer::decode_from returned non-OK status");
             return Err(s_footer);
         }
 
         let mut index_block_contents = BlockContents::default();
-        let mut status               = Status::ok();
+        let mut status = Status::ok();
 
         if status.is_ok() {
             let mut opt = ReadOptions::default();
@@ -92,9 +94,7 @@ impl Table {
         }
 
         if !status.is_ok() {
-            error!(
-                "Table::open: failed while reading index block; status not OK"
-            );
+            error!("Table::open: failed while reading index block; status not OK");
             return Err(status);
         }
 
@@ -105,6 +105,7 @@ impl Table {
         let cache_id = unsafe {
             let cache_ptr_ref = options.block_cache();
             let cache_ptr: *mut Cache = *cache_ptr_ref;
+
             if cache_ptr.is_null() {
                 0
             } else {
@@ -113,9 +114,11 @@ impl Table {
             }
         };
 
-        let mut rep_options = options.clone();
-        rep_options.set_comparator(Arc::new(BytewiseComparatorImpl::default()));
-        rep_options.set_filter_policy(Arc::new(NullFilterPolicy::default()));
+        // Preserve the caller-supplied ordering and filtering regime exactly.
+        // Replacing these with bytewise/null defaults breaks recovered SSTable lookup.
+        let rep_options = options.clone();
+
+        trace!("Table::open: preserving caller-supplied comparator and filter policy for TableRep");
 
         let rep = TableRep::new(
             rep_options.clone(),
@@ -126,7 +129,7 @@ impl Table {
         );
 
         let rep_box: Box<TableRep> = Box::new(rep);
-        let rep_ptr: *mut TableRep  = Box::into_raw(rep_box);
+        let rep_ptr: *mut TableRep = Box::into_raw(rep_box);
 
         // Preserve the original heap/ptr semantics: allocate Table on the heap,
         // convert to a raw pointer for read_meta, then rewrap into Box for return.
@@ -143,7 +146,6 @@ impl Table {
         }
     }
 }
-
 #[cfg(test)]
 mod table_open_file_size_behavior {
     use super::*;

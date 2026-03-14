@@ -1,7 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-memtable/src/memtable_constructor.rs ]
 crate::ix!();
 
-pub struct MemTableConstructor {
+#[repr(C)]
+pub struct MemTableConstructor  {
     base:                Constructor,
     user_comparator:     Box<dyn SliceComparator>,
     internal_comparator: InternalKeyComparator,

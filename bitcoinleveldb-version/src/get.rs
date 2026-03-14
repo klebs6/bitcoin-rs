@@ -3,6 +3,12 @@ crate::ix!();
 
 impl Version {
 
+    /// Preserves comparator identity across the complete Version read path.
+    ///
+    /// Postcondition:
+    /// file selection, table lookup, and user-key acceptance performed by this
+    /// call all observe the active configured comparator rather than a fallback
+    /// bytewise comparator.
     pub fn get(
         &mut self,
         options: &ReadOptions,
@@ -26,14 +32,17 @@ impl Version {
             (*stats).set_seek_file(core::ptr::null_mut());
             (*stats).set_seek_file_level(-1);
 
-            let ucmp_ptr = {
-                let vset_ptr = self.vset();
-                assert!(
-                    !vset_ptr.is_null(),
-                    "Version::get: vset pointer must not be null"
-                );
-                (*vset_ptr).icmp().user_comparator()
-            };
+            let vset_ptr = self.vset();
+            assert!(
+                !vset_ptr.is_null(),
+                "Version::get: vset pointer must not be null"
+            );
+
+            let ucmp_ptr = (*vset_ptr).icmp().user_comparator();
+            assert!(
+                !ucmp_ptr.is_null(),
+                "Version::get: user comparator pointer must not be null"
+            );
 
             let user_key_slice_for_saver = k.user_key();
             let user_key_for_saver = Slice::from_ptr_len(
@@ -41,22 +50,41 @@ impl Version {
                 *user_key_slice_for_saver.size(),
             );
 
-            let saver = SaverBuilder::default()
-                .state(SaverState::NotFound)
-                .ucmp({
-                    assert!(
-                        !ucmp_ptr.is_null(),
-                        "Version::get: user comparator pointer must not be null"
+            // Rebuild Box<dyn SliceComparator> from the trait object pointer
+            // by using a forwarding adapter that never takes ownership of the
+            // configured comparator. This preserves the configured comparator
+            // across memtable and table-file reads.
+            let forwarded_ucmp = match borrowed_slice_comparator_adapter_box(ucmp_ptr) {
+                Some(forwarded_ucmp) => forwarded_ucmp,
+                None => {
+                    error!(
+                        target: "bitcoinleveldb_version::get",
+                        label = "version.get.forwarded_comparator_unavailable",
+                        comparator_ptr = ?ucmp_ptr
                     );
-                    // Rebuild Box<dyn SliceComparator> from the trait object pointer
-                    // by using a thin wrapper that forwards to it; we cannot take
-                    // ownership of the original comparator.
-                    Box::new(BytewiseComparatorImpl::default())
-                })
+                    let message = Slice::from("version-get-forwarded-comparator");
+                    return Status::corruption(&message, None);
+                }
+            };
+
+            let saver = match SaverBuilder::default()
+                .state(SaverState::NotFound)
+                .ucmp(forwarded_ucmp)
                 .user_key_(user_key_for_saver)
                 .value(value)
                 .build()
-                .unwrap();
+            {
+                Ok(saver) => saver,
+                Err(build_error) => {
+                    error!(
+                        target: "bitcoinleveldb_version::get",
+                        label = "version.get.saver_build_failed",
+                        build_error = ?build_error
+                    );
+                    let message = Slice::from("version-get-saver-build");
+                    return Status::corruption(&message, None);
+                }
+            };
 
             let mut state = State {
                 saver,

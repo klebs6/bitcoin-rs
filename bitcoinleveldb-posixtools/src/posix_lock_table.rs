@@ -9,8 +9,13 @@ crate::ix!();
 /// 
 /// Instances are thread-safe because all member data is guarded by a mutex.
 ///
-pub struct PosixLockTable {
-    mu: Mutex<PosixLockTableInner>,
+lazy_static! {
+    pub static ref BITCOINLEVELDB_POSIX_LOCK_TABLE_GLOBAL: Mutex<PosixLockTableInner> =
+        Mutex::new(PosixLockTableInner::default());
+}
+
+pub struct PosixLockTable  {
+    mu_: (),
 }
 
 impl PosixLockTable {
@@ -19,17 +24,17 @@ impl PosixLockTable {
     pub fn insert(&mut self, fname: &str) -> bool {
         trace!(
             file = fname,
-            "PosixLockTable::insert: acquiring mutex"
+            "PosixLockTable::insert: acquiring process-global mutex"
         );
 
-        let mut guard = self.mu.lock();
+        let mut guard = BITCOINLEVELDB_POSIX_LOCK_TABLE_GLOBAL.lock();
 
         let inserted = guard.locked_files.insert(fname.to_string());
 
         debug!(
             file = fname,
             inserted,
-            "PosixLockTable::insert: updated locked file set"
+            "PosixLockTable::insert: updated process-global locked file set"
         );
 
         inserted
@@ -39,27 +44,26 @@ impl PosixLockTable {
     pub fn remove(&mut self, fname: &str) {
         trace!(
             file = fname,
-            "PosixLockTable::remove: acquiring mutex"
+            "PosixLockTable::remove: acquiring process-global mutex"
         );
 
-        let mut guard = self.mu.lock();
+        let mut guard = BITCOINLEVELDB_POSIX_LOCK_TABLE_GLOBAL.lock();
 
         let removed = guard.locked_files.remove(fname);
 
         debug!(
             file = fname,
             removed,
-            "PosixLockTable::remove: updated locked file set"
+            "PosixLockTable::remove: updated process-global locked file set"
         );
     }
 }
 
 impl Default for PosixLockTable {
+
     fn default() -> Self {
-        trace!("PosixLockTable::default: creating new lock table");
-        PosixLockTable {
-            mu: Mutex::new(PosixLockTableInner::default()),
-        }
+        trace!("PosixLockTable::default: constructing process-global lock-table handle");
+        Self { mu_: () }
     }
 }
 
@@ -69,9 +73,10 @@ pub struct PosixLockTableInner {
 }
 
 impl Default for PosixLockTableInner {
+
     fn default() -> Self {
         trace!(
-            "PosixLockTableInner::default: creating empty lock set"
+            "PosixLockTableInner::default: creating empty process-global lock set"
         );
         Self {
             locked_files: HashSet::new(),

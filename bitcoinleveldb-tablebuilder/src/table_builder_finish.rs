@@ -37,7 +37,7 @@ impl TableBuilder {
             let mut index_block_handle      = BlockHandle::default();
 
             if self.ok() {
-                let filter_block_ptr: *mut FilterBlockBuilder = r.filter_block();
+                let filter_block_ptr: *mut FilterBlockBuilder = *r.filter_block();
                 if !filter_block_ptr.is_null() {
                     trace!("TableBuilder::finish: writing filter block");
 
@@ -55,7 +55,7 @@ impl TableBuilder {
             if self.ok() {
                 trace!("TableBuilder::finish: writing metaindex block");
 
-                let options_ptr = r.options();
+                let options_ptr = *r.options();
                 assert!(
                     !options_ptr.is_null(),
                     "TableBuilder::finish: options pointer is null while writing metaindex block"
@@ -65,7 +65,7 @@ impl TableBuilder {
                 let mut meta_index_block = BlockBuilder::new(options_ptr);
                 meta_index_block.set_block_restart_interval(1);
 
-                let filter_block_ptr: *mut FilterBlockBuilder = r.filter_block();
+                let filter_block_ptr: *mut FilterBlockBuilder = *r.filter_block();
                 if !filter_block_ptr.is_null() {
                     let mut key = String::from("filter.");
 
@@ -110,7 +110,7 @@ impl TableBuilder {
                 );
 
                 if *r.pending_index_entry() {
-                    let options_ptr = r.options();
+                    let options_ptr = *r.options();
                     assert!(
                         !options_ptr.is_null(),
                         "TableBuilder::finish: options pointer is null while finalizing index entry"
@@ -119,10 +119,9 @@ impl TableBuilder {
                     let cmp_box: &Arc<dyn SliceComparator> = opts.comparator();
                     let cmp: &dyn SliceComparator = &**cmp_box;
 
-                    let mut last_key_bytes: Vec<u8> =
-                        r.last_key_().as_bytes().to_vec();
+                    let mut last_key_bytes: Vec<u8> = r.last_key_().clone();
                     cmp.find_short_successor(&mut last_key_bytes);
-                    r.set_last_key_(String::from_utf8_lossy(&last_key_bytes).to_string());
+                    r.set_last_key_(last_key_bytes);
 
                     let mut handle_encoding = String::new();
                     {
@@ -131,8 +130,7 @@ impl TableBuilder {
                         handle.encode_to(enc_ptr);
                     }
 
-                    let last_key_slice =
-                        Slice::from(r.last_key_().as_bytes());
+                    let last_key_slice = Slice::from(r.last_key_().as_slice());
                     let handle_slice =
                         Slice::from(handle_encoding.as_bytes());
 

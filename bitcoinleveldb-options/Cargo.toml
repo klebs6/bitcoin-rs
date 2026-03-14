@@ -24,6 +24,10 @@ version = "0.1.19"
 path = "../bitcoinleveldb-cache"
 version = "0.1.19"
 
+[dependencies.bitcoinleveldb-posixenv]
+path = "../bitcoinleveldb-posixenv"
+version = "0.1.1"
+
 [dependencies.bitcoinleveldb-comparator]
 path = "../bitcoinleveldb-comparator"
 version = "0.1.19"

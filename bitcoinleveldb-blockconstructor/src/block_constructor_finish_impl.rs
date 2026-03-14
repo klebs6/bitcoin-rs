@@ -3,11 +3,7 @@ crate::ix!();
 
 impl BlockConstructor {
 
-    pub fn finish_impl(
-        &mut self,
-        options: &Options,
-        data:    &KVMap,
-    ) -> crate::Status {
+    pub fn finish_impl(&mut self, options: &Options, data: &KVMap) -> crate::Status {
         let existing_block = self.block_ptr();
         let data_len       = self.data_string().len();
 
@@ -34,9 +30,16 @@ impl BlockConstructor {
         let mut builder = BlockBuilder::new(opts_ptr);
 
         // To satisfy BlockBuilder's strictly-increasing key requirement,
-        // iterate over the entries in sorted key order.
+        // iterate over the entries in comparator order rather than UTF-8 lexical order.
+        let comparator: &dyn SliceComparator = self.comparator_ref();
+
         let mut entries: Vec<(&String, &String)> = data.iter().collect();
-        entries.sort_by(|(k1, _), (k2, _)| k1.cmp(k2));
+        entries.sort_by(|(k1, _), (k2, _)| {
+            let key1: Slice = Slice::from(k1.as_bytes());
+            let key2: Slice = Slice::from(k2.as_bytes());
+            let cmp: i32 = comparator.compare(&key1, &key2);
+            cmp.cmp(&0)
+        });
 
         for (key, value) in entries.into_iter() {
             let key_bytes:   &[u8] = key.as_bytes();
@@ -102,7 +105,6 @@ impl BlockConstructor {
         crate::Status::ok()
     }
 }
-
 
 #[cfg(test)]
 mod constructor_kvmap_and_finish_tests {

@@ -25,3 +25,4 @@ bitcoinleveldb-dbimpl           = { path = "../bitcoinleveldb-dbimpl" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
 bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
