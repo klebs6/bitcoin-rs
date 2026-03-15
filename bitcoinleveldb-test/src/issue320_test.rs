@@ -158,8 +158,7 @@ fn issue320_test() {
         let mut snapshots: Vec<*const LevelDBSnapshot> =
             vec![core::ptr::null(); 100usize];
 
-        let mut dbpath = crate::harness::tmp_dir();
-        dbpath.push_str("/leveldb_issue320_test");
+        let dbpath = unique_db_path("/leveldb_issue320_test");
 
         let mut dbname = dbpath.into_bytes();
         dbname.push(0u8);

@@ -39,3 +39,4 @@ pub(crate) use bitcoinleveldb_dbimplinner::*;
 
 #[cfg(test)]
 pub(crate) use tempfile::TempDir;
+pub(crate) use bitcoinleveldb_memenv::*;

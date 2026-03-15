@@ -536,15 +536,13 @@ fn corruption_test_recovery() {
 
     t.build(100);
     t.check(100, 100);
-    t.corrupt(FileType::LogFile, 19, 1);  // WriteBatch tag for first record
+    t.corrupt(FileType::LogFile, 19, 1);
     t.corrupt(
         FileType::LogFile,
         BITCOINLEVELDB_TEST_CORRUPTION_TEST_LOG_BLOCK_SIZE + 1000,
         1,
-    );  // Somewhere in second block
+    );
     t.reopen();
-
-    // The 64 records in the first two log blocks are completely lost.
     t.check(36, 36);
 }
 
@@ -561,7 +559,6 @@ fn corruption_test_recover_write_error() {
 fn corruption_test_new_file_error_during_write() {
     let mut t = CorruptionTest::default();
 
-    // Do enough writing to force minor compaction
     t.env.borrow_mut().set_writable_file_error(true);
 
     let num = 3i32 + ((*Options::default().write_buffer_size()) / (VALUE_SIZE as usize)) as i32;
@@ -614,7 +611,7 @@ fn corruption_test_table_file() {
 fn corruption_test_table_file_repair() {
     let mut t = CorruptionTest::default();
 
-    t.options.set_block_size((2 * VALUE_SIZE) as usize);  // Limit scope of corruption
+    t.options.set_block_size((2 * VALUE_SIZE) as usize);
     t.options.set_paranoid_checks(true);
     t.reopen();
 
@@ -639,7 +636,7 @@ fn corruption_test_table_file_repair() {
 fn corruption_test_table_file_index_data() {
     let mut t = CorruptionTest::default();
 
-    t.build(10000);  // Enough to build multiple Tables
+    t.build(10000);
 
     let dbi = t.db as *mut DBImpl;
     let compact_status = unsafe { (&mut *dbi).test_compact_mem_table() };
@@ -691,8 +688,6 @@ fn corruption_test_sequence_number_recovery() {
     }.is_ok());
     assert_eq!("v5".to_string(), v);
 
-    // Write something.  If sequence number was not recovered properly,
-    // it will be hidden by an earlier write.
     assert!(unsafe { (&mut *t.db).put(&WriteOptions::default(), &foo, &v6) }.is_ok());
     assert!(unsafe {
         (&mut *t.db).get(
@@ -771,7 +766,6 @@ fn corruption_test_compaction_input_error() {
     t.corrupt(FileType::TableFile, 100, 1);
     t.check(5, 9);
 
-    // Force compactions by writing lots of values
     t.build(10000);
     t.check(10000, 10000);
 }
@@ -786,7 +780,6 @@ fn corruption_test_compaction_input_error_paranoid() {
 
     let dbi = t.db as *mut DBImpl;
 
-    // Make multiple inputs so we need to compact.
     let mut i: i32 = 0i32;
     while i < 2i32 {
         t.build(10);
@@ -804,7 +797,6 @@ fn corruption_test_compaction_input_error_paranoid() {
         (&mut *dbi).compact_range(core::ptr::null(), core::ptr::null());
     }
 
-    // Write must fail because of corrupted table
     let mut tmp1 = String::new();
     let mut tmp2 = String::new();
     let s = unsafe {

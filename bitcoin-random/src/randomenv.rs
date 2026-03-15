@@ -107,11 +107,11 @@ pub fn add_sockaddr(
     unsafe {
         match (*addr).sa_family {
 
-            AF_INET  => hasher.write(
+            libevent_sys::AF_INET  => hasher.write(
                 addr as *mut u8, size_of::<libc::sockaddr_in>()
             ),
 
-            AF_INET6 => hasher.write(
+            libevent_sys::AF_INET6 => hasher.write(
                 addr as *mut u8, size_of::<libc::sockaddr_in6>()
             ),
 

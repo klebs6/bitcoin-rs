@@ -1210,7 +1210,7 @@ impl Default for FaultInjectionTest {
         };
 
         let tiny_cache = new_lru_cache(100usize);
-        let dbname = format!("{}/fault_test", crate::harness::tmp_dir());
+        let dbname = unique_db_path("/fault_test");
 
         let destroy_status = destroydb(&dbname, &Options::default());
         assert!(destroy_status.is_ok());

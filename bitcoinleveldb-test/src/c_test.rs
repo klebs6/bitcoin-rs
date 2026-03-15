@@ -551,9 +551,11 @@ fn dbc_test_main(
         let options: *mut LevelDBOptions;
         let roptions: *mut LevelDBReadOptions;
         let woptions: *mut LevelDBWriteOptions;
-        let dbname: *mut u8;
+        let mut dbname = unique_db_path("leveldb_c_api_roundtrip").into_bytes();
         let mut err: *mut u8 = core::ptr::null_mut();
         let mut run: i32 = -1;
+
+        dbname.push(0u8);
 
         check_condition!(leveldb_major_version() >= 1);
         check_condition!(leveldb_minor_version() >= 1);
@@ -562,8 +564,14 @@ fn dbc_test_main(
         cmp = leveldb_comparator_create(core::ptr::null_mut(), cmp_destroy, cmp_compare, cmp_name);
         env = leveldb_create_default_env();
         cache = leveldb_cache_create_lru(100000usize);
-        dbname = leveldb_env_get_test_directory(env);
-        check_condition!(!dbname.is_null());
+
+        check_condition!(!cmp.is_null());
+        check_condition!(!env.is_null());
+        check_condition!(!cache.is_null());
+
+        let test_directory = leveldb_env_get_test_directory(env);
+        check_condition!(!test_directory.is_null());
+        leveldb_free(test_directory as *mut c_void);
 
         options = leveldb_options_create();
         leveldb_options_set_comparator(options, cmp);
@@ -587,23 +595,23 @@ fn dbc_test_main(
         leveldb_writeoptions_set_sync(woptions, 1u8);
 
         start_phase(b"destroy\0".as_ptr());
-        leveldb_destroy_db(options, dbname as *const u8, (&mut err) as *mut *mut u8);
+        leveldb_destroy_db(options, dbname.as_ptr(), (&mut err) as *mut *mut u8);
         free((&mut err) as *mut *mut u8);
 
         start_phase(b"open_error\0".as_ptr());
-        db = leveldb_open(options, dbname as *const u8, (&mut err) as *mut *mut u8);
+        db = leveldb_open(options, dbname.as_ptr(), (&mut err) as *mut *mut u8);
         check_condition!(!err.is_null());
         free((&mut err) as *mut *mut u8);
 
         start_phase(b"leveldb_free\0".as_ptr());
-        db = leveldb_open(options, dbname as *const u8, (&mut err) as *mut *mut u8);
+        db = leveldb_open(options, dbname.as_ptr(), (&mut err) as *mut *mut u8);
         check_condition!(!err.is_null());
         leveldb_free(err as *mut c_void);
         err = core::ptr::null_mut();
 
         start_phase(b"open\0".as_ptr());
         leveldb_options_set_create_if_missing(options, 1u8);
-        db = leveldb_open(options, dbname as *const u8, (&mut err) as *mut *mut u8);
+        db = leveldb_open(options, dbname.as_ptr(), (&mut err) as *mut *mut u8);
         check_no_error!(err);
         check_get(db, roptions, b"foo\0".as_ptr(), core::ptr::null());
 
@@ -764,10 +772,10 @@ fn dbc_test_main(
 
             leveldb_options_set_create_if_missing(options, 0u8);
             leveldb_options_set_error_if_exists(options, 0u8);
-            leveldb_repair_db(options, dbname as *const u8, (&mut err) as *mut *mut u8);
+            leveldb_repair_db(options, dbname.as_ptr(), (&mut err) as *mut *mut u8);
             check_no_error!(err);
 
-            db = leveldb_open(options, dbname as *const u8, (&mut err) as *mut *mut u8);
+            db = leveldb_open(options, dbname.as_ptr(), (&mut err) as *mut *mut u8);
             check_no_error!(err);
             check_get(db, roptions, b"foo\0".as_ptr(), core::ptr::null());
             check_get(db, roptions, b"bar\0".as_ptr(), core::ptr::null());
@@ -796,9 +804,9 @@ fn dbc_test_main(
             leveldb_close(db);
             db = core::ptr::null_mut();
 
-            leveldb_destroy_db(options, dbname as *const u8, (&mut err) as *mut *mut u8);
+            leveldb_destroy_db(options, dbname.as_ptr(), (&mut err) as *mut *mut u8);
             leveldb_options_set_filter_policy(options, policy);
-            db = leveldb_open(options, dbname as *const u8, (&mut err) as *mut *mut u8);
+            db = leveldb_open(options, dbname.as_ptr(), (&mut err) as *mut *mut u8);
             check_no_error!(err);
 
             leveldb_put(
@@ -852,7 +860,6 @@ fn dbc_test_main(
         leveldb_options_destroy(options);
         leveldb_readoptions_destroy(roptions);
         leveldb_writeoptions_destroy(woptions);
-        leveldb_free(dbname as *mut c_void);
         leveldb_cache_destroy(cache);
         leveldb_comparator_destroy(cmp);
         leveldb_env_destroy(env);

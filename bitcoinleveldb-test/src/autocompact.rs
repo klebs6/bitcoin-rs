@@ -17,7 +17,7 @@ impl Default for AutoCompactTest {
             event = "auto_compact_test_default_entry"
         );
 
-        let dbname = format!("{}/autocompact_test", crate::harness::tmp_dir());
+        let dbname = unique_db_path("/autocompact_test");
         let tiny_cache = new_lru_cache(100usize);
 
         let mut options = Options::default();

@@ -131,8 +131,8 @@ impl AutoFile {
         }
 
         unsafe {
-            let read = libc::fread(pch as *mut libc::c_void, 1, n_size, self.file);
-            if read != n_size {
+            let read_bytes = libc::fread(pch as *mut libc::c_void, 1, n_size, self.file);
+            if read_bytes != n_size {
                 let msg = if libc::feof(self.file) != 0 {
                     "AutoFile::read_ptr: end of file"
                 } else {

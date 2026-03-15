@@ -53,7 +53,7 @@ impl Default for RecoveryTest {
         );
 
         let env = posix_default_env();
-        let dbname = format!("{}/recovery_test", crate::harness::tmp_dir());
+        let dbname = unique_db_path("/recovery_test");
         let _ = destroydb(&dbname, &Options::default());
 
         let mut out = Self {
@@ -629,7 +629,6 @@ fn recovery_test_large_manifest_compacted() {
 
     let old_manifest = t.manifest_file_name();
 
-    // Pad with zeroes to make manifest file very big.
     {
         let len = t.file_size(&old_manifest) as usize;
 
@@ -700,7 +699,6 @@ fn recovery_test_log_file_reuse() {
         assert!(t.put(&"foo".to_string(), &"bar".to_string()).is_ok());
 
         if i == 0i32 {
-            // Compact to ensure current log is empty
             t.compact_mem_table();
         }
 
@@ -733,7 +731,6 @@ fn recovery_test_log_file_reuse() {
 fn recovery_test_multiple_mem_tables() {
     let mut t = RecoveryTest::default();
 
-    // Make a large log.
     const BITCOINLEVELDB_TEST_RECOVERY_TEST_K_NUM: i32 = 1000;
 
     let mut i: i32 = 0i32;
@@ -750,7 +747,6 @@ fn recovery_test_multiple_mem_tables() {
 
     let old_log_file = t.first_log_file();
 
-    // Force creation of multiple memtables by reducing the write buffer size.
     let mut opt = Options::default();
     opt.set_reuse_logs(true);
     opt.set_write_buffer_size((BITCOINLEVELDB_TEST_RECOVERY_TEST_K_NUM * 100 / 2) as usize);
@@ -776,7 +772,6 @@ fn recovery_test_multiple_log_files() {
     t.close();
     assert_eq!(1i32, t.num_logs());
 
-    // Make a bunch of uncompacted log files.
     let old_log = t.first_log_file();
 
     let hello = "hello".to_string();
@@ -806,7 +801,6 @@ fn recovery_test_multiple_log_files() {
         Slice::from(&bar2),
     );
 
-    // Recover and check that all log files were processed.
     t.open(None);
     assert!(1i32 <= t.num_tables());
     assert_eq!(1i32, t.num_logs());
@@ -817,7 +811,6 @@ fn recovery_test_multiple_log_files() {
     assert_eq!("world".to_string(), t.get(&"hello".to_string(), None));
     assert_eq!("there".to_string(), t.get(&"hi".to_string(), None));
 
-    // Test that previous recovery produced recoverable state.
     t.open(None);
     assert!(1i32 <= t.num_tables());
     assert_eq!(1i32, t.num_logs());
@@ -828,7 +821,6 @@ fn recovery_test_multiple_log_files() {
     assert_eq!("world".to_string(), t.get(&"hello".to_string(), None));
     assert_eq!("there".to_string(), t.get(&"hi".to_string(), None));
 
-    // Check that introducing an older log file does not cause it to be re-read.
     t.close();
 
     let stale_write = "stale write".to_string();

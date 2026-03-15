@@ -21,22 +21,13 @@ impl DBImpl {
 
         // Important: avoid holding the DB mutex while doing Env filesystem calls.
         // This reduces lock-ordering deadlocks involving Env scheduling/background work.
+        //
+        // Do not probe `file_exists(dbname)` here. Some Env implementations
+        // (notably in-memory ones) do not model directories as first-class
+        // filesystem entries, so `file_exists(dbname)` may be false even when
+        // `get_children(dbname)` correctly returns live files.
         unsafe {
             self.mutex.unlock();
-        }
-
-        // Some Env implementations have UB on directory enumeration for non-existent paths.
-        // Treat a missing DB directory as an empty listing and return without attempting GC.
-        let dir_exists: bool = self.env.as_mut().file_exists(&self.dbname);
-
-        if !dir_exists {
-            tracing::debug!(
-                dbname = %self.dbname,
-                "delete_obsolete_files: db directory does not exist; skipping directory scan"
-            );
-
-            self.mutex.lock();
-            return;
         }
 
         let mut filenames: Vec<String> = Vec::new();
@@ -51,15 +42,16 @@ impl DBImpl {
             tracing::debug!(
                 dbname = %self.dbname,
                 status = %children_status.to_string(),
-                "delete_obsolete_files: get_children returned non-OK; proceeding with empty/partial listing"
+                "delete_obsolete_files: get_children returned non-OK; aborting deletion pass"
             );
-        } else {
-            tracing::trace!(
-                dbname = %self.dbname,
-                files = filenames.len() as u64,
-                "delete_obsolete_files: directory listing collected"
-            );
+            return;
         }
+
+        tracing::trace!(
+            dbname = %self.dbname,
+            files = filenames.len() as u64,
+            "delete_obsolete_files: directory listing collected"
+        );
 
         // If a background error was set while we dropped the lock, do not attempt GC.
         if !self.bg_error.is_ok() {
@@ -490,5 +482,77 @@ mod obsolete_file_deletion_contract_suite {
         type Sig = fn(&mut DBImpl);
         let _sig: Sig = DBImpl::delete_obsolete_files;
         tracing::debug!("Signature check compiled");
+    }
+
+    #[traced_test]
+    fn delete_obsolete_files_uses_get_children_for_memenv_even_when_dbname_file_exists_is_false() {
+        let dbname = "/memenv/delete_obsolete_files_memenv_regression".to_string();
+
+        let env = new_mem_env(posix_default_env());
+        let options: Options = Options::with_env(env.clone());
+
+        let mut db = std::mem::ManuallyDrop::new(DBImpl::new(&options, &dbname));
+
+        let dbname_exists_before = env.borrow_mut().file_exists(&dbname);
+        tracing::debug!(
+            dbname = %dbname,
+            dbname_exists_before,
+            "MemEnv directory existence probe before creating files"
+        );
+        assert!(
+            !dbname_exists_before,
+            "Regression precondition failed: memenv unexpectedly reports dbname as existing"
+        );
+
+        let dead_table_num: u64 = 93001;
+        let dead_table_path = table_file_name(&dbname, dead_table_num);
+
+        let mut file: *mut Box<dyn WritableFile> = core::ptr::null_mut();
+        let create_status = env
+            .borrow_mut()
+            .new_writable_file(&dead_table_path, (&mut file) as *mut *mut Box<dyn WritableFile>);
+        assert!(create_status.is_ok());
+        assert!(!file.is_null());
+
+        {
+            let mut file_holder: Box<Box<dyn WritableFile>> = unsafe { Box::from_raw(file) };
+            let file_ref: &mut Box<dyn WritableFile> = file_holder.as_mut();
+
+            let payload = Slice::from(b"dead-table".as_slice());
+            let append_status = file_ref.append(&payload);
+            assert!(append_status.is_ok());
+
+            let close_status = file_ref.close();
+            assert!(close_status.is_ok());
+        }
+
+        let dead_table_exists_before = env.borrow_mut().file_exists(&dead_table_path);
+        tracing::debug!(
+            path = %dead_table_path,
+            dead_table_exists_before,
+            "Dead table existence before delete_obsolete_files"
+        );
+        assert!(dead_table_exists_before);
+
+        db.mutex.lock();
+        tracing::info!(
+            "Calling delete_obsolete_files in memenv regression scenario; dead table must be collected"
+        );
+        db.delete_obsolete_files();
+        let still_locked = db.mutex.is_locked();
+        tracing::debug!(still_locked, "Mutex lock state after memenv delete_obsolete_files");
+        assert!(still_locked);
+        unsafe { db.mutex.unlock() };
+
+        let dead_table_exists_after = env.borrow_mut().file_exists(&dead_table_path);
+        tracing::debug!(
+            path = %dead_table_path,
+            dead_table_exists_after,
+            "Dead table existence after delete_obsolete_files"
+        );
+        assert!(
+            !dead_table_exists_after,
+            "Expected dead table to be deleted via get_children scan in memenv"
+        );
     }
 }

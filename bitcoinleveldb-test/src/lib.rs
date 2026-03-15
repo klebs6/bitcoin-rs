@@ -10,3 +10,4 @@ x!{issue200_test}
 x!{issue320_test}
 x!{recovery_test}
 x!{util}
+x!{unique_db_path}

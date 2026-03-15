@@ -4,6 +4,7 @@ version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
+serial_test.workspace = true
 traced-test.workspace = true
 tracing-setup.workspace = true
 

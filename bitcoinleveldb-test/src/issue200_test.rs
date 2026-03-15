@@ -69,8 +69,7 @@ fn issue200_test() {
     );
 
     unsafe {
-        let mut dbpath = crate::harness::tmp_dir();
-        dbpath.push_str("/leveldb_issue200_test");
+        let dbpath = unique_db_path("/leveldb_issue200_test");
 
         let mut dbname = dbpath.into_bytes();
         dbname.push(0u8);

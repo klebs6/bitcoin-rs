@@ -76,8 +76,7 @@ fn issue178_test() {
 
     unsafe {
         // Get rid of any state from an old run.
-        let mut dbpath = crate::harness::tmp_dir();
-        dbpath.push_str("/leveldb_cbug_test");
+        let dbpath = unique_db_path("/leveldb_cbug_test");
 
         let mut dbname = dbpath.into_bytes();
         dbname.push(0u8);

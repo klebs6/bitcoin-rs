@@ -30,3 +30,6 @@ pub(crate) use bitcoinleveldb_repair::*;
 pub(crate) use std::fmt::Display;
 pub(crate) use std::ops::Shl;
 pub(crate) use std::process::exit;
+pub(crate) use serial_test::serial;
+pub(crate) use std::sync::atomic::AtomicU64;
+pub(crate) use std::sync::atomic::Ordering;
