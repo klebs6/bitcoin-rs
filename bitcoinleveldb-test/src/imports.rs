@@ -33,3 +33,5 @@ pub(crate) use std::process::exit;
 pub(crate) use serial_test::serial;
 pub(crate) use std::sync::atomic::AtomicU64;
 pub(crate) use std::sync::atomic::Ordering;
+pub(crate) use tempfile::TempDir;
+pub(crate) use bitcoinleveldb_cfg::*;

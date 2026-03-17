@@ -35,7 +35,6 @@ impl ReuseFileNumber for VersionSet {
 #[cfg(test)]
 mod reuse_file_number_exhaustive_test_suite {
     use super::*;
-    use tracing::{debug, trace};
 
     #[traced_test]
     fn reuse_file_number_rolls_back_only_for_most_recent_allocation_and_wraps() {

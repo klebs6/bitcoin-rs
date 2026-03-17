@@ -1,6 +1,43 @@
 // ---------------- [ File: bitcoinleveldb-versionsetutil/src/add_boundary_inputs.rs ]
 crate::ix!();
 
+fn boundary_trace_internal_key(ikey: &InternalKey) -> String {
+    let encoded = ikey.encode();
+    let mut parsed = ParsedInternalKey::default();
+
+    if parse_internal_key(&encoded, &mut parsed) {
+        format!(
+            "user='{}' seq={} ty={:?}",
+            String::from_utf8_lossy(parsed.user_key().as_bytes()),
+            *parsed.sequence(),
+            *parsed.ty()
+        )
+    } else {
+        format!("<unparsed internal key len={}>", encoded.size())
+    }
+}
+
+fn boundary_trace_file(fptr: *mut FileMetaData) -> String {
+    if fptr.is_null() {
+        return "<null file>".to_string();
+    }
+
+    unsafe {
+        let f = &*fptr;
+        format!(
+            "#{} [{} .. {}] bytes={}",
+            *f.number(),
+            boundary_trace_internal_key(f.smallest()),
+            boundary_trace_internal_key(f.largest()),
+            *f.file_size(),
+        )
+    }
+}
+
+fn boundary_trace_files(files: &Vec<*mut FileMetaData>) -> Vec<String> {
+    files.iter().copied().map(boundary_trace_file).collect()
+}
+
 /// Extracts the largest file b1 from |compaction_files| and then searches for
 /// a b2 in |level_files| for which user_key(u1) = user_key(l2). 
 ///
@@ -37,6 +74,8 @@ pub fn add_boundary_inputs(
         trace!(
             level_file_count      = level_files.len(),
             compaction_file_count = compaction_files_ref.len(),
+            level_files           = ?boundary_trace_files(level_files),
+            compaction_files      = ?boundary_trace_files(compaction_files_ref),
             "add_boundary_inputs: start"
         );
 
@@ -45,7 +84,6 @@ pub fn add_boundary_inputs(
         let has_largest =
             find_largest_key(icmp, compaction_files_ref, &mut largest_key as *mut InternalKey);
 
-        // Quick return if compaction_files is empty.
         if !has_largest {
             debug!(
                 "add_boundary_inputs: compaction_files was empty; returning without changes"
@@ -53,20 +91,31 @@ pub fn add_boundary_inputs(
             return;
         }
 
+        trace!(
+            largest_key = %boundary_trace_internal_key(&largest_key),
+            "add_boundary_inputs: seeded search upper-bound from current compaction set"
+        );
+
         let mut continue_searching = true;
         while continue_searching {
             let smallest_boundary_file =
                 find_smallest_boundary_file(icmp, level_files, &largest_key);
 
-            // If a boundary file was found advance largest_key, otherwise we're done.
             if !smallest_boundary_file.is_null() {
                 let f = &*smallest_boundary_file;
                 debug!(
-                    file_number = *f.number(),
+                    file_number   = *f.number(),
+                    file          = %boundary_trace_file(smallest_boundary_file),
+                    current_bound = %boundary_trace_internal_key(&largest_key),
                     "add_boundary_inputs: adding boundary file to compaction set"
                 );
                 compaction_files_ref.push(smallest_boundary_file);
                 largest_key = f.largest().clone();
+                trace!(
+                    new_largest_key = %boundary_trace_internal_key(&largest_key),
+                    compaction_files = ?boundary_trace_files(compaction_files_ref),
+                    "add_boundary_inputs: advanced search upper-bound after boundary append"
+                );
             } else {
                 trace!(
                     "add_boundary_inputs: no further boundary files found; stopping search"
@@ -77,6 +126,7 @@ pub fn add_boundary_inputs(
 
         trace!(
             final_compaction_file_count = compaction_files_ref.len(),
+            compaction_files            = ?boundary_trace_files(compaction_files_ref),
             "add_boundary_inputs: done"
         );
     }
@@ -354,5 +404,73 @@ mod add_boundary_inputs_spec {
         assert_eq!(f1, harness.compaction_files[0], "First file must be f1");
         assert_eq!(f4, harness.compaction_files[1], "Second file must be f4");
         assert_eq!(f3, harness.compaction_files[2], "Third file must be f3");
+    }
+
+    #[traced_test]
+    fn verify_add_boundary_inputs_skips_same_user_file_that_is_not_strictly_after_current_largest() {
+        let mut harness = BoundaryFilesHarness::new();
+
+        let seed = harness.create_file(
+            1,
+            ikey_from_str("100", 6),
+            ikey_from_str("100", 5),
+        );
+
+        // Same user key, but not a valid boundary: its smallest key sorts before seed.largest().
+        let too_new = harness.create_file(
+            2,
+            ikey_from_str("100", 7),
+            ikey_from_str("100", 6),
+        );
+
+        let boundary1 = harness.create_file(
+            3,
+            ikey_from_str("100", 4),
+            ikey_from_str("100", 3),
+        );
+
+        let boundary2 = harness.create_file(
+            4,
+            ikey_from_str("100", 2),
+            ikey_from_str("100", 1),
+        );
+
+        harness.level_files.push(too_new);
+        harness.level_files.push(boundary2);
+        harness.level_files.push(boundary1);
+        harness.level_files.push(seed);
+
+        harness.compaction_files.push(seed);
+
+        let compaction_ptr = harness.compaction_files_mut();
+        add_boundary_inputs(&harness.icmp, harness.level_files(), compaction_ptr);
+
+        assert_eq!(harness.compaction_files.len(), 3);
+        assert_eq!(harness.compaction_files[0], seed);
+        assert_eq!(harness.compaction_files[1], boundary1);
+        assert_eq!(harness.compaction_files[2], boundary2);
+
+        assert!(
+            !harness.compaction_files.iter().any(|&p| p == too_new),
+            "same-user file must not be appended unless its smallest key is strictly after the current largest key"
+        );
+    }
+
+    #[traced_test]
+    fn verify_add_boundary_inputs_closes_entire_boundary_chain() {
+        let mut harness = BoundaryFilesHarness::new();
+
+        let f1 = harness.create_file(1, ikey_from_str("100", 8), ikey_from_str("100", 7));
+        let f2 = harness.create_file(2, ikey_from_str("100", 6), ikey_from_str("100", 5));
+        let f3 = harness.create_file(3, ikey_from_str("100", 4), ikey_from_str("100", 3));
+        let f4 = harness.create_file(4, ikey_from_str("100", 2), ikey_from_str("100", 1));
+
+        harness.level_files.extend([f4, f3, f2, f1]);
+        harness.compaction_files.push(f1);
+
+        let compaction_ptr = harness.compaction_files_mut();
+        add_boundary_inputs(&harness.icmp, harness.level_files(), compaction_ptr);
+
+        assert_eq!(harness.compaction_files, vec![f1, f2, f3, f4]);
     }
 }

@@ -1,6 +1,43 @@
 // ---------------- [ File: bitcoinleveldb-versionset/src/version_set_setup_other_inputs.rs ]
 crate::ix!();
 
+fn setup_other_inputs_trace_internal_key(ikey: &InternalKey) -> String {
+    let encoded = ikey.encode();
+    let mut parsed = ParsedInternalKey::default();
+
+    if parse_internal_key(&encoded, &mut parsed) {
+        format!(
+            "user='{}' seq={} ty={:?}",
+            String::from_utf8_lossy(parsed.user_key().as_bytes()),
+            *parsed.sequence(),
+            *parsed.ty()
+        )
+    } else {
+        format!("<unparsed internal key len={}>", encoded.size())
+    }
+}
+
+fn setup_other_inputs_trace_file(fptr: *mut FileMetaData) -> String {
+    if fptr.is_null() {
+        return "<null file>".to_string();
+    }
+
+    unsafe {
+        let f = &*fptr;
+        format!(
+            "#{} [{} .. {}] bytes={}",
+            *f.number(),
+            setup_other_inputs_trace_internal_key(f.smallest()),
+            setup_other_inputs_trace_internal_key(f.largest()),
+            *f.file_size(),
+        )
+    }
+}
+
+fn setup_other_inputs_trace_files(files: &Vec<*mut FileMetaData>) -> Vec<String> {
+    files.iter().copied().map(setup_other_inputs_trace_file).collect()
+}
+
 impl CompactionSetupOtherInputs for VersionSet {
     fn setup_other_inputs(&mut self, c: *mut Compaction) {
         trace!("VersionSet::setup_other_inputs: enter; c={:p}", c);
@@ -24,10 +61,23 @@ impl CompactionSetupOtherInputs for VersionSet {
 
             let cur: &mut Version = &mut *cur_ptr;
 
+            info!(
+                level,
+                seeded_inputs0 = ?setup_other_inputs_trace_files(&(*c).inputs()[0]),
+                level_files    = ?setup_other_inputs_trace_files(&cur.files()[level as usize]),
+                "VersionSet::setup_other_inputs: before boundary expansion on the level being compacted"
+            );
+
             add_boundary_inputs(
                 self.icmp(),
                 &cur.files()[level as usize],
                 &mut (*c).inputs_mut()[0],
+            );
+
+            info!(
+                level,
+                inputs0 = ?setup_other_inputs_trace_files(&(*c).inputs()[0]),
+                "VersionSet::setup_other_inputs: after boundary expansion on the level being compacted"
             );
 
             self.get_range(
@@ -43,7 +93,26 @@ impl CompactionSetupOtherInputs for VersionSet {
                 &mut (*c).inputs_mut()[1] as *mut Vec<*mut FileMetaData>,
             );
 
-            // Get entire range covered by compaction
+            info!(
+                level,
+                smallest    = %setup_other_inputs_trace_internal_key(&smallest),
+                largest     = %setup_other_inputs_trace_internal_key(&largest),
+                raw_inputs1 = ?setup_other_inputs_trace_files(&(*c).inputs()[1]),
+                "VersionSet::setup_other_inputs: raw overlapping files from the next level before boundary expansion"
+            );
+
+            add_boundary_inputs(
+                self.icmp(),
+                &cur.files()[(level + 1) as usize],
+                &mut (*c).inputs_mut()[1],
+            );
+
+            info!(
+                level,
+                inputs1 = ?setup_other_inputs_trace_files(&(*c).inputs()[1]),
+                "VersionSet::setup_other_inputs: after boundary expansion on the next level"
+            );
+
             let mut all_start = InternalKey::default();
             let mut all_limit = InternalKey::default();
 
@@ -54,8 +123,6 @@ impl CompactionSetupOtherInputs for VersionSet {
                 &mut all_limit as *mut InternalKey,
             );
 
-            // See if we can grow the number of inputs in "level" without
-            // changing the number of "level+1" files we pick up.
             if !(*c).inputs()[1].is_empty() {
                 let mut expanded0: Vec<*mut FileMetaData> = Vec::new();
 
@@ -67,6 +134,12 @@ impl CompactionSetupOtherInputs for VersionSet {
                 );
 
                 add_boundary_inputs(self.icmp(), &cur.files()[level as usize], &mut expanded0);
+
+                trace!(
+                    level,
+                    expanded0 = ?setup_other_inputs_trace_files(&expanded0),
+                    "VersionSet::setup_other_inputs: candidate expanded input set on the compacted level"
+                );
 
                 let inputs0_size: i64 = total_file_size(&(*c).inputs()[0]);
                 let inputs1_size: i64 = total_file_size(&(*c).inputs()[1]);
@@ -94,6 +167,26 @@ impl CompactionSetupOtherInputs for VersionSet {
                         &mut expanded1 as *mut Vec<*mut FileMetaData>,
                     );
 
+                    trace!(
+                        level,
+                        new_start     = %setup_other_inputs_trace_internal_key(&new_start),
+                        new_limit     = %setup_other_inputs_trace_internal_key(&new_limit),
+                        raw_expanded1 = ?setup_other_inputs_trace_files(&expanded1),
+                        "VersionSet::setup_other_inputs: raw candidate next-level input set before boundary expansion"
+                    );
+
+                    add_boundary_inputs(
+                        self.icmp(),
+                        &cur.files()[(level + 1) as usize],
+                        &mut expanded1,
+                    );
+
+                    trace!(
+                        level,
+                        expanded1 = ?setup_other_inputs_trace_files(&expanded1),
+                        "VersionSet::setup_other_inputs: candidate next-level input set after boundary expansion"
+                    );
+
                     if expanded1.len() == (*c).inputs()[1].len() {
                         info!(
                             "Expanding@{} {}+{} ({}+{} bytes) to {}+{} ({}+{} bytes)",
@@ -106,6 +199,14 @@ impl CompactionSetupOtherInputs for VersionSet {
                             expanded1.len(),
                             expanded0_size,
                             inputs1_size
+                        );
+                        info!(
+                            level,
+                            new_start = %setup_other_inputs_trace_internal_key(&new_start),
+                            new_limit = %setup_other_inputs_trace_internal_key(&new_limit),
+                            expanded0 = ?setup_other_inputs_trace_files(&expanded0),
+                            expanded1 = ?setup_other_inputs_trace_files(&expanded1),
+                            "VersionSet::setup_other_inputs: accepted expanded input sets"
                         );
 
                         smallest = new_start;
@@ -124,8 +225,6 @@ impl CompactionSetupOtherInputs for VersionSet {
                 }
             }
 
-            // Compute the set of grandparent files that overlap this compaction
-            // (parent == level+1; grandparent == level+2)
             if level + 2 < (NUM_LEVELS as i32) {
                 let gp_ptr: *mut Vec<*mut FileMetaData> =
                     (*c).grandparents_mut() as *mut Vec<*mut FileMetaData>;
@@ -136,9 +235,16 @@ impl CompactionSetupOtherInputs for VersionSet {
                     &all_limit as *const InternalKey,
                     gp_ptr,
                 );
+
+                trace!(
+                    level,
+                    all_start    = %setup_other_inputs_trace_internal_key(&all_start),
+                    all_limit    = %setup_other_inputs_trace_internal_key(&all_limit),
+                    grandparents = ?setup_other_inputs_trace_files((*c).grandparents()),
+                    "VersionSet::setup_other_inputs: selected overlapping grandparent files"
+                );
             }
 
-            // Update the place where we will do the next compaction for this level.
             self.compact_pointer_mut()[level as usize] = largest.encode().to_string();
 
             let edit_ptr: *mut VersionEdit = (*c).edit();
@@ -147,6 +253,14 @@ impl CompactionSetupOtherInputs for VersionSet {
                 "VersionSet::setup_other_inputs: compaction edit pointer is null"
             );
             (*edit_ptr).set_compact_pointer(level, &largest);
+
+            info!(
+                level,
+                compact_pointer = %setup_other_inputs_trace_internal_key(&largest),
+                final_inputs0   = ?setup_other_inputs_trace_files(&(*c).inputs()[0]),
+                final_inputs1   = ?setup_other_inputs_trace_files(&(*c).inputs()[1]),
+                "VersionSet::setup_other_inputs: finalized compaction inputs and compact pointer"
+            );
         }
 
         trace!("VersionSet::setup_other_inputs: exit");
@@ -156,65 +270,6 @@ impl CompactionSetupOtherInputs for VersionSet {
 #[cfg(test)]
 mod version_set_setup_other_inputs_exhaustive_test_suite {
     use super::*;
-    use std::path::{Path, PathBuf};
-    use std::time::{SystemTime, UNIX_EPOCH};
-    use tracing::{debug, error, info, trace, warn};
-
-    fn make_unique_temp_db_dir(prefix: &str) -> PathBuf {
-        let pid = std::process::id();
-        let nanos = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map(|d| d.as_nanos())
-            .unwrap_or(0);
-
-        let mut p = std::env::temp_dir();
-        p.push(format!("{prefix}_{pid}_{nanos}"));
-        p
-    }
-
-    fn remove_dir_all_best_effort(dir: &Path) {
-        match std::fs::remove_dir_all(dir) {
-            Ok(()) => trace!(dir = %dir.display(), "removed temp db dir"),
-            Err(e) => warn!(dir = %dir.display(), error = ?e, "failed to remove temp db dir (best effort)"),
-        }
-    }
-
-    fn assert_status_ok(st: &Status, context: &'static str) {
-        if !st.is_ok() {
-            error!(?st, context, "unexpected non-ok Status");
-            panic!("unexpected non-ok Status in {context}");
-        }
-        trace!(context, "Status OK");
-    }
-
-    fn make_ikey(user_key: &str, seq: u64) -> InternalKey {
-        InternalKey::new(&Slice::from(user_key), seq, ValueType::TypeValue)
-    }
-
-    fn make_internal_key_comparator_from_options(options: &Options) -> InternalKeyComparator {
-        let ucmp_ptr: *const dyn SliceComparator =
-            options.comparator().as_ref() as *const dyn SliceComparator;
-        InternalKeyComparator::new(ucmp_ptr)
-    }
-
-    struct RawMutexTestGuard {
-        mu: *mut RawMutex,
-    }
-
-    impl RawMutexTestGuard {
-        fn lock(mu: *mut RawMutex) -> Self {
-            trace!(mu_ptr = %format!("{:p}", mu), "RawMutexTestGuard::lock");
-            unsafe { (*mu).lock() };
-            Self { mu }
-        }
-    }
-
-    impl Drop for RawMutexTestGuard {
-        fn drop(&mut self) {
-            trace!(mu_ptr = %format!("{:p}", self.mu), "RawMutexTestGuard::drop (unlock)");
-            unsafe { (*self.mu).unlock() };
-        }
-    }
 
     #[traced_test]
     fn setup_other_inputs_is_safe_on_null_compaction_pointer() {
@@ -302,6 +357,83 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
 
             assert!(in0 >= 1, "expected at least one input at base level");
         }
+
+        remove_dir_all_best_effort(&dir);
+    }
+
+    #[traced_test]
+    fn setup_other_inputs_appends_boundary_chain_on_next_level() {
+        let dir = make_unique_temp_db_dir("versionset_setup_other_inputs_next_level_boundary");
+        std::fs::create_dir_all(&dir).unwrap();
+        let dbname = Box::new(dir.to_string_lossy().to_string());
+
+        let env = PosixEnv::shared();
+        let mut options = Box::new(Options::with_env(env));
+        options.set_create_if_missing(true);
+        options.set_error_if_exists(false);
+
+        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
+        let mut mu = Box::new(RawMutex::INIT);
+
+        let mut vs = VersionSet::new(
+            dbname.as_ref(),
+            options.as_ref(),
+            table_cache.as_mut() as *mut TableCache,
+            icmp.as_ref() as *const InternalKeyComparator,
+        );
+
+        let mut save_manifest: bool = false;
+        let st0 = vs.recover(&mut save_manifest as *mut bool);
+        assert_status_ok(&st0, "recover");
+
+        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+
+        let mut e = VersionEdit::default();
+        let f1 = vs.new_file_number();
+        let g1 = vs.new_file_number();
+        let g2 = vs.new_file_number();
+
+        e.add_file(1, f1, 100, &make_ikey("a", 100), &make_ikey("j", 100));
+        e.add_file(2, g1, 100, &make_ikey("a", 90), &make_ikey("k", 90));
+        e.add_file(2, g2, 100, &make_ikey("k", 80), &make_ikey("z", 1));
+
+        assert_status_ok(
+            &vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
+            "log_and_apply next-level boundary files",
+        );
+
+        let cur = vs.current();
+        assert!(!cur.is_null(), "expected non-null current version");
+
+        let level1_files = unsafe { &(*cur).files()[1] };
+        let seeded = find_file_by_number(level1_files, f1);
+        assert!(!seeded.is_null(), "seeded file must be present in level-1");
+
+        let mut c = Box::new(Compaction::new(options.as_ref() as *const Options, 1));
+        c.inputs_mut()[0].push(seeded);
+
+        vs.setup_other_inputs(c.as_mut() as *mut Compaction);
+
+        let got0: Vec<u64> = c
+            .inputs()[0]
+            .iter()
+            .map(|&fptr| unsafe { *(*fptr).number() })
+            .collect();
+        let got1: Vec<u64> = c
+            .inputs()[1]
+            .iter()
+            .map(|&fptr| unsafe { *(*fptr).number() })
+            .collect();
+
+        info!(?got0, ?got1, "next-level boundary setup_other_inputs result");
+
+        assert_eq!(got0, vec![f1], "seeded level input should stay unchanged here");
+        assert_eq!(
+            got1,
+            vec![g1, g2],
+            "expected boundary expansion on inputs[1] to append the same-user-key next-level file"
+        );
 
         remove_dir_all_best_effort(&dir);
     }

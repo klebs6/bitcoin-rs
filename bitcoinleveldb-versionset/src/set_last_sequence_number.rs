@@ -37,7 +37,6 @@ impl VersionSet {
 #[cfg(test)]
 mod set_last_sequence_number_exhaustive_test_suite {
     use super::*;
-    use tracing::{debug, trace};
 
     #[traced_test]
     fn set_last_sequence_number_enforces_monotonicity() {

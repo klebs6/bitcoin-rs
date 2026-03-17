@@ -4,6 +4,7 @@ version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
+tempfile.workspace = true
 serial_test.workspace = true
 traced-test.workspace = true
 tracing-setup.workspace = true
@@ -22,6 +23,7 @@ bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
 bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair" }
+bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

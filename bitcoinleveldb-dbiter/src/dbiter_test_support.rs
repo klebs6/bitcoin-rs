@@ -3,7 +3,6 @@
 
 crate::ix!();
 
-use core::borrow::Borrow;
 use std::borrow::Cow;
 use std::sync::{
     Arc,
@@ -462,4 +461,163 @@ pub(crate) fn make_internal_stub_iterator(
 ) -> Rc<RefCell<LevelDBIterator>> {
     let stub = InternalKeyComparatorStubIterator::new(entries);
     Rc::new(RefCell::new(LevelDBIterator::new(Some(Box::new(stub)))))
+}
+
+#[cfg(test)]
+pub(crate) fn make_internal_stub_iterator_raw(
+    entries: Vec<(Vec<u8>, Vec<u8>)>,
+) -> *mut LevelDBIterator {
+    let stub = InternalKeyComparatorStubIterator::new(entries);
+    Box::into_raw(Box::new(LevelDBIterator::new(Some(Box::new(stub)))))
+}
+
+#[cfg(test)]
+mod dbiter_merger_seam_suite {
+    use super::*;
+    use bitcoinleveldb_comparator::bytewise_comparator;
+    use bitcoinleveldb_key::InternalKeyComparator;
+    use bitcoinleveldb_merger::new_merging_iterator;
+
+    fn build_dbiter_over_merged_children(
+        sequence: SequenceNumber,
+        seed: u32,
+        child_entries: Vec<Vec<(Vec<u8>, Vec<u8>)>>,
+    ) -> Rc<RefCell<LevelDBIterator>> {
+        let mut children: Vec<*mut LevelDBIterator> = child_entries
+            .into_iter()
+            .map(make_internal_stub_iterator_raw)
+            .collect();
+
+        let cmp: Box<dyn SliceComparator> =
+            Box::new(InternalKeyComparator::new(bytewise_comparator()));
+
+        let merged_ptr =
+            new_merging_iterator(cmp, children.as_mut_ptr(), children.len() as i32);
+
+        let merged_box = unsafe { Box::from_raw(merged_ptr) };
+        let merged_rc = Rc::new(RefCell::new(*merged_box));
+
+        let (db, _calls, _last_len) = make_read_sample_counting_db();
+        let user_cmp = make_user_comparator();
+
+        new_db_iterator(db, user_cmp, merged_rc, sequence, seed)
+    }
+
+    #[traced_test]
+    fn dbiter_over_merger_collapses_versions_distributed_across_children() {
+        let it = build_dbiter_over_merged_children(
+            10,
+            1,
+            vec![
+                vec![
+                    make_entry(b"a", 7, ValueType::TypeValue, b"a7"),
+                    make_entry(b"b", 2, ValueType::TypeValue, b"b2"),
+                ],
+                vec![
+                    make_entry(b"a", 5, ValueType::TypeValue, b"a5"),
+                    make_entry(b"c", 1, ValueType::TypeValue, b"c1"),
+                ],
+            ],
+        );
+
+        let got = collect_forward_visible_entries(&it);
+
+        assert_eq!(
+            got,
+            vec![
+                (b"a".to_vec(), b"a7".to_vec()),
+                (b"b".to_vec(), b"b2".to_vec()),
+                (b"c".to_vec(), b"c1".to_vec()),
+            ]
+        );
+    }
+
+    #[traced_test]
+    fn dbiter_over_merger_respects_snapshot_across_children() {
+        let it = build_dbiter_over_merged_children(
+            5,
+            2,
+            vec![
+                vec![
+                    make_entry(b"a", 9, ValueType::TypeValue, b"a9"),
+                    make_entry(b"b", 2, ValueType::TypeValue, b"b2"),
+                ],
+                vec![
+                    make_entry(b"a", 5, ValueType::TypeValue, b"a5"),
+                    make_entry(b"c", 1, ValueType::TypeValue, b"c1"),
+                ],
+            ],
+        );
+
+        let got = collect_forward_visible_entries(&it);
+
+        assert_eq!(
+            got,
+            vec![
+                (b"a".to_vec(), b"a5".to_vec()),
+                (b"b".to_vec(), b"b2".to_vec()),
+                (b"c".to_vec(), b"c1".to_vec()),
+            ]
+        );
+    }
+
+    #[traced_test]
+    fn dbiter_over_merger_respects_tombstone_across_children() {
+        let it = build_dbiter_over_merged_children(
+            6,
+            3,
+            vec![
+                vec![
+                    make_entry(b"a", 6, ValueType::TypeDeletion, b""),
+                    make_entry(b"b", 2, ValueType::TypeValue, b"b2"),
+                ],
+                vec![
+                    make_entry(b"a", 4, ValueType::TypeValue, b"a4"),
+                    make_entry(b"c", 1, ValueType::TypeValue, b"c1"),
+                ],
+            ],
+        );
+
+        let got = collect_forward_visible_entries(&it);
+
+        assert_eq!(
+            got,
+            vec![
+                (b"b".to_vec(), b"b2".to_vec()),
+                (b"c".to_vec(), b"c1".to_vec()),
+            ]
+        );
+    }
+
+    #[traced_test]
+    fn dbiter_over_merger_direction_switch_is_stable() {
+        let it = build_dbiter_over_merged_children(
+            10,
+            4,
+            vec![
+                vec![
+                    make_entry(b"a", 7, ValueType::TypeValue, b"a7"),
+                    make_entry(b"b", 2, ValueType::TypeValue, b"b2"),
+                ],
+                vec![
+                    make_entry(b"a", 5, ValueType::TypeValue, b"a5"),
+                    make_entry(b"c", 1, ValueType::TypeValue, b"c1"),
+                ],
+            ],
+        );
+
+        it.borrow_mut().seek_to_first();
+        assert_eq!(it.borrow().key().as_bytes(), b"a");
+        assert_eq!(it.borrow().value().as_bytes(), b"a7");
+
+        it.borrow_mut().next();
+        assert_eq!(it.borrow().key().as_bytes(), b"b");
+
+        it.borrow_mut().prev();
+        assert_eq!(it.borrow().key().as_bytes(), b"a");
+        assert_eq!(it.borrow().value().as_bytes(), b"a7");
+
+        it.borrow_mut().next();
+        assert_eq!(it.borrow().key().as_bytes(), b"b");
+    }
 }

@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbtest/src/special_env_delegating_env_adapter.rs ]
 crate::ix!();
 
 /// Invariant: this adapter restores the C++ test topology in which `SpecialEnv` is passed

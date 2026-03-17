@@ -31,7 +31,6 @@ impl VersionSet {
 #[cfg(test)]
 mod get_table_cache_exhaustive_test_suite {
     use super::*;
-    use tracing::{debug, trace};
 
     #[traced_test]
     fn table_cache_accessors_round_trip_and_are_stable() {

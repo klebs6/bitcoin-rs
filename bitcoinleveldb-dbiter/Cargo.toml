@@ -21,3 +21,6 @@ bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
+
+[dev-dependencies]
+bitcoinleveldb-merger = { path = "../bitcoinleveldb-merger" }

@@ -17,4 +17,3 @@ x!{start_thread}
 x!{time}
 x!{write_string_to_file}
 x!{write_string_to_file_impl}
-

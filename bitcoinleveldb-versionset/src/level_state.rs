@@ -39,7 +39,6 @@ impl VersionSetBuilderLevelState {
 #[cfg(test)]
 mod level_state_exhaustive_test_suite {
     use super::*;
-    use tracing::{debug, trace};
 
     #[traced_test]
     fn level_state_default_and_mutators_behave_consistently() {

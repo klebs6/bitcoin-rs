@@ -97,27 +97,6 @@ impl VersionSetGetRange for VersionSet {
 #[cfg(test)]
 mod version_set_get_range_exhaustive_test_suite {
     use super::*;
-    use tracing::{debug, error, trace};
-
-    fn make_ikey(user_key: &str, seq: u64) -> InternalKey {
-        InternalKey::new(&Slice::from(user_key), seq, ValueType::TypeValue)
-    }
-
-    fn make_internal_key_comparator_from_options(options: &Options) -> InternalKeyComparator {
-        let ucmp_ptr: *const dyn SliceComparator =
-            options.comparator().as_ref() as *const dyn SliceComparator;
-        InternalKeyComparator::new(ucmp_ptr)
-    }
-
-    fn make_file_meta(number: u64, smallest: &InternalKey, largest: &InternalKey) -> *mut FileMetaData {
-        let mut f = Box::new(FileMetaData::default());
-        *f.number_mut() = number;
-        *f.file_size_mut() = 1;
-        *f.smallest_mut() = smallest.clone();
-        *f.largest_mut() = largest.clone();
-        *f.refs_mut() = 1;
-        Box::into_raw(f)
-    }
 
     #[traced_test]
     fn get_range_computes_min_max_over_inputs_regardless_of_order() {

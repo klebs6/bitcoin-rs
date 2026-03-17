@@ -96,7 +96,6 @@ pub struct DBImpl {
 
 impl DB for DBImpl { }
 
-#[cfg(test)]
 impl DBImpl {
     pub fn clear_background_error_for_test(&mut self) {
         self.bg_error = Status::default();

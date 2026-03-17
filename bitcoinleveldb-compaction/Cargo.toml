@@ -25,3 +25,5 @@ bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
 bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
 bitcoinleveldb-versionsetutil = { path = "../bitcoinleveldb-versionsetutil" }
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
+bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }

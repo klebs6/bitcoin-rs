@@ -33,7 +33,6 @@ impl VersionSet {
 #[cfg(test)]
 mod manifest_file_number_exhaustive_test_suite {
     use super::*;
-    use tracing::{debug, trace};
 
     #[traced_test]
     fn manifest_file_number_accessors_match_and_reflect_updates() {

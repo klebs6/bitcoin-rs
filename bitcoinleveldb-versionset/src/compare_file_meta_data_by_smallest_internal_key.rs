@@ -36,27 +36,6 @@ pub fn compare_file_meta_data_by_smallest_internal_key(
 #[cfg(test)]
 mod compare_file_meta_data_by_smallest_internal_key_exhaustive_test_suite {
     use super::*;
-    use tracing::{debug, error, info, trace, warn};
-
-    fn make_ikey(user_key: &str, seq: u64) -> InternalKey {
-        InternalKey::new(&Slice::from(user_key), seq, ValueType::TypeValue)
-    }
-
-    fn make_internal_key_comparator_from_options(options: &Options) -> InternalKeyComparator {
-        let ucmp_ptr: *const dyn SliceComparator =
-            options.comparator().as_ref() as *const dyn SliceComparator;
-        InternalKeyComparator::new(ucmp_ptr)
-    }
-
-    fn make_file_meta(number: u64, smallest: &InternalKey, largest: &InternalKey) -> *mut FileMetaData {
-        let mut f = Box::new(FileMetaData::default());
-        *f.number_mut() = number;
-        *f.file_size_mut() = 1;
-        *f.smallest_mut() = smallest.clone();
-        *f.largest_mut() = largest.clone();
-        *f.refs_mut() = 1;
-        Box::into_raw(f)
-    }
 
     #[traced_test]
     fn compare_orders_by_smallest_key_then_by_file_number_when_smallest_equal() {

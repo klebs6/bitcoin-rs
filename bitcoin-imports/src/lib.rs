@@ -8,6 +8,17 @@
 #[macro_use] mod multidex; pub use multidex::*;
 #[macro_use] mod util;     pub use util::*;
 
+#[macro_export]
+macro_rules! xt {
+    ($name:ident) => {
+        #[cfg(test)]
+        mod $name;
+
+        #[cfg(test)]
+        pub use $name::*;
+    };
+}
+
 #[macro_export] macro_rules! as_mut_cvoid {
     ($x:expr) => {
         $x as *mut _ as *mut c_void

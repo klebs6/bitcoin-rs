@@ -59,7 +59,6 @@ impl From<VersionSetPtr> for Version {
 #[cfg(test)]
 mod version_set_ptr_exhaustive_test_suite {
     use super::*;
-    use tracing::{debug, trace};
 
     #[traced_test]
     fn version_set_ptr_round_trips_raw_pointer_and_constructs_versions_with_expected_defaults() {

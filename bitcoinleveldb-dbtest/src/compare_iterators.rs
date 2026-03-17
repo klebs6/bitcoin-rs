@@ -33,10 +33,9 @@ pub fn compare_iterators(
     let mut options = ReadOptions::default();
 
     // options.snapshot = model_snap;
-    let model_snapshot_opt: Option<Arc<dyn Snapshot>> = match model_snap {
-        Some(s) => Some(dbtest_snapshot_read_arc_from_snapshot_ref(s)),
-        None => None,
-    };
+    let model_snapshot_opt: Option<Arc<dyn Snapshot + 'static>> =
+        model_snap.map(|s| snapshot_read_arc_from_snapshot_ref(s));
+
     options.set_snapshot(model_snapshot_opt);
 
     let miter: *mut LevelDBIterator = unsafe { (&mut *model).new_iterator(&options) };

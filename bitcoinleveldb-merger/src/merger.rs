@@ -569,3 +569,215 @@ mod merging_iterator_integration_tests {
         );
     }
 }
+
+#[cfg(test)]
+mod internal_key_merger_test_support {
+    use super::*;
+    use bitcoinleveldb_comparator::bytewise_comparator;
+    use bitcoinleveldb_key::{pack_sequence_and_type, InternalKeyComparator, ValueType};
+
+    fn encode_internal_key_bytes(user_key: &[u8], seq: u64, ty: ValueType) -> Vec<u8> {
+        let mut out = Vec::with_capacity(user_key.len() + 8);
+        out.extend_from_slice(user_key);
+        out.extend_from_slice(&pack_sequence_and_type(seq, ty).to_le_bytes());
+        out
+    }
+
+    struct ComparatorAwareStubIterator {
+        entries: Vec<(Vec<u8>, Vec<u8>)>,
+        index: Option<usize>,
+        status: Status,
+        cmp: Box<dyn SliceComparator>,
+    }
+
+    impl ComparatorAwareStubIterator {
+        fn new(
+            cmp: Box<dyn SliceComparator>,
+            mut entries: Vec<(Vec<u8>, Vec<u8>)>,
+        ) -> Self {
+            entries.sort_by(|(ka, _), (kb, _)| {
+                let a = Slice::from_bytes(ka.as_slice());
+                let b = Slice::from_bytes(kb.as_slice());
+                match cmp.compare(&a, &b) {
+                    x if x < 0 => std::cmp::Ordering::Less,
+                    x if x > 0 => std::cmp::Ordering::Greater,
+                    _ => std::cmp::Ordering::Equal,
+                }
+            });
+
+            Self {
+                entries,
+                index: None,
+                status: Status::ok(),
+                cmp,
+            }
+        }
+    }
+
+    impl LevelDBIteratorInterface for ComparatorAwareStubIterator {}
+
+    impl LevelDBIteratorValid for ComparatorAwareStubIterator {
+        fn valid(&self) -> bool { self.index.is_some() }
+    }
+
+    impl LevelDBIteratorSeekToFirst for ComparatorAwareStubIterator {
+        fn seek_to_first(&mut self) {
+            self.index = if self.entries.is_empty() { None } else { Some(0) };
+        }
+    }
+
+    impl LevelDBIteratorSeekToLast for ComparatorAwareStubIterator {
+        fn seek_to_last(&mut self) {
+            self.index = if self.entries.is_empty() {
+                None
+            } else {
+                Some(self.entries.len() - 1)
+            };
+        }
+    }
+
+    impl LevelDBIteratorSeek for ComparatorAwareStubIterator {
+        fn seek(&mut self, target: &Slice) {
+            self.index = self.entries.iter().position(|(k, _)| {
+                let key = Slice::from_bytes(k.as_slice());
+                self.cmp.compare(&key, target) >= 0
+            });
+        }
+    }
+
+    impl LevelDBIteratorNext for ComparatorAwareStubIterator {
+        fn next(&mut self) {
+            if let Some(i) = self.index {
+                let j = i + 1;
+                self.index = if j < self.entries.len() { Some(j) } else { None };
+            }
+        }
+    }
+
+    impl LevelDBIteratorPrev for ComparatorAwareStubIterator {
+        fn prev(&mut self) {
+            if let Some(i) = self.index {
+                self.index = if i == 0 { None } else { Some(i - 1) };
+            }
+        }
+    }
+
+    impl LevelDBIteratorStatus for ComparatorAwareStubIterator {
+        fn status(&self) -> Status { self.status.clone() }
+    }
+
+    impl LevelDBIteratorKey for ComparatorAwareStubIterator {
+        fn key(&self) -> Slice {
+            let i = self.index.expect("key() on invalid ComparatorAwareStubIterator");
+            Slice::from_bytes(self.entries[i].0.as_slice())
+        }
+    }
+
+    impl LevelDBIteratorValue for ComparatorAwareStubIterator {
+        fn value(&self) -> Slice {
+            let i = self.index.expect("value() on invalid ComparatorAwareStubIterator");
+            Slice::from_bytes(self.entries[i].1.as_slice())
+        }
+    }
+
+    fn make_internal_child(entries: Vec<(Vec<u8>, Vec<u8>)>) -> *mut LevelDBIterator {
+        let cmp: Box<dyn SliceComparator> =
+            Box::new(InternalKeyComparator::new(bytewise_comparator()));
+        let inner = ComparatorAwareStubIterator::new(cmp, entries);
+        Box::into_raw(Box::new(LevelDBIterator::new(Some(Box::new(inner)))))
+    }
+
+    fn decode_seq(k: &Slice) -> u64 {
+        let bytes = k.as_bytes();
+        let mut tag = [0u8; 8];
+        tag.copy_from_slice(&bytes[bytes.len() - 8..]);
+        u64::from_le_bytes(tag) >> 8
+    }
+
+    fn decode_user(k: &Slice) -> Vec<u8> {
+        let bytes = k.as_bytes();
+        bytes[..bytes.len() - 8].to_vec()
+    }
+
+    #[traced_test]
+    fn internal_keys_merge_in_user_asc_seq_desc_order_across_children() {
+        let c0 = make_internal_child(vec![
+            (encode_internal_key_bytes(b"a", 7, ValueType::TypeValue), b"a7".to_vec()),
+            (encode_internal_key_bytes(b"b", 2, ValueType::TypeValue), b"b2".to_vec()),
+        ]);
+
+        let c1 = make_internal_child(vec![
+            (encode_internal_key_bytes(b"a", 5, ValueType::TypeValue), b"a5".to_vec()),
+            (encode_internal_key_bytes(b"a", 3, ValueType::TypeValue), b"a3".to_vec()),
+        ]);
+
+        let mut children = [c0, c1];
+        let cmp: Box<dyn SliceComparator> =
+            Box::new(InternalKeyComparator::new(bytewise_comparator()));
+
+        let result_ptr = new_merging_iterator(cmp, children.as_mut_ptr(), 2);
+        let mut it = unsafe { Box::from_raw(result_ptr) };
+
+        it.seek_to_first();
+
+        let mut rows = Vec::new();
+        while it.valid() {
+            rows.push((
+                decode_user(&it.key()),
+                decode_seq(&it.key()),
+                it.value().to_string(),
+            ));
+            it.next();
+        }
+
+        assert_eq!(
+            rows,
+            vec![
+                (b"a".to_vec(), 7, "a7".to_string()),
+                (b"a".to_vec(), 5, "a5".to_string()),
+                (b"a".to_vec(), 3, "a3".to_string()),
+                (b"b".to_vec(), 2, "b2".to_string()),
+            ]
+        );
+    }
+
+    #[traced_test]
+    fn reverse_then_forward_inside_same_user_run_is_stable_for_internal_keys() {
+        let c0 = make_internal_child(vec![
+            (encode_internal_key_bytes(b"a", 7, ValueType::TypeValue), b"a7".to_vec()),
+            (encode_internal_key_bytes(b"b", 2, ValueType::TypeValue), b"b2".to_vec()),
+        ]);
+
+        let c1 = make_internal_child(vec![
+            (encode_internal_key_bytes(b"a", 5, ValueType::TypeValue), b"a5".to_vec()),
+            (encode_internal_key_bytes(b"a", 3, ValueType::TypeValue), b"a3".to_vec()),
+        ]);
+
+        let mut children = [c0, c1];
+        let cmp: Box<dyn SliceComparator> =
+            Box::new(InternalKeyComparator::new(bytewise_comparator()));
+
+        let result_ptr = new_merging_iterator(cmp, children.as_mut_ptr(), 2);
+        let mut it = unsafe { Box::from_raw(result_ptr) };
+
+        it.seek_to_first();
+        assert_eq!(decode_user(&it.key()), b"a".to_vec());
+        assert_eq!(decode_seq(&it.key()), 7);
+
+        it.next();
+        assert_eq!(decode_seq(&it.key()), 5);
+
+        it.next();
+        assert_eq!(decode_seq(&it.key()), 3);
+
+        it.prev();
+        assert_eq!(decode_seq(&it.key()), 5);
+
+        it.next();
+        assert_eq!(decode_seq(&it.key()), 3);
+
+        it.next();
+        assert_eq!(decode_user(&it.key()), b"b".to_vec());
+        assert_eq!(decode_seq(&it.key()), 2);
+    }
+}

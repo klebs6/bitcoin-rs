@@ -14,3 +14,5 @@ pub(crate) use bitcoinleveldb_cfg::*;
 pub(crate) use bitcoinleveldb_comparator::*;
 pub(crate) use bitcoinleveldb_versionsetinterface::*;
 pub(crate) use bitcoinleveldb_versionsetutil::*;
+pub(crate) use bitcoinleveldb_posixenv::*;
+pub(crate) use bitcoinleveldb_tablecache::*;

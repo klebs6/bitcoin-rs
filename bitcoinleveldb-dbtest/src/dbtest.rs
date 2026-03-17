@@ -592,10 +592,8 @@ impl DBTest {
         //   load-bearing datum for reads is the captured sequence number.
         // Therefore we preserve read semantics by materializing an `Arc<SnapshotImpl>`
         // carrying the same sequence number for the duration of this call.
-        let snap_arc: Option<Arc<dyn Snapshot>> = match snapshot {
-            Some(s) => Some(dbtest_snapshot_read_arc_from_snapshot_ref(s)),
-            None => None,
-        };
+        let snap_arc: Option<Arc<dyn Snapshot + 'static>> =
+            snapshot.map(|s| snapshot_read_arc_from_snapshot_ref(s));
         options.set_snapshot(snap_arc);
 
         let mut result = String::new();

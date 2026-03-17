@@ -277,7 +277,7 @@ members = [
     "bitcoinsecp256k1-ecmult", 
     "bitcoinsecp256k1-ecmultgen", 
     "bitcoinsecp256k1-ecmultconst"
-, "bitcoinleveldb-dbimplinner"]
+, "bitcoinleveldb-dbimplinner", "bitcoinleveldb-versionsettestutil"]
 
 [profile.dev]
 debug = 2

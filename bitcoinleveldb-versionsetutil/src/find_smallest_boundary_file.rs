@@ -206,4 +206,46 @@ mod smallest_boundary_file_spec {
             "Among multiple boundary candidates, the one with smallest smallest-key should be chosen"
         );
     }
+
+    #[traced_test]
+    fn verify_find_smallest_boundary_file_requires_strictly_greater_internal_key() {
+        let icmp = InternalKeyComparator::new(bytewise_comparator());
+
+        // Seed file: largest = 100@5
+        let mut seed = FileMetaData::default();
+        seed.set_number(1);
+        seed.set_smallest(ikey_from_str("100", 6));
+        seed.set_largest(ikey_from_str("100", 5));
+
+        // Same user key, but newer internal key: 100@7 sorts *before* 100@5,
+        // so it must NOT count as a boundary file.
+        let mut too_new = FileMetaData::default();
+        too_new.set_number(2);
+        too_new.set_smallest(ikey_from_str("100", 7));
+        too_new.set_largest(ikey_from_str("100", 6));
+
+        // Proper boundary candidate: same user key, strictly after 100@5.
+        let mut boundary = FileMetaData::default();
+        boundary.set_number(3);
+        boundary.set_smallest(ikey_from_str("100", 4));
+        boundary.set_largest(ikey_from_str("100", 3));
+
+        let mut b_seed = Box::new(seed);
+        let mut b_too_new = Box::new(too_new);
+        let mut b_boundary = Box::new(boundary);
+
+        let p_seed: *mut FileMetaData = &mut *b_seed;
+        let p_too_new: *mut FileMetaData = &mut *b_too_new;
+        let p_boundary: *mut FileMetaData = &mut *b_boundary;
+
+        let level_files = vec![p_too_new, p_boundary, p_seed];
+        let largest_key = unsafe { (&*p_seed).largest().clone() };
+
+        let result = find_smallest_boundary_file(&icmp, &level_files, &largest_key);
+
+        assert_eq!(
+            result, p_boundary,
+            "boundary file must be the smallest file whose smallest key is strictly after the seed largest key"
+        );
+    }
 }
