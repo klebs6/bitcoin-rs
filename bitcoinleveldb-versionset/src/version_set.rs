@@ -238,13 +238,13 @@ mod version_set_exhaustive_test_suite {
 
     #[traced_test]
     fn versionset_new_initializes_expected_state_invariants() {
-        let dir = make_unique_temp_db_dir("versionset_new_invariants");
+        let dir = build_unique_temporary_database_directory_path("versionset_new_invariants");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
         let options = Box::new(Options::with_env(env));
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 4));
 
         let vs = VersionSet::new(
@@ -277,6 +277,6 @@ mod version_set_exhaustive_test_suite {
 
         assert!(!vs.current().is_null(), "current version must be initialized in new_internal");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

@@ -26,7 +26,7 @@ mod get_internal_key_comparator_exhaustive_test_suite {
 
     #[traced_test]
     fn internal_key_comparator_accessor_is_stable_and_orders_keys() {
-        let dir = make_unique_temp_db_dir("versionset_icmp_accessor");
+        let dir = build_unique_temporary_database_directory_path("versionset_icmp_accessor");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -35,7 +35,7 @@ mod get_internal_key_comparator_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 8));
 
         let vs = VersionSet::new(
@@ -54,14 +54,14 @@ mod get_internal_key_comparator_exhaustive_test_suite {
         );
         assert_eq!(a, b, "icmp reference should be stable across repeated calls");
 
-        let k1 = make_ikey("a", 100);
-        let k2 = make_ikey("b", 100);
+        let k1 = make_value_internal_key_for_user_key("a", 100);
+        let k2 = make_value_internal_key_for_user_key("b", 100);
         let r = vs
             .get_internal_key_comparator()
             .compare_internal_key(&k1, &k2);
         debug!(r, "compare_internal_key(a,b)");
         assert!(r < 0, "expected internal key for 'a' to compare less than 'b'");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

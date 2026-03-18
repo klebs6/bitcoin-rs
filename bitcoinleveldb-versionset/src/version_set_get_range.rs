@@ -102,7 +102,7 @@ mod version_set_get_range_exhaustive_test_suite {
     fn get_range_computes_min_max_over_inputs_regardless_of_order() {
         let env = PosixEnv::shared();
         let options = Box::new(Options::with_env(env));
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&"tmp".to_string(), options.as_ref(), 1));
 
         let mut vs = VersionSet::new(
@@ -112,9 +112,9 @@ mod version_set_get_range_exhaustive_test_suite {
             icmp.as_ref() as *const InternalKeyComparator,
         );
 
-        let f1 = make_file_meta(1, &make_ikey("b", 1), &make_ikey("d", 1));
-        let f2 = make_file_meta(2, &make_ikey("a", 1), &make_ikey("c", 1));
-        let f3 = make_file_meta(3, &make_ikey("e", 1), &make_ikey("f", 1));
+        let f1 = allocate_test_file_metadata_for_key_range(1, &make_value_internal_key_for_user_key("b", 1), &make_value_internal_key_for_user_key("d", 1));
+        let f2 = allocate_test_file_metadata_for_key_range(2, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("c", 1));
+        let f3 = allocate_test_file_metadata_for_key_range(3, &make_value_internal_key_for_user_key("e", 1), &make_value_internal_key_for_user_key("f", 1));
 
         // Intentionally unsorted input.
         let inputs = vec![f1, f3, f2];
@@ -131,11 +131,11 @@ mod version_set_get_range_exhaustive_test_suite {
         );
 
         assert!(
-            vs.icmp().compare_internal_key(&smallest, &make_ikey("a", 1)) == 0,
+            vs.icmp().compare_internal_key(&smallest, &make_value_internal_key_for_user_key("a", 1)) == 0,
             "smallest must be 'a'"
         );
         assert!(
-            vs.icmp().compare_internal_key(&largest, &make_ikey("f", 1)) == 0,
+            vs.icmp().compare_internal_key(&largest, &make_value_internal_key_for_user_key("f", 1)) == 0,
             "largest must be 'f'"
         );
 
@@ -150,7 +150,7 @@ mod version_set_get_range_exhaustive_test_suite {
     fn get_range2_matches_get_range_on_concatenation() {
         let env = PosixEnv::shared();
         let options = Box::new(Options::with_env(env));
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&"tmp".to_string(), options.as_ref(), 1));
 
         let mut vs = VersionSet::new(
@@ -160,8 +160,8 @@ mod version_set_get_range_exhaustive_test_suite {
             icmp.as_ref() as *const InternalKeyComparator,
         );
 
-        let a = make_file_meta(10, &make_ikey("a", 1), &make_ikey("b", 1));
-        let z = make_file_meta(11, &make_ikey("y", 1), &make_ikey("z", 1));
+        let a = allocate_test_file_metadata_for_key_range(10, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("b", 1));
+        let z = allocate_test_file_metadata_for_key_range(11, &make_value_internal_key_for_user_key("y", 1), &make_value_internal_key_for_user_key("z", 1));
 
         let inputs1 = vec![a];
         let inputs2 = vec![z];
@@ -177,11 +177,11 @@ mod version_set_get_range_exhaustive_test_suite {
         );
 
         assert!(
-            vs.icmp().compare_internal_key(&s1, &make_ikey("a", 1)) == 0,
+            vs.icmp().compare_internal_key(&s1, &make_value_internal_key_for_user_key("a", 1)) == 0,
             "smallest must be 'a'"
         );
         assert!(
-            vs.icmp().compare_internal_key(&l1, &make_ikey("z", 1)) == 0,
+            vs.icmp().compare_internal_key(&l1, &make_value_internal_key_for_user_key("z", 1)) == 0,
             "largest must be 'z'"
         );
 
@@ -195,7 +195,7 @@ mod version_set_get_range_exhaustive_test_suite {
     fn get_range_panics_on_empty_inputs_and_null_out_params() {
         let env = PosixEnv::shared();
         let options = Box::new(Options::with_env(env));
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&"tmp".to_string(), options.as_ref(), 1));
 
         let mut vs = VersionSet::new(
@@ -214,7 +214,7 @@ mod version_set_get_range_exhaustive_test_suite {
         }));
         assert!(r1.is_err(), "get_range must panic on empty inputs");
 
-        let f = make_file_meta(1, &make_ikey("a", 1), &make_ikey("b", 1));
+        let f = allocate_test_file_metadata_for_key_range(1, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("b", 1));
         let nonempty = vec![f];
 
         let r2 = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {

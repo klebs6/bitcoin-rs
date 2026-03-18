@@ -138,7 +138,7 @@ mod version_set_append_version_exhaustive_test_suite {
 
     #[traced_test]
     fn append_version_installs_new_current_increments_refs_and_preserves_old_with_extra_ref() {
-        let dir = make_unique_temp_db_dir("versionset_append_version_basic");
+        let dir = build_unique_temporary_database_directory_path("versionset_append_version_basic");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -147,7 +147,7 @@ mod version_set_append_version_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 16));
 
         let mut vs = VersionSet::new(
@@ -159,7 +159,7 @@ mod version_set_append_version_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
         let old_cur = vs.current();
         assert!(!old_cur.is_null(), "old current must not be null");
@@ -209,18 +209,18 @@ mod version_set_append_version_exhaustive_test_suite {
         // Release our extra ref.
         unsafe { (*old_cur).unref() };
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn append_version_panics_on_null_pointer() {
-        let dir = make_unique_temp_db_dir("versionset_append_version_null");
+        let dir = build_unique_temporary_database_directory_path("versionset_append_version_null");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
         let options = Box::new(Options::with_env(env));
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 1));
 
         let mut vs = VersionSet::new(
@@ -237,6 +237,6 @@ mod version_set_append_version_exhaustive_test_suite {
         debug!(panicked = r.is_err(), "append_version(null) panic check");
         assert!(r.is_err(), "append_version must panic on null input");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

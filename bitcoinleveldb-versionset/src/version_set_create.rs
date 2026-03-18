@@ -58,86 +58,126 @@ mod version_set_create_exhaustive_test_suite {
 
     #[traced_test]
     fn versionset_create_then_recover_creates_current_file_when_missing_allowed() {
-        let mut h = VersionSetCreateHarness::new(
+        let mut harness = VersionSetCreationScenarioHarness::open_for_database_flags(
             "versionset_create_recover_creates_current",
             true,
             false,
         );
 
-        let (st, _save_manifest) = h.recover();
-        assert_status_ok(&st, "recover");
+        let (status, _save_manifest) = harness.recover_into_current_version_set();
+        assert_status_is_ok_or_panic(&status, "recover");
 
-        let current_path = h.dir.join("CURRENT");
+        let current_path = harness.database_directory_path().join("CURRENT");
         debug!(path = %current_path.display(), "checking CURRENT file presence");
         assert!(current_path.exists(), "CURRENT file must exist after successful recover");
 
-        h.drop_versionset_now();
-        remove_dir_all_best_effort(&h.dir);
+        let cleanup_path = harness.database_directory_path().to_path_buf();
+        harness.drop_version_set_instance();
+        remove_directory_tree_best_effort(cleanup_path.as_path());
     }
 
     #[traced_test]
-    fn versionset_create_drop_then_recreate_allows_second_recover_no_lock_leak() {
-        let dir = make_unique_temp_db_dir("versionset_create_drop_recreate");
-        std::fs::create_dir_all(&dir).unwrap();
+    fn versionset_create_drop_then_recreate_allows_second_recover_no_acquire_from_raw_mutex_leak() {
+        let dir = build_unique_temporary_database_directory_path("versionset_create_drop_recreate");
+        match std::fs::create_dir_all(&dir) {
+            Ok(()) => {}
+            Err(error) => {
+                error!(dir = %dir.display(), error = ?error, "failed to create test directory");
+                panic!("versionset_create_drop_then_recreate_allows_second_recover_no_acquire_from_raw_mutex_leak_create_dir_all_failed");
+            }
+        }
 
         let dbname = dir.to_string_lossy().to_string();
 
         {
-            let mut h1 = VersionSetCreateHarness::new("unused_prefix", true, false);
-            h1.dir = dir.clone();
-            h1.dbname = Box::new(dbname.clone());
+            let env = PosixEnv::shared();
+            let mut options = Box::new(Options::with_env(env));
+            options.set_create_if_missing(true);
+            options.set_error_if_exists(false);
 
-            let (st1, _) = h1.recover();
-            assert_status_ok(&st1, "first recover");
+            let icmp = Box::new(
+                build_internal_key_comparator_from_database_options(options.as_ref()),
+            );
+            let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 128));
 
-            h1.drop_versionset_now();
+            let mut versionset = VersionSet::new(
+                &dbname,
+                options.as_ref(),
+                table_cache.as_mut() as *mut TableCache,
+                icmp.as_ref() as *const InternalKeyComparator,
+            );
+
+            let mut save_manifest = false;
+            let status = versionset.recover(&mut save_manifest as *mut bool);
+            assert_status_is_ok_or_panic(&status, "first recover");
         }
 
         {
-            let mut h2 = VersionSetCreateHarness::new("unused_prefix_2", true, false);
-            h2.dir = dir.clone();
-            h2.dbname = Box::new(dbname.clone());
+            let env = PosixEnv::shared();
+            let mut options = Box::new(Options::with_env(env));
+            options.set_create_if_missing(true);
+            options.set_error_if_exists(false);
 
-            let (st2, _) = h2.recover();
-            assert_status_ok(&st2, "second recover");
+            let icmp = Box::new(
+                build_internal_key_comparator_from_database_options(options.as_ref()),
+            );
+            let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 128));
 
-            h2.drop_versionset_now();
+            let mut versionset = VersionSet::new(
+                &dbname,
+                options.as_ref(),
+                table_cache.as_mut() as *mut TableCache,
+                icmp.as_ref() as *const InternalKeyComparator,
+            );
+
+            let mut save_manifest = false;
+            let status = versionset.recover(&mut save_manifest as *mut bool);
+            assert_status_is_ok_or_panic(&status, "second recover");
         }
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(dir.as_path());
     }
 
     #[traced_test]
     fn versionset_create_recover_fails_when_create_if_missing_disabled_and_db_empty() {
-        let mut h = VersionSetCreateHarness::new(
+        let mut harness = VersionSetCreationScenarioHarness::open_for_database_flags(
             "versionset_create_recover_fails_create_if_missing_false",
             false,
             false,
         );
 
-        let (st, _save_manifest) = h.recover();
-        debug!(?st, "recover result when create_if_missing=false");
+        let (status, _save_manifest) = harness.recover_into_current_version_set();
+        debug!(?status, "recover result when create_if_missing=false");
         assert!(
-            !st.is_ok(),
+            !status.is_ok(),
             "recover must fail on empty db when create_if_missing is false"
         );
 
-        h.drop_versionset_now();
-        remove_dir_all_best_effort(&h.dir);
+        let cleanup_path = harness.database_directory_path().to_path_buf();
+        harness.drop_version_set_instance();
+        remove_directory_tree_best_effort(cleanup_path.as_path());
     }
 
     #[traced_test]
     fn versionset_remains_valid_when_box_is_moved() {
-        let dir = make_unique_temp_db_dir("versionset_move_box_check");
-        std::fs::create_dir_all(&dir).unwrap();
+        let dir = build_unique_temporary_database_directory_path("versionset_move_box_check");
+        match std::fs::create_dir_all(&dir) {
+            Ok(()) => {}
+            Err(error) => {
+                error!(dir = %dir.display(), error = ?error, "failed to create test directory");
+                panic!("versionset_remains_valid_when_box_is_moved_create_dir_all_failed");
+            }
+        }
+
         let dbname = dir.to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
         let options_ptr = Box::new(Options::with_env(env));
-        let cmp_ptr = Box::new(make_internal_key_comparator_from_options(options_ptr.as_ref()));
+        let cmp_ptr = Box::new(
+            build_internal_key_comparator_from_database_options(options_ptr.as_ref()),
+        );
         let mut table_cache_ptr = Box::new(TableCache::new(&dbname, options_ptr.as_ref(), 4));
 
-        // construct boxed
         let mut vset = VersionSet::new(
             &dbname,
             options_ptr.as_ref() as *const Options,
@@ -145,19 +185,23 @@ mod version_set_create_exhaustive_test_suite {
             cmp_ptr.as_ref() as *const InternalKeyComparator,
         );
 
-        // perform a basic operation that walks the list
         let mut live = std::collections::HashSet::new();
         vset.add_live_files(&mut live as *mut _);
 
-        // move the box around
-        let mut vec = Vec::new();
-        vec.push(vset);
-        let mut vset = vec.pop().unwrap();
+        let mut versionset_box_stack = Vec::new();
+        versionset_box_stack.push(vset);
+        let mut moved_versionset = match versionset_box_stack.pop() {
+            Some(versionset) => versionset,
+            None => {
+                panic!("versionset_remains_valid_when_box_is_moved_pop_empty_vector");
+            }
+        };
 
-        // list traversal still works
-        let mut live2 = std::collections::HashSet::new();
-        vset.add_live_files(&mut live2 as *mut _);
+        let mut live_after_move = std::collections::HashSet::new();
+        moved_versionset.add_live_files(&mut live_after_move as *mut _);
 
-        assert_eq!(live, live2);
+        assert_eq!(live, live_after_move);
+
+        remove_directory_tree_best_effort(dir.as_path());
     }
 }

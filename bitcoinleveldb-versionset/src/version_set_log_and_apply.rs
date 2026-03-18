@@ -114,7 +114,7 @@ impl VersionEditLogAndApply for VersionSet {
                     "VersionSet::log_and_apply: descriptor_log is null; creating new MANIFEST"
                 );
 
-                // No reason to unlock *mu here since we only hit this path in the
+                // No reason to unacquire_from_raw_mutex *mu here since we only hit this path in the
                 // first call to LogAndApply (when opening the database).
                 assert!(
                     self.descriptor_file().is_null(),
@@ -197,22 +197,22 @@ impl VersionEditLogAndApply for VersionSet {
                 }
             }
 
-            // Unlock during expensive MANIFEST log write
+            // Unacquire_from_raw_mutex during expensive MANIFEST log write
             {
                 tracing::info!(
                     ?tid,
                     mu_ptr = mu as usize,
-                    "VersionSet::log_and_apply: about to unlock mu for MANIFEST write"
+                    "VersionSet::log_and_apply: about to unacquire_from_raw_mutex mu for MANIFEST write"
                 );
 
                 (*mu).unlock();
 
-                let t_unlocked = std::time::Instant::now();
+                let t_unacquire_from_raw_mutexed = std::time::Instant::now();
 
                 tracing::info!(
                     ?tid,
                     mu_ptr = mu as usize,
-                    "VersionSet::log_and_apply: mu unlocked"
+                    "VersionSet::log_and_apply: mu unacquire_from_raw_mutexed"
                 );
 
                 // Write new record to MANIFEST log
@@ -304,18 +304,18 @@ impl VersionEditLogAndApply for VersionSet {
                 tracing::info!(
                     ?tid,
                     mu_ptr = mu as usize,
-                    unlocked_elapsed_ms = t_unlocked.elapsed().as_millis() as u64,
-                    "VersionSet::log_and_apply: about to re-lock mu after MANIFEST write"
+                    unacquire_from_raw_mutexed_elapsed_ms = t_unacquire_from_raw_mutexed.elapsed().as_millis() as u64,
+                    "VersionSet::log_and_apply: about to re-acquire_from_raw_mutex mu after MANIFEST write"
                 );
 
-                let t_relock_wait = std::time::Instant::now();
+                let t_reacquire_from_raw_mutex_wait = std::time::Instant::now();
                 (*mu).lock();
 
                 tracing::info!(
                     ?tid,
                     mu_ptr = mu as usize,
-                    relock_wait_ms = t_relock_wait.elapsed().as_millis() as u64,
-                    "VersionSet::log_and_apply: mu re-locked"
+                    reacquire_from_raw_mutex_wait_ms = t_reacquire_from_raw_mutex_wait.elapsed().as_millis() as u64,
+                    "VersionSet::log_and_apply: mu re-acquire_from_raw_mutexed"
                 );
             }
 
@@ -394,7 +394,7 @@ mod version_set_log_and_apply_exhaustive_test_suite {
 
     #[traced_test]
     fn log_and_apply_persists_edit_so_recover_sees_it() {
-        let dir = make_unique_temp_db_dir("versionset_log_and_apply_persist");
+        let dir = build_unique_temporary_database_directory_path("versionset_log_and_apply_persist");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -403,7 +403,7 @@ mod version_set_log_and_apply_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
         let mut mu = Box::new(RawMutex::INIT);
@@ -417,21 +417,21 @@ mod version_set_log_and_apply_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st0 = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st0, "recover before log_and_apply");
+        assert_status_is_ok_or_panic(&st0, "recover before log_and_apply");
 
-        let manifest_before = find_manifest_file(&dir).expect("MANIFEST-* must exist after recover");
+        let manifest_before = find_manifest_file_in_directory(&dir).expect("MANIFEST-* must exist after recover");
         let size_before = std::fs::metadata(&manifest_before).unwrap().len();
         debug!(path = %manifest_before.display(), size_before, "manifest before");
 
         let mut edit = VersionEdit::default();
         let fnum = vs.new_file_number();
-        let smallest = make_ikey("a", 1);
-        let largest = make_ikey("k", 1);
+        let smallest = make_value_internal_key_for_user_key("a", 1);
+        let largest = make_value_internal_key_for_user_key("k", 1);
         edit.add_file(1, fnum, 100, &smallest, &largest);
 
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
         let st1 = vs.log_and_apply(&mut edit as *mut VersionEdit, mu.as_mut() as *mut RawMutex);
-        assert_status_ok(&st1, "log_and_apply");
+        assert_status_is_ok_or_panic(&st1, "log_and_apply");
 
         let size_after = std::fs::metadata(&manifest_before).unwrap().len();
         debug!(size_after, "manifest after");
@@ -441,7 +441,7 @@ mod version_set_log_and_apply_exhaustive_test_suite {
         options2.set_create_if_missing(false);
         options2.set_error_if_exists(false);
 
-        let icmp2 = Box::new(make_internal_key_comparator_from_options(options2.as_ref()));
+        let icmp2 = Box::new(build_internal_key_comparator_from_database_options(options2.as_ref()));
 
         let mut table_cache2 = Box::new(TableCache::new(dbname.as_ref(), options2.as_ref(), 128));
 
@@ -455,18 +455,18 @@ mod version_set_log_and_apply_exhaustive_test_suite {
         let mut save_manifest2: bool = false;
         let st2 = vs2.recover(&mut save_manifest2 as *mut bool);
         info!(save_manifest2, status = ?st2, "recover after log_and_apply");
-        assert_status_ok(&st2, "recover after log_and_apply");
+        assert_status_is_ok_or_panic(&st2, "recover after log_and_apply");
 
         let n = vs2.num_level_files(1);
         debug!(n, "num_level_files(1) after recover");
         assert!(n >= 1, "expected at least one file in level 1 after recover");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn log_and_apply_multiple_edits_monotonically_increase_file_numbers() {
-        let dir = make_unique_temp_db_dir("versionset_log_and_apply_file_numbers");
+        let dir = build_unique_temporary_database_directory_path("versionset_log_and_apply_file_numbers");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -475,7 +475,7 @@ mod version_set_log_and_apply_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
         let mut mu = Box::new(RawMutex::INIT);
@@ -489,29 +489,29 @@ mod version_set_log_and_apply_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st0 = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st0, "recover");
+        assert_status_is_ok_or_panic(&st0, "recover");
 
         let f1 = vs.new_file_number();
         let f2 = vs.new_file_number();
         debug!(f1, f2, "allocated new file numbers");
         assert!(f2 > f1, "file numbers must be monotonically increasing");
 
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
         let mut e1 = VersionEdit::default();
-        e1.add_file(0, f1, 10, &make_ikey("a", 1), &make_ikey("b", 1));
+        e1.add_file(0, f1, 10, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("b", 1));
         let st1 = vs.log_and_apply(&mut e1 as *mut VersionEdit, mu.as_mut() as *mut RawMutex);
-        assert_status_ok(&st1, "log_and_apply e1");
+        assert_status_is_ok_or_panic(&st1, "log_and_apply e1");
 
         let mut e2 = VersionEdit::default();
-        e2.add_file(0, f2, 10, &make_ikey("c", 1), &make_ikey("d", 1));
+        e2.add_file(0, f2, 10, &make_value_internal_key_for_user_key("c", 1), &make_value_internal_key_for_user_key("d", 1));
         let st2 = vs.log_and_apply(&mut e2 as *mut VersionEdit, mu.as_mut() as *mut RawMutex);
-        assert_status_ok(&st2, "log_and_apply e2");
+        assert_status_is_ok_or_panic(&st2, "log_and_apply e2");
 
         let l0 = vs.num_level_files(0);
         debug!(l0, "num_level_files(0)");
         assert!(l0 >= 2, "expected at least two L0 files after two edits");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

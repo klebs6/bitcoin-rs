@@ -88,7 +88,7 @@ mod version_set_finalize_exhaustive_test_suite {
 
     #[traced_test]
     fn finalize_prefers_level0_file_count_when_it_has_highest_score() {
-        let dir = make_unique_temp_db_dir("versionset_finalize_level0");
+        let dir = build_unique_temporary_database_directory_path("versionset_finalize_level0");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -97,7 +97,7 @@ mod version_set_finalize_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 64));
         let mut mu = Box::new(RawMutex::INIT);
 
@@ -110,18 +110,18 @@ mod version_set_finalize_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
         // Add many L0 files to make L0 the best score.
         for i in 0..12u64 {
             let mut e = VersionEdit::default();
             let fnum = vs.new_file_number();
             let k = format!("k{:02}", i);
-            e.add_file(0, fnum, 10, &make_ikey(&k, 1), &make_ikey(&k, 1));
+            e.add_file(0, fnum, 10, &make_value_internal_key_for_user_key(&k, 1), &make_value_internal_key_for_user_key(&k, 1));
             let s = vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex);
-            assert_status_ok(&s, "log_and_apply L0");
+            assert_status_is_ok_or_panic(&s, "log_and_apply L0");
         }
 
         let cur = vs.current();
@@ -134,12 +134,12 @@ mod version_set_finalize_exhaustive_test_suite {
         assert_eq!(level, 0, "expected compaction_level=0 when L0 dominates");
         assert!(score >= 1.0, "expected compaction_score>=1.0 for L0 dominance");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn finalize_selects_level1_when_level1_bytes_exceed_its_limit() {
-        let dir = make_unique_temp_db_dir("versionset_finalize_level1_bytes");
+        let dir = build_unique_temporary_database_directory_path("versionset_finalize_level1_bytes");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -148,7 +148,7 @@ mod version_set_finalize_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 64));
         let mut mu = Box::new(RawMutex::INIT);
 
@@ -161,18 +161,18 @@ mod version_set_finalize_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
         let limit: u64 = max_bytes_for_level(vs.options(), 1) as u64;
         let huge: u64 = limit.saturating_add(1);
 
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
         let mut e = VersionEdit::default();
         let fnum = vs.new_file_number();
-        e.add_file(1, fnum, huge, &make_ikey("a", 1), &make_ikey("z", 1));
+        e.add_file(1, fnum, huge, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("z", 1));
         let s = vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex);
-        assert_status_ok(&s, "log_and_apply huge L1");
+        assert_status_is_ok_or_panic(&s, "log_and_apply huge L1");
 
         let cur = vs.current();
         assert!(!cur.is_null(), "current must not be null");
@@ -184,6 +184,6 @@ mod version_set_finalize_exhaustive_test_suite {
         assert_eq!(level, 1, "expected compaction_level=1 when L1 bytes exceed its limit");
         assert!(score > 1.0, "expected compaction_score>1.0 when bytes exceed limit");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

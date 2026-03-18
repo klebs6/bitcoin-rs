@@ -48,7 +48,7 @@ mod num_level_files_exhaustive_test_suite {
 
     #[traced_test]
     fn num_level_files_counts_are_correct_and_panics_on_invalid_levels() {
-        let dir = make_unique_temp_db_dir("versionset_num_level_files");
+        let dir = build_unique_temporary_database_directory_path("versionset_num_level_files");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -57,7 +57,7 @@ mod num_level_files_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 32));
         let mut mu = Box::new(RawMutex::INIT);
 
@@ -70,7 +70,7 @@ mod num_level_files_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
         for lvl in 0..(NUM_LEVELS as i32) {
             let n = vs.num_level_files(lvl);
@@ -78,12 +78,12 @@ mod num_level_files_exhaustive_test_suite {
             assert_eq!(n, 0, "fresh db must have 0 files at every level");
         }
 
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
         let mut e = VersionEdit::default();
         let f0 = vs.new_file_number();
-        e.add_file(0, f0, 10, &make_ikey("a", 1), &make_ikey("b", 1));
-        assert_status_ok(
+        e.add_file(0, f0, 10, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("b", 1));
+        assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply",
         );
@@ -105,6 +105,6 @@ mod num_level_files_exhaustive_test_suite {
         }));
         assert!(oob.is_err(), "num_level_files must panic on out-of-range levels");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

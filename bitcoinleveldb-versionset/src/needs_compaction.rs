@@ -45,7 +45,7 @@ mod needs_compaction_exhaustive_test_suite {
 
     #[traced_test]
     fn needs_compaction_false_for_fresh_db_true_after_many_l0_files_and_true_when_file_to_compact_set() {
-        let dir = make_unique_temp_db_dir("versionset_needs_compaction");
+        let dir = build_unique_temporary_database_directory_path("versionset_needs_compaction");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -54,7 +54,7 @@ mod needs_compaction_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 64));
         let mut mu = Box::new(RawMutex::INIT);
 
@@ -67,21 +67,21 @@ mod needs_compaction_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
         let initial = vs.needs_compaction();
         debug!(initial, "needs_compaction on fresh db");
         assert!(!initial, "fresh db should not need compaction");
 
         // Create enough L0 files to ensure compaction score >= 1.0 regardless of trigger constant.
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
         for i in 0..12u64 {
             let mut e = VersionEdit::default();
             let fnum = vs.new_file_number();
             let k = format!("k{:02}", i);
-            e.add_file(0, fnum, 10, &make_ikey(&k, 1), &make_ikey(&k, 1));
+            e.add_file(0, fnum, 10, &make_value_internal_key_for_user_key(&k, 1), &make_value_internal_key_for_user_key(&k, 1));
             let s = vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex);
-            assert_status_ok(&s, "log_and_apply add L0");
+            assert_status_is_ok_or_panic(&s, "log_and_apply add L0");
         }
 
         let after_l0 = vs.needs_compaction();
@@ -113,18 +113,18 @@ mod needs_compaction_exhaustive_test_suite {
             "non-null file_to_compact must cause needs_compaction to return true"
         );
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn needs_compaction_is_false_when_current_is_null() {
-        let dir = make_unique_temp_db_dir("versionset_needs_compaction_null_current");
+        let dir = build_unique_temporary_database_directory_path("versionset_needs_compaction_null_current");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
         let options = Box::new(Options::with_env(env));
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 8));
 
         let mut vs = VersionSet::new(
@@ -144,6 +144,6 @@ mod needs_compaction_exhaustive_test_suite {
         // Restore to avoid leaving the instance in a surprising state for drop.
         vs.set_current(old);
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

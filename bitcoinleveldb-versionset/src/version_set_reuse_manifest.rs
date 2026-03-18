@@ -296,7 +296,7 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
 
     #[traced_test]
     fn reuse_manifest_returns_false_when_no_manifest_exists() {
-        let dir = make_unique_temp_db_dir("versionset_reuse_manifest_none");
+        let dir = build_unique_temporary_database_directory_path("versionset_reuse_manifest_none");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -305,7 +305,7 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
         options.set_create_if_missing(false);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 64));
 
@@ -326,12 +326,12 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
             "reuse_manifest must be false when target manifest does not exist"
         );
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn reuse_manifest_true_for_small_existing_manifest_after_initial_recover() {
-        let dir = make_unique_temp_db_dir("versionset_reuse_manifest_small");
+        let dir = build_unique_temporary_database_directory_path("versionset_reuse_manifest_small");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -340,7 +340,7 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 64));
 
@@ -354,9 +354,9 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
         info!(save_manifest, status = ?st, "initial recover");
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
-        let manifest = find_manifest_file(&dir).unwrap_or_else(|| {
+        let manifest = find_manifest_file_in_directory(&dir).unwrap_or_else(|| {
             error!(dir = %dir.display(), "no MANIFEST-* found after recover");
             panic!("expected MANIFEST file");
         });
@@ -372,12 +372,12 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
         debug!(reused, dscname = %dscname, dscbase = %dscbase, "reuse_manifest result");
         assert!(reused || !reused, "reuse_manifest must be a total function (sanity)");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn reuse_manifest_false_for_large_existing_manifest() {
-        let dir = make_unique_temp_db_dir("versionset_reuse_manifest_large");
+        let dir = build_unique_temporary_database_directory_path("versionset_reuse_manifest_large");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -386,7 +386,7 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 64));
 
@@ -399,9 +399,9 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
-        let manifest = find_manifest_file(&dir).unwrap_or_else(|| {
+        let manifest = find_manifest_file_in_directory(&dir).unwrap_or_else(|| {
             error!(dir = %dir.display(), "no MANIFEST-* found after recover");
             panic!("expected MANIFEST file");
         });
@@ -424,6 +424,6 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
         let reused = vs.reuse_manifest(&dscname, &dscbase);
         debug!(reused, "reuse_manifest result for large manifest");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

@@ -118,7 +118,7 @@ mod version_set_compact_range_exhaustive_test_suite {
 
     #[traced_test]
     fn compact_range_noop_on_empty_db_does_not_panic() {
-        let dir = make_unique_temp_db_dir("versionset_compact_range_empty_noop");
+        let dir = build_unique_temporary_database_directory_path("versionset_compact_range_empty_noop");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -127,7 +127,7 @@ mod version_set_compact_range_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
 
@@ -140,16 +140,16 @@ mod version_set_compact_range_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st0 = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st0, "recover");
+        assert_status_is_ok_or_panic(&st0, "recover");
 
         vs.compact_range(0, std::ptr::null(), std::ptr::null());
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn compact_range_with_bounds_is_total_function_on_small_metadata_only_state() {
-        let dir = make_unique_temp_db_dir("versionset_compact_range_bounds_total");
+        let dir = build_unique_temporary_database_directory_path("versionset_compact_range_bounds_total");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -158,7 +158,7 @@ mod version_set_compact_range_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
 
@@ -173,22 +173,22 @@ mod version_set_compact_range_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st0 = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st0, "recover");
+        assert_status_is_ok_or_panic(&st0, "recover");
 
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
         let mut e = VersionEdit::default();
-        e.add_file(1, vs.new_file_number(), 100, &make_ikey("a", 1), &make_ikey("z", 1));
-        assert_status_ok(
+        e.add_file(1, vs.new_file_number(), 100, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("z", 1));
+        assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply",
         );
 
-        let begin = make_ikey("b", 1);
-        let end = make_ikey("y", 1);
+        let begin = make_value_internal_key_for_user_key("b", 1);
+        let end = make_value_internal_key_for_user_key("y", 1);
 
         vs.compact_range(1, &begin as *const InternalKey, &end as *const InternalKey);
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

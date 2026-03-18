@@ -41,22 +41,22 @@ mod compare_file_meta_data_by_smallest_internal_key_exhaustive_test_suite {
     fn compare_orders_by_smallest_key_then_by_file_number_when_smallest_equal() {
         let env = PosixEnv::shared();
         let options = Box::new(Options::with_env(env));
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let icmp_ptr: *const InternalKeyComparator = icmp.as_ref() as *const InternalKeyComparator;
 
-        let k1 = make_ikey("a", 100);
-        let k2 = make_ikey("b", 100);
+        let k1 = make_value_internal_key_for_user_key("a", 100);
+        let k2 = make_value_internal_key_for_user_key("b", 100);
 
-        let a = make_file_meta(7, &k1, &k2);
-        let b = make_file_meta(9, &k2, &k2);
+        let a = allocate_test_file_metadata_for_key_range(7, &k1, &k2);
+        let b = allocate_test_file_metadata_for_key_range(9, &k2, &k2);
 
         let ord = compare_file_meta_data_by_smallest_internal_key(icmp_ptr, a, b);
         debug!(?ord, "ordering by smallest key");
         assert_eq!(ord, core::cmp::Ordering::Less, "expected 'a' < 'b'");
 
-        let k_same = make_ikey("k", 1);
-        let c = make_file_meta(10, &k_same, &k_same);
-        let d = make_file_meta(11, &k_same, &k_same);
+        let k_same = make_value_internal_key_for_user_key("k", 1);
+        let c = allocate_test_file_metadata_for_key_range(10, &k_same, &k_same);
+        let d = allocate_test_file_metadata_for_key_range(11, &k_same, &k_same);
 
         let ord2 = compare_file_meta_data_by_smallest_internal_key(icmp_ptr, c, d);
         debug!(?ord2, "ordering by file number when smallest equal");
@@ -78,14 +78,14 @@ mod compare_file_meta_data_by_smallest_internal_key_exhaustive_test_suite {
     fn compare_is_antisymmetric_for_distinct_inputs() {
         let env = PosixEnv::shared();
         let options = Box::new(Options::with_env(env));
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let icmp_ptr: *const InternalKeyComparator = icmp.as_ref() as *const InternalKeyComparator;
 
-        let ka = make_ikey("a", 1);
-        let kb = make_ikey("b", 1);
+        let ka = make_value_internal_key_for_user_key("a", 1);
+        let kb = make_value_internal_key_for_user_key("b", 1);
 
-        let a = make_file_meta(1, &ka, &ka);
-        let b = make_file_meta(2, &kb, &kb);
+        let a = allocate_test_file_metadata_for_key_range(1, &ka, &ka);
+        let b = allocate_test_file_metadata_for_key_range(2, &kb, &kb);
 
         let ab = compare_file_meta_data_by_smallest_internal_key(icmp_ptr, a, b);
         let ba = compare_file_meta_data_by_smallest_internal_key(icmp_ptr, b, a);

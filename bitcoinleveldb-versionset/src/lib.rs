@@ -27,7 +27,7 @@ x!{version_set_append_version}
 x!{version_set_approximate_offset_of}
 x!{version_set_builder_apply}
 x!{version_set_builder_drop}
-x!{version_set_builder_maybe_add_file}
+x!{version_set_builder_maybe_add_level_file}
 x!{version_set_builder_save_to}
 x!{version_set_builder}
 x!{version_set_compact_range}
@@ -49,9 +49,9 @@ x!{version_set_write_snapshot}
 x!{version_set}
 
 xt!{t_algorithm_scenario_harness}
-xt!{t_compaction_behavior_harness}
 xt!{t_compaction_scenario_harness}
 xt!{t_create_scenario_harness}
 xt!{t_drop_scenario_harness}
 xt!{t_recovery_scenario_harness}
 xt!{t_temporary_database_harness}
+xt!{t_version_set_compaction_behavior_specifications}

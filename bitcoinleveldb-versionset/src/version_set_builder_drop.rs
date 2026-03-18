@@ -67,7 +67,7 @@ mod version_set_builder_drop_exhaustive_test_suite {
 
     #[traced_test]
     fn builder_drop_unrefs_base_and_decrements_added_file_refs() {
-        let dir = make_unique_temp_db_dir("versionset_builder_drop_refs");
+        let dir = build_unique_temporary_database_directory_path("versionset_builder_drop_refs");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -76,7 +76,7 @@ mod version_set_builder_drop_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 16));
 
         let mut vs = VersionSet::new(
@@ -88,7 +88,7 @@ mod version_set_builder_drop_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
         let base = vs.current();
         assert!(!base.is_null(), "base must not be null");
@@ -101,7 +101,7 @@ mod version_set_builder_drop_exhaustive_test_suite {
         // Apply an edit that queues a new file (owned by builder).
         let mut edit = VersionEdit::default();
         let file_num = 777u64;
-        edit.add_file(3, file_num, 1, &make_ikey("a", 1), &make_ikey("b", 1));
+        edit.add_file(3, file_num, 1, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("b", 1));
         builder.apply(&mut edit as *mut VersionEdit);
 
         // Capture the queued file pointer and artificially bump its refs to keep it alive after drop.
@@ -148,6 +148,6 @@ mod version_set_builder_drop_exhaustive_test_suite {
             drop(Box::from_raw(fptr));
         }
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

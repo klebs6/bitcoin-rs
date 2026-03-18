@@ -142,7 +142,7 @@ mod version_set_add_live_files_exhaustive_test_suite {
 
     #[traced_test]
     fn add_live_files_is_noop_and_does_not_panic_when_out_param_is_null() {
-        let dir = make_unique_temp_db_dir("versionset_add_live_files_null_out_param");
+        let dir = build_unique_temporary_database_directory_path("versionset_add_live_files_null_out_param");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -152,7 +152,7 @@ mod version_set_add_live_files_exhaustive_test_suite {
             options.set_create_if_missing(true);
             options.set_error_if_exists(false);
 
-            let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+            let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
             let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 64));
 
             let mut vs = VersionSet::new(
@@ -164,19 +164,19 @@ mod version_set_add_live_files_exhaustive_test_suite {
 
             let mut save_manifest: bool = false;
             let st = vs.recover(&mut save_manifest as *mut bool);
-            assert_status_ok(&st, "recover");
+            assert_status_is_ok_or_panic(&st, "recover");
 
             info!("calling add_live_files with null out-parameter; should be a total function");
             <VersionSet as AddLiveFiles>::add_live_files(&mut vs, core::ptr::null_mut());
         }
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     #[disable]
     fn add_live_files_collects_union_across_multiple_live_versions_including_deleted_from_current() {
-        let dir = make_unique_temp_db_dir("versionset_add_live_files_union_across_versions");
+        let dir = build_unique_temporary_database_directory_path("versionset_add_live_files_union_across_versions");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -186,7 +186,7 @@ mod version_set_add_live_files_exhaustive_test_suite {
             options.set_create_if_missing(true);
             options.set_error_if_exists(false);
 
-            let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+            let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
             let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
             let mut mu = Box::new(RawMutex::INIT);
 
@@ -199,20 +199,20 @@ mod version_set_add_live_files_exhaustive_test_suite {
 
             let mut save_manifest: bool = false;
             let st0 = vs.recover(&mut save_manifest as *mut bool);
-            assert_status_ok(&st0, "recover");
+            assert_status_is_ok_or_panic(&st0, "recover");
 
-            let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+            let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
             // Version V1: add file f1 at level 1.
             let f1 = vs.new_file_number();
             let mut e1 = VersionEdit::default();
-            e1.add_file(1, f1, 111, &make_ikey("a", 7), &make_ikey("k", 7));
+            e1.add_level_file(1, f1, 111, &make_value_internal_key_for_user_key("a", 7), &make_value_internal_key_for_user_key("k", 7));
             let st1 = <VersionSet as VersionEditLogAndApply>::log_and_apply(
                 &mut vs,
                 &mut e1 as *mut VersionEdit,
                 mu.as_mut() as *mut RawMutex,
             );
-            assert_status_ok(&st1, "log_and_apply e1 (add f1)");
+            assert_status_is_ok_or_panic(&st1, "log_and_apply e1 (add f1)");
 
             // Pin V1 so it remains "live" after we advance current.
             let v1_ptr: *mut Version = vs.current();
@@ -227,14 +227,14 @@ mod version_set_add_live_files_exhaustive_test_suite {
             let f2 = vs.new_file_number();
             let mut e2 = VersionEdit::default();
             e2.delete_file(1, f1);
-            e2.add_file(1, f2, 222, &make_ikey("l", 7), &make_ikey("z", 7));
+            e2.add_level_file(1, f2, 222, &make_value_internal_key_for_user_key("l", 7), &make_value_internal_key_for_user_key("z", 7));
 
             let st2 = <VersionSet as VersionEditLogAndApply>::log_and_apply(
                 &mut vs,
                 &mut e2 as *mut VersionEdit,
                 mu.as_mut() as *mut RawMutex,
             );
-            assert_status_ok(&st2, "log_and_apply e2 (delete f1, add f2)");
+            assert_status_is_ok_or_panic(&st2, "log_and_apply e2 (delete f1, add f2)");
 
             let v2_ptr: *mut Version = vs.current();
             debug!(
@@ -270,13 +270,13 @@ mod version_set_add_live_files_exhaustive_test_suite {
             trace!(v1_ptr = %format!("{:p}", v1_ptr), "released pinned version v1");
         }
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     #[disable]
     fn add_live_files_does_not_clear_existing_entries_in_out_set() {
-        let dir = make_unique_temp_db_dir("versionset_add_live_files_preserves_existing");
+        let dir = build_unique_temporary_database_directory_path("versionset_add_live_files_preserves_existing");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -286,7 +286,7 @@ mod version_set_add_live_files_exhaustive_test_suite {
             options.set_create_if_missing(true);
             options.set_error_if_exists(false);
 
-            let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+            let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
             let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 64));
             let mut mu = Box::new(RawMutex::INIT);
 
@@ -299,20 +299,20 @@ mod version_set_add_live_files_exhaustive_test_suite {
 
             let mut save_manifest: bool = false;
             let st0 = vs.recover(&mut save_manifest as *mut bool);
-            assert_status_ok(&st0, "recover");
+            assert_status_is_ok_or_panic(&st0, "recover");
 
-            let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+            let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
             let f1 = vs.new_file_number();
             let mut e1 = VersionEdit::default();
-            e1.add_file(2, f1, 333, &make_ikey("aa", 9), &make_ikey("zz", 9));
+            e1.add_level_file(2, f1, 333, &make_value_internal_key_for_user_key("aa", 9), &make_value_internal_key_for_user_key("zz", 9));
 
             let st1 = <VersionSet as VersionEditLogAndApply>::log_and_apply(
                 &mut vs,
                 &mut e1 as *mut VersionEdit,
                 mu.as_mut() as *mut RawMutex,
             );
-            assert_status_ok(&st1, "log_and_apply e1");
+            assert_status_is_ok_or_panic(&st1, "log_and_apply e1");
 
             let sentinel: u64 = 1;
             let mut live: HashSet<u64> = HashSet::new();
@@ -331,6 +331,6 @@ mod version_set_add_live_files_exhaustive_test_suite {
             );
         }
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

@@ -77,7 +77,7 @@ mod get_level_summary_exhaustive_test_suite {
 
     #[traced_test]
     fn level_summary_writes_expected_zero_counts_on_fresh_db() {
-        let dir = make_unique_temp_db_dir("versionset_level_summary_zero");
+        let dir = build_unique_temporary_database_directory_path("versionset_level_summary_zero");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -86,7 +86,7 @@ mod get_level_summary_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 16));
 
         let mut vs = VersionSet::new(
@@ -98,7 +98,7 @@ mod get_level_summary_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
         let mut scratch: MaybeUninit<VersionSetLevelSummaryStorage> = MaybeUninit::uninit();
         let scratch_ptr = scratch.as_mut_ptr();
@@ -115,7 +115,7 @@ mod get_level_summary_exhaustive_test_suite {
             "level_summary must return the same address as scratch"
         );
 
-        let s = read_c_string(out_ptr);
+        let s = read_utf8_lossy_c_string(out_ptr);
         info!(summary = %s, "level summary");
         assert_eq!(
             s.as_str(),
@@ -124,12 +124,12 @@ mod get_level_summary_exhaustive_test_suite {
         );
 
         let _ = unsafe { scratch.assume_init() };
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn level_summary_reflects_file_counts_after_edits() {
-        let dir = make_unique_temp_db_dir("versionset_level_summary_counts");
+        let dir = build_unique_temporary_database_directory_path("versionset_level_summary_counts");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -138,7 +138,7 @@ mod get_level_summary_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 32));
         let mut mu = Box::new(RawMutex::INIT);
 
@@ -151,31 +151,31 @@ mod get_level_summary_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
         // Add one file to L0 and two files to L2.
         let mut e0 = VersionEdit::default();
         let f0 = vs.new_file_number();
-        e0.add_file(0, f0, 10, &make_ikey("a", 1), &make_ikey("b", 1));
-        assert_status_ok(
+        e0.add_file(0, f0, 10, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("b", 1));
+        assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e0 as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply L0",
         );
 
         let mut e2a = VersionEdit::default();
         let f2a = vs.new_file_number();
-        e2a.add_file(2, f2a, 10, &make_ikey("c", 1), &make_ikey("d", 1));
-        assert_status_ok(
+        e2a.add_file(2, f2a, 10, &make_value_internal_key_for_user_key("c", 1), &make_value_internal_key_for_user_key("d", 1));
+        assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e2a as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply L2 first",
         );
 
         let mut e2b = VersionEdit::default();
         let f2b = vs.new_file_number();
-        e2b.add_file(2, f2b, 10, &make_ikey("e", 1), &make_ikey("f", 1));
-        assert_status_ok(
+        e2b.add_file(2, f2b, 10, &make_value_internal_key_for_user_key("e", 1), &make_value_internal_key_for_user_key("f", 1));
+        assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e2b as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply L2 second",
         );
@@ -183,7 +183,7 @@ mod get_level_summary_exhaustive_test_suite {
         let mut scratch: MaybeUninit<VersionSetLevelSummaryStorage> = MaybeUninit::uninit();
         let out_ptr =
             <VersionSet as GetLevelSummary>::level_summary(&vs, scratch.as_mut_ptr());
-        let s = read_c_string(out_ptr);
+        let s = read_utf8_lossy_c_string(out_ptr);
 
         info!(summary = %s, "level summary after edits");
         assert_eq!(
@@ -193,18 +193,18 @@ mod get_level_summary_exhaustive_test_suite {
         );
 
         let _ = unsafe { scratch.assume_init() };
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn level_summary_panics_on_null_scratch_pointer() {
-        let dir = make_unique_temp_db_dir("versionset_level_summary_null_scratch");
+        let dir = build_unique_temporary_database_directory_path("versionset_level_summary_null_scratch");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
         let options = Box::new(Options::with_env(env));
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 8));
 
         let vs = VersionSet::new(
@@ -224,6 +224,6 @@ mod get_level_summary_exhaustive_test_suite {
         debug!(panicked = r.is_err(), "null scratch panic check");
         assert!(r.is_err(), "level_summary must panic on null scratch pointer");
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

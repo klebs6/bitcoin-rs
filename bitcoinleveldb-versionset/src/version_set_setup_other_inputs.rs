@@ -273,7 +273,7 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
 
     #[traced_test]
     fn setup_other_inputs_is_safe_on_null_compaction_pointer() {
-        let dir = make_unique_temp_db_dir("versionset_setup_other_inputs_null");
+        let dir = build_unique_temporary_database_directory_path("versionset_setup_other_inputs_null");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -282,7 +282,7 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
 
@@ -295,17 +295,17 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st0 = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st0, "recover");
+        assert_status_is_ok_or_panic(&st0, "recover");
 
         let null_c: *mut Compaction = std::ptr::null_mut();
         vs.setup_other_inputs(null_c);
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn setup_other_inputs_expands_inputs_for_overlapping_key_ranges() {
-        let dir = make_unique_temp_db_dir("versionset_setup_other_inputs_overlap");
+        let dir = build_unique_temporary_database_directory_path("versionset_setup_other_inputs_overlap");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -314,7 +314,7 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
         let mut mu = Box::new(RawMutex::INIT);
@@ -328,20 +328,20 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st0 = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st0, "recover");
+        assert_status_is_ok_or_panic(&st0, "recover");
 
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
         let mut e1 = VersionEdit::default();
-        e1.add_file(1, vs.new_file_number(), 100, &make_ikey("a", 1), &make_ikey("m", 1));
-        assert_status_ok(
+        e1.add_file(1, vs.new_file_number(), 100, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("m", 1));
+        assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e1 as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply e1",
         );
 
         let mut e2 = VersionEdit::default();
-        e2.add_file(2, vs.new_file_number(), 100, &make_ikey("g", 1), &make_ikey("z", 1));
-        assert_status_ok(
+        e2.add_file(2, vs.new_file_number(), 100, &make_value_internal_key_for_user_key("g", 1), &make_value_internal_key_for_user_key("z", 1));
+        assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e2 as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply e2",
         );
@@ -358,12 +358,12 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
             assert!(in0 >= 1, "expected at least one input at base level");
         }
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn setup_other_inputs_appends_boundary_chain_on_next_level() {
-        let dir = make_unique_temp_db_dir("versionset_setup_other_inputs_next_level_boundary");
+        let dir = build_unique_temporary_database_directory_path("versionset_setup_other_inputs_next_level_boundary");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
@@ -372,7 +372,7 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 128));
         let mut mu = Box::new(RawMutex::INIT);
 
@@ -385,20 +385,20 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st0 = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st0, "recover");
+        assert_status_is_ok_or_panic(&st0, "recover");
 
-        let _guard = RawMutexTestGuard::lock(mu.as_mut() as *mut RawMutex);
+        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
         let mut e = VersionEdit::default();
         let f1 = vs.new_file_number();
         let g1 = vs.new_file_number();
         let g2 = vs.new_file_number();
 
-        e.add_file(1, f1, 100, &make_ikey("a", 100), &make_ikey("j", 100));
-        e.add_file(2, g1, 100, &make_ikey("a", 90), &make_ikey("k", 90));
-        e.add_file(2, g2, 100, &make_ikey("k", 80), &make_ikey("z", 1));
+        e.add_file(1, f1, 100, &make_value_internal_key_for_user_key("a", 100), &make_value_internal_key_for_user_key("j", 100));
+        e.add_file(2, g1, 100, &make_value_internal_key_for_user_key("a", 90), &make_value_internal_key_for_user_key("k", 90));
+        e.add_file(2, g2, 100, &make_value_internal_key_for_user_key("k", 80), &make_value_internal_key_for_user_key("z", 1));
 
-        assert_status_ok(
+        assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply next-level boundary files",
         );
@@ -407,7 +407,9 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
         assert!(!cur.is_null(), "expected non-null current version");
 
         let level1_files = unsafe { &(*cur).files()[1] };
-        let seeded = find_file_by_number(level1_files, f1);
+
+        let seeded = find_file_metadata_pointer_by_number_in_vector(level1_files, f1);
+
         assert!(!seeded.is_null(), "seeded file must be present in level-1");
 
         let mut c = Box::new(Compaction::new(options.as_ref() as *const Options, 1));
@@ -435,6 +437,6 @@ mod version_set_setup_other_inputs_exhaustive_test_suite {
             "expected boundary expansion on inputs[1] to append the same-user-key next-level file"
         );
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }

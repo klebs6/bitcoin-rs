@@ -634,36 +634,48 @@ mod version_set_recover_exhaustive_test_suite {
 
     #[traced_test]
     fn recover_creates_new_db_when_allowed() {
-        let mut h = VersionSetRecoverHarness::new("versionset_recover_creates_db", true);
-        let (st, _save_manifest) = h.recover();
-        assert_status_ok(&st, "recover");
+        let mut h = VersionSetRecoveryScenarioHarness::open_for_create_if_missing_flag(
+            "versionset_recover_creates_db",
+            true,
+        );
+
+        let (st, _save_manifest) = h.recover_into_current_version_set();
+        assert_status_is_ok_or_panic(&st, "recover");
+
+        let cleanup_path = h.database_directory_path().to_path_buf();
 
         assert!(
-            h.dir.join("CURRENT").exists(),
+            cleanup_path.join("CURRENT").exists(),
             "CURRENT should exist after recover"
         );
 
-        h.drop_versionset_now();
-        remove_dir_all_best_effort(&h.dir);
+        h.drop_version_set_instance();
+        remove_directory_tree_best_effort(cleanup_path.as_path());
     }
 
     #[traced_test]
     fn recover_fails_on_missing_db_when_not_allowed() {
-        let mut h = VersionSetRecoverHarness::new("versionset_recover_disallowed_missing_db", false);
-        let (st, _save_manifest) = h.recover();
+        let mut h = VersionSetRecoveryScenarioHarness::open_for_create_if_missing_flag(
+            "versionset_recover_disallowed_missing_db",
+            false,
+        );
+
+        let (st, _save_manifest) = h.recover_into_current_version_set();
         debug!(?st, "recover result");
         assert!(
             !st.is_ok(),
             "recover must fail when db missing and create_if_missing=false"
         );
 
-        h.drop_versionset_now();
-        remove_dir_all_best_effort(&h.dir);
+        let cleanup_path = h.database_directory_path().to_path_buf();
+
+        h.drop_version_set_instance();
+        remove_directory_tree_best_effort(cleanup_path.as_path());
     }
 
     #[traced_test]
     fn recover_fails_on_corrupt_current_file_contents() {
-        let dir = make_unique_temp_db_dir("versionset_recover_corrupt_current");
+        let dir = build_unique_temporary_database_directory_path("versionset_recover_corrupt_current");
         std::fs::create_dir_all(&dir).unwrap();
 
         let current = dir.join("CURRENT");
@@ -680,7 +692,7 @@ mod version_set_recover_exhaustive_test_suite {
         options.set_create_if_missing(false);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 64));
 
@@ -700,12 +712,12 @@ mod version_set_recover_exhaustive_test_suite {
             "recover must fail when CURRENT is corrupt"
         );
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 
     #[traced_test]
     fn recover_fails_when_current_points_to_missing_manifest() {
-        let dir = make_unique_temp_db_dir("versionset_recover_missing_manifest");
+        let dir = build_unique_temporary_database_directory_path("versionset_recover_missing_manifest");
         std::fs::create_dir_all(&dir).unwrap();
 
         let current = dir.join("CURRENT");
@@ -722,7 +734,7 @@ mod version_set_recover_exhaustive_test_suite {
         options.set_create_if_missing(false);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
         let mut table_cache = Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 64));
 
@@ -742,6 +754,7 @@ mod version_set_recover_exhaustive_test_suite {
             "recover must fail when CURRENT points to missing manifest"
         );
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }
+

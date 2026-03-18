@@ -68,7 +68,7 @@ impl VersionSetTemporaryDatabaseHarness {
         let temporary_database_directory =
             build_unique_temporary_database_directory_path(test_prefix);
 
-        match StdFs::create_dir_all(&temporary_database_directory) {
+        match std::fs::create_dir_all(&temporary_database_directory) {
             Ok(()) => {
                 trace!(
                     target: "bitcoinleveldb_versionsettestutil::harness",
@@ -130,6 +130,7 @@ impl VersionSetTemporaryDatabaseHarness {
             version_set,
         }
     }
+
 
     /// Postconditions: identical to `open_temporary_database_with_flags(test_prefix, true, false, 64)`.
     pub fn open_default_temporary_database(test_prefix: &str) -> Self {
@@ -209,7 +210,7 @@ impl VersionSetTemporaryDatabaseHarness {
         (status, save_manifest)
     }
 
-    /// Postconditions: the returned guard owns the mutex lock until drop; callers must not attempt
+    /// Postconditions: the returned guard owns the mutex acquire_from_raw_mutex until drop; callers must not attempt
     /// re-entrant acquisition through the same raw mutex while the guard is live.
     pub fn acquire_version_set_mutex(&mut self) -> RawMutexExclusiveTestGuard {
         trace!(
@@ -274,6 +275,7 @@ impl VersionSetTemporaryDatabaseHarness {
             largest_sequence_number = largest_sequence_number
         );
 
+        let raw_mutex_ptr = self.version_set_mutex.as_mut() as *mut RawMutex;
         let version_set = self.version_set_mut_or_panic();
         let mut version_edit = VersionEdit::default();
         let file_number = version_set.new_file_number();
@@ -294,7 +296,7 @@ impl VersionSetTemporaryDatabaseHarness {
 
         let status = version_set.log_and_apply(
             &mut version_edit as *mut VersionEdit,
-            self.version_set_mutex.as_mut() as *mut RawMutex,
+            raw_mutex_ptr,
         );
 
         match status.is_ok() {

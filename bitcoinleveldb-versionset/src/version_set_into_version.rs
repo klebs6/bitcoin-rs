@@ -59,10 +59,10 @@ mod version_set_into_version_exhaustive_test_suite {
 
     #[traced_test]
     fn into_version_constructs_fresh_detached_version_with_expected_defaults() {
-        let dir = make_unique_db_dir_for_versionset_into_version(
+        let dir = build_unique_versionset_into_version_directory_path(
             "into_version_constructs_fresh_detached_version_with_expected_defaults",
         );
-        create_dir_all_or_panic_for_versionset_into_version(&dir);
+        create_versionset_into_version_directory_or_panic(&dir);
 
         {
             let dbname: Box<String> = Box::new(dir.to_string_lossy().to_string());
@@ -70,7 +70,7 @@ mod version_set_into_version_exhaustive_test_suite {
             let env = PosixEnv::shared();
             let options: Box<Options> = Box::new(Options::with_env(env));
             let icmp: Box<InternalKeyComparator> =
-                Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+                Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
             let mut table_cache: Box<TableCache> =
                 Box::new(TableCache::new(dbname.as_ref(), options.as_ref(), 64));
@@ -163,6 +163,6 @@ mod version_set_into_version_exhaustive_test_suite {
             info!("into_version_constructs_fresh_detached_version_with_expected_defaults: ok");
         }
 
-        remove_dir_all_best_effort_for_versionset_into_version(&dir);
+        remove_versionset_into_version_directory_best_effort(&dir);
     }
 }

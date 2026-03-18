@@ -34,7 +34,7 @@ mod current_version_exhaustive_test_suite {
 
     #[traced_test]
     fn current_version_methods_agree_and_track_updates() {
-        let dir = make_unique_temp_db_dir("versionset_current_version_agree");
+        let dir = build_unique_temporary_database_directory_path("versionset_current_version_agree");
         std::fs::create_dir_all(&dir).unwrap();
         let dbname = dir.to_string_lossy().to_string();
 
@@ -43,7 +43,7 @@ mod current_version_exhaustive_test_suite {
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
 
-        let icmp = Box::new(make_internal_key_comparator_from_options(options.as_ref()));
+        let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
         let mut table_cache = Box::new(TableCache::new(&dbname, options.as_ref(), 32));
 
         let mut vs = VersionSet::new(
@@ -55,7 +55,7 @@ mod current_version_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        assert_status_ok(&st, "recover");
+        assert_status_is_ok_or_panic(&st, "recover");
 
         let cur_inherent: *mut Version = VersionSet::current(&vs);
         let cur_trait: *mut Version = <VersionSet as CurrentVersion>::current(&vs);
@@ -95,6 +95,6 @@ mod current_version_exhaustive_test_suite {
 
         unsafe { (*old_cur).unref() };
 
-        remove_dir_all_best_effort(&dir);
+        remove_directory_tree_best_effort(&dir);
     }
 }
