@@ -55,3 +55,9 @@ xt!{t_drop_scenario_harness}
 xt!{t_recovery_scenario_harness}
 xt!{t_temporary_database_harness}
 xt!{t_version_set_compaction_behavior_specifications}
+xt!{t_version_set_layout_invariant_specifications}
+xt!{t_version_set_pick_compaction_selection_specifications}
+xt!{t_version_set_setup_other_inputs_boundary_specifications}
+xt!{t_version_set_setup_other_inputs_expansion_decision_specifications}
+xt!{t_version_get_probe_support}
+xt!{t_version_get_visibility_specifications}

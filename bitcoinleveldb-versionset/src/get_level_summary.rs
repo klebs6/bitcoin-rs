@@ -78,7 +78,7 @@ mod get_level_summary_exhaustive_test_suite {
     #[traced_test]
     fn level_summary_writes_expected_zero_counts_on_fresh_db() {
         let dir = build_unique_temporary_database_directory_path("versionset_level_summary_zero");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = dir.to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
@@ -105,9 +105,10 @@ mod get_level_summary_exhaustive_test_suite {
 
         let out_ptr = <VersionSet as GetLevelSummary>::level_summary(&vs, scratch_ptr);
         debug!(
-            out_ptr = %format!("{:p}", out_ptr),
-            scratch_ptr = %format!("{:p}", scratch_ptr),
-            "level_summary returned pointer"
+            target: "bitcoinleveldb_versionset::get_level_summary::test",
+            event = "versionset_get_level_summary_zero_pointer_identity",
+            out_ptr = ?out_ptr,
+            scratch_ptr = ?scratch_ptr
         );
         assert_eq!(
             out_ptr as *const (),
@@ -115,12 +116,20 @@ mod get_level_summary_exhaustive_test_suite {
             "level_summary must return the same address as scratch"
         );
 
-        let s = read_utf8_lossy_c_string(out_ptr);
-        info!(summary = %s, "level summary");
+        let summary = read_utf8_lossy_c_string(out_ptr);
+        let counts = extract_level_summary_file_counts_or_panic(summary.as_str());
+
+        info!(
+            target: "bitcoinleveldb_versionset::get_level_summary::test",
+            event = "versionset_get_level_summary_zero_counts",
+            summary = summary.as_str(),
+            counts = ?counts
+        );
+
         assert_eq!(
-            s.as_str(),
-            "files[ 0 0 0 0 0 0 0 ]",
-            "fresh db should report 0 files at all levels"
+            counts,
+            [0_usize; NUM_LEVELS],
+            "a fresh recovered database must report zero files at every level"
         );
 
         let _ = unsafe { scratch.assume_init() };
@@ -130,7 +139,7 @@ mod get_level_summary_exhaustive_test_suite {
     #[traced_test]
     fn level_summary_reflects_file_counts_after_edits() {
         let dir = build_unique_temporary_database_directory_path("versionset_level_summary_counts");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = dir.to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
@@ -153,12 +162,18 @@ mod get_level_summary_exhaustive_test_suite {
         let st = vs.recover(&mut save_manifest as *mut bool);
         assert_status_is_ok_or_panic(&st, "recover");
 
-        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
+        let _guard =
+            RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
-        // Add one file to L0 and two files to L2.
         let mut e0 = VersionEdit::default();
         let f0 = vs.new_file_number();
-        e0.add_file(0, f0, 10, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("b", 1));
+        e0.add_file(
+            0,
+            f0,
+            10,
+            &make_value_internal_key_for_user_key("a", 1),
+            &make_value_internal_key_for_user_key("b", 1),
+        );
         assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e0 as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply L0",
@@ -166,7 +181,13 @@ mod get_level_summary_exhaustive_test_suite {
 
         let mut e2a = VersionEdit::default();
         let f2a = vs.new_file_number();
-        e2a.add_file(2, f2a, 10, &make_value_internal_key_for_user_key("c", 1), &make_value_internal_key_for_user_key("d", 1));
+        e2a.add_file(
+            2,
+            f2a,
+            10,
+            &make_value_internal_key_for_user_key("c", 1),
+            &make_value_internal_key_for_user_key("d", 1),
+        );
         assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e2a as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply L2 first",
@@ -174,7 +195,13 @@ mod get_level_summary_exhaustive_test_suite {
 
         let mut e2b = VersionEdit::default();
         let f2b = vs.new_file_number();
-        e2b.add_file(2, f2b, 10, &make_value_internal_key_for_user_key("e", 1), &make_value_internal_key_for_user_key("f", 1));
+        e2b.add_file(
+            2,
+            f2b,
+            10,
+            &make_value_internal_key_for_user_key("e", 1),
+            &make_value_internal_key_for_user_key("f", 1),
+        );
         assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e2b as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply L2 second",
@@ -183,13 +210,20 @@ mod get_level_summary_exhaustive_test_suite {
         let mut scratch: MaybeUninit<VersionSetLevelSummaryStorage> = MaybeUninit::uninit();
         let out_ptr =
             <VersionSet as GetLevelSummary>::level_summary(&vs, scratch.as_mut_ptr());
-        let s = read_utf8_lossy_c_string(out_ptr);
+        let summary = read_utf8_lossy_c_string(out_ptr);
+        let counts = extract_level_summary_file_counts_or_panic(summary.as_str());
 
-        info!(summary = %s, "level summary after edits");
+        info!(
+            target: "bitcoinleveldb_versionset::get_level_summary::test",
+            event = "versionset_get_level_summary_counts_after_edits",
+            summary = summary.as_str(),
+            counts = ?counts
+        );
+
         assert_eq!(
-            s.as_str(),
-            "files[ 1 0 2 0 0 0 0 ]",
-            "expected counts after edits (L0=1, L2=2)"
+            counts,
+            [1_usize, 0_usize, 2_usize, 0_usize, 0_usize, 0_usize, 0_usize],
+            "the semantic level counts must reflect one level-0 file and two level-2 files"
         );
 
         let _ = unsafe { scratch.assume_init() };

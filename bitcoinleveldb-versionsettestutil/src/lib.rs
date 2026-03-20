@@ -37,11 +37,11 @@
 //! setup, and read-mostly assertions thereafter; future refactors must not introduce hidden
 //! background work, unbounded caching, or superlinear rescans over the same level vectors.
 
-
 #[macro_use] mod imports; use imports::*;
 
 x!{constructors}
 x!{harness}
+x!{point_file_layout}
 x!{raw_mutex_test_guard}
 x!{recording_writable_file_state}
 x!{recording_writable_file}

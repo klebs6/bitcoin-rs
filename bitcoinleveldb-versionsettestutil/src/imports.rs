@@ -32,3 +32,4 @@ pub(crate) use std::fs as StdFs;
 pub(crate) use std::process as StdProcess;
 pub(crate) use std::slice as StdSlice;
 pub(crate) use std::time::{Duration as StdDuration, SystemTime, UNIX_EPOCH};
+pub(crate) use std::io::Write as StdWrite;

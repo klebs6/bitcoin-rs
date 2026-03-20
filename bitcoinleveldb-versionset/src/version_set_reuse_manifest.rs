@@ -297,13 +297,14 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
     #[traced_test]
     fn reuse_manifest_returns_false_when_no_manifest_exists() {
         let dir = build_unique_temporary_database_directory_path("versionset_reuse_manifest_none");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
         let env = PosixEnv::shared();
         let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(false);
         options.set_error_if_exists(false);
+        options.set_reuse_logs(true);
 
         let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
@@ -320,10 +321,26 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
         let dscbase = "MANIFEST-000001".to_string();
 
         let reused = vs.reuse_manifest(&dscname, &dscbase);
-        debug!(reused, "reuse_manifest result (no manifest exists)");
+
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+            event = "versionset_reuse_manifest_missing_manifest_result",
+            reused = reused,
+            descriptor_file_is_null = vs.descriptor_file().is_null(),
+            descriptor_log_is_null = vs.descriptor_log().is_null()
+        );
+
         assert!(
             !reused,
-            "reuse_manifest must be false when target manifest does not exist"
+            "reuse_manifest must return false when the manifest file does not exist even if reuse_logs is enabled"
+        );
+        assert!(
+            vs.descriptor_file().is_null(),
+            "descriptor_file must remain null when manifest reuse fails"
+        );
+        assert!(
+            vs.descriptor_log().is_null(),
+            "descriptor_log must remain null when manifest reuse fails"
         );
 
         remove_directory_tree_best_effort(&dir);
@@ -332,13 +349,14 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
     #[traced_test]
     fn reuse_manifest_true_for_small_existing_manifest_after_initial_recover() {
         let dir = build_unique_temporary_database_directory_path("versionset_reuse_manifest_small");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
         let env = PosixEnv::shared();
         let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
+        options.set_reuse_logs(true);
 
         let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
@@ -353,24 +371,99 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
 
         let mut save_manifest: bool = false;
         let st = vs.recover(&mut save_manifest as *mut bool);
-        info!(save_manifest, status = ?st, "initial recover");
+        info!(
+            target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+            event = "versionset_reuse_manifest_small_initial_recover",
+            save_manifest = save_manifest,
+            status = ?st
+        );
         assert_status_is_ok_or_panic(&st, "recover");
 
-        let manifest = find_manifest_file_in_directory(&dir).unwrap_or_else(|| {
-            error!(dir = %dir.display(), "no MANIFEST-* found after recover");
-            panic!("expected MANIFEST file");
-        });
+        let manifest = match find_manifest_file_in_directory(&dir) {
+            Some(manifest) => manifest,
+            None => {
+                error!(
+                    target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+                    event = "versionset_reuse_manifest_small_manifest_missing_after_recover",
+                    directory = %dir.display()
+                );
+                panic!("versionset_reuse_manifest_small_manifest_missing_after_recover");
+            }
+        };
+
+        let manifest_size_before_reuse = read_file_size_or_panic(manifest.as_path());
+        let reuse_threshold_bytes: u64 = target_file_size(options.as_ref()) as u64;
+
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+            event = "versionset_reuse_manifest_small_size_check",
+            manifest_path = %manifest.display(),
+            manifest_size_before_reuse = manifest_size_before_reuse,
+            reuse_threshold_bytes = reuse_threshold_bytes
+        );
+
+        assert!(
+            manifest_size_before_reuse < reuse_threshold_bytes,
+            "the small-manifest reuse test requires a manifest smaller than target_file_size"
+        );
 
         let dscname = manifest.to_string_lossy().to_string();
-        let dscbase = manifest
-            .file_name()
-            .and_then(|s| s.to_str())
-            .unwrap_or("MANIFEST-UNKNOWN")
-            .to_string();
+        let dscbase = match manifest.file_name().and_then(|file_name| file_name.to_str()) {
+            Some(file_name) => file_name.to_string(),
+            None => {
+                error!(
+                    target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+                    event = "versionset_reuse_manifest_small_manifest_name_invalid_utf8",
+                    manifest_path = %manifest.display()
+                );
+                panic!("versionset_reuse_manifest_small_manifest_name_invalid_utf8");
+            }
+        };
+
+        let mut manifest_number: u64 = 0;
+        let mut manifest_type: FileType = FileType::CurrentFile;
+
+        let parsed_ok = parse_file_name(
+            &dscbase,
+            &mut manifest_number as *mut u64,
+            &mut manifest_type as *mut FileType,
+        );
+
+        assert!(parsed_ok, "manifest file name must parse successfully");
+        assert!(
+            matches!(manifest_type, FileType::DescriptorFile),
+            "parsed manifest file name must be classified as a descriptor file"
+        );
 
         let reused = vs.reuse_manifest(&dscname, &dscbase);
-        debug!(reused, dscname = %dscname, dscbase = %dscbase, "reuse_manifest result");
-        assert!(reused || !reused, "reuse_manifest must be a total function (sanity)");
+
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+            event = "versionset_reuse_manifest_small_reuse_result",
+            reused = reused,
+            manifest_number = manifest_number,
+            descriptor_file_is_null = vs.descriptor_file().is_null(),
+            descriptor_log_is_null = vs.descriptor_log().is_null(),
+            stored_manifest_file_number = vs.manifest_file_number()
+        );
+
+        assert!(
+            reused,
+            "reuse_manifest must return true when reuse_logs is enabled and the existing manifest is below target_file_size"
+        );
+        assert!(
+            !vs.descriptor_file().is_null(),
+            "descriptor_file must be installed when manifest reuse succeeds"
+        );
+        assert!(
+            !vs.descriptor_log().is_null(),
+            "descriptor_log must be installed when manifest reuse succeeds"
+        );
+        assert_eq!(
+            vs.manifest_file_number(),
+            manifest_number,
+            "manifest_file_number must track the reused descriptor number"
+        );
 
         remove_directory_tree_best_effort(&dir);
     }
@@ -378,13 +471,14 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
     #[traced_test]
     fn reuse_manifest_false_for_large_existing_manifest() {
         let dir = build_unique_temporary_database_directory_path("versionset_reuse_manifest_large");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
         let env = PosixEnv::shared();
         let mut options = Box::new(Options::with_env(env));
         options.set_create_if_missing(true);
         options.set_error_if_exists(false);
+        options.set_reuse_logs(true);
 
         let icmp = Box::new(build_internal_key_comparator_from_database_options(options.as_ref()));
 
@@ -401,28 +495,95 @@ mod version_set_reuse_manifest_exhaustive_test_suite {
         let st = vs.recover(&mut save_manifest as *mut bool);
         assert_status_is_ok_or_panic(&st, "recover");
 
-        let manifest = find_manifest_file_in_directory(&dir).unwrap_or_else(|| {
-            error!(dir = %dir.display(), "no MANIFEST-* found after recover");
-            panic!("expected MANIFEST file");
-        });
-
-        {
-            use std::io::Write;
-            let mut f = std::fs::OpenOptions::new().append(true).open(&manifest).unwrap();
-            let big = vec![0u8; 2 * 1024 * 1024];
-            f.write_all(&big).unwrap();
-            f.flush().unwrap();
-        }
+        let manifest = match find_manifest_file_in_directory(&dir) {
+            Some(manifest) => manifest,
+            None => {
+                error!(
+                    target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+                    event = "versionset_reuse_manifest_large_manifest_missing_after_recover",
+                    directory = %dir.display()
+                );
+                panic!("versionset_reuse_manifest_large_manifest_missing_after_recover");
+            }
+        };
 
         let dscname = manifest.to_string_lossy().to_string();
-        let dscbase = manifest
-            .file_name()
-            .and_then(|s| s.to_str())
-            .unwrap_or("MANIFEST-UNKNOWN")
-            .to_string();
+        let dscbase = match manifest.file_name().and_then(|file_name| file_name.to_str()) {
+            Some(file_name) => file_name.to_string(),
+            None => {
+                error!(
+                    target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+                    event = "versionset_reuse_manifest_large_manifest_name_invalid_utf8",
+                    manifest_path = %manifest.display()
+                );
+                panic!("versionset_reuse_manifest_large_manifest_name_invalid_utf8");
+            }
+        };
+
+        let reuse_threshold_bytes: u64 = target_file_size(options.as_ref()) as u64;
+        let manifest_size_before_growth = read_file_size_or_panic(manifest.as_path());
+
+        let bytes_to_append_u64 = match manifest_size_before_growth >= reuse_threshold_bytes {
+            true => 0_u64,
+            false => reuse_threshold_bytes
+                .saturating_sub(manifest_size_before_growth)
+                .saturating_add(1),
+        };
+
+        let bytes_to_append: usize = match usize::try_from(bytes_to_append_u64) {
+            Ok(value) => value,
+            Err(error) => {
+                error!(
+                    target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+                    event = "versionset_reuse_manifest_large_append_size_conversion_error",
+                    bytes_to_append_u64 = bytes_to_append_u64,
+                    error = ?error
+                );
+                panic!("versionset_reuse_manifest_large_append_size_conversion_error");
+            }
+        };
+
+        append_zero_bytes_to_file_or_panic(manifest.as_path(), bytes_to_append);
+
+        let manifest_size_after_growth = read_file_size_or_panic(manifest.as_path());
+
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+            event = "versionset_reuse_manifest_large_size_check",
+            manifest_path = %manifest.display(),
+            reuse_threshold_bytes = reuse_threshold_bytes,
+            manifest_size_before_growth = manifest_size_before_growth,
+            bytes_to_append = bytes_to_append,
+            manifest_size_after_growth = manifest_size_after_growth
+        );
+
+        assert!(
+            manifest_size_after_growth >= reuse_threshold_bytes,
+            "the large-manifest reuse test requires a manifest at or above target_file_size"
+        );
 
         let reused = vs.reuse_manifest(&dscname, &dscbase);
-        debug!(reused, "reuse_manifest result for large manifest");
+
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_reuse_manifest::test",
+            event = "versionset_reuse_manifest_large_reuse_result",
+            reused = reused,
+            descriptor_file_is_null = vs.descriptor_file().is_null(),
+            descriptor_log_is_null = vs.descriptor_log().is_null()
+        );
+
+        assert!(
+            !reused,
+            "reuse_manifest must return false when the existing manifest size reaches or exceeds target_file_size"
+        );
+        assert!(
+            vs.descriptor_file().is_null(),
+            "descriptor_file must remain null when a large manifest is rejected"
+        );
+        assert!(
+            vs.descriptor_log().is_null(),
+            "descriptor_log must remain null when a large manifest is rejected"
+        );
 
         remove_directory_tree_best_effort(&dir);
     }

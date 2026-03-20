@@ -1,6 +1,69 @@
 // ---------------- [ File: bitcoinleveldb-versionsettestutil/src/harness.rs ]
 crate::ix!();
 
+/// Guarantees the requested directory tree exists after return or the current test aborts before
+/// any downstream filesystem mutation relies on it.
+pub fn create_directory_tree_or_panic(directory_path: &Path) {
+    trace!(
+        target: "bitcoinleveldb_versionsettestutil::harness",
+        event = "create_directory_tree_or_panic_enter",
+        directory = %directory_path.display()
+    );
+
+    match StdFs::create_dir_all(directory_path) {
+        Ok(()) => {
+            trace!(
+                target: "bitcoinleveldb_versionsettestutil::harness",
+                event = "create_directory_tree_or_panic_exit",
+                directory = %directory_path.display()
+            );
+        }
+        Err(error) => {
+            error!(
+                target: "bitcoinleveldb_versionsettestutil::harness",
+                event = "create_directory_tree_or_panic_error",
+                directory = %directory_path.display(),
+                error = ?error
+            );
+            panic!("create_directory_tree_or_panic_error");
+        }
+    }
+}
+
+/// Guarantees the returned size is the exact current filesystem length of `file_path` in bytes or
+/// the current test aborts before any size-dependent assertion can observe an invalid value.
+pub fn read_file_size_or_panic(file_path: &Path) -> u64 {
+    trace!(
+        target: "bitcoinleveldb_versionsettestutil::harness",
+        event = "read_file_size_or_panic_enter",
+        file_path = %file_path.display()
+    );
+
+    let metadata = match StdFs::metadata(file_path) {
+        Ok(metadata) => metadata,
+        Err(error) => {
+            error!(
+                target: "bitcoinleveldb_versionsettestutil::harness",
+                event = "read_file_size_or_panic_metadata_error",
+                file_path = %file_path.display(),
+                error = ?error
+            );
+            panic!("read_file_size_or_panic_metadata_error");
+        }
+    };
+
+    let file_size = metadata.len();
+
+    trace!(
+        target: "bitcoinleveldb_versionsettestutil::harness",
+        event = "read_file_size_or_panic_exit",
+        file_path = %file_path.display(),
+        file_size = file_size
+    );
+
+    file_size
+}
+
 /// Guarantees cleanup is best-effort only; callers must never rely on filesystem removal for
 /// logical correctness of a test assertion.
 pub fn remove_directory_tree_best_effort(directory_path: &Path) {
@@ -25,6 +88,92 @@ pub fn remove_directory_tree_best_effort(directory_path: &Path) {
                 directory = %directory_path.display(),
                 error = ?error
             );
+        }
+    }
+}
+
+/// Guarantees exactly `byte_count` zero bytes are appended to `file_path` in append order, or the
+/// current test aborts before any manifest-size assertion can observe a partial growth.
+pub fn append_zero_bytes_to_file_or_panic(
+    file_path: &Path,
+    byte_count: usize,
+) {
+    trace!(
+        target: "bitcoinleveldb_versionsettestutil::harness",
+        event = "append_zero_bytes_to_file_or_panic_enter",
+        file_path = %file_path.display(),
+        byte_count = byte_count
+    );
+
+    match byte_count == 0 {
+        true => {
+            trace!(
+                target: "bitcoinleveldb_versionsettestutil::harness",
+                event = "append_zero_bytes_to_file_or_panic_exit_noop",
+                file_path = %file_path.display(),
+                byte_count = byte_count
+            );
+        }
+        false => {
+            let mut file = match StdFs::OpenOptions::new().append(true).open(file_path) {
+                Ok(file) => file,
+                Err(error) => {
+                    error!(
+                        target: "bitcoinleveldb_versionsettestutil::harness",
+                        event = "append_zero_bytes_to_file_or_panic_open_error",
+                        file_path = %file_path.display(),
+                        byte_count = byte_count,
+                        error = ?error
+                    );
+                    panic!("append_zero_bytes_to_file_or_panic_open_error");
+                }
+            };
+
+            let zero_chunk: [u8; 8192] = [0_u8; 8192];
+            let mut bytes_remaining: usize = byte_count;
+
+            while bytes_remaining > 0 {
+                let write_len: usize = core::cmp::min(bytes_remaining, zero_chunk.len());
+
+                match StdWrite::write_all(&mut file, &zero_chunk[..write_len]) {
+                    Ok(()) => {
+                        bytes_remaining -= write_len;
+                    }
+                    Err(error) => {
+                        error!(
+                            target: "bitcoinleveldb_versionsettestutil::harness",
+                            event = "append_zero_bytes_to_file_or_panic_write_error",
+                            file_path = %file_path.display(),
+                            byte_count = byte_count,
+                            bytes_remaining = bytes_remaining,
+                            attempted_write_len = write_len,
+                            error = ?error
+                        );
+                        panic!("append_zero_bytes_to_file_or_panic_write_error");
+                    }
+                }
+            }
+
+            match StdWrite::flush(&mut file) {
+                Ok(()) => {
+                    trace!(
+                        target: "bitcoinleveldb_versionsettestutil::harness",
+                        event = "append_zero_bytes_to_file_or_panic_exit",
+                        file_path = %file_path.display(),
+                        byte_count = byte_count
+                    );
+                }
+                Err(error) => {
+                    error!(
+                        target: "bitcoinleveldb_versionsettestutil::harness",
+                        event = "append_zero_bytes_to_file_or_panic_flush_error",
+                        file_path = %file_path.display(),
+                        byte_count = byte_count,
+                        error = ?error
+                    );
+                    panic!("append_zero_bytes_to_file_or_panic_flush_error");
+                }
+            }
         }
     }
 }
@@ -89,6 +238,95 @@ pub fn read_utf8_lossy_c_string(raw_c_string_ptr: *const u8) -> String {
             );
 
             owned_string
+        }
+    }
+}
+
+/// Guarantees the returned array contains exactly one non-negative file-count entry per LevelDB
+/// level, independent of surrounding whitespace or bracket formatting.
+pub fn extract_level_summary_file_counts_or_panic(
+    level_summary: &str,
+) -> [usize; NUM_LEVELS] {
+    trace!(
+        target: "bitcoinleveldb_versionsettestutil::harness",
+        event = "extract_level_summary_file_counts_or_panic_enter",
+        level_summary = level_summary
+    );
+
+    let mut parsed_counts: Vec<usize> = Vec::with_capacity(NUM_LEVELS);
+    let mut digit_run = String::new();
+
+    for character in level_summary.chars() {
+        match character.is_ascii_digit() {
+            true => {
+                digit_run.push(character);
+            }
+            false => {
+                if !digit_run.is_empty() {
+                    match digit_run.parse::<usize>() {
+                        Ok(value) => {
+                            parsed_counts.push(value);
+                            digit_run.clear();
+                        }
+                        Err(error) => {
+                            error!(
+                                target: "bitcoinleveldb_versionsettestutil::harness",
+                                event = "extract_level_summary_file_counts_or_panic_parse_error",
+                                level_summary = level_summary,
+                                digit_run = digit_run,
+                                error = ?error
+                            );
+                            panic!("extract_level_summary_file_counts_or_panic_parse_error");
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if !digit_run.is_empty() {
+        match digit_run.parse::<usize>() {
+            Ok(value) => {
+                parsed_counts.push(value);
+            }
+            Err(error) => {
+                error!(
+                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    event = "extract_level_summary_file_counts_or_panic_parse_error_final_token",
+                    level_summary = level_summary,
+                    digit_run = digit_run,
+                    error = ?error
+                );
+                panic!("extract_level_summary_file_counts_or_panic_parse_error_final_token");
+            }
+        }
+    }
+
+    match parsed_counts.len() == NUM_LEVELS {
+        true => {
+            let mut counts: [usize; NUM_LEVELS] = [0_usize; NUM_LEVELS];
+
+            for (index, value) in parsed_counts.iter().enumerate() {
+                counts[index] = *value;
+            }
+
+            trace!(
+                target: "bitcoinleveldb_versionsettestutil::harness",
+                event = "extract_level_summary_file_counts_or_panic_exit",
+                counts = ?counts
+            );
+
+            counts
+        }
+        false => {
+            error!(
+                target: "bitcoinleveldb_versionsettestutil::harness",
+                event = "extract_level_summary_file_counts_or_panic_invalid_count",
+                level_summary = level_summary,
+                parsed_count_len = parsed_counts.len(),
+                expected_count_len = NUM_LEVELS
+            );
+            panic!("extract_level_summary_file_counts_or_panic_invalid_count");
         }
     }
 }

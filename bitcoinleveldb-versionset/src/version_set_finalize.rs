@@ -89,7 +89,7 @@ mod version_set_finalize_exhaustive_test_suite {
     #[traced_test]
     fn finalize_prefers_level0_file_count_when_it_has_highest_score() {
         let dir = build_unique_temporary_database_directory_path("versionset_finalize_level0");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = dir.to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
@@ -112,14 +112,29 @@ mod version_set_finalize_exhaustive_test_suite {
         let st = vs.recover(&mut save_manifest as *mut bool);
         assert_status_is_ok_or_panic(&st, "recover");
 
-        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
+        let triggering_l0_file_count: u64 = (L0_COMPACTION_TRIGGER as u64).saturating_add(1);
 
-        // Add many L0 files to make L0 the best score.
-        for i in 0..12u64 {
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_finalize::test",
+            event = "versionset_finalize_level0_trigger_configuration",
+            l0_compaction_trigger = L0_COMPACTION_TRIGGER as u64,
+            triggering_l0_file_count = triggering_l0_file_count
+        );
+
+        let _guard =
+            RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
+
+        for i in 0..triggering_l0_file_count {
             let mut e = VersionEdit::default();
             let fnum = vs.new_file_number();
             let k = format!("k{:02}", i);
-            e.add_file(0, fnum, 10, &make_value_internal_key_for_user_key(&k, 1), &make_value_internal_key_for_user_key(&k, 1));
+            e.add_file(
+                0,
+                fnum,
+                10,
+                &make_value_internal_key_for_user_key(&k, 1),
+                &make_value_internal_key_for_user_key(&k, 1),
+            );
             let s = vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex);
             assert_status_is_ok_or_panic(&s, "log_and_apply L0");
         }
@@ -130,9 +145,23 @@ mod version_set_finalize_exhaustive_test_suite {
         let level = unsafe { *(*cur).compaction_level() };
         let score = unsafe { *(*cur).compaction_score() };
 
-        debug!(level, score, "finalize result after many L0 files");
-        assert_eq!(level, 0, "expected compaction_level=0 when L0 dominates");
-        assert!(score >= 1.0, "expected compaction_score>=1.0 for L0 dominance");
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_finalize::test",
+            event = "versionset_finalize_level0_result",
+            level = level,
+            score = score,
+            triggering_l0_file_count = triggering_l0_file_count
+        );
+
+        assert_eq!(
+            level,
+            0,
+            "when level 0 exceeds L0_COMPACTION_TRIGGER it must be selected as the compaction level"
+        );
+        assert!(
+            score >= 1.0,
+            "a level selected due to the L0 file-count trigger must report compaction_score >= 1.0"
+        );
 
         remove_directory_tree_best_effort(&dir);
     }

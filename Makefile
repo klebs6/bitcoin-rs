@@ -485,7 +485,7 @@ dbtest-randomized-focus:
 #ACTIVE := bitcoinleveldb-cache
 #ACTIVE := bitcoinleveldb-cfg
 #ACTIVE := bitcoinleveldb-coding
-#ACTIVE := bitcoinleveldb-compaction
+ACTIVE := bitcoinleveldb-compaction
 #ACTIVE := bitcoinleveldb-compactionstats
 #ACTIVE := bitcoinleveldb-comparator
 #ACTIVE := bitcoinleveldb-compat

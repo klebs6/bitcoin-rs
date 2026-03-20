@@ -9,6 +9,37 @@ pub struct VersionSetAlgorithmScenarioHarness {
 }
 
 impl VersionSetAlgorithmScenarioHarness {
+
+    /// Guarantees the returned database name remains stable for the scenario lifetime.
+    pub fn database_name(&self) -> &str {
+        self.harness.database_name()
+    }
+
+    /// Guarantees callers observe the same immutable options object used by this scenario.
+    pub fn database_options(&self) -> &Options {
+        self.harness.database_options()
+    }
+
+    /// Preconditions: callers hold the version-set mutex when the upstream implementation requires it.
+    /// Postconditions: the supplied edit has been applied through the live `VersionSet`.
+    pub fn apply_version_edit(
+        &mut self,
+        version_edit: *mut VersionEdit,
+    ) -> Status {
+        self.harness.apply_version_edit(version_edit)
+    }
+
+    /// Guarantees the returned mutable reference is the exact live `VersionSet` used by this
+    /// algorithm scenario.
+    pub fn version_set_mut(&mut self) -> &mut VersionSet {
+        self.harness.version_set_mut()
+    }
+
+    /// Guarantees the returned pointer is the current-version pointer for the live scenario.
+    pub fn current_version_ptr(&mut self) -> *mut Version {
+        self.harness.current_version_ptr()
+    }
+
     /// Postconditions: the returned harness has completed `recover()` successfully before any
     /// algorithm assertions execute.
     pub fn open_for_test_prefix(test_prefix: &str) -> Self {

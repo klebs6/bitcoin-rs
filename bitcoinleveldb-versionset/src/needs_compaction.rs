@@ -46,7 +46,7 @@ mod needs_compaction_exhaustive_test_suite {
     #[traced_test]
     fn needs_compaction_false_for_fresh_db_true_after_many_l0_files_and_true_when_file_to_compact_set() {
         let dir = build_unique_temporary_database_directory_path("versionset_needs_compaction");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = dir.to_string_lossy().to_string();
 
         let env = PosixEnv::shared();
@@ -70,30 +70,56 @@ mod needs_compaction_exhaustive_test_suite {
         assert_status_is_ok_or_panic(&st, "recover");
 
         let initial = vs.needs_compaction();
-        debug!(initial, "needs_compaction on fresh db");
+        debug!(
+            target: "bitcoinleveldb_versionset::needs_compaction::test",
+            event = "versionset_needs_compaction_fresh_db_state",
+            initial = initial
+        );
         assert!(!initial, "fresh db should not need compaction");
 
-        // Create enough L0 files to ensure compaction score >= 1.0 regardless of trigger constant.
-        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
-        for i in 0..12u64 {
+        let triggering_l0_file_count: u64 = (L0_COMPACTION_TRIGGER as u64).saturating_add(1);
+
+        debug!(
+            target: "bitcoinleveldb_versionset::needs_compaction::test",
+            event = "versionset_needs_compaction_derived_trigger",
+            l0_compaction_trigger = L0_COMPACTION_TRIGGER as u64,
+            triggering_l0_file_count = triggering_l0_file_count
+        );
+
+        let _guard =
+            RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
+
+        for i in 0..triggering_l0_file_count {
             let mut e = VersionEdit::default();
             let fnum = vs.new_file_number();
             let k = format!("k{:02}", i);
-            e.add_file(0, fnum, 10, &make_value_internal_key_for_user_key(&k, 1), &make_value_internal_key_for_user_key(&k, 1));
+            e.add_file(
+                0,
+                fnum,
+                10,
+                &make_value_internal_key_for_user_key(&k, 1),
+                &make_value_internal_key_for_user_key(&k, 1),
+            );
             let s = vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex);
             assert_status_is_ok_or_panic(&s, "log_and_apply add L0");
         }
 
         let after_l0 = vs.needs_compaction();
-        debug!(after_l0, "needs_compaction after many L0 files");
-        assert!(after_l0, "many L0 files should trigger needs_compaction");
+        debug!(
+            target: "bitcoinleveldb_versionset::needs_compaction::test",
+            event = "versionset_needs_compaction_after_l0_growth",
+            after_l0 = after_l0,
+            triggering_l0_file_count = triggering_l0_file_count
+        );
+        assert!(
+            after_l0,
+            "adding more than L0_COMPACTION_TRIGGER files to level 0 should trigger compaction"
+        );
 
-        // Force the "file_to_compact" signal while keeping score low.
         let cur = vs.current();
         assert!(!cur.is_null(), "current must not be null");
 
         unsafe {
-            // Choose any existing file pointer (from L0) and set it as file_to_compact.
             let fptr = (*cur).files()[0]
                 .get(0)
                 .copied()
@@ -107,7 +133,11 @@ mod needs_compaction_exhaustive_test_suite {
         }
 
         let by_seek_signal = vs.needs_compaction();
-        debug!(by_seek_signal, "needs_compaction after setting file_to_compact");
+        debug!(
+            target: "bitcoinleveldb_versionset::needs_compaction::test",
+            event = "versionset_needs_compaction_seek_signal",
+            by_seek_signal = by_seek_signal
+        );
         assert!(
             by_seek_signal,
             "non-null file_to_compact must cause needs_compaction to return true"

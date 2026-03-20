@@ -160,7 +160,7 @@ mod version_set_make_input_iterator_exhaustive_test_suite {
     #[traced_test]
     fn make_input_iterator_returns_non_null_for_valid_compaction() {
         let dir = build_unique_temporary_database_directory_path("versionset_make_input_iterator_non_null");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
         let env = PosixEnv::shared();
@@ -184,34 +184,72 @@ mod version_set_make_input_iterator_exhaustive_test_suite {
         let st0 = vs.recover(&mut save_manifest as *mut bool);
         assert_status_is_ok_or_panic(&st0, "recover");
 
-        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
+        let triggering_l0_file_count: u64 = (L0_COMPACTION_TRIGGER as u64).saturating_add(1);
 
-        for i in 0..6u64 {
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_make_input_iterator::test",
+            event = "versionset_make_input_iterator_l0_trigger_configuration",
+            l0_compaction_trigger = L0_COMPACTION_TRIGGER as u64,
+            triggering_l0_file_count = triggering_l0_file_count
+        );
+
+        let _guard =
+            RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
+
+        for i in 0..triggering_l0_file_count {
             let mut e = VersionEdit::default();
             let fnum = vs.new_file_number();
             let a = format!("k{:02}", i);
             let b = format!("k{:02}", i);
-            e.add_file(0, fnum, 10, &make_value_internal_key_for_user_key(&a, 1), &make_value_internal_key_for_user_key(&b, 1));
+            e.add_file(
+                0,
+                fnum,
+                10,
+                &make_value_internal_key_for_user_key(&a, 1),
+                &make_value_internal_key_for_user_key(&b, 1),
+            );
             let st = vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex);
             assert_status_is_ok_or_panic(&st, "log_and_apply");
         }
 
         let c = vs.pick_compaction();
-        debug!(is_null = c.is_null(), "pick_compaction");
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_make_input_iterator::test",
+            event = "versionset_make_input_iterator_picked_compaction",
+            compaction_ptr = ?c
+        );
         assert!(!c.is_null(), "expected compaction");
 
+        let picked_level = unsafe { (*c).level() };
+        assert_eq!(
+            picked_level,
+            0,
+            "the iterator construction scenario should be driven by a level-0 compaction"
+        );
+
         let it = vs.make_input_iterator(c);
-        debug!(is_null = it.is_null(), "make_input_iterator result pointer");
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_make_input_iterator::test",
+            event = "versionset_make_input_iterator_created_iterator",
+            iterator_ptr = ?it
+        );
         assert!(
             !it.is_null(),
-            "make_input_iterator must return a non-null iterator for non-null compaction"
+            "make_input_iterator must return a non-null iterator for a valid compaction"
         );
 
         unsafe {
             (*it).seek_to_first();
             let valid = (*it).valid();
             let st = (*it).status();
-            debug!(valid, status = ?st, "iterator after seek_to_first");
+            debug!(
+                target: "bitcoinleveldb_versionset::version_set_make_input_iterator::test",
+                event = "versionset_make_input_iterator_after_seek_to_first",
+                valid = valid,
+                status = ?st
+            );
+            drop(Box::from_raw(it));
+            drop(Box::from_raw(c));
         }
 
         remove_directory_tree_best_effort(&dir);

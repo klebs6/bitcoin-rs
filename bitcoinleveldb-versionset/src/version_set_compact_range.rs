@@ -119,7 +119,7 @@ mod version_set_compact_range_exhaustive_test_suite {
     #[traced_test]
     fn compact_range_noop_on_empty_db_does_not_panic() {
         let dir = build_unique_temporary_database_directory_path("versionset_compact_range_empty_noop");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
         let env = PosixEnv::shared();
@@ -142,7 +142,18 @@ mod version_set_compact_range_exhaustive_test_suite {
         let st0 = vs.recover(&mut save_manifest as *mut bool);
         assert_status_is_ok_or_panic(&st0, "recover");
 
-        vs.compact_range(0, std::ptr::null(), std::ptr::null());
+        let c = vs.compact_range(0, core::ptr::null(), core::ptr::null());
+
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_compact_range::test",
+            event = "versionset_compact_range_empty_result",
+            compaction_ptr = ?c
+        );
+
+        assert!(
+            c.is_null(),
+            "compact_range must return null when no files overlap the requested range"
+        );
 
         remove_directory_tree_best_effort(&dir);
     }
@@ -150,7 +161,7 @@ mod version_set_compact_range_exhaustive_test_suite {
     #[traced_test]
     fn compact_range_with_bounds_is_total_function_on_small_metadata_only_state() {
         let dir = build_unique_temporary_database_directory_path("versionset_compact_range_bounds_total");
-        std::fs::create_dir_all(&dir).unwrap();
+        create_directory_tree_or_panic(&dir);
         let dbname = Box::new(dir.to_string_lossy().to_string());
 
         let env = PosixEnv::shared();
@@ -175,10 +186,17 @@ mod version_set_compact_range_exhaustive_test_suite {
         let st0 = vs.recover(&mut save_manifest as *mut bool);
         assert_status_is_ok_or_panic(&st0, "recover");
 
-        let _guard = RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
+        let _guard =
+            RawMutexExclusiveTestGuard::acquire_from_raw_mutex(mu.as_mut() as *mut RawMutex);
 
         let mut e = VersionEdit::default();
-        e.add_file(1, vs.new_file_number(), 100, &make_value_internal_key_for_user_key("a", 1), &make_value_internal_key_for_user_key("z", 1));
+        e.add_file(
+            1,
+            vs.new_file_number(),
+            100,
+            &make_value_internal_key_for_user_key("a", 1),
+            &make_value_internal_key_for_user_key("z", 1),
+        );
         assert_status_is_ok_or_panic(
             &vs.log_and_apply(&mut e as *mut VersionEdit, mu.as_mut() as *mut RawMutex),
             "log_and_apply",
@@ -187,7 +205,44 @@ mod version_set_compact_range_exhaustive_test_suite {
         let begin = make_value_internal_key_for_user_key("b", 1);
         let end = make_value_internal_key_for_user_key("y", 1);
 
-        vs.compact_range(1, &begin as *const InternalKey, &end as *const InternalKey);
+        let c = vs.compact_range(1, &begin as *const InternalKey, &end as *const InternalKey);
+
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_compact_range::test",
+            event = "versionset_compact_range_bounded_result",
+            compaction_ptr = ?c
+        );
+
+        assert!(
+            !c.is_null(),
+            "compact_range must return a compaction when the requested bounds overlap an existing file"
+        );
+
+        let picked_level = unsafe { (*c).level() };
+        let input_count_level = unsafe { (*c).num_input_files(0) };
+        let input_count_next_level = unsafe { (*c).num_input_files(1) };
+
+        debug!(
+            target: "bitcoinleveldb_versionset::version_set_compact_range::test",
+            event = "versionset_compact_range_bounded_compaction_shape",
+            picked_level = picked_level,
+            input_count_level = input_count_level,
+            input_count_next_level = input_count_next_level
+        );
+
+        assert_eq!(
+            picked_level,
+            1,
+            "the bounded compaction must be rooted at the requested source level"
+        );
+        assert!(
+            input_count_level >= 1,
+            "the returned compaction must contain at least one input file from the requested level"
+        );
+
+        unsafe {
+            drop(Box::from_raw(c));
+        }
 
         remove_directory_tree_best_effort(&dir);
     }

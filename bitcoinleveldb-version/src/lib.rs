@@ -19,3 +19,5 @@ x!{record_read_sample_match_cb}
 x!{level_file_num_iterator}
 x!{tests}
 x!{interfaces}
+
+xt!{t_version_read_order_specifications}
