@@ -12,6 +12,7 @@ description = "todo: write a description here"
 [dependencies]
 tracing.workspace              = true
 disable_macro.workspace        = true
+derive_builder.workspace        = true
 bitcoin-imports                = { path = "../bitcoin-imports" }
 bitcoin-derive                 = { path = "../bitcoin-derive" }
 bitcoinleveldb-status          = { path = "../bitcoinleveldb-status" }

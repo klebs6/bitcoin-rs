@@ -48,3 +48,12 @@ x!{test_hooks}
 
 #[cfg(test)]
 x!{rt_probe}
+
+#[cfg(test)]
+x!{t_dbimpl_live_compaction_output_boundary_support}
+
+#[cfg(test)]
+x!{t_dbimpl_compaction_output_boundary_specifications}
+
+#[cfg(test)]
+x!{t_live_compaction_mutex_probe_support}

@@ -363,6 +363,10 @@ check_dbtest:
 	#- $(CARGO) $(TEST) -p bitcoinleveldb-dbtest db_test_l0_compaction_bug_issue44_a -- --nocapture
 	#- $(CARGO) $(TEST) -p bitcoinleveldb-dbtest db_test_l0_compaction_bug_issue44_b -- --nocapture
 
+
+check_dbimpl:
+	RUST_LOG=bitcoinleveldb_dbimpl::t_compaction_output_boundary_specifications=trace,bitcoinleveldb_dbimpl::t_live_compaction_output_boundary_support=trace,bitcoinleveldb_dbimpl::test_live_compaction_boundary_access=trace,bitcoinleveldb_dbimpl::do_compaction_work=trace cargo test -p bitcoinleveldb-dbimpl t_dbimpl_compaction_output_boundary_specifications -- --nocapture --test-threads=1
+
 recovery_cluster: 
 	- $(CARGO) $(TEST) -p bitcoinleveldb-test recovery_test -- --nocapture --test-threads=1
 
@@ -547,7 +551,7 @@ ACTIVE := bitcoinleveldb-compaction
 #ACTIVE := bitcoinleveldb-versionsetinterface
 #ACTIVE := bitcoinleveldb-versionsetutil
 
-ACTIVE := bitcoinleveldb-versionset
+#ACTIVE := bitcoinleveldb-versionset
 #ACTIVE := bitcoinleveldb-versionsettestutil
 
 #ACTIVE := bitcoinsecp256k1-ecmult
@@ -568,6 +572,6 @@ ACTIVE := bitcoinleveldb-versionset
 #ACTIVE := bitcoinleveldb-posixenv
 #ACTIVE := bitcoinleveldb-slice
 #ACTIVE := bitcoinleveldb-dbiterstate        #loc: 1883
-#ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
+ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 #ACTIVE := bitcoinleveldb-dbconstructor #loc: 99
 #ACTIVE := bitcoinleveldb-db            #loc: 1049

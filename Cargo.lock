@@ -3458,6 +3458,7 @@ dependencies = [
  "bitcoinleveldb-versionset",
  "bitcoinleveldb-versionsetinterface",
  "bitcoinleveldb-writebatch",
+ "derive_builder",
  "disable_macro",
  "signal-hook",
  "tempfile",
