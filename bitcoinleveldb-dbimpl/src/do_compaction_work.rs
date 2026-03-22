@@ -40,7 +40,7 @@ impl DBImpl {
         let input: *mut LevelDBIterator =
             unsafe { (*versions_ptr).make_input_iterator(compaction_ptr) };
 
-        // Release mutex while we're actually doing the compaction work
+        // Release mutex while we're actually doing the compaction work.
         unsafe {
             self.mutex.unlock();
         }
@@ -56,10 +56,22 @@ impl DBImpl {
         let mut has_current_user_key: bool = false;
         let mut last_sequence_for_key: SequenceNumber = MAX_SEQUENCE_NUMBER;
 
+        // H02:
+        // Never rotate output between adjacent internal keys of the same user key.
+        //
+        // This flag means:
+        // "the current output should be closed before the next distinct user key
+        //  is emitted (or at iterator exhaustion)."
+        //
+        // We set it when a rollover trigger fires in the middle of a user-key run:
+        // - grandparent-pressure boundary (`should_stop_before`)
+        // - max-output-size boundary
+        let mut pending_output_boundary_before_next_user_key: bool = false;
+
         while unsafe { (*input).valid() }
             && !self.shutting_down.load(core::sync::atomic::Ordering::Acquire)
         {
-            // Prioritize immutable compaction work
+            // Prioritize immutable compaction work.
             if self.has_imm.load(core::sync::atomic::Ordering::Relaxed) {
                 let imm_start: u64 = self.env.as_mut().now_micros();
 
@@ -86,31 +98,65 @@ impl DBImpl {
 
             let key: Slice = unsafe { (*input).key() };
 
-            if unsafe { (*compaction_ptr).should_stop_before(&key) }
+            let current_key_is_parseable_internal_key: bool =
+                parse_internal_key(&key, &mut ikey);
+
+            let current_key_starts_new_user_key: bool =
+                if current_key_is_parseable_internal_key {
+                    !has_current_user_key
+                        || self.user_comparator().compare(
+                            ikey.user_key(),
+                            &Slice::from_bytes(&current_user_key),
+                        ) != 0
+                } else {
+                    // Treat parse failures as boundary-eligible.
+                    has_current_user_key
+                };
+
+            // Discharge a previously deferred boundary exactly at the first key
+            // that is not part of the current user-key run.
+            if pending_output_boundary_before_next_user_key
                 && !unsafe { *(*compact).builder() }.is_null()
+                && (!current_key_is_parseable_internal_key || current_key_starts_new_user_key)
             {
                 status = self.finish_compaction_output_file(compact, input);
                 if !status.is_ok() {
                     break;
+                }
+
+                pending_output_boundary_before_next_user_key = false;
+            }
+
+            // Grandparent-pressure boundary:
+            // finish before the current key only if that boundary does not cut
+            // through a same-user-key run. Otherwise defer it.
+            let should_stop_before_current_key: bool =
+                unsafe { (*compaction_ptr).should_stop_before(&key) };
+
+            if should_stop_before_current_key && !unsafe { *(*compact).builder() }.is_null() {
+                if !current_key_is_parseable_internal_key || current_key_starts_new_user_key {
+                    status = self.finish_compaction_output_file(compact, input);
+                    if !status.is_ok() {
+                        break;
+                    }
+
+                    pending_output_boundary_before_next_user_key = false;
+                } else {
+                    pending_output_boundary_before_next_user_key = true;
                 }
             }
 
             // Handle key/value, add to state, etc.
             let mut drop: bool = false;
 
-            if !parse_internal_key(&key, &mut ikey) {
-                // Do not hide error keys
+            if !current_key_is_parseable_internal_key {
+                // Do not hide error keys.
                 current_user_key.clear();
                 has_current_user_key = false;
                 last_sequence_for_key = MAX_SEQUENCE_NUMBER;
             } else {
-                if !has_current_user_key
-                    || self.user_comparator().compare(
-                        ikey.user_key(),
-                        &Slice::from_bytes(&current_user_key),
-                    ) != 0
-                {
-                    // First occurrence of this user key
+                if current_key_starts_new_user_key {
+                    // First occurrence of this user key.
                     current_user_key.clear();
                     current_user_key.extend_from_slice(ikey.user_key().as_bytes());
                     has_current_user_key = true;
@@ -118,18 +164,18 @@ impl DBImpl {
                 }
 
                 if last_sequence_for_key <= unsafe { *(*compact).smallest_snapshot() } {
-                    // Hidden by an newer entry for same user key
+                    // Hidden by a newer entry for same user key.
                     drop = true;
                 } else if *ikey.ty() == ValueType::TypeDeletion
                     && *ikey.sequence() <= unsafe { *(*compact).smallest_snapshot() }
                     && unsafe { (*compaction_ptr).is_base_level_for_key(ikey.user_key()) }
                 {
-                    // For this user key_:
+                    // For this user key:
                     // (1) there is no data in higher levels
                     // (2) data in lower levels will have larger sequence numbers
                     // (3) data in layers that are being compacted here and have
                     //     smaller sequence numbers will be dropped in the next
-                    //     few iterations of this loop (by rule (A) above).
+                    //     few iterations of this loop (by rule (A) above)
                     // Therefore this deletion marker is obsolete and can be dropped.
                     drop = true;
                 }
@@ -138,7 +184,7 @@ impl DBImpl {
             }
 
             if !drop {
-                // Open output file if necessary
+                // Open output file if necessary.
                 if unsafe { *(*compact).builder() }.is_null() {
                     status = self.open_compaction_output_file(compact);
                     if !status.is_ok() {
@@ -171,14 +217,12 @@ impl DBImpl {
                     }
                 }
 
-                // Close output file if it is big enough
+                // Size-triggered boundary:
+                // do not rotate immediately if that would cut through a same-user-key run.
                 if unsafe { builder_ptr.as_ref().unwrap().file_size() }
                     >= unsafe { (*compaction_ptr).max_output_file_size() }
                 {
-                    status = self.finish_compaction_output_file(compact, input);
-                    if !status.is_ok() {
-                        break;
-                    }
+                    pending_output_boundary_before_next_user_key = true;
                 }
             }
 
@@ -192,8 +236,11 @@ impl DBImpl {
             status = Status::io_error(&msg, None);
         }
 
+        // At iterator exhaustion, close any open output, including a boundary that
+        // was deferred until the end of the final user-key run.
         if status.is_ok() && !unsafe { *(*compact).builder() }.is_null() {
             status = self.finish_compaction_output_file(compact, input);
+            pending_output_boundary_before_next_user_key = false;
         }
 
         if status.is_ok() {

@@ -1,8 +1,6 @@
-// ---------------- [ File: bitcoinleveldb-test/src/imports.rs ]
 pub(crate) use bitcoin_derive::*;
 pub(crate) use bitcoin_imports::*;
 pub(crate) use bitcoinleveldb_cache::*;
-pub(crate) use bitcoinleveldb_db::*;
 pub(crate) use bitcoinleveldb_env::*;
 pub(crate) use bitcoinleveldb_file::*;
 pub(crate) use bitcoinleveldb_key::*;
@@ -36,3 +34,8 @@ pub(crate) use std::sync::atomic::Ordering;
 pub(crate) use tempfile::TempDir;
 pub(crate) use bitcoinleveldb_cfg::*;
 
+pub(crate) use bitcoinleveldb_comparator::*;
+pub(crate) use bitcoinleveldb_versionedit::*;
+pub(crate) use bitcoinleveldb_versionset::*;
+pub(crate) use bitcoinleveldb_versionsetinterface::*;
+pub(crate) use bitcoinleveldb_db::*;

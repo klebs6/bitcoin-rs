@@ -1,0 +1,89 @@
+[package]
+name = "bitcoinleveldb-testissue320"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+export-magic.workspace = true
+tracing.workspace = true
+tempfile.workspace = true
+serial_test.workspace = true
+traced-test.workspace = true
+tracing-setup.workspace = true
+
+bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
+bitcoinleveldb-dbiter = { path = "../bitcoinleveldb-dbiter" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
+bitcoinleveldb-memenv = { path = "../bitcoinleveldb-memenv" }
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
+bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
+bitcoinleveldb-logwriter = { path = "../bitcoinleveldb-logwriter" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
+bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair" }
+bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
+bitcoinleveldb-testutil = { path = "../bitcoinleveldb-testutil" }
+
+[dependencies.bitcoin-derive]
+path = "../bitcoin-derive"
+version = "0.1.19"
+
+[dependencies.bitcoin-imports]
+path = "../bitcoin-imports"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-cache]
+path = "../bitcoinleveldb-cache"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-db]
+path = "../bitcoinleveldb-db"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-env]
+path = "../bitcoinleveldb-env"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-file]
+path = "../bitcoinleveldb-file"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-key]
+path = "../bitcoinleveldb-key"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-options]
+path = "../bitcoinleveldb-options"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-rand]
+path = "../bitcoinleveldb-rand"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-slice]
+path = "../bitcoinleveldb-slice"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-status]
+path = "../bitcoinleveldb-status"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-table]
+path = "../bitcoinleveldb-table"
+version = "0.1.19"
+
+[dependencies.bitcoinleveldb-util]
+path = "../bitcoinleveldb-util"
+version = "0.1.19"
+
+

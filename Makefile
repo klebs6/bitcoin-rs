@@ -49,6 +49,12 @@ ACTIVE := bitcoinleveldb-bench         #loc: 2997
 ACTIVE := bitcoinleveldb-harness       #loc: 297
 
 ACTIVE := bitcoinleveldb-test          #loc: 3254
+ACTIVE := bitcoinleveldb-testautocompaction #this one actually hangs
+ACTIVE := bitcoinleveldb-testenv #one fail
+ACTIVE := bitcoinleveldb-testissue178
+ACTIVE := bitcoinleveldb-testutil
+#ACTIVE := bitcoinleveldb-testissue320
+
 #ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
 #ACTIVE := bitcoinleveldb-dbimpl        #loc: 2652
 
@@ -489,7 +495,7 @@ dbtest-randomized-focus:
 #ACTIVE := bitcoinleveldb-cache
 #ACTIVE := bitcoinleveldb-cfg
 #ACTIVE := bitcoinleveldb-coding
-ACTIVE := bitcoinleveldb-compaction
+#ACTIVE := bitcoinleveldb-compaction
 #ACTIVE := bitcoinleveldb-compactionstats
 #ACTIVE := bitcoinleveldb-comparator
 #ACTIVE := bitcoinleveldb-compat
@@ -572,6 +578,11 @@ ACTIVE := bitcoinleveldb-compaction
 #ACTIVE := bitcoinleveldb-posixenv
 #ACTIVE := bitcoinleveldb-slice
 #ACTIVE := bitcoinleveldb-dbiterstate        #loc: 1883
-ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
+#ACTIVE := bitcoinleveldb-dbimpl        #loc: 1883
 #ACTIVE := bitcoinleveldb-dbconstructor #loc: 99
 #ACTIVE := bitcoinleveldb-db            #loc: 1049
+#ACTIVE := bitcoinleveldb-testcapi
+#ACTIVE := bitcoinleveldb-testissue200
+#ACTIVE := bitcoinleveldb-testrecovery
+#ACTIVE := bitcoinleveldb-testcorruption #note that these tests passed in about 7 minutes
+#ACTIVE := bitcoinleveldb-testfaultinjection #passes in +20 min

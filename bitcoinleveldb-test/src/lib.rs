@@ -1,16 +1,10 @@
 // ---------------- [ File: bitcoinleveldb-test/src/lib.rs ]
-#[macro_use] mod imports; use imports::*;
-
-x!{c_test}
-x!{corruption_test}
-x!{fault_injection_test}
-x!{harness}
-x!{issue178_test}
-x!{issue200_test}
-x!{issue320_test}
-x!{recovery_test}
-x!{util}
-x!{unique_db_path}
-
-#[cfg(test)]
-x!{issue320_isolation_tests}
+pub use bitcoinleveldb_testautocompaction::*;
+pub use bitcoinleveldb_testcapi::*;
+pub use bitcoinleveldb_testcorruption::*;
+pub use bitcoinleveldb_testfaultinjection::*;
+pub use bitcoinleveldb_testissue178::*;
+pub use bitcoinleveldb_testissue200::*;
+pub use bitcoinleveldb_testrecovery::*;
+pub use bitcoinleveldb_testutil::*;
+pub use bitcoinleveldb_testissue320::*;

@@ -1,5 +1,68 @@
 crate::ix!();
 
+/// Opens one fully initialized live `DBImpl` through the real `DBOpen` path and
+/// returns owned concrete storage for the harness.
+///
+/// Postcondition:
+/// - the returned database has completed recover/open bootstrap
+/// - `VersionSet` manifest state is initialized
+/// - subsequent `VersionSet::log_and_apply(...)` calls append to a valid manifest
+pub fn bitcoinleveldb_dbimpl_live_compaction_boundary_open_database_instance_via_dbopen(
+    temporary_database_directory: &String,
+) -> Box<DBImpl> {
+    trace!(
+        target: "bitcoinleveldb_dbimpl::t_live_compaction_output_boundary_support",
+        label = "dbimpl.live_compaction_boundary_open_database_instance_via_dbopen.entry",
+        temporary_database_directory = %temporary_database_directory
+    );
+
+    let environment = PosixEnv::shared();
+
+    let mut database_options = Options::with_env(environment.clone());
+    database_options.set_create_if_missing(true);
+    database_options.set_error_if_exists(false);
+
+    let mut dispatcher = DBImpl::new(
+        &database_options,
+        temporary_database_directory,
+    );
+
+    let mut opened_database_ptr: *mut dyn DB =
+        core::ptr::null_mut::<DBImpl>() as *mut dyn DB;
+
+    let open_status: Status = <DBImpl as DBOpen>::open(
+        &mut dispatcher,
+        &database_options,
+        temporary_database_directory,
+        &mut opened_database_ptr as *mut *mut dyn DB,
+    );
+
+    assert!(open_status.is_ok());
+    assert!(!opened_database_ptr.is_null());
+
+    let opened_database_impl_ptr: *mut DBImpl = {
+        let opened_database_data_ptr: *mut () = opened_database_ptr as *mut ();
+        opened_database_data_ptr as *mut DBImpl
+    };
+
+    assert!(!opened_database_impl_ptr.is_null());
+
+    let database_instance: Box<DBImpl> = unsafe {
+        Box::from_raw(opened_database_impl_ptr)
+    };
+
+    debug!(
+        target: "bitcoinleveldb_dbimpl::t_live_compaction_output_boundary_support",
+        label = "dbimpl.live_compaction_boundary_open_database_instance_via_dbopen.exit",
+        temporary_database_directory = %temporary_database_directory,
+        dbimpl_ptr = opened_database_impl_ptr as usize,
+        status_ok = open_status.is_ok(),
+        status = %open_status.to_string()
+    );
+
+    database_instance
+}
+
 /// Classifies the exact table entry semantics installed by the live compaction
 /// boundary harness.
 ///
@@ -283,7 +346,7 @@ impl BitcoinLevelDbDbImplLiveCompactionBoundaryHarness {
     ///
     /// Postcondition:
     /// - the backing directory exists
-    /// - the returned harness owns a fresh `DBImpl`
+    /// - the returned harness owns a fully opened `DBImpl`
     pub fn open_for_test_prefix(test_prefix: &str) -> Self {
         trace!(
             target: "bitcoinleveldb_dbimpl::t_live_compaction_output_boundary_support",
@@ -302,14 +365,10 @@ impl BitcoinLevelDbDbImplLiveCompactionBoundaryHarness {
 
         assert!(create_directory_status.is_ok());
 
-        let mut database_options = Box::new(Options::with_env(environment.clone()));
-        database_options.set_create_if_missing(true);
-        database_options.set_error_if_exists(false);
-
-        let database_instance = Box::new(DBImpl::new(
-            database_options.as_ref(),
-            &temporary_database_directory,
-        ));
+        let database_instance =
+            bitcoinleveldb_dbimpl_live_compaction_boundary_open_database_instance_via_dbopen(
+                &temporary_database_directory,
+            );
 
         let harness_result = BitcoinLevelDbDbImplLiveCompactionBoundaryHarnessBuilder::default()
             .temporary_database_directory(temporary_database_directory.clone())
@@ -341,6 +400,7 @@ impl BitcoinLevelDbDbImplLiveCompactionBoundaryHarness {
 
         harness
     }
+
 
     /// Installs one physical single-entry table file into the requested level
     /// through the real manifest-application path.

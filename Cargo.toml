@@ -277,7 +277,18 @@ members = [
     "bitcoinsecp256k1-ecmult", 
     "bitcoinsecp256k1-ecmultgen", 
     "bitcoinsecp256k1-ecmultconst"
-, "bitcoinleveldb-dbimplinner", "bitcoinleveldb-versionsettestutil"]
+, "bitcoinleveldb-dbimplinner", 
+    "bitcoinleveldb-versionsettestutil", 
+    "bitcoinleveldb-testfaultinjection", 
+    "bitcoinleveldb-testcorruption", 
+    "bitcoinleveldb-testrecovery", 
+    "bitcoinleveldb-testautocompaction", 
+    "bitcoinleveldb-testcapi", 
+    "bitcoinleveldb-testissue178", 
+    "bitcoinleveldb-testissue200", 
+    "bitcoinleveldb-testutil", 
+    "bitcoinleveldb-testissue320"
+, "bitcoinleveldb-testsnapshot"]
 
 [profile.dev]
 debug = 2
