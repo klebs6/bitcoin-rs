@@ -757,4 +757,3 @@ mod version_set_recover_exhaustive_test_suite {
         remove_directory_tree_best_effort(&dir);
     }
 }
-

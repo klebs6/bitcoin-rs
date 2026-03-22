@@ -55,7 +55,7 @@ ACTIVE := bitcoinleveldb-testissue178
 ACTIVE := bitcoinleveldb-testutil
 #ACTIVE := bitcoinleveldb-testissue320
 
-#ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
+ACTIVE := bitcoinleveldb-dbtest        #loc: 2652
 #ACTIVE := bitcoinleveldb-dbimpl        #loc: 2652
 
 # ---[leveldb-layer-3]

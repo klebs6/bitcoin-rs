@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldb-dbimpl/src/t_dbimpl_live_compaction_output_boundary_support.rs ]
 crate::ix!();
 
 /// Opens one fully initialized live `DBImpl` through the real `DBOpen` path and

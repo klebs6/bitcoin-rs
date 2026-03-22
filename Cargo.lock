@@ -3608,6 +3608,7 @@ dependencies = [
  "bitcoinleveldb-tableconstructor",
  "bitcoinleveldb-test",
  "bitcoinleveldb-testenv",
+ "bitcoinleveldb-testsnapshot",
  "bitcoinleveldb-versionedit",
  "bitcoinleveldb-versionset",
  "bitcoinleveldb-versionsetinterface",
@@ -4832,6 +4833,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "bitcoinleveldb-testmt"
+version = "0.1.0"
+
+[[package]]
+name = "bitcoinleveldb-testrandomized"
+version = "0.1.0"
+
+[[package]]
 name = "bitcoinleveldb-testrecovery"
 version = "0.1.0"
 dependencies = [
@@ -4877,6 +4886,10 @@ name = "bitcoinleveldb-testsnapshot"
 version = "0.1.0"
 
 [[package]]
+name = "bitcoinleveldb-testtable"
+version = "0.1.0"
+
+[[package]]
 name = "bitcoinleveldb-testutil"
 version = "0.1.0"
 dependencies = [
@@ -4905,6 +4918,7 @@ dependencies = [
  "bitcoinleveldb-repair",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-specialenv",
  "bitcoinleveldb-status",
  "bitcoinleveldb-table",
  "bitcoinleveldb-util",

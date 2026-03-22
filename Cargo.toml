@@ -288,7 +288,7 @@ members = [
     "bitcoinleveldb-testissue200", 
     "bitcoinleveldb-testutil", 
     "bitcoinleveldb-testissue320"
-, "bitcoinleveldb-testsnapshot"]
+, "bitcoinleveldb-testsnapshot", "bitcoinleveldb-testrandomized", "bitcoinleveldb-testmt", "bitcoinleveldb-testtable"]
 
 [profile.dev]
 debug = 2

@@ -1,0 +1,46 @@
+[package]
+name = "bitcoinleveldb-dbtest"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+tracing.workspace = true
+snap.workspace = true
+lock_api.workspace = true
+bitcoin-imports = { path = "../bitcoin-imports" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
+bitcoinleveldb-specialenv = { path = "../bitcoinleveldb-specialenv" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand" }
+bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl" }
+bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-test = { path = "../bitcoinleveldb-test" }
+bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
+bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
+bitcoinleveldb-logtools = { path = "../bitcoinleveldb-logtools" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom" }
+bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
+bitcoinleveldb-tableconstructor = { path = "../bitcoinleveldb-tableconstructor" }
+bitcoinleveldb-testenv = { path = "../bitcoinleveldb-testenv" }
+bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
+bitcoinleveldb-versionset = { path = "../bitcoinleveldb-versionset" }
+bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
+bitcoinleveldb-modeldb = { path = "../bitcoinleveldb-modeldb" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
+bitcoinleveldb-testsnapshot = { path = "../bitcoinleveldb-testsnapshot" }
