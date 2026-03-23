@@ -1,5 +1,5 @@
 [package]
-name = "bitcoinleveldbt-randomized"
+name = "bitcoinleveldbt-issue474"
 version = "0.1.0"
 authors = ["YourName <you@example.com>"]
 license = "MIT"
@@ -34,8 +34,6 @@ bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair" }
 bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
 bitcoinleveldbt-util = { path = "../bitcoinleveldbt-util" }
 bitcoinleveldbt-dbtest = { path = "../bitcoinleveldbt-dbtest" }
-bitcoinleveldbt-snapshot = { path = "../bitcoinleveldbt-snapshot" }
-bitcoinleveldb-modeldb = { path = "../bitcoinleveldb-modeldb" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

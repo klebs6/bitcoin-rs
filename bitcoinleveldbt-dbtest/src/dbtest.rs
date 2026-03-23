@@ -815,7 +815,7 @@ impl DBTest {
 
         // translated from: db_->CompactRange(&start, &limit);
         unsafe {
-            (*self.dbfull()).compact_range((start as *const Slice), (limit as *const Slice));
+            (*self.dbfull()).compact_range(start as *const Slice, limit as *const Slice);
         }
 
         tracing::trace!(

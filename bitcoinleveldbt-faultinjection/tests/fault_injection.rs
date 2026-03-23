@@ -6,8 +6,9 @@
   | purposely dropping file data (or entire files)
   | not protected by a "sync".
   */
-
-crate::ix!();
+use bitcoinleveldbt_faultinjection::*;
+use traced_test::*;
+use tracing_setup::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/fault_injection_test.cc]
 #[traced_test]

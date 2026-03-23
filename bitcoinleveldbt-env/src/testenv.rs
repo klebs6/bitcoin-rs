@@ -16,17 +16,34 @@ impl GetChildren for TestEnv {
         tracing::trace!(
             dir = %dir,
             ignore_dot_files = self.ignore_dot_files,
+            result_is_null = result.is_null(),
             "TestEnv::get_children: entering"
         );
 
+        // Preserve the base env's null-pointer behavior.
+        if result.is_null() {
+            return self.base.get_children(dir, result);
+        }
+
         let mut delegated: Vec<String> = Vec::new();
         let s = self.base.get_children(dir, &mut delegated as *mut Vec<String>);
-        if !s.is_ok() || result.is_null() {
-            return s;
-        }
 
         let out: &mut Vec<String> = unsafe { &mut *result };
         out.clear();
+
+        // Preserve whatever the base env produced on error; do not filter.
+        if !s.is_ok() {
+            out.extend(delegated);
+
+            tracing::debug!(
+                dir = %dir,
+                count = out.len(),
+                code = ?s.code(),
+                "TestEnv::get_children: exit with delegated error payload"
+            );
+
+            return s;
+        }
 
         if !self.ignore_dot_files {
             out.push(".".to_string());
@@ -38,7 +55,7 @@ impl GetChildren for TestEnv {
                 if self.ignore_dot_files {
                     continue;
                 }
-                // avoid duplicates if the backend ever starts returning them
+                // avoid duplicates when we already emitted canonical "." and ".."
                 continue;
             }
             out.push(child);
@@ -1330,5 +1347,18 @@ mod testenv_exhaustive_behavior_suite {
 
         let wrapper_target = env.target();
         assert!(Rc::ptr_eq(&wrapper_target, &base_env_clone));
+    }
+
+    #[traced_test]
+    fn testenv_get_children_forwards_null_result_pointer_to_base() {
+        let (base_env, _state) = scripted_env_as_dyn_env(vec![
+            GetChildrenScriptStep::ok(&["alpha"])
+        ]);
+
+        let mut env = TestEnv::new(base_env);
+
+        let s = env.get_children(&"dir-null".to_string(), std::ptr::null_mut());
+
+        assert_eq!(s.code(), StatusCode::InvalidArgument);
     }
 }

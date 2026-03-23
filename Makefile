@@ -46,25 +46,16 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoinsecp256k1-eccontext
 
 ACTIVE := bitcoinleveldb-harness       #loc: 297
-ACTIVE := bitcoinleveldbt-snapshot
-
-#ACTIVE := bitcoinleveldbt-autocompaction #there exists a hang here
-#ACTIVE := bitcoinleveldbt-bench
-#ACTIVE := bitcoinleveldbt-capi
-#ACTIVE := bitcoinleveldbt-corruption #passes in about 7min
-#ACTIVE := bitcoinleveldbt-dbtest
-#ACTIVE := bitcoinleveldbt-env
-#ACTIVE := bitcoinleveldbt-faultinjection #passes in +20 min
-#ACTIVE := bitcoinleveldbt-issue178
-#ACTIVE := bitcoinleveldbt-issue200
-#ACTIVE := bitcoinleveldbt-issue320
-#ACTIVE := bitcoinleveldbt-mockversionset
-#ACTIVE := bitcoinleveldbt-mt
+#ACTIVE := bitcoinleveldbt-snapshot
 #ACTIVE := bitcoinleveldbt-randomized
-ACTIVE := bitcoinleveldbt-recovery
-#ACTIVE := bitcoinleveldb-test
+#ACTIVE := bitcoinleveldbt-mt
+#ACTIVE := bitcoinleveldbt-issue178 #sigkill
+ACTIVE := bitcoinleveldbt-autocompaction #there exists a hang here
+ACTIVE := bitcoinleveldbt-env
+#ACTIVE := bitcoinleveldbt-dbtest
+#ACTIVE := bitcoinleveldbt-issue44
+#ACTIVE := bitcoinleveldbt-issue320
 
-#ACTIVE := bitcoinleveldb-dbimpl        #loc: 2652
 
 # ---[leveldb-layer-3]
 #ACTIVE := bitcoin-leveldb              #loc: 36
@@ -589,3 +580,13 @@ dbtest-randomized-focus:
 #ACTIVE := bitcoinleveldbt-versionsettestutil
 #ACTIVE := bitcoinleveldbt-util
 #ACTIVE := bitcoinleveldbt-table
+#ACTIVE := bitcoinleveldbt-recovery
+#ACTIVE := bitcoinleveldbt-mockversionset
+#ACTIVE := bitcoinleveldbt-faultinjection #passes in +20 min
+#ACTIVE := bitcoinleveldbt-corruption #passes in about 7min
+#ACTIVE := bitcoinleveldbt-bench
+#ACTIVE := bitcoinleveldbt-capi
+#ACTIVE := bitcoinleveldbt-issue474
+#ACTIVE := bitcoinleveldbt-issue200
+#ACTIVE := bitcoinleveldb-dbimpl        #loc: 2652
+#ACTIVE := bitcoinleveldb-test

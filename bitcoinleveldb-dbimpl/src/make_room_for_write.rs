@@ -50,7 +50,7 @@ impl DBImpl {
 
         loop {
             if !self.bg_error.is_ok() {
-                // Yield previous error
+                // Yield previous error.
                 s = self.bg_error.clone();
                 tracing::debug!(
                     status = %s.to_string(),
@@ -71,9 +71,10 @@ impl DBImpl {
                 unsafe {
                     self.mutex.unlock();
                 }
+
                 env.borrow_mut().sleep_for_microseconds(1000);
 
-                // Do not delay a single write more than once
+                // Do not delay a single write more than once.
                 allow_delay = false;
 
                 self.mutex.lock();
@@ -93,28 +94,75 @@ impl DBImpl {
             }
 
             if !self.imm.is_null() {
-                tracing::info!("Current memtable full; waiting...");
-                {
-                    let _cv_guard = self.background_work_finished_mutex.lock();
-                    self.background_work_finished_signal.signal_all();
+                // Mirror upstream LevelDB semantics exactly:
+                // if an immutable memtable is already outstanding, we must wait for
+                // background compaction to finish instead of rotating another memtable
+                // and overwriting self.imm.
+                tracing::info!(
+                    imm_ptr = self.imm as usize,
+                    mem_usage,
+                    write_buffer_limit,
+                    "make_room_for_write: current memtable full; waiting for immutable memtable compaction"
+                );
+
+                let mut cv_guard = self.background_work_finished_mutex.lock();
+
+                unsafe {
+                    self.mutex.unlock();
                 }
+
+                self.background_work_finished_signal.wait(&mut cv_guard);
+
+                drop(cv_guard);
+
+                self.mutex.lock();
+
+                tracing::debug!(
+                    imm_ptr = self.imm as usize,
+                    bg_error = %self.bg_error.to_string(),
+                    "make_room_for_write: woke while waiting for immutable memtable compaction"
+                );
+
+                continue;
             }
 
             if l0_files >= (L0_STOP_WRITES_TRIGGER as i32) {
+                // Mirror upstream LevelDB semantics exactly:
+                // when level-0 is too full, writers must wait for background work
+                // to make progress before creating yet another level-0 file.
                 tracing::info!(
                     l0_files,
                     trigger = L0_STOP_WRITES_TRIGGER as i32,
-                    "Too many L0 files; waiting..."
+                    "make_room_for_write: too many L0 files; waiting for background compaction"
                 );
 
-                {
-                    let _cv_guard = self.background_work_finished_mutex.lock();
-                    self.background_work_finished_signal.signal_all();
+                let mut cv_guard = self.background_work_finished_mutex.lock();
+
+                unsafe {
+                    self.mutex.unlock();
                 }
+
+                self.background_work_finished_signal.wait(&mut cv_guard);
+
+                drop(cv_guard);
+
+                self.mutex.lock();
+
+                tracing::debug!(
+                    l0_files = unsafe { (*versions).num_level_files(0) },
+                    bg_error = %self.bg_error.to_string(),
+                    "make_room_for_write: woke while waiting for L0 pressure to drop"
+                );
+
+                continue;
             }
 
-            // Attempt to switch to a new memtable and trigger compaction of old
+            // Attempt to switch to a new memtable and trigger compaction of old.
             assert_eq!(unsafe { (*versions).prev_log_number() }, 0);
+            assert!(
+                self.imm.is_null(),
+                "make_room_for_write: attempted to rotate memtable while immutable memtable was still outstanding"
+            );
 
             let new_log_number: u64 = unsafe { (*versions).new_file_number() };
             let fname: String = log_file_name(&self.dbname, new_log_number);
@@ -185,11 +233,13 @@ impl DBImpl {
                 (*self.mem).ref_();
             }
 
-            // Do not force another compaction if have room
+            // Do not force another compaction if we now have room.
             force = false;
 
             tracing::debug!(
                 log_number = new_log_number,
+                imm_ptr = self.imm as usize,
+                mem_ptr = self.mem as usize,
                 "make_room_for_write: installed new log + memtable; scheduling compaction"
             );
 
@@ -198,6 +248,77 @@ impl DBImpl {
 
         tracing::debug!(status = %s.to_string(), "make_room_for_write: end");
         s
+    }
+
+    #[cfg(test)]
+    pub fn test_install_temporary_immutable_memtable_and_release_after_delay_for_make_room_for_write_harness(
+        &mut self,
+        release_after_millis: u64
+    ) -> std::thread::JoinHandle<()>
+    {
+        trace!(
+            target: "bitcoinleveldb_dbimpl::make_room_for_write_regression",
+            event = "dbimpl_test_install_temporary_immutable_memtable_entry",
+            release_after_millis = release_after_millis,
+            dbname = %self.dbname
+        );
+
+        self.mutex.lock();
+
+        assert!(
+            !self.mem.is_null(),
+            "test_install_temporary_immutable_memtable_and_release_after_delay_for_make_room_for_write_harness: DB must be opened"
+        );
+        assert!(
+            self.imm.is_null(),
+            "test_install_temporary_immutable_memtable_and_release_after_delay_for_make_room_for_write_harness: harness requires imm to be null before injection"
+        );
+
+        let injected_imm: *mut MemTable =
+            Box::into_raw(Box::new(MemTable::new(&self.internal_comparator)));
+
+        unsafe {
+            (*injected_imm).ref_();
+        }
+
+        self.imm = injected_imm;
+        self.has_imm
+            .store(true, core::sync::atomic::Ordering::Release);
+
+        unsafe {
+            self.mutex.unlock();
+        }
+
+        let db_ptr_value: usize = self as *mut DBImpl as usize;
+        let injected_imm_ptr_value: usize = injected_imm as usize;
+
+        std::thread::spawn(move || {
+            std::thread::sleep(std::time::Duration::from_millis(release_after_millis));
+
+            unsafe {
+                let db: &mut DBImpl = &mut *(db_ptr_value as *mut DBImpl);
+                let injected_imm: *mut MemTable = injected_imm_ptr_value as *mut MemTable;
+
+                db.mutex.lock();
+
+                let injected_still_installed: bool = db.imm == injected_imm;
+
+                if injected_still_installed {
+                    db.imm = core::ptr::null_mut();
+                    db.has_imm
+                        .store(false, core::sync::atomic::Ordering::Release);
+                }
+
+                (*injected_imm).unref();
+
+                {
+                    let _cv_guard = db.background_work_finished_mutex.lock();
+                    db.background_work_finished_signal.signal_all();
+                }
+
+                db.mutex.unlock();
+            }
+        })
     }
 }
 
@@ -267,5 +388,53 @@ mod make_room_for_write_interface_contract_suite {
 
         drop(db);
         let _ = std::fs::remove_dir_all(&dbname);
+    }
+
+    #[cfg(test)]
+    #[traced_test]
+    fn dbimpl_make_room_for_write_waits_for_outstanding_immutable_memtable_regression() {
+        init_test_runtime();
+
+        let temporary_database_directory =
+            bitcoinleveldb_dbimpl_live_compaction_boundary_build_temporary_database_directory_path(
+                "dbimpl_make_room_for_write_waits_for_immutable_memtable_regression",
+            );
+
+        let mut database_instance =
+            bitcoinleveldb_dbimpl_live_compaction_boundary_open_database_instance_via_dbopen(
+                &temporary_database_directory,
+            );
+
+        let releaser =
+            database_instance
+            .test_install_temporary_immutable_memtable_and_release_after_delay_for_make_room_for_write_harness(
+                300,
+            );
+
+        let started_at = std::time::Instant::now();
+
+        let status = <DBImpl as DBWrite>::write(
+            database_instance.as_mut(),
+            &WriteOptions::default(),
+            core::ptr::null_mut(),
+        );
+
+        let elapsed = started_at.elapsed();
+
+        assert!(status.is_ok());
+        assert!(releaser.join().is_ok());
+
+        assert!(
+            elapsed >= std::time::Duration::from_millis(200),
+            "make_room_for_write returned before the outstanding immutable memtable was released: elapsed={:?}",
+            elapsed
+        );
+
+        drop(database_instance);
+
+        let cleanup_options = Options::with_env(PosixEnv::shared());
+        let cleanup_status = bitcoinleveldb_dbconstructor::destroydb(&temporary_database_directory, &cleanup_options);
+        assert!(cleanup_status.is_ok());
+
     }
 }

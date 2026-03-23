@@ -56,3 +56,4 @@ tracing-subscriber.workspace = true
 tracing-appender.workspace = true
 tempfile.workspace = true
 signal-hook.workspace = true
+bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
