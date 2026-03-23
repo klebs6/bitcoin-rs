@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testenv/src/testenv.rs ]
+// ---------------- [ File: bitcoinleveldbt-env/src/testenv.rs ]
 crate::ix!();
 
 /**
@@ -58,14 +58,14 @@ impl GetChildren for TestEnv {
 impl TestEnv {
     pub fn new(base: Rc<RefCell<dyn Env>>) -> Self {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             "TestEnv::new: constructing test environment wrapper"
         );
 
         let env_wrapper = EnvWrapper::new(base);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             ignore_dot_files = false,
             "TestEnv::new: constructed"
         );
@@ -82,7 +82,7 @@ impl TestEnv {
         self.ignore_dot_files = ignored;
 
         info!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             previous = prev,
             current = self.ignore_dot_files,
             "TestEnv::set_ignore_dot_files: updated configuration"
@@ -107,7 +107,7 @@ impl std::ops::DerefMut for TestEnv {
 impl DeleteFile for TestEnv {
     fn delete_file(&mut self, f: &String) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             "TestEnv::delete_file: delegating"
         );
@@ -115,7 +115,7 @@ impl DeleteFile for TestEnv {
         let s = self.base.delete_file(f);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             ok = s.is_ok(),
             code = ?s.code(),
@@ -129,7 +129,7 @@ impl DeleteFile for TestEnv {
 impl CreateDir for TestEnv {
     fn create_dir(&mut self, d: &String) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             dir = %d,
             "TestEnv::create_dir: delegating"
         );
@@ -137,7 +137,7 @@ impl CreateDir for TestEnv {
         let s = self.base.create_dir(d);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             dir = %d,
             ok = s.is_ok(),
             code = ?s.code(),
@@ -151,7 +151,7 @@ impl CreateDir for TestEnv {
 impl DeleteDir for TestEnv {
     fn delete_dir(&mut self, d: &String) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             dir = %d,
             "TestEnv::delete_dir: delegating"
         );
@@ -159,7 +159,7 @@ impl DeleteDir for TestEnv {
         let s = self.base.delete_dir(d);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             dir = %d,
             ok = s.is_ok(),
             code = ?s.code(),
@@ -173,7 +173,7 @@ impl DeleteDir for TestEnv {
 impl NewSequentialFile for TestEnv {
     fn new_sequential_file(&mut self, f: &String, r: *mut *mut Box<dyn SequentialFile>) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             result_is_null = r.is_null(),
             "TestEnv::new_sequential_file: delegating"
@@ -182,7 +182,7 @@ impl NewSequentialFile for TestEnv {
         let s = self.base.new_sequential_file(f, r);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             ok = s.is_ok(),
             code = ?s.code(),
@@ -200,7 +200,7 @@ impl NewRandomAccessFile for TestEnv {
         r: *mut *mut Box<dyn RandomAccessFile>,
     ) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             result_is_null = r.is_null(),
             "TestEnv::new_random_access_file: delegating"
@@ -209,7 +209,7 @@ impl NewRandomAccessFile for TestEnv {
         let s = self.base.new_random_access_file(f, r);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             ok = s.is_ok(),
             code = ?s.code(),
@@ -223,7 +223,7 @@ impl NewRandomAccessFile for TestEnv {
 impl NewWritableFile for TestEnv {
     fn new_writable_file(&mut self, f: &String, r: *mut *mut Box<dyn WritableFile>) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             result_is_null = r.is_null(),
             "TestEnv::new_writable_file: delegating"
@@ -232,7 +232,7 @@ impl NewWritableFile for TestEnv {
         let s = self.base.new_writable_file(f, r);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             ok = s.is_ok(),
             code = ?s.code(),
@@ -246,7 +246,7 @@ impl NewWritableFile for TestEnv {
 impl NewAppendableFile for TestEnv {
     fn new_appendable_file(&mut self, f: &String, r: *mut *mut Box<dyn WritableFile>) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             result_is_null = r.is_null(),
             "TestEnv::new_appendable_file: delegating"
@@ -255,7 +255,7 @@ impl NewAppendableFile for TestEnv {
         let s = self.base.new_appendable_file(f, r);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             ok = s.is_ok(),
             code = ?s.code(),
@@ -269,7 +269,7 @@ impl NewAppendableFile for TestEnv {
 impl FileExists for TestEnv {
     fn file_exists(&mut self, f: &String) -> bool {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             "TestEnv::file_exists: delegating"
         );
@@ -277,7 +277,7 @@ impl FileExists for TestEnv {
         let exists = self.base.file_exists(f);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             exists,
             "TestEnv::file_exists: delegated"
@@ -290,7 +290,7 @@ impl FileExists for TestEnv {
 impl GetFileSize for TestEnv {
     fn get_file_size(&mut self, f: &String, s: *mut u64) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             out_is_null = s.is_null(),
             "TestEnv::get_file_size: delegating"
@@ -299,7 +299,7 @@ impl GetFileSize for TestEnv {
         let st = self.base.get_file_size(f, s);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             ok = st.is_ok(),
             code = ?st.code(),
@@ -313,7 +313,7 @@ impl GetFileSize for TestEnv {
 impl RenameFile for TestEnv {
     fn rename_file(&mut self, src: &String, target: &String) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             src = %src,
             target = %target,
             "TestEnv::rename_file: delegating"
@@ -322,7 +322,7 @@ impl RenameFile for TestEnv {
         let st = self.base.rename_file(src, target);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             src = %src,
             target = %target,
             ok = st.is_ok(),
@@ -337,7 +337,7 @@ impl RenameFile for TestEnv {
 impl LockFile for TestEnv {
     fn lock_file(&mut self, f: &String, l: *mut *mut Box<dyn FileLock>) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             out_is_null = l.is_null(),
             "TestEnv::lock_file: delegating"
@@ -346,7 +346,7 @@ impl LockFile for TestEnv {
         let st = self.base.lock_file(f, l);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %f,
             ok = st.is_ok(),
             code = ?st.code(),
@@ -360,7 +360,7 @@ impl LockFile for TestEnv {
 impl UnlockFile for TestEnv {
     fn unlock_file(&mut self, l: *mut Box<dyn FileLock>) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             lock_is_null = l.is_null(),
             "TestEnv::unlock_file: delegating"
         );
@@ -368,7 +368,7 @@ impl UnlockFile for TestEnv {
         let st = self.base.unlock_file(l);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             ok = st.is_ok(),
             code = ?st.code(),
             "TestEnv::unlock_file: delegated"
@@ -385,7 +385,7 @@ impl Schedule for TestEnv {
         arg: *mut std::ffi::c_void,
     ) {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             arg_is_null = arg.is_null(),
             "TestEnv::schedule: delegating"
         );
@@ -393,7 +393,7 @@ impl Schedule for TestEnv {
         self.base.schedule(function, arg);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             "TestEnv::schedule: delegated"
         );
     }
@@ -406,7 +406,7 @@ impl StartThread for TestEnv {
         arg: *mut std::ffi::c_void,
     ) {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             arg_is_null = arg.is_null(),
             "TestEnv::start_thread: delegating"
         );
@@ -414,7 +414,7 @@ impl StartThread for TestEnv {
         self.base.start_thread(function, arg);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             "TestEnv::start_thread: delegated"
         );
     }
@@ -423,7 +423,7 @@ impl StartThread for TestEnv {
 impl GetTestDirectory for TestEnv {
     fn get_test_directory(&mut self, path: *mut String) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             out_is_null = path.is_null(),
             "TestEnv::get_test_directory: delegating"
         );
@@ -431,7 +431,7 @@ impl GetTestDirectory for TestEnv {
         let st = self.base.get_test_directory(path);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             ok = st.is_ok(),
             code = ?st.code(),
             "TestEnv::get_test_directory: delegated"
@@ -444,7 +444,7 @@ impl GetTestDirectory for TestEnv {
 impl NewLogger for TestEnv {
     fn new_logger(&mut self, fname: &String, result: *mut *mut Box<dyn Logger>) -> Status {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %fname,
             out_is_null = result.is_null(),
             "TestEnv::new_logger: delegating"
@@ -453,7 +453,7 @@ impl NewLogger for TestEnv {
         let st = self.base.new_logger(fname, result);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             file = %fname,
             ok = st.is_ok(),
             code = ?st.code(),
@@ -467,14 +467,14 @@ impl NewLogger for TestEnv {
 impl NowMicros for TestEnv {
     fn now_micros(&mut self) -> u64 {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             "TestEnv::now_micros: delegating"
         );
 
         let v = self.base.now_micros();
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             now_micros = v,
             "TestEnv::now_micros: delegated"
         );
@@ -486,7 +486,7 @@ impl NowMicros for TestEnv {
 impl SleepForMicroseconds for TestEnv {
     fn sleep_for_microseconds(&mut self, micros: i32) {
         trace!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             micros,
             "TestEnv::sleep_for_microseconds: delegating"
         );
@@ -494,7 +494,7 @@ impl SleepForMicroseconds for TestEnv {
         self.base.sleep_for_microseconds(micros);
 
         debug!(
-            target: "bitcoinleveldb_testenv::testenv",
+            target: "bitcoinleveldbt_env::testenv",
             micros,
             "TestEnv::sleep_for_microseconds: delegated"
         );
@@ -519,7 +519,7 @@ mod testenv_exhaustive_behavior_suite {
             let v: Vec<String> = children.iter().map(|s| (*s).to_string()).collect();
 
             debug!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 ok = status.is_ok(),
                 code = ?status.code(),
                 children_len = v.len(),
@@ -533,7 +533,7 @@ mod testenv_exhaustive_behavior_suite {
             let v: Vec<String> = children.iter().map(|s| (*s).to_string()).collect();
 
             debug!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 ok = status.is_ok(),
                 code = ?status.code(),
                 children_len = v.len(),
@@ -587,7 +587,7 @@ mod testenv_exhaustive_behavior_suite {
     impl ScriptedEnvState {
         fn new(get_children_steps: Vec<GetChildrenScriptStep>) -> Self {
             info!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 steps_len = get_children_steps.len(),
                 "ScriptedEnvState::new"
             );
@@ -657,7 +657,7 @@ mod testenv_exhaustive_behavior_suite {
     impl ScriptedEnv {
         fn new(state: Rc<RefCell<ScriptedEnvState>>) -> Self {
             debug!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 "ScriptedEnv::new"
             );
             Self { state }
@@ -683,7 +683,7 @@ mod testenv_exhaustive_behavior_suite {
     impl GetChildren for ScriptedEnv {
         fn get_children(&mut self, dir: &String, result: *mut Vec<String>) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 dir = %dir,
                 result_is_null = result.is_null(),
                 "ScriptedEnv::get_children: begin"
@@ -693,7 +693,7 @@ mod testenv_exhaustive_behavior_suite {
                 let st = Status::invalid_argument(&"null get_children result".into(), None);
 
                 warn!(
-                    target: "bitcoinleveldb_testenv::tests::fixture",
+                    target: "bitcoinleveldbt_env::tests::fixture",
                     dir = %dir,
                     ok = st.is_ok(),
                     code = ?st.code(),
@@ -718,7 +718,7 @@ mod testenv_exhaustive_behavior_suite {
             }
 
             debug!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 dir = %dir,
                 ok = step.status.is_ok(),
                 code = ?step.status.code(),
@@ -732,7 +732,7 @@ mod testenv_exhaustive_behavior_suite {
     impl DeleteFile for ScriptedEnv {
         fn delete_file(&mut self, fname: &String) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 file = %fname,
                 "ScriptedEnv::delete_file"
             );
@@ -746,7 +746,7 @@ mod testenv_exhaustive_behavior_suite {
     impl CreateDir for ScriptedEnv {
         fn create_dir(&mut self, dirname: &String) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 dir = %dirname,
                 "ScriptedEnv::create_dir"
             );
@@ -760,7 +760,7 @@ mod testenv_exhaustive_behavior_suite {
     impl DeleteDir for ScriptedEnv {
         fn delete_dir(&mut self, dirname: &String) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 dir = %dirname,
                 "ScriptedEnv::delete_dir"
             );
@@ -778,7 +778,7 @@ mod testenv_exhaustive_behavior_suite {
             result: *mut *mut Box<dyn SequentialFile>,
         ) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 file = %fname,
                 result_is_null = result.is_null(),
                 "ScriptedEnv::new_sequential_file"
@@ -808,7 +808,7 @@ mod testenv_exhaustive_behavior_suite {
             result: *mut *mut Box<dyn RandomAccessFile>,
         ) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 file = %fname,
                 result_is_null = result.is_null(),
                 "ScriptedEnv::new_random_access_file"
@@ -838,7 +838,7 @@ mod testenv_exhaustive_behavior_suite {
             result: *mut *mut Box<dyn WritableFile>,
         ) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 file = %fname,
                 result_is_null = result.is_null(),
                 "ScriptedEnv::new_writable_file"
@@ -868,7 +868,7 @@ mod testenv_exhaustive_behavior_suite {
             result: *mut *mut Box<dyn WritableFile>,
         ) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 file = %fname,
                 result_is_null = result.is_null(),
                 "ScriptedEnv::new_appendable_file"
@@ -894,7 +894,7 @@ mod testenv_exhaustive_behavior_suite {
     impl FileExists for ScriptedEnv {
         fn file_exists(&mut self, fname: &String) -> bool {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 file = %fname,
                 "ScriptedEnv::file_exists"
             );
@@ -908,7 +908,7 @@ mod testenv_exhaustive_behavior_suite {
     impl GetFileSize for ScriptedEnv {
         fn get_file_size(&mut self, fname: &String, file_size: *mut u64) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 file = %fname,
                 out_is_null = file_size.is_null(),
                 "ScriptedEnv::get_file_size"
@@ -935,7 +935,7 @@ mod testenv_exhaustive_behavior_suite {
     impl RenameFile for ScriptedEnv {
         fn rename_file(&mut self, src: &String, target: &String) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 src = %src,
                 target = %target,
                 "ScriptedEnv::rename_file"
@@ -953,7 +953,7 @@ mod testenv_exhaustive_behavior_suite {
     impl LockFile for ScriptedEnv {
         fn lock_file(&mut self, fname: &String, lock: *mut *mut Box<dyn FileLock>) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 file = %fname,
                 out_is_null = lock.is_null(),
                 "ScriptedEnv::lock_file"
@@ -976,7 +976,7 @@ mod testenv_exhaustive_behavior_suite {
     impl UnlockFile for ScriptedEnv {
         fn unlock_file(&mut self, _lock: *mut Box<dyn FileLock>) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 "ScriptedEnv::unlock_file"
             );
 
@@ -993,7 +993,7 @@ mod testenv_exhaustive_behavior_suite {
             arg: *mut std::ffi::c_void,
         ) {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 arg_is_null = arg.is_null(),
                 "ScriptedEnv::schedule"
             );
@@ -1009,7 +1009,7 @@ mod testenv_exhaustive_behavior_suite {
             arg: *mut std::ffi::c_void,
         ) {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 arg_is_null = arg.is_null(),
                 "ScriptedEnv::start_thread"
             );
@@ -1021,7 +1021,7 @@ mod testenv_exhaustive_behavior_suite {
     impl GetTestDirectory for ScriptedEnv {
         fn get_test_directory(&mut self, path: *mut String) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 out_is_null = path.is_null(),
                 "ScriptedEnv::get_test_directory"
             );
@@ -1047,7 +1047,7 @@ mod testenv_exhaustive_behavior_suite {
     impl NewLogger for ScriptedEnv {
         fn new_logger(&mut self, fname: &String, result: *mut *mut Box<dyn Logger>) -> Status {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 file = %fname,
                 out_is_null = result.is_null(),
                 "ScriptedEnv::new_logger"
@@ -1070,7 +1070,7 @@ mod testenv_exhaustive_behavior_suite {
     impl NowMicros for ScriptedEnv {
         fn now_micros(&mut self) -> u64 {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 "ScriptedEnv::now_micros"
             );
 
@@ -1083,7 +1083,7 @@ mod testenv_exhaustive_behavior_suite {
     impl SleepForMicroseconds for ScriptedEnv {
         fn sleep_for_microseconds(&mut self, micros: i32) {
             trace!(
-                target: "bitcoinleveldb_testenv::tests::fixture",
+                target: "bitcoinleveldbt_env::tests::fixture",
                 micros,
                 "ScriptedEnv::sleep_for_microseconds"
             );
@@ -1108,7 +1108,7 @@ mod testenv_exhaustive_behavior_suite {
         let mut out: Vec<String> = Vec::new();
 
         trace!(
-            target: "bitcoinleveldb_testenv::tests",
+            target: "bitcoinleveldbt_env::tests",
             dir = %dir_string,
             "invoke_get_children: calling TestEnv::get_children"
         );
@@ -1122,7 +1122,7 @@ mod testenv_exhaustive_behavior_suite {
         let mut out: Vec<String> = Vec::new();
 
         trace!(
-            target: "bitcoinleveldb_testenv::tests",
+            target: "bitcoinleveldbt_env::tests",
             dir = %dir_string,
             "invoke_get_children_via_trait: calling GetChildren::get_children"
         );

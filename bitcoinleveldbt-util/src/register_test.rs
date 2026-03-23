@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/register_test.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/register_test.rs ]
 crate::ix!();
 
 /**
@@ -13,7 +13,7 @@ pub fn register_test(
     func: fn(),
 ) -> bool {
     trace!(
-        target: "bitcoinleveldb_test::harness",
+        target: "bitcoinleveldbt_util::harness",
         event = "register_test_entry",
         base_ptr = (base as usize),
         name_ptr = (name as usize)
@@ -51,7 +51,7 @@ pub fn register_test(
     guard.push(test);
 
     trace!(
-        target: "bitcoinleveldb_test::harness",
+        target: "bitcoinleveldbt_util::harness",
         event = "register_test_exit",
         registered_count = guard.len()
     );

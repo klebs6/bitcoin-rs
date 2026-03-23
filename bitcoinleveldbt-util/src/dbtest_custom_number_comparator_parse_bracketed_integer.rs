@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/dbtest_custom_number_comparator_parse_bracketed_integer.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/dbtest_custom_number_comparator_parse_bracketed_integer.rs ]
 crate::ix!();
 
 /// Invariant: successful parses recover exactly the bracketed integer value accepted by the
@@ -11,7 +11,7 @@ pub fn dbtest_custom_number_comparator_parse_bracketed_integer(
     x: &Slice,
 ) -> i32 {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::fixture",
+        target: "bitcoinleveldbt_dbtest::fixture",
         label = "dbtest_custom_number_comparator_parse_bracketed_integer.entry",
         input_len = x.size()
     );
@@ -53,7 +53,7 @@ pub fn dbtest_custom_number_comparator_parse_bracketed_integer(
     };
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::fixture",
+        target: "bitcoinleveldbt_dbtest::fixture",
         label = "dbtest_custom_number_comparator_parse_bracketed_integer.exit",
         value = value
     );

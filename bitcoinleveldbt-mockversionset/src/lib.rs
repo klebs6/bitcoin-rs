@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-mockversionset/src/lib.rs ]
+// ---------------- [ File: bitcoinleveldbt-mockversionset/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinleveldb_mockversionset}
+x!{mock_version_set}

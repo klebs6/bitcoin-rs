@@ -3542,8 +3542,8 @@
       "enums": [],
       "types": []
     },
-    "bitcoinleveldb-test": {
-      "crate_name": "bitcoinleveldb-test",
+    "bitcoinleveldbt-deleteme": {
+      "crate_name": "bitcoinleveldbt-deleteme",
       "traits": [],
       "fns": [
         "partial_compact_test_reopen_with_fault",
@@ -3648,8 +3648,8 @@
       "enums": [],
       "types": []
     },
-    "bitcoinleveldb-bench": {
-      "crate_name": "bitcoinleveldb-bench",
+    "bitcoinleveldbt-bench": {
+      "crate_name": "bitcoinleveldbt-bench",
       "traits": [],
       "fns": [
         "run_benchmark",
@@ -10825,7 +10825,7 @@
       "bitcoin-cli"
     ],
     "add_message": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "changed_search": [
       "bitcoin-qt"
@@ -11008,7 +11008,7 @@
       "bitcoinleveldb-file"
     ],
     "read_while_writing": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "read_binary_file": [
       "bitcoin-system"
@@ -11083,7 +11083,7 @@
       "bitcoin-coinsview"
     ],
     "report": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "unban_subnet": [
       "bitcoin-banman"
@@ -11092,7 +11092,7 @@
       "bitcoin-qt"
     ],
     "manifest_file_name": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "get_value_size": [
       "bitcoin-db",
@@ -11102,7 +11102,7 @@
       "bitcoin-qt"
     ],
     "register_test": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "could_sign_inputs": [
       "bitcoin-qt"
@@ -11141,7 +11141,7 @@
       "bitcoin-blockpolicy"
     ],
     "file_size": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-table"
     ],
     "show_or_print": [
@@ -11447,7 +11447,7 @@
       "bitcoin-qt"
     ],
     "reset_db_state": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "open_third_party_tx_url": [
       "bitcoin-qt"
@@ -11459,7 +11459,7 @@
       "bitcoin-qt"
     ],
     "wal_checkpoint": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "RelayDustFee": [
       "bitcoinchain-interface"
@@ -11554,7 +11554,7 @@
       "bitcoin-http"
     ],
     "partial_compact_test_reopen_with_fault": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "GetTxConflicts": [
       "bitcoinwallet-interface"
@@ -11741,7 +11741,7 @@
       "bitcoin-qt"
     ],
     "delete_random": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "data_mut": [
       "bitcoin-hash",
@@ -11879,7 +11879,7 @@
       "bitcoinleveldb-lru"
     ],
     "print_stats": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "deserialize_from_fuzzing_input": [
       "bitcoin-fuzz"
@@ -11907,7 +11907,7 @@
     ],
     "verify": [
       "bitcoin-test",
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoin-bdb",
       "bitcoin-sqlite",
       "bitcoin-key"
@@ -12005,7 +12005,7 @@
       "bitcoinrpc-mining"
     ],
     "heap_profile": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "sendmany": [
       "bitcoinrpc-wallet"
@@ -12056,7 +12056,7 @@
       "bitcoin-peerman"
     ],
     "Benchmark": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "leveldb_readoptions_set_snapshot": [
       "bitcoinleveldb-db"
@@ -12152,7 +12152,7 @@
       "bitcoin-qt"
     ],
     "exec_error_check": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "create_block": [
       "bitcoin-test"
@@ -12651,7 +12651,7 @@
       "bitcoin-signingprovider"
     ],
     "rename_file": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-memenv"
     ],
     "verifychain": [
@@ -12664,7 +12664,7 @@
       "bitcoinsecp256k1-scratch"
     ],
     "run_all_tests": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "LogFlags": [
       "bitcoin-log"
@@ -12733,7 +12733,7 @@
       "bitcoin-txmempool"
     ],
     "open_with_status": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "Backup": [
       "bitcoinwallet-interface"
@@ -12909,7 +12909,7 @@
       "bitcoinrpc-txn"
     ],
     "no_write_test_reopen_with_fault": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "CacheErase": [
       "bitcoinleveldb-cache"
@@ -13274,7 +13274,7 @@
       "bitcoinwallet-receive"
     ],
     "num_tables": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "disconnect_node_with_str": [
       "bitcoin-connman"
@@ -13361,7 +13361,7 @@
       "bitcoin-fuzz"
     ],
     "writable_file_closed": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "dump_log": [
       "bitcoinleveldb-dumpfile"
@@ -13446,7 +13446,7 @@
       "bitcoin-qt"
     ],
     "partial_compact_test_pre_fault": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "addpeeraddress": [
       "bitcoinrpc-net"
@@ -13696,7 +13696,7 @@
       "bitcoinleveldb-db"
     ],
     "print_environment": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "get_mem_pool_parents": [
       "bitcoin-txmempoolentry"
@@ -13741,7 +13741,7 @@
       "bitcoin-indexed-chain"
     ],
     "opendb": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "set_ignore_dot_files": [
       "bitcoinleveldb-db"
@@ -14064,7 +14064,7 @@
       "bitcoinwallet-interface"
     ],
     "seek_random": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "guess_type": [
       "bitcoinleveldb-dumpfile"
@@ -14210,7 +14210,7 @@
       "bitcoin-qt"
     ],
     "set_filesystem_active": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "TableBuilder": [
       "bitcoinleveldb-table"
@@ -14362,7 +14362,7 @@
       "bitcoinleveldb-db"
     ],
     "dbfull": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-db"
     ],
     "accept_multiple_transactions": [
@@ -14420,7 +14420,7 @@
       "bitcoin-scripting"
     ],
     "thread_body": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "set_processing_queued_transactions": [
       "bitcoin-qt"
@@ -14561,7 +14561,7 @@
       "bitcoin-signingprovider"
     ],
     "is_fully_synced": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "PosixDefaultEnv": [
       "bitcoinleveldb-posix"
@@ -14615,7 +14615,7 @@
       "bitcoin-client-ui"
     ],
     "make_log_file": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "choose_date": [
       "bitcoin-qt"
@@ -14819,7 +14819,7 @@
       "bitcoin-time"
     ],
     "dir_was_synced": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "MakeBatch": [
       "bitcoinwallet-interface"
@@ -14898,7 +14898,7 @@
       "bitcoin-tor"
     ],
     "can_append": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "pollute_pub_key": [
       "bitcoin-test"
@@ -14986,7 +14986,7 @@
       "bitcoin-fuzz"
     ],
     "crc_32c": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "get_block_pos": [
       "bitcoin-block"
@@ -15405,7 +15405,7 @@
       "bitcoin-qt"
     ],
     "compact_mem_table": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-db"
     ],
     "parse_asymptote": [
@@ -16057,7 +16057,7 @@
       "bitcoin-indexed-chain"
     ],
     "tmp_dir": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "verify_with_flag": [
       "bitcoin-test"
@@ -16117,7 +16117,7 @@
       "bitcoinnode-interface"
     ],
     "is_file_created_since_last_dir_sync": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "savemempool": [
       "bitcoinrpc-blockchain"
@@ -16277,7 +16277,7 @@
       "bitcoinchain-params"
     ],
     "error_check": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "PSBTInputAnalysis": [
       "bitcoin-psbt"
@@ -16360,7 +16360,7 @@
       "bitcoin-sync"
     ],
     "delete_files_created_after_last_dir_sync": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "EstimateSmartFee": [
       "bitcoinchain-interface"
@@ -16677,7 +16677,7 @@
       "bitcoin-indexed-chain"
     ],
     "do_delete": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "AttachChain": [
       "bitcoinwallet-library"
@@ -16890,7 +16890,7 @@
       "bitcoin-qt"
     ],
     "compressible_string": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "setup_networking": [
       "bitcoin-init"
@@ -17159,7 +17159,7 @@
       "bitcoinwallet-interface"
     ],
     "ThreadArg": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "bump_fee": [
       "bitcoin-qt"
@@ -17417,7 +17417,7 @@
       "bitcoin-http"
     ],
     "get_files": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "check_message": [
       "bitcoin-test"
@@ -17688,7 +17688,7 @@
       "bitcoin-secp256k1"
     ],
     "repairdb": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-db",
       "bitcoinleveldb-repair"
     ],
@@ -17829,7 +17829,7 @@
       "bitcoin-connman"
     ],
     "try_reopen": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-db"
     ],
     "nonce_function_0": [
@@ -17872,7 +17872,7 @@
       "bitcoinleveldb-table"
     ],
     "corrupt": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "is_bdb_file": [
       "bitcoin-walletdb"
@@ -17998,7 +17998,7 @@
       "bitcoin-signingprovider"
     ],
     "log_name": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "write_level_0table": [
       "bitcoinleveldb-db"
@@ -18069,7 +18069,7 @@
       "bitcoinnode-interface"
     ],
     "new_writable_file": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-db",
       "bitcoinleveldb-memenv"
     ],
@@ -18182,7 +18182,7 @@
       "bitcoin-support"
     ],
     "read_value": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "set_has_keys": [
       "bitcoinrpc-blockchain"
@@ -18245,7 +18245,7 @@
       "bitcoin-block"
     ],
     "open_bench": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "Q_METATYPE": [
       "bitcoin-derive"
@@ -18526,7 +18526,7 @@
       "bitcoin-univalue"
     ],
     "run_benchmark": [
-      "bitcoinleveldb-bench",
+      "bitcoinleveldbt-bench",
       "bitcoinsecp256k1-bench",
       "bitcoin-aes"
     ],
@@ -19002,7 +19002,7 @@
       "bitcoin-signingprovider"
     ],
     "reset_state": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "newest_first": [
       "bitcoinleveldb-meta"
@@ -19231,7 +19231,7 @@
     ],
     "random_seed": [
       "bitcoin-random",
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "leveldb_options_set_compression": [
       "bitcoinleveldb-db"
@@ -20017,7 +20017,7 @@
       "bitcoinrpc-blockchain"
     ],
     "property": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "ModalOverlay": [
       "bitcoin-qt"
@@ -20223,7 +20223,7 @@
       "bitcoin-network"
     ],
     "new_appendable_file": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-memenv"
     ],
     "OriginPubkeyProvider": [
@@ -20288,7 +20288,7 @@
       "bitcoin-qt"
     ],
     "db_synchronize": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "app_init_main": [
       "bitcoin-init"
@@ -20338,7 +20338,7 @@
       "bitcoin-coinsview"
     ],
     "SharedState": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "get_home_dir": [
       "bitcoin-argsman"
@@ -20445,7 +20445,7 @@
       "bitcoin-qt"
     ],
     "reopen": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-db"
     ],
     "use_available_balance": [
@@ -20842,7 +20842,7 @@
       "bitcoin-qt"
     ],
     "is_filesystem_active": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "HasEncryptionKeys": [
       "bitcoinwallet-interface"
@@ -20993,7 +20993,7 @@
       "bitcoin-qt"
     ],
     "read_missing": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "sha256_maj": [
       "bitcoin-sha256"
@@ -21375,7 +21375,7 @@
       "bitcoinrpc-util"
     ],
     "DBState": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "is_standard_tx": [
       "bitcoin-txmempool",
@@ -21690,7 +21690,7 @@
       "bitcoin-qt"
     ],
     "trim_space": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "UpdateForParentInclusion": [
       "bitcoin-miner"
@@ -22447,7 +22447,7 @@
       "bitcoinchain-params"
     ],
     "reuse_logs": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "soft_fork_desc_push_back_with_deployment_pos": [
       "bitcoinrpc-blockchain"
@@ -22465,7 +22465,7 @@
       "bitcoinwallet-interface"
     ],
     "delete_file": [
-      "bitcoinleveldb-test",
+      "bitcoinleveldbt-deleteme",
       "bitcoinleveldb-memenv",
       "bitcoinleveldb-versionedit"
     ],
@@ -22485,7 +22485,7 @@
       "bitcoin-asmap"
     ],
     "random_key": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "encrypt_wallet": [
       "bitcoin-qt"
@@ -22603,7 +22603,7 @@
       "bitcoin-indirectmap"
     ],
     "print_header": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "read_raw_block_from_disk": [
       "bitcoin-peerman"
@@ -22678,7 +22678,7 @@
       "bitcoin-secp256k1"
     ],
     "ThreadState": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "rpc_set_timer_interface": [
       "bitcoinrpc-server"
@@ -22881,7 +22881,7 @@
       "bitcoin-indexed-chain"
     ],
     "append_with_space": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "new_with_scripts": [
       "bitcoin-signingprovider"
@@ -23025,7 +23025,7 @@
       "bitcoin-ipc"
     ],
     "drop_unsynced_data": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "Action": [
       "bitcoin-test"
@@ -23238,7 +23238,7 @@
       "bitcoin-signingprovider"
     ],
     "benchdb_bench_sqlite3_main": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "set_special": [
       "bitcoin-network"
@@ -23880,7 +23880,7 @@
       "bitcoin-signingprovider"
     ],
     "write_seq": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "VarIntFormatter": [
       "bitcoin-serialize"
@@ -23950,7 +23950,7 @@
       "bitcoin-coinsview"
     ],
     "delete_log_files": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "backup": [
       "bitcoin-walletdb",
@@ -24085,7 +24085,7 @@
       "bitcoin-http"
     ],
     "drop_unsynced_file_data": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "target": [
       "bitcoinleveldb-env"
@@ -24207,7 +24207,7 @@
       "bitcoin-peerman"
     ],
     "num_logs": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "un_select": [
       "bitcoinwallet-interface"
@@ -24449,7 +24449,7 @@
       "bitcoin-init"
     ],
     "ErrorEnv": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "n_receive_flood_size": [
       "bitcoin-connman"
@@ -24959,7 +24959,7 @@
       "bitcoin-system"
     ],
     "benchdb_bench_tree_db_main": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "build_hashed_set": [
       "bitcoin-fuzz",
@@ -25045,7 +25045,7 @@
       "bitcoin-qt"
     ],
     "read_random": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "StringContentsSerializer": [
       "bitcoin-test"
@@ -25096,7 +25096,7 @@
       "bitcoin-proxy"
     ],
     "compact": [
-      "bitcoinleveldb-bench",
+      "bitcoinleveldbt-bench",
       "bitcoinleveldb-db",
       "bitcoin-bitstream"
     ],
@@ -25245,7 +25245,7 @@
       "bitcoin-qt"
     ],
     "untrack_file": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "decode_hex_tx": [
       "bitcoin-tx",
@@ -25497,7 +25497,7 @@
       "bitcoin-tor"
     ],
     "step_error_check": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "parse_hash_type": [
       "bitcoinrpc-blockchain"
@@ -25986,7 +25986,7 @@
       "bitcoin-bloom"
     ],
     "add_bytes": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "ec_pubkey_parse": [
       "bitcoin-secp256k1"
@@ -26051,13 +26051,13 @@
       "bitcoinsecp256k1-bench"
     ],
     "delete_manifest_file": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "is_mine_inner": [
       "bitcoin-scriptpubkeyman"
     ],
     "read_reverse": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "console_tests": [
       "bitcoin-qt"
@@ -26373,7 +26373,7 @@
       "bitcoinleveldb-db"
     ],
     "print_warnings": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "consume_remaining_bytes": [
       "bitcoin-fuzz"
@@ -26397,7 +26397,7 @@
       "bitcoin-block"
     ],
     "first_log_file": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "keystream": [
       "bitcoin-chacha"
@@ -26454,7 +26454,7 @@
       "bitcoinrpc-wallet"
     ],
     "snappy_uncompress": [
-      "bitcoinleveldb-bench",
+      "bitcoinleveldbt-bench",
       "bitcoinleveldb-compat"
     ],
     "set_version": [
@@ -26635,7 +26635,7 @@
       "bitcoin-txmempool"
     ],
     "read_hot": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "insert_range": [
       "bitcoin-fuzz"
@@ -26747,7 +26747,7 @@
       "bitcoin-hash"
     ],
     "finished_single_op": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "consume_arith_uint256": [
       "bitcoin-fuzz"
@@ -26816,7 +26816,7 @@
       "bitcoin-qt"
     ],
     "do_reads": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "leveldb_writebatch_create": [
       "bitcoinleveldb-db"
@@ -27569,7 +27569,7 @@
       "bitcoinleveldb-db"
     ],
     "delete_all_data": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "LabelOutOfFocusEventFilter": [
       "bitcoin-qt"
@@ -27801,7 +27801,7 @@
       "bitcoinleveldb-table"
     ],
     "read_sequential": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "on_ok_button_clicked": [
       "bitcoin-qt"
@@ -28029,7 +28029,7 @@
       "bitcoin-signingprovider"
     ],
     "benchdb_bench_main": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "gbt_vb_name": [
       "bitcoinrpc-mining"
@@ -28570,7 +28570,7 @@
       "bitcoin-scripting"
     ],
     "generate": [
-      "bitcoinleveldb-bench",
+      "bitcoinleveldbt-bench",
       "bitcoinrpc-mining"
     ],
     "FeeBumperResult": [
@@ -28676,7 +28676,7 @@
       "bitcoin-qt"
     ],
     "random_string": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "ConnmanTotalBytesRecv": [
       "bitcoin-connman"
@@ -28952,7 +28952,7 @@
       "bitcoin-block"
     ],
     "write_random": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "ClientUIInterface": [
       "bitcoin-client-ui"
@@ -29137,7 +29137,7 @@
     ],
     "Tester": [
       "bitcoin-fuzz",
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "set_privacy": [
       "bitcoin-qt"
@@ -29183,7 +29183,7 @@
       "bitcoin-support"
     ],
     "snappy_compress": [
-      "bitcoinleveldb-bench",
+      "bitcoinleveldbt-bench",
       "bitcoinleveldb-compat"
     ],
     "uri_tests": [
@@ -29394,7 +29394,7 @@
       "bitcoinrpc-misc"
     ],
     "closedb": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "write_active_script_pub_key_man": [
       "bitcoinwallet-interface"
@@ -29484,7 +29484,7 @@
       "bitcoin-qt"
     ],
     "do_write": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "teststatus_test_main": [
       "bitcoinleveldb-status"
@@ -29899,7 +29899,7 @@
       "bitcoinwallet-interface"
     ],
     "delete_seq": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "WriteOptions": [
       "bitcoinleveldb-options"
@@ -29924,7 +29924,7 @@
     ],
     "do_test": [
       "bitcoin-test",
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "VersionBitsCache": [
       "bitcoin-txmempool"
@@ -30168,7 +30168,7 @@
       "bitcoinnode-interface"
     ],
     "write_to_file": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "get_networks_info": [
       "bitcoinrpc-net"
@@ -30330,10 +30330,10 @@
       "bitcoin-scripting"
     ],
     "no_write_test_pre_fault": [
-      "bitcoinleveldb-test"
+      "bitcoinleveldbt-deleteme"
     ],
     "RandomGenerator": [
-      "bitcoinleveldb-bench"
+      "bitcoinleveldbt-bench"
     ],
     "MarkReplaced": [
       "bitcoinwallet-interface"

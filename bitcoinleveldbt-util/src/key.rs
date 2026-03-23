@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/key.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/key.rs ]
 crate::ix!();
 
 /// Deterministic formatting helper for DB tests.

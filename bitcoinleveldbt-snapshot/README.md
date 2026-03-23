@@ -1,3 +1,3 @@
-# bitcoinleveldb-testsnapshot
+# bitcoinleveldbt-snapshot
 
 TODO: fill description.

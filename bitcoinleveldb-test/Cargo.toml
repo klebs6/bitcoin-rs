@@ -1,0 +1,31 @@
+[package]
+name = "bitcoinleveldb-test"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+export-magic.workspace = true
+bitcoinleveldbt-autocompaction = { path = "../bitcoinleveldbt-autocompaction" }
+bitcoinleveldbt-bench = { path = "../bitcoinleveldbt-bench" }
+bitcoinleveldbt-capi = { path = "../bitcoinleveldbt-capi" }
+bitcoinleveldbt-corruption = { path = "../bitcoinleveldbt-corruption" }
+bitcoinleveldbt-dbtest = { path = "../bitcoinleveldbt-dbtest" }
+bitcoinleveldbt-env = { path = "../bitcoinleveldbt-env" }
+bitcoinleveldbt-faultinjection = { path = "../bitcoinleveldbt-faultinjection" }
+bitcoinleveldbt-issue178 = { path = "../bitcoinleveldbt-issue178" }
+bitcoinleveldbt-issue200 = { path = "../bitcoinleveldbt-issue200" }
+bitcoinleveldbt-issue320 = { path = "../bitcoinleveldbt-issue320" }
+bitcoinleveldbt-mockversionset = { path = "../bitcoinleveldbt-mockversionset" }
+bitcoinleveldbt-mt = { path = "../bitcoinleveldbt-mt" }
+bitcoinleveldbt-randomized = { path = "../bitcoinleveldbt-randomized" }
+bitcoinleveldbt-recovery = { path = "../bitcoinleveldbt-recovery" }
+bitcoinleveldbt-snapshot = { path = "../bitcoinleveldbt-snapshot" }
+bitcoinleveldbt-table = { path = "../bitcoinleveldbt-table" }
+bitcoinleveldbt-util = { path = "../bitcoinleveldbt-util" }
+bitcoinleveldbt-versionsettestutil = { path = "../bitcoinleveldbt-versionsettestutil" }

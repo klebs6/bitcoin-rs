@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoin-leveldb/src/lib.rs ]
 pub use bitcoinleveldb_arena::*;
 pub use bitcoinleveldb_batch::*;
-pub use bitcoinleveldb_bench::*;
+pub use bitcoinleveldbt_bench::*;
 pub use bitcoinleveldb_bloom::*;
 pub use bitcoinleveldb_cache::*;
 pub use bitcoinleveldb_coding::*;
@@ -32,5 +32,4 @@ pub use bitcoinleveldb_slice::*;
 pub use bitcoinleveldb_status::*;
 pub use bitcoinleveldb_sync::*;
 pub use bitcoinleveldb_table::*;
-pub use bitcoinleveldb_test::*;
 pub use bitcoinleveldb_util::*;

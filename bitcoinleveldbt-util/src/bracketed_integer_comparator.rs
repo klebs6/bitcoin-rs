@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/bracketed_integer_comparator.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/bracketed_integer_comparator.rs ]
 crate::ix!();
 
 /// Invariant: this comparator orders keys by the integer encoded inside bracket syntax,

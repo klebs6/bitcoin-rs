@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/bm_log_and_apply.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/bm_log_and_apply.rs ]
 crate::ix!();
 
 pub fn bm_log_and_apply(
@@ -6,7 +6,7 @@ pub fn bm_log_and_apply(
     num_base_files: i32)  {
 
     trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "bm_log_and_apply.entry",
         iters,
         num_base_files
@@ -110,7 +110,7 @@ pub fn bm_log_and_apply(
     }
 
     trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "bm_log_and_apply.exit",
         iters,
         num_base_files,

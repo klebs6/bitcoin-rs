@@ -53,7 +53,7 @@
 #-------------------------------[next-development-branch (already-scaffolded)]
 #ACTIVE := bitcoinleveldb-arena
 #ACTIVE := bitcoinleveldb-batch
-#ACTIVE := bitcoinleveldb-bench
+#ACTIVE := bitcoinleveldbt-bench
 #ACTIVE := bitcoinleveldb-bloom
 #ACTIVE := bitcoinleveldb-cache
 #ACTIVE := bitcoinleveldb-cfg
@@ -87,7 +87,7 @@
 #ACTIVE := bitcoinleveldb-status
 #ACTIVE := bitcoinleveldb-sync
 #ACTIVE := bitcoinleveldb-table
-#ACTIVE := bitcoinleveldb-test
+#ACTIVE := bitcoinleveldbt-deleteme
 #ACTIVE := bitcoinleveldb-util
 #ACTIVE := bitcoinleveldb-version
 #ACTIVE := bitcoinleveldb-versionedit

@@ -1,3 +1,3 @@
-# bitcoinleveldb-testissue320
+# bitcoinleveldbt-issue320
 
 TODO: fill description.

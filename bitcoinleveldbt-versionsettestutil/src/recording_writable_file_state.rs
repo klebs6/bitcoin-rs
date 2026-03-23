@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-versionsettestutil/src/recording_writable_file_state.rs ]
+// ---------------- [ File: bitcoinleveldbt-versionsettestutil/src/recording_writable_file_state.rs ]
 crate::ix!();
 
 /// Guarantees zero is the only valid initial counter state and the append buffer preserves exact
@@ -55,7 +55,7 @@ impl WritableFileRecordingState {
         appended_bytes: &[u8],
     ) -> (usize, usize) {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file_state",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file_state",
             event = "writable_file_recording_state_record_append_bytes_enter",
             appended_length = appended_bytes.len()
         );
@@ -67,7 +67,7 @@ impl WritableFileRecordingState {
         let total_appended_length = self.appended_bytes.len();
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file_state",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file_state",
             event = "writable_file_recording_state_record_append_bytes_exit",
             append_call_count = append_call_count,
             total_appended_length = total_appended_length
@@ -79,14 +79,14 @@ impl WritableFileRecordingState {
     /// Postconditions: `close_call_count` increases by one.
     pub fn record_close_call(&mut self) -> usize {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file_state",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file_state",
             event = "writable_file_recording_state_record_close_call_enter"
         );
 
         self.close_call_count += 1;
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file_state",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file_state",
             event = "writable_file_recording_state_record_close_call_exit",
             close_call_count = self.close_call_count
         );
@@ -97,14 +97,14 @@ impl WritableFileRecordingState {
     /// Postconditions: `flush_call_count` increases by one.
     pub fn record_flush_call(&mut self) -> usize {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file_state",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file_state",
             event = "writable_file_recording_state_record_flush_call_enter"
         );
 
         self.flush_call_count += 1;
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file_state",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file_state",
             event = "writable_file_recording_state_record_flush_call_exit",
             flush_call_count = self.flush_call_count
         );
@@ -115,14 +115,14 @@ impl WritableFileRecordingState {
     /// Postconditions: `sync_call_count` increases by one.
     pub fn record_sync_call(&mut self) -> usize {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file_state",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file_state",
             event = "writable_file_recording_state_record_sync_call_enter"
         );
 
         self.sync_call_count += 1;
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file_state",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file_state",
             event = "writable_file_recording_state_record_sync_call_exit",
             sync_call_count = self.sync_call_count
         );

@@ -1,3 +1,3 @@
-# bitcoinleveldb-testrandomized
+# bitcoinleveldbt-randomized
 
 TODO: fill description.

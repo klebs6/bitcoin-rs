@@ -25,7 +25,7 @@ impl VersionSetCompactionScenarioHarness {
     /// current test aborts before any compaction assertion executes.
     pub fn open_for_test_prefix(test_prefix: &str) -> Self {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::compaction_behavior_harness",
+            target: "bitcoinleveldbt_versionsettestutil::compaction_behavior_harness",
             event = "version_set_compaction_scenario_harness_open_enter",
             test_prefix = test_prefix
         );
@@ -41,7 +41,7 @@ impl VersionSetCompactionScenarioHarness {
         );
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::compaction_behavior_harness",
+            target: "bitcoinleveldbt_versionsettestutil::compaction_behavior_harness",
             event = "version_set_compaction_scenario_harness_open_exit",
             test_prefix = test_prefix,
             save_manifest = save_manifest

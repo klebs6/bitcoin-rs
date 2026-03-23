@@ -10,14 +10,14 @@ my @crates = [
     "bitcoinleveldb-dbinterface",
 
     # ---[leveldb-layer-2]
-    "bitcoinleveldb-dbtest",
+    "bitcoinleveldbt-dbtest",
     "bitcoinleveldb-db",
     "bitcoinleveldb-dbimpl",
     "bitcoinleveldb-dbiter",
 
     # ---[leveldb-layer-3]
-    "bitcoinleveldb-bench",
-    "bitcoinleveldb-test",
+    "bitcoinleveldbt-bench",
+    "bitcoinleveldbt-deleteme",
     "bitcoin-leveldb",
 ];
 

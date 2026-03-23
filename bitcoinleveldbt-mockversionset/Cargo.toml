@@ -1,5 +1,5 @@
 [package]
-name = "bitcoinleveldb-mockversionset"
+name = "bitcoinleveldbt-mockversionset"
 version = "0.1.0"
 authors = ["YourName <you@example.com>"]
 license = "MIT"

@@ -1,5 +1,5 @@
 [package]
-name = "bitcoinleveldb-dbtest"
+name = "bitcoinleveldbt-dbtest"
 version = "0.1.0"
 authors = ["YourName <you@example.com>"]
 license = "MIT"
@@ -28,7 +28,7 @@ bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
 bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
 bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-test = { path = "../bitcoinleveldb-test" }
+bitcoinleveldbt-util = { path = "../bitcoinleveldbt-util" }
 bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
 bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
 bitcoinleveldb-logtools = { path = "../bitcoinleveldb-logtools" }
@@ -37,10 +37,9 @@ bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
 bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom" }
 bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
 bitcoinleveldb-tableconstructor = { path = "../bitcoinleveldb-tableconstructor" }
-bitcoinleveldb-testenv = { path = "../bitcoinleveldb-testenv" }
+bitcoinleveldbt-env = { path = "../bitcoinleveldbt-env" }
 bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
 bitcoinleveldb-versionset = { path = "../bitcoinleveldb-versionset" }
 bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
 bitcoinleveldb-modeldb = { path = "../bitcoinleveldb-modeldb" }
 bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
-bitcoinleveldb-testsnapshot = { path = "../bitcoinleveldb-testsnapshot" }

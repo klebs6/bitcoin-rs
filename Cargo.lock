@@ -1599,7 +1599,6 @@ dependencies = [
  "bitcoin-cfg",
  "bitcoinleveldb-arena",
  "bitcoinleveldb-batch",
- "bitcoinleveldb-bench",
  "bitcoinleveldb-bloom",
  "bitcoinleveldb-cache",
  "bitcoinleveldb-coding",
@@ -1629,7 +1628,6 @@ dependencies = [
  "bitcoinleveldb-status",
  "bitcoinleveldb-sync",
  "bitcoinleveldb-table",
- "bitcoinleveldb-test",
  "bitcoinleveldb-util",
 ]
 
@@ -3065,27 +3063,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bitcoinleveldb-bench"
-version = "0.1.19"
-dependencies = [
- "bitcoin-cfg",
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-compat",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-filter",
- "bitcoinleveldb-histogram",
- "bitcoinleveldb-options",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-writebatch",
- "sqlite3",
- "sqlite3-sys",
-]
-
-[[package]]
 name = "bitcoinleveldb-block"
 version = "0.1.0"
 dependencies = [
@@ -3578,46 +3555,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bitcoinleveldb-dbtest"
-version = "0.1.0"
-dependencies = [
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-bloom",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-comparator",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-filter",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-logtools",
- "bitcoinleveldb-modeldb",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-specialenv",
- "bitcoinleveldb-status",
- "bitcoinleveldb-tableconstructor",
- "bitcoinleveldb-test",
- "bitcoinleveldb-testenv",
- "bitcoinleveldb-testsnapshot",
- "bitcoinleveldb-versionedit",
- "bitcoinleveldb-versionset",
- "bitcoinleveldb-versionsetinterface",
- "lock_api",
- "snap",
- "tracing",
-]
-
-[[package]]
 name = "bitcoinleveldb-dumpfile"
 version = "0.1.19"
 dependencies = [
@@ -3761,7 +3698,6 @@ dependencies = [
  "bitcoinleveldb-dbconstructor",
  "bitcoinleveldb-dbimplinner",
  "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbtest",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-memtable",
@@ -3770,6 +3706,7 @@ dependencies = [
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-tableconstructor",
+ "bitcoinleveldbt-dbtest",
  "traced-test",
  "tracing",
  "tracing-setup",
@@ -4027,20 +3964,6 @@ dependencies = [
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "tracing",
-]
-
-[[package]]
-name = "bitcoinleveldb-mockversionset"
-version = "0.1.0"
-dependencies = [
- "bitcoin-imports",
- "bitcoinleveldb-comparator",
- "bitcoinleveldb-file",
- "bitcoinleveldb-key",
- "bitcoinleveldb-options",
- "bitcoinleveldb-status",
- "bitcoinleveldb-tablecache",
- "bitcoinleveldb-versionsetinterface",
 ]
 
 [[package]]
@@ -4517,424 +4440,27 @@ dependencies = [
 
 [[package]]
 name = "bitcoinleveldb-test"
-version = "0.1.19"
-dependencies = [
- "bitcoin-cfg",
- "bitcoinleveldb-testautocompaction",
- "bitcoinleveldb-testcapi",
- "bitcoinleveldb-testcorruption",
- "bitcoinleveldb-testfaultinjection",
- "bitcoinleveldb-testissue178",
- "bitcoinleveldb-testissue200",
- "bitcoinleveldb-testissue320",
- "bitcoinleveldb-testrecovery",
- "bitcoinleveldb-testutil",
-]
-
-[[package]]
-name = "bitcoinleveldb-testautocompaction"
 version = "0.1.0"
 dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbiter",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-log",
- "bitcoinleveldb-logwriter",
- "bitcoinleveldb-memenv",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-repair",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-status",
- "bitcoinleveldb-table",
- "bitcoinleveldb-testutil",
- "bitcoinleveldb-util",
- "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-autocompaction",
+ "bitcoinleveldbt-bench",
+ "bitcoinleveldbt-capi",
+ "bitcoinleveldbt-corruption",
+ "bitcoinleveldbt-dbtest",
+ "bitcoinleveldbt-env",
+ "bitcoinleveldbt-faultinjection",
+ "bitcoinleveldbt-issue178",
+ "bitcoinleveldbt-issue200",
+ "bitcoinleveldbt-issue320",
+ "bitcoinleveldbt-mockversionset",
+ "bitcoinleveldbt-mt",
+ "bitcoinleveldbt-randomized",
+ "bitcoinleveldbt-recovery",
+ "bitcoinleveldbt-snapshot",
+ "bitcoinleveldbt-table",
+ "bitcoinleveldbt-util",
+ "bitcoinleveldbt-versionsettestutil",
  "export-magic",
- "serial_test",
- "tempfile",
- "traced-test",
- "tracing",
- "tracing-setup",
-]
-
-[[package]]
-name = "bitcoinleveldb-testcapi"
-version = "0.1.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbiter",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-log",
- "bitcoinleveldb-logwriter",
- "bitcoinleveldb-memenv",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-repair",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-status",
- "bitcoinleveldb-table",
- "bitcoinleveldb-testutil",
- "bitcoinleveldb-util",
- "bitcoinleveldb-writebatch",
- "export-magic",
- "serial_test",
- "tempfile",
- "traced-test",
- "tracing",
- "tracing-setup",
-]
-
-[[package]]
-name = "bitcoinleveldb-testcorruption"
-version = "0.1.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbiter",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-log",
- "bitcoinleveldb-logwriter",
- "bitcoinleveldb-memenv",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-repair",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-status",
- "bitcoinleveldb-table",
- "bitcoinleveldb-testutil",
- "bitcoinleveldb-util",
- "bitcoinleveldb-writebatch",
- "export-magic",
- "serial_test",
- "tempfile",
- "traced-test",
- "tracing",
- "tracing-setup",
-]
-
-[[package]]
-name = "bitcoinleveldb-testenv"
-version = "0.1.0"
-dependencies = [
- "bitcoin-imports",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-log",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-status",
- "traced-test",
- "tracing",
-]
-
-[[package]]
-name = "bitcoinleveldb-testfaultinjection"
-version = "0.1.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbiter",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-log",
- "bitcoinleveldb-logwriter",
- "bitcoinleveldb-memenv",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-repair",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-status",
- "bitcoinleveldb-table",
- "bitcoinleveldb-testutil",
- "bitcoinleveldb-util",
- "bitcoinleveldb-writebatch",
- "export-magic",
- "serial_test",
- "tempfile",
- "traced-test",
- "tracing",
- "tracing-setup",
-]
-
-[[package]]
-name = "bitcoinleveldb-testissue178"
-version = "0.1.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbiter",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-log",
- "bitcoinleveldb-logwriter",
- "bitcoinleveldb-memenv",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-repair",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-status",
- "bitcoinleveldb-table",
- "bitcoinleveldb-testutil",
- "bitcoinleveldb-util",
- "bitcoinleveldb-writebatch",
- "export-magic",
- "serial_test",
- "tempfile",
- "traced-test",
- "tracing",
- "tracing-setup",
-]
-
-[[package]]
-name = "bitcoinleveldb-testissue200"
-version = "0.1.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbiter",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-log",
- "bitcoinleveldb-logwriter",
- "bitcoinleveldb-memenv",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-repair",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-status",
- "bitcoinleveldb-table",
- "bitcoinleveldb-testutil",
- "bitcoinleveldb-util",
- "bitcoinleveldb-writebatch",
- "export-magic",
- "serial_test",
- "tempfile",
- "traced-test",
- "tracing",
- "tracing-setup",
-]
-
-[[package]]
-name = "bitcoinleveldb-testissue320"
-version = "0.1.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbiter",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-log",
- "bitcoinleveldb-logwriter",
- "bitcoinleveldb-memenv",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-repair",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-status",
- "bitcoinleveldb-table",
- "bitcoinleveldb-testutil",
- "bitcoinleveldb-util",
- "bitcoinleveldb-writebatch",
- "export-magic",
- "serial_test",
- "tempfile",
- "traced-test",
- "tracing",
- "tracing-setup",
-]
-
-[[package]]
-name = "bitcoinleveldb-testmt"
-version = "0.1.0"
-
-[[package]]
-name = "bitcoinleveldb-testrandomized"
-version = "0.1.0"
-
-[[package]]
-name = "bitcoinleveldb-testrecovery"
-version = "0.1.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbiter",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-log",
- "bitcoinleveldb-logwriter",
- "bitcoinleveldb-memenv",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-repair",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-status",
- "bitcoinleveldb-table",
- "bitcoinleveldb-testutil",
- "bitcoinleveldb-util",
- "bitcoinleveldb-writebatch",
- "export-magic",
- "serial_test",
- "tempfile",
- "traced-test",
- "tracing",
- "tracing-setup",
-]
-
-[[package]]
-name = "bitcoinleveldb-testsnapshot"
-version = "0.1.0"
-
-[[package]]
-name = "bitcoinleveldb-testtable"
-version = "0.1.0"
-
-[[package]]
-name = "bitcoinleveldb-testutil"
-version = "0.1.0"
-dependencies = [
- "bitcoin-derive",
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-cache",
- "bitcoinleveldb-cfg",
- "bitcoinleveldb-comparator",
- "bitcoinleveldb-db",
- "bitcoinleveldb-dbconstructor",
- "bitcoinleveldb-dbimpl",
- "bitcoinleveldb-dbinterface",
- "bitcoinleveldb-dbiter",
- "bitcoinleveldb-env",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-iteratorinner",
- "bitcoinleveldb-key",
- "bitcoinleveldb-log",
- "bitcoinleveldb-logwriter",
- "bitcoinleveldb-memenv",
- "bitcoinleveldb-options",
- "bitcoinleveldb-posixenv",
- "bitcoinleveldb-rand",
- "bitcoinleveldb-repair",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-snapshot",
- "bitcoinleveldb-specialenv",
- "bitcoinleveldb-status",
- "bitcoinleveldb-table",
- "bitcoinleveldb-util",
- "bitcoinleveldb-versionedit",
- "bitcoinleveldb-versionset",
- "bitcoinleveldb-versionsetinterface",
- "bitcoinleveldb-writebatch",
- "derive_builder",
- "export-magic",
- "getset",
- "lock_api",
- "serial_test",
- "tempfile",
- "traced-test",
- "tracing",
- "tracing-setup",
 ]
 
 [[package]]
@@ -4968,13 +4494,13 @@ dependencies = [
  "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-key",
  "bitcoinleveldb-log",
- "bitcoinleveldb-mockversionset",
  "bitcoinleveldb-options",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-status",
  "bitcoinleveldb-table",
  "bitcoinleveldb-versionsetinterface",
  "bitcoinleveldb-versionsetutil",
+ "bitcoinleveldbt-mockversionset",
  "derive_builder",
  "tracing",
 ]
@@ -5042,8 +4568,8 @@ dependencies = [
  "bitcoinleveldb-version",
  "bitcoinleveldb-versionedit",
  "bitcoinleveldb-versionsetinterface",
- "bitcoinleveldb-versionsettestutil",
  "bitcoinleveldb-versionsetutil",
+ "bitcoinleveldbt-versionsettestutil",
  "derive_builder",
  "disable_macro",
  "tracing",
@@ -5063,7 +4589,671 @@ dependencies = [
 ]
 
 [[package]]
-name = "bitcoinleveldb-versionsettestutil"
+name = "bitcoinleveldb-versionsetutil"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-erroriterator",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-tablecache",
+ "derive_builder",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldb-writebatch"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-memtable",
+ "bitcoinleveldb-slice",
+]
+
+[[package]]
+name = "bitcoinleveldbt-autocompaction"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-bench"
+version = "0.1.19"
+dependencies = [
+ "bitcoin-cfg",
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-compat",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-filter",
+ "bitcoinleveldb-histogram",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-writebatch",
+ "sqlite3",
+ "sqlite3-sys",
+]
+
+[[package]]
+name = "bitcoinleveldbt-capi"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-corruption"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-dbtest"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-bloom",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-filter",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-logtools",
+ "bitcoinleveldb-modeldb",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-specialenv",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-tableconstructor",
+ "bitcoinleveldb-versionedit",
+ "bitcoinleveldb-versionset",
+ "bitcoinleveldb-versionsetinterface",
+ "bitcoinleveldbt-env",
+ "bitcoinleveldbt-util",
+ "lock_api",
+ "snap",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldbt-env"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-status",
+ "traced-test",
+ "tracing",
+]
+
+[[package]]
+name = "bitcoinleveldbt-faultinjection"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "derive_builder",
+ "export-magic",
+ "getset",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-issue178"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-issue200"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-issue320"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-mockversionset"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-imports",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-tablecache",
+ "bitcoinleveldb-versionsetinterface",
+]
+
+[[package]]
+name = "bitcoinleveldbt-mt"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-dbtest",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-randomized"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-recovery"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-snapshot"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-modeldb",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-dbtest",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-table"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-tableconstructor",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-writebatch",
+ "bitcoinleveldbt-util",
+ "export-magic",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-util"
+version = "0.1.0"
+dependencies = [
+ "bitcoin-derive",
+ "bitcoin-imports",
+ "bitcoinleveldb-batch",
+ "bitcoinleveldb-cache",
+ "bitcoinleveldb-cfg",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-db",
+ "bitcoinleveldb-dbconstructor",
+ "bitcoinleveldb-dbimpl",
+ "bitcoinleveldb-dbinterface",
+ "bitcoinleveldb-dbiter",
+ "bitcoinleveldb-env",
+ "bitcoinleveldb-file",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
+ "bitcoinleveldb-log",
+ "bitcoinleveldb-logwriter",
+ "bitcoinleveldb-memenv",
+ "bitcoinleveldb-modeldb",
+ "bitcoinleveldb-options",
+ "bitcoinleveldb-posixenv",
+ "bitcoinleveldb-rand",
+ "bitcoinleveldb-repair",
+ "bitcoinleveldb-slice",
+ "bitcoinleveldb-snapshot",
+ "bitcoinleveldb-specialenv",
+ "bitcoinleveldb-status",
+ "bitcoinleveldb-table",
+ "bitcoinleveldb-util",
+ "bitcoinleveldb-versionedit",
+ "bitcoinleveldb-versionset",
+ "bitcoinleveldb-versionsetinterface",
+ "bitcoinleveldb-writebatch",
+ "derive_builder",
+ "export-magic",
+ "getset",
+ "lock_api",
+ "serial_test",
+ "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-versionsettestutil"
 version = "0.1.0"
 dependencies = [
  "bitcoin-derive",
@@ -5094,34 +5284,6 @@ dependencies = [
  "derive_builder",
  "disable_macro",
  "tracing",
-]
-
-[[package]]
-name = "bitcoinleveldb-versionsetutil"
-version = "0.1.0"
-dependencies = [
- "bitcoin-imports",
- "bitcoinleveldb-comparator",
- "bitcoinleveldb-erroriterator",
- "bitcoinleveldb-file",
- "bitcoinleveldb-iterator",
- "bitcoinleveldb-key",
- "bitcoinleveldb-options",
- "bitcoinleveldb-slice",
- "bitcoinleveldb-status",
- "bitcoinleveldb-tablecache",
- "derive_builder",
- "tracing",
-]
-
-[[package]]
-name = "bitcoinleveldb-writebatch"
-version = "0.1.0"
-dependencies = [
- "bitcoin-imports",
- "bitcoinleveldb-batch",
- "bitcoinleveldb-memtable",
- "bitcoinleveldb-slice",
 ]
 
 [[package]]

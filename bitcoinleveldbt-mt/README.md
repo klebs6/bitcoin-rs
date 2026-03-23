@@ -1,3 +1,3 @@
-# bitcoinleveldb-testmt
+# bitcoinleveldbt-mt
 
 TODO: fill description.

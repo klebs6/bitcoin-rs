@@ -1,3 +1,3 @@
-# bitcoinleveldb-testautocompaction
+# bitcoinleveldbt-autocompaction
 
 TODO: fill description.

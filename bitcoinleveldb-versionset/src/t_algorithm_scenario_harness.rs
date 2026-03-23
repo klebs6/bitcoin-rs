@@ -44,7 +44,7 @@ impl VersionSetAlgorithmScenarioHarness {
     /// algorithm assertions execute.
     pub fn open_for_test_prefix(test_prefix: &str) -> Self {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::version_set_algorithm_harness",
+            target: "bitcoinleveldbt_versionsettestutil::version_set_algorithm_harness",
             event = "version_set_algorithm_scenario_harness_open_enter",
             test_prefix = test_prefix
         );
@@ -60,7 +60,7 @@ impl VersionSetAlgorithmScenarioHarness {
         );
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::version_set_algorithm_harness",
+            target: "bitcoinleveldbt_versionsettestutil::version_set_algorithm_harness",
             event = "version_set_algorithm_scenario_harness_open_exit",
             test_prefix = test_prefix,
             save_manifest = save_manifest

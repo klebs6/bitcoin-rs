@@ -1,5 +1,5 @@
 [package]
-name = "bitcoinleveldb-testenv"
+name = "bitcoinleveldbt-env"
 version = "0.1.0"
 authors = ["YourName <you@example.com>"]
 license = "MIT"

@@ -21339,7 +21339,7 @@ translation.
 This crate is a wrapper for the subcrates in the
 Bitcoin LevelDB subsystem, including
 `bitcoinleveldb_arena`, `bitcoinleveldb_batch`,
-`bitcoinleveldb_bench`, and many others. The crate
+`bitcoinleveldbt_bench`, and many others. The crate
 provides a simple and convenient way to access the
 functionality of these subcrates from Rust.
 
@@ -37080,7 +37080,7 @@ considering these technical details, you can
 effectively use write batches to improve the
 performance and consistency of your LevelDB-based
 applications.
-# bitcoinleveldb-bench Crate
+# bitcoinleveldbt-bench Crate
 
 ---
 
@@ -37122,7 +37122,7 @@ to manage thread-specific state in the benchmark,
 such as the current operation mix and the current
 position in the working set.
 
-The `bitcoinleveldb-bench` crate includes several
+The `bitcoinleveldbt-bench` crate includes several
 benchmarks that test the performance of the
 LevelDB database and other components of the
 Bitcoin Core, such as the tree database and the
@@ -37156,7 +37156,7 @@ can be used to benchmark LevelDB, depending on the
 specific goals and requirements of the benchmark.
 
 One common approach to benchmarking LevelDB is to
-use the `bitcoinleveldb-bench` crate or a similar
+use the `bitcoinleveldbt-bench` crate or a similar
 benchmarking tool that provides a set of
 standardized benchmark tests. These benchmarks can
 be used to measure the performance of LevelDB
@@ -42447,7 +42447,7 @@ created. Additionally, if tables are compressed,
 the compression and decompression operations can
 be CPU-intensive, which may impact read and write
 performance.
-## `bitcoinleveldb-test`
+## `bitcoinleveldbt-deleteme`
 
 This crate is part of a direct translation from
 C++ to Rust of the bitcoin core. As such, some of
@@ -42456,7 +42456,7 @@ translation. Please note that this system will
 become testable once the translation process is
 complete.
 
-The `bitcoinleveldb-test` crate contains tests for
+The `bitcoinleveldbt-deleteme` crate contains tests for
 the `bitcoinleveldb` system. It provides various
 functions and structures for conducting tests on
 the system, such as `CorruptionTest`, `Issue320`,

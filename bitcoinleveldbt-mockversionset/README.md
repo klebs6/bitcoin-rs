@@ -1,3 +1,3 @@
-# bitcoinleveldb-mockversionset
+# bitcoinleveldbt-mockversionset
 
 TODO: fill description.

@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testcapi/src/bitcoinleveldb_testcapi.rs ]
+// ---------------- [ File: bitcoinleveldbt-capi/src/bitcoinleveldbt_capi.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/c_test.c]
@@ -29,7 +29,7 @@ fn bitcoinleveldb_test__c_test_rs__phase_label() -> String {
 
 fn start_phase(name: *const u8) {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "start_phase_entry",
         name_ptr = (name as usize)
     );
@@ -48,7 +48,7 @@ fn start_phase(name: *const u8) {
     BITCOINLEVELDB_TEST_C_TEST_PHASE_PTR.store(name as *mut u8, atomic::Ordering::SeqCst);
 
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "start_phase_exit",
         phase = %label
     );
@@ -65,7 +65,7 @@ macro_rules! check_no_error {
             };
 
             error!(
-                target: "bitcoinleveldb_test::c_test",
+                target: "bitcoinleveldbt_capi::c_test",
                 event = "check_no_error_failed",
                 file = file!(),
                 line = line!(),
@@ -84,7 +84,7 @@ macro_rules! check_condition {
             let phase_label_value = bitcoinleveldb_test__c_test_rs__phase_label();
 
             error!(
-                target: "bitcoinleveldb_test::c_test",
+                target: "bitcoinleveldbt_capi::c_test",
                 event = "check_condition_failed",
                 file = file!(),
                 line = line!(),
@@ -102,7 +102,7 @@ fn check_equal(
     v:        *const u8,
     n:        usize)  {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_equal_entry",
         expected_is_null = expected.is_null(),
         value_is_null = v.is_null(),
@@ -125,7 +125,7 @@ fn check_equal(
 
     if equal {
         trace!(
-            target: "bitcoinleveldb_test::c_test",
+            target: "bitcoinleveldbt_capi::c_test",
             event = "check_equal_exit",
             matched = true
         );
@@ -150,7 +150,7 @@ fn check_equal(
     };
 
     error!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_equal_mismatch",
         phase = %bitcoinleveldb_test__c_test_rs__phase_label(),
         expected = %expected_label,
@@ -163,7 +163,7 @@ fn check_equal(
 
 fn free(ptr: *mut *mut u8)  {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "free_entry",
         ptr_ptr_is_null = ptr.is_null()
     );
@@ -171,7 +171,7 @@ fn free(ptr: *mut *mut u8)  {
     unsafe {
         if ptr.is_null() {
             trace!(
-                target: "bitcoinleveldb_test::c_test",
+                target: "bitcoinleveldbt_capi::c_test",
                 event = "free_exit",
                 freed = false
             );
@@ -185,7 +185,7 @@ fn free(ptr: *mut *mut u8)  {
     }
 
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "free_exit",
         freed = true
     );
@@ -197,7 +197,7 @@ fn check_get(
     key_:     *const u8,
     expected: *const u8)  {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_get_entry",
         db_is_null = db.is_null(),
         options_is_null = options.is_null(),
@@ -233,7 +233,7 @@ fn check_get(
     free((&mut val_mut) as *mut *mut u8);
 
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_get_exit",
         key_len = key_len,
         val_len = val_len
@@ -245,7 +245,7 @@ fn check_iter(
     key_: *const u8,
     val:  *const u8)  {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_iter_entry",
         iter_is_null = iter.is_null()
     );
@@ -258,7 +258,7 @@ fn check_iter(
     check_equal(val, val_ptr, len);
 
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_iter_exit"
     );
 }
@@ -274,7 +274,7 @@ fn check_put(
     v:    *const u8,
     vlen: usize)  {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_put_entry",
         state_ptr = (ptr as usize),
         key_len = klen,
@@ -306,7 +306,7 @@ fn check_put(
     }
 
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_put_exit"
     );
 }
@@ -320,7 +320,7 @@ fn check_del(
     k:    *const u8,
     klen: usize)  {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_del_entry",
         state_ptr = (ptr as usize),
         key_len = klen
@@ -337,14 +337,14 @@ fn check_del(
     }
 
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "check_del_exit"
     );
 }
 
 fn cmp_destroy(arg: *mut c_void)  {
     debug!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "cmp_destroy",
         arg = (arg as usize)
     );
@@ -357,7 +357,7 @@ fn cmp_compare(
     b:    *const u8,
     blen: usize) -> i32 {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "cmp_compare_entry",
         arg = (arg as usize),
         alen = alen,
@@ -406,7 +406,7 @@ fn cmp_compare(
     }
 
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "cmp_compare_exit",
         result = r
     );
@@ -416,7 +416,7 @@ fn cmp_compare(
 
 fn cmp_name(arg: *mut c_void) -> *const u8 {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "cmp_name",
         arg = (arg as usize)
     );
@@ -433,7 +433,7 @@ lazy_static!{
 
 fn filter_destroy(arg: *mut c_void)  {
     debug!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "filter_destroy",
         arg = (arg as usize)
     );
@@ -441,7 +441,7 @@ fn filter_destroy(arg: *mut c_void)  {
 
 fn filter_name(arg: *mut c_void) -> *const u8 {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "filter_name",
         arg = (arg as usize)
     );
@@ -456,7 +456,7 @@ fn filter_create(
     num_keys:         i32,
     filter_length:    *mut usize) -> *mut u8 {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "filter_create_entry",
         arg = (arg as usize),
         key_array = (key_array as usize),
@@ -473,7 +473,7 @@ fn filter_create(
         let result = libc::malloc(4usize) as *mut u8;
         if result.is_null() {
             error!(
-                target: "bitcoinleveldb_test::c_test",
+                target: "bitcoinleveldbt_capi::c_test",
                 event = "filter_create_malloc_failed"
             );
 
@@ -487,7 +487,7 @@ fn filter_create(
         core::ptr::copy_nonoverlapping(b"fake".as_ptr(), result, 4usize);
 
         trace!(
-            target: "bitcoinleveldb_test::c_test",
+            target: "bitcoinleveldbt_capi::c_test",
             event = "filter_create_exit",
             result_ptr = (result as usize)
         );
@@ -504,7 +504,7 @@ fn filter_key_match(
     filter_length: usize,
 ) -> u8 {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "filter_key_match_entry",
         arg = (arg as usize),
         key_ptr = (k as usize),
@@ -526,7 +526,7 @@ fn filter_key_match(
     let result = BITCOINLEVELDB_TEST_C_TEST_FAKE_FILTER_RESULT.load(atomic::Ordering::SeqCst);
 
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "filter_key_match_exit",
         result = result
     );
@@ -539,7 +539,7 @@ fn dbc_test_main(
     _argv: *mut *mut u8,
 ) -> i32 {
     trace!(
-        target: "bitcoinleveldb_test::c_test",
+        target: "bitcoinleveldbt_capi::c_test",
         event = "dbc_test_main_entry"
     );
 
@@ -867,7 +867,7 @@ fn dbc_test_main(
         eprintln!("PASS");
 
         trace!(
-            target: "bitcoinleveldb_test::c_test",
+            target: "bitcoinleveldbt_capi::c_test",
             event = "dbc_test_main_exit",
             result = 0
         );

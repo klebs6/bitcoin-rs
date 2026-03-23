@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-dbtest/src/fixture.rs ]
+// ---------------- [ File: bitcoinleveldbt-dbtest/src/fixture.rs ]
 crate::ix!();
 
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -9,18 +9,18 @@ static DBTEST_TMP_COUNTER: AtomicU64 = AtomicU64::new(0);
 /// appending `suffix` plus a monotone instance id to the test harness temporary directory.
 ///
 /// Precondition: `suffix` is a byte-stable path suffix.
-/// Postcondition: the returned pathname begins with `bitcoinleveldb_test::tmp_dir()` and is
+/// Postcondition: the returned pathname begins with `bitcoinleveldbt_util::tmp_dir()` and is
 /// distinct from prior calls in this process.
 pub fn dbtest_fixture_tmp_dbname_with_suffix(suffix: &str) -> String {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_tmp_dbname_with_suffix.entry",
         suffix_len = suffix.len()
     );
 
     let id = DBTEST_TMP_COUNTER.fetch_add(1, Ordering::Relaxed);
 
-    let mut dbname = bitcoinleveldb_test::tmp_dir();
+    let mut dbname = bitcoinleveldbt_util::tmp_dir();
     dbname.push_str(suffix);
     dbname.push('.');
     dbname.push_str(&std::process::id().to_string());
@@ -28,7 +28,7 @@ pub fn dbtest_fixture_tmp_dbname_with_suffix(suffix: &str) -> String {
     dbname.push_str(&id.to_string());
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_tmp_dbname_with_suffix.exit",
         dbname_len = dbname.len(),
         id = id
@@ -47,7 +47,7 @@ pub fn dbtest_fixture_open_db_pointer_with_options(
     options: &Options,
 ) -> (Status, Option<*mut dyn DB>) {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_open_db_pointer_with_options.entry",
         dbname_len = dbname.len()
     );
@@ -62,7 +62,7 @@ pub fn dbtest_fixture_open_db_pointer_with_options(
     };
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_open_db_pointer_with_options.exit",
         ok = s.is_ok(),
         has_db_ptr = db_ptr.is_some()
@@ -80,7 +80,7 @@ pub fn dbtest_fixture_drop_open_db_pointer(
     db_ptr: Option<*mut dyn DB>,
 ) {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_drop_open_db_pointer.entry",
         has_db_ptr = db_ptr.is_some()
     );
@@ -93,7 +93,7 @@ pub fn dbtest_fixture_drop_open_db_pointer(
     }
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_drop_open_db_pointer.exit"
     );
 }
@@ -108,7 +108,7 @@ pub fn dbtest_fixture_put_owned_string_pair(
     value_owned: &String,
 ) -> Status {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_put_owned_string_pair.entry",
         key_len = key_owned.len(),
         value_len = value_owned.len()
@@ -117,7 +117,7 @@ pub fn dbtest_fixture_put_owned_string_pair(
     let s = dbtest.put(key_owned, value_owned);
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_put_owned_string_pair.exit",
         ok = s.is_ok()
     );
@@ -134,7 +134,7 @@ pub fn dbtest_fixture_get_owned_string_key(
     key_owned: &String,
 ) -> String {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_get_owned_string_key.entry",
         key_len = key_owned.len()
     );
@@ -142,7 +142,7 @@ pub fn dbtest_fixture_get_owned_string_key(
     let out = dbtest.get(key_owned, None);
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_get_owned_string_key.exit",
         out_len = out.len()
     );
@@ -160,7 +160,7 @@ pub fn dbtest_fixture_size_owned_string_bounds(
     limit_owned: &String,
 ) -> u64 {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_size_owned_string_bounds.entry",
         start_len = start_owned.len(),
         limit_len = limit_owned.len()
@@ -171,7 +171,7 @@ pub fn dbtest_fixture_size_owned_string_bounds(
     let out = dbtest.size(start_slice, limit_slice);
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_size_owned_string_bounds.exit",
         out = out
     );
@@ -189,7 +189,7 @@ pub fn dbtest_fixture_size_literal_string_bounds(
     limit_literal: &str,
 ) -> u64 {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_size_literal_string_bounds.entry",
         start_len = start_literal.len(),
         limit_len = limit_literal.len()
@@ -200,7 +200,7 @@ pub fn dbtest_fixture_size_literal_string_bounds(
     let out = dbtest_fixture_size_owned_string_bounds(dbtest, &start_owned, &limit_owned);
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_size_literal_string_bounds.exit",
         out = out
     );
@@ -217,14 +217,14 @@ pub fn dbtest_fixture_test_compact_memtable_status(
     dbtest: &mut DBTest,
 ) -> Status {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_test_compact_memtable_status.entry"
     );
 
     let s = unsafe { (*dbtest.dbfull()).test_compact_mem_table() };
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_test_compact_memtable_status.exit",
         ok = s.is_ok()
     );
@@ -245,7 +245,7 @@ pub fn dbtest_fixture_test_compact_range_optional_owned_bounds(
     limit_owned: Option<&String>,
 ) {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_test_compact_range_optional_owned_bounds.entry",
         level = level,
         has_start = start_owned.is_some(),
@@ -275,7 +275,7 @@ pub fn dbtest_fixture_test_compact_range_optional_owned_bounds(
     }
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_test_compact_range_optional_owned_bounds.exit",
         level = level
     );
@@ -286,7 +286,7 @@ pub fn dbtest_fixture_test_compact_range_optional_owned_bounds(
 /// Postcondition: the returned string compares byte-for-byte equal to `literal`.
 pub fn dbtest_fixture_owned_string(literal: &str) -> String {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_owned_string.entry",
         literal_len = literal.len()
     );
@@ -294,7 +294,7 @@ pub fn dbtest_fixture_owned_string(literal: &str) -> String {
     let out = literal.to_string();
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_owned_string.exit",
         out_len = out.len()
     );
@@ -312,7 +312,7 @@ pub fn dbtest_fixture_put_literal(
     value_literal: &str,
 ) -> Status {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_put_literal.entry",
         key_len = key_literal.len(),
         value_len = value_literal.len()
@@ -323,7 +323,7 @@ pub fn dbtest_fixture_put_literal(
     let s = dbtest.put(&key_owned, &value_owned);
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_put_literal.exit",
         ok = s.is_ok()
     );
@@ -340,7 +340,7 @@ pub fn dbtest_fixture_delete_literal(
     key_literal: &str,
 ) -> Status {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_delete_literal.entry",
         key_len = key_literal.len()
     );
@@ -349,7 +349,7 @@ pub fn dbtest_fixture_delete_literal(
     let s = dbtest.delete(&key_owned);
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_delete_literal.exit",
         ok = s.is_ok()
     );
@@ -367,7 +367,7 @@ pub fn dbtest_fixture_get_literal(
     key_literal: &str,
 ) -> String {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_get_literal.entry",
         key_len = key_literal.len()
     );
@@ -376,7 +376,7 @@ pub fn dbtest_fixture_get_literal(
     let out = dbtest.get(&key_owned, None);
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_get_literal.exit",
         out_len = out.len()
     );
@@ -395,7 +395,7 @@ pub fn dbtest_fixture_compact_literal_range(
     limit_literal: &str,
 ) {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_compact_literal_range.entry",
         start_len = start_literal.len(),
         limit_len = limit_literal.len()
@@ -409,7 +409,7 @@ pub fn dbtest_fixture_compact_literal_range(
     dbtest.compact(&start_slice, &limit_slice);
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_compact_literal_range.exit"
     );
 }
@@ -424,7 +424,7 @@ where
     F: FnMut(&mut DBTest),
 {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_run_across_option_configurations.entry"
     );
 
@@ -441,7 +441,7 @@ where
     }
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::tests",
+        target: "bitcoinleveldbt_dbtest::tests",
         label = "dbtest_fixture_run_across_option_configurations.exit",
         rounds
     );
@@ -1957,7 +1957,7 @@ fn db_test_fflush_issue474() {
     static K_NUM: i32 = 100000;
 
     let mut dbtest = DBTest::default();
-    let mut rnd = Random::new(bitcoinleveldb_test::random_seed() as u32);
+    let mut rnd = Random::new(bitcoinleveldbt_util::random_seed() as u32);
 
     let mut i: i32 = 0;
     while i < K_NUM {

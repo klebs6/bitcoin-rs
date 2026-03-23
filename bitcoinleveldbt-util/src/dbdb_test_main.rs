@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/dbdb_test_main.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/dbdb_test_main.rs ]
 crate::ix!();
 
 /// Precondition: `argv` is either null or points to an array of NUL-terminated C strings.
@@ -9,7 +9,7 @@ pub fn dbdb_test_main(
     argv: *mut *mut u8,
 ) -> i32 {
     tracing::trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "dbdb_test_main.entry",
         argc
     );
@@ -40,7 +40,7 @@ pub fn dbdb_test_main(
     };
 
     tracing::trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "dbdb_test_main.exit",
         benchmark_requested,
         rc

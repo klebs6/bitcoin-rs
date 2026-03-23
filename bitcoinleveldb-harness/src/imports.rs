@@ -6,7 +6,7 @@ pub(crate) use bitcoinleveldb_rand::*;
 pub(crate) use bitcoinleveldb_dbinterface::*;
 pub(crate) use bitcoinleveldb_iterator::*;
 pub(crate) use bitcoinleveldb_blockconstructor::*;
-pub(crate) use bitcoinleveldb_dbtest::*;
+pub(crate) use bitcoinleveldbt_dbtest::*;
 pub(crate) use bitcoinleveldb_memtable::*;
 pub(crate) use bitcoinleveldb_dbconstructor::*;
 pub(crate) use bitcoinleveldb_comparator::*;

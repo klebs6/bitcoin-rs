@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testautocompaction/src/bitcoinleveldb_testautocompaction.rs ]
+// ---------------- [ File: bitcoinleveldbt-autocompaction/src/bitcoinleveldbt_autocompaction.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/autocompact_test.cc]
@@ -13,7 +13,7 @@ struct AutoCompactTest {
 impl Default for AutoCompactTest {
     fn default() -> Self {
         trace!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_default_entry"
         );
 
@@ -47,7 +47,7 @@ impl Default for AutoCompactTest {
         };
 
         trace!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_default_exit",
             db_is_null = out.db.is_null()
         );
@@ -59,7 +59,7 @@ impl Default for AutoCompactTest {
 impl Drop for AutoCompactTest {
     fn drop(&mut self) {
         debug!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_drop_entry",
             db_is_null = self.db.is_null(),
             cache_is_null = self.tiny_cache.is_null()
@@ -82,7 +82,7 @@ impl Drop for AutoCompactTest {
         }
 
         debug!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_drop_exit"
         );
     }
@@ -95,7 +95,7 @@ const COUNT:      i32 = TOTAL_SIZE / VALUE_SIZE;
 impl AutoCompactTest {
     pub fn key(&mut self, i: i32) -> String {
         trace!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_key_entry",
             i = i
         );
@@ -103,7 +103,7 @@ impl AutoCompactTest {
         let out = format!("key{:06}", i);
 
         trace!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_key_exit",
             key_len = out.len()
         );
@@ -117,7 +117,7 @@ impl AutoCompactTest {
         limit: &Slice,
     ) -> u64 {
         trace!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_size_entry",
             start_len = *start.size(),
             limit_len = *limit.size()
@@ -138,7 +138,7 @@ impl AutoCompactTest {
         }
 
         trace!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_size_exit",
             size = size
         );
@@ -154,7 +154,7 @@ impl AutoCompactTest {
       */
     pub fn do_reads(&mut self, n: i32) {
         trace!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_do_reads_entry",
             n = n
         );
@@ -279,7 +279,7 @@ impl AutoCompactTest {
         assert!(final_other_size >= initial_other_size / 5u64 - 1_048_576u64);
 
         trace!(
-            target: "bitcoinleveldb_test::autocompact_test",
+            target: "bitcoinleveldbt_autocompaction::autocompact_test",
             event = "auto_compact_test_do_reads_exit",
             n = n
         );
@@ -303,14 +303,14 @@ fn dbautocompact_test_main(
     _argv: *mut *mut u8,
 ) -> i32 {
     trace!(
-        target: "bitcoinleveldb_test::autocompact_test",
+        target: "bitcoinleveldbt_autocompaction::autocompact_test",
         event = "dbautocompact_test_main_entry"
     );
 
     let rc = run_all_tests();
 
     trace!(
-        target: "bitcoinleveldb_test::autocompact_test",
+        target: "bitcoinleveldbt_autocompaction::autocompact_test",
         event = "dbautocompact_test_main_exit",
         result = rc
     );

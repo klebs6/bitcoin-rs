@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testcorruption/src/lib.rs ]
+// ---------------- [ File: bitcoinleveldbt-corruption/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinleveldb_testcorruption}
+x!{bitcoinleveldbt_corruption}

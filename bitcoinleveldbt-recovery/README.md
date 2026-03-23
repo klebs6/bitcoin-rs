@@ -1,3 +1,3 @@
-# bitcoinleveldb-testrecovery
+# bitcoinleveldbt-recovery
 
 TODO: fill description.

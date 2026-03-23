@@ -16,7 +16,7 @@ impl VersionSetRecoveryScenarioHarness {
         create_if_missing: bool,
     ) -> Self {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::version_set_recover_harness",
+            target: "bitcoinleveldbt_versionsettestutil::version_set_recover_harness",
             event = "version_set_recovery_scenario_harness_open_enter",
             test_prefix = test_prefix,
             create_if_missing = create_if_missing
@@ -30,7 +30,7 @@ impl VersionSetRecoveryScenarioHarness {
         );
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::version_set_recover_harness",
+            target: "bitcoinleveldbt_versionsettestutil::version_set_recover_harness",
             event = "version_set_recovery_scenario_harness_open_exit",
             test_prefix = test_prefix,
             create_if_missing = create_if_missing

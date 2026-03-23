@@ -1,3 +1,3 @@
-# bitcoinleveldb-testenv
+# bitcoinleveldbt-env
 
 TODO: fill description.

@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/special_env_delegating_env_adapter.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/special_env_delegating_env_adapter.rs ]
 crate::ix!();
 
 /// Invariant: this adapter restores the C++ test topology in which `SpecialEnv` is passed
@@ -16,7 +16,7 @@ impl DBTestSpecialEnvDelegatingEnvAdapter {
     /// Postcondition: constructs a non-owning adapter over that `SpecialEnv`.
     pub fn new(inner: *mut SpecialEnv) -> Self {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.new",
             inner_is_null = inner.is_null()
         );
@@ -32,7 +32,7 @@ impl Env for DBTestSpecialEnvDelegatingEnvAdapter {}
 impl DeleteFile for DBTestSpecialEnvDelegatingEnvAdapter {
     fn delete_file(&mut self, f: &String) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.delete_file",
             file_len = f.len()
         );
@@ -44,7 +44,7 @@ impl DeleteFile for DBTestSpecialEnvDelegatingEnvAdapter {
 impl CreateDir for DBTestSpecialEnvDelegatingEnvAdapter {
     fn create_dir(&mut self, d: &String) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.create_dir",
             dir_len = d.len()
         );
@@ -56,7 +56,7 @@ impl CreateDir for DBTestSpecialEnvDelegatingEnvAdapter {
 impl DeleteDir for DBTestSpecialEnvDelegatingEnvAdapter {
     fn delete_dir(&mut self, d: &String) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.delete_dir",
             dir_len = d.len()
         );
@@ -68,7 +68,7 @@ impl DeleteDir for DBTestSpecialEnvDelegatingEnvAdapter {
 impl NewSequentialFile for DBTestSpecialEnvDelegatingEnvAdapter {
     fn new_sequential_file(&mut self, f: &String, r: *mut *mut Box<dyn SequentialFile>) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.new_sequential_file",
             file_len = f.len()
         );
@@ -80,7 +80,7 @@ impl NewSequentialFile for DBTestSpecialEnvDelegatingEnvAdapter {
 impl NewRandomAccessFile for DBTestSpecialEnvDelegatingEnvAdapter {
     fn new_random_access_file(&mut self, f: &String, r: *mut *mut Box<dyn RandomAccessFile>) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.new_random_access_file",
             file_len = f.len()
         );
@@ -92,7 +92,7 @@ impl NewRandomAccessFile for DBTestSpecialEnvDelegatingEnvAdapter {
 impl NewWritableFile for DBTestSpecialEnvDelegatingEnvAdapter {
     fn new_writable_file(&mut self, f: &String, r: *mut *mut Box<dyn WritableFile>) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.new_writable_file",
             file_len = f.len()
         );
@@ -104,7 +104,7 @@ impl NewWritableFile for DBTestSpecialEnvDelegatingEnvAdapter {
 impl NewAppendableFile for DBTestSpecialEnvDelegatingEnvAdapter {
     fn new_appendable_file(&mut self, f: &String, r: *mut *mut Box<dyn WritableFile>) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.new_appendable_file",
             file_len = f.len()
         );
@@ -116,7 +116,7 @@ impl NewAppendableFile for DBTestSpecialEnvDelegatingEnvAdapter {
 impl FileExists for DBTestSpecialEnvDelegatingEnvAdapter {
     fn file_exists(&mut self, f: &String) -> bool {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.file_exists",
             file_len = f.len()
         );
@@ -128,7 +128,7 @@ impl FileExists for DBTestSpecialEnvDelegatingEnvAdapter {
 impl GetChildren for DBTestSpecialEnvDelegatingEnvAdapter {
     fn get_children(&mut self, dir: &String, r: *mut Vec<String>) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.get_children",
             dir_len = dir.len()
         );
@@ -140,7 +140,7 @@ impl GetChildren for DBTestSpecialEnvDelegatingEnvAdapter {
 impl GetFileSize for DBTestSpecialEnvDelegatingEnvAdapter {
     fn get_file_size(&mut self, f: &String, s: *mut u64) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.get_file_size",
             file_len = f.len()
         );
@@ -152,7 +152,7 @@ impl GetFileSize for DBTestSpecialEnvDelegatingEnvAdapter {
 impl RenameFile for DBTestSpecialEnvDelegatingEnvAdapter {
     fn rename_file(&mut self, src: &String, target: &String) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.rename_file",
             src_len = src.len(),
             target_len = target.len()
@@ -165,7 +165,7 @@ impl RenameFile for DBTestSpecialEnvDelegatingEnvAdapter {
 impl LockFile for DBTestSpecialEnvDelegatingEnvAdapter {
     fn lock_file(&mut self, f: &String, l: *mut *mut Box<dyn FileLock>) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.lock_file",
             file_len = f.len()
         );
@@ -177,7 +177,7 @@ impl LockFile for DBTestSpecialEnvDelegatingEnvAdapter {
 impl UnlockFile for DBTestSpecialEnvDelegatingEnvAdapter {
     fn unlock_file(&mut self, l: *mut Box<dyn FileLock>) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.unlock_file"
         );
 
@@ -188,7 +188,7 @@ impl UnlockFile for DBTestSpecialEnvDelegatingEnvAdapter {
 impl Schedule for DBTestSpecialEnvDelegatingEnvAdapter {
     fn schedule(&mut self, f: fn(arg: *mut c_void) -> c_void, a: *mut c_void) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.schedule"
         );
 
@@ -201,7 +201,7 @@ impl Schedule for DBTestSpecialEnvDelegatingEnvAdapter {
 impl StartThread for DBTestSpecialEnvDelegatingEnvAdapter {
     fn start_thread(&mut self, f: fn(arg: *mut c_void) -> c_void, a: *mut c_void) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.start_thread"
         );
 
@@ -214,7 +214,7 @@ impl StartThread for DBTestSpecialEnvDelegatingEnvAdapter {
 impl GetTestDirectory for DBTestSpecialEnvDelegatingEnvAdapter {
     fn get_test_directory(&mut self, path: *mut String) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.get_test_directory"
         );
 
@@ -225,7 +225,7 @@ impl GetTestDirectory for DBTestSpecialEnvDelegatingEnvAdapter {
 impl NewLogger for DBTestSpecialEnvDelegatingEnvAdapter {
     fn new_logger(&mut self, fname: &String, result: *mut *mut Box<dyn Logger>) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.new_logger",
             file_len = fname.len()
         );
@@ -237,7 +237,7 @@ impl NewLogger for DBTestSpecialEnvDelegatingEnvAdapter {
 impl NowMicros for DBTestSpecialEnvDelegatingEnvAdapter {
     fn now_micros(&mut self) -> u64 {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.now_micros"
         );
 
@@ -248,7 +248,7 @@ impl NowMicros for DBTestSpecialEnvDelegatingEnvAdapter {
 impl SleepForMicroseconds for DBTestSpecialEnvDelegatingEnvAdapter {
     fn sleep_for_microseconds(&mut self, micros: i32) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+            target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
             label = "dbtest.special_env_delegating_env_adapter.sleep_for_microseconds",
             micros = micros
         );
@@ -268,7 +268,7 @@ pub fn dbtest_special_env_delegating_env_rc(
     inner: *mut SpecialEnv,
 ) -> Rc<RefCell<dyn Env>> {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+        target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
         label = "dbtest.special_env_delegating_env_rc.entry",
         inner_is_null = inner.is_null()
     );
@@ -279,7 +279,7 @@ pub fn dbtest_special_env_delegating_env_rc(
         Rc::new(RefCell::new(DBTestSpecialEnvDelegatingEnvAdapter::new(inner)));
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::special_env_delegating_env_adapter",
+        target: "bitcoinleveldbt_dbtest::special_env_delegating_env_adapter",
         label = "dbtest.special_env_delegating_env_rc.exit"
     );
 

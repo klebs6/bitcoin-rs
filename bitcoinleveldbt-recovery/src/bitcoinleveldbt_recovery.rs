@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testrecovery/src/bitcoinleveldb_testrecovery.rs ]
+// ---------------- [ File: bitcoinleveldbt-recovery/src/bitcoinleveldbt_recovery.rs ]
 crate::ix!();
 
 struct BitcoinLevelDbTestRecoveryWritableFileRcAdapter {
@@ -48,7 +48,7 @@ struct RecoveryTest {
 impl Default for RecoveryTest {
     fn default() -> Self {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_default_entry"
         );
 
@@ -65,7 +65,7 @@ impl Default for RecoveryTest {
         out.open(None);
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_default_exit",
             db_is_null = out.db.is_null()
         );
@@ -77,7 +77,7 @@ impl Default for RecoveryTest {
 impl Drop for RecoveryTest {
     fn drop(&mut self) {
         debug!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_drop_entry",
             db_is_null = self.db.is_null()
         );
@@ -86,7 +86,7 @@ impl Drop for RecoveryTest {
         let _ = destroydb(&self.dbname, &Options::default());
 
         debug!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_drop_exit"
         );
     }
@@ -96,7 +96,7 @@ impl RecoveryTest {
 
     pub fn dbfull(&self) -> *mut DBImpl {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_dbfull_entry",
             db_is_null = self.db.is_null()
         );
@@ -104,7 +104,7 @@ impl RecoveryTest {
         let out = (self.db as *mut ()) as *mut DBImpl;
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_dbfull_exit",
             dbimpl_is_null = out.is_null()
         );
@@ -114,14 +114,14 @@ impl RecoveryTest {
     
     pub fn env(&self) -> Rc<RefCell<dyn Env>> {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_env_entry"
         );
 
         let out = Rc::clone(&self.env);
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_env_exit",
             strong_count = Rc::strong_count(&out)
         );
@@ -131,7 +131,7 @@ impl RecoveryTest {
 
     pub fn can_append(&mut self) -> bool {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_can_append_entry"
         );
 
@@ -158,7 +158,7 @@ impl RecoveryTest {
         };
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_can_append_exit",
             status_ok = status.is_ok(),
             status_not_supported = status.is_not_supported_error(),
@@ -170,7 +170,7 @@ impl RecoveryTest {
 
     pub fn close(&mut self) {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_close_entry",
             db_is_null = self.db.is_null()
         );
@@ -183,7 +183,7 @@ impl RecoveryTest {
         }
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_close_exit",
             db_is_null = self.db.is_null()
         );
@@ -191,7 +191,7 @@ impl RecoveryTest {
    
     pub fn open_with_status(&mut self, options: Option<*mut Options>) -> crate::Status {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_open_with_status_entry",
             dbname = %self.dbname,
             has_options = options.is_some()
@@ -221,7 +221,7 @@ impl RecoveryTest {
         );
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_open_with_status_exit",
             ok = status.is_ok(),
             db_is_null = self.db.is_null()
@@ -242,7 +242,7 @@ impl RecoveryTest {
         v: &String,
     ) -> crate::Status {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_put_entry",
             key_len = k.len(),
             value_len = v.len()
@@ -257,7 +257,7 @@ impl RecoveryTest {
         };
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_put_exit",
             ok = status.is_ok()
         );
@@ -271,7 +271,7 @@ impl RecoveryTest {
         snapshot: Option<*const dyn Snapshot>,
     ) -> String {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_get_entry",
             key_len = k.len(),
             has_snapshot = snapshot.is_some()
@@ -293,7 +293,7 @@ impl RecoveryTest {
         }
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_get_exit",
             result_len = result.len()
         );
@@ -303,7 +303,7 @@ impl RecoveryTest {
 
     pub fn manifest_file_name(&mut self) -> String {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_manifest_file_name_entry"
         );
 
@@ -324,7 +324,7 @@ impl RecoveryTest {
         let out = format!("{}/{}", self.dbname, current);
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_manifest_file_name_exit",
             manifest = %out
         );
@@ -334,7 +334,7 @@ impl RecoveryTest {
 
     pub fn log_name(&mut self, number: u64) -> String {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_log_name_entry",
             number = number
         );
@@ -342,7 +342,7 @@ impl RecoveryTest {
         let out = log_file_name(&self.dbname, number);
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_log_name_exit",
             filename = %out
         );
@@ -352,7 +352,7 @@ impl RecoveryTest {
 
     pub fn delete_log_files(&mut self) -> usize {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_delete_log_files_entry"
         );
 
@@ -369,7 +369,7 @@ impl RecoveryTest {
         }
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_delete_log_files_exit",
             deleted = logs.len()
         );
@@ -379,7 +379,7 @@ impl RecoveryTest {
 
     pub fn delete_manifest_file(&mut self) {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_delete_manifest_file_entry"
         );
 
@@ -388,21 +388,21 @@ impl RecoveryTest {
         assert!(status.is_ok());
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_delete_manifest_file_exit"
         );
     }
 
     pub fn first_log_file(&mut self) -> u64 {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_first_log_file_entry"
         );
 
         let out = self.get_files(FileType::LogFile)[0];
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_first_log_file_exit",
             number = out
         );
@@ -412,7 +412,7 @@ impl RecoveryTest {
    
     pub fn get_files(&mut self, t: FileType) -> Vec<u64> {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_get_files_entry"
         );
 
@@ -441,7 +441,7 @@ impl RecoveryTest {
         }
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_get_files_exit",
             count = result.len()
         );
@@ -451,14 +451,14 @@ impl RecoveryTest {
    
     pub fn num_logs(&mut self) -> i32 {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_num_logs_entry"
         );
 
         let out = self.get_files(FileType::LogFile).len() as i32;
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_num_logs_exit",
             count = out
         );
@@ -468,14 +468,14 @@ impl RecoveryTest {
 
     pub fn num_tables(&mut self) -> i32 {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_num_tables_entry"
         );
 
         let out = self.get_files(FileType::TableFile).len() as i32;
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_num_tables_exit",
             count = out
         );
@@ -485,7 +485,7 @@ impl RecoveryTest {
 
     pub fn file_size(&mut self, fname: &String) -> u64 {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_file_size_entry",
             filename = %fname
         );
@@ -499,7 +499,7 @@ impl RecoveryTest {
         assert!(status.is_ok());
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_file_size_exit",
             filename = %fname,
             size = result
@@ -510,7 +510,7 @@ impl RecoveryTest {
     
     pub fn compact_mem_table(&mut self) {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_compact_mem_table_entry"
         );
 
@@ -518,7 +518,7 @@ impl RecoveryTest {
         assert!(status.is_ok());
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_compact_mem_table_exit",
             ok = status.is_ok()
         );
@@ -534,7 +534,7 @@ impl RecoveryTest {
         val:    Slice,
     ) {
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_make_log_file_entry",
             lognum = lognum,
             seq = seq
@@ -585,7 +585,7 @@ impl RecoveryTest {
         }
 
         trace!(
-            target: "bitcoinleveldb_test::recovery_test",
+            target: "bitcoinleveldbt_recovery::recovery_test",
             event = "recovery_test_make_log_file_exit",
             lognum = lognum
         );
@@ -859,14 +859,14 @@ fn dbrecovery_test_main(
     _argv: *mut *mut u8,
 ) -> i32 {
     trace!(
-        target: "bitcoinleveldb_test::recovery_test",
+        target: "bitcoinleveldbt_recovery::recovery_test",
         event = "dbrecovery_test_main_entry"
     );
 
     let rc = run_all_tests();
 
     trace!(
-        target: "bitcoinleveldb_test::recovery_test",
+        target: "bitcoinleveldbt_recovery::recovery_test",
         event = "dbrecovery_test_main_exit",
         result = rc
     );

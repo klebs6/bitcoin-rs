@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-versionsettestutil/src/constructors.rs ]
+// ---------------- [ File: bitcoinleveldbt-versionsettestutil/src/constructors.rs ]
 crate::ix!();
 
 /// Guarantees the returned key always encodes `ValueType::TypeValue`; callers must not reuse
@@ -8,7 +8,7 @@ pub fn make_value_internal_key_for_user_key(
     sequence_number: u64,
 ) -> InternalKey {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "make_value_internal_key_for_user_key_enter",
         user_key = user_key,
         sequence_number = sequence_number
@@ -18,7 +18,7 @@ pub fn make_value_internal_key_for_user_key(
         InternalKey::new(&Slice::from(user_key), sequence_number, ValueType::TypeValue);
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "make_value_internal_key_for_user_key_exit",
         user_key = user_key,
         sequence_number = sequence_number
@@ -33,7 +33,7 @@ pub fn build_internal_key_comparator_from_database_options(
     options: &Options,
 ) -> InternalKeyComparator {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "build_internal_key_comparator_from_database_options_enter"
     );
 
@@ -45,7 +45,7 @@ pub fn build_internal_key_comparator_from_database_options(
     };
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "build_internal_key_comparator_from_database_options_decision",
         comparator_name = %comparator_name
     );
@@ -61,7 +61,7 @@ pub fn build_internal_key_comparator_from_database_options(
         InternalKeyComparator::new(user_comparator_ref as *const dyn SliceComparator);
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "build_internal_key_comparator_from_database_options_exit",
         comparator_name = %comparator_name
     );
@@ -77,7 +77,7 @@ pub fn allocate_test_file_metadata_for_key_range(
     largest_internal_key: &InternalKey,
 ) -> *mut FileMetaData {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "allocate_test_file_metadata_for_key_range_enter",
         file_number = file_number
     );
@@ -92,7 +92,7 @@ pub fn allocate_test_file_metadata_for_key_range(
     let file_metadata_ptr = Box::into_raw(file_metadata);
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "allocate_test_file_metadata_for_key_range_exit",
         file_number = file_number,
         file_metadata_ptr = ?file_metadata_ptr
@@ -105,7 +105,7 @@ pub fn allocate_test_file_metadata_for_key_range(
 /// callers must create the directory explicitly so filesystem side effects stay observable.
 pub fn build_unique_temporary_database_directory_path(test_prefix: &str) -> PathBuf {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "build_unique_temporary_database_directory_path_enter",
         test_prefix = test_prefix
     );
@@ -115,7 +115,7 @@ pub fn build_unique_temporary_database_directory_path(test_prefix: &str) -> Path
         Ok(duration) => duration,
         Err(error) => {
             warn!(
-                target: "bitcoinleveldb_versionsettestutil::constructors",
+                target: "bitcoinleveldbt_versionsettestutil::constructors",
                 event = "build_unique_temporary_database_directory_path_system_time_before_epoch",
                 error = ?error
             );
@@ -132,7 +132,7 @@ pub fn build_unique_temporary_database_directory_path(test_prefix: &str) -> Path
     ));
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "build_unique_temporary_database_directory_path_exit",
         test_prefix = test_prefix,
         directory = %temporary_directory_path.display()
@@ -147,7 +147,7 @@ pub fn build_unique_versionset_into_version_directory_path(
     test_label: &str,
 ) -> PathBuf {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "build_unique_versionset_into_version_directory_path_enter",
         test_label = test_label
     );
@@ -158,7 +158,7 @@ pub fn build_unique_versionset_into_version_directory_path(
         Ok(duration) => duration,
         Err(error) => {
             warn!(
-                target: "bitcoinleveldb_versionsettestutil::constructors",
+                target: "bitcoinleveldbt_versionsettestutil::constructors",
                 event = "build_unique_versionset_into_version_directory_path_system_time_before_epoch",
                 error = ?error
             );
@@ -175,7 +175,7 @@ pub fn build_unique_versionset_into_version_directory_path(
     ));
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::constructors",
+        target: "bitcoinleveldbt_versionsettestutil::constructors",
         event = "build_unique_versionset_into_version_directory_path_exit",
         test_label = test_label,
         directory = %temporary_directory_path.display()

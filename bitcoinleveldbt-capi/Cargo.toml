@@ -1,5 +1,5 @@
 [package]
-name = "bitcoinleveldb-testcapi"
+name = "bitcoinleveldbt-capi"
 version = "0.1.0"
 authors = ["YourName <you@example.com>"]
 license = "MIT"
@@ -32,7 +32,7 @@ bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair" }
 bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
-bitcoinleveldb-testutil = { path = "../bitcoinleveldb-testutil" }
+bitcoinleveldbt-util = { path = "../bitcoinleveldbt-util" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

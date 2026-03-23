@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/test_type.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/test_type.rs ]
 crate::ix!();
 
 #[derive(Debug,Copy,Clone,PartialEq,Hash,Eq)]

@@ -24,5 +24,5 @@ pub(crate) use bitcoinleveldb_snapshot::*;
 pub(crate) use bitcoinleveldb_merger::*;
 pub(crate) use bitcoinleveldb_comparator::*;
 pub(crate) use bitcoinleveldb_posixenv::*;
-pub(crate) use bitcoinleveldb_versionsettestutil::*;
+pub(crate) use bitcoinleveldbt_versionsettestutil::*;
 pub(crate) use bitcoinleveldb_tablebuilder::*;

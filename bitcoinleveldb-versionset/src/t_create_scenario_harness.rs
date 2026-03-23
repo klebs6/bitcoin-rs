@@ -17,7 +17,7 @@ impl VersionSetCreationScenarioHarness {
         error_if_exists: bool,
     ) -> Self {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::version_set_create_harness",
+            target: "bitcoinleveldbt_versionsettestutil::version_set_create_harness",
             event = "version_set_creation_scenario_harness_open_enter",
             test_prefix = test_prefix,
             create_if_missing = create_if_missing,
@@ -32,7 +32,7 @@ impl VersionSetCreationScenarioHarness {
         );
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::version_set_create_harness",
+            target: "bitcoinleveldbt_versionsettestutil::version_set_create_harness",
             event = "version_set_creation_scenario_harness_open_exit",
             test_prefix = test_prefix
         );

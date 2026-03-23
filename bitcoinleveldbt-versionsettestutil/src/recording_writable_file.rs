@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-versionsettestutil/src/recording_writable_file.rs ]
+// ---------------- [ File: bitcoinleveldbt-versionsettestutil/src/recording_writable_file.rs ]
 crate::ix!();
 
 /// Guarantees every writable-file trait method updates the shared recording state synchronously
@@ -21,7 +21,7 @@ impl WritableFileRecorder {
         stable_label: &str,
     ) -> Self {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_bind_shared_state_with_label_enter",
             stable_label = stable_label
         );
@@ -32,7 +32,7 @@ impl WritableFileRecorder {
         };
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_bind_shared_state_with_label_exit",
             stable_label = recorder.stable_label.as_str()
         );
@@ -43,7 +43,7 @@ impl WritableFileRecorder {
     /// Guarantees the returned bytes are an owned copy of the exact slice contents at call time.
     pub fn copy_slice_bytes(data: &Slice) -> Vec<u8> {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_copy_slice_bytes_enter"
         );
 
@@ -54,7 +54,7 @@ impl WritableFileRecorder {
         };
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_copy_slice_bytes_exit",
             owned_length = owned_bytes.len()
         );
@@ -66,7 +66,7 @@ impl WritableFileRecorder {
 impl WritableFileAppend for WritableFileRecorder {
     fn append(&mut self, data: &Slice) -> Status {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_append_enter",
             stable_label = self.stable_label.as_str()
         );
@@ -78,7 +78,7 @@ impl WritableFileAppend for WritableFileRecorder {
                 .record_append_bytes(appended_bytes.as_slice());
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_append_exit",
             stable_label = self.stable_label.as_str(),
             append_call_count = append_call_count,
@@ -93,7 +93,7 @@ impl WritableFileAppend for WritableFileRecorder {
 impl WritableFileClose for WritableFileRecorder {
     fn close(&mut self) -> Status {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_close_enter",
             stable_label = self.stable_label.as_str()
         );
@@ -101,7 +101,7 @@ impl WritableFileClose for WritableFileRecorder {
         let close_call_count = self.shared_state.borrow_mut().record_close_call();
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_close_exit",
             stable_label = self.stable_label.as_str(),
             close_call_count = close_call_count
@@ -114,7 +114,7 @@ impl WritableFileClose for WritableFileRecorder {
 impl WritableFileFlush for WritableFileRecorder {
     fn flush(&mut self) -> Status {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_flush_enter",
             stable_label = self.stable_label.as_str()
         );
@@ -122,7 +122,7 @@ impl WritableFileFlush for WritableFileRecorder {
         let flush_call_count = self.shared_state.borrow_mut().record_flush_call();
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_flush_exit",
             stable_label = self.stable_label.as_str(),
             flush_call_count = flush_call_count
@@ -135,7 +135,7 @@ impl WritableFileFlush for WritableFileRecorder {
 impl WritableFileSync for WritableFileRecorder {
     fn sync(&mut self) -> Status {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_sync_enter",
             stable_label = self.stable_label.as_str()
         );
@@ -143,7 +143,7 @@ impl WritableFileSync for WritableFileRecorder {
         let sync_call_count = self.shared_state.borrow_mut().record_sync_call();
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::recording_writable_file",
+            target: "bitcoinleveldbt_versionsettestutil::recording_writable_file",
             event = "writable_file_recorder_sync_exit",
             stable_label = self.stable_label.as_str(),
             sync_call_count = sync_call_count

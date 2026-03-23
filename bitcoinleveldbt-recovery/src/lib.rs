@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testrecovery/src/lib.rs ]
+// ---------------- [ File: bitcoinleveldbt-recovery/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinleveldb_testrecovery}
+x!{bitcoinleveldbt_recovery}

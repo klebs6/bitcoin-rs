@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testissue178/src/bitcoinleveldb_testissue178.rs ]
+// ---------------- [ File: bitcoinleveldbt-issue178/src/bitcoinleveldbt_issue178.rs ]
 /*!
   | Test for issue 178: a manual compaction
   | causes deleted data to reappear.
@@ -13,7 +13,7 @@ const NUM_KEYS: i32 = 1100000;
 
 fn key1(i: i32) -> String {
     trace!(
-        target: "bitcoinleveldb_test::issue178_test",
+        target: "bitcoinleveldbt_issue178::issue178_test",
         event = "key1_entry",
         i = i
     );
@@ -21,7 +21,7 @@ fn key1(i: i32) -> String {
     let out = format!("my_key_{}", i);
 
     trace!(
-        target: "bitcoinleveldb_test::issue178_test",
+        target: "bitcoinleveldbt_issue178::issue178_test",
         event = "key1_exit",
         len = out.len()
     );
@@ -31,7 +31,7 @@ fn key1(i: i32) -> String {
 
 fn key2(i: i32) -> String {
     trace!(
-        target: "bitcoinleveldb_test::issue178_test",
+        target: "bitcoinleveldbt_issue178::issue178_test",
         event = "key2_entry",
         i = i
     );
@@ -40,7 +40,7 @@ fn key2(i: i32) -> String {
     out.push_str("_xxx");
 
     trace!(
-        target: "bitcoinleveldb_test::issue178_test",
+        target: "bitcoinleveldbt_issue178::issue178_test",
         event = "key2_exit",
         len = out.len()
     );
@@ -50,7 +50,7 @@ fn key2(i: i32) -> String {
 
 fn bitcoinleveldb_test__issue178_test_rs__free_err_if_non_null(err: *mut u8) {
     trace!(
-        target: "bitcoinleveldb_test::issue178_test",
+        target: "bitcoinleveldbt_issue178::issue178_test",
         event = "free_err_if_non_null_entry",
         err_is_null = err.is_null()
     );
@@ -60,7 +60,7 @@ fn bitcoinleveldb_test__issue178_test_rs__free_err_if_non_null(err: *mut u8) {
     }
 
     trace!(
-        target: "bitcoinleveldb_test::issue178_test",
+        target: "bitcoinleveldbt_issue178::issue178_test",
         event = "free_err_if_non_null_exit"
     );
 }
@@ -70,7 +70,7 @@ struct Issue178 {}
 #[traced_test]
 fn issue178_test() {
     trace!(
-        target: "bitcoinleveldb_test::issue178_test",
+        target: "bitcoinleveldbt_issue178::issue178_test",
         event = "issue178_test_entry"
     );
 
@@ -113,7 +113,7 @@ fn issue178_test() {
         assert!(!db.is_null());
 
         debug!(
-            target: "bitcoinleveldb_test::issue178_test",
+            target: "bitcoinleveldbt_issue178::issue178_test",
             event = "issue178_test_open_complete"
         );
 
@@ -143,7 +143,7 @@ fn issue178_test() {
         assert!(err.is_null());
 
         debug!(
-            target: "bitcoinleveldb_test::issue178_test",
+            target: "bitcoinleveldbt_issue178::issue178_test",
             event = "issue178_test_range1_written"
         );
 
@@ -172,7 +172,7 @@ fn issue178_test() {
         assert!(err.is_null());
 
         debug!(
-            target: "bitcoinleveldb_test::issue178_test",
+            target: "bitcoinleveldbt_issue178::issue178_test",
             event = "issue178_test_range2_written"
         );
 
@@ -198,7 +198,7 @@ fn issue178_test() {
         assert!(err.is_null());
 
         debug!(
-            target: "bitcoinleveldb_test::issue178_test",
+            target: "bitcoinleveldbt_issue178::issue178_test",
             event = "issue178_test_range2_deleted"
         );
 
@@ -216,7 +216,7 @@ fn issue178_test() {
         );
 
         debug!(
-            target: "bitcoinleveldb_test::issue178_test",
+            target: "bitcoinleveldbt_issue178::issue178_test",
             event = "issue178_test_compaction_complete"
         );
 
@@ -252,7 +252,7 @@ fn issue178_test() {
     }
 
     trace!(
-        target: "bitcoinleveldb_test::issue178_test",
+        target: "bitcoinleveldbt_issue178::issue178_test",
         event = "issue178_test_exit"
     );
 }

@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/optional_raw_db_pointer.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/optional_raw_db_pointer.rs ]
 crate::ix!();
 
 /// Invariant: returns `true` iff the optional raw DB pointer carries no live allocation.

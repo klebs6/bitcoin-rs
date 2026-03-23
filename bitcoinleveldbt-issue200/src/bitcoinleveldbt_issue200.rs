@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testissue200/src/bitcoinleveldb_testissue200.rs ]
+// ---------------- [ File: bitcoinleveldbt-issue200/src/bitcoinleveldbt_issue200.rs ]
 /*!
   | Test for issue 200: when iterator switches
   | direction from backward to forward, the current
@@ -13,7 +13,7 @@ crate::ix!();
 
 fn bitcoinleveldb_test__issue200_test_rs__free_err_if_non_null(err: *mut u8) {
     trace!(
-        target: "bitcoinleveldb_test::issue200_test",
+        target: "bitcoinleveldbt_issue200::issue200_test",
         event = "free_err_if_non_null_entry",
         err_is_null = err.is_null()
     );
@@ -23,7 +23,7 @@ fn bitcoinleveldb_test__issue200_test_rs__free_err_if_non_null(err: *mut u8) {
     }
 
     trace!(
-        target: "bitcoinleveldb_test::issue200_test",
+        target: "bitcoinleveldbt_issue200::issue200_test",
         event = "free_err_if_non_null_exit"
     );
 }
@@ -32,7 +32,7 @@ fn bitcoinleveldb_test__issue200_test_rs__iterator_key_string(
     iter: *const LevelDBIterator
 ) -> String {
     trace!(
-        target: "bitcoinleveldb_test::issue200_test",
+        target: "bitcoinleveldbt_issue200::issue200_test",
         event = "iterator_key_string_entry",
         iter_is_null = iter.is_null()
     );
@@ -42,7 +42,7 @@ fn bitcoinleveldb_test__issue200_test_rs__iterator_key_string(
 
     if kptr.is_null() {
         trace!(
-            target: "bitcoinleveldb_test::issue200_test",
+            target: "bitcoinleveldbt_issue200::issue200_test",
             event = "iterator_key_string_exit",
             key_len = 0
         );
@@ -53,7 +53,7 @@ fn bitcoinleveldb_test__issue200_test_rs__iterator_key_string(
     let out = String::from_utf8_lossy(bytes).into_owned();
 
     trace!(
-        target: "bitcoinleveldb_test::issue200_test",
+        target: "bitcoinleveldbt_issue200::issue200_test",
         event = "iterator_key_string_exit",
         key_len = klen
     );
@@ -64,7 +64,7 @@ fn bitcoinleveldb_test__issue200_test_rs__iterator_key_string(
 #[traced_test]
 fn issue200_test() {
     trace!(
-        target: "bitcoinleveldb_test::issue200_test",
+        target: "bitcoinleveldbt_issue200::issue200_test",
         event = "issue200_test_entry"
     );
 
@@ -226,7 +226,7 @@ fn issue200_test() {
     }
 
     trace!(
-        target: "bitcoinleveldb_test::issue200_test",
+        target: "bitcoinleveldbt_issue200::issue200_test",
         event = "issue200_test_exit"
     );
 }
@@ -235,14 +235,14 @@ fn issuesissue200_test_main (
     _argc: i32,
     _argv: *mut *mut u8) -> i32 {
     trace!(
-        target: "bitcoinleveldb_test::issue200_test",
+        target: "bitcoinleveldbt_issue200::issue200_test",
         event = "issuesissue200_test_main_entry"
     );
 
     let rc = run_all_tests();
 
     trace!(
-        target: "bitcoinleveldb_test::issue200_test",
+        target: "bitcoinleveldbt_issue200::issue200_test",
         event = "issuesissue200_test_main_exit",
         result = rc
     );

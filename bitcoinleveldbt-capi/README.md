@@ -1,3 +1,3 @@
-# bitcoinleveldb-testcapi
+# bitcoinleveldbt-capi
 
 TODO: fill description.

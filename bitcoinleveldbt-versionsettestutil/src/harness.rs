@@ -1,11 +1,11 @@
-// ---------------- [ File: bitcoinleveldb-versionsettestutil/src/harness.rs ]
+// ---------------- [ File: bitcoinleveldbt-versionsettestutil/src/harness.rs ]
 crate::ix!();
 
 /// Guarantees the requested directory tree exists after return or the current test aborts before
 /// any downstream filesystem mutation relies on it.
 pub fn create_directory_tree_or_panic(directory_path: &Path) {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "create_directory_tree_or_panic_enter",
         directory = %directory_path.display()
     );
@@ -13,14 +13,14 @@ pub fn create_directory_tree_or_panic(directory_path: &Path) {
     match StdFs::create_dir_all(directory_path) {
         Ok(()) => {
             trace!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "create_directory_tree_or_panic_exit",
                 directory = %directory_path.display()
             );
         }
         Err(error) => {
             error!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "create_directory_tree_or_panic_error",
                 directory = %directory_path.display(),
                 error = ?error
@@ -34,7 +34,7 @@ pub fn create_directory_tree_or_panic(directory_path: &Path) {
 /// the current test aborts before any size-dependent assertion can observe an invalid value.
 pub fn read_file_size_or_panic(file_path: &Path) -> u64 {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "read_file_size_or_panic_enter",
         file_path = %file_path.display()
     );
@@ -43,7 +43,7 @@ pub fn read_file_size_or_panic(file_path: &Path) -> u64 {
         Ok(metadata) => metadata,
         Err(error) => {
             error!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "read_file_size_or_panic_metadata_error",
                 file_path = %file_path.display(),
                 error = ?error
@@ -55,7 +55,7 @@ pub fn read_file_size_or_panic(file_path: &Path) -> u64 {
     let file_size = metadata.len();
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "read_file_size_or_panic_exit",
         file_path = %file_path.display(),
         file_size = file_size
@@ -68,7 +68,7 @@ pub fn read_file_size_or_panic(file_path: &Path) -> u64 {
 /// logical correctness of a test assertion.
 pub fn remove_directory_tree_best_effort(directory_path: &Path) {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "remove_directory_tree_best_effort_enter",
         directory = %directory_path.display()
     );
@@ -76,14 +76,14 @@ pub fn remove_directory_tree_best_effort(directory_path: &Path) {
     match StdFs::remove_dir_all(directory_path) {
         Ok(()) => {
             trace!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "remove_directory_tree_best_effort_exit",
                 directory = %directory_path.display()
             );
         }
         Err(error) => {
             warn!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "remove_directory_tree_best_effort_error",
                 directory = %directory_path.display(),
                 error = ?error
@@ -99,7 +99,7 @@ pub fn append_zero_bytes_to_file_or_panic(
     byte_count: usize,
 ) {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "append_zero_bytes_to_file_or_panic_enter",
         file_path = %file_path.display(),
         byte_count = byte_count
@@ -108,7 +108,7 @@ pub fn append_zero_bytes_to_file_or_panic(
     match byte_count == 0 {
         true => {
             trace!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "append_zero_bytes_to_file_or_panic_exit_noop",
                 file_path = %file_path.display(),
                 byte_count = byte_count
@@ -119,7 +119,7 @@ pub fn append_zero_bytes_to_file_or_panic(
                 Ok(file) => file,
                 Err(error) => {
                     error!(
-                        target: "bitcoinleveldb_versionsettestutil::harness",
+                        target: "bitcoinleveldbt_versionsettestutil::harness",
                         event = "append_zero_bytes_to_file_or_panic_open_error",
                         file_path = %file_path.display(),
                         byte_count = byte_count,
@@ -141,7 +141,7 @@ pub fn append_zero_bytes_to_file_or_panic(
                     }
                     Err(error) => {
                         error!(
-                            target: "bitcoinleveldb_versionsettestutil::harness",
+                            target: "bitcoinleveldbt_versionsettestutil::harness",
                             event = "append_zero_bytes_to_file_or_panic_write_error",
                             file_path = %file_path.display(),
                             byte_count = byte_count,
@@ -157,7 +157,7 @@ pub fn append_zero_bytes_to_file_or_panic(
             match StdWrite::flush(&mut file) {
                 Ok(()) => {
                     trace!(
-                        target: "bitcoinleveldb_versionsettestutil::harness",
+                        target: "bitcoinleveldbt_versionsettestutil::harness",
                         event = "append_zero_bytes_to_file_or_panic_exit",
                         file_path = %file_path.display(),
                         byte_count = byte_count
@@ -165,7 +165,7 @@ pub fn append_zero_bytes_to_file_or_panic(
                 }
                 Err(error) => {
                     error!(
-                        target: "bitcoinleveldb_versionsettestutil::harness",
+                        target: "bitcoinleveldbt_versionsettestutil::harness",
                         event = "append_zero_bytes_to_file_or_panic_flush_error",
                         file_path = %file_path.display(),
                         byte_count = byte_count,
@@ -185,7 +185,7 @@ pub fn assert_status_is_ok_or_panic(
     context_label: &'static str,
 ) {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "assert_status_is_ok_or_panic_enter",
         context_label = context_label
     );
@@ -193,14 +193,14 @@ pub fn assert_status_is_ok_or_panic(
     match status.is_ok() {
         true => {
             trace!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "assert_status_is_ok_or_panic_exit",
                 context_label = context_label
             );
         }
         false => {
             error!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "assert_status_is_ok_or_panic_non_ok_status",
                 context_label = context_label,
                 status = ?status
@@ -214,7 +214,7 @@ pub fn assert_status_is_ok_or_panic(
 /// sequence. Postconditions: the returned string is the lossy UTF-8 view of that exact sequence.
 pub fn read_utf8_lossy_c_string(raw_c_string_ptr: *const u8) -> String {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "read_utf8_lossy_c_string_enter",
         raw_c_string_ptr = ?raw_c_string_ptr
     );
@@ -222,7 +222,7 @@ pub fn read_utf8_lossy_c_string(raw_c_string_ptr: *const u8) -> String {
     match raw_c_string_ptr.is_null() {
         true => {
             error!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "read_utf8_lossy_c_string_null_pointer"
             );
             panic!("read_utf8_lossy_c_string_null_pointer");
@@ -232,7 +232,7 @@ pub fn read_utf8_lossy_c_string(raw_c_string_ptr: *const u8) -> String {
             let owned_string = c_string.to_string_lossy().to_string();
 
             trace!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "read_utf8_lossy_c_string_exit",
                 string_length = owned_string.len()
             );
@@ -248,7 +248,7 @@ pub fn extract_level_summary_file_counts_or_panic(
     level_summary: &str,
 ) -> [usize; NUM_LEVELS] {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "extract_level_summary_file_counts_or_panic_enter",
         level_summary = level_summary
     );
@@ -270,7 +270,7 @@ pub fn extract_level_summary_file_counts_or_panic(
                         }
                         Err(error) => {
                             error!(
-                                target: "bitcoinleveldb_versionsettestutil::harness",
+                                target: "bitcoinleveldbt_versionsettestutil::harness",
                                 event = "extract_level_summary_file_counts_or_panic_parse_error",
                                 level_summary = level_summary,
                                 digit_run = digit_run,
@@ -291,7 +291,7 @@ pub fn extract_level_summary_file_counts_or_panic(
             }
             Err(error) => {
                 error!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "extract_level_summary_file_counts_or_panic_parse_error_final_token",
                     level_summary = level_summary,
                     digit_run = digit_run,
@@ -311,7 +311,7 @@ pub fn extract_level_summary_file_counts_or_panic(
             }
 
             trace!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "extract_level_summary_file_counts_or_panic_exit",
                 counts = ?counts
             );
@@ -320,7 +320,7 @@ pub fn extract_level_summary_file_counts_or_panic(
         }
         false => {
             error!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "extract_level_summary_file_counts_or_panic_invalid_count",
                 level_summary = level_summary,
                 parsed_count_len = parsed_counts.len(),
@@ -337,7 +337,7 @@ pub fn create_versionset_into_version_directory_or_panic(
     directory_path: &Path,
 ) {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "create_versionset_into_version_directory_or_panic_enter",
         directory = %directory_path.display()
     );
@@ -345,14 +345,14 @@ pub fn create_versionset_into_version_directory_or_panic(
     match StdFs::create_dir_all(directory_path) {
         Ok(()) => {
             trace!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "create_versionset_into_version_directory_or_panic_exit",
                 directory = %directory_path.display()
             );
         }
         Err(error) => {
             error!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "create_versionset_into_version_directory_or_panic_error",
                 directory = %directory_path.display(),
                 error = ?error
@@ -368,7 +368,7 @@ pub fn remove_versionset_into_version_directory_best_effort(
     directory_path: &Path,
 ) {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "remove_versionset_into_version_directory_best_effort_enter",
         directory = %directory_path.display()
     );
@@ -376,14 +376,14 @@ pub fn remove_versionset_into_version_directory_best_effort(
     match StdFs::remove_dir_all(directory_path) {
         Ok(()) => {
             trace!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "remove_versionset_into_version_directory_best_effort_exit",
                 directory = %directory_path.display()
             );
         }
         Err(error) => {
             warn!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "remove_versionset_into_version_directory_best_effort_error",
                 directory = %directory_path.display(),
                 error = ?error
@@ -398,7 +398,7 @@ pub fn find_manifest_file_in_directory(
     directory_path: &Path,
 ) -> Option<PathBuf> {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "find_manifest_file_in_directory_enter",
         directory = %directory_path.display()
     );
@@ -407,7 +407,7 @@ pub fn find_manifest_file_in_directory(
         Ok(read_dir) => read_dir,
         Err(error) => {
             warn!(
-                target: "bitcoinleveldb_versionsettestutil::harness",
+                target: "bitcoinleveldbt_versionsettestutil::harness",
                 event = "find_manifest_file_in_directory_read_dir_error",
                 directory = %directory_path.display(),
                 error = ?error
@@ -425,7 +425,7 @@ pub fn find_manifest_file_in_directory(
                         match file_name.starts_with("MANIFEST-") {
                             true => {
                                 trace!(
-                                    target: "bitcoinleveldb_versionsettestutil::harness",
+                                    target: "bitcoinleveldbt_versionsettestutil::harness",
                                     event = "find_manifest_file_in_directory_found",
                                     manifest_path = %entry_path.display()
                                 );
@@ -439,7 +439,7 @@ pub fn find_manifest_file_in_directory(
             }
             Err(error) => {
                 warn!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "find_manifest_file_in_directory_entry_error",
                     directory = %directory_path.display(),
                     error = ?error
@@ -449,7 +449,7 @@ pub fn find_manifest_file_in_directory(
     }
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "find_manifest_file_in_directory_exit_none",
         directory = %directory_path.display()
     );
@@ -464,7 +464,7 @@ pub fn find_file_metadata_pointer_by_number_in_vector(
     file_number: u64,
 ) -> *mut FileMetaData {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "find_file_metadata_pointer_by_number_in_vector_enter",
         file_number = file_number
     );
@@ -476,7 +476,7 @@ pub fn find_file_metadata_pointer_by_number_in_vector(
                 match *(*file_metadata_ptr).number() == file_number {
                     true => {
                         trace!(
-                            target: "bitcoinleveldb_versionsettestutil::harness",
+                            target: "bitcoinleveldbt_versionsettestutil::harness",
                             event = "find_file_metadata_pointer_by_number_in_vector_found",
                             file_number = file_number,
                             file_metadata_ptr = ?file_metadata_ptr
@@ -490,7 +490,7 @@ pub fn find_file_metadata_pointer_by_number_in_vector(
     }
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "find_file_metadata_pointer_by_number_in_vector_not_found",
         file_number = file_number
     );
@@ -505,7 +505,7 @@ pub fn collect_compaction_input_file_numbers(
     input_vector_index: usize,
 ) -> Vec<u64> {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "collect_compaction_input_file_numbers_enter",
         input_vector_index = input_vector_index
     );
@@ -516,7 +516,7 @@ pub fn collect_compaction_input_file_numbers(
         .collect::<Vec<u64>>();
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "collect_compaction_input_file_numbers_exit",
         input_vector_index = input_vector_index,
         count = file_numbers.len()
@@ -531,7 +531,7 @@ pub fn collect_compaction_grandparent_file_numbers(
     compaction: &Compaction,
 ) -> Vec<u64> {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "collect_compaction_grandparent_file_numbers_enter"
     );
 
@@ -542,7 +542,7 @@ pub fn collect_compaction_grandparent_file_numbers(
         .collect::<Vec<u64>>();
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::harness",
+        target: "bitcoinleveldbt_versionsettestutil::harness",
         event = "collect_compaction_grandparent_file_numbers_exit",
         count = file_numbers.len()
     );

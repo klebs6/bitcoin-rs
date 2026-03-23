@@ -42,7 +42,7 @@ fn main() {
     let (_owned_arguments, mut raw_arguments, argc) =
         bitcoinleveldb_bench_leveldb_custom_harness_process_argv_or_exit();
 
-    let exit_code = bitcoinleveldb_bench::benchdb_bench_main(
+    let exit_code = bitcoinleveldbt_bench::benchdb_bench_main(
         argc,
         raw_arguments.as_mut_ptr(),
     );

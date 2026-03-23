@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/random_seed.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/random_seed.rs ]
 crate::ix!();
 
 /// Return a randomization seed for this run.
@@ -7,7 +7,7 @@ crate::ix!();
 /// stable fallback value `301`, preserving deterministic behavior.
 pub fn random_seed() -> i32 {
     trace!(
-        target: "bitcoinleveldb_test::harness",
+        target: "bitcoinleveldbt_util::harness",
         event = "random_seed_entry"
     );
 
@@ -31,7 +31,7 @@ pub fn random_seed() -> i32 {
     };
 
     trace!(
-        target: "bitcoinleveldb_test::harness",
+        target: "bitcoinleveldbt_util::harness",
         event = "random_seed_exit",
         result = result
     );

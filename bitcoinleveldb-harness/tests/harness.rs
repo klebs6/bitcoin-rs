@@ -1,6 +1,6 @@
 // ---------------- [ File: bitcoinleveldb-harness/tests/harness.rs ]
 use bitcoin_imports::*;
-use bitcoinleveldb_dbtest::{TestArgs, TestType};
+use bitcoinleveldbt_dbtest::{TestArgs, TestType};
 use bitcoinleveldb_harness::Harness;
 use bitcoinleveldb_iterator::{LevelDBIterator, MockStubIterator};
 use bitcoinleveldb_rand::Random;

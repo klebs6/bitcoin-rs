@@ -1,21 +1,20 @@
-// ---------------- [ File: bitcoinleveldb-testsnapshot/src/testutil.rs ]
 crate::ix!();
 
-fn snapshot_trait_object_parts(snapshot: &dyn Snapshot) -> (*const (), *const ()) {
+pub fn snapshot_trait_object_parts(snapshot: &dyn Snapshot) -> (*const (), *const ()) {
     let raw: *const dyn Snapshot = snapshot as *const dyn Snapshot;
     unsafe { std::mem::transmute::<*const dyn Snapshot, (*const (), *const ())>(raw) }
 }
 
-fn snapshot_vtable_ptr_from_snapshot_ref(snapshot: &dyn Snapshot) -> *const () {
+pub fn snapshot_vtable_ptr_from_snapshot_ref(snapshot: &dyn Snapshot) -> *const () {
     snapshot_trait_object_parts(snapshot).1
 }
 
-fn snapshot_model_vtable_ptr() -> *const () {
+pub fn snapshot_model_vtable_ptr() -> *const () {
 
     let empty_map = std::collections::HashMap::<String, String>::new();
 
     let empty_model_snapshot: bitcoinleveldb_modeldb::ModelSnapshot =
-        bitcoinleveldb_modeldb::ModelSnapshot::new_from_map(
+        ModelSnapshot::new_from_map(
             &empty_map,
         );
 
@@ -24,9 +23,9 @@ fn snapshot_model_vtable_ptr() -> *const () {
     snapshot_vtable_ptr_from_snapshot_ref(dyn_ref)
 }
 
-fn snapshot_impl_vtable_ptr() -> *const () {
-    let empty_db_snapshot: bitcoinleveldb_snapshot::SnapshotImpl =
-        bitcoinleveldb_snapshot::SnapshotImpl::new(0);
+pub fn snapshot_impl_vtable_ptr() -> *const () {
+    let empty_db_snapshot: SnapshotImpl =
+        SnapshotImpl::new(0);
     let dyn_ref: &dyn Snapshot = &empty_db_snapshot;
     snapshot_vtable_ptr_from_snapshot_ref(dyn_ref)
 }
@@ -43,7 +42,7 @@ pub fn snapshot_read_arc_from_snapshot_ref(
     snapshot: &dyn Snapshot,
 ) -> Arc<dyn Snapshot> {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.snapshot_read_arc_from_snapshot_ref.entry"
     );
 
@@ -51,7 +50,7 @@ pub fn snapshot_read_arc_from_snapshot_ref(
 
     let out: Arc<dyn Snapshot> = if actual_vtable == snapshot_model_vtable_ptr() {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.snapshot_read_arc_from_snapshot_ref.branch",
             branch = "model_snapshot"
         );
@@ -66,7 +65,7 @@ pub fn snapshot_read_arc_from_snapshot_ref(
         Arc::new(ModelSnapshot::new_from_map(&snap_ref))
     } else if actual_vtable == snapshot_impl_vtable_ptr() {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.snapshot_read_arc_from_snapshot_ref.branch",
             branch = "snapshot_impl"
         );
@@ -75,7 +74,7 @@ pub fn snapshot_read_arc_from_snapshot_ref(
         Arc::new(SnapshotImpl::new(sequence_number))
     } else {
         tracing::error!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.snapshot_read_arc_from_snapshot_ref.unsupported_snapshot_impl"
         );
 
@@ -83,7 +82,7 @@ pub fn snapshot_read_arc_from_snapshot_ref(
     };
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.snapshot_read_arc_from_snapshot_ref.exit"
     );
 
@@ -100,21 +99,21 @@ pub fn dbtest_snapshot_read_arc_from_snapshot_ref(
     snapshot: &dyn Snapshot,
 ) -> Arc<dyn Snapshot> {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.dbtest_snapshot_read_arc_from_snapshot_ref.entry"
     );
 
     let out = snapshot_read_arc_from_snapshot_ref(snapshot);
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.dbtest_snapshot_read_arc_from_snapshot_ref.exit"
     );
 
     out
 }
 
-/// Invariant: `bitcoinleveldb-dbtest` only consumes snapshot handles produced by the
+/// Invariant: `bitcoinleveldbt-dbtest` only consumes snapshot handles produced by the
 /// workspace DB surface, whose concrete runtime representation is `SnapshotImpl`.
 ///
 /// Precondition: `snapshot` originated from `DBImpl::get_snapshot`.
@@ -123,7 +122,7 @@ pub fn dbtest_snapshot_sequence_from_snapshot_ref(
     snapshot: &dyn Snapshot,
 ) -> SequenceNumber {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.snapshot_sequence_from_snapshot_ref.entry"
     );
 
@@ -133,7 +132,7 @@ pub fn dbtest_snapshot_sequence_from_snapshot_ref(
     let sequence_number = *snapshot_impl_ref.sequence_number();
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.snapshot_sequence_from_snapshot_ref.exit",
         sequence_number = sequence_number
     );
@@ -150,7 +149,7 @@ pub fn dbtest_snapshot_read_arc_from_snapshot_ptr(
     snapshot: *const dyn Snapshot,
 ) -> Option<Arc<dyn Snapshot>> {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.snapshot_read_arc_from_snapshot_ptr.entry",
         snapshot_is_null = snapshot.is_null()
     );
@@ -164,7 +163,7 @@ pub fn dbtest_snapshot_read_arc_from_snapshot_ptr(
     };
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.snapshot_read_arc_from_snapshot_ptr.exit",
         has_snapshot = out.is_some()
     );
@@ -181,7 +180,7 @@ pub fn dbtest_read_options_from_snapshot_ref(
     snapshot: &dyn Snapshot,
 ) -> ReadOptions {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.read_options_from_snapshot_ref.entry"
     );
 
@@ -189,7 +188,7 @@ pub fn dbtest_read_options_from_snapshot_ref(
     options.set_snapshot(Some(snapshot_read_arc_from_snapshot_ref(snapshot)));
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::dbtest",
+        target: "bitcoinleveldbt_dbtest::dbtest",
         label = "dbtest.read_options_from_snapshot_ref.exit"
     );
 

@@ -1,5 +1,5 @@
 [package]
-name = "bitcoinleveldb-testutil"
+name = "bitcoinleveldbt-util"
 version = "0.1.0"
 authors = ["YourName <you@example.com>"]
 license = "MIT"
@@ -41,6 +41,7 @@ bitcoinleveldb-versionset = { path = "../bitcoinleveldb-versionset" }
 bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
 bitcoinleveldb-db = { path = "../bitcoinleveldb-db" }
 bitcoinleveldb-specialenv = { path = "../bitcoinleveldb-specialenv" }
+bitcoinleveldb-modeldb = { path = "../bitcoinleveldb-modeldb" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

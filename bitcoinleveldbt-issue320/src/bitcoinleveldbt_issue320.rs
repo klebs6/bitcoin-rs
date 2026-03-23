@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testissue320/src/bitcoinleveldb_testissue320.rs ]
+// ---------------- [ File: bitcoinleveldbt-issue320/src/bitcoinleveldbt_issue320.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/issues/issue320_test.cc]
@@ -11,7 +11,7 @@ crate::ix!();
 fn generate_random_number(max: i32) -> i32 {
     /*
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "generate_random_number_entry",
         max = max
     );
@@ -25,7 +25,7 @@ fn generate_random_number(max: i32) -> i32 {
 
     /*
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "generate_random_number_exit",
         result = out
     );
@@ -36,7 +36,7 @@ fn generate_random_number(max: i32) -> i32 {
 
 fn create_random_string(index: i32) -> String {
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "create_random_string_entry",
         index = index
     );
@@ -70,7 +70,7 @@ fn create_random_string(index: i32) -> String {
     };
 
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "create_random_string_exit",
         len = out.len()
     );
@@ -82,7 +82,7 @@ struct Issue320 {}
 
 fn bitcoinleveldb_test__issue320_test_rs__free_err_if_non_null(err: *mut u8) {
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "free_err_if_non_null_entry",
         err_is_null = err.is_null()
     );
@@ -92,7 +92,7 @@ fn bitcoinleveldb_test__issue320_test_rs__free_err_if_non_null(err: *mut u8) {
     }
 
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "free_err_if_non_null_exit"
     );
 }
@@ -103,7 +103,7 @@ fn bitcoinleveldb_test__issue320_test_rs__get_value_string_or_panic(
     key:      &String,
 ) -> String {
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "get_value_string_or_panic_entry",
         db_is_null = db.is_null(),
         options_is_null = options.is_null(),
@@ -133,7 +133,7 @@ fn bitcoinleveldb_test__issue320_test_rs__get_value_string_or_panic(
     leveldb_free(val as *mut c_void);
 
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "get_value_string_or_panic_exit",
         value_len = out.len()
     );
@@ -144,7 +144,7 @@ fn bitcoinleveldb_test__issue320_test_rs__get_value_string_or_panic(
 #[traced_test]
 fn issue320_test() {
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "issue320_test_entry"
     );
 
@@ -308,7 +308,7 @@ fn issue320_test() {
     }
 
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "issue320_test_exit"
     );
 }
@@ -318,14 +318,14 @@ fn issuesissue320_test_main(
     _argv: *mut *mut u8,
 ) -> i32 {
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "issuesissue320_test_main_entry"
     );
 
     let rc = run_all_tests();
 
     trace!(
-        target: "bitcoinleveldb_test::issue320_test",
+        target: "bitcoinleveldbt_issue320::issue320_test",
         event = "issuesissue320_test_main_exit",
         result = rc
     );

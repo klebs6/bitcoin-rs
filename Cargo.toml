@@ -146,7 +146,7 @@ members = [
     "bitcoinchain-params", 
     "bitcoinleveldb-arena", 
     "bitcoinleveldb-batch", 
-    "bitcoinleveldb-bench", 
+    "bitcoinleveldbt-bench", 
     "bitcoinleveldb-block", 
     "bitcoinleveldb-blockbuilder", 
     "bitcoinleveldb-blockconstructor", 
@@ -170,7 +170,7 @@ members = [
     "bitcoinleveldb-dbinterface", 
     "bitcoinleveldb-dbiter", 
     "bitcoinleveldb-dbiterstate",
-    "bitcoinleveldb-dbtest", 
+    "bitcoinleveldbt-dbtest", 
     "bitcoinleveldb-dumpfile", 
     "bitcoinleveldb-duplex", 
     "bitcoinleveldb-emptyiterator", 
@@ -221,8 +221,7 @@ members = [
     "bitcoinleveldb-tablecache", 
     "bitcoinleveldb-tableconstructor", 
     "bitcoinleveldb-tablerep", 
-    "bitcoinleveldb-test", 
-    "bitcoinleveldb-testenv", 
+    "bitcoinleveldbt-env", 
     "bitcoinleveldb-util", 
     "bitcoinleveldb-version", 
     "bitcoinleveldb-versionedit", 
@@ -264,7 +263,7 @@ members = [
     "bitcoinwallet-spend", 
     "bitcoinleveldb-versionsetutil", 
     "bitcoinleveldb-versionsetinterface", 
-    "bitcoinleveldb-mockversionset", 
+    "bitcoinleveldbt-mockversionset", 
     "bitcoinsecp256k1-modinv64", 
     "bitcoinsecp256k1-modinv32", 
     "bitcoinsecp256k1-fe10x26", 
@@ -278,17 +277,17 @@ members = [
     "bitcoinsecp256k1-ecmultgen", 
     "bitcoinsecp256k1-ecmultconst"
 , "bitcoinleveldb-dbimplinner", 
-    "bitcoinleveldb-versionsettestutil", 
-    "bitcoinleveldb-testfaultinjection", 
-    "bitcoinleveldb-testcorruption", 
-    "bitcoinleveldb-testrecovery", 
-    "bitcoinleveldb-testautocompaction", 
-    "bitcoinleveldb-testcapi", 
-    "bitcoinleveldb-testissue178", 
-    "bitcoinleveldb-testissue200", 
-    "bitcoinleveldb-testutil", 
-    "bitcoinleveldb-testissue320"
-, "bitcoinleveldb-testsnapshot", "bitcoinleveldb-testrandomized", "bitcoinleveldb-testmt", "bitcoinleveldb-testtable"]
+    "bitcoinleveldbt-versionsettestutil", 
+    "bitcoinleveldbt-faultinjection", 
+    "bitcoinleveldbt-corruption", 
+    "bitcoinleveldbt-recovery", 
+    "bitcoinleveldbt-autocompaction", 
+    "bitcoinleveldbt-capi", 
+    "bitcoinleveldbt-issue178", 
+    "bitcoinleveldbt-issue200", 
+    "bitcoinleveldbt-util", 
+    "bitcoinleveldbt-issue320"
+, "bitcoinleveldbt-snapshot", "bitcoinleveldbt-randomized", "bitcoinleveldbt-mt", "bitcoinleveldbt-table", "bitcoinleveldb-test"]
 
 [profile.dev]
 debug = 2

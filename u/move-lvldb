@@ -10,7 +10,7 @@ my %map = (
         "bitcoin-leveldb/src/db/write_batch.rs",
         "bitcoin-leveldb/src/db/write_batch_test.rs",
     ],
-    bitcoinleveldb-bench => [
+    bitcoinleveldbt-bench => [
         "bitcoin-leveldb/src/bench/mod.rs",
         "bitcoin-leveldb/src/bench/db_bench.rs",
         "bitcoin-leveldb/src/bench/db_bench_sqlite3.rs",
@@ -166,7 +166,7 @@ my %map = (
         "bitcoin-leveldb/src/table/table.rs",
         "bitcoin-leveldb/src/table/table_test.rs",
     ],
-    bitcoinleveldb-test => [
+    bitcoinleveldbt-deleteme => [
         "bitcoin-leveldb/src/test/util.rs",
         "bitcoin-leveldb/src/test/harness.rs",
         "bitcoin-leveldb/src/test/mod.rs",

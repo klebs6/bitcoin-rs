@@ -1,3 +1,3 @@
-# bitcoinleveldb-dbtest
+# bitcoinleveldbt-dbtest
 
 TODO: fill description.

@@ -1,7 +1,7 @@
-// ---------------- [ File: bitcoinleveldb-testrandomized/tests/randomized.rs ]
+// ---------------- [ File: bitcoinleveldbt-randomized/tests/randomized.rs ]
 #[traced_test]
 fn db_test_randomized() {
-    let mut rnd = Random::new(bitcoinleveldb_test::random_seed() as u32);
+    let mut rnd = Random::new(bitcoinleveldbt_util::random_seed() as u32);
 
     let mut body = |dbtest: &mut DBTest| {
         let opts = dbtest.current_options();

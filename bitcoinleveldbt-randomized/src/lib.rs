@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testrandomized/src/lib.rs ]
+// ---------------- [ File: bitcoinleveldbt-randomized/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinleveldb_testrandomized}
+x!{bitcoinleveldbt_randomized}

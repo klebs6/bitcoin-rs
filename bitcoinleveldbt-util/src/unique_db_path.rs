@@ -1,9 +1,9 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/unique_db_path.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/unique_db_path.rs ]
 crate::ix!();
 
 pub fn unique_db_path(suffix: &str) -> String {
     trace!(
-        target: "bitcoinleveldb_test::unique_db_path",
+        target: "bitcoinleveldbt_util::unique_db_path",
         event = "unique_db_path_entry",
         suffix = suffix
     );
@@ -30,7 +30,7 @@ pub fn unique_db_path(suffix: &str) -> String {
     base.push_str(counter_value.to_string().as_str());
 
     trace!(
-        target: "bitcoinleveldb_test::unique_db_path",
+        target: "bitcoinleveldbt_util::unique_db_path",
         event = "unique_db_path_exit",
         path = %base
     );

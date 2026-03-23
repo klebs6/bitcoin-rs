@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/lib.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/testutil.h]
@@ -26,5 +26,6 @@ x!{run_all_tests}
 x!{special_env_compatibility_surface}
 x!{special_env_delegating_env_adapter}
 x!{test_type}
-x!{tmp_dir}
+x!{temporary_dir}
 x!{unique_db_path}
+x!{snapshot_type_dispatch_glue}

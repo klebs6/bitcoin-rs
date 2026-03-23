@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/random_key.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/random_key.rs ]
 crate::ix!();
 
 /// Invariant: output is entirely determined by the PRNG state reachable from `rnd`.
@@ -7,7 +7,7 @@ pub fn dbtest_random_key(rnd: *mut Random) -> String {
     let rnd_ptr_usize: usize = rnd as usize;
 
     trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "dbtest_random_key.entry",
         rnd_ptr_usize
     );
@@ -25,7 +25,7 @@ pub fn dbtest_random_key(rnd: *mut Random) -> String {
     let k = random_key(rnd, len);
 
     trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "dbtest_random_key.exit",
         rnd_ptr_usize,
         len,
@@ -46,7 +46,7 @@ pub fn random_key(
     len: i32,
 ) -> String {
     trace!(
-        target: "bitcoinleveldb_test::util",
+        target: "bitcoinleveldbt_util::util",
         event = "random_key_entry",
         rnd_is_null = rnd.is_null(),
         len = len
@@ -69,7 +69,7 @@ pub fn random_key(
 
     if rnd.is_null() || len <= 0 {
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "random_key_exit",
             result_len = 0
         );
@@ -92,7 +92,7 @@ pub fn random_key(
     }
 
     trace!(
-        target: "bitcoinleveldb_test::util",
+        target: "bitcoinleveldbt_util::util",
         event = "random_key_exit",
         result_len = result.len()
     );

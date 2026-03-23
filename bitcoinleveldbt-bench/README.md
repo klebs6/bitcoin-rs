@@ -1,4 +1,4 @@
-# bitcoinleveldb-bench Crate
+# bitcoinleveldbt-bench Crate
 
 ---
 
@@ -40,7 +40,7 @@ to manage thread-specific state in the benchmark,
 such as the current operation mix and the current
 position in the working set.
 
-The `bitcoinleveldb-bench` crate includes several
+The `bitcoinleveldbt-bench` crate includes several
 benchmarks that test the performance of the
 LevelDB database and other components of the
 Bitcoin Core, such as the tree database and the
@@ -74,7 +74,7 @@ can be used to benchmark LevelDB, depending on the
 specific goals and requirements of the benchmark.
 
 One common approach to benchmarking LevelDB is to
-use the `bitcoinleveldb-bench` crate or a similar
+use the `bitcoinleveldbt-bench` crate or a similar
 benchmarking tool that provides a set of
 standardized benchmark tests. These benchmarks can
 be used to measure the performance of LevelDB

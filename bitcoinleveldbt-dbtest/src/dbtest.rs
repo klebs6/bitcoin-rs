@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-dbtest/src/dbtest.rs ]
+// ---------------- [ File: bitcoinleveldbt-dbtest/src/dbtest.rs ]
 crate::ix!();
 
 /// Invariant: the discriminant order is relied upon by `DBTest::change_options`,
@@ -50,7 +50,7 @@ impl DBTest {
     /// without transferring ownership or mutating its state.
     pub fn special_env(&mut self) -> *mut SpecialEnv {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.special_env",
             phase = "return",
             env_is_null = self.env.is_null()
@@ -63,7 +63,7 @@ impl DBTest {
 impl Default for DBTest {
     fn default() -> Self {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.default.enter",
             phase = "enter"
         );
@@ -92,7 +92,7 @@ impl Default for DBTest {
         this.reopen(None);
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.default.exit",
             phase = "exit"
         );
@@ -104,7 +104,7 @@ impl Default for DBTest {
 impl Drop for DBTest {
     fn drop(&mut self) {
         tracing::debug!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.drop.enter",
             phase = "enter",
             dbname = self.dbname.as_str()
@@ -131,7 +131,7 @@ impl Drop for DBTest {
         }
 
         tracing::debug!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.drop.exit",
             phase = "exit",
             dbname = self.dbname.as_str()
@@ -152,7 +152,7 @@ impl DBTest {
     ///
     pub fn change_options(&mut self) -> bool {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.change_options.enter",
             phase = "enter",
             option_config = self.option_config
@@ -171,7 +171,7 @@ impl DBTest {
         };
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.change_options.exit",
             phase = "exit",
             option_config = self.option_config,
@@ -187,7 +187,7 @@ impl DBTest {
     /// Postcondition: returns an `Options` value whose fields reflect the current configuration.
     pub fn current_options(&mut self) -> Options {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.current_options.enter",
             phase = "enter",
             option_config = self.option_config
@@ -215,7 +215,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.current_options.exit",
             phase = "exit",
             option_config = self.option_config
@@ -228,7 +228,7 @@ impl DBTest {
     /// Postcondition: returns the raw pointer view of the underlying implementation, or null if closed.
     pub fn dbfull(&mut self) -> *mut DBImpl {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.dbfull",
             phase = "return",
             db_is_null = self.db.is_null()
@@ -245,7 +245,7 @@ impl DBTest {
     /// or the current configuration options.
     pub fn reopen(&mut self, mut options: Option<&mut Options>) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.reopen.enter",
             phase = "enter",
             has_options = options.is_some()
@@ -261,7 +261,7 @@ impl DBTest {
         assert!(s.is_ok());
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.reopen.exit",
             phase = "exit",
             ok = s.is_ok()
@@ -272,7 +272,7 @@ impl DBTest {
     /// Postcondition: `self.db` is null.
     pub fn close(&mut self) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.close.enter",
             phase = "enter",
             db_is_null = self.db.is_null()
@@ -286,7 +286,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.close.exit",
             phase = "exit",
             db_is_null = self.db.is_null()
@@ -297,7 +297,7 @@ impl DBTest {
     /// Postcondition: on-disk database directory is destroyed and a fresh DB is opened (asserted).
     pub fn destroy_and_reopen(&mut self, mut options: Option<&mut Options>) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.destroy_and_reopen.enter",
             phase = "enter",
             has_options = options.is_some(),
@@ -322,7 +322,7 @@ impl DBTest {
         assert!(s.is_ok());
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.destroy_and_reopen.exit",
             phase = "exit",
             ok = s.is_ok(),
@@ -335,7 +335,7 @@ impl DBTest {
     /// and `self.last_options` is set to the attempted options.
     pub fn try_reopen(&mut self, options: *mut Options) -> crate::Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.try_reopen.enter",
             phase = "enter",
             options_is_null = options.is_null(),
@@ -375,7 +375,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.try_reopen.exit",
             phase = "exit",
             ok = s.is_ok(),
@@ -389,7 +389,7 @@ impl DBTest {
     /// Postcondition: forwards to DB `Put` and returns its `Status`.
     pub fn put(&mut self, k: &String, v: &String) -> crate::Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.put.enter",
             phase = "enter",
             db_is_null = self.db.is_null(),
@@ -404,7 +404,7 @@ impl DBTest {
         let s = unsafe { (*self.dbfull()).put(&w, &ks, &vs) };
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.put.exit",
             phase = "exit",
             ok = s.is_ok()
@@ -417,7 +417,7 @@ impl DBTest {
     /// Postcondition: forwards to DB `Delete` and returns its `Status`.
     pub fn delete(&mut self, k: &String) -> crate::Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.delete.enter",
             phase = "enter",
             db_is_null = self.db.is_null(),
@@ -430,7 +430,7 @@ impl DBTest {
         let s = unsafe { (*self.dbfull()).delete(&w, &ks) };
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.delete.exit",
             phase = "exit",
             ok = s.is_ok()
@@ -444,7 +444,7 @@ impl DBTest {
     /// the retrieved value or the error string from the underlying `Status`.
     pub fn get(&mut self, k: &String, snapshot: Option<&dyn Snapshot>) -> String {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.get.enter",
             phase = "enter",
             db_is_null = self.db.is_null(),
@@ -483,7 +483,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.get.exit",
             phase = "exit",
             status_ok = s.is_ok(),
@@ -499,7 +499,7 @@ impl DBTest {
     /// 
     pub fn contents(&mut self) -> String {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.contents.enter",
             phase = "enter",
             db_is_null = self.db.is_null()
@@ -548,7 +548,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.contents.exit",
             phase = "exit",
             out_len = result.len()
@@ -559,7 +559,7 @@ impl DBTest {
    
     pub fn all_entries_for(&mut self, user_key_: &Slice) -> String {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.all_entries_for.enter",
             phase = "enter",
             db_is_null = self.db.is_null(),
@@ -631,7 +631,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.all_entries_for.exit",
             phase = "exit",
             out_len = result.len()
@@ -642,7 +642,7 @@ impl DBTest {
 
     pub fn num_table_files_at_level(&mut self, level: i32) -> i32 {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.num_table_files_at_level.enter",
             phase = "enter",
             level
@@ -668,7 +668,7 @@ impl DBTest {
         };
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.num_table_files_at_level.exit",
             phase = "exit",
             level,
@@ -680,7 +680,7 @@ impl DBTest {
     
     pub fn total_table_files(&mut self) -> i32 {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.total_table_files.enter",
             phase = "enter"
         );
@@ -696,7 +696,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.total_table_files.exit",
             phase = "exit",
             result
@@ -711,7 +711,7 @@ impl DBTest {
       */
     pub fn files_per_level(&mut self) -> String {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.files_per_level.enter",
             phase = "enter"
         );
@@ -742,7 +742,7 @@ impl DBTest {
         result.truncate(last_non_zero_offset);
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.files_per_level.exit",
             phase = "exit",
             out_len = result.len()
@@ -753,7 +753,7 @@ impl DBTest {
    
     pub fn count_files(&mut self) -> i32 {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.count_files.enter",
             phase = "enter",
             dbname = self.dbname.as_str()
@@ -770,7 +770,7 @@ impl DBTest {
         let n = files.len() as i32;
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.count_files.exit",
             phase = "exit",
             n
@@ -781,7 +781,7 @@ impl DBTest {
 
     pub fn size(&mut self, start: Slice, limit: Slice) -> u64 {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.size.enter",
             phase = "enter"
         );
@@ -797,7 +797,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.size.exit",
             phase = "exit",
             size
@@ -808,7 +808,7 @@ impl DBTest {
        
     pub fn compact(&mut self, start: &Slice, limit: &Slice) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.compact.enter",
             phase = "enter"
         );
@@ -819,7 +819,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.compact.exit",
             phase = "exit"
         );
@@ -833,7 +833,7 @@ impl DBTest {
       */
     pub fn make_tables(&mut self, n: i32, small_key_: &String, large_key_: &String) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.make_tables.enter",
             phase = "enter",
             n
@@ -856,7 +856,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.make_tables.exit",
             phase = "exit"
         );
@@ -870,7 +870,7 @@ impl DBTest {
       */
     pub fn fill_levels(&mut self, smallest: &String, largest: &String) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.fill_levels.enter",
             phase = "enter"
         );
@@ -879,7 +879,7 @@ impl DBTest {
         self.make_tables(bitcoinleveldb_cfg::NUM_LEVELS as i32, smallest, largest);
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.fill_levels.exit",
             phase = "exit"
         );
@@ -887,7 +887,7 @@ impl DBTest {
  
     pub fn dump_file_counts(&mut self, label: *const u8) {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.dump_file_counts.enter",
             phase = "enter"
         );
@@ -910,7 +910,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.dump_file_counts.exit",
             phase = "exit"
         );
@@ -918,7 +918,7 @@ impl DBTest {
 
     pub fn dump_ss_table_list(&mut self) -> String {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.dump_ss_table_list.enter",
             phase = "enter"
         );
@@ -933,7 +933,7 @@ impl DBTest {
         };
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.dump_ss_table_list.exit",
             phase = "exit",
             out_len = property.len()
@@ -944,7 +944,7 @@ impl DBTest {
  
     pub fn iter_status(&mut self, iter: *mut LevelDBIterator) -> String {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.iter_status.enter",
             phase = "enter",
             iter_is_null = iter.is_null()
@@ -969,7 +969,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.iter_status.exit",
             phase = "exit",
             out_len = result.len()
@@ -980,7 +980,7 @@ impl DBTest {
  
     pub fn delete_an_sst_file(&mut self) -> bool {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.delete_an_sst_file.enter",
             phase = "enter",
             dbname = self.dbname.as_str()
@@ -1003,7 +1003,7 @@ impl DBTest {
                 assert!(ds.is_ok());
 
                 tracing::trace!(
-                    target: "bitcoinleveldb_dbtest::dbtest",
+                    target: "bitcoinleveldbt_dbtest::dbtest",
                     label = "dbtest.delete_an_sst_file.exit",
                     phase = "exit",
                     deleted = true,
@@ -1017,7 +1017,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.delete_an_sst_file.exit",
             phase = "exit",
             deleted = false
@@ -1032,7 +1032,7 @@ impl DBTest {
       */
     pub fn rename_ldb_tosst(&mut self) -> i32 {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.rename_ldb_tosst.enter",
             phase = "enter",
             dbname = self.dbname.as_str()
@@ -1062,7 +1062,7 @@ impl DBTest {
         }
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.rename_ldb_tosst.exit",
             phase = "exit",
             files_renamed

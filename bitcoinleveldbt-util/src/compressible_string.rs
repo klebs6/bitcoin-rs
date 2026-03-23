@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/compressible_string.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/compressible_string.rs ]
 crate::ix!();
 
 /**
@@ -14,7 +14,7 @@ pub fn compressible_string(
     dst:                 *mut String,
 ) -> Slice {
     trace!(
-        target: "bitcoinleveldb_test::util",
+        target: "bitcoinleveldbt_util::util",
         event = "compressible_string_entry",
         rnd_is_null = rnd.is_null(),
         dst_is_null = dst.is_null(),
@@ -24,7 +24,7 @@ pub fn compressible_string(
 
     if dst.is_null() {
         error!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "compressible_string_null_dst"
         );
 
@@ -57,7 +57,7 @@ pub fn compressible_string(
     let out = unsafe { Slice::from(&*dst) };
 
     trace!(
-        target: "bitcoinleveldb_test::util",
+        target: "bitcoinleveldbt_util::util",
         event = "compressible_string_exit",
         raw_len = raw,
         result_len = len

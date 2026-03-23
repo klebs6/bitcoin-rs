@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testsnapshot/src/compare_iterators.rs ]
+// ---------------- [ File: bitcoinleveldbt-snapshot/src/compare_iterators.rs ]
 crate::ix!();
 
 /// Let `K` be the set of byte strings (keys) with total order `≺` induced by `Slice::compare`,
@@ -21,7 +21,7 @@ pub fn compare_iterators(
     let db_ptr_usize: usize = db as *const () as usize;
 
     trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "compare_iterators.entry",
         step,
         model_ptr_usize,
@@ -102,7 +102,7 @@ pub fn compare_iterators(
     }
 
     trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "compare_iterators.exit",
         step,
         ok,

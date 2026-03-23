@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testcapi/src/lib.rs ]
+// ---------------- [ File: bitcoinleveldbt-capi/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinleveldb_testcapi}
+x!{bitcoinleveldbt_capi}

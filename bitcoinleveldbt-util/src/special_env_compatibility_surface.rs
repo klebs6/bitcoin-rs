@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/special_env_compatibility_surface.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/special_env_compatibility_surface.rs ]
 crate::ix!();
 
 /// Invariant: preserves `SpecialEnv` delegation semantics while adapting the call signatures
@@ -20,7 +20,7 @@ pub trait DBTestSpecialEnvCompatibilitySurface {
 impl DBTestSpecialEnvCompatibilitySurface for SpecialEnv {
     fn get_children(&mut self, dir: &String, result: &mut Vec<String>) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.specialenv_compat.get_children.enter",
             dir_len = dir.len()
         );
@@ -28,7 +28,7 @@ impl DBTestSpecialEnvCompatibilitySurface for SpecialEnv {
         let s = self.base_mut().get_children(dir, result as *mut Vec<String>);
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.specialenv_compat.get_children.exit",
             ok = s.is_ok(),
             result_len = result.len()
@@ -39,7 +39,7 @@ impl DBTestSpecialEnvCompatibilitySurface for SpecialEnv {
 
     fn delete_file(&mut self, filename: &String) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.specialenv_compat.delete_file.enter",
             filename_len = filename.len()
         );
@@ -47,7 +47,7 @@ impl DBTestSpecialEnvCompatibilitySurface for SpecialEnv {
         let s = self.base_mut().delete_file(filename);
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.specialenv_compat.delete_file.exit",
             ok = s.is_ok()
         );
@@ -57,7 +57,7 @@ impl DBTestSpecialEnvCompatibilitySurface for SpecialEnv {
 
     fn rename_file(&mut self, from: &String, to: &String) -> Status {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.specialenv_compat.rename_file.enter",
             from_len = from.len(),
             to_len = to.len()
@@ -66,7 +66,7 @@ impl DBTestSpecialEnvCompatibilitySurface for SpecialEnv {
         let s = self.base_mut().rename_file(from, to);
 
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::dbtest",
+            target: "bitcoinleveldbt_dbtest::dbtest",
             label = "dbtest.specialenv_compat.rename_file.exit",
             ok = s.is_ok()
         );

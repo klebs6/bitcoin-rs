@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/harness.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/harness.rs ]
 crate::ix!();
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/util/testharness.h]
@@ -24,7 +24,7 @@ impl Drop for Tester {
     fn drop(&mut self) {
         if !self.ok {
             error!(
-                target: "bitcoinleveldb_test::harness",
+                target: "bitcoinleveldbt_util::harness",
                 event = "tester_drop_failure",
                 file = self.fname,
                 line = self.line,
@@ -74,7 +74,7 @@ impl Tester {
         l: i32,
     ) -> Self {
         trace!(
-            target: "bitcoinleveldb_test::harness",
+            target: "bitcoinleveldbt_util::harness",
             event = "tester_new_entry",
             file = f,
             line = l
@@ -88,7 +88,7 @@ impl Tester {
         };
 
         trace!(
-            target: "bitcoinleveldb_test::harness",
+            target: "bitcoinleveldbt_util::harness",
             event = "tester_new_exit",
             file = out.fname,
             line = out.line

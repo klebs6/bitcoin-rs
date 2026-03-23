@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/comparator_name_mismatch_probe.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/comparator_name_mismatch_probe.rs ]
 crate::ix!();
 
 /// Invariant: this comparator preserves bytewise ordering while intentionally advertising

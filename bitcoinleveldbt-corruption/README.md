@@ -1,3 +1,3 @@
-# bitcoinleveldb-testcorruption
+# bitcoinleveldbt-corruption
 
 TODO: fill description.

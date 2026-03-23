@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/error_env.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/error_env.rs ]
 crate::ix!();
 
 /**
@@ -14,7 +14,7 @@ pub struct ErrorEnv {
 impl ErrorEnv {
     pub fn set_writable_file_error(&mut self, value: bool) {
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_set_writable_file_error_entry",
             value = value
         );
@@ -22,7 +22,7 @@ impl ErrorEnv {
         self.writable_file_error = value;
 
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_set_writable_file_error_exit",
             value = self.writable_file_error
         );
@@ -30,7 +30,7 @@ impl ErrorEnv {
 
     pub fn writable_file_error(&self) -> bool {
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_writable_file_error_entry",
             value = self.writable_file_error
         );
@@ -40,7 +40,7 @@ impl ErrorEnv {
 
     pub fn num_writable_file_errors(&self) -> i32 {
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_num_writable_file_errors_entry",
             value = self.num_writable_file_errors
         );
@@ -52,7 +52,7 @@ impl ErrorEnv {
 impl Default for ErrorEnv {
     fn default() -> Self {
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_default_entry"
         );
 
@@ -63,7 +63,7 @@ impl Default for ErrorEnv {
         };
 
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_default_exit",
             writable_file_error = out.writable_file_error,
             num_writable_file_errors = out.num_writable_file_errors
@@ -76,7 +76,7 @@ impl Default for ErrorEnv {
 impl Drop for ErrorEnv {
     fn drop(&mut self) {
         debug!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_drop",
             writable_file_error = self.writable_file_error,
             num_writable_file_errors = self.num_writable_file_errors
@@ -131,7 +131,7 @@ impl NewWritableFile for ErrorEnv {
         result: *mut *mut Box<dyn WritableFile>,
     ) -> crate::Status {
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_new_writable_file_entry",
             filename = %fname,
             writable_file_error = self.writable_file_error
@@ -152,7 +152,7 @@ impl NewWritableFile for ErrorEnv {
             let status = Status::io_error(&fname_slice, Some(&msg_slice));
 
             trace!(
-                target: "bitcoinleveldb_test::util",
+                target: "bitcoinleveldbt_util::util",
                 event = "error_env_new_writable_file_exit",
                 filename = %fname,
                 ok = status.is_ok(),
@@ -165,7 +165,7 @@ impl NewWritableFile for ErrorEnv {
         let status = self.base.new_writable_file(fname, result);
 
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_new_writable_file_exit",
             filename = %fname,
             ok = status.is_ok(),
@@ -183,7 +183,7 @@ impl NewAppendableFile for ErrorEnv {
         result: *mut *mut Box<dyn WritableFile>,
     ) -> crate::Status {
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_new_appendable_file_entry",
             filename = %fname,
             writable_file_error = self.writable_file_error
@@ -204,7 +204,7 @@ impl NewAppendableFile for ErrorEnv {
             let status = Status::io_error(&fname_slice, Some(&msg_slice));
 
             trace!(
-                target: "bitcoinleveldb_test::util",
+                target: "bitcoinleveldbt_util::util",
                 event = "error_env_new_appendable_file_exit",
                 filename = %fname,
                 ok = status.is_ok(),
@@ -217,7 +217,7 @@ impl NewAppendableFile for ErrorEnv {
         let status = self.base.new_appendable_file(fname, result);
 
         trace!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "error_env_new_appendable_file_exit",
             filename = %fname,
             ok = status.is_ok(),

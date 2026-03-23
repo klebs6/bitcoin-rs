@@ -1,3 +1,3 @@
-# bitcoinleveldb-testfaultinjection
+# bitcoinleveldbt-faultinjection
 
 TODO: fill description.

@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testcorruption/src/bitcoinleveldb_testcorruption.rs ]
+// ---------------- [ File: bitcoinleveldbt-corruption/src/bitcoinleveldbt_corruption.rs ]
 crate::ix!();
 
 const BITCOINLEVELDB_TEST_CORRUPTION_TEST_LOG_BLOCK_SIZE: i32 = 32 * 1024;
@@ -20,7 +20,7 @@ impl Default for CorruptionTest {
 
     fn default() -> Self {
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_default_entry"
         );
 
@@ -50,7 +50,7 @@ impl Default for CorruptionTest {
         out.options.set_create_if_missing(false);
 
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_default_exit",
             db_is_null = out.db.is_null()
         );
@@ -62,7 +62,7 @@ impl Default for CorruptionTest {
 impl Drop for CorruptionTest {
     fn drop(&mut self) {
         debug!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_drop_entry",
             db_is_null = self.db.is_null(),
             cache_is_null = self.tiny_cache.is_null()
@@ -83,7 +83,7 @@ impl Drop for CorruptionTest {
         }
 
         debug!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_drop_exit"
         );
     }
@@ -93,7 +93,7 @@ impl CorruptionTest {
     
     pub fn try_reopen(&mut self) -> Status {
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_try_reopen_entry",
             db_is_null = self.db.is_null()
         );
@@ -113,7 +113,7 @@ impl CorruptionTest {
         );
 
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_try_reopen_exit",
             ok = status.is_ok(),
             db_is_null = self.db.is_null()
@@ -129,7 +129,7 @@ impl CorruptionTest {
 
     pub fn repairdb(&mut self) {
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_repairdb_entry",
             db_is_null = self.db.is_null()
         );
@@ -145,7 +145,7 @@ impl CorruptionTest {
         assert!(status.is_ok());
 
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_repairdb_exit",
             ok = status.is_ok()
         );
@@ -153,7 +153,7 @@ impl CorruptionTest {
 
     pub fn build(&mut self, n: i32) {
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_build_entry",
             n = n
         );
@@ -190,7 +190,7 @@ impl CorruptionTest {
         }
 
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_build_exit",
             n = n
         );
@@ -202,7 +202,7 @@ impl CorruptionTest {
         max_expected: i32,
     ) {
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_check_entry",
             min_expected = min_expected,
             max_expected = max_expected
@@ -280,7 +280,7 @@ impl CorruptionTest {
         assert!(max_expected >= correct);
 
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_check_exit",
             correct = correct,
             bad_keys = bad_keys,
@@ -296,7 +296,7 @@ impl CorruptionTest {
         bytes_to_corrupt: i32,
     ) {
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_corrupt_entry",
             filetype = ?filetype,
             offset = offset,
@@ -415,7 +415,7 @@ impl CorruptionTest {
         }
 
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_corrupt_exit",
             file = %fname,
             file_size = file_size,
@@ -426,7 +426,7 @@ impl CorruptionTest {
 
     pub fn property(&mut self, name: &String) -> i32 {
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_property_entry",
             name = %name
         );
@@ -450,7 +450,7 @@ impl CorruptionTest {
         };
 
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_property_exit",
             name = %name,
             result = result
@@ -466,7 +466,7 @@ impl CorruptionTest {
         storage: *mut String,
     ) -> Slice {
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_key_entry",
             i = i,
             storage_is_null = storage.is_null()
@@ -474,7 +474,7 @@ impl CorruptionTest {
 
         if storage.is_null() {
             error!(
-                target: "bitcoinleveldb_test::corruption_test",
+                target: "bitcoinleveldbt_corruption::corruption_test",
                 event = "corruption_test_key_null_storage",
                 i = i
             );
@@ -492,7 +492,7 @@ impl CorruptionTest {
         let out = unsafe { Slice::from(&*storage) };
 
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_key_exit",
             key_len = formatted.len()
         );
@@ -507,7 +507,7 @@ impl CorruptionTest {
         storage: *mut String,
     ) -> Slice {
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_value_entry",
             k = k,
             storage_is_null = storage.is_null()
@@ -521,7 +521,7 @@ impl CorruptionTest {
         );
 
         trace!(
-            target: "bitcoinleveldb_test::corruption_test",
+            target: "bitcoinleveldbt_corruption::corruption_test",
             event = "corruption_test_value_exit",
             k = k
         );
@@ -865,14 +865,14 @@ fn dbcorruption_test_main(
     _argv: *mut *mut u8,
 ) -> i32 {
     trace!(
-        target: "bitcoinleveldb_test::corruption_test",
+        target: "bitcoinleveldbt_corruption::corruption_test",
         event = "dbcorruption_test_main_entry"
     );
 
     let rc = run_all_tests();
 
     trace!(
-        target: "bitcoinleveldb_test::corruption_test",
+        target: "bitcoinleveldbt_corruption::corruption_test",
         event = "dbcorruption_test_main_exit",
         result = rc
     );

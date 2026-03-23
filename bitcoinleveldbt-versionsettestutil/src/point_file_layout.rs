@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-versionsettestutil/src/point_file_layout.rs ]
+// ---------------- [ File: bitcoinleveldbt-versionsettestutil/src/point_file_layout.rs ]
 crate::ix!();
 
 /// Guarantees each placement describes one file whose smallest and largest internal-key bounds
@@ -89,7 +89,7 @@ fn collect_point_file_user_key_and_max_sequence_number(
     file_metadata: &FileMetaData,
 ) -> Option<(String, u64)> {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+        target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
         event = "collect_point_file_user_key_and_max_sequence_number_enter",
         file_number = *file_metadata.number()
     );
@@ -124,7 +124,7 @@ fn collect_point_file_user_key_and_max_sequence_number(
                     );
 
                     trace!(
-                        target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+                        target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
                         event = "collect_point_file_user_key_and_max_sequence_number_exit_some",
                         file_number = *file_metadata.number(),
                         user_key = smallest_user_key.as_str(),
@@ -135,7 +135,7 @@ fn collect_point_file_user_key_and_max_sequence_number(
                 }
                 false => {
                     trace!(
-                        target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+                        target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
                         event = "collect_point_file_user_key_and_max_sequence_number_exit_none_not_point_file",
                         file_number = *file_metadata.number(),
                         smallest_user_key = smallest_user_key.as_str(),
@@ -147,7 +147,7 @@ fn collect_point_file_user_key_and_max_sequence_number(
         }
         (false, false) | (false, true) | (true, false) => {
             warn!(
-                target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+                target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
                 event = "collect_point_file_user_key_and_max_sequence_number_parse_failure",
                 file_number = *file_metadata.number(),
                 parsed_smallest = parsed_smallest,
@@ -164,7 +164,7 @@ pub fn collect_point_file_level_sequence_placements_from_version(
     current_version_ptr: *mut Version,
 ) -> Vec<PointFileLevelSequencePlacement> {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+        target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
         event = "collect_point_file_level_sequence_placements_from_version_enter",
         current_version_ptr = ?current_version_ptr
     );
@@ -174,7 +174,7 @@ pub fn collect_point_file_level_sequence_placements_from_version(
     match current_version_ptr.is_null() {
         true => {
             warn!(
-                target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+                target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
                 event = "collect_point_file_level_sequence_placements_from_version_null_version"
             );
         }
@@ -184,7 +184,7 @@ pub fn collect_point_file_level_sequence_placements_from_version(
                     match file_metadata_ptr.is_null() {
                         true => {
                             warn!(
-                                target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+                                target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
                                 event = "collect_point_file_level_sequence_placements_from_version_null_file_metadata",
                                 level = level
                             );
@@ -210,7 +210,7 @@ pub fn collect_point_file_level_sequence_placements_from_version(
     }
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+        target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
         event = "collect_point_file_level_sequence_placements_from_version_exit",
         placement_count = placements.len()
     );
@@ -224,7 +224,7 @@ pub fn collect_point_file_cross_level_sequence_inversion_evidence_from_version(
     current_version_ptr: *mut Version,
 ) -> Vec<PointFileCrossLevelSequenceInversionEvidence> {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+        target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
         event = "collect_point_file_cross_level_sequence_inversion_evidence_from_version_enter",
         current_version_ptr = ?current_version_ptr
     );
@@ -272,7 +272,7 @@ pub fn collect_point_file_cross_level_sequence_inversion_evidence_from_version(
     }
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+        target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
         event = "collect_point_file_cross_level_sequence_inversion_evidence_from_version_exit",
         evidence_count = evidence.len()
     );
@@ -286,7 +286,7 @@ pub fn version_contains_point_file_cross_level_sequence_inversion(
     current_version_ptr: *mut Version,
 ) -> bool {
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+        target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
         event = "version_contains_point_file_cross_level_sequence_inversion_enter",
         current_version_ptr = ?current_version_ptr
     );
@@ -299,7 +299,7 @@ pub fn version_contains_point_file_cross_level_sequence_inversion(
     let contains_inversion = !evidence.is_empty();
 
     trace!(
-        target: "bitcoinleveldb_versionsettestutil::point_file_layout",
+        target: "bitcoinleveldbt_versionsettestutil::point_file_layout",
         event = "version_contains_point_file_cross_level_sequence_inversion_exit",
         contains_inversion = contains_inversion,
         evidence_count = evidence.len()

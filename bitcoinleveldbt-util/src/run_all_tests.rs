@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/run_all_tests.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/run_all_tests.rs ]
 crate::ix!();
 
 /**
@@ -24,7 +24,7 @@ crate::ix!();
   */
 pub fn run_all_tests() -> i32 {
     trace!(
-        target: "bitcoinleveldb_test::harness",
+        target: "bitcoinleveldbt_util::harness",
         event = "run_all_tests_entry"
     );
 
@@ -53,7 +53,7 @@ pub fn run_all_tests() -> i32 {
             Some(m) => {
                 if !full_name.contains(m.as_str()) {
                     trace!(
-                        target: "bitcoinleveldb_test::harness",
+                        target: "bitcoinleveldbt_util::harness",
                         event = "run_all_tests_skip",
                         test_name = %full_name,
                         matcher = %m
@@ -67,7 +67,7 @@ pub fn run_all_tests() -> i32 {
         eprintln!("==== Test {}.{}", t.base(), t.name());
 
         trace!(
-            target: "bitcoinleveldb_test::harness",
+            target: "bitcoinleveldbt_util::harness",
             event = "run_all_tests_invoke",
             test_name = %full_name
         );
@@ -79,7 +79,7 @@ pub fn run_all_tests() -> i32 {
     eprintln!("==== PASSED {} tests", num);
 
     trace!(
-        target: "bitcoinleveldb_test::harness",
+        target: "bitcoinleveldbt_util::harness",
         event = "run_all_tests_exit",
         executed = num
     );

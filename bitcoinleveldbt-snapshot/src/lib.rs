@@ -1,6 +1,5 @@
-// ---------------- [ File: bitcoinleveldb-testsnapshot/src/lib.rs ]
+// ---------------- [ File: bitcoinleveldbt-snapshot/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
 x!{compare_iterators}
-x!{testutil}
 x!{snapshot}

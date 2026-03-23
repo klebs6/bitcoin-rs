@@ -13,7 +13,7 @@ impl VersionSetDropLifecycleScenarioHarness {
     /// but recovery remains explicit and is not performed automatically.
     pub fn open_for_test_prefix(test_prefix: &str) -> Self {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::version_set_drop_harness",
+            target: "bitcoinleveldbt_versionsettestutil::version_set_drop_harness",
             event = "version_set_drop_lifecycle_scenario_harness_open_enter",
             test_prefix = test_prefix
         );
@@ -23,7 +23,7 @@ impl VersionSetDropLifecycleScenarioHarness {
         );
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::version_set_drop_harness",
+            target: "bitcoinleveldbt_versionsettestutil::version_set_drop_harness",
             event = "version_set_drop_lifecycle_scenario_harness_open_exit",
             test_prefix = test_prefix
         );
@@ -37,7 +37,7 @@ impl VersionSetDropLifecycleScenarioHarness {
         let (status, save_manifest) = self.harness.recover_into_current_version_set();
 
         info!(
-            target: "bitcoinleveldb_versionsettestutil::version_set_drop_harness",
+            target: "bitcoinleveldbt_versionsettestutil::version_set_drop_harness",
             event = "version_set_drop_lifecycle_scenario_harness_recover_exit",
             save_manifest = save_manifest,
             status = ?status

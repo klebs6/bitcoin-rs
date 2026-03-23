@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testissue320/src/lib.rs ]
+// ---------------- [ File: bitcoinleveldbt-issue320/src/lib.rs ]
 #[macro_use] mod imports; use imports::*;
 
-x!{bitcoinleveldb_testissue320}
+x!{bitcoinleveldbt_issue320}

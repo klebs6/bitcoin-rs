@@ -1,10 +1,10 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/delay_milliseconds.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/delay_milliseconds.rs ]
 crate::ix!();
 
 pub fn delay_milliseconds(millis: i32)  {
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::delay",
+        target: "bitcoinleveldbt_dbtest::delay",
         event  = "delay_milliseconds.entry",
         millis
     );
@@ -20,7 +20,7 @@ pub fn delay_milliseconds(millis: i32)  {
 
         // Sleep is a side-effect boundary. We trace the derived duration.
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::delay",
+            target: "bitcoinleveldbt_dbtest::delay",
             event  = "delay_milliseconds.sleep_for_microseconds",
             micros
         );
@@ -28,14 +28,14 @@ pub fn delay_milliseconds(millis: i32)  {
         env.borrow_mut().sleep_for_microseconds(micros);
     } else {
         tracing::trace!(
-            target: "bitcoinleveldb_dbtest::delay",
+            target: "bitcoinleveldbt_dbtest::delay",
             event  = "delay_milliseconds.noop",
             millis
         );
     }
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::delay",
+        target: "bitcoinleveldbt_dbtest::delay",
         event  = "delay_milliseconds.exit",
         millis
     );

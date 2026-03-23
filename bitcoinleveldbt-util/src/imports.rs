@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/imports.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/imports.rs ]
 pub(crate) use bitcoin_derive::*;
 pub(crate) use bitcoin_imports::*;
 pub(crate) use bitcoinleveldb_cache::*;
@@ -41,3 +41,4 @@ pub(crate) use bitcoinleveldb_versionset::*;
 pub(crate) use bitcoinleveldb_versionsetinterface::*;
 pub(crate) use bitcoinleveldb_db::*;
 pub(crate) use bitcoinleveldb_specialenv::*;
+pub(crate) use bitcoinleveldb_modeldb::*;

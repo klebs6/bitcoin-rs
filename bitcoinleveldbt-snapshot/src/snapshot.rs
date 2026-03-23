@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testsnapshot/src/snapshot.rs ]
+// ---------------- [ File: bitcoinleveldbt-snapshot/src/snapshot.rs ]
 crate::ix!();
 
 #[cfg(test)]
@@ -336,15 +336,14 @@ mod db_test_snapshot_clue_tests {
 
     fn snapshot_suite_model_snapshot_map_len_from_ref(snapshot: &dyn Snapshot) -> usize {
         let snapshot_ptr: *const dyn Snapshot = snapshot as *const dyn Snapshot;
-        let model_snapshot_ptr: *const bitcoinleveldb_modeldb::ModelSnapshot =
-            snapshot_ptr as *const bitcoinleveldb_modeldb::ModelSnapshot;
+        let model_snapshot_ptr: *const ModelSnapshot =
+            snapshot_ptr as *const ModelSnapshot;
 
         unsafe { (*model_snapshot_ptr).map_ref().len() }
     }
 
     #[traced_test]
     fn db_test_snapshot_clue_model_direct_snapshot_ref_preserves_contents() {
-        use bitcoinleveldb_modeldb::ModelDB;
 
         let options: Options = Options::default();
         let mut model: ModelDB = ModelDB::new(&options);
@@ -378,7 +377,6 @@ mod db_test_snapshot_clue_tests {
 
     #[traced_test]
     fn db_test_snapshot_clue_snapshot_ref_bridge_preserves_model_snapshot_kind() {
-        use bitcoinleveldb_modeldb::ModelDB;
 
         let options: Options = Options::default();
         let mut model: ModelDB = ModelDB::new(&options);
@@ -401,7 +399,6 @@ mod db_test_snapshot_clue_tests {
 
     #[traced_test]
     fn db_test_snapshot_clue_snapshot_ref_bridge_preserves_model_snapshot_contents() {
-        use bitcoinleveldb_modeldb::ModelDB;
 
         let options: Options = Options::default();
         let mut model: ModelDB = ModelDB::new(&options);
@@ -492,7 +489,6 @@ mod db_test_snapshot_clue_tests {
 
     #[traced_test]
     fn db_test_snapshot_clue_dbtest_bridge_preserves_model_snapshot_kind() {
-        use bitcoinleveldb_modeldb::ModelDB;
 
         let options: Options = Options::default();
         let mut model: ModelDB = ModelDB::new(&options);
@@ -515,7 +511,6 @@ mod db_test_snapshot_clue_tests {
 
     #[traced_test]
     fn db_test_snapshot_clue_dbtest_bridge_preserves_model_snapshot_contents() {
-        use bitcoinleveldb_modeldb::ModelDB;
 
         let options: Options = Options::default();
         let mut model: ModelDB = ModelDB::new(&options);

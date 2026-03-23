@@ -10,7 +10,7 @@ translation.
 This crate is a wrapper for the subcrates in the
 Bitcoin LevelDB subsystem, including
 `bitcoinleveldb_arena`, `bitcoinleveldb_batch`,
-`bitcoinleveldb_bench`, and many others. The crate
+`bitcoinleveldbt_bench`, and many others. The crate
 provides a simple and convenient way to access the
 functionality of these subcrates from Rust.
 

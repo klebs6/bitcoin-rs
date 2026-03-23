@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-versionsettestutil/src/raw_mutex_test_guard.rs ]
+// ---------------- [ File: bitcoinleveldbt-versionsettestutil/src/raw_mutex_test_guard.rs ]
 crate::ix!();
 
 /// Guarantees exactly one successful raw-mutex lock is paired with exactly one unlock on drop.
@@ -13,7 +13,7 @@ impl RawMutexExclusiveTestGuard {
     /// Postconditions: the pointed-to mutex is locked for the lifetime of the returned guard.
     pub fn acquire_from_raw_mutex(raw_mutex_ptr: *mut RawMutex) -> Self {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::raw_mutex_test_guard",
+            target: "bitcoinleveldbt_versionsettestutil::raw_mutex_test_guard",
             event = "raw_mutex_exclusive_test_guard_acquire_enter",
             raw_mutex_ptr = ?raw_mutex_ptr
         );
@@ -21,7 +21,7 @@ impl RawMutexExclusiveTestGuard {
         match raw_mutex_ptr.is_null() {
             true => {
                 error!(
-                    target: "bitcoinleveldb_versionsettestutil::raw_mutex_test_guard",
+                    target: "bitcoinleveldbt_versionsettestutil::raw_mutex_test_guard",
                     event = "raw_mutex_exclusive_test_guard_acquire_null_pointer"
                 );
                 panic!("raw_mutex_exclusive_test_guard_acquire_null_pointer");
@@ -32,7 +32,7 @@ impl RawMutexExclusiveTestGuard {
         }
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::raw_mutex_test_guard",
+            target: "bitcoinleveldbt_versionsettestutil::raw_mutex_test_guard",
             event = "raw_mutex_exclusive_test_guard_acquire_exit",
             raw_mutex_ptr = ?raw_mutex_ptr
         );
@@ -44,7 +44,7 @@ impl RawMutexExclusiveTestGuard {
 impl Drop for RawMutexExclusiveTestGuard {
     fn drop(&mut self) {
         debug!(
-            target: "bitcoinleveldb_versionsettestutil::raw_mutex_test_guard",
+            target: "bitcoinleveldbt_versionsettestutil::raw_mutex_test_guard",
             event = "raw_mutex_exclusive_test_guard_drop_enter",
             raw_mutex_ptr = ?self.raw_mutex_ptr
         );
@@ -52,7 +52,7 @@ impl Drop for RawMutexExclusiveTestGuard {
         match self.raw_mutex_ptr.is_null() {
             true => {
                 error!(
-                    target: "bitcoinleveldb_versionsettestutil::raw_mutex_test_guard",
+                    target: "bitcoinleveldbt_versionsettestutil::raw_mutex_test_guard",
                     event = "raw_mutex_exclusive_test_guard_drop_null_pointer"
                 );
             }
@@ -62,7 +62,7 @@ impl Drop for RawMutexExclusiveTestGuard {
         }
 
         debug!(
-            target: "bitcoinleveldb_versionsettestutil::raw_mutex_test_guard",
+            target: "bitcoinleveldbt_versionsettestutil::raw_mutex_test_guard",
             event = "raw_mutex_exclusive_test_guard_drop_exit",
             raw_mutex_ptr = ?self.raw_mutex_ptr
         );

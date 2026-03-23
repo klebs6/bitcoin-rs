@@ -3,7 +3,7 @@
 my @crates = <
 bitcoinleveldb-arena
 bitcoinleveldb-batch
-bitcoinleveldb-bench
+bitcoinleveldbt-bench
 bitcoinleveldb-block
 bitcoinleveldb-bloom
 bitcoinleveldb-cache
@@ -39,7 +39,7 @@ bitcoinleveldb-snapshot
 bitcoinleveldb-status
 bitcoinleveldb-sync
 bitcoinleveldb-table
-bitcoinleveldb-test
+bitcoinleveldbt-deleteme
 bitcoinleveldb-util
 >;
 

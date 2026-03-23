@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testmt/src/mt_test.rs ]
+// ---------------- [ File: bitcoinleveldbt-mt/src/mt_test.rs ]
 crate::ix!();
 
 /* ------------- Multi-threaded test:  ------------- */
@@ -26,7 +26,7 @@ pub struct MTThread {
 /// Postcondition: returns `Some((key, writer_id, counter))` iff the prefix matches `"%d.%d.%d"`.
 pub fn dbtest_mt_parse_counter_value_prefix(value: &str) -> Option<(i32, i32, i32)> {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::mt_test",
+        target: "bitcoinleveldbt_dbtest::mt_test",
         label = "dbtest_mt_parse_counter_value_prefix.entry",
         value_len = value.len()
     );
@@ -60,7 +60,7 @@ pub fn dbtest_mt_parse_counter_value_prefix(value: &str) -> Option<(i32, i32, i3
     };
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::mt_test",
+        target: "bitcoinleveldbt_dbtest::mt_test",
         label = "dbtest_mt_parse_counter_value_prefix.exit",
         parsed = parsed.is_some()
     );
@@ -70,7 +70,7 @@ pub fn dbtest_mt_parse_counter_value_prefix(value: &str) -> Option<(i32, i32, i3
 
 pub fn mt_thread_body(arg: *mut c_void)  -> c_void {
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::mt_test",
+        target: "bitcoinleveldbt_dbtest::mt_test",
         label = "mt_thread_body.entry",
         arg_is_null = arg.is_null()
     );
@@ -152,7 +152,7 @@ pub fn mt_thread_body(arg: *mut c_void)  -> c_void {
     }
 
     tracing::trace!(
-        target: "bitcoinleveldb_dbtest::mt_test",
+        target: "bitcoinleveldbt_dbtest::mt_test",
         label = "mt_thread_body.exit"
     );
 

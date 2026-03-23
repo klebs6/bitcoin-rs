@@ -66,7 +66,7 @@ impl VersionSetTemporaryDatabaseHarness {
         version_edit: *mut VersionEdit,
     ) -> Status {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_apply_version_edit_enter",
             database_name = %self.database_name,
             version_edit_ptr = ?version_edit
@@ -75,7 +75,7 @@ impl VersionSetTemporaryDatabaseHarness {
         match version_edit.is_null() {
             true => {
                 error!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "version_set_temporary_database_harness_apply_version_edit_null_edit",
                     database_name = %self.database_name
                 );
@@ -89,7 +89,7 @@ impl VersionSetTemporaryDatabaseHarness {
         let status = version_set.log_and_apply(version_edit, raw_mutex_ptr);
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_apply_version_edit_exit",
             database_name = %self.database_name,
             status = ?status
@@ -122,7 +122,7 @@ impl VersionSetTemporaryDatabaseHarness {
     ) -> Self
     {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_open_enter",
             test_prefix = test_prefix,
             create_if_missing = create_if_missing,
@@ -134,7 +134,7 @@ impl VersionSetTemporaryDatabaseHarness {
             true => {}
             false => {
                 error!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "version_set_temporary_database_harness_open_invalid_table_cache_capacity",
                     table_cache_capacity = table_cache_capacity
                 );
@@ -148,14 +148,14 @@ impl VersionSetTemporaryDatabaseHarness {
         match std::fs::create_dir_all(&temporary_database_directory) {
             Ok(()) => {
                 trace!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "version_set_temporary_database_harness_open_directory_created",
                     directory = %temporary_database_directory.display()
                 );
             }
             Err(error) => {
                 error!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "version_set_temporary_database_harness_open_directory_create_error",
                     directory = %temporary_database_directory.display(),
                     error = ?error
@@ -189,7 +189,7 @@ impl VersionSetTemporaryDatabaseHarness {
         );
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_open_internalized_table_topology",
             database_name = %database_name,
             options_ptr = ?(database_options.as_ref() as *const Options),
@@ -215,7 +215,7 @@ impl VersionSetTemporaryDatabaseHarness {
         ));
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_open_exit",
             database_name = %database_name,
             directory = %temporary_database_directory.display(),
@@ -238,7 +238,7 @@ impl VersionSetTemporaryDatabaseHarness {
     /// Postconditions: identical to `open_temporary_database_with_flags(test_prefix, true, false, 64)`.
     pub fn open_default_temporary_database(test_prefix: &str) -> Self {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_open_default_enter",
             test_prefix = test_prefix
         );
@@ -251,7 +251,7 @@ impl VersionSetTemporaryDatabaseHarness {
         );
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_open_default_exit",
             test_prefix = test_prefix
         );
@@ -264,7 +264,7 @@ impl VersionSetTemporaryDatabaseHarness {
             Some(version_set_box) => version_set_box.as_mut(),
             None => {
                 error!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "version_set_temporary_database_harness_version_set_missing",
                     database_name = %self.database_name
                 );
@@ -279,7 +279,7 @@ impl VersionSetTemporaryDatabaseHarness {
         match current_version_ptr.is_null() {
             true => {
                 error!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "version_set_temporary_database_harness_current_version_null",
                     database_name = %self.database_name
                 );
@@ -293,7 +293,7 @@ impl VersionSetTemporaryDatabaseHarness {
     /// preserves both the upstream `Status` and `save_manifest` decision exactly.
     pub fn recover_into_current_version_set(&mut self) -> (Status, bool) {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_recover_enter",
             database_name = %self.database_name
         );
@@ -303,7 +303,7 @@ impl VersionSetTemporaryDatabaseHarness {
         let status = version_set.recover(&mut save_manifest as *mut bool);
 
         info!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_recover_exit",
             database_name = %self.database_name,
             save_manifest = save_manifest,
@@ -317,7 +317,7 @@ impl VersionSetTemporaryDatabaseHarness {
     /// re-entrant acquisition through the same raw mutex while the guard is live.
     pub fn acquire_version_set_mutex(&mut self) -> RawMutexExclusiveTestGuard {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_acquire_mutex_enter",
             database_name = %self.database_name
         );
@@ -327,7 +327,7 @@ impl VersionSetTemporaryDatabaseHarness {
         );
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_acquire_mutex_exit",
             database_name = %self.database_name
         );
@@ -339,7 +339,7 @@ impl VersionSetTemporaryDatabaseHarness {
     /// require it will terminate until a new instance is explicitly installed.
     pub fn drop_version_set_instance(&mut self) {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_drop_version_set_enter",
             database_name = %self.database_name,
             version_set_present = self.version_set.is_some()
@@ -348,7 +348,7 @@ impl VersionSetTemporaryDatabaseHarness {
         let _ = self.version_set.take();
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_drop_version_set_exit",
             database_name = %self.database_name,
             version_set_present = self.version_set.is_some()
@@ -367,7 +367,7 @@ impl VersionSetTemporaryDatabaseHarness {
         largest_sequence_number: u64,
     ) -> u64 {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_add_level_file_enter",
             database_name = %self.database_name,
             level = level,
@@ -405,7 +405,7 @@ impl VersionSetTemporaryDatabaseHarness {
         match status.is_ok() {
             true => {
                 trace!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "version_set_temporary_database_harness_add_level_file_exit",
                     database_name = %self.database_name,
                     level = level,
@@ -415,7 +415,7 @@ impl VersionSetTemporaryDatabaseHarness {
             }
             false => {
                 error!(
-                    target: "bitcoinleveldb_versionsettestutil::harness",
+                    target: "bitcoinleveldbt_versionsettestutil::harness",
                     event = "version_set_temporary_database_harness_add_level_file_non_ok_status",
                     database_name = %self.database_name,
                     level = level,
@@ -434,7 +434,7 @@ impl VersionSetTemporaryDatabaseHarness {
         level: usize,
     ) -> Vec<*mut FileMetaData> {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_current_level_file_metadata_pointers_enter",
             database_name = %self.database_name,
             level = level
@@ -445,7 +445,7 @@ impl VersionSetTemporaryDatabaseHarness {
             unsafe { (*current_version_ptr).files()[level].clone() };
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_current_level_file_metadata_pointers_exit",
             database_name = %self.database_name,
             level = level,
@@ -462,7 +462,7 @@ impl VersionSetTemporaryDatabaseHarness {
         file_number: u64,
     ) -> *mut FileMetaData {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_find_level_file_metadata_pointer_by_number_enter",
             database_name = %self.database_name,
             level = level,
@@ -478,7 +478,7 @@ impl VersionSetTemporaryDatabaseHarness {
         );
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_find_level_file_metadata_pointer_by_number_exit",
             database_name = %self.database_name,
             level = level,
@@ -499,7 +499,7 @@ impl VersionSetTemporaryDatabaseHarness {
         input_file_numbers_at_level: &[u64],
     ) -> Box<Compaction> {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_seed_compaction_from_current_version_enter",
             database_name = %self.database_name,
             level = level,
@@ -524,7 +524,7 @@ impl VersionSetTemporaryDatabaseHarness {
             match file_metadata_ptr.is_null() {
                 true => {
                     error!(
-                        target: "bitcoinleveldb_versionsettestutil::harness",
+                        target: "bitcoinleveldbt_versionsettestutil::harness",
                         event = "version_set_temporary_database_harness_seed_compaction_from_current_version_missing_file",
                         database_name = %self.database_name,
                         level = level,
@@ -539,7 +539,7 @@ impl VersionSetTemporaryDatabaseHarness {
         }
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_seed_compaction_from_current_version_exit",
             database_name = %self.database_name,
             level = level,
@@ -576,7 +576,7 @@ impl VersionSetTemporaryDatabaseHarness {
         let db_name = self.database_name.clone();
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_version_set_mut_enter",
             database_name = %db_name
         );
@@ -584,7 +584,7 @@ impl VersionSetTemporaryDatabaseHarness {
         let version_set = self.version_set_mut_or_panic();
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_version_set_mut_exit",
             database_name = %db_name,
             version_set_ptr = ?(version_set as *mut VersionSet)
@@ -597,7 +597,7 @@ impl VersionSetTemporaryDatabaseHarness {
     /// non-null on the success path.
     pub fn current_version_ptr(&mut self) -> *mut Version {
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_current_version_ptr_enter",
             database_name = %self.database_name
         );
@@ -605,7 +605,7 @@ impl VersionSetTemporaryDatabaseHarness {
         let current_version_ptr = self.current_version_ptr_or_panic();
 
         trace!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_current_version_ptr_exit",
             database_name = %self.database_name,
             current_version_ptr = ?current_version_ptr
@@ -619,7 +619,7 @@ impl Drop for VersionSetTemporaryDatabaseHarness {
 
     fn drop(&mut self) {
         debug!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_drop_enter",
             database_name = %self.database_name,
             directory = %self.temporary_database_directory.display(),
@@ -636,7 +636,7 @@ impl Drop for VersionSetTemporaryDatabaseHarness {
         remove_directory_tree_best_effort(self.temporary_database_directory.as_path());
 
         debug!(
-            target: "bitcoinleveldb_versionsettestutil::harness",
+            target: "bitcoinleveldbt_versionsettestutil::harness",
             event = "version_set_temporary_database_harness_drop_exit",
             database_name = %self.database_name,
             directory = %self.temporary_database_directory.display(),

@@ -1,4 +1,14 @@
-// ---------------- [ File: bitcoinleveldb-testtable/tests/table_test.rs ]
+// ---------------- [ File: bitcoinleveldbt-table/tests/table_test.rs ]
+
+use bitcoinleveldbt_util::*;
+use traced_test::*;
+use tracing_setup::*;
+use bitcoinleveldb_slice::*;
+use bitcoinleveldb_options::*;
+use bitcoinleveldb_rand::*;
+use bitcoinleveldb_tableconstructor::*;
+use bitcoinleveldb_comparator::*;
+
 pub struct TableTest {}
 
 #[traced_test]
@@ -57,7 +67,7 @@ fn table_test_approximate_offset_of_compressed() {
 
     c.base_mut().add(&"k01".to_string(), &Slice::from("hello"));
 
-    let k02 = bitcoinleveldb_test::compressible_string(
+    let k02 = bitcoinleveldbt_util::compressible_string(
         (&mut rnd) as *mut Random,
         0.25,
         10000,
@@ -67,7 +77,7 @@ fn table_test_approximate_offset_of_compressed() {
     c.base_mut().add(&"k02".to_string(), &Slice::from(&k02));
     c.base_mut().add(&"k03".to_string(), &Slice::from("hello3"));
 
-    let k04 = bitcoinleveldb_test::compressible_string(
+    let k04 = bitcoinleveldbt_util::compressible_string(
         (&mut rnd) as *mut Random,
         0.25,
         10000,

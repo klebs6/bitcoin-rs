@@ -10,10 +10,6 @@ version = "0.1.19"
 path = "../bitcoinleveldb-batch"
 version = "0.1.19"
 
-[dependencies.bitcoinleveldb-bench]
-path = "../bitcoinleveldb-bench"
-version = "0.1.19"
-
 [dependencies.bitcoinleveldb-bloom]
 path = "../bitcoinleveldb-bloom"
 version = "0.1.19"
@@ -128,10 +124,6 @@ version = "0.1.19"
 
 [dependencies.bitcoinleveldb-table]
 path = "../bitcoinleveldb-table"
-version = "0.1.19"
-
-[dependencies.bitcoinleveldb-test]
-path = "../bitcoinleveldb-test"
 version = "0.1.19"
 
 [dependencies.bitcoinleveldb-util]

@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-testutil/src/random_string.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/random_string.rs ]
 crate::ix!();
 
 /// Invariant: output is entirely determined by the PRNG state reachable from `rnd` plus `len`.
@@ -7,7 +7,7 @@ pub fn dbtest_random_string(rnd: *mut Random, len: i32) -> String {
     let rnd_ptr_usize: usize = rnd as usize;
 
     trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "dbtest_random_string.entry",
         rnd_ptr_usize,
         len
@@ -17,7 +17,7 @@ pub fn dbtest_random_string(rnd: *mut Random, len: i32) -> String {
     let _ = random_string(rnd, len, &mut r as *mut String);
 
     trace!(
-        target: "bitcoinleveldb-dbtest",
+        target: "bitcoinleveldbt-dbtest",
         label = "dbtest_random_string.exit",
         rnd_ptr_usize,
         len,
@@ -39,7 +39,7 @@ pub fn random_string(
     dst: *mut String,
 ) -> Slice {
     trace!(
-        target: "bitcoinleveldb_test::util",
+        target: "bitcoinleveldbt_util::util",
         event = "random_string_entry",
         rnd_is_null = rnd.is_null(),
         dst_is_null = dst.is_null(),
@@ -48,7 +48,7 @@ pub fn random_string(
 
     if rnd.is_null() || dst.is_null() {
         error!(
-            target: "bitcoinleveldb_test::util",
+            target: "bitcoinleveldbt_util::util",
             event = "random_string_null_input",
             rnd_is_null = rnd.is_null(),
             dst_is_null = dst.is_null()
@@ -80,11 +80,10 @@ pub fn random_string(
     let out = unsafe { Slice::from(&*dst) };
 
     trace!(
-        target: "bitcoinleveldb_test::util",
+        target: "bitcoinleveldbt_util::util",
         event = "random_string_exit",
         result_len = target_len
     );
 
     out
 }
-
