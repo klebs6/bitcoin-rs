@@ -48,10 +48,9 @@ ACTIVE := bitcoinsecp256k1-eccontext
 ACTIVE := bitcoinleveldb-harness       #loc: 297
 #ACTIVE := bitcoinleveldbt-snapshot
 #ACTIVE := bitcoinleveldbt-randomized
-#ACTIVE := bitcoinleveldbt-mt
 #ACTIVE := bitcoinleveldbt-issue178 #sigkill
 ACTIVE := bitcoinleveldbt-autocompaction #there exists a hang here
-ACTIVE := bitcoinleveldbt-env
+ACTIVE := bitcoinleveldbt-mt
 #ACTIVE := bitcoinleveldbt-dbtest
 #ACTIVE := bitcoinleveldbt-issue44
 #ACTIVE := bitcoinleveldbt-issue320
@@ -419,6 +418,9 @@ dbtest-randomized-focus:
 		NUM_JOBS=12 \
 		cargo test -p bitcoinleveldbt-dbtest db_rand::db_test_randomized -- --exact --nocapture
 
+.PHONY: test-mt
+test-mt:
+	RUST_BACKTRACE=1 $(CARGO) test -p bitcoinleveldbt-mt mt_test::db_test_multi_threaded -- --nocapture --test-threads=1
 #-------------------------------[done-below]
 #ACTIVE := bitcoin-amt
 #ACTIVE := bitcoin-arena
@@ -590,3 +592,4 @@ dbtest-randomized-focus:
 #ACTIVE := bitcoinleveldbt-issue200
 #ACTIVE := bitcoinleveldb-dbimpl        #loc: 2652
 #ACTIVE := bitcoinleveldb-test
+#ACTIVE := bitcoinleveldbt-env

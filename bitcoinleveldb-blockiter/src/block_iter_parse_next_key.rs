@@ -53,9 +53,8 @@ impl BlockIter {
             let key_buf = self.key_buffer_mut();
             key_buf.truncate(shared as usize);
 
-            let key_delta =
-                core::slice::from_raw_parts(key_ptr, non_shared as usize);
-            key_buf.push_str(core::str::from_utf8_unchecked(key_delta));
+            let key_delta = from_raw_parts(key_ptr, non_shared as usize);
+            key_buf.extend_from_slice(key_delta);
 
             let value_ptr = key_ptr.add(non_shared as usize);
             let new_value =
@@ -107,7 +106,7 @@ mod block_iter_parse_next_key_tests {
         unsafe {
             let ptr = *slice.data();
             let len = *slice.size();
-            core::slice::from_raw_parts(ptr, len).to_vec()
+            from_raw_parts(ptr, len).to_vec()
         }
     }
 
@@ -119,17 +118,21 @@ mod block_iter_parse_next_key_tests {
         let len         = block_bytes.len();
 
         assert!(
-            len > core::mem::size_of::<u32>(),
+            len > size_of::<u32>(),
             "block_bytes must be large enough to contain restart metadata"
         );
 
-        let num_restarts =
-            u32::from_le_bytes(block_bytes[len - 4..].try_into().unwrap());
+        let num_restarts = u32::from_le_bytes([
+            block_bytes[len - 4],
+            block_bytes[len - 3],
+            block_bytes[len - 2],
+            block_bytes[len - 1],
+        ]);
         let restart_offset =
-            (len - (1 + num_restarts as usize) * core::mem::size_of::<u32>())
+            (len - (1 + num_restarts as usize) * size_of::<u32>())
                 as u32;
 
-        let cmp = bitcoinleveldb_comparator::BytewiseComparatorImpl::default();
+        let cmp = BytewiseComparatorImpl::default();
         let cmp_ref: &dyn SliceComparator = &cmp;
         let cmp_ptr: *const dyn SliceComparator =
             cmp_ref as *const dyn SliceComparator;
@@ -172,12 +175,12 @@ mod block_iter_parse_next_key_tests {
             let v = iter.value();
 
             let k_str = unsafe {
-                let bytes = core::slice::from_raw_parts(*k.data(), *k.size());
-                core::str::from_utf8_unchecked(bytes).to_string()
+                let bytes = from_raw_parts(*k.data(), *k.size());
+                String::from_utf8_unchecked(bytes.to_vec())
             };
             let v_str = unsafe {
-                let bytes = core::slice::from_raw_parts(*v.data(), *v.size());
-                core::str::from_utf8_unchecked(bytes).to_string()
+                let bytes = from_raw_parts(*v.data(), *v.size());
+                String::from_utf8_unchecked(bytes.to_vec())
             };
 
             trace!(
@@ -220,5 +223,110 @@ mod block_iter_parse_next_key_tests {
             ("b".to_string(), "v2".to_string()),
             "second entry must match the second added key/value"
         );
+    }
+
+    #[traced_test]
+    fn parse_next_key_preserves_non_utf8_key_bytes_without_panicking() {
+        trace!(
+            "parse_next_key_preserves_non_utf8_key_bytes_without_panicking: start"
+        );
+
+        let opts_box = Box::new(Options::default());
+        let opts_ptr: *const Options = &*opts_box;
+
+        let mut builder = BlockBuilder::new(opts_ptr);
+        let first_key = [0xff_u8, b'a'];
+        let second_key = [0xff_u8, b'b'];
+
+        builder.add(
+            &Slice::from(&first_key[..]),
+            &Slice::from("v1".as_bytes()),
+        );
+        builder.add(
+            &Slice::from(&second_key[..]),
+            &Slice::from("v2".as_bytes()),
+        );
+
+        let slice = builder.finish();
+        let block_bytes = unsafe {
+            let ptr = *slice.data();
+            let len = *slice.size();
+            from_raw_parts(ptr, len).to_vec()
+        };
+        let len = block_bytes.len();
+
+        assert!(
+            len > size_of::<u32>(),
+            "block_bytes must be large enough to contain restart metadata"
+        );
+
+        let num_restarts = u32::from_le_bytes([
+            block_bytes[len - 4],
+            block_bytes[len - 3],
+            block_bytes[len - 2],
+            block_bytes[len - 1],
+        ]);
+        let restart_offset =
+            (len - (1 + num_restarts as usize) * size_of::<u32>())
+                as u32;
+
+        let cmp = BytewiseComparatorImpl::default();
+        let cmp_ref: &dyn SliceComparator = &cmp;
+        let cmp_ptr: *const dyn SliceComparator =
+            cmp_ref as *const dyn SliceComparator;
+
+        let mut iter = BlockIter::new(
+            cmp_ptr,
+            block_bytes.as_ptr(),
+            restart_offset,
+            num_restarts,
+        );
+
+        iter.seek_to_restart_point(0);
+
+        let mut seen_keys = Vec::<Vec<u8>>::new();
+
+        loop {
+            let parsed = iter.parse_next_key();
+
+            if !parsed {
+                trace!(
+                    "parse_next_key_preserves_non_utf8_key_bytes_without_panicking: ParseNextKey returned false; breaking"
+                );
+                break;
+            }
+
+            if !iter.valid() {
+                trace!(
+                    "parse_next_key_preserves_non_utf8_key_bytes_without_panicking: iterator invalid after ParseNextKey; breaking"
+                );
+                break;
+            }
+
+            let k = iter.key();
+            let key_bytes = unsafe {
+                let bytes = from_raw_parts(*k.data(), *k.size());
+                bytes.to_vec()
+            };
+
+            trace!(
+                "parse_next_key_preserves_non_utf8_key_bytes_without_panicking: observed key_len={}",
+                key_bytes.len()
+            );
+
+            seen_keys.push(key_bytes);
+
+            let next_offset = iter.next_entry_offset();
+            if next_offset >= iter.restarts_offset() {
+                trace!(
+                    "parse_next_key_preserves_non_utf8_key_bytes_without_panicking: reached end of data region; stopping iteration"
+                );
+                break;
+            }
+        }
+
+        assert_eq!(seen_keys.len(), 2);
+        assert_eq!(seen_keys[0], first_key.to_vec());
+        assert_eq!(seen_keys[1], second_key.to_vec());
     }
 }

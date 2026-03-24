@@ -10,6 +10,8 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
+getset.workspace = true
+derive_builder.workspace = true
 export-magic.workspace = true
 tracing.workspace = true
 tempfile.workspace = true

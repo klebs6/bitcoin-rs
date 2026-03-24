@@ -49,7 +49,7 @@ mod block_iter_seek_to_restart_point_tests {
             2,
         );
 
-        iter.key_buffer_mut().push_str("prefix");
+        iter.key_buffer_mut().extend_from_slice(b"prefix");
         iter.seek_to_restart_point(1);
 
         trace!(

@@ -5,7 +5,7 @@ impl LevelDBIteratorKey for BlockIter {
 
     fn key(&self) -> Slice {
         assert!(self.valid(), "BlockIter::key called on invalid iterator");
-        let slice = Slice::from(self.key_buffer());
+        let slice = Slice::from(self.key_buffer().as_slice());
         trace!(
             "BlockIter::key: len={}, data_ptr={:?}",
             *slice.size(),
@@ -57,7 +57,7 @@ mod block_iter_key_and_value_access_tests {
         unsafe {
             let ptr = *slice.data();
             let len = *slice.size();
-            core::slice::from_raw_parts(ptr, len).to_vec()
+            from_raw_parts(ptr, len).to_vec()
         }
     }
 
@@ -65,9 +65,17 @@ mod block_iter_key_and_value_access_tests {
     fn key_and_value_return_current_entry() {
         let block_bytes = build_block_bytes_for_simple_iteration();
         let len         = block_bytes.len();
-        let num_restarts =
-            u32::from_le_bytes(block_bytes[len - 4..].try_into().unwrap());
-        let restart_offset = (len - (1 + num_restarts as usize) * 4) as u32;
+        assert!(len >= size_of::<u32>());
+
+        let num_restarts = u32::from_le_bytes([
+            block_bytes[len - 4],
+            block_bytes[len - 3],
+            block_bytes[len - 2],
+            block_bytes[len - 1],
+        ]);
+        let restart_offset =
+            (len - (1 + num_restarts as usize) * size_of::<u32>())
+                as u32;
 
         let cmp = BytewiseComparatorImpl::default();
         let cmp_ref: &dyn SliceComparator = &cmp;
@@ -89,12 +97,12 @@ mod block_iter_key_and_value_access_tests {
         let value = iter.value();
 
         let key_str = unsafe {
-            let bytes = core::slice::from_raw_parts(*key.data(), *key.size());
-            core::str::from_utf8_unchecked(bytes).to_string()
+            let bytes = from_raw_parts(*key.data(), *key.size());
+            String::from_utf8_unchecked(bytes.to_vec())
         };
         let value_str = unsafe {
-            let bytes = core::slice::from_raw_parts(*value.data(), *value.size());
-            core::str::from_utf8_unchecked(bytes).to_string()
+            let bytes = from_raw_parts(*value.data(), *value.size());
+            String::from_utf8_unchecked(bytes.to_vec())
         };
 
         trace!("decoded key='{}', value='{}'", key_str, value_str);

@@ -213,11 +213,33 @@ fn db_test_multi_threaded() {
 
         delay_milliseconds((TEST_SECONDS * 1000) as i32);
 
+        use std::time::{Duration, Instant};
+
         mt.stop.store(true, atomic::Ordering::Release);
+
+        let stop_deadline = Instant::now() + Duration::from_secs(30);
 
         let mut wait_id: usize = 0;
         while wait_id < NUM_THREADS {
             while !mt.thread_done[wait_id].load(atomic::Ordering::Acquire) {
+                if Instant::now() >= stop_deadline {
+                    let counters: Vec<i32> = mt.counter
+                        .iter()
+                        .map(|c| c.load(atomic::Ordering::Acquire))
+                        .collect();
+                    let done: Vec<bool> = mt.thread_done
+                        .iter()
+                        .map(|d| d.load(atomic::Ordering::Acquire))
+                        .collect();
+
+                    panic!(
+                        "timeout waiting for worker {}; stop={}, counters={:?}, done={:?}",
+                        wait_id,
+                        mt.stop.load(atomic::Ordering::Acquire),
+                        counters,
+                        done,
+                    );
+                }
                 delay_milliseconds(100);
             }
             wait_id += 1;

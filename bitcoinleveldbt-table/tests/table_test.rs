@@ -1,5 +1,4 @@
 // ---------------- [ File: bitcoinleveldbt-table/tests/table_test.rs ]
-
 use bitcoinleveldbt_util::*;
 use traced_test::*;
 use tracing_setup::*;

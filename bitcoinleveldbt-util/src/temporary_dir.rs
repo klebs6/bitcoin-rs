@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldbt-util/src/tmp_dir.rs ]
+// ---------------- [ File: bitcoinleveldbt-util/src/temporary_dir.rs ]
 crate::ix!();
 
 /// Return the directory to use for temporary storage.

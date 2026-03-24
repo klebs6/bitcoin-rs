@@ -31,7 +31,14 @@ pub struct BlockIter {
     /// 
     restart_index: u32,
 
-    key_:          String,
+    /// Prefix-decoded key bytes for the current
+    /// entry.
+    ///
+    /// Invariant: this buffer preserves exact
+    /// on-disk key bytes and must never be
+    /// interpreted as UTF-8 by iterator
+    /// mechanics.
+    key_:          Vec<u8>,
     value:         Slice,
     status:        Status,
 }
@@ -67,7 +74,7 @@ impl BlockIter {
             num_restarts,
             current:       restarts,
             restart_index: num_restarts,
-            key_:          String::new(),
+            key_:          Vec::new(),
             value:         Slice::default(),
             status:        Status::default(),
         }
@@ -102,7 +109,7 @@ impl LevelDBIteratorValid for BlockIter {
 
 impl LevelDBIteratorStatus for BlockIter {
 
-    fn status(&self) -> crate::Status {
+    fn status(&self) -> Status {
         trace!("BlockIter::status called");
         Status::new_from_other_copy(&self.status)
     }
@@ -164,12 +171,12 @@ impl BlockIter {
     }
 
     #[inline]
-    pub fn key_buffer(&self) -> &String {
+    pub fn key_buffer(&self) -> &Vec<u8> {
         &self.key_
     }
 
     #[inline]
-    pub fn key_buffer_mut(&mut self) -> &mut String {
+    pub fn key_buffer_mut(&mut self) -> &mut Vec<u8> {
         &mut self.key_
     }
 
@@ -198,8 +205,9 @@ impl BlockIter {
 mod block_iter_construction_and_validity_tests {
     use super::*;
 
-    fn build_simple_two_entry_block_bytes() -> Vec<u8> {
-        let mut options = Box::new(Options::default());
+    #[traced_test]
+    fn block_iter_new_starts_at_restart_region_and_is_initially_invalid() {
+        let options = Box::new(Options::default());
         let opts_ptr: *const Options = &*options;
 
         let mut builder = BlockBuilder::new(opts_ptr);
@@ -213,22 +221,22 @@ mod block_iter_construction_and_validity_tests {
         );
 
         let block_slice = builder.finish();
-        unsafe {
+        let block_bytes = unsafe {
             let ptr = *block_slice.data();
             let len = *block_slice.size();
-            core::slice::from_raw_parts(ptr, len).to_vec()
-        }
-    }
-
-    #[traced_test]
-    fn block_iter_new_starts_at_restart_region_and_is_initially_invalid() {
-        let block_bytes = build_simple_two_entry_block_bytes();
-        let len         = block_bytes.len();
+            from_raw_parts(ptr, len).to_vec()
+        };
+        let len = block_bytes.len();
         assert!(len > 8);
 
-        let num_restarts =
-            u32::from_le_bytes(block_bytes[len - 4..].try_into().unwrap());
-        let restart_offset = (len - (1 + num_restarts as usize) * 4) as u32;
+        let num_restarts = u32::from_le_bytes([
+            block_bytes[len - 4],
+            block_bytes[len - 3],
+            block_bytes[len - 2],
+            block_bytes[len - 1],
+        ]);
+        let restart_offset =
+            (len - (1 + num_restarts as usize) * size_of::<u32>()) as u32;
 
         let cmp = BytewiseComparatorImpl::default();
         let cmp_ref: &dyn SliceComparator = &cmp;
@@ -253,11 +261,36 @@ mod block_iter_construction_and_validity_tests {
 
     #[traced_test]
     fn block_iter_status_defaults_to_ok() {
-        let block_bytes = build_simple_two_entry_block_bytes();
-        let len         = block_bytes.len();
-        let num_restarts =
-            u32::from_le_bytes(block_bytes[len - 4..].try_into().unwrap());
-        let restart_offset = (len - (1 + num_restarts as usize) * 4) as u32;
+        let options = Box::new(Options::default());
+        let opts_ptr: *const Options = &*options;
+
+        let mut builder = BlockBuilder::new(opts_ptr);
+        builder.add(
+            &Slice::from("a".as_bytes()),
+            &Slice::from("v1".as_bytes()),
+        );
+        builder.add(
+            &Slice::from("b".as_bytes()),
+            &Slice::from("v2".as_bytes()),
+        );
+
+        let block_slice = builder.finish();
+        let block_bytes = unsafe {
+            let ptr = *block_slice.data();
+            let len = *block_slice.size();
+            from_raw_parts(ptr, len).to_vec()
+        };
+        let len = block_bytes.len();
+        assert!(len >= size_of::<u32>());
+
+        let num_restarts = u32::from_le_bytes([
+            block_bytes[len - 4],
+            block_bytes[len - 3],
+            block_bytes[len - 2],
+            block_bytes[len - 1],
+        ]);
+        let restart_offset =
+            (len - (1 + num_restarts as usize) * size_of::<u32>()) as u32;
 
         let cmp = BytewiseComparatorImpl::default();
         let cmp_ref: &dyn SliceComparator = &cmp;

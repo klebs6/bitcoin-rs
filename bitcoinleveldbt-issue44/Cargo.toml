@@ -33,6 +33,7 @@ bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
 bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair" }
 bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
 bitcoinleveldbt-util = { path = "../bitcoinleveldbt-util" }
+bitcoinleveldbt-dbtest = { path = "../bitcoinleveldbt-dbtest" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

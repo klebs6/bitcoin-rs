@@ -1,3 +1,4 @@
+// ---------------- [ File: bitcoinleveldbt-util/src/snapshot_type_dispatch_glue.rs ]
 crate::ix!();
 
 pub fn snapshot_trait_object_parts(snapshot: &dyn Snapshot) -> (*const (), *const ()) {
