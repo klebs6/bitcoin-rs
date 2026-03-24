@@ -47,12 +47,9 @@ ACTIVE := bitcoinsecp256k1-eccontext
 
 ACTIVE := bitcoinleveldb-harness       #loc: 297
 #ACTIVE := bitcoinleveldbt-snapshot
-#ACTIVE := bitcoinleveldbt-randomized
+ACTIVE := bitcoinleveldbt-randomized
 #ACTIVE := bitcoinleveldbt-issue178 #sigkill
-ACTIVE := bitcoinleveldbt-autocompaction #there exists a hang here
-ACTIVE := bitcoinleveldbt-mt
 #ACTIVE := bitcoinleveldbt-dbtest
-#ACTIVE := bitcoinleveldbt-issue44
 #ACTIVE := bitcoinleveldbt-issue320
 
 
@@ -593,3 +590,6 @@ test-mt:
 #ACTIVE := bitcoinleveldb-dbimpl        #loc: 2652
 #ACTIVE := bitcoinleveldb-test
 #ACTIVE := bitcoinleveldbt-env
+#ACTIVE := bitcoinleveldbt-mt
+#ACTIVE := bitcoinleveldbt-autocompaction #there exists a hang here
+#ACTIVE := bitcoinleveldbt-issue44

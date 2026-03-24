@@ -1,12 +1,19 @@
 // ---------------- [ File: bitcoinleveldb-blockhandle/src/read_block_maybe_check_crc.rs ]
 crate::ix!();
 
+/**
+  | Invariant: checksum verification is
+  | side-effect free on success; on mismatch the
+  | returned corruption status names the same
+  | shared file identity that produced the bytes.
+  |
+  */
 pub fn read_block_maybe_check_crc(
     file:    &Rc<RefCell<dyn RandomAccessFile>>,
     options: &ReadOptions,
     data:    &[u8],
     n:       usize,
-) -> Option<crate::Status> {
+) -> Option<Status> {
     if !*options.verify_checksums() {
         trace!(
             "read_block_maybe_check_crc: checksum verification disabled; skipping CRC validation"
@@ -16,7 +23,6 @@ pub fn read_block_maybe_check_crc(
 
     // Trailer layout: data[0..n] = block, data[n] = type, data[n+1..n+5] = masked CRC.
     let crc_bytes = &data[n + 1..n + 5];
-
     let stored_crc = {
         let v = bitcoinleveldb_coding::decode_fixed32(
             crc_bytes.as_ptr(),
@@ -24,31 +30,29 @@ pub fn read_block_maybe_check_crc(
         crc32c_unmask(v)
     };
 
-    let actual_crc = unsafe { crc32c_value(data.as_ptr(), n + 1) };
+    let actual_crc = unsafe {
+        crc32c_value(data.as_ptr(), n + 1)
+    };
 
     if actual_crc != stored_crc {
         let msg       = b"block checksum mismatch";
         let msg_slice = Slice::from(&msg[..]);
 
-        let status = {
-            let file_ref = file.borrow();
-            let fname    = file_ref.name();
-            let fname_slice = Slice::from(fname.as_bytes());
+        let fname =
+            bitcoinleveldb_blockhandle_random_access_file_name(file);
+        let fname_slice = Slice::from(fname.as_bytes());
 
-            error!(
-                "read_block: CRC mismatch for file='{}' (stored={:#010x}, actual={:#010x})",
-                fname,
-                stored_crc,
-                actual_crc
-            );
+        error!(
+            "read_block: CRC mismatch for file='{}' (stored={:#010x}, actual={:#010x})",
+            fname,
+            stored_crc,
+            actual_crc
+        );
 
-            crate::Status::corruption(
-                &msg_slice,
-                Some(&fname_slice),
-            )
-        };
-
-        Some(status)
+        Some(crate::Status::corruption(
+            &msg_slice,
+            Some(&fname_slice),
+        ))
     } else {
         trace!(
             "read_block_maybe_check_crc: checksum verification succeeded (crc={:#010x})",

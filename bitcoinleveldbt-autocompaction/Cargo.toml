@@ -11,6 +11,8 @@ description = "todo: write a description here"
 
 [dependencies]
 getset.workspace = true
+tracing-subscriber.workspace = true
+tracing-appender.workspace = true
 derive_builder.workspace = true
 export-magic.workspace = true
 tracing.workspace = true

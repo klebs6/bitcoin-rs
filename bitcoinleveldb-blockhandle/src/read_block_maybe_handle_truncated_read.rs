@@ -1,11 +1,18 @@
 // ---------------- [ File: bitcoinleveldb-blockhandle/src/read_block_maybe_handle_truncated_read.rs ]
 crate::ix!();
 
+/**
+  | Invariant: returns None if and only if the
+  | observed byte count matches the expected
+  | byte count; any returned status names the
+  | originating file.
+  |
+  */
 pub fn read_block_maybe_handle_truncated_read(
-    file:           &Rc<RefCell<dyn RandomAccessFile>>,
-    contents_size:  usize,
-    expected_size:  usize,
-) -> Option<crate::Status> {
+    file:          &Rc<RefCell<dyn RandomAccessFile>>,
+    contents_size: usize,
+    expected_size: usize,
+) -> Option<Status> {
     if contents_size == expected_size {
         trace!(
             "read_block_maybe_handle_truncated_read: contents_size matches expected_size ({} bytes)",
@@ -17,25 +24,21 @@ pub fn read_block_maybe_handle_truncated_read(
     let msg       = b"truncated block read";
     let msg_slice = Slice::from(&msg[..]);
 
-    let status = {
-        let file_ref = file.borrow();
-        let fname    = file_ref.name();
-        let fname_slice = Slice::from(fname.as_bytes());
+    let fname =
+        bitcoinleveldb_blockhandle_random_access_file_name(file);
+    let fname_slice = Slice::from(fname.as_bytes());
 
-        error!(
-            "read_block: truncated read; expected={} got={} (file='{}')",
-            expected_size,
-            contents_size,
-            fname
-        );
+    error!(
+        "read_block: truncated read; expected={} got={} (file='{}')",
+        expected_size,
+        contents_size,
+        fname
+    );
 
-        crate::Status::corruption(
-            &msg_slice,
-            Some(&fname_slice),
-        )
-    };
-
-    Some(status)
+    Some(crate::Status::corruption(
+        &msg_slice,
+        Some(&fname_slice),
+    ))
 }
 
 #[cfg(test)]

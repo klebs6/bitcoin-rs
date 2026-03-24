@@ -10,12 +10,16 @@ pub const TABLE_MAGIC_NUMBER: u64 = 0xdb4775248b80fb57;
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/table/format.cc]
 
-/// Read the block identified by "handle" from "file".
-///
-/// On failure return non-OK. On success fill *result and return OK.
-///
-pub fn read_block(
-    file:    Rc<RefCell<dyn RandomAccessFile>>,
+/**
+  | Invariant: this helper reads from a shared
+  | RandomAccessFile wrapper without cloning the
+  | surrounding Rc, so the hot table-read path
+  | does not mutate Rc reference counts while
+  | concurrent readers are active.
+  |
+  */
+pub fn bitcoinleveldb_blockhandle_read_block_from_file_ref(
+    file:    &Rc<RefCell<dyn RandomAccessFile>>,
     options: &ReadOptions,
     handle:  &BlockHandle,
     result:  *mut BlockContents,
@@ -50,7 +54,7 @@ pub fn read_block(
 
         // Perform the read via RandomAccessFileRead.
         let status = read_block_perform_file_read(
-            &file,
+            file,
             handle,
             to_read,
             &mut contents,
@@ -64,7 +68,7 @@ pub fn read_block(
         let contents_size = *contents.size();
         if let Some(status) =
             read_block_maybe_handle_truncated_read(
-                &file,
+                file,
                 contents_size,
                 to_read,
             )
@@ -84,7 +88,7 @@ pub fn read_block(
 
         // Verify checksum if requested.
         if let Some(status) = read_block_maybe_check_crc(
-            &file,
+            file,
             options,
             data,
             n,
@@ -93,7 +97,7 @@ pub fn read_block(
         }
 
         read_block_dispatch_block_type(
-            &file,
+            file,
             block_type,
             data_ptr,
             n,
@@ -102,6 +106,24 @@ pub fn read_block(
             buf,
         )
     }
+}
+
+/// Read the block identified by "handle" from "file".
+///
+/// On failure return non-OK. On success fill *result and return OK.
+///
+pub fn read_block(
+    file:    Rc<RefCell<dyn RandomAccessFile>>,
+    options: &ReadOptions,
+    handle:  &BlockHandle,
+    result:  *mut BlockContents,
+) -> crate::Status {
+    bitcoinleveldb_blockhandle_read_block_from_file_ref(
+        &file,
+        options,
+        handle,
+        result,
+    )
 }
 
 #[cfg(test)]

@@ -1,6 +1,87 @@
 // ---------------- [ File: bitcoinleveldbt-autocompaction/src/bitcoinleveldbt_autocompaction.rs ]
 crate::ix!();
 
+use tracing_subscriber::EnvFilter;
+
+/// This selector preserves caller intent for test-log topology.
+/// If the process provides an explicit `RUST_LOG` filter and it parses
+/// successfully, the test runtime must not widen it to global `trace`.
+/// Widening an explicit filter destroys the wall-clock observability of
+/// long-running storage tests and can turn bounded compaction loops into
+/// apparent hangs through log amplification alone.
+pub fn bitcoinleveldb_dbimpl_test_runtime_env_filter() -> EnvFilter {
+    trace!(
+        target: "bitcoinleveldb_dbimpl::test_hooks",
+        event = "bitcoinleveldb_dbimpl_test_runtime_env_filter_entry",
+        label = "bitcoinleveldb_dbimpl.test_runtime_env_filter.entry"
+    );
+
+    let runtime_env_filter = match EnvFilter::try_from_default_env() {
+        Ok(explicit_env_filter) => {
+            debug!(
+                target: "bitcoinleveldb_dbimpl::test_hooks",
+                event = "bitcoinleveldb_dbimpl_test_runtime_env_filter_decision",
+                label = "bitcoinleveldb_dbimpl.test_runtime_env_filter.use_explicit_env",
+                rust_log_explicit = true
+            );
+
+            explicit_env_filter
+        }
+        Err(explicit_env_filter_error) => {
+            warn!(
+                target: "bitcoinleveldb_dbimpl::test_hooks",
+                event = "bitcoinleveldb_dbimpl_test_runtime_env_filter_decision",
+                label = "bitcoinleveldb_dbimpl.test_runtime_env_filter.fallback_default_trace",
+                rust_log_explicit = false,
+                explicit_env_filter_error = ?explicit_env_filter_error
+            );
+
+            let trace_directive_result = "trace".parse();
+
+            match trace_directive_result {
+                Ok(trace_directive) => EnvFilter::default().add_directive(trace_directive),
+                Err(trace_directive_parse_error) => {
+                    error!(
+                        target: "bitcoinleveldb_dbimpl::test_hooks",
+                        event = "bitcoinleveldb_dbimpl_test_runtime_env_filter_trace_directive_parse_failed",
+                        label = "bitcoinleveldb_dbimpl.test_runtime_env_filter.trace_directive_parse_failed",
+                        trace_directive_parse_error = ?trace_directive_parse_error
+                    );
+
+                    EnvFilter::default()
+                }
+            }
+        }
+    };
+
+    trace!(
+        target: "bitcoinleveldb_dbimpl::test_hooks",
+        event = "bitcoinleveldb_dbimpl_test_runtime_env_filter_exit",
+        label = "bitcoinleveldb_dbimpl.test_runtime_env_filter.exit"
+    );
+
+    runtime_env_filter
+}
+
+pub fn init_tracing_for_tests() {
+    static INIT: Once = Once::new();
+
+    INIT.call_once(|| {
+        let (writer, guard) = tracing_appender::non_blocking(std::io::stderr());
+
+        let runtime_env_filter = bitcoinleveldb_dbimpl_test_runtime_env_filter();
+
+        tracing_subscriber::fmt()
+            .with_env_filter(runtime_env_filter)
+            .with_writer(writer)
+            .with_thread_ids(true)
+            .with_thread_names(true)
+            .with_file(true)
+            .with_line_number(true)
+            .init();
+    });
+}
+
 /// This wait primitive must never borrow the shared database `Env`.
 /// The autocompaction harness opens the DB on a `PosixEnv` instance that
 /// background compaction threads reach through `EnvWrapper`'s serialized
@@ -211,7 +292,7 @@ impl AutoCompactTest {
             limit_len = *limit.size()
         );
 
-        let range = Range::new(
+        let range = bitcoinleveldb_slice::Range::new(
             Slice::from_ptr_len(*start.data(), *start.size()),
             Slice::from_ptr_len(*limit.data(), *limit.size()),
         );
@@ -219,7 +300,7 @@ impl AutoCompactTest {
         let mut size: u64 = 0u64;
         unsafe {
             (&mut *self.db).get_approximate_sizes(
-                (&range) as *const Range,
+                (&range) as *const bitcoinleveldb_slice::Range,
                 1i32,
                 (&mut size) as *mut u64,
             );
@@ -1120,165 +1201,238 @@ impl AutoCompactTest {
     }
 }
 
-#[traced_test]
-fn auto_compact_test_read_all() {
-    let mut t = AutoCompactTest::default();
-    t.do_reads(COUNT);
+lazy_static! {
+    /// This mutex defines the process-local execution boundary for autocompaction
+    /// tests. The boundary is intentional: these tests exercise large compaction
+    /// loops under a process-global tracing subscriber, and parallel execution
+    /// makes wall-clock watchdog output non-diagnostic through shared log
+    /// backpressure and concurrent compaction topology noise.
+    pub static ref BITCOINLEVELDBT_AUTOCOMPACTION_SERIAL_HEAVY_TEST_MUTEX: Mutex<()> =
+        Mutex::new(());
 }
 
-#[traced_test]
-fn auto_compact_test_read_half() {
-    let mut t = AutoCompactTest::default();
-    t.do_reads(COUNT / 2);
+/// This wrapper preserves test semantics while serializing the heavy
+/// autocompaction bodies inside the process. The wrapped closure must contain
+/// the entire DB lifecycle so all background compaction and teardown events
+/// stay inside the same serialized boundary.
+pub fn bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary<TBitcoinLevelDbTAutoCompactionTestBody>(
+    test_name: &'static str,
+    test_body: TBitcoinLevelDbTAutoCompactionTestBody,
+) where
+    TBitcoinLevelDbTAutoCompactionTestBody: FnOnce(),
+{
+    trace!(
+        target: "bitcoinleveldbt_autocompaction::autocompact_test",
+        event = "bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary_entry",
+        label = "bitcoinleveldbt_autocompaction.execute_with_serial_heavy_test_boundary.entry",
+        test_name = test_name
+    );
+
+    let _serial_guard = BITCOINLEVELDBT_AUTOCOMPACTION_SERIAL_HEAVY_TEST_MUTEX.lock();
+
+    debug!(
+        target: "bitcoinleveldbt_autocompaction::autocompact_test",
+        event = "bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary_state_transition",
+        label = "bitcoinleveldbt_autocompaction.execute_with_serial_heavy_test_boundary.acquired",
+        test_name = test_name
+    );
+
+    test_body();
+
+    trace!(
+        target: "bitcoinleveldbt_autocompaction::autocompact_test",
+        event = "bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary_exit",
+        label = "bitcoinleveldbt_autocompaction.execute_with_serial_heavy_test_boundary.exit",
+        test_name = test_name
+    );
 }
 
 #[traced_test]
 fn auto_compact_test_read_all_empty_other_range_uses_signed_lower_bound_space() {
-    let mut t = AutoCompactTest::default();
+    bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
+        "auto_compact_test_read_all_empty_other_range_uses_signed_lower_bound_space",
+        || {
+            let mut t = AutoCompactTest::default();
 
-    let keyn = t.key(COUNT);
-    let last_key = t.key(COUNT);
+            let keyn = t.key(COUNT);
+            let last_key = t.key(COUNT);
 
-    let initial_other_size = t.signed_size(
-        &Slice::from(&keyn),
-        &Slice::from(&last_key),
+            let initial_other_size = t.signed_size(
+                &Slice::from(&keyn),
+                &Slice::from(&last_key),
+            );
+
+            let lower_bound = initial_other_size / 5i64 - 1_048_576i64;
+
+            assert_eq!(initial_other_size, 0i64);
+            assert!(lower_bound < 0i64);
+        },
     );
-
-    let lower_bound = initial_other_size / 5i64 - 1_048_576i64;
-
-    assert_eq!(initial_other_size, 0i64);
-    assert!(lower_bound < 0i64);
-
 }
 
 #[traced_test]
 fn auto_compact_test_parameterized_fixture_preparation_probe_reports_completed_compaction_barriers() {
-    let mut t = AutoCompactTest::default();
+    bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
+        "auto_compact_test_parameterized_fixture_preparation_probe_reports_completed_compaction_barriers",
+        || {
+            let mut t = AutoCompactTest::default();
 
-    let observation =
-        t.prepare_parameterized_deleted_fixture_for_auto_compaction_probe(
-            96i32,
-            128i32 * 1024i32,
-            48i32,
-        );
+            let observation =
+                t.prepare_parameterized_deleted_fixture_for_auto_compaction_probe(
+                    96i32,
+                    128i32 * 1024i32,
+                    48i32,
+                );
 
-    assert_eq!(*observation.entry_count(), 96i32);
-    assert_eq!(*observation.value_size_bytes(), 128i32 * 1024i32);
-    assert_eq!(*observation.visible_key_count(), 48i32);
-    assert!(*observation.initial_visible_range_size_bytes() > 0i64);
-    assert!(*observation.initial_untouched_range_size_bytes() >= 0i64);
-    assert!(
-        observation.leveldb_stats().len() > 0usize
-        || observation.leveldb_sstables().len() > 0usize
+            assert_eq!(*observation.entry_count(), 96i32);
+            assert_eq!(*observation.value_size_bytes(), 128i32 * 1024i32);
+            assert_eq!(*observation.visible_key_count(), 48i32);
+            assert!(*observation.initial_visible_range_size_bytes() > 0i64);
+            assert!(*observation.initial_untouched_range_size_bytes() >= 0i64);
+            assert!(
+                observation.leveldb_stats().len() > 0usize
+                    || observation.leveldb_sstables().len() > 0usize
+            );
+        },
     );
-
 }
 
 #[traced_test]
 fn auto_compact_test_parameterized_small_fixture_read_half_progress_probe_exhibits_early_compaction_or_topology_motion() {
-    let mut t = AutoCompactTest::default();
+    bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
+        "auto_compact_test_parameterized_small_fixture_read_half_progress_probe_exhibits_early_compaction_or_topology_motion",
+        || {
+            let mut t = AutoCompactTest::default();
 
-    let observations =
-        t.do_parameterized_reads_progress_probe(
-            96i32,
-            128i32 * 1024i32,
-            48i32,
-            16i32,
-            250_000i32,
-        );
+            let observations =
+                t.do_parameterized_reads_progress_probe(
+                    96i32,
+                    128i32 * 1024i32,
+                    48i32,
+                    16i32,
+                    250_000i32,
+                );
 
-    assert!(!observations.is_empty());
-    assert!(*observations[0].initial_visible_range_size_bytes() > 0i64);
+            assert!(!observations.is_empty());
+            assert!(*observations[0].initial_visible_range_size_bytes() > 0i64);
 
-    let first_visible_range_size_bytes =
-        *observations[0].visible_range_size_bytes();
+            let first_visible_range_size_bytes =
+                *observations[0].visible_range_size_bytes();
 
-    let mut observed_visible_range_shrink = false;
-    let mut observed_sstable_topology_motion = false;
+            let mut observed_visible_range_shrink = false;
+            let mut observed_sstable_topology_motion = false;
 
-    let mut previous_sstable_snapshot =
-        observations[0].leveldb_sstables().clone();
+            let mut previous_sstable_snapshot =
+                observations[0].leveldb_sstables().clone();
 
-    let mut index: usize = 1usize;
-    while index < observations.len() {
-        let current_observation =
-            &observations[index];
+            let mut index: usize = 1usize;
+            while index < observations.len() {
+                let current_observation =
+                    &observations[index];
 
-        if *current_observation.visible_range_size_bytes()
-            < first_visible_range_size_bytes
-        {
-            observed_visible_range_shrink = true;
-        }
+                if *current_observation.visible_range_size_bytes()
+                    < first_visible_range_size_bytes
+                {
+                    observed_visible_range_shrink = true;
+                }
 
-        if current_observation.leveldb_sstables()
-            != &previous_sstable_snapshot
-        {
-            observed_sstable_topology_motion = true;
-        }
+                if current_observation.leveldb_sstables()
+                    != &previous_sstable_snapshot
+                {
+                    observed_sstable_topology_motion = true;
+                }
 
-        previous_sstable_snapshot =
-            current_observation.leveldb_sstables().clone();
+                previous_sstable_snapshot =
+                    current_observation.leveldb_sstables().clone();
 
-        index += 1usize;
-    }
+                index += 1usize;
+            }
 
-    assert!(
-        observed_visible_range_shrink || observed_sstable_topology_motion,
-        "Parameterized ReadHalf made no visible size progress and no sstable-topology progress within the bounded probe window"
+            assert!(
+                observed_visible_range_shrink || observed_sstable_topology_motion,
+                "Parameterized ReadHalf made no visible size progress and no sstable-topology progress within the bounded probe window"
+            );
+        },
     );
-
 }
 
 #[traced_test]
 fn auto_compact_test_read_all_progress_probe_exhibits_early_compaction_or_topology_motion() {
-    let mut t = AutoCompactTest::default();
+    bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
+        "auto_compact_test_read_all_progress_probe_exhibits_early_compaction_or_topology_motion",
+        || {
+            let mut t = AutoCompactTest::default();
 
-    let observations =
-        t.do_parameterized_reads_progress_probe(
-            96i32,
-            128i32 * 1024i32,
-            96i32,
-            16i32,
-            250_000i32,
-        );
+            let observations =
+                t.do_parameterized_reads_progress_probe(
+                    96i32,
+                    128i32 * 1024i32,
+                    96i32,
+                    16i32,
+                    250_000i32,
+                );
 
-    assert!(!observations.is_empty());
-    assert!(*observations[0].initial_visible_range_size_bytes() > 0i64);
+            assert!(!observations.is_empty());
+            assert!(*observations[0].initial_visible_range_size_bytes() > 0i64);
 
-    let first_visible_range_size_bytes =
-        *observations[0].visible_range_size_bytes();
+            let first_visible_range_size_bytes =
+                *observations[0].visible_range_size_bytes();
 
-    let mut observed_visible_range_shrink = false;
-    let mut observed_sstable_topology_motion = false;
+            let mut observed_visible_range_shrink = false;
+            let mut observed_sstable_topology_motion = false;
 
-    let mut previous_sstable_snapshot =
-        observations[0].leveldb_sstables().clone();
+            let mut previous_sstable_snapshot =
+                observations[0].leveldb_sstables().clone();
 
-    let mut index: usize = 1usize;
-    while index < observations.len() {
-        let current_observation =
-            &observations[index];
+            let mut index: usize = 1usize;
+            while index < observations.len() {
+                let current_observation =
+                    &observations[index];
 
-        if *current_observation.visible_range_size_bytes()
-            < first_visible_range_size_bytes
-        {
-            observed_visible_range_shrink = true;
-        }
+                if *current_observation.visible_range_size_bytes()
+                    < first_visible_range_size_bytes
+                {
+                    observed_visible_range_shrink = true;
+                }
 
-        if current_observation.leveldb_sstables()
-            != &previous_sstable_snapshot
-        {
-            observed_sstable_topology_motion = true;
-        }
+                if current_observation.leveldb_sstables()
+                    != &previous_sstable_snapshot
+                {
+                    observed_sstable_topology_motion = true;
+                }
 
-        previous_sstable_snapshot =
-            current_observation.leveldb_sstables().clone();
+                previous_sstable_snapshot =
+                    current_observation.leveldb_sstables().clone();
 
-        index += 1usize;
-    }
+                index += 1usize;
+            }
 
-    assert!(
-        observed_visible_range_shrink || observed_sstable_topology_motion,
-        "Parameterized ReadAll made no visible size progress and no sstable-topology progress within the bounded probe window"
+            assert!(
+                observed_visible_range_shrink || observed_sstable_topology_motion,
+                "Parameterized ReadAll made no visible size progress and no sstable-topology progress within the bounded probe window"
+            );
+        },
+    );
+}
+
+#[traced_test]
+fn auto_compact_test_read_all() {
+    bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
+        "auto_compact_test_read_all",
+        || {
+            let mut t = AutoCompactTest::default();
+            t.do_reads(COUNT);
+        },
+    );
+}
+
+#[traced_test]
+fn auto_compact_test_read_half() {
+    bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
+        "auto_compact_test_read_half",
+        || {
+            let mut t = AutoCompactTest::default();
+            t.do_reads(COUNT / 2);
+        },
     );
 }

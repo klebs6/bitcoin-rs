@@ -1,6 +1,13 @@
 // ---------------- [ File: bitcoinleveldb-blockhandle/src/read_block_perform_file_read.rs ]
 crate::ix!();
 
+/**
+  | Invariant: performs exactly one serialized
+  | RandomAccessFile::read against the supplied
+  | shared file identity and does not leave a
+  | live RefCell borrow after the call returns.
+  |
+  */
 pub fn read_block_perform_file_read(
     file:     &Rc<RefCell<dyn RandomAccessFile>>,
     handle:   &BlockHandle,
@@ -8,28 +15,28 @@ pub fn read_block_perform_file_read(
     contents: &mut Slice,
     buf:      &mut Vec<u8>,
 ) -> crate::Status {
-    use bitcoinleveldb_file::RandomAccessFileRead;
-
     trace!(
         "read_block_perform_file_read: offset={}, to_read={}",
         handle.offset(),
         to_read
     );
 
-    let status = {
-        let file_ref = file.borrow();
-        trace!(
-            "read_block: issuing RandomAccessFile::read(name='{}')",
-            file_ref.name()
-        );
-        RandomAccessFileRead::read(
-            &*file_ref,
+    let file_name =
+        bitcoinleveldb_blockhandle_random_access_file_name(file);
+
+    trace!(
+        "read_block: issuing RandomAccessFile::read(name='{}')",
+        file_name
+    );
+
+    let status =
+        bitcoinleveldb_blockhandle_read_random_access_file(
+            file,
             handle.offset(),
             to_read,
             contents as *mut Slice,
             buf.as_mut_ptr(),
-        )
-    };
+        );
 
     if !status.is_ok() {
         error!(

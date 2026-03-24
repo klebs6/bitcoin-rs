@@ -48,13 +48,15 @@ impl RandomAccessFileRead for BorrowedRandomAccessFileAdapter {
             if self.inner.is_null() {
                 let msg = b"BorrowedRandomAccessFileAdapter::read: inner file holder pointer is null";
                 let msg_slice = Slice::from(&msg[..]);
+
                 error!(
                     "BorrowedRandomAccessFileAdapter::read: inner pointer null; returning corruption status"
                 );
+
                 return Status::corruption(&msg_slice, None);
             }
 
-            let inner_holder: &mut Box<dyn RandomAccessFile> = &mut *self.inner;
+            let inner_holder: &Box<dyn RandomAccessFile> = &*self.inner;
             let inner_file: &dyn RandomAccessFile = inner_holder.as_ref();
 
             RandomAccessFileRead::read(
@@ -83,7 +85,7 @@ impl Named for BorrowedRandomAccessFileAdapter {
             }
 
             // SAFETY: inner is a *mut Box<dyn RandomAccessFile>
-            let holder: &mut Box<dyn RandomAccessFile> = &mut *self.inner;
+            let holder: &Box<dyn RandomAccessFile> = &*self.inner;
 
             // Underlying file returns Cow<'_, str>. We must clone it into an owned String.
             let underlying_cow = holder.name();

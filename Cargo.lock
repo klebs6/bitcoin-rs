@@ -4657,7 +4657,9 @@ dependencies = [
  "tempfile",
  "traced-test",
  "tracing",
+ "tracing-appender",
  "tracing-setup",
+ "tracing-subscriber",
 ]
 
 [[package]]

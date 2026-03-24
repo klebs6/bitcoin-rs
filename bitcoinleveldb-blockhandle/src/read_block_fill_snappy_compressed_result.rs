@@ -1,6 +1,14 @@
 // ---------------- [ File: bitcoinleveldb-blockhandle/src/read_block_fill_snappy_compressed_result.rs ]
 crate::ix!();
 
+/**
+  | Invariant: on success the returned
+  | BlockContents owns a stable heap buffer
+  | containing the uncompressed bytes; on
+  | failure the corruption status names the
+  | originating file.
+  |
+  */
 pub fn read_block_fill_snappy_compressed_result(
     file:   &Rc<RefCell<dyn RandomAccessFile>>,
     data:   &[u8],
@@ -27,24 +35,19 @@ pub fn read_block_fill_snappy_compressed_result(
         let msg       = b"corrupted compressed block contents";
         let msg_slice = Slice::from(&msg[..]);
 
-        let status = {
-            let file_ref = file.borrow();
-            let fname    = file_ref.name();
-            let fname_slice =
-                Slice::from(fname.as_bytes());
+        let fname =
+            bitcoinleveldb_blockhandle_random_access_file_name(file);
+        let fname_slice = Slice::from(fname.as_bytes());
 
-            error!(
-                "read_block: failed to determine Snappy uncompressed length (file='{}')",
-                fname
-            );
+        error!(
+            "read_block: failed to determine Snappy uncompressed length (file='{}')",
+            fname
+        );
 
-            crate::Status::corruption(
-                &msg_slice,
-                Some(&fname_slice),
-            )
-        };
-
-        return status;
+        return crate::Status::corruption(
+            &msg_slice,
+            Some(&fname_slice),
+        );
     }
 
     let mut uncompressed = vec![0u8; ulength];
@@ -61,24 +64,19 @@ pub fn read_block_fill_snappy_compressed_result(
         let msg       = b"corrupted compressed block contents";
         let msg_slice = Slice::from(&msg[..]);
 
-        let status = {
-            let file_ref = file.borrow();
-            let fname    = file_ref.name();
-            let fname_slice =
-                Slice::from(fname.as_bytes());
+        let fname =
+            bitcoinleveldb_blockhandle_random_access_file_name(file);
+        let fname_slice = Slice::from(fname.as_bytes());
 
-            error!(
-                "read_block: Snappy decompression failed (file='{}')",
-                fname
-            );
+        error!(
+            "read_block: Snappy decompression failed (file='{}')",
+            fname
+        );
 
-            crate::Status::corruption(
-                &msg_slice,
-                Some(&fname_slice),
-            )
-        };
-
-        return status;
+        return crate::Status::corruption(
+            &msg_slice,
+            Some(&fname_slice),
+        );
     }
 
     let owned = uncompressed.into_boxed_slice();

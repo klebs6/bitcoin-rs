@@ -1,5 +1,6 @@
 // ---------------- [ File: bitcoinleveldbt-autocompaction/src/imports.rs ]
 pub(crate) use bitcoin_derive::*;
+pub(crate) use bitcoin_imports::*;
 pub(crate) use export_magic::*;
 pub(crate) use bitcoinleveldb_cache::*;
 pub(crate) use bitcoinleveldb_db::*;

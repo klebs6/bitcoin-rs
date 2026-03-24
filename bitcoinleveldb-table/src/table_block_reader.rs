@@ -22,8 +22,8 @@ impl Table {
             );
 
             let table: &mut Table = &mut *(arg as *mut Table);
-
             let rep_ptr = table.rep_mut_ptr();
+
             assert!(
                 !rep_ptr.is_null(),
                 "Table::block_reader: table.rep pointer is null"
@@ -37,24 +37,28 @@ impl Table {
 
             let mut block: *mut Block = core::ptr::null_mut();
             let mut cache_handle: *mut CacheHandle = core::ptr::null_mut();
-
             let mut handle = BlockHandle::default();
 
             // Make a by-value copy of the Slice header (pointer + length) so we
             // can mutate it for decode_from without touching index_value itself.
             let input_data_ptr = *index_value.data();
             let input_data_len = *index_value.size();
-            let mut input = Slice::from_ptr_len(input_data_ptr, input_data_len);
+            let mut input = Slice::from_ptr_len(
+                input_data_ptr,
+                input_data_len,
+            );
 
             trace!(
                 "Table::block_reader: decoding BlockHandle from index_value (size={})",
                 index_value.size()
             );
 
-            let mut status = handle.decode_from(&mut input as *mut Slice);
+            let mut status = handle.decode_from(
+                &mut input as *mut Slice,
+            );
+
             // We intentionally allow extra stuff in index_value so that we
             // can add more features in the future.
-
             if status.is_ok() {
                 // Use the public constructor / default rather than
                 // reaching into private fields.
@@ -77,6 +81,7 @@ impl Table {
                         cache_key_buf.as_mut_ptr(),
                         *rep.cache_id(),
                     );
+
                     bitcoinleveldb_coding::encode_fixed64(
                         cache_key_buf.as_mut_ptr().add(8),
                         handle.offset(),
@@ -93,10 +98,12 @@ impl Table {
                         );
 
                         let value_ptr = cache_ref.value(cache_handle);
+
                         assert!(
                             !value_ptr.is_null(),
                             "Table::block_reader: cache value is null on cache hit"
                         );
+
                         block = value_ptr as *mut Block;
                     } else {
                         trace!(
@@ -105,12 +112,13 @@ impl Table {
                             handle.size()
                         );
 
-                        status = read_block(
-                            rep.file().clone(),
-                            options,
-                            &handle,
-                            &mut contents as *mut BlockContents,
-                        );
+                        status =
+                            bitcoinleveldb_blockhandle_read_block_from_file_ref(
+                                rep.file(),
+                                options,
+                                &handle,
+                                &mut contents as *mut BlockContents,
+                            );
 
                         if status.is_ok() {
                             let block_box = Box::new(Block::new(&contents));
@@ -151,12 +159,13 @@ impl Table {
                         handle.size()
                     );
 
-                    status = read_block(
-                        rep.file().clone(),
-                        options,
-                        &handle,
-                        &mut contents as *mut BlockContents,
-                    );
+                    status =
+                        bitcoinleveldb_blockhandle_read_block_from_file_ref(
+                            rep.file(),
+                            options,
+                            &handle,
+                            &mut contents as *mut BlockContents,
+                        );
 
                     if status.is_ok() {
                         let block_box = Box::new(Block::new(&contents));
@@ -197,6 +206,7 @@ impl Table {
                     trace!(
                         "Table::block_reader: registering DeleteBlock cleanup for uncached block"
                     );
+
                     (*data_iter_raw).register_cleanup(
                         delete_block,
                         block as *mut c_void,
@@ -226,11 +236,17 @@ impl Table {
                     "Table::block_reader: no block available; returning error iterator (status_ok={})",
                     status.is_ok()
                 );
+
                 let err_raw: *mut LevelDBIterator =
-                    bitcoinleveldb_erroriterator::new_error_iterator(&status);
-                let err_box: Box<LevelDBIterator> = Box::from_raw(err_raw);
+                    bitcoinleveldb_erroriterator::new_error_iterator(
+                        &status,
+                    );
+
+                let err_box: Box<LevelDBIterator> =
+                    Box::from_raw(err_raw);
                 let boxed_interface: Box<dyn LevelDBIteratorInterface> =
                     err_box;
+
                 Some(boxed_interface)
             }
         }
