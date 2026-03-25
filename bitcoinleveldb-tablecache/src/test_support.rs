@@ -840,4 +840,172 @@ pub(crate) mod table_cache_test_support {
         let wrapper = LevelDBIterator::new(Some(iface));
         Box::into_raw(Box::new(wrapper))
     }
+
+    #[traced_test]
+    fn find_table_explicitly_reproduces_env_refcell_borrow_conflict() {
+        let (env, _state) = make_in_memory_env();
+        let options = make_options_with_env(env.clone());
+        let dbname = String::from("find_table_refcell_conflict_db");
+        let mut table_cache = TableCache::new(&dbname, &options, 4);
+
+        // Hold the same Env RefCell mutably borrowed.
+        let _held = env.borrow_mut();
+
+        let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let mut handle: *mut CacheHandle = std::ptr::null_mut();
+            let _ = table_cache.find_table(1, 0, &mut handle);
+        }));
+
+        assert!(result.is_err());
+    }
+}
+
+#[cfg(test)]
+mod bitcoinleveldb_tablecache_test_support_find_table_env_refcell_borrow_isolation_tests {
+    use super::*;
+
+    use crate::table_cache_test_support::*;
+    use std::panic::catch_unwind;
+
+    /// These tests freeze the minimal reproduction boundary for the
+    /// `RefCell already borrowed` panic observed from the background compaction
+    /// path. The panic must arise from re-borrowing the shared `Env` handle
+    /// inside `TableCache::find_table`; it must not require the background
+    /// worker queue, thread startup, or file-open side effects.
+    #[traced_test]
+    fn bitcoinleveldb_tablecache_test_support_find_table_direct_double_mutable_env_borrow_panics(
+    ) {
+        let (env, _state) = make_in_memory_env();
+        let options = make_options_with_env(env.clone());
+        let dbname = String::from(
+            "bitcoinleveldb-tablecache-find-table-direct-double-mutable-env-borrow",
+        );
+        let mut table_cache = TableCache::new(&dbname, &options, 4);
+        let _held_env_borrow = env.borrow_mut();
+        let mut handle: *mut CacheHandle = 0 as *mut CacheHandle;
+
+        trace!(
+            target: "bitcoinleveldb_tablecache::test_support",
+            label = "tablecache_find_table_refcell_double_borrow.entry",
+            dbname = %dbname,
+            file_number = 1_u64,
+            file_size = 0_u64,
+            handle_ptr = ?handle
+        );
+
+        let unwind_result = catch_unwind(AssertUnwindSafe(|| {
+            let _status = table_cache.find_table(1_u64, 0_u64, &mut handle);
+        }));
+
+        match unwind_result {
+            Ok(_) => {
+                error!(
+                    target: "bitcoinleveldb_tablecache::test_support",
+                    label = "tablecache_find_table_refcell_double_borrow.unexpected_ok",
+                    dbname = %dbname,
+                    handle_ptr = ?handle
+                );
+                panic!(
+                    "bitcoinleveldb_tablecache_test_support_find_table_direct_double_mutable_env_borrow_panics"
+                );
+            }
+            Err(_) => {
+                debug!(
+                    target: "bitcoinleveldb_tablecache::test_support",
+                    label = "tablecache_find_table_refcell_double_borrow.observed_panic",
+                    dbname = %dbname,
+                    handle_ptr = ?handle
+                );
+            }
+        }
+
+        assert!(handle.is_null());
+
+        trace!(
+            target: "bitcoinleveldb_tablecache::test_support",
+            label = "tablecache_find_table_refcell_double_borrow.exit",
+            dbname = %dbname,
+            handle_ptr = ?handle
+        );
+    }
+
+    /// The direct panic path must occur before `find_table` has an opportunity
+    /// to perform any random-access file open. This preserves the diagnostic
+    /// boundary at the shared `Env` borrow site.
+    #[traced_test]
+    fn bitcoinleveldb_tablecache_test_support_find_table_double_mutable_env_borrow_panics_before_random_access_open_side_effects(
+    ) {
+        let (env, state) = make_in_memory_env();
+        let options = make_options_with_env(env.clone());
+        let dbname = String::from(
+            "bitcoinleveldb-tablecache-find-table-double-mutable-env-borrow-side-effect-boundary",
+        );
+        let mut table_cache = TableCache::new(&dbname, &options, 4);
+        let random_open_count_before = {
+            let guard = state.lock();
+            guard.random_open_count.len()
+        };
+        let _held_env_borrow = env.borrow_mut();
+        let mut handle: *mut CacheHandle = 0 as *mut CacheHandle;
+
+        trace!(
+            target: "bitcoinleveldb_tablecache::test_support",
+            label = "tablecache_find_table_refcell_double_borrow_side_effect_boundary.entry",
+            dbname = %dbname,
+            random_open_count_before,
+            handle_ptr = ?handle
+        );
+
+        let unwind_result = catch_unwind(AssertUnwindSafe(|| {
+            let _status = table_cache.find_table(1_u64, 0_u64, &mut handle);
+        }));
+
+        match unwind_result {
+            Ok(_) => {
+                error!(
+                    target: "bitcoinleveldb_tablecache::test_support",
+                    label = "tablecache_find_table_refcell_double_borrow_side_effect_boundary.unexpected_ok",
+                    dbname = %dbname,
+                    handle_ptr = ?handle
+                );
+                panic!(
+                    "bitcoinleveldb_tablecache_test_support_find_table_double_mutable_env_borrow_panics_before_random_access_open_side_effects"
+                );
+            }
+            Err(_) => {
+                debug!(
+                    target: "bitcoinleveldb_tablecache::test_support",
+                    label = "tablecache_find_table_refcell_double_borrow_side_effect_boundary.observed_panic",
+                    dbname = %dbname,
+                    handle_ptr = ?handle
+                );
+            }
+        }
+
+        let random_open_count_after = {
+            let guard = state.lock();
+            guard.random_open_count.len()
+        };
+
+        debug!(
+            target: "bitcoinleveldb_tablecache::test_support",
+            label = "tablecache_find_table_refcell_double_borrow_side_effect_boundary.observed_counts",
+            dbname = %dbname,
+            random_open_count_before,
+            random_open_count_after,
+            handle_ptr = ?handle
+        );
+
+        assert!(handle.is_null());
+        assert_eq!(random_open_count_after, random_open_count_before);
+
+        trace!(
+            target: "bitcoinleveldb_tablecache::test_support",
+            label = "tablecache_find_table_refcell_double_borrow_side_effect_boundary.exit",
+            dbname = %dbname,
+            random_open_count_before,
+            random_open_count_after,
+            handle_ptr = ?handle
+        );
+    }
 }

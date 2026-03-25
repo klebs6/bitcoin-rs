@@ -5160,7 +5160,9 @@ dependencies = [
  "bitcoinleveldbt-dbtest",
  "bitcoinleveldbt-snapshot",
  "bitcoinleveldbt-util",
+ "derive_builder",
  "export-magic",
+ "getset",
  "serial_test",
  "tempfile",
  "traced-test",
@@ -5244,9 +5246,23 @@ dependencies = [
  "bitcoinleveldb-writebatch",
  "bitcoinleveldbt-dbtest",
  "bitcoinleveldbt-util",
+ "derive_builder",
  "export-magic",
+ "getset",
  "serial_test",
  "tempfile",
+ "traced-test",
+ "tracing",
+ "tracing-setup",
+]
+
+[[package]]
+name = "bitcoinleveldbt-sparsemerge"
+version = "0.1.0"
+dependencies = [
+ "bitcoinleveldb-options",
+ "bitcoinleveldbt-dbtest",
+ "export-magic",
  "traced-test",
  "tracing",
  "tracing-setup",

@@ -39,55 +39,10 @@ pub fn snapshot_impl_vtable_ptr() -> *const () {
 /// this crate's DB test surface.
 /// Postcondition: reads performed through the returned `Arc<dyn Snapshot>` observe the
 /// same logical snapshot state as reads performed through `snapshot`.
-pub fn snapshot_read_arc_from_snapshot_ref(
-    snapshot: &dyn Snapshot,
-) -> Arc<dyn Snapshot> {
-    tracing::trace!(
-        target: "bitcoinleveldbt_dbtest::dbtest",
-        label = "dbtest.snapshot_read_arc_from_snapshot_ref.entry"
-    );
-
-    let actual_vtable: *const () = snapshot_vtable_ptr_from_snapshot_ref(snapshot);
-
-    let out: Arc<dyn Snapshot> = if actual_vtable == snapshot_model_vtable_ptr() {
-        tracing::trace!(
-            target: "bitcoinleveldbt_dbtest::dbtest",
-            label = "dbtest.snapshot_read_arc_from_snapshot_ref.branch",
-            branch = "model_snapshot"
-        );
-
-        let snapshot_ptr: *const dyn Snapshot = snapshot as *const dyn Snapshot;
-        let model_snapshot_ptr: *const ModelSnapshot =
-            snapshot_ptr as *const ModelSnapshot;
-        let model_snapshot_ref: &ModelSnapshot = unsafe { &*model_snapshot_ptr };
-
-        let snap_ref = model_snapshot_ref.map_ref().clone();
-
-        Arc::new(ModelSnapshot::new_from_map(&snap_ref))
-    } else if actual_vtable == snapshot_impl_vtable_ptr() {
-        tracing::trace!(
-            target: "bitcoinleveldbt_dbtest::dbtest",
-            label = "dbtest.snapshot_read_arc_from_snapshot_ref.branch",
-            branch = "snapshot_impl"
-        );
-
-        let sequence_number = dbtest_snapshot_sequence_from_snapshot_ref(snapshot);
-        Arc::new(SnapshotImpl::new(sequence_number))
-    } else {
-        tracing::error!(
-            target: "bitcoinleveldbt_dbtest::dbtest",
-            label = "dbtest.snapshot_read_arc_from_snapshot_ref.unsupported_snapshot_impl"
-        );
-
-        panic!("snapshot_read_arc_from_snapshot_ref: unsupported snapshot implementation");
-    };
-
-    tracing::trace!(
-        target: "bitcoinleveldbt_dbtest::dbtest",
-        label = "dbtest.snapshot_read_arc_from_snapshot_ref.exit"
-    );
-
-    out
+pub fn snapshot_read_arc_from_snapshot_ref(snapshot: &dyn Snapshot) -> Arc<dyn Snapshot> {
+    Arc::new(SnapshotImpl::new(
+        dbtest_snapshot_sequence_from_snapshot_ref(snapshot),
+    ))
 }
 
 /// Invariant: preserves the historical dbtest symbol expected by existing call sites while
@@ -195,3 +150,95 @@ pub fn dbtest_read_options_from_snapshot_ref(
 
     options
 }
+
+#[cfg(test)]
+mod bitcoinleveldbt_util_snapshot_type_dispatch_glue_sequence_adapter_contract_tests {
+    use super::*;
+
+    /// The DBTest snapshot adapter contract is sequence preservation only.
+    /// Future refactors must not require a runtime kind channel in order to
+    /// preserve the snapshot cutoff represented by the source sequence number.
+    #[traced_test]
+    fn bitcoinleveldbt_util_snapshot_type_dispatch_glue_preserves_sequence_number_across_arc_adapter(
+    ) {
+        let source_sequence_number = 17_u64;
+
+        trace!(
+            target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
+            label = "snapshot_type_dispatch_glue.sequence_preservation.entry",
+            source_sequence_number
+        );
+
+        let source_snapshot_impl = SnapshotImpl::new(source_sequence_number);
+        let source_snapshot_ref: &dyn Snapshot = &source_snapshot_impl;
+
+        let adapted_snapshot_arc =
+            snapshot_read_arc_from_snapshot_ref(source_snapshot_ref);
+        let adapted_snapshot_ref: &dyn Snapshot = adapted_snapshot_arc.as_ref();
+
+        let observed_sequence_number =
+            dbtest_snapshot_sequence_from_snapshot_ref(adapted_snapshot_ref);
+
+        debug!(
+            target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
+            label = "snapshot_type_dispatch_glue.sequence_preservation.observed",
+            observed_sequence_number
+        );
+
+        assert_eq!(observed_sequence_number, source_sequence_number);
+
+        trace!(
+            target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
+            label = "snapshot_type_dispatch_glue.sequence_preservation.exit",
+            observed_sequence_number
+        );
+    }
+
+    /// Re-applying the DBTest adapter must not strengthen or weaken the cutoff.
+    /// The preserved sequence number is the whole identity required by this
+    /// adapter path.
+    #[traced_test]
+    fn bitcoinleveldbt_util_snapshot_type_dispatch_glue_repeated_adaptation_is_sequence_idempotent(
+    ) {
+        let source_sequence_number = 23_u64;
+
+        trace!(
+            target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
+            label = "snapshot_type_dispatch_glue.sequence_idempotence.entry",
+            source_sequence_number
+        );
+
+        let source_snapshot_impl = SnapshotImpl::new(source_sequence_number);
+        let first_adapted_snapshot_arc =
+            snapshot_read_arc_from_snapshot_ref(&source_snapshot_impl);
+        let second_adapted_snapshot_arc =
+            snapshot_read_arc_from_snapshot_ref(first_adapted_snapshot_arc.as_ref());
+
+        let first_observed_sequence_number =
+            dbtest_snapshot_sequence_from_snapshot_ref(
+                first_adapted_snapshot_arc.as_ref(),
+            );
+        let second_observed_sequence_number =
+            dbtest_snapshot_sequence_from_snapshot_ref(
+                second_adapted_snapshot_arc.as_ref(),
+            );
+
+        debug!(
+            target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
+            label = "snapshot_type_dispatch_glue.sequence_idempotence.observed",
+            first_observed_sequence_number,
+            second_observed_sequence_number
+        );
+
+        assert_eq!(first_observed_sequence_number, source_sequence_number);
+        assert_eq!(second_observed_sequence_number, source_sequence_number);
+
+        trace!(
+            target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
+            label = "snapshot_type_dispatch_glue.sequence_idempotence.exit",
+            first_observed_sequence_number,
+            second_observed_sequence_number
+        );
+    }
+}
+

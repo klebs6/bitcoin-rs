@@ -10,4 +10,3 @@ pub(crate) use bitcoinleveldb_options::*;
 pub(crate) use bitcoinleveldb_blockbuilder::*;
 pub(crate) use bitcoinleveldb_iteratorinner::*;
 pub(crate) use std::slice::from_raw_parts;
-

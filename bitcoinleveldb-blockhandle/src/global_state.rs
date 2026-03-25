@@ -253,4 +253,3 @@ pub fn bitcoinleveldb_blockhandle_read_random_access_file(
 
     status
 }
-

@@ -1,0 +1,18 @@
+[package]
+name = "bitcoinleveldbt-sparsemerge"
+version = "0.1.0"
+authors = ["YourName <you@example.com>"]
+license = "MIT"
+edition = "2024"
+description = "todo: write a description here"
+
+# keywords = []
+# categories = []
+
+[dependencies]
+export-magic.workspace = true
+traced-test.workspace = true
+tracing-setup.workspace = true
+tracing.workspace = true
+bitcoinleveldbt-dbtest = { path = "../bitcoinleveldbt-dbtest" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }

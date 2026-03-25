@@ -46,12 +46,12 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoinsecp256k1-eccontext
 
 ACTIVE := bitcoinleveldb-harness       #loc: 297
-#ACTIVE := bitcoinleveldbt-snapshot
 ACTIVE := bitcoinleveldbt-randomized
-#ACTIVE := bitcoinleveldbt-issue178 #sigkill
-#ACTIVE := bitcoinleveldbt-dbtest
+ACTIVE := bitcoinleveldbt-issue178 #sigkill
+ACTIVE := bitcoinleveldbt-sparsemerge #hang
+ACTIVE := bitcoinleveldbt-dbtest
+ACTIVE := bitcoinleveldbt-snapshot
 #ACTIVE := bitcoinleveldbt-issue320
-
 
 # ---[leveldb-layer-3]
 #ACTIVE := bitcoin-leveldb              #loc: 36
@@ -364,6 +364,11 @@ check_dbtest:
 	#- $(CARGO) $(TEST) -p bitcoinleveldbt-dbtest db_test_l0_compaction_bug_issue44_a -- --nocapture
 	#- $(CARGO) $(TEST) -p bitcoinleveldbt-dbtest db_test_l0_compaction_bug_issue44_b -- --nocapture
 
+check_randomized_bisect:
+	- $(CARGO) $(TEST) -p bitcoinleveldbt-randomized bisect -- --nocapture
+
+check_randomized:
+	- $(CARGO) $(TEST) -p bitcoinleveldbt-randomized db_test_randomized -- --nocapture
 
 check_dbimpl:
 	RUST_LOG=bitcoinleveldb_dbimpl::t_compaction_output_boundary_specifications=trace,bitcoinleveldb_dbimpl::t_live_compaction_output_boundary_support=trace,bitcoinleveldb_dbimpl::test_live_compaction_boundary_access=trace,bitcoinleveldb_dbimpl::do_compaction_work=trace cargo test -p bitcoinleveldb-dbimpl t_dbimpl_compaction_output_boundary_specifications -- --nocapture --test-threads=1
@@ -418,6 +423,10 @@ dbtest-randomized-focus:
 .PHONY: test-mt
 test-mt:
 	RUST_BACKTRACE=1 $(CARGO) test -p bitcoinleveldbt-mt mt_test::db_test_multi_threaded -- --nocapture --test-threads=1
+
+test-snapshot:
+	- $(CARGO) $(TEST) --no-fail-fast -p bitcoinleveldbt-snapshot probe -- --nocapture --test-threads=1 --skip get_snapshot
+
 #-------------------------------[done-below]
 #ACTIVE := bitcoin-amt
 #ACTIVE := bitcoin-arena
@@ -544,6 +553,7 @@ test-mt:
 #ACTIVE := bitcoinleveldb-table
 #ACTIVE := bitcoinleveldb-tablebuilder
 #ACTIVE := bitcoinleveldb-tablecache
+#ACTIVE := bitcoinleveldbt-util
 #ACTIVE := bitcoinleveldb-tableconstructor
 #ACTIVE := bitcoinleveldb-tablerep
 #ACTIVE := bitcoinleveldb-util
