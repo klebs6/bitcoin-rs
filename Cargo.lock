@@ -3356,6 +3356,7 @@ dependencies = [
  "bitcoinleveldb-filter",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
  "bitcoinleveldb-log",
  "bitcoinleveldb-options",
  "bitcoinleveldb-posixenv",
@@ -3976,10 +3977,13 @@ dependencies = [
  "bitcoinleveldb-dbinterface",
  "bitcoinleveldb-iterator",
  "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
  "bitcoinleveldb-options",
  "bitcoinleveldb-slice",
  "bitcoinleveldb-snapshot",
  "bitcoinleveldb-status",
+ "derive_builder",
+ "getset",
  "tracing",
 ]
 
@@ -4257,6 +4261,8 @@ dependencies = [
  "bitcoinleveldb-key",
  "bitcoinleveldb-logwriter",
  "bitcoinleveldb-status",
+ "derive_builder",
+ "getset",
  "tracing",
 ]
 
@@ -5350,6 +5356,7 @@ dependencies = [
  "bitcoinleveldb-versionsetinterface",
  "bitcoinleveldb-writebatch",
  "derive_builder",
+ "disable_macro",
  "export-magic",
  "getset",
  "lock_api",

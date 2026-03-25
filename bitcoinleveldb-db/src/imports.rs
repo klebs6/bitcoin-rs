@@ -34,3 +34,4 @@ pub(crate) use bitcoinleveldb_posixenv::*;
 pub(crate) use bitcoinleveldb_repair::*;
 pub(crate) use bitcoinleveldb_bloom::*;
 pub(crate) use bitcoinleveldb_writebatch::*;
+pub(crate) use bitcoinleveldb_key::*;

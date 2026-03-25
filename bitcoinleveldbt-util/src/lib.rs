@@ -28,4 +28,3 @@ x!{special_env_delegating_env_adapter}
 x!{test_type}
 x!{temporary_dir}
 x!{unique_db_path}
-x!{snapshot_type_dispatch_glue}

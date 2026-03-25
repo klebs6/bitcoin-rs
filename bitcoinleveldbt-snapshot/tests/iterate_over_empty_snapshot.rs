@@ -5,6 +5,7 @@ use bitcoinleveldb_dbinterface::*;
 use bitcoinleveldb_iteratorinner::*;
 use bitcoinleveldbt_dbtest::*;
 use bitcoinleveldbt_util::*;
+use bitcoinleveldbt_snapshot::*;
 
 #[traced_test]
 fn db_test_iterate_over_empty_snapshot() {

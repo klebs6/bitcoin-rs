@@ -58,7 +58,78 @@ impl LevelDBSnapshot {
     }
 }
 
-impl Snapshot for LevelDBSnapshot {}
+impl Snapshot for LevelDBSnapshot {
+
+    fn snapshot_runtime_implementation_kind(&self) -> SnapshotDispatchConcreteImplementationKind {
+        trace!(
+            target: "bitcoinleveldb_db::db",
+            event = "leveldb_snapshot_runtime_implementation_kind_entry",
+            has_inner_snapshot = self.snap.is_some()
+        );
+
+        let implementation_kind = match self.snap.as_deref() {
+            Some(inner_snapshot) => inner_snapshot.snapshot_runtime_implementation_kind(),
+            None => SnapshotDispatchConcreteImplementationKind::SnapshotImpl,
+        };
+
+        trace!(
+            target: "bitcoinleveldb_db::db",
+            event = "leveldb_snapshot_runtime_implementation_kind_exit",
+            has_inner_snapshot = self.snap.is_some(),
+            implementation_kind = ?implementation_kind
+        );
+
+        implementation_kind
+    }
+
+    fn snapshot_sequence_number_for_read_reconstruction(&self) -> Option<SequenceNumber> {
+        trace!(
+            target: "bitcoinleveldb_db::db",
+            event = "leveldb_snapshot_sequence_number_for_read_reconstruction_entry",
+            has_inner_snapshot = self.snap.is_some()
+        );
+
+        let sequence_number = match self.snap.as_deref() {
+            Some(inner_snapshot) => inner_snapshot.snapshot_sequence_number_for_read_reconstruction(),
+            None => Some(*self.shadow.sequence_number()),
+        };
+
+        trace!(
+            target: "bitcoinleveldb_db::db",
+            event = "leveldb_snapshot_sequence_number_for_read_reconstruction_exit",
+            has_inner_snapshot = self.snap.is_some(),
+            has_sequence_number = sequence_number.is_some()
+        );
+
+        sequence_number
+    }
+
+    fn snapshot_read_arc_clone(&self) -> Option<Arc<dyn Snapshot>> {
+        trace!(
+            target: "bitcoinleveldb_db::db",
+            event = "leveldb_snapshot_read_arc_clone_entry",
+            has_inner_snapshot = self.snap.is_some()
+        );
+
+        let snapshot_arc = match self.snap.as_deref() {
+            Some(inner_snapshot) => inner_snapshot.snapshot_read_arc_clone(),
+            None => {
+                let sequence_number = *self.shadow.sequence_number();
+                let cloned_snapshot_arc: Arc<dyn Snapshot> = Arc::new(SnapshotImpl::new(sequence_number));
+                Some(cloned_snapshot_arc)
+            }
+        };
+
+        trace!(
+            target: "bitcoinleveldb_db::db",
+            event = "leveldb_snapshot_read_arc_clone_exit",
+            has_inner_snapshot = self.snap.is_some(),
+            produced_snapshot_arc = snapshot_arc.is_some()
+        );
+
+        snapshot_arc
+    }
+}
 
 impl Drop for LevelDBSnapshot {
     fn drop(&mut self) {

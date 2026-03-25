@@ -29,6 +29,61 @@ pub struct SnapshotImpl {
 
 impl Snapshot for SnapshotImpl {
 
+    fn snapshot_runtime_implementation_kind(&self) -> SnapshotDispatchConcreteImplementationKind {
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot_impl",
+            event = "snapshot_impl_snapshot_runtime_implementation_kind_entry",
+            sequence_number = *self.sequence_number()
+        );
+
+        let implementation_kind = SnapshotDispatchConcreteImplementationKind::SnapshotImpl;
+
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot_impl",
+            event = "snapshot_impl_snapshot_runtime_implementation_kind_exit",
+            implementation_kind = ?implementation_kind,
+            sequence_number = *self.sequence_number()
+        );
+
+        implementation_kind
+    }
+
+    fn snapshot_sequence_number_for_read_reconstruction(&self) -> Option<SequenceNumber> {
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot_impl",
+            event = "snapshot_impl_snapshot_sequence_number_for_read_reconstruction_entry",
+            sequence_number = *self.sequence_number()
+        );
+
+        let sequence_number = Some(*self.sequence_number());
+
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot_impl",
+            event = "snapshot_impl_snapshot_sequence_number_for_read_reconstruction_exit",
+            sequence_number = *self.sequence_number()
+        );
+
+        sequence_number
+    }
+
+    fn snapshot_read_arc_clone(&self) -> Option<Arc<dyn Snapshot>> {
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot_impl",
+            event = "snapshot_impl_snapshot_read_arc_clone_entry",
+            sequence_number = *self.sequence_number()
+        );
+
+        let sequence_number = *self.sequence_number();
+        let snapshot_arc: Arc<dyn Snapshot> = Arc::new(SnapshotImpl::new(sequence_number));
+
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot_impl",
+            event = "snapshot_impl_snapshot_read_arc_clone_exit",
+            sequence_number = sequence_number
+        );
+
+        Some(snapshot_arc)
+    }
 }
 
 impl SnapshotImpl {

@@ -10,17 +10,78 @@ pub trait WriteSnapshot {
     fn write_snapshot(&mut self, log: &mut LogWriter) -> Status;
 }
 
-/**
-  | Abstract handle to particular state of a DB.
-  |
-  | A Snapshot is an immutable object and can
-  | therefore be safely accessed from multiple
-  | threads without any external synchronization.
-  */
-pub trait Snapshot {
-
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum SnapshotDispatchConcreteImplementationKind {
+    ModelSnapshot,
+    SnapshotImpl,
+    Unsupported,
 }
 
+/// Abstract handle to particular state of a DB.
+/// 
+/// A Snapshot is an immutable object and can therefore be safely accessed from multiple threads
+/// without any external synchronization.
+///
+pub trait Snapshot {
+
+    /// Invariant: runtime classification is semantic and must remain stable for
+    /// the lifetime of the snapshot object. Callers must not infer this from
+    /// trait-object metadata addresses.
+    fn snapshot_runtime_implementation_kind(&self) -> SnapshotDispatchConcreteImplementationKind {
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot",
+            event = "snapshot_runtime_implementation_kind_default_entry"
+        );
+
+        let implementation_kind = SnapshotDispatchConcreteImplementationKind::Unsupported;
+
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot",
+            event = "snapshot_runtime_implementation_kind_default_exit",
+            implementation_kind = ?implementation_kind
+        );
+
+        implementation_kind
+    }
+
+    /// Invariant: a returned sequence number is valid only when sequence-only
+    /// reconstruction preserves the original read boundary exactly.
+    fn snapshot_sequence_number_for_read_reconstruction(&self) -> Option<SequenceNumber> {
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot",
+            event = "snapshot_sequence_number_for_read_reconstruction_default_entry"
+        );
+
+        let sequence_number = None;
+
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot",
+            event = "snapshot_sequence_number_for_read_reconstruction_default_exit",
+            has_sequence_number = sequence_number.is_some()
+        );
+
+        sequence_number
+    }
+
+    /// Invariant: a returned Arc must preserve the original snapshot's read
+    /// semantics exactly without consulting trait-object metadata identity.
+    fn snapshot_read_arc_clone(&self) -> Option<Arc<dyn Snapshot>> {
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot",
+            event = "snapshot_read_arc_clone_default_entry"
+        );
+
+        let snapshot_arc = None;
+
+        trace!(
+            target: "bitcoinleveldb_snapshot::snapshot",
+            event = "snapshot_read_arc_clone_default_exit",
+            produced_snapshot_arc = snapshot_arc.is_some()
+        );
+
+        snapshot_arc
+    }
+}
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/snapshot.h]
 #[cfg(test)]
 mod snapshot_trait_contract_spec {

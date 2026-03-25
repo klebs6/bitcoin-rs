@@ -11,6 +11,8 @@ description = "todo: write a description here"
 
 [dependencies]
 tracing.workspace = true
+derive_builder.workspace = true
+getset.workspace = true
 bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
 bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
@@ -20,3 +22,4 @@ bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
 bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
 bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
 bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }

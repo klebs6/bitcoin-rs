@@ -30,6 +30,7 @@ bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
 bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair" }
 bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom" }
 bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

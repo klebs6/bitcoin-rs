@@ -1194,5 +1194,3 @@ fn db_test_bisect_randomized() {
     }
 
 }
-
-

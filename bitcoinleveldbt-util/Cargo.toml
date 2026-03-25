@@ -10,6 +10,7 @@ description = "todo: write a description here"
 # categories = []
 
 [dependencies]
+disable_macro.workspace = true
 derive_builder.workspace = true
 getset.workspace = true
 lock_api.workspace = true

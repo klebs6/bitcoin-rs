@@ -275,8 +275,8 @@ members = [
     "bitcoinsecp256k1-eckey", 
     "bitcoinsecp256k1-ecmult", 
     "bitcoinsecp256k1-ecmultgen", 
-    "bitcoinsecp256k1-ecmultconst"
-, "bitcoinleveldb-dbimplinner", 
+    "bitcoinsecp256k1-ecmultconst",
+    "bitcoinleveldb-dbimplinner", 
     "bitcoinleveldbt-versionsettestutil", 
     "bitcoinleveldbt-faultinjection", 
     "bitcoinleveldbt-corruption", 
@@ -286,8 +286,16 @@ members = [
     "bitcoinleveldbt-issue178", 
     "bitcoinleveldbt-issue200", 
     "bitcoinleveldbt-util", 
-    "bitcoinleveldbt-issue320"
-, "bitcoinleveldbt-snapshot", "bitcoinleveldbt-randomized", "bitcoinleveldbt-mt", "bitcoinleveldbt-table", "bitcoinleveldb-test", "bitcoinleveldbt-issue44", "bitcoinleveldbt-issue474", "bitcoinleveldbt-sparsemerge"]
+    "bitcoinleveldbt-issue320", 
+    "bitcoinleveldbt-snapshot", 
+    "bitcoinleveldbt-randomized", 
+    "bitcoinleveldbt-mt", 
+    "bitcoinleveldbt-table", 
+    "bitcoinleveldb-test", 
+    "bitcoinleveldbt-issue44", 
+    "bitcoinleveldbt-issue474", 
+    "bitcoinleveldbt-sparsemerge" 
+]
 
 [profile.dev]
 debug = 2

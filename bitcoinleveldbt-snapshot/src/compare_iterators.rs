@@ -10,6 +10,11 @@ crate::ix!();
 /// the produced sequences are identical (pairwise in order) and their termination `Valid`
 /// flags agree.
 ///
+/// Snapshot-backed iterator construction must retain an independent `ReadOptions` owner for
+/// each side until both iterators are destroyed. Reusing one `ReadOptions` across both sides
+/// is forbidden because snapshot-backed iterator implementations may borrow snapshot-owned
+/// state during iterator creation.
+///
 pub fn compare_iterators(
     step: i32,
     model: *mut dyn DB,
@@ -30,24 +35,25 @@ pub fn compare_iterators(
         db_has_snapshot = db_snap.is_some()
     );
 
-    let mut options = ReadOptions::default();
-
-    // options.snapshot = model_snap;
-    let model_snapshot_opt: Option<Arc<dyn Snapshot + 'static>> =
-        model_snap.map(|s| snapshot_read_arc_from_snapshot_ref(s));
-
-    options.set_snapshot(model_snapshot_opt);
-
-    let miter: *mut LevelDBIterator = unsafe { (&mut *model).new_iterator(&options) };
-
-    // options.snapshot = db_snap;
-    let db_snapshot_opt: Option<Arc<dyn Snapshot>> = match db_snap {
-        Some(s) => Some(dbtest_snapshot_read_arc_from_snapshot_ref(s)),
+    let mut model_read_options: ReadOptions = ReadOptions::default();
+    let model_snapshot_opt: Option<Arc<dyn Snapshot>> = match model_snap {
+        Some(snapshot) => Some(snapshot_read_arc_from_snapshot_ref(snapshot)),
         None => None,
     };
-    options.set_snapshot(db_snapshot_opt);
+    model_read_options.set_snapshot(model_snapshot_opt);
 
-    let dbiter: *mut LevelDBIterator = unsafe { (&mut *db).new_iterator(&options) };
+    let miter: *mut LevelDBIterator =
+        unsafe { (&mut *model).new_iterator(&model_read_options) };
+
+    let mut db_read_options: ReadOptions = ReadOptions::default();
+    let db_snapshot_opt: Option<Arc<dyn Snapshot>> = match db_snap {
+        Some(snapshot) => Some(dbtest_snapshot_read_arc_from_snapshot_ref(snapshot)),
+        None => None,
+    };
+    db_read_options.set_snapshot(db_snapshot_opt);
+
+    let dbiter: *mut LevelDBIterator =
+        unsafe { (&mut *db).new_iterator(&db_read_options) };
 
     let mut ok: bool = true;
     let mut count: i32 = 0;

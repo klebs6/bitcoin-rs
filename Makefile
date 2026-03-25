@@ -46,11 +46,13 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoinsecp256k1-eccontext
 
 ACTIVE := bitcoinleveldb-harness       #loc: 297
-ACTIVE := bitcoinleveldbt-randomized
 ACTIVE := bitcoinleveldbt-issue178 #sigkill
 ACTIVE := bitcoinleveldbt-sparsemerge #hang
-ACTIVE := bitcoinleveldbt-dbtest
+ACTIVE := bitcoinleveldbt-randomized
 ACTIVE := bitcoinleveldbt-snapshot
+#ACTIVE := bitcoinleveldbt-dbtest
+#ACTIVE := bitcoinleveldb-snapshot
+#ACTIVE := bitcoinleveldb-modeldb
 #ACTIVE := bitcoinleveldbt-issue320
 
 # ---[leveldb-layer-3]
@@ -427,6 +429,15 @@ test-mt:
 test-snapshot:
 	- $(CARGO) $(TEST) --no-fail-fast -p bitcoinleveldbt-snapshot probe -- --nocapture --test-threads=1 --skip get_snapshot
 
+test-snapshot2:
+	env RUSTFLAGS=-Awarnings RUST_LOG=debug CARGO_MSG_LIMIT=15 CARGO_BUILD_JOBS=12 NUM_JOBS=12 cargo test --no-fail-fast -p bitcoinleveldbt-snapshot probe -- --nocapture --test-threads=1 --skip get_snapshot
+
+test-get-snapshot2:
+	env RUSTFLAGS=-Awarnings RUST_LOG=debug CARGO_MSG_LIMIT=15 CARGO_BUILD_JOBS=12 NUM_JOBS=12 cargo test --no-fail-fast -p bitcoinleveldbt-snapshot get_snapshot2_tests -- --nocapture --test-threads=1
+
+test-snapshot3:
+	env RUSTFLAGS=-Awarnings RUST_LOG=debug CARGO_MSG_LIMIT=15 CARGO_BUILD_JOBS=12 NUM_JOBS=12 cargo test --no-fail-fast -p bitcoinleveldbt-snapshot clue_flush_tests -- --nocapture --test-threads=1 --skip get_snapshot
+
 #-------------------------------[done-below]
 #ACTIVE := bitcoin-amt
 #ACTIVE := bitcoin-arena
@@ -544,7 +555,6 @@ test-snapshot:
 #ACTIVE := bitcoinleveldb-repair
 #ACTIVE := bitcoinleveldb-reversekeycomparator
 #ACTIVE := bitcoinleveldb-skiplist
-#ACTIVE := bitcoinleveldb-snapshot
 #ACTIVE := bitcoinleveldb-specialenv
 #ACTIVE := bitcoinleveldb-status
 #ACTIVE := bitcoinleveldb-stringsink

@@ -14,3 +14,14 @@ pub(crate) use bitcoinleveldb_iteratorinner::*;
 pub(crate) use bitcoinleveldb_tablebuilder::*;
 pub(crate) use bitcoinleveldb_erroriterator::*;
 pub(crate) use bitcoinleveldb_log::*;
+
+#[cfg(test)]
+pub(crate) use core::cmp::Ordering;
+#[cfg(test)]
+pub(crate) use core::mem::zeroed;
+#[cfg(test)]
+pub(crate) use core::ptr::null_mut;
+#[cfg(test)]
+pub(crate) use core::slice::from_raw_parts;
+#[cfg(test)]
+pub(crate) use std::panic::{catch_unwind, AssertUnwindSafe};

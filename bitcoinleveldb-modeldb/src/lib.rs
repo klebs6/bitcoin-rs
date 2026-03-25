@@ -3,9 +3,10 @@
 
 x!{modeldb}
 x!{iter}
-x!{snapshot}
 x!{model_db_write_batch_handler}
 x!{base}
+x!{model_snapshot}
+x!{snapshot_vtable}
 
 #[cfg(test)]
 mod modeldb_crate_surface_sanity_suite {

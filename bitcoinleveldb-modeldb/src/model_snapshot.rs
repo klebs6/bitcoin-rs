@@ -1,4 +1,4 @@
-// ---------------- [ File: bitcoinleveldb-modeldb/src/snapshot.rs ]
+// ---------------- [ File: bitcoinleveldb-modeldb/src/model_snapshot.rs ]
 crate::ix!();
 
 pub struct ModelSnapshot {
@@ -7,6 +7,42 @@ pub struct ModelSnapshot {
 
 impl Snapshot for ModelSnapshot {
 
+    fn snapshot_runtime_implementation_kind(&self) -> SnapshotDispatchConcreteImplementationKind {
+        trace!(
+            target: "bitcoinleveldb_modeldb::snapshot",
+            event = "model_snapshot_runtime_implementation_kind_entry",
+            map_len = self.map_ref().len()
+        );
+
+        let implementation_kind = SnapshotDispatchConcreteImplementationKind::ModelSnapshot;
+
+        trace!(
+            target: "bitcoinleveldb_modeldb::snapshot",
+            event = "model_snapshot_runtime_implementation_kind_exit",
+            implementation_kind = ?implementation_kind,
+            map_len = self.map_ref().len()
+        );
+
+        implementation_kind
+    }
+
+    fn snapshot_read_arc_clone(&self) -> Option<Arc<dyn Snapshot>> {
+        trace!(
+            target: "bitcoinleveldb_modeldb::snapshot",
+            event = "model_snapshot_read_arc_clone_entry",
+            map_len = self.map_ref().len()
+        );
+
+        let snapshot_arc: Arc<dyn Snapshot> = Arc::new(ModelSnapshot::new_from_map(self.map_ref()));
+
+        trace!(
+            target: "bitcoinleveldb_modeldb::snapshot",
+            event = "model_snapshot_read_arc_clone_exit",
+            map_len = self.map_ref().len()
+        );
+
+        Some(snapshot_arc)
+    }
 }
 
 impl ModelSnapshot {

@@ -22,7 +22,7 @@ mod test_probe {
 
     fn bitcoinleveldbt_randomized_snapshot_dispatch_emit_observation_stderr(
         label: &'static str,
-        observation: &DBTestSnapshotDispatchConcreteImplementationObservation,
+        observation: &BitcoinLevelDbTestSnapshotDispatchConcreteImplementationObservation,
     ) {
         trace!(
             target: "bitcoinleveldbt_randomized::snapshot_dispatch",
@@ -121,7 +121,7 @@ mod test_probe {
 
         assert_eq!(
             *observation.implementation_kind(),
-            DBTestSnapshotDispatchConcreteImplementationKind::Unsupported,
+            SnapshotDispatchConcreteImplementationKind::Unsupported,
         );
         assert!(observation.snapshot_sequence_number_hint().is_none());
     }
@@ -148,7 +148,7 @@ mod test_probe {
 
         assert_eq!(
             *observation.implementation_kind(),
-            DBTestSnapshotDispatchConcreteImplementationKind::ModelSnapshot,
+            SnapshotDispatchConcreteImplementationKind::ModelSnapshot,
         );
         assert!(observation.snapshot_sequence_number_hint().is_none());
     }
@@ -176,7 +176,7 @@ mod test_probe {
 
         assert_eq!(
             *observation.implementation_kind(),
-            DBTestSnapshotDispatchConcreteImplementationKind::SnapshotImpl,
+            SnapshotDispatchConcreteImplementationKind::SnapshotImpl,
         );
 
         match observation.snapshot_sequence_number_hint() {
@@ -230,7 +230,7 @@ mod test_probe {
 
                 assert_eq!(
                     *converted_observation.implementation_kind(),
-                    DBTestSnapshotDispatchConcreteImplementationKind::ModelSnapshot,
+                    SnapshotDispatchConcreteImplementationKind::ModelSnapshot,
                 );
             }
             None => {
@@ -277,7 +277,7 @@ mod test_probe {
 
                 assert_eq!(
                     *converted_observation.implementation_kind(),
-                    DBTestSnapshotDispatchConcreteImplementationKind::SnapshotImpl,
+                    SnapshotDispatchConcreteImplementationKind::SnapshotImpl,
                 );
 
                 match converted_observation.snapshot_sequence_number_hint() {

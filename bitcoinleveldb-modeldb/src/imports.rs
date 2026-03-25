@@ -10,3 +10,4 @@ pub(crate) use bitcoinleveldb_iterator::*;
 pub(crate) use bitcoinleveldb_snapshot::*;
 pub(crate) use bitcoinleveldb_batch::*;
 pub(crate) use bitcoinleveldb_iteratorinner::*;
+pub(crate) use bitcoinleveldb_key::*;
