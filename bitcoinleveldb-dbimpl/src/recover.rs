@@ -31,15 +31,6 @@ impl DBImpl {
             "DBImpl::recover: enter"
         );
 
-        eprintln!(
-            "[dbimpl-recover-live] event=dbimpl_recover_entry dbname='{}' edit_ptr={} save_manifest_ptr={} versions_ptr={} db_lock_ptr={}",
-            self.dbname,
-            edit as usize,
-            save_manifest as usize,
-            self.versions as usize,
-            self.db_lock as usize,
-        );
-
         // Ignore error from CreateDir since the creation of the DB is
         // committed only when the descriptor is created, and this directory
         // may already exist from a previous failed creation attempt.
@@ -88,16 +79,6 @@ impl DBImpl {
             "DBImpl::recover: Env::lock_file returned"
         );
 
-        eprintln!(
-            "[dbimpl-recover-live] event=dbimpl_recover_lock_file_end dbname='{}' file='{}' status_ok={} status='{}' db_lock_null={} elapsed_ms={}",
-            self.dbname,
-            lock_path,
-            s.is_ok(),
-            s.to_string(),
-            self.db_lock.is_null(),
-            t_lock.elapsed().as_millis() as u64,
-        );
-
         if s.is_ok() && self.db_lock.is_null() {
             tracing::error!(
                 target: "bitcoinleveldb_dbimpl::recover",
@@ -106,12 +87,6 @@ impl DBImpl {
                 dbname = %self.dbname,
                 file = %lock_path,
                 "Env::lock_file returned ok but output lock handle was null"
-            );
-
-            eprintln!(
-                "[dbimpl-recover-live] event=dbimpl_recover_lock_file_null_output dbname='{}' file='{}'",
-                self.dbname,
-                lock_path,
             );
 
             let msg: Slice = Slice::from_str("lock_file returned ok but output was null");
@@ -128,13 +103,6 @@ impl DBImpl {
                 status = %s.to_string(),
                 elapsed_ms = t_start.elapsed().as_millis() as u64,
                 "DBImpl::recover: early return due to lock_file failure"
-            );
-
-            eprintln!(
-                "[dbimpl-recover-live] event=dbimpl_recover_lock_file_failure dbname='{}' status='{}' elapsed_ms={}",
-                self.dbname,
-                s.to_string(),
-                t_start.elapsed().as_millis() as u64,
             );
 
             return s;
@@ -166,12 +134,6 @@ impl DBImpl {
                     "DBImpl::recover: CURRENT missing; create_if_missing=true; calling newdb()"
                 );
 
-                eprintln!(
-                    "[dbimpl-recover-live] event=dbimpl_recover_current_missing_create_db dbname='{}' current='{}'",
-                    self.dbname,
-                    current_path,
-                );
-
                 s = self.newdb();
 
                 tracing::info!(
@@ -186,7 +148,7 @@ impl DBImpl {
                 );
 
                 if !s.is_ok() {
-                    eprintln!(
+                    tracing::error!(
                         "[dbimpl-recover-live] event=dbimpl_recover_newdb_failure dbname='{}' status='{}' elapsed_ms={}",
                         self.dbname,
                         s.to_string(),
@@ -207,12 +169,6 @@ impl DBImpl {
                     "DBImpl::recover: CURRENT missing; create_if_missing=false; returning InvalidArgument"
                 );
 
-                eprintln!(
-                    "[dbimpl-recover-live] event=dbimpl_recover_current_missing_invalid_argument dbname='{}' current='{}'",
-                    self.dbname,
-                    current_path,
-                );
-
                 return Status::invalid_argument(&msg, Some(&msg2));
             }
         } else if *self.options.error_if_exists() {
@@ -226,12 +182,6 @@ impl DBImpl {
                 dbname = %self.dbname,
                 current = %current_path,
                 "DBImpl::recover: CURRENT exists; error_if_exists=true; returning InvalidArgument"
-            );
-
-            eprintln!(
-                "[dbimpl-recover-live] event=dbimpl_recover_error_if_exists dbname='{}' current='{}'",
-                self.dbname,
-                current_path,
             );
 
             return Status::invalid_argument(&msg, Some(&msg2));
@@ -259,15 +209,6 @@ impl DBImpl {
             save_manifest_value = if save_manifest.is_null() { false } else { unsafe { *save_manifest } },
             elapsed_ms = t_vrecover.elapsed().as_millis() as u64,
             "DBImpl::recover: VersionSet::recover returned"
-        );
-
-        eprintln!(
-            "[dbimpl-recover-live] event=dbimpl_recover_versionset_recover_end dbname='{}' status_ok={} status='{}' save_manifest_value={} elapsed_ms={}",
-            self.dbname,
-            s.is_ok(),
-            s.to_string(),
-            if save_manifest.is_null() { false } else { unsafe { *save_manifest } },
-            t_vrecover.elapsed().as_millis() as u64,
         );
 
         if !s.is_ok() {
@@ -321,15 +262,6 @@ impl DBImpl {
             "DBImpl::recover: Env::get_children returned"
         );
 
-        eprintln!(
-            "[dbimpl-recover-live] event=dbimpl_recover_get_children_end dbname='{}' status_ok={} status='{}' elapsed_ms={} child_count={}",
-            self.dbname,
-            s.is_ok(),
-            s.to_string(),
-            t_children.elapsed().as_millis() as u64,
-            filenames.len() as u64,
-        );
-
         if !s.is_ok() {
             return s;
         }
@@ -362,13 +294,6 @@ impl DBImpl {
             "DBImpl::recover: VersionSet::add_live_files returned"
         );
 
-        eprintln!(
-            "[dbimpl-recover-live] event=dbimpl_recover_add_live_files_end dbname='{}' live_files={} elapsed_ms={}",
-            self.dbname,
-            expected_live.len() as u64,
-            t_live.elapsed().as_millis() as u64,
-        );
-
         let mut expected: std::collections::BTreeSet<u64> = expected_live.into_iter().collect::<std::collections::BTreeSet<u64>>();
         let mut logs: Vec<u64> = Vec::new();
 
@@ -397,15 +322,6 @@ impl DBImpl {
             "DBImpl::recover: selected candidate logs"
         );
 
-        eprintln!(
-            "[dbimpl-recover-live] event=dbimpl_recover_logs_selected dbname='{}' min_log={} prev_log={} logs_selected={} missing_expected={}",
-            self.dbname,
-            min_log,
-            prev_log,
-            logs.len() as u64,
-            expected.len() as u64,
-        );
-
         if !expected.is_empty() {
             let buf_string: String = format!("{} missing files; e.g.", expected.len());
             let msg: Slice = Slice::from_str(&buf_string);
@@ -425,13 +341,6 @@ impl DBImpl {
                 "DBImpl::recover: missing expected live files; returning corruption"
             );
 
-            eprintln!(
-                "[dbimpl-recover-live] event=dbimpl_recover_missing_expected_live_files dbname='{}' missing_count={} example='{}'",
-                self.dbname,
-                expected.len() as u64,
-                first_missing_path.clone().unwrap_or_else(|| String::from("<none>")),
-            );
-
             match first_missing_path {
                 Some(first_fname) => {
                     let msg2 = Slice::from(&first_fname);
@@ -447,7 +356,7 @@ impl DBImpl {
         logs.sort();
 
         if logs.is_empty() {
-            eprintln!(
+            tracing::info!(
                 "[dbimpl-recover-live] event=dbimpl_recover_no_logs_to_replay dbname='{}' min_log={} prev_log={}",
                 self.dbname,
                 min_log,
@@ -465,14 +374,6 @@ impl DBImpl {
                 idx = i as u64,
                 last = (i == logs.len().saturating_sub(1)),
                 "DBImpl::recover: calling recover_log_file"
-            );
-
-            eprintln!(
-                "[dbimpl-recover-live] event=dbimpl_recover_log_file_begin dbname='{}' log_number={} idx={} last={}",
-                self.dbname,
-                log_number,
-                i as u64,
-                i == logs.len().saturating_sub(1),
             );
 
             let t_log = std::time::Instant::now();
@@ -495,16 +396,6 @@ impl DBImpl {
                 elapsed_ms = t_log.elapsed().as_millis() as u64,
                 max_sequence,
                 "DBImpl::recover: recover_log_file returned"
-            );
-
-            eprintln!(
-                "[dbimpl-recover-live] event=dbimpl_recover_log_file_end dbname='{}' log_number={} status_ok={} status='{}' elapsed_ms={} max_sequence={}",
-                self.dbname,
-                log_number,
-                s.is_ok(),
-                s.to_string(),
-                t_log.elapsed().as_millis() as u64,
-                max_sequence,
             );
 
             if !s.is_ok() {
@@ -549,16 +440,6 @@ impl DBImpl {
             save_manifest_value = if save_manifest.is_null() { false } else { unsafe { *save_manifest } },
             elapsed_ms = t_start.elapsed().as_millis() as u64,
             "DBImpl::recover: exit ok"
-        );
-
-        eprintln!(
-            "[dbimpl-recover-live] event=dbimpl_recover_exit dbname='{}' status_ok=true max_sequence={} previous_last_sequence={} final_last_sequence={} save_manifest_value={} elapsed_ms={}",
-            self.dbname,
-            max_sequence,
-            previous_last_sequence,
-            unsafe { (*self.versions).last_sequence() },
-            if save_manifest.is_null() { false } else { unsafe { *save_manifest } },
-            t_start.elapsed().as_millis() as u64,
         );
 
         Status::ok()

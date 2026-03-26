@@ -50,7 +50,6 @@ ACTIVE := bitcoinleveldbt-issue178 #sigkill
 ACTIVE := bitcoinleveldbt-sparsemerge #hang
 ACTIVE := bitcoinleveldbt-randomized
 ACTIVE := bitcoinleveldbt-snapshot
-#ACTIVE := bitcoinleveldbt-dbtest
 #ACTIVE := bitcoinleveldb-snapshot
 #ACTIVE := bitcoinleveldb-modeldb
 #ACTIVE := bitcoinleveldbt-issue320
@@ -262,6 +261,7 @@ INDIVIDUAL_TEST := db_open_fails_with_error_if_exists_and_leaves_dbptr_null
 INDIVIDUAL_TEST := new_iterator_returns_non_null_iterator_on_open_database
 INDIVIDUAL_TEST := test_new_internal_iterator_returns_non_null_iterator
 INDIVIDUAL_TEST := new_internal_iterator_increments_seed_and_returns_non_null_iterators
+INDIVIDUAL_TEST := probes
 #INDIVIDUAL_TEST := delete_obsolete_files
 
 
@@ -427,7 +427,7 @@ test-mt:
 	RUST_BACKTRACE=1 $(CARGO) test -p bitcoinleveldbt-mt mt_test::db_test_multi_threaded -- --nocapture --test-threads=1
 
 test-snapshot:
-	- $(CARGO) $(TEST) --no-fail-fast -p bitcoinleveldbt-snapshot probe -- --nocapture --test-threads=1 --skip get_snapshot
+	- $(CARGO) $(TEST) --no-fail-fast -p bitcoinleveldbt-snapshot clue_flush_tests -- --nocapture --test-threads=1 --skip get_snapshot
 
 test-snapshot2:
 	env RUSTFLAGS=-Awarnings RUST_LOG=debug CARGO_MSG_LIMIT=15 CARGO_BUILD_JOBS=12 NUM_JOBS=12 cargo test --no-fail-fast -p bitcoinleveldbt-snapshot probe -- --nocapture --test-threads=1 --skip get_snapshot
@@ -436,7 +436,7 @@ test-get-snapshot2:
 	env RUSTFLAGS=-Awarnings RUST_LOG=debug CARGO_MSG_LIMIT=15 CARGO_BUILD_JOBS=12 NUM_JOBS=12 cargo test --no-fail-fast -p bitcoinleveldbt-snapshot get_snapshot2_tests -- --nocapture --test-threads=1
 
 test-snapshot3:
-	env RUSTFLAGS=-Awarnings RUST_LOG=debug CARGO_MSG_LIMIT=15 CARGO_BUILD_JOBS=12 NUM_JOBS=12 cargo test --no-fail-fast -p bitcoinleveldbt-snapshot clue_flush_tests -- --nocapture --test-threads=1 --skip get_snapshot
+	env RUSTFLAGS=-Awarnings RUST_LOG=debug CARGO_MSG_LIMIT=15 CARGO_BUILD_JOBS=12 NUM_JOBS=12 cargo test --no-fail-fast -p bitcoinleveldbt-snapshot clue_dbtest_bridge -- --nocapture --test-threads=1 --skip get_snapshot
 
 #-------------------------------[done-below]
 #ACTIVE := bitcoin-amt
@@ -613,3 +613,4 @@ test-snapshot3:
 #ACTIVE := bitcoinleveldbt-mt
 #ACTIVE := bitcoinleveldbt-autocompaction #there exists a hang here
 #ACTIVE := bitcoinleveldbt-issue44
+#ACTIVE := bitcoinleveldbt-dbtest

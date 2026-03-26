@@ -2,22 +2,8 @@
 crate::ix!();
 
 impl Table {
-    /// Preconditions:
-    /// - `size` is the authoritative byte length of `file`.
-    ///
-    /// Postconditions:
-    /// - On success, the returned table reads index and data blocks under the exact comparator
-    ///   and filter policy carried by `options`.
-    ///
-    /// Invariant:
-    /// - Replacing the caller-supplied comparator or filter policy with bytewise or null
-    ///   defaults is forbidden. SSTable lookup order must remain identical to the ordering
-    ///   regime active when the table was built or recovered.
-    pub fn open(
-        options: &Options,
-        file:    Rc<RefCell<dyn RandomAccessFile>>,
-        size:    u64,
-    ) -> Result<Box<Table>, Status> {
+
+    pub fn open(options: &Options, file: Rc<RefCell<dyn RandomAccessFile>>, size: u64) -> Result<Box<Table>, Status> {
         trace!(
             "Table::open: size={}, footer_len={}",
             size,
@@ -129,12 +115,15 @@ impl Table {
             }
         };
 
-        let mut rep_options = options.clone();
-        rep_options.set_comparator(Arc::new(BytewiseComparatorImpl::default()));
-        rep_options.set_filter_policy(Arc::new(NullFilterPolicy::default()));
-
+        // Preserve the caller-provided comparator and filter policy exactly.
+        //
+        // DB callers arrive here with sanitized internal-key-aware options,
+        // while focused regression tests may intentionally supply custom
+        // comparator or bloom-filter semantics. Replacing either here makes
+        // reopened SSTables seek under the wrong ordering and silently drops
+        // filter behavior.
         let rep = TableRep::new(
-            rep_options.clone(),
+            options.clone(),
             file.clone(),
             cache_id,
             *footer.metaindex_handle(),

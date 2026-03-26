@@ -12,13 +12,6 @@ impl ReuseManifest for VersionSet {
             "VersionSet::reuse_manifest: enter"
         );
 
-        eprintln!(
-            "[versionset-reuse-live] event=versionset_reuse_manifest_entry dbname='{}' dscname='{}' dscbase='{}'",
-            self.dbname(),
-            dscname,
-            dscbase,
-        );
-
         let reuse_logs_enabled: bool = unsafe { *(*self.options()).reuse_logs() };
         if !reuse_logs_enabled {
             debug!(
@@ -29,14 +22,6 @@ impl ReuseManifest for VersionSet {
                 dscbase = %dscbase,
                 reuse_logs_enabled,
                 "VersionSet::reuse_manifest: reuse_logs disabled"
-            );
-
-            eprintln!(
-                "[versionset-reuse-live] event=versionset_reuse_manifest_disabled dbname='{}' dscname='{}' dscbase='{}' reuse_logs_enabled={}",
-                self.dbname(),
-                dscname,
-                dscbase,
-                reuse_logs_enabled,
             );
 
             return false;
@@ -67,15 +52,6 @@ impl ReuseManifest for VersionSet {
                 "VersionSet::reuse_manifest: parse/type precondition rejected reuse"
             );
 
-            eprintln!(
-                "[versionset-reuse-live] event=versionset_reuse_manifest_parse_rejected dbname='{}' dscname='{}' dscbase='{}' parsed_ok={} manifest_type='{:?}'",
-                self.dbname(),
-                dscname,
-                dscbase,
-                parsed_ok,
-                manifest_type,
-            );
-
             return false;
         }
 
@@ -89,13 +65,6 @@ impl ReuseManifest for VersionSet {
                     dscname = %dscname,
                     dscbase = %dscbase,
                     "VersionSet::reuse_manifest: Options.env is None"
-                );
-
-                eprintln!(
-                    "[versionset-reuse-live] event=versionset_reuse_manifest_missing_env dbname='{}' dscname='{}' dscbase='{}'",
-                    self.dbname(),
-                    dscname,
-                    dscbase,
                 );
 
                 return false;
@@ -118,15 +87,6 @@ impl ReuseManifest for VersionSet {
                 "VersionSet::reuse_manifest: get_file_size failed"
             );
 
-            eprintln!(
-                "[versionset-reuse-live] event=versionset_reuse_manifest_size_failure dbname='{}' dscname='{}' dscbase='{}' manifest_number={} status='{}'",
-                self.dbname(),
-                dscname,
-                dscbase,
-                manifest_number,
-                size_status.to_string(),
-            );
-
             return false;
         }
 
@@ -143,16 +103,6 @@ impl ReuseManifest for VersionSet {
                 manifest_size,
                 target_u64,
                 "VersionSet::reuse_manifest: manifest too large to reuse"
-            );
-
-            eprintln!(
-                "[versionset-reuse-live] event=versionset_reuse_manifest_too_large dbname='{}' dscname='{}' dscbase='{}' manifest_number={} manifest_size={} target_u64={}",
-                self.dbname(),
-                dscname,
-                dscbase,
-                manifest_number,
-                manifest_size,
-                target_u64,
             );
 
             return false;
@@ -186,17 +136,6 @@ impl ReuseManifest for VersionSet {
                 "VersionSet::reuse_manifest: NewAppendableFile failed"
             );
 
-            eprintln!(
-                "[versionset-reuse-live] event=versionset_reuse_manifest_append_failure dbname='{}' dscname='{}' dscbase='{}' manifest_number={} manifest_size={} target_u64={} status='{}'",
-                self.dbname(),
-                dscname,
-                dscbase,
-                manifest_number,
-                manifest_size,
-                target_u64,
-                append_status.to_string(),
-            );
-
             assert!(
                 self.descriptor_file().is_null(),
                 "VersionSet::reuse_manifest: descriptor_file must remain null on failure"
@@ -215,16 +154,6 @@ impl ReuseManifest for VersionSet {
                 manifest_size,
                 target_u64,
                 "VersionSet::reuse_manifest: Env returned OK but file pointer is null"
-            );
-
-            eprintln!(
-                "[versionset-reuse-live] event=versionset_reuse_manifest_append_null_output dbname='{}' dscname='{}' dscbase='{}' manifest_number={} manifest_size={} target_u64={}",
-                self.dbname(),
-                dscname,
-                dscbase,
-                manifest_number,
-                manifest_size,
-                target_u64,
             );
 
             return false;
@@ -272,18 +201,6 @@ impl ReuseManifest for VersionSet {
             descriptor_log_ptr = self.descriptor_log() as usize,
             reused = true,
             "VersionSet::reuse_manifest: exit"
-        );
-
-        eprintln!(
-            "[versionset-reuse-live] event=versionset_reuse_manifest_exit dbname='{}' dscname='{}' dscbase='{}' manifest_number={} manifest_size={} target_u64={} descriptor_file_ptr={} descriptor_log_ptr={} reused=true",
-            self.dbname(),
-            dscname,
-            dscbase,
-            manifest_number,
-            manifest_size,
-            target_u64,
-            (self.descriptor_file() as *mut ()) as usize,
-            self.descriptor_log() as usize,
         );
 
         true

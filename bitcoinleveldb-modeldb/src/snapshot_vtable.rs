@@ -95,7 +95,6 @@ pub fn snapshot_trait_object_parts(snapshot: &dyn Snapshot) -> (*const (), *cons
     parts
 }
 
-
 pub fn dbtest_snapshot_dispatch_concrete_implementation_observation_from_snapshot_ref(
     snapshot: &dyn Snapshot,
 ) -> BitcoinLevelDbTestSnapshotDispatchConcreteImplementationObservation {

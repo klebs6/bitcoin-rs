@@ -15,12 +15,6 @@ impl bitcoinleveldb_logreader::LogReaderReporter for VersionSetRecoverCorruption
             "VersionSet::recover: log corruption reported"
         );
 
-        eprintln!(
-            "[versionset-recover-live] event=versionset_recover_manifest_corruption bytes={} status='{}'",
-            bytes,
-            st.to_string(),
-        );
-
         unsafe {
             if !self.status.is_null() && (*self.status).is_ok() {
                 (*self.status) = Status::new_from_other_copy(st);
@@ -40,12 +34,6 @@ impl Recover for VersionSet {
             "VersionSet::recover: enter"
         );
 
-        eprintln!(
-            "[versionset-recover-live] event=versionset_recover_entry dbname='{}' save_manifest_ptr={}",
-            self.dbname(),
-            save_manifest as usize,
-        );
-
         assert!(
             !save_manifest.is_null(),
             "VersionSet::recover: save_manifest out-param is null"
@@ -63,11 +51,6 @@ impl Recover for VersionSet {
                     event = "versionset_recover_missing_env",
                     dbname = %self.dbname(),
                     "VersionSet::recover: Options.env is None"
-                );
-
-                eprintln!(
-                    "[versionset-recover-live] event=versionset_recover_missing_env dbname='{}'",
-                    self.dbname(),
                 );
 
                 let msg = Slice::from("VersionSet::recover: Options.env is None");
@@ -91,14 +74,6 @@ impl Recover for VersionSet {
             "VersionSet::recover: read CURRENT"
         );
 
-        eprintln!(
-            "[versionset-recover-live] event=versionset_recover_read_current dbname='{}' current_name='{}' status_ok={} status='{}'",
-            self.dbname(),
-            current_name,
-            s.is_ok(),
-            s.to_string(),
-        );
-
         if !s.is_ok() {
             let create_if_missing = unsafe { *(*self.options()).create_if_missing() };
             if s.is_not_found() && create_if_missing {
@@ -107,11 +82,6 @@ impl Recover for VersionSet {
                     event = "versionset_recover_current_missing_create_manifest",
                     dbname = %self.dbname(),
                     "VersionSet::recover: CURRENT missing and create_if_missing=true; creating new manifest"
-                );
-
-                eprintln!(
-                    "[versionset-recover-live] event=versionset_recover_current_missing_create_manifest dbname='{}'",
-                    self.dbname(),
                 );
 
                 self.set_manifest_file_number(1);
@@ -144,13 +114,6 @@ impl Recover for VersionSet {
                         manifest = %manifest,
                         status = %s.to_string(),
                         "VersionSet::recover: failed to create initial MANIFEST"
-                    );
-
-                    eprintln!(
-                        "[versionset-recover-live] event=versionset_recover_create_initial_manifest_failure dbname='{}' manifest='{}' status='{}'",
-                        self.dbname(),
-                        manifest,
-                        s.to_string(),
                     );
 
                     return s;
@@ -226,7 +189,7 @@ impl Recover for VersionSet {
                 }
 
                 if !snap_status.is_ok() {
-                    eprintln!(
+                    tracing::error!(
                         "[versionset-recover-live] event=versionset_recover_initial_write_snapshot_failure dbname='{}' manifest='{}' status='{}'",
                         self.dbname(),
                         manifest,
@@ -236,7 +199,7 @@ impl Recover for VersionSet {
                 }
 
                 if !sync_status.is_ok() {
-                    eprintln!(
+                    tracing::error!(
                         "[versionset-recover-live] event=versionset_recover_initial_manifest_sync_failure dbname='{}' manifest='{}' status='{}'",
                         self.dbname(),
                         manifest,
@@ -271,12 +234,6 @@ impl Recover for VersionSet {
                     "VersionSet::recover: created new CURRENT+MANIFEST; exit ok"
                 );
 
-                eprintln!(
-                    "[versionset-recover-live] event=versionset_recover_created_new_manifest_exit dbname='{}' status_ok=true save_manifest={}",
-                    self.dbname(),
-                    unsafe { *save_manifest },
-                );
-
                 return Status::ok();
             }
 
@@ -303,15 +260,6 @@ impl Recover for VersionSet {
             status = %s.to_string(),
             file_ptr = file_ptr as usize,
             "VersionSet::recover: opened descriptor file"
-        );
-
-        eprintln!(
-            "[versionset-recover-live] event=versionset_recover_open_manifest dbname='{}' descriptor='{}' status_ok={} status='{}' file_ptr={}",
-            self.dbname(),
-            dscname,
-            s.is_ok(),
-            s.to_string(),
-            file_ptr as usize,
         );
 
         if !s.is_ok() {
@@ -378,13 +326,6 @@ impl Recover for VersionSet {
                         "VersionSet::recover: manifest replay progress"
                     );
 
-                    eprintln!(
-                        "[versionset-recover-live] event=versionset_recover_manifest_progress dbname='{}' descriptor='{}' manifest_records_seen={} manifest_edits_applied={}",
-                        self.dbname(),
-                        dscname,
-                        manifest_records_seen,
-                        manifest_edits_applied,
-                    );
                 }
 
                 let mut edit = VersionEdit::default();
@@ -462,24 +403,6 @@ impl Recover for VersionSet {
             "VersionSet::recover: manifest replay summary"
         );
 
-        eprintln!(
-            "[versionset-recover-live] event=versionset_recover_manifest_replay_summary dbname='{}' descriptor='{}' status_ok={} status='{}' manifest_records_seen={} manifest_edits_applied={} have_log_number={} have_prev_log_number={} have_next_file={} have_last_sequence={} next_file={} last_sequence={} log_number={} prev_log_number={}",
-            self.dbname(),
-            dscname,
-            s.is_ok(),
-            s.to_string(),
-            manifest_records_seen,
-            manifest_edits_applied,
-            have_log_number,
-            have_prev_log_number,
-            have_next_file,
-            have_last_sequence,
-            next_file,
-            last_sequence,
-            log_number,
-            prev_log_number,
-        );
-
         if s.is_ok() {
             if !have_next_file {
                 let msg = Slice::from("no meta-nextfile entry in descriptor");
@@ -528,11 +451,6 @@ impl Recover for VersionSet {
                         dbname = %self.dbname(),
                         error = ?build_error,
                         "VersionSet::recover: failed to build recovered Version"
-                    );
-
-                    eprintln!(
-                        "[versionset-recover-live] event=versionset_recover_build_version_failure dbname='{}'",
-                        self.dbname(),
                     );
 
                     let msg = Slice::from("failed to build recovered Version");
@@ -585,20 +503,6 @@ impl Recover for VersionSet {
                 "VersionSet::recover: exit"
             );
 
-            eprintln!(
-                "[versionset-recover-live] event=versionset_recover_exit dbname='{}' status_ok={} save_manifest={} manifest_reused={} manifest_records_seen={} manifest_edits_applied={} next_file={} last_sequence={} log_number={} prev_log_number={}",
-                self.dbname(),
-                s.is_ok(),
-                unsafe { *save_manifest },
-                manifest_reused,
-                manifest_records_seen,
-                manifest_edits_applied,
-                next_file,
-                last_sequence,
-                log_number,
-                prev_log_number,
-            );
-
             return s;
         }
 
@@ -612,16 +516,6 @@ impl Recover for VersionSet {
             manifest_records_seen,
             manifest_edits_applied,
             "VersionSet::recover: exit"
-        );
-
-        eprintln!(
-            "[versionset-recover-live] event=versionset_recover_exit_error dbname='{}' status_ok={} status='{}' save_manifest={} manifest_records_seen={} manifest_edits_applied={}",
-            self.dbname(),
-            s.is_ok(),
-            s.to_string(),
-            unsafe { *save_manifest },
-            manifest_records_seen,
-            manifest_edits_applied,
         );
 
         s

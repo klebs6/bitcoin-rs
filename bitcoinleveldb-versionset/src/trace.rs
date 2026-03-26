@@ -96,20 +96,6 @@ impl VersionSet {
             tail_vset_meta = ?tail_vset_meta,
             "VersionSet move diagnostics: version-list and trait-object pointers"
         );
-
-        eprintln!(
-            "[versionset-move-diagnostics] dbname='{}' ctx='{}' self={:#x} dummy={:#x} head={:#x} tail={:#x} head.prev={:#x} tail.next={:#x} self_iface.data={:#x} head.vset.data={:#x}",
-            self.dbname(),
-            context,
-            self_ptr as usize,
-            dummy_ptr as usize,
-            head_ptr as usize,
-            tail_ptr as usize,
-            head_prev as usize,
-            tail_next as usize,
-            self_iface_data as usize,
-            head_vset_data as usize
-        );
     }
 }
 

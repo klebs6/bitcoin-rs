@@ -2494,3 +2494,39 @@ fn db_test_bloom_filter() {
         options.set_block_cache(null_mut::<Cache>());
     }
 }
+
+#[traced_test]
+fn db_test_table_open_preserves_configured_comparator_for_reopened_sstable_point_lookups() {
+    let mut dbtest = DBTest::default();
+
+    let mut options = dbtest.current_options();
+    options.set_create_if_missing(true);
+    options.set_error_if_exists(false);
+    options.set_comparator(Arc::new(DBTestBracketedIntegerComparator::default()));
+    options.set_filter_policy(Arc::new(NullFilterPolicy::default()));
+
+    dbtest.destroy_and_reopen(Some(&mut options));
+
+    let stored_key = "[10]".to_string();
+    let stored_value = "ten".to_string();
+
+    assert!(dbtest.put(&stored_key, &stored_value).is_ok());
+
+    // Force the value out of the memtable so the next read has to go through the
+    // table-open / table-cache path rather than succeeding accidentally from the
+    // in-memory comparator surface.
+    assert!(dbtest_fixture_test_compact_memtable_status(&mut dbtest).is_ok());
+
+    // Reopen to make the probe use a freshly opened SSTable.
+    dbtest.reopen(Some(&mut options));
+
+    let equivalent_lookup_key = "[0xa]".to_string();
+
+    // If Table::open silently falls back to bytewise order, this becomes NOT_FOUND
+    // once reads are served from the reopened SSTable instead of the memtable.
+    assert_eq!(
+        "ten",
+        dbtest.get(&equivalent_lookup_key, None),
+        "reopened SSTable point lookups must keep using the configured comparator semantics",
+    );
+}

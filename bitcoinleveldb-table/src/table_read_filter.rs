@@ -87,11 +87,11 @@ impl Table {
                 );
             }
 
-            // FilterPolicy is a trait object and not Clone; we materialize a fresh
-            // NullFilterPolicy instance for the FilterBlockReader, matching the
-            // existing NullFilterPolicy-based configuration used in open().
+            // Reuse the exact policy stored on the table rep. Rebuilding the
+            // reader with a null policy discards bloom/internal-filter semantics
+            // on reopened tables and turns targeted probes into false misses.
             let cloned_policy: Arc<dyn FilterPolicy> =
-                Arc::new(NullFilterPolicy::default());
+                Arc::clone(rep.options().filter_policy());
 
             let filter_reader =
                 FilterBlockReader::new(cloned_policy, block.data());
