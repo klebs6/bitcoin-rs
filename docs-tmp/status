@@ -1,0 +1,387 @@
+----------------------------------------[here-is-what-is-already-done]
+bitcoin-aes
+bitcoin-amt
+bitcoin-arena
+bitcoin-argsman
+bitcoin-asmap
+bitcoin-autofile
+bitcoin-base58
+bitcoin-bech32m
+bitcoin-bitstream
+bitcoin-blob
+bitcoin-bufferedfile
+bitcoin-chacha
+bitcoin-compat
+bitcoin-crc32c
+bitcoin-cuckoo-cache
+bitcoin-epoch
+bitcoin-fees
+bitcoin-get-json-token
+bitcoin-golombrice
+bitcoin-hash
+bitcoin-hmac-sha256
+bitcoin-hmac-sha512
+bitcoin-indirectmap
+bitcoin-locked-page-allocator
+bitcoin-locked-pool
+bitcoin-log
+bitcoin-mem
+bitcoin-muhash
+bitcoin-network
+bitcoin-poly1305
+bitcoin-random
+bitcoin-remote
+bitcoin-ripemd
+bitcoin-scheduler
+bitcoin-serialize
+bitcoin-service
+bitcoin-service-flags
+bitcoin-settings
+bitcoin-sha1
+bitcoin-sha256
+bitcoin-sha256-hkdf
+bitcoin-sha256-sse41
+bitcoin-sha3
+bitcoin-sha512
+bitcoin-siphash
+bitcoin-sock
+bitcoin-string
+bitcoin-support
+bitcoin-sync
+bitcoin-syscall
+bitcoin-time
+bitcoin-tokenpipe
+bitcoin-tx-confirm-stats
+bitcoin-u160
+bitcoin-u256
+bitcoin-univalue
+bitcoin-vectorstream
+bitcoin-version
+bitcoinchain-client
+bitcoinchain-interface
+bitcoinchain-notifications
+bitcoinleveldb-arena
+bitcoinleveldb-batch
+bitcoinleveldb-block
+bitcoinleveldb-blockbuilder
+bitcoinleveldb-blockconstructor
+bitcoinleveldb-blockhandle
+bitcoinleveldb-blockiter
+bitcoinleveldb-blockutil
+bitcoinleveldb-bloom
+bitcoinleveldb-cache
+bitcoinleveldb-cfg
+bitcoinleveldb-coding
+bitcoinleveldb-compaction
+bitcoinleveldb-compactionstats
+bitcoinleveldb-comparator
+bitcoinleveldb-compat
+bitcoinleveldb-crc32
+bitcoinleveldb-db
+bitcoinleveldb-dbconstructor
+bitcoinleveldb-dbimpl
+bitcoinleveldb-dbimplwriter
+bitcoinleveldb-dbinterface
+bitcoinleveldb-dbiter
+bitcoinleveldb-dbiterstate
+bitcoinleveldb-dumpfile
+bitcoinleveldb-duplex
+bitcoinleveldb-emptyiterator
+bitcoinleveldb-env
+bitcoinleveldb-erroriterator
+bitcoinleveldb-file
+bitcoinleveldb-filter
+bitcoinleveldb-footer
+bitcoinleveldb-hash
+bitcoinleveldb-histogram
+bitcoinleveldb-iterator
+bitcoinleveldb-iteratorinner
+bitcoinleveldb-key
+bitcoinleveldb-keyconvertingiterator
+bitcoinleveldb-limiter
+bitcoinleveldb-log
+bitcoinleveldb-logreader
+bitcoinleveldb-logtools
+bitcoinleveldb-logwriter
+bitcoinleveldb-lru
+bitcoinleveldb-memenv
+bitcoinleveldb-memtable
+bitcoinleveldb-merger
+bitcoinleveldb-modeldb
+bitcoinleveldb-options
+bitcoinleveldb-posix
+bitcoinleveldb-posixenv
+bitcoinleveldb-posixlogger
+bitcoinleveldb-posixmmaprfile
+bitcoinleveldb-posixrafile
+bitcoinleveldb-posixseqfile
+bitcoinleveldb-posixtools
+bitcoinleveldb-posixwfile
+bitcoinleveldb-rand
+bitcoinleveldb-repair
+bitcoinleveldb-reversekeycomparator
+bitcoinleveldb-skiplist
+bitcoinleveldb-slice
+bitcoinleveldb-specialenv
+bitcoinleveldb-status
+bitcoinleveldb-stringsink
+bitcoinleveldb-stringsource
+bitcoinleveldb-sync
+bitcoinleveldb-table
+bitcoinleveldb-tablebuilder
+bitcoinleveldb-tablecache
+bitcoinleveldb-tableconstructor
+bitcoinleveldb-tablerep
+bitcoinleveldb-test
+bitcoinleveldb-util
+bitcoinleveldb-version
+bitcoinleveldb-versionedit
+bitcoinleveldb-versioniterator
+bitcoinleveldb-versionset
+bitcoinleveldb-versionsetinterface
+bitcoinleveldb-versionsetutil
+bitcoinleveldbt-autocompaction
+bitcoinleveldbt-bench
+bitcoinleveldbt-capi
+bitcoinleveldbt-corruption
+bitcoinleveldbt-dbtest
+bitcoinleveldbt-env
+bitcoinleveldbt-faultinjection
+bitcoinleveldbt-issue200
+bitcoinleveldbt-issue44
+bitcoinleveldbt-issue474
+bitcoinleveldbt-mockversionset
+bitcoinleveldbt-mt
+bitcoinleveldbt-recovery
+bitcoinleveldbt-table
+bitcoinleveldbt-util
+bitcoinleveldbt-versionsettestutil
+bitcoinsecp256k1-ecmult
+bitcoinsecp256k1-ecmultgen
+bitcoinsecp256k1-fe10x26 
+bitcoinsecp256k1-fe5x52
+bitcoinsecp256k1-field
+bitcoinsecp256k1-group
+bitcoinsecp256k1-modinv
+bitcoinsecp256k1-modinv32
+bitcoinsecp256k1-modinv64
+bitcoinsecp256k1-scalar
+bitcoinsecp256k1-scratch
+
+# the packages below are interface-compiling but not yet fully function body
+# translated or tested
+#
+# i have decomposed the problem into blocks and layers
+#
+#----------------------------------------[active]
+ACTIVE := bitcoinsecp256k1-eccontext
+
+ACTIVE := bitcoinleveldb-harness       #loc: 297
+ACTIVE := bitcoinleveldbt-sparsemerge #hang
+ACTIVE := bitcoinleveldbt-issue178 #sigkill
+ACTIVE := bitcoinleveldbt-randomized
+ACTIVE := bitcoinleveldbt-snapshot
+#ACTIVE := bitcoinleveldb-snapshot
+#ACTIVE := bitcoinleveldb-modeldb
+#ACTIVE := bitcoinleveldbt-issue320
+
+# ---[leveldb-layer-3]
+#ACTIVE := bitcoin-leveldb              #loc: 36
+
+#-------------------------------[active-below]
+# ---[secp-layer-4]
+#ACTIVE := bitcoinsecp256k1-ecmultconst
+# ---[secp-layer-4b]
+#ACTIVE := bitcoinsecp256k1-ecdh
+#ACTIVE := bitcoinsecp256k1-ecdsa
+#ACTIVE := bitcoinsecp256k1-ecdsasignature
+#ACTIVE := bitcoinsecp256k1-eckey
+# ---[secp-layer-5]
+#ACTIVE := bitcoinsecp256k1-ec
+#ACTIVE := bitcoinsecp256k1-keys     #loc: 1556
+#ACTIVE := bitcoinsecp256k1-parse    #loc: 512
+#ACTIVE := bitcoinsecp256k1-recovery #loc: 992
+# ---[secp-layer-6]
+#ACTIVE := bitcoinsecp256k1-bench    #loc: 1643
+#ACTIVE := bitcoinsecp256k1-schnorr  #loc: 1876
+# ---[secp-layer-4]
+#ACTIVE := bitcoin-secp256k1         #loc: 10730
+
+#----------------------------------------[block-1]
+# ---[layer 0]
+#ACTIVE := bitcoin-checkqueue      #loc: 365
+#ACTIVE := bitcoin-validation      #loc: 153
+
+# ---[layer 1]
+#ACTIVE := bitcoin-subnet          #loc: 337
+
+#----------------------------------------[block-2]
+# ---[layer 2]
+#ACTIVE := bitcoin-addr            #loc: 431
+#ACTIVE := bitcoin-netpermissions  #loc: 319
+#ACTIVE := bitcoin-proxy           #loc: 1088
+#ACTIVE := bitcoin-sam             #loc: 999
+
+# ---[layer 3]
+#ACTIVE := bitcoin-dns             #loc: 298
+
+# ---[layer 4]
+#ACTIVE := bitcoin-key             #loc: 1980
+
+# ---[layer 5]
+#ACTIVE := bitcoin-hdchain         #loc: 165
+#ACTIVE := bitcoin-message         #loc: 202
+
+# ---[layer 6]
+#ACTIVE := bitcoin-crypter         #loc: 320
+
+# ---[layer 7]
+#ACTIVE := bitcoin-scripting       #loc: 6547
+
+# ---[layer 8]
+#ACTIVE := bitcoin-compressor      #loc: 601
+#ACTIVE := bitcoin-netmsg          #loc: 897
+#ACTIVE := bitcoin-tx              #loc: 3049
+
+# ---[layer 9]
+#ACTIVE := bitcoin-block           #loc: 2882
+#ACTIVE := bitcoin-bloom           #loc: 683
+#ACTIVE := bitcoin-noui            #loc: 171
+#ACTIVE := bitcoin-rbf             #loc: 182
+
+# ---[layer 10]
+#ACTIVE := bitcoin-blockencoding   #loc: 294
+#ACTIVE := bitcoin-chain-consensus #loc: 442
+#ACTIVE := bitcoin-client-ui       #loc: 460
+#ACTIVE := bitcoin-foundblock      #loc: 203
+#ACTIVE := bitcoin-merkle          #loc: 506
+#ACTIVE := bitcoin-txmempoolentry  #loc: 598
+#ACTIVE := bitcoinnode-txrelay     #loc: 112
+
+# ---[layer 11]
+#ACTIVE := bitcoin-blockpolicy     #loc: 1095
+#ACTIVE := bitcoin-deployment      #loc: 234
+#ACTIVE := bitcoin-pow             #loc: 142
+#ACTIVE := bitcoin-signet          #loc: 209
+
+# ---[layer 12]
+#ACTIVE := bitcoin-db              #loc: 947
+
+# ---[layer 13]
+#ACTIVE := bitcoin-coinsview       #loc: 1865
+
+# ---[layer 14]
+#ACTIVE := bitcoin-policy          #loc: 584
+#ACTIVE := bitcoin-signingprovider #loc: 5350
+#ACTIVE := bitcoinchain-params     #loc: 1767
+
+# ---[layer 15]
+#ACTIVE := bitcoin-blockman        #loc: 856
+#ACTIVE := bitcoin-net             #loc: 1846
+#ACTIVE := bitcoin-packages        #loc: 151
+#ACTIVE := bitcoin-portmap         #loc: 972
+#ACTIVE := bitcoin-psbt            #loc: 2223
+
+#----------------------------------------[block-3]
+# ---[layer 16]
+#ACTIVE := bitcoin-addrman         #loc: 2976
+#ACTIVE := bitcoin-banman          #loc: 912
+#ACTIVE := bitcoin-tor             #loc: 1036
+#ACTIVE := bitcoin-txmempool       #loc: 6815
+#ACTIVE := bitcoinnode-stats       #loc: 116
+
+# ---[layer 17]
+#ACTIVE := bitcoin-system          #loc: 2139
+
+# ---[layer 18]
+#ACTIVE := bitcoin-scriptpubkeyman #loc: 4101
+
+# ---[layer 19]
+#ACTIVE := bitcoin-bdb             #loc: 1388
+#ACTIVE := bitcoin-chainman        #loc: 929
+#ACTIVE := bitcoin-index           #loc: 721
+#ACTIVE := bitcoin-sqlite          #loc: 861
+
+# ---[layer 20]
+#ACTIVE := bitcoin-blockfilter     #loc: 879
+#ACTIVE := bitcoin-coincontrol     #loc: 425
+#ACTIVE := bitcoin-ipc             #loc: 611
+
+#----------------------------------------[block-4]
+# ---[wallet layer 0]
+#ACTIVE := bitcoinwallet-salvage   #loc: 186
+#ACTIVE := bitcoinwallet-feature   #loc: 258
+
+# ---[wallet layer 1]
+#ACTIVE := bitcoinwallet-interface #loc: 3811
+
+# ---[wallet layer 2]
+#ACTIVE := bitcoin-walletdb        #loc: 409
+
+# ---[wallet layer 3]
+#ACTIVE := bitcoinwallet-context   #loc: 61
+
+# ---[wallet layer 4]
+#ACTIVE := bitcoinwallet-client    #loc: 364
+
+# ---[wallet layer 5]
+#ACTIVE := bitcoinwallet-library   #loc: 5434
+
+# ---[wallet layer 6]
+#ACTIVE := bitcoinwallet-fees      #loc: 520
+#ACTIVE := bitcoinwallet-init      #loc: 371
+#ACTIVE := bitcoinwallet-receive   #loc: 682
+#ACTIVE := bitcoinwallet-spend     #loc: 1398
+
+#----------------------------------------[block-5]
+# ---[layer 21]
+#ACTIVE := bitcoinnode-interface   #loc: 1618
+
+# ---[layer 22]
+#ACTIVE := bitcoin-connman         #loc: 5386
+#ACTIVE := bitcoin-node            #loc: 1869
+
+# ---[layer 23]
+#ACTIVE := bitcoin-http            #loc: 1587
+#ACTIVE := bitcoin-peerman         #loc: 16839
+
+# ---[layer 24]
+#ACTIVE := bitcoin-indexed-chain   #loc: 7615
+
+# ---[layer 25]
+#ACTIVE := bitcoin-coinselect      #loc: 1137
+#ACTIVE := bitcoin-init            #loc: 2765
+#ACTIVE := bitcoin-mainsignals     #loc: 358
+#ACTIVE := bitcoin-miner           #loc: 914
+#ACTIVE := bitcoin-net-zmq         #loc: 1032
+#ACTIVE := bitcoin-restapi         #loc: 891
+
+#----------------------------------------[block-6]
+# ---[layer 26]
+#ACTIVE := bitcoinrpc-util         #loc: 1967
+#ACTIVE := bitcoinrpc-server       #loc: 1067
+#ACTIVE := bitcoinrpc-blockchain   #loc: 3007
+#ACTIVE := bitcoinrpc-mining       #loc: 1390
+#ACTIVE := bitcoinrpc-misc         #loc: 864
+#ACTIVE := bitcoinrpc-net          #loc: 1044
+#ACTIVE := bitcoinrpc-txn          #loc: 2346
+#ACTIVE := bitcoinrpc-dump         #loc: 1979
+#ACTIVE := bitcoinrpc-wallet       #loc: 5416
+
+# ---[layer 27]
+#ACTIVE := bitcoin-cli             #loc: 3008
+#ACTIVE := bitcoin-test            #loc: 21553
+#ACTIVE := bitcoin-dummywallet     #loc: 100
+#ACTIVE := bitcoin-dumpwallet      #loc: 316
+
+# ---[layer 28]
+#ACTIVE := bitcoin-bench           #loc: 2485
+#ACTIVE := bitcoin-daemon          #loc: 345
+#ACTIVE := bitcoin-fuzz            #loc: 12268
+
+# ---[layer 29]
+#ACTIVE := bitcoin-top             #loc: 128
+
+#-------------------------------DONE
+
+

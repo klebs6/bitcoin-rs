@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+
+mv bitcoinleveldbt-autocompaction/src/bitcoinleveldb_testautocompaction.rs bitcoinleveldbt-autocompaction/src/bitcoinleveldbt_autocompaction.rs
+mv bitcoinleveldbt-capi/src/bitcoinleveldb_testcapi.rs bitcoinleveldbt-capi/src/bitcoinleveldbt_capi.rs
+mv bitcoinleveldbt-corruption/src/bitcoinleveldb_testcorruption.rs bitcoinleveldbt-corruption/src/bitcoinleveldbt_corruption.rs
+mv bitcoinleveldbt-issue178/src/bitcoinleveldb_testissue178.rs bitcoinleveldbt-issue178/src/bitcoinleveldbt_issue178.rs
+mv bitcoinleveldbt-issue200/src/bitcoinleveldb_testissue200.rs bitcoinleveldbt-issue200/src/bitcoinleveldbt_issue200.rs
+mv bitcoinleveldbt-issue320/src/bitcoinleveldb_testissue320.rs bitcoinleveldbt-issue320/src/bitcoinleveldbt_issue320.rs
+mv bitcoinleveldbt-recovery/src/bitcoinleveldb_testrecovery.rs bitcoinleveldbt-recovery/src/bitcoinleveldbt_recovery.rs

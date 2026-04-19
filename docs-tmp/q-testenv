@@ -1,0 +1,3903 @@
+here is where we are:
+
+// ---------------- [ File: bitcoinleveldb-testenv/src/testenv.rs ]
+pub struct TestEnv  {
+    base:             EnvWrapper,
+    ignore_dot_files: bool,
+}
+
+
+impl GetChildren for TestEnv {
+
+    fn get_children(&mut self, dir: &String, result: *mut Vec<String>) -> Status {
+        tracing::trace!(
+            dir = %dir,
+            ignore_dot_files = self.ignore_dot_files,
+            "TestEnv::get_children: entering"
+        );
+    
+        let mut delegated: Vec<String> = Vec::new();
+        let s = self.base.get_children(dir, &mut delegated as *mut Vec<String>);
+        if !s.is_ok() || result.is_null() {
+            return s;
+        }
+    
+        let out: &mut Vec<String> = unsafe { &mut *result };
+        out.clear();
+    
+        if !self.ignore_dot_files {
+            out.push(".".to_string());
+            out.push("..".to_string());
+        }
+    
+        for child in delegated.into_iter() {
+            if child == "." || child == ".." {
+                if self.ignore_dot_files {
+                    continue;
+                }
+                // avoid duplicates if the backend ever starts returning them
+                continue;
+            }
+            out.push(child);
+        }
+    
+        tracing::debug!(
+            dir = %dir,
+            count = out.len(),
+            ignore_dot_files = self.ignore_dot_files,
+            "TestEnv::get_children: exit"
+        );
+    
+        s
+    }
+}
+
+impl TestEnv {
+
+    pub fn new(base: Rc<RefCell<dyn Env>>) -> Self {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            "TestEnv::new: constructing test environment wrapper"
+        );
+    
+        let env_wrapper = EnvWrapper::new(base);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            ignore_dot_files = false,
+            "TestEnv::new: constructed"
+        );
+    
+        Self {
+            base: env_wrapper,
+            ignore_dot_files: false,
+        }
+    }
+
+    pub fn set_ignore_dot_files(&mut self, ignored: bool) {
+        let prev = self.ignore_dot_files;
+    
+        self.ignore_dot_files = ignored;
+    
+        info!(
+            target: "bitcoinleveldb_testenv::testenv",
+            previous = prev,
+            current = self.ignore_dot_files,
+            "TestEnv::set_ignore_dot_files: updated configuration"
+        );
+    }
+}
+
+impl std::ops::Deref for TestEnv {
+
+    type Target = EnvWrapper;
+
+    fn deref(&self) -> &Self::Target {
+        &self.base
+    }
+}
+
+impl std::ops::DerefMut for TestEnv {
+
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.base
+    }
+}
+
+impl DeleteFile for TestEnv {
+
+    fn delete_file(&mut self, f: &String) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            "TestEnv::delete_file: delegating"
+        );
+    
+        let s = self.base.delete_file(f);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            ok = s.is_ok(),
+            code = ?s.code(),
+            "TestEnv::delete_file: delegated"
+        );
+    
+        s
+    }
+}
+
+impl CreateDir for TestEnv {
+
+    fn create_dir(&mut self, d: &String) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            dir = %d,
+            "TestEnv::create_dir: delegating"
+        );
+    
+        let s = self.base.create_dir(d);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            dir = %d,
+            ok = s.is_ok(),
+            code = ?s.code(),
+            "TestEnv::create_dir: delegated"
+        );
+    
+        s
+    }
+}
+
+impl DeleteDir for TestEnv {
+
+    fn delete_dir(&mut self, d: &String) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            dir = %d,
+            "TestEnv::delete_dir: delegating"
+        );
+    
+        let s = self.base.delete_dir(d);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            dir = %d,
+            ok = s.is_ok(),
+            code = ?s.code(),
+            "TestEnv::delete_dir: delegated"
+        );
+    
+        s
+    }
+}
+
+impl NewSequentialFile for TestEnv {
+
+    fn new_sequential_file(&mut self, f: &String, r: *mut *mut Box<dyn SequentialFile>) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            result_is_null = r.is_null(),
+            "TestEnv::new_sequential_file: delegating"
+        );
+    
+        let s = self.base.new_sequential_file(f, r);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            ok = s.is_ok(),
+            code = ?s.code(),
+            "TestEnv::new_sequential_file: delegated"
+        );
+    
+        s
+    }
+}
+
+impl NewRandomAccessFile for TestEnv {
+
+    fn new_random_access_file(&mut self, f: &String, r: *mut *mut Box<dyn RandomAccessFile>) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            result_is_null = r.is_null(),
+            "TestEnv::new_random_access_file: delegating"
+        );
+    
+        let s = self.base.new_random_access_file(f, r);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            ok = s.is_ok(),
+            code = ?s.code(),
+            "TestEnv::new_random_access_file: delegated"
+        );
+    
+        s
+    }
+}
+
+impl NewWritableFile for TestEnv {
+
+    fn new_writable_file(&mut self, f: &String, r: *mut *mut Box<dyn WritableFile>) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            result_is_null = r.is_null(),
+            "TestEnv::new_writable_file: delegating"
+        );
+    
+        let s = self.base.new_writable_file(f, r);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            ok = s.is_ok(),
+            code = ?s.code(),
+            "TestEnv::new_writable_file: delegated"
+        );
+    
+        s
+    }
+}
+
+impl NewAppendableFile for TestEnv {
+
+    fn new_appendable_file(&mut self, f: &String, r: *mut *mut Box<dyn WritableFile>) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            result_is_null = r.is_null(),
+            "TestEnv::new_appendable_file: delegating"
+        );
+    
+        let s = self.base.new_appendable_file(f, r);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            ok = s.is_ok(),
+            code = ?s.code(),
+            "TestEnv::new_appendable_file: delegated"
+        );
+    
+        s
+    }
+}
+
+impl FileExists for TestEnv {
+
+    fn file_exists(&mut self, f: &String) -> bool {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            "TestEnv::file_exists: delegating"
+        );
+    
+        let exists = self.base.file_exists(f);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            exists,
+            "TestEnv::file_exists: delegated"
+        );
+    
+        exists
+    }
+}
+
+impl GetFileSize for TestEnv {
+
+    fn get_file_size(&mut self, f: &String, s: *mut u64) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            out_is_null = s.is_null(),
+            "TestEnv::get_file_size: delegating"
+        );
+    
+        let st = self.base.get_file_size(f, s);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            ok = st.is_ok(),
+            code = ?st.code(),
+            "TestEnv::get_file_size: delegated"
+        );
+    
+        st
+    }
+}
+
+impl RenameFile for TestEnv {
+
+    fn rename_file(&mut self, src: &String, target: &String) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            src = %src,
+            target = %target,
+            "TestEnv::rename_file: delegating"
+        );
+    
+        let st = self.base.rename_file(src, target);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            src = %src,
+            target = %target,
+            ok = st.is_ok(),
+            code = ?st.code(),
+            "TestEnv::rename_file: delegated"
+        );
+    
+        st
+    }
+}
+
+impl LockFile for TestEnv {
+
+    fn lock_file(&mut self, f: &String, l: *mut *mut Box<dyn FileLock>) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            out_is_null = l.is_null(),
+            "TestEnv::lock_file: delegating"
+        );
+    
+        let st = self.base.lock_file(f, l);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %f,
+            ok = st.is_ok(),
+            code = ?st.code(),
+            "TestEnv::lock_file: delegated"
+        );
+    
+        st
+    }
+}
+
+impl UnlockFile for TestEnv {
+
+    fn unlock_file(&mut self, l: *mut Box<dyn FileLock>) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            lock_is_null = l.is_null(),
+            "TestEnv::unlock_file: delegating"
+        );
+    
+        let st = self.base.unlock_file(l);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            ok = st.is_ok(),
+            code = ?st.code(),
+            "TestEnv::unlock_file: delegated"
+        );
+    
+        st
+    }
+}
+
+impl Schedule for TestEnv {
+
+    fn schedule(&mut self, function: fn(arg: *mut std::ffi::c_void) -> std::ffi::c_void, arg: *mut std::ffi::c_void) {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            arg_is_null = arg.is_null(),
+            "TestEnv::schedule: delegating"
+        );
+    
+        self.base.schedule(function, arg);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            "TestEnv::schedule: delegated"
+        );
+    }
+}
+
+impl StartThread for TestEnv {
+
+    fn start_thread(&mut self, function: fn(arg: *mut std::ffi::c_void) -> std::ffi::c_void, arg: *mut std::ffi::c_void) {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            arg_is_null = arg.is_null(),
+            "TestEnv::start_thread: delegating"
+        );
+    
+        self.base.start_thread(function, arg);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            "TestEnv::start_thread: delegated"
+        );
+    }
+}
+
+impl GetTestDirectory for TestEnv {
+
+    fn get_test_directory(&mut self, path: *mut String) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            out_is_null = path.is_null(),
+            "TestEnv::get_test_directory: delegating"
+        );
+    
+        let st = self.base.get_test_directory(path);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            ok = st.is_ok(),
+            code = ?st.code(),
+            "TestEnv::get_test_directory: delegated"
+        );
+    
+        st
+    }
+}
+
+impl NewLogger for TestEnv {
+
+    fn new_logger(&mut self, fname: &String, result: *mut *mut Box<dyn Logger>) -> Status {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %fname,
+            out_is_null = result.is_null(),
+            "TestEnv::new_logger: delegating"
+        );
+    
+        let st = self.base.new_logger(fname, result);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            file = %fname,
+            ok = st.is_ok(),
+            code = ?st.code(),
+            "TestEnv::new_logger: delegated"
+        );
+    
+        st
+    }
+}
+
+impl NowMicros for TestEnv {
+
+    fn now_micros(&mut self) -> u64 {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            "TestEnv::now_micros: delegating"
+        );
+    
+        let v = self.base.now_micros();
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            now_micros = v,
+            "TestEnv::now_micros: delegated"
+        );
+    
+        v
+    }
+}
+
+impl SleepForMicroseconds for TestEnv {
+
+    fn sleep_for_microseconds(&mut self, micros: i32) {
+        trace!(
+            target: "bitcoinleveldb_testenv::testenv",
+            micros,
+            "TestEnv::sleep_for_microseconds: delegating"
+        );
+    
+        self.base.sleep_for_microseconds(micros);
+    
+        debug!(
+            target: "bitcoinleveldb_testenv::testenv",
+            micros,
+            "TestEnv::sleep_for_microseconds: delegated"
+        );
+    }
+}
+
+impl Env for TestEnv {}
+
+#[cfg(test)]
+mod testenv_exhaustive_behavior_suite {
+    #[derive(Debug, Clone)]
+    struct GetChildrenScriptStep  {
+        status:   Status,
+        children: Vec<String>,
+    }
+
+    impl GetChildrenScriptStep {
+    
+        fn ok(children: &[&str]) -> Self {
+            let status = Status::ok();
+            let v: Vec<String> = children.iter().map(|s| (*s).to_string()).collect();
+        
+            debug!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                ok = status.is_ok(),
+                code = ?status.code(),
+                children_len = v.len(),
+                "GetChildrenScriptStep::ok"
+            );
+        
+            Self { status, children: v }
+        }
+    
+        fn with_status(status: Status, children: &[&str]) -> Self {
+            let v: Vec<String> = children.iter().map(|s| (*s).to_string()).collect();
+        
+            debug!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                ok = status.is_ok(),
+                code = ?status.code(),
+                children_len = v.len(),
+                "GetChildrenScriptStep::with_status"
+            );
+        
+            Self { status, children: v }
+        }
+    }
+
+    #[derive(Debug)]
+    struct ScriptedEnvState  {
+        get_children_steps:           Vec<GetChildrenScriptStep>,
+        get_children_calls:           usize,
+        get_children_dirs:            Vec<String>,
+        delete_file_calls:            Vec<String>,
+        create_dir_calls:             Vec<String>,
+        delete_dir_calls:             Vec<String>,
+        file_exists_calls:            Vec<String>,
+        file_exists_result:           bool,
+        get_file_size_calls:          Vec<String>,
+        get_file_size_value:          u64,
+        rename_file_calls:            Vec<(String, String)>,
+        lock_file_calls:              Vec<String>,
+        unlock_file_calls:            usize,
+        new_sequential_file_calls:    Vec<String>,
+        new_random_access_file_calls: Vec<String>,
+        new_writable_file_calls:      Vec<String>,
+        new_appendable_file_calls:    Vec<String>,
+        schedule_calls:               usize,
+        start_thread_calls:           usize,
+        get_test_directory_calls:     usize,
+        test_directory_value:         String,
+        new_logger_calls:             Vec<String>,
+        now_micros_calls:             usize,
+        now_micros_value:             u64,
+        sleep_calls:                  Vec<i32>,
+    }
+
+    impl ScriptedEnvState {
+    
+        fn new(get_children_steps: Vec<GetChildrenScriptStep>) -> Self {
+            info!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                steps_len = get_children_steps.len(),
+                "ScriptedEnvState::new"
+            );
+        
+            Self {
+                get_children_steps,
+                get_children_calls: 0,
+                get_children_dirs: Vec::new(),
+        
+                delete_file_calls: Vec::new(),
+                create_dir_calls: Vec::new(),
+                delete_dir_calls: Vec::new(),
+        
+                file_exists_calls: Vec::new(),
+                file_exists_result: false,
+        
+                get_file_size_calls: Vec::new(),
+                get_file_size_value: 0,
+        
+                rename_file_calls: Vec::new(),
+        
+                lock_file_calls: Vec::new(),
+                unlock_file_calls: 0,
+        
+                new_sequential_file_calls: Vec::new(),
+                new_random_access_file_calls: Vec::new(),
+                new_writable_file_calls: Vec::new(),
+                new_appendable_file_calls: Vec::new(),
+        
+                schedule_calls: 0,
+                start_thread_calls: 0,
+        
+                get_test_directory_calls: 0,
+                test_directory_value: "testdir".to_string(),
+        
+                new_logger_calls: Vec::new(),
+        
+                now_micros_calls: 0,
+                now_micros_value: 123,
+        
+                sleep_calls: Vec::new(),
+            }
+        }
+    
+        fn set_file_exists_result(&mut self, v: bool) {
+            self.file_exists_result = v;
+        }
+    
+        fn set_get_file_size_value(&mut self, v: u64) {
+            self.get_file_size_value = v;
+        }
+    
+        fn set_test_directory_value(&mut self, v: &str) {
+            self.test_directory_value = v.to_string();
+        }
+    
+        fn set_now_micros_value(&mut self, v: u64) {
+            self.now_micros_value = v;
+        }
+    }
+
+    #[derive(Debug)]
+    struct ScriptedEnv  {
+        state: Rc<RefCell<ScriptedEnvState>>,
+    }
+
+    impl ScriptedEnv {
+    
+        fn new(state: Rc<RefCell<ScriptedEnvState>>) -> Self {
+            debug!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                "ScriptedEnv::new"
+            );
+            Self { state }
+        }
+    
+        fn next_get_children_step_locked(st: &mut ScriptedEnvState) -> GetChildrenScriptStep {
+            let call_index = st.get_children_calls;
+            let steps_len = st.get_children_steps.len();
+        
+            if steps_len == 0 {
+                return GetChildrenScriptStep::ok(&[]);
+            }
+        
+            let step_index = call_index.min(steps_len.saturating_sub(1));
+            st.get_children_steps[step_index].clone()
+        }
+    }
+
+    impl Env for ScriptedEnv {}
+
+    impl GetChildren for ScriptedEnv {
+    
+        fn get_children(&mut self, dir: &String, result: *mut Vec<String>) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                dir = %dir,
+                result_is_null = result.is_null(),
+                "ScriptedEnv::get_children: begin"
+            );
+        
+            if result.is_null() {
+                let st = Status::invalid_argument(&"null get_children result".into(), None);
+        
+                warn!(
+                    target: "bitcoinleveldb_testenv::tests::fixture",
+                    dir = %dir,
+                    ok = st.is_ok(),
+                    code = ?st.code(),
+                    "ScriptedEnv::get_children: null result pointer"
+                );
+        
+                return st;
+            }
+        
+            let step = {
+                let mut st = self.state.borrow_mut();
+                st.get_children_dirs.push(dir.clone());
+                let step = ScriptedEnv::next_get_children_step_locked(&mut st);
+                st.get_children_calls += 1;
+                step
+            };
+        
+            unsafe {
+                let out: &mut Vec<String> = &mut *result;
+                out.clear();
+                out.extend(step.children.iter().cloned());
+            }
+        
+            debug!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                dir = %dir,
+                ok = step.status.is_ok(),
+                code = ?step.status.code(),
+                "ScriptedEnv::get_children: filled result"
+            );
+        
+            Status::new_from_other_copy(&step.status)
+        }
+    }
+
+    impl DeleteFile for ScriptedEnv {
+    
+        fn delete_file(&mut self, fname: &String) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                file = %fname,
+                "ScriptedEnv::delete_file"
+            );
+        
+            self.state.borrow_mut().delete_file_calls.push(fname.clone());
+        
+            Status::not_found(&"delete_file".into(), None)
+        }
+    }
+
+    impl CreateDir for ScriptedEnv {
+    
+        fn create_dir(&mut self, dirname: &String) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                dir = %dirname,
+                "ScriptedEnv::create_dir"
+            );
+        
+            self.state.borrow_mut().create_dir_calls.push(dirname.clone());
+        
+            Status::ok()
+        }
+    }
+
+    impl DeleteDir for ScriptedEnv {
+    
+        fn delete_dir(&mut self, dirname: &String) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                dir = %dirname,
+                "ScriptedEnv::delete_dir"
+            );
+        
+            self.state.borrow_mut().delete_dir_calls.push(dirname.clone());
+        
+            Status::not_supported(&"delete_dir".into(), None)
+        }
+    }
+
+    impl NewSequentialFile for ScriptedEnv {
+    
+        fn new_sequential_file(&mut self, fname: &String, result: *mut *mut Box<dyn SequentialFile>) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                file = %fname,
+                result_is_null = result.is_null(),
+                "ScriptedEnv::new_sequential_file"
+            );
+        
+            self.state
+                .borrow_mut()
+                .new_sequential_file_calls
+                .push(fname.clone());
+        
+            if result.is_null() {
+                return Status::invalid_argument(&"null sequential out".into(), None);
+            }
+        
+            unsafe {
+                *result = std::ptr::null_mut();
+            }
+        
+            Status::not_supported(&"new_sequential_file".into(), None)
+        }
+    }
+
+    impl NewRandomAccessFile for ScriptedEnv {
+    
+        fn new_random_access_file(&mut self, fname: &String, result: *mut *mut Box<dyn RandomAccessFile>) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                file = %fname,
+                result_is_null = result.is_null(),
+                "ScriptedEnv::new_random_access_file"
+            );
+        
+            self.state
+                .borrow_mut()
+                .new_random_access_file_calls
+                .push(fname.clone());
+        
+            if result.is_null() {
+                return Status::invalid_argument(&"null random-access out".into(), None);
+            }
+        
+            unsafe {
+                *result = std::ptr::null_mut();
+            }
+        
+            Status::not_supported(&"new_random_access_file".into(), None)
+        }
+    }
+
+    impl NewWritableFile for ScriptedEnv {
+    
+        fn new_writable_file(&mut self, fname: &String, result: *mut *mut Box<dyn WritableFile>) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                file = %fname,
+                result_is_null = result.is_null(),
+                "ScriptedEnv::new_writable_file"
+            );
+        
+            self.state
+                .borrow_mut()
+                .new_writable_file_calls
+                .push(fname.clone());
+        
+            if result.is_null() {
+                return Status::invalid_argument(&"null writable out".into(), None);
+            }
+        
+            unsafe {
+                *result = std::ptr::null_mut();
+            }
+        
+            Status::not_supported(&"new_writable_file".into(), None)
+        }
+    }
+
+    impl NewAppendableFile for ScriptedEnv {
+    
+        fn new_appendable_file(&mut self, fname: &String, result: *mut *mut Box<dyn WritableFile>) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                file = %fname,
+                result_is_null = result.is_null(),
+                "ScriptedEnv::new_appendable_file"
+            );
+        
+            self.state
+                .borrow_mut()
+                .new_appendable_file_calls
+                .push(fname.clone());
+        
+            if result.is_null() {
+                return Status::invalid_argument(&"null appendable out".into(), None);
+            }
+        
+            unsafe {
+                *result = std::ptr::null_mut();
+            }
+        
+            Status::not_supported(&"new_appendable_file".into(), None)
+        }
+    }
+
+    impl FileExists for ScriptedEnv {
+    
+        fn file_exists(&mut self, fname: &String) -> bool {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                file = %fname,
+                "ScriptedEnv::file_exists"
+            );
+        
+            let mut st = self.state.borrow_mut();
+            st.file_exists_calls.push(fname.clone());
+            st.file_exists_result
+        }
+    }
+
+    impl GetFileSize for ScriptedEnv {
+    
+        fn get_file_size(&mut self, fname: &String, file_size: *mut u64) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                file = %fname,
+                out_is_null = file_size.is_null(),
+                "ScriptedEnv::get_file_size"
+            );
+        
+            let v = {
+                let mut st = self.state.borrow_mut();
+                st.get_file_size_calls.push(fname.clone());
+                st.get_file_size_value
+            };
+        
+            if file_size.is_null() {
+                return Status::invalid_argument(&"null file_size out".into(), None);
+            }
+        
+            unsafe {
+                *file_size = v;
+            }
+        
+            Status::ok()
+        }
+    }
+
+    impl RenameFile for ScriptedEnv {
+    
+        fn rename_file(&mut self, src: &String, target: &String) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                src = %src,
+                target = %target,
+                "ScriptedEnv::rename_file"
+            );
+        
+            self.state
+                .borrow_mut()
+                .rename_file_calls
+                .push((src.clone(), target.clone()));
+        
+            Status::invalid_argument(&"rename_file".into(), None)
+        }
+    }
+
+    impl LockFile for ScriptedEnv {
+    
+        fn lock_file(&mut self, fname: &String, lock: *mut *mut Box<dyn FileLock>) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                file = %fname,
+                out_is_null = lock.is_null(),
+                "ScriptedEnv::lock_file"
+            );
+        
+            self.state.borrow_mut().lock_file_calls.push(fname.clone());
+        
+            if lock.is_null() {
+                return Status::invalid_argument(&"null lock out".into(), None);
+            }
+        
+            unsafe {
+                *lock = std::ptr::null_mut();
+            }
+        
+            Status::ok()
+        }
+    }
+
+    impl UnlockFile for ScriptedEnv {
+    
+        fn unlock_file(&mut self, _lock: *mut Box<dyn FileLock>) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                "ScriptedEnv::unlock_file"
+            );
+        
+            self.state.borrow_mut().unlock_file_calls += 1;
+        
+            Status::ok()
+        }
+    }
+
+    impl Schedule for ScriptedEnv {
+    
+        fn schedule(&mut self, _function: fn(arg: *mut std::ffi::c_void) -> std::ffi::c_void, arg: *mut std::ffi::c_void) {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                arg_is_null = arg.is_null(),
+                "ScriptedEnv::schedule"
+            );
+        
+            self.state.borrow_mut().schedule_calls += 1;
+        }
+    }
+
+    impl StartThread for ScriptedEnv {
+    
+        fn start_thread(&mut self, _function: fn(arg: *mut std::ffi::c_void) -> std::ffi::c_void, arg: *mut std::ffi::c_void) {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                arg_is_null = arg.is_null(),
+                "ScriptedEnv::start_thread"
+            );
+        
+            self.state.borrow_mut().start_thread_calls += 1;
+        }
+    }
+
+    impl GetTestDirectory for ScriptedEnv {
+    
+        fn get_test_directory(&mut self, path: *mut String) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                out_is_null = path.is_null(),
+                "ScriptedEnv::get_test_directory"
+            );
+        
+            let v = {
+                let mut st = self.state.borrow_mut();
+                st.get_test_directory_calls += 1;
+                st.test_directory_value.clone()
+            };
+        
+            if path.is_null() {
+                return Status::invalid_argument(&"null testdir out".into(), None);
+            }
+        
+            unsafe {
+                *path = v;
+            }
+        
+            Status::ok()
+        }
+    }
+
+    impl NewLogger for ScriptedEnv {
+    
+        fn new_logger(&mut self, fname: &String, result: *mut *mut Box<dyn Logger>) -> Status {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                file = %fname,
+                out_is_null = result.is_null(),
+                "ScriptedEnv::new_logger"
+            );
+        
+            self.state.borrow_mut().new_logger_calls.push(fname.clone());
+        
+            if result.is_null() {
+                return Status::invalid_argument(&"null logger out".into(), None);
+            }
+        
+            unsafe {
+                *result = std::ptr::null_mut();
+            }
+        
+            Status::not_supported(&"new_logger".into(), None)
+        }
+    }
+
+    impl NowMicros for ScriptedEnv {
+    
+        fn now_micros(&mut self) -> u64 {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                "ScriptedEnv::now_micros"
+            );
+        
+            let mut st = self.state.borrow_mut();
+            st.now_micros_calls += 1;
+            st.now_micros_value
+        }
+    }
+
+    impl SleepForMicroseconds for ScriptedEnv {
+    
+        fn sleep_for_microseconds(&mut self, micros: i32) {
+            trace!(
+                target: "bitcoinleveldb_testenv::tests::fixture",
+                micros,
+                "ScriptedEnv::sleep_for_microseconds"
+            );
+        
+            self.state.borrow_mut().sleep_calls.push(micros);
+        }
+    }
+
+    fn scripted_env_as_dyn_env(steps: Vec<GetChildrenScriptStep>) -> (Rc<RefCell<dyn Env>>, Rc<RefCell<ScriptedEnvState>>) {
+        let state = Rc::new(RefCell::new(ScriptedEnvState::new(steps)));
+        let env = ScriptedEnv::new(state.clone());
+    
+        let rc: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(env));
+    
+        (rc, state)
+    }
+
+    fn invoke_get_children(env: &mut TestEnv, dir: &str) -> (Status, Vec<String>) {
+        let dir_string = dir.to_string();
+        let mut out: Vec<String> = Vec::new();
+    
+        trace!(
+            target: "bitcoinleveldb_testenv::tests",
+            dir = %dir_string,
+            "invoke_get_children: calling TestEnv::get_children"
+        );
+    
+        let s = env.get_children(&dir_string, &mut out as *mut Vec<String>);
+        (s, out)
+    }
+
+    fn invoke_get_children_via_trait(env: &mut TestEnv, dir: &str) -> (Status, Vec<String>) {
+        let dir_string = dir.to_string();
+        let mut out: Vec<String> = Vec::new();
+    
+        trace!(
+            target: "bitcoinleveldb_testenv::tests",
+            dir = %dir_string,
+            "invoke_get_children_via_trait: calling GetChildren::get_children"
+        );
+    
+        let s = GetChildren::get_children(env, &dir_string, &mut out as *mut Vec<String>);
+        (s, out)
+    }
+
+    fn never_returning_callback(_arg: *mut std::ffi::c_void) -> std::ffi::c_void {
+        loop {}
+}
+
+    #[traced_test]
+    fn testenv_defaults_do_not_filter_dot_entries_and_propagate_ok_status() {
+        let step = GetChildrenScriptStep::ok(&[".", "..", "alpha", ".hidden", "beta"]);
+        let (base_env, state) = scripted_env_as_dyn_env(vec![step]);
+    
+        let mut env = TestEnv::new(base_env);
+    
+        let (s, out) = invoke_get_children(&mut env, "dir0");
+        assert!(s.is_ok());
+        assert_eq!(
+            out,
+            vec![
+                ".".to_string(),
+                "..".to_string(),
+                "alpha".to_string(),
+                ".hidden".to_string(),
+                "beta".to_string(),
+            ]
+        );
+    
+        let st = state.borrow();
+        assert_eq!(st.get_children_calls, 1);
+        assert_eq!(st.get_children_dirs, vec!["dir0".to_string()]);
+    }
+
+    #[traced_test]
+    fn testenv_filters_only_dot_and_dotdot_when_configured_and_base_returns_ok() {
+        let step = GetChildrenScriptStep::ok(&[
+            ".", "..", ".", "alpha", "..", "beta", ".", ".hidden", "...", "..bar",
+        ]);
+        let (base_env, state) = scripted_env_as_dyn_env(vec![step]);
+    
+        let mut env = TestEnv::new(base_env);
+        env.set_ignore_dot_files(true);
+    
+        let (s, out) = invoke_get_children(&mut env, "dir1");
+        assert!(s.is_ok());
+        assert_eq!(
+            out,
+            vec![
+                "alpha".to_string(),
+                "beta".to_string(),
+                ".hidden".to_string(),
+                "...".to_string(),
+                "..bar".to_string(),
+            ]
+        );
+    
+        let st = state.borrow();
+        assert_eq!(st.get_children_calls, 1);
+        assert_eq!(st.get_children_dirs, vec!["dir1".to_string()]);
+    }
+
+    #[traced_test]
+    fn testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots() {
+        let err = Status::io_error(&"io-error".into(), None);
+        let step = GetChildrenScriptStep::with_status(
+            Status::new_from_other_copy(&err),
+            &[".", "..", "alpha", "beta"],
+        );
+        let (base_env, state) = scripted_env_as_dyn_env(vec![step]);
+    
+        let mut env = TestEnv::new(base_env);
+        env.set_ignore_dot_files(true);
+    
+        let (s, out) = invoke_get_children(&mut env, "dir2");
+        assert!(!s.is_ok());
+        assert_eq!(s.code(), StatusCode::IOError);
+    
+        assert_eq!(
+            out,
+            vec![
+                ".".to_string(),
+                "..".to_string(),
+                "alpha".to_string(),
+                "beta".to_string(),
+            ]
+        );
+    
+        let st = state.borrow();
+        assert_eq!(st.get_children_calls, 1);
+        assert_eq!(st.get_children_dirs, vec!["dir2".to_string()]);
+    }
+
+    #[traced_test]
+    fn testenv_trait_get_children_invocation_matches_inherent_method() {
+        let step = GetChildrenScriptStep::ok(&[".", "..", "alpha", "beta"]);
+        let (base_env, _state) = scripted_env_as_dyn_env(vec![step]);
+    
+        let mut env = TestEnv::new(base_env);
+        env.set_ignore_dot_files(true);
+    
+        let (s_inherent, out_inherent) = invoke_get_children(&mut env, "dir3");
+        let (s_trait, out_trait) = invoke_get_children_via_trait(&mut env, "dir3");
+    
+        assert!(s_inherent.is_ok());
+        assert!(s_trait.is_ok());
+        assert_eq!(out_inherent, vec!["alpha".to_string(), "beta".to_string()]);
+        assert_eq!(out_trait, vec!["alpha".to_string(), "beta".to_string()]);
+    }
+
+    #[traced_test]
+    fn testenv_forwards_env_supertrait_methods_to_base_env_wrapper() {
+        let (base_env, state) = scripted_env_as_dyn_env(vec![]);
+        {
+            let mut st = state.borrow_mut();
+            st.set_file_exists_result(true);
+            st.set_get_file_size_value(42);
+            st.set_test_directory_value("fixture_test_dir");
+            st.set_now_micros_value(999_001);
+        }
+    
+        let mut env = TestEnv::new(base_env);
+    
+        let file = "some_file".to_string();
+        let dir = "some_dir".to_string();
+    
+        let st_del = env.delete_file(&file);
+        assert_eq!(st_del.code(), StatusCode::NotFound);
+    
+        let st_mkdir = env.create_dir(&dir);
+        assert!(st_mkdir.is_ok());
+    
+        let st_rmdir = env.delete_dir(&dir);
+        assert_eq!(st_rmdir.code(), StatusCode::NotSupported);
+    
+        let exists = env.file_exists(&file);
+        assert!(exists);
+    
+        let now = env.now_micros();
+        assert_eq!(now, 999_001);
+    
+        env.sleep_for_microseconds(1234);
+    
+        let mut file_size: u64 = 0;
+        let st_size = env.get_file_size(&file, &mut file_size as *mut u64);
+        assert!(st_size.is_ok());
+        assert_eq!(file_size, 42);
+    
+        let mut testdir = String::new();
+        let st_testdir = env.get_test_directory(&mut testdir as *mut String);
+        assert!(st_testdir.is_ok());
+        assert_eq!(testdir, "fixture_test_dir".to_string());
+    
+        let src = "src".to_string();
+        let dst = "dst".to_string();
+        let st_rename = env.rename_file(&src, &dst);
+        assert_eq!(st_rename.code(), StatusCode::InvalidArgument);
+    
+        let mut lock_out: *mut Box<dyn FileLock> = std::ptr::null_mut();
+        let st_lock = env.lock_file(&file, &mut lock_out as *mut *mut Box<dyn FileLock>);
+        assert!(st_lock.is_ok());
+        assert!(lock_out.is_null());
+    
+        env.schedule(never_returning_callback, std::ptr::null_mut());
+        env.start_thread(never_returning_callback, std::ptr::null_mut());
+    
+        let mut logger_out: *mut Box<dyn Logger> = std::ptr::null_mut();
+        let st_logger = env.new_logger(&file, &mut logger_out as *mut *mut Box<dyn Logger>);
+        assert_eq!(st_logger.code(), StatusCode::NotSupported);
+        assert!(logger_out.is_null());
+    
+        let st = state.borrow();
+    
+        assert_eq!(st.delete_file_calls, vec![file.clone()]);
+        assert_eq!(st.create_dir_calls, vec![dir.clone()]);
+        assert_eq!(st.delete_dir_calls, vec![dir.clone()]);
+    
+        assert_eq!(st.file_exists_calls, vec![file.clone()]);
+        assert_eq!(st.get_file_size_calls, vec![file.clone()]);
+        assert_eq!(st.get_test_directory_calls, 1);
+    
+        assert_eq!(st.rename_file_calls, vec![(src.clone(), dst.clone())]);
+        assert_eq!(st.lock_file_calls, vec![file.clone()]);
+        assert_eq!(st.unlock_file_calls, 0);
+    
+        assert_eq!(st.schedule_calls, 1);
+        assert_eq!(st.start_thread_calls, 1);
+    
+        assert_eq!(st.new_logger_calls, vec![file.clone()]);
+    
+        assert_eq!(st.now_micros_calls, 1);
+        assert_eq!(st.sleep_calls, vec![1234]);
+    }
+
+    #[traced_test]
+    fn testenv_deref_exposes_envwrapper_target_rc_identity() {
+        let step = GetChildrenScriptStep::ok(&["alpha"]);
+        let (base_env, _state) = scripted_env_as_dyn_env(vec![step]);
+    
+        let base_env_clone = base_env.clone();
+        let env = TestEnv::new(base_env);
+    
+        let wrapper_target = env.target();
+        assert!(Rc::ptr_eq(&wrapper_target, &base_env_clone));
+    }
+}
+
+
+// ---------------- [ Dep crate: bitcoin-imports ]
+// ---------------- [ File: bitcoin-imports/src/lib.rs ]
+pub fn amo_none<T>() -> Amo<T> {
+    Amo::<T>::none()
+}
+
+
+#[derive(Debug)]
+pub struct Amo<T>  (
+    Arc<RwLock<Option<T>>>,
+);
+
+
+pub struct Broken  { }
+
+
+pub struct BrokenDelegate  { }
+
+
+pub struct CommonType<T>  {
+    p: std::marker::PhantomData<T>,
+}
+
+
+pub enum TryBlockResult<R,E> {
+    Return(R),
+    Err(E),
+    Break,
+    Success,
+}
+
+
+pub trait Flush {
+    fn flush(&mut self);
+}
+
+
+pub type AmoReadGuard<'a, T> = MappedRwLockReadGuard<'a, T>;
+
+
+pub type AmoWriteGuard<'a, T> = MappedRwLockWriteGuard<'a, T>;
+
+
+pub type AmoOuterReadGuard<'a, T> = RwLockReadGuard<'a, Option<T>>;
+
+
+pub type AmoOuterWriteGuard<'a, T> = RwLockWriteGuard<'a, Option<T>>;
+
+
+pub type KVMap = std::collections::HashMap<String, String>;
+
+
+pub type PreVector<T,const N: usize> = tinyvec::TinyVec::<[T; N]>;
+
+
+pub type LockGuard<'a,T> = std::sync::MutexGuard<'a,T>;
+
+
+#[macro_export]
+macro_rules! xt { {
+    ($name:ident) => {
+        #[cfg(test)]
+        mod $name;
+
+        #[cfg(test)]
+        pub use $name::*;
+    };
+} }
+
+
+#[macro_export]
+macro_rules! as_mut_cvoid { {
+    ($x:expr) => {
+        $x as *mut _ as *mut c_void
+    };
+} }
+
+
+#[macro_export]
+macro_rules! mut_cvoid { {
+    ($x:expr) => {
+        &mut $x as *mut _ as *mut c_void
+    };
+} }
+
+
+#[macro_export]
+macro_rules! as_cvoid { {
+    ($x:expr) => {
+        $x as *const _ as *const c_void
+    }
+} }
+
+
+#[macro_export]
+macro_rules! ternary { {
+    ($condition:expr,$if_true:expr,$if_false:expr) => {
+        match $condition {
+            true => $if_true,
+            false => $if_false,
+        }
+    }
+} }
+
+
+#[macro_export]
+macro_rules! from_cstr { {
+    ($ptr:expr) => {
+        unsafe {
+            std::ffi::CStr::from_ptr(
+                $ptr as *const libc::c_char
+            )
+            .to_string_lossy()
+            .to_string()
+        }
+    }
+} }
+
+
+#[macro_export]
+macro_rules! func { {
+    () => {{
+        fn f() {}
+        fn type_name_of<T>(_: T) -> &'static str {
+            std::any::type_name::<T>()
+        }
+        let name = type_name_of(f);
+        &name[..name.len() - 3]
+    }}
+} }
+
+
+#[macro_export]
+macro_rules! ptr_to_string { {
+    ($item:tt) => {
+        std::ffi::CStr::from_ptr(psz_dest as *const c_char)
+            .to_string_lossy()
+            .to_string()
+    }
+} }
+
+
+#[cfg(ABORT_ON_FAILED_ASSUME)]
+#[macro_export]
+macro_rules! assume { {
+    ($val:expr) => {
+        assert!($val);
+        $val
+    }
+} }
+
+
+#[cfg(not(ABORT_ON_FAILED_ASSUME))]
+#[macro_export]
+macro_rules! assume { {
+    ($val:expr) => {
+        /*
+                ([&]() ->
+        decltype(get_pure_r_value(val)) { auto&&
+        check = (val); return
+        std::forward<decltype(get_pure_r_value(val))>(check);
+        }())
+        */
+        $val
+    }
+} }
+
+
+impl<T> Default for Amo<T> {
+
+    fn default() -> Self {
+        Self(Arc::new(RwLock::new(None)))
+    }
+}
+
+impl<T: PartialOrd> PartialOrd for Amo<T> {
+
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.get().partial_cmp(&other.get())
+    }
+}
+
+impl<T: Ord> Ord for Amo<T> {
+
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.get().cmp(&other.get())
+    }
+}
+
+impl<T: Serialize> Serialize for Amo<T> {
+
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer
+    {
+        match *self.getopt() {
+            Some(ref val) => serializer.serialize_some(val),
+            None          => serializer.serialize_none(),
+        }
+    }
+}
+
+impl<'de, T: Deserialize<'de>> Deserialize<'de> for Amo<T> {
+
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error> where
+            D: Deserializer<'de>
+    {
+        todo!();
+    }
+}
+
+impl<T: PartialEq> PartialEq for Amo<T> {
+
+    fn eq(&self, other: &Self) -> bool {
+        match (self.getopt().as_ref(), other.getopt().as_ref()) {
+            (Some(a), Some(b)) => a.eq(b),
+            (None, None)       => true, // should it be this way?
+            _                  => false,
+        }
+    }
+}
+
+impl<T: Eq> Eq for Amo<T> {}
+
+impl<T> Clone for Amo<T> {
+
+    fn clone(&self) -> Self {
+        Self(self.0.clone())
+    }
+}
+
+impl<T> From<T> for Amo<T> {
+
+    fn from(x: T) -> Self {
+        Self(Arc::new(RwLock::new(Some(x))))
+    }
+}
+
+impl<T> From<&Self> for Amo<T> {
+
+    fn from(x: &Self) -> Self {
+        x.clone()
+    }
+}
+
+impl<T> From<Option<T>> for Amo<T> {
+
+    fn from(x: Option<T>) -> Self {
+        Self(Arc::new(RwLock::new(x)))
+    }
+}
+
+impl<T> Amo<T> {
+
+    pub fn inner_arc(self) -> Arc<T> {
+        todo!();
+    }
+
+    pub fn load(&self, inner: Option<T>) {
+        todo!();
+    }
+
+    pub fn replace(&self, inner: &T) {
+        todo!();
+    }
+
+    pub fn none() -> Self {
+        Self(Arc::new(RwLock::new(None)))
+    }
+
+    pub fn get<'a>(&'a self) -> AmoReadGuard<'a, T> {
+        let mut guard = self.0.read();
+        RwLockReadGuard::map(guard, |g| g.as_ref().unwrap())
+    }
+
+    pub fn get_mut<'a>(&'a self) -> AmoWriteGuard<'a, T> {
+        let mut guard = self.0.write();
+        RwLockWriteGuard::map(guard, |g| g.as_mut().unwrap())
+    }
+
+    pub fn getopt<'a>(&'a self) -> AmoOuterReadGuard<'a, T> {
+        self.0.read()
+    }
+
+    pub fn getopt_mut<'a>(&'a self) -> AmoOuterWriteGuard<'a, T> {
+        self.0.write()
+    }
+}
+
+impl Deref for Broken {
+
+    type Target = BrokenDelegate;
+
+    fn deref(&self) -> &Self::Target {
+        todo!(); 
+    }
+}
+
+impl BrokenDelegate {
+
+    pub fn get_mem_pool_parents_const<T>(&self) -> T {
+        todo!() 
+    }
+
+    pub fn get_shared_tx<T>(&self) -> T {
+        todo!(); 
+    }
+}
+
+
+
+
+
+// ---------------- [ File: bitcoin-imports/src/multidex.rs ]
+#[macro_export]
+macro_rules! multidex { {
+    (
+         name => $name:ident, 
+         item => $item:ident, 
+
+        $(hashed_unique     => [ $(($tag_a:ident, $sortby_a:ident,   $hasher_a:ident)),* ])?
+
+        $(ordered_unique    => [ $(($tag_b:ident, $identity_b:ident, $comparator_b:ident)),* ])?
+
+        $(ordered_nonunique => [ $(($tag_c:ident, $identity_c:ident, $comparator_c:ident)),* ])?
+
+    ) => {
+
+    }
+} }
+
+
+// ---------------- [ File: bitcoin-imports/src/stdexcept.rs ]
+pub fn runtime_error(x: &str) -> StdException {
+    StdException::RuntimeError(RuntimeError::Default { what: x.to_string() })
+}
+
+
+pub fn connection_failed(x: &str) -> StdException {
+    StdException::RuntimeError(RuntimeError::ConnectionFailed { what: x.to_string() })
+}
+
+
+pub fn invalid_argument(x: &str) -> StdException {
+    StdException::LogicError(LogicError::InvalidArgument { what: x.to_string() })
+}
+
+
+pub fn logic_error(x: &str) -> StdException {
+    StdException::LogicError(LogicError::Default { what: x.to_string() })
+}
+
+
+pub fn ios_base_failure(x: &str) -> StdException {
+    let e = SystemError::IosBaseFailure { what: x.to_string() };
+    StdException::RuntimeError(RuntimeError::SystemError(e))
+}
+
+
+#[derive(Debug,Clone)]
+pub struct BadOptionalAccess  {
+    what: String,
+}
+
+
+#[derive(Debug,Clone)]
+pub struct BadTypeid  {
+    what: String,
+}
+
+
+#[derive(Debug,Clone)]
+pub struct BadWeakPtr  {
+    what: String,
+}
+
+
+#[derive(Debug,Clone)]
+pub struct BadFunctionCall  {
+    what: String,
+}
+
+
+#[derive(Debug,Clone)]
+pub struct BadException  {
+    what: String,
+}
+
+
+#[derive(Debug,Clone)]
+pub struct BadVariantAccess  {
+    what: String,
+}
+
+
+#[derive(Debug,Clone)]
+pub enum LogicError {
+    InvalidArgument { what: String },
+    DomainError { what: String },
+    LengthError { what: String },
+    OutOfRange { what: String },
+    FutureError { what: String },
+    Default { what: String },
+}
+
+
+#[derive(Debug,Clone)]
+pub enum SystemError {
+    IosBaseFailure { what: String },
+    FilesystemError { what: String },
+    Default { what: String },
+}
+
+
+#[derive(Debug,Clone)]
+pub enum RuntimeError {
+    RangeError { what: String },
+    OverflowError { what: String },
+    UnderflowError { what: String },
+    RegexError { what: String },
+    SystemError(SystemError),
+    TxException { what: String },
+    NonexistentLocalTime { what: String },
+    AmbiguousLocalTime { what: String },
+    FormatError { what: String },
+    ConnectionFailed { what: String },
+    Default { what: String },
+}
+
+
+#[derive(Debug,Clone)]
+pub enum BadCast {
+    BadAnyCast { what: String },
+    Default { what: String },
+}
+
+
+#[derive(Debug,Clone)]
+pub enum BadAlloc {
+    BadArrayNewLength { what: String },
+    Default { what: String },
+}
+
+
+#[derive(Debug,Clone)]
+pub enum StdException {
+    LogicError(LogicError),
+    BadOptionalAccess(BadOptionalAccess),
+    RuntimeError(RuntimeError),
+    BadTypeid(BadTypeid),
+    BadCast(BadCast),
+    BadWeakPtr(BadWeakPtr),
+    BadFunctionCall(BadFunctionCall),
+    BadAlloc(BadAlloc),
+    BadException(BadException),
+    BadVariantAccess(BadVariantAccess),
+    Default { what: String },
+}
+
+
+pub trait RuntimeErrorInterface {}
+
+
+// ---------------- [ Dep crate: bitcoinleveldb-env ]
+// ---------------- [ File: bitcoinleveldb-env/src/env_wrapper.rs ]
+pub struct EnvWrapper  {
+    target:             Rc<RefCell<dyn Env>>,
+    target_access_gate: Arc<Mutex<()>>,
+}
+
+
+impl Env for EnvWrapper {}
+
+impl DeleteFile for EnvWrapper {
+
+    fn delete_file(&mut self, f: &String) -> Status {
+        trace!(file = %f, "EnvWrapper::delete_file forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "delete_file",
+            |target_env| target_env.delete_file(f),
+        );
+        debug!(file = %f, ok = status.is_ok(), "EnvWrapper::delete_file completed");
+        status
+    }
+}
+
+impl CreateDir for EnvWrapper {
+
+    fn create_dir(&mut self, d: &String) -> Status {
+        trace!(dir = %d, "EnvWrapper::create_dir forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "create_dir",
+            |target_env| target_env.create_dir(d),
+        );
+        debug!(dir = %d, ok = status.is_ok(), "EnvWrapper::create_dir completed");
+        status
+    }
+}
+
+impl DeleteDir for EnvWrapper {
+
+    fn delete_dir(&mut self, d: &String) -> Status {
+        trace!(dir = %d, "EnvWrapper::delete_dir forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "delete_dir",
+            |target_env| target_env.delete_dir(d),
+        );
+        debug!(dir = %d, ok = status.is_ok(), "EnvWrapper::delete_dir completed");
+        status
+    }
+}
+
+impl NewSequentialFile for EnvWrapper {
+
+    fn new_sequential_file(&mut self, f: &String, r: *mut *mut Box<dyn SequentialFile>) -> Status {
+        trace!(file = %f, "EnvWrapper::new_sequential_file forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "new_sequential_file",
+            |target_env| target_env.new_sequential_file(f, r),
+        );
+        debug!(file = %f, ok = status.is_ok(), "EnvWrapper::new_sequential_file completed");
+        status
+    }
+}
+
+impl NewRandomAccessFile for EnvWrapper {
+
+    fn new_random_access_file(&mut self, f: &String, r: *mut *mut Box<dyn RandomAccessFile>) -> Status {
+        trace!(file = %f, "EnvWrapper::new_random_access_file forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "new_random_access_file",
+            |target_env| target_env.new_random_access_file(f, r),
+        );
+        debug!(file = %f, ok = status.is_ok(), "EnvWrapper::new_random_access_file completed");
+        status
+    }
+}
+
+impl NewWritableFile for EnvWrapper {
+
+    fn new_writable_file(&mut self, f: &String, r: *mut *mut Box<dyn WritableFile>) -> Status {
+        trace!(file = %f, "EnvWrapper::new_writable_file forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "new_writable_file",
+            |target_env| target_env.new_writable_file(f, r),
+        );
+        debug!(file = %f, ok = status.is_ok(), "EnvWrapper::new_writable_file completed");
+        status
+    }
+}
+
+impl NewAppendableFile for EnvWrapper {
+
+    fn new_appendable_file(&mut self, f: &String, r: *mut *mut Box<dyn WritableFile>) -> Status {
+        trace!(file = %f, "EnvWrapper::new_appendable_file forwarding to target Env");
+    
+        // Disambiguate against the Env::new_appendable_file default helper.
+        let status = self.with_serialized_target_access(
+            "new_appendable_file",
+            |target_env| {
+                bitcoinleveldb_file::NewAppendableFile::new_appendable_file(
+                    target_env,
+                    f,
+                    r,
+                )
+            },
+        );
+    
+        debug!(file = %f, ok = status.is_ok(), "EnvWrapper::new_appendable_file completed");
+        status
+    }
+}
+
+impl FileExists for EnvWrapper {
+
+    fn file_exists(&mut self, f: &String) -> bool {
+        trace!(file = %f, "EnvWrapper::file_exists forwarding to target Env");
+        let exists = self.with_serialized_target_access(
+            "file_exists",
+            |target_env| target_env.file_exists(f),
+        );
+        debug!(file = %f, exists, "EnvWrapper::file_exists completed");
+        exists
+    }
+}
+
+impl GetChildren for EnvWrapper {
+
+    fn get_children(&mut self, dir: &String, r: *mut Vec<String>) -> Status {
+        trace!(dir = %dir, "EnvWrapper::get_children forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "get_children",
+            |target_env| target_env.get_children(dir, r),
+        );
+        debug!(dir = %dir, ok = status.is_ok(), "EnvWrapper::get_children completed");
+        status
+    }
+}
+
+impl GetFileSize for EnvWrapper {
+
+    fn get_file_size(&mut self, f: &String, s: *mut u64) -> Status {
+        trace!(file = %f, "EnvWrapper::get_file_size forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "get_file_size",
+            |target_env| target_env.get_file_size(f, s),
+        );
+        let size_val = unsafe { s.as_ref().copied() };
+        debug!(
+            file = %f,
+            ok = status.is_ok(),
+            size = size_val,
+            "EnvWrapper::get_file_size completed"
+        );
+        status
+    }
+}
+
+impl RenameFile for EnvWrapper {
+
+    fn rename_file(&mut self, src: &String, target: &String) -> Status {
+        trace!(src = %src, target = %target, "EnvWrapper::rename_file forwarding");
+        let status = self.with_serialized_target_access(
+            "rename_file",
+            |target_env| target_env.rename_file(src, target),
+        );
+        debug!(
+            src = %src,
+            target = %target,
+            ok = status.is_ok(),
+            "EnvWrapper::rename_file completed"
+        );
+        status
+    }
+}
+
+impl LockFile for EnvWrapper {
+
+    fn lock_file(&mut self, f: &String, l: *mut *mut Box<dyn FileLock>) -> Status {
+        trace!(file = %f, "EnvWrapper::lock_file forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "lock_file",
+            |target_env| target_env.lock_file(f, l),
+        );
+        debug!(file = %f, ok = status.is_ok(), "EnvWrapper::lock_file completed");
+        status
+    }
+}
+
+impl UnlockFile for EnvWrapper {
+
+    fn unlock_file(&mut self, l: *mut Box<dyn FileLock>) -> Status {
+        trace!("EnvWrapper::unlock_file forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "unlock_file",
+            |target_env| target_env.unlock_file(l),
+        );
+        debug!(ok = status.is_ok(), "EnvWrapper::unlock_file completed");
+        status
+    }
+}
+
+impl Schedule for EnvWrapper {
+
+    fn schedule(&mut self, f: fn(_0: *mut c_void) -> c_void, a: *mut c_void) {
+        trace!("EnvWrapper::schedule forwarding to target Env");
+        self.with_serialized_target_access(
+            "schedule",
+            |target_env| {
+                target_env.schedule(f, a);
+            },
+        );
+        debug!("EnvWrapper::schedule completed");
+    }
+}
+
+impl StartThread for EnvWrapper {
+
+    fn start_thread(&mut self, f: fn(_0: *mut c_void) -> c_void, a: *mut c_void) {
+        trace!("EnvWrapper::start_thread forwarding to target Env");
+        self.with_serialized_target_access(
+            "start_thread",
+            |target_env| {
+                target_env.start_thread(f, a);
+            },
+        );
+        debug!("EnvWrapper::start_thread completed");
+    }
+}
+
+impl GetTestDirectory for EnvWrapper {
+
+    fn get_test_directory(&mut self, path: *mut String) -> Status {
+        trace!("EnvWrapper::get_test_directory forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "get_test_directory",
+            |target_env| target_env.get_test_directory(path),
+        );
+        let path_preview = unsafe { path.as_ref().map(|s| s.as_str()).unwrap_or("") };
+        debug!(
+            path = %path_preview,
+            ok = status.is_ok(),
+            "EnvWrapper::get_test_directory completed"
+        );
+        status
+    }
+}
+
+impl NewLogger for EnvWrapper {
+
+    fn new_logger(&mut self, fname: &String, result: *mut *mut Box<dyn Logger>) -> Status {
+        trace!(file = %fname, "EnvWrapper::new_logger forwarding to target Env");
+        let status = self.with_serialized_target_access(
+            "new_logger",
+            |target_env| target_env.new_logger(fname, result),
+        );
+        debug!(file = %fname, ok = status.is_ok(), "EnvWrapper::new_logger completed");
+        status
+    }
+}
+
+impl NowMicros for EnvWrapper {
+
+    fn now_micros(&mut self) -> u64 {
+        trace!("EnvWrapper::now_micros forwarding to target Env");
+        let micros = self.with_serialized_target_access(
+            "now_micros",
+            |target_env| target_env.now_micros(),
+        );
+        debug!(micros, "EnvWrapper::now_micros completed");
+        micros
+    }
+}
+
+impl SleepForMicroseconds for EnvWrapper {
+
+    fn sleep_for_microseconds(&mut self, micros: i32) {
+        trace!(micros, "EnvWrapper::sleep_for_microseconds forwarding to target Env");
+        self.with_serialized_target_access(
+            "sleep_for_microseconds",
+            |target_env| {
+                target_env.sleep_for_microseconds(micros);
+            },
+        );
+        debug!(micros, "EnvWrapper::sleep_for_microseconds completed");
+    }
+}
+
+impl EnvWrapper {
+
+    pub fn new(t: Rc<RefCell<dyn Env>>) -> Self {
+        trace!("EnvWrapper::new constructing wrapper");
+    
+        let target_access_gate = env_wrapper_shared_borrow_gate_for_target(&t);
+    
+        let wrapper = Self {
+            target: t,
+            target_access_gate,
+        };
+    
+        debug!("EnvWrapper::new constructed");
+        wrapper
+    }
+
+    pub fn target(&self) -> Rc<RefCell<dyn Env>> {
+        trace!("EnvWrapper::target cloning Rc to inner Env");
+        self.target.clone()
+    }
+
+    pub fn target_identity_key(&self) -> usize {
+        env_wrapper_target_identity_key(&self.target)
+    }
+
+    pub fn with_serialized_target_access<TOperationResult, TOperation>(&mut self, operation_label: &'static str, operation: TOperation) -> TOperationResult where
+            TOperation: FnOnce(&mut dyn Env) -> TOperationResult
+    {
+        let target_identity_key = self.target_identity_key();
+    
+        trace!(
+            target: "bitcoinleveldb_env::env_wrapper",
+            label = "env_wrapper.with_serialized_target_access.entry",
+            operation_label,
+            target_identity_key,
+        );
+    
+        let gate_lock_result = self.target_access_gate.lock();
+    
+        let _gate_guard = match gate_lock_result {
+            Ok(gate_guard) => gate_guard,
+            Err(poisoned_gate_guard) => {
+                warn!(
+                    target: "bitcoinleveldb_env::env_wrapper",
+                    label = "env_wrapper.with_serialized_target_access.gate_poisoned",
+                    operation_label,
+                    target_identity_key,
+                );
+                poisoned_gate_guard.into_inner()
+            }
+        };
+    
+        let target_borrow_result = self.target.try_borrow_mut();
+    
+        let mut target_borrow = match target_borrow_result {
+            Ok(target_borrow) => target_borrow,
+            Err(target_borrow_error) => {
+                error!(
+                    target: "bitcoinleveldb_env::env_wrapper",
+                    label = "env_wrapper.with_serialized_target_access.borrow_failed",
+                    operation_label,
+                    target_identity_key,
+                    borrow_error = ?target_borrow_error,
+                );
+                panic!("EnvWrapper::with_serialized_target_access: target borrow failed");
+            }
+        };
+    
+        let operation_result = operation(&mut *target_borrow);
+    
+        trace!(
+            target: "bitcoinleveldb_env::env_wrapper",
+            label = "env_wrapper.with_serialized_target_access.exit",
+            operation_label,
+            target_identity_key,
+        );
+    
+        operation_result
+    }
+}
+
+// ---------------- [ File: bitcoinleveldb-env/src/get_test_directory.rs ]
+pub trait GetTestDirectory {
+    fn get_test_directory(&mut self, path: *mut String) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/global_state.rs ]
+pub fn env_wrapper_target_identity_key(target: &Rc<RefCell<dyn Env>>) -> usize {
+    let raw_target_ptr: *const RefCell<dyn Env> = Rc::as_ptr(target);
+    let identity_key: usize = raw_target_ptr as *const () as usize;
+
+    trace!(
+        target: "bitcoinleveldb_env::global_state",
+        label = "env_wrapper_target_identity_key",
+        identity_key,
+    );
+
+    identity_key
+}
+
+
+pub fn env_wrapper_shared_borrow_gate_for_target(target: &Rc<RefCell<dyn Env>>) -> Arc<Mutex<()>> {
+    let identity_key = env_wrapper_target_identity_key(target);
+
+    trace!(
+        target: "bitcoinleveldb_env::global_state",
+        label = "env_wrapper_shared_borrow_gate_for_target.entry",
+        identity_key,
+    );
+
+    let registry_lock_result = env_wrapper_shared_borrow_gate_registry_state().lock();
+
+    let mut registry_guard = match registry_lock_result {
+        Ok(registry_guard) => registry_guard,
+        Err(poisoned_registry_guard) => {
+            warn!(
+                target: "bitcoinleveldb_env::global_state",
+                label = "env_wrapper_shared_borrow_gate_for_target.registry_poisoned",
+                identity_key,
+            );
+            poisoned_registry_guard.into_inner()
+        }
+    };
+
+    match registry_guard.get(&identity_key) {
+        Some(existing_gate) => {
+            trace!(
+                target: "bitcoinleveldb_env::global_state",
+                label = "env_wrapper_shared_borrow_gate_for_target.reuse_existing",
+                identity_key,
+            );
+            existing_gate.clone()
+        }
+        None => {
+            let new_gate = Arc::new(Mutex::new(()));
+
+            trace!(
+                target: "bitcoinleveldb_env::global_state",
+                label = "env_wrapper_shared_borrow_gate_for_target.install_new",
+                identity_key,
+            );
+
+            registry_guard.insert(identity_key, new_gate.clone());
+            new_gate
+        }
+    }
+}
+
+
+fn env_wrapper_shared_borrow_gate_registry_state() -> &'static Mutex<BTreeMap<usize, Arc<Mutex<()>>>> {
+    static ENV_WRAPPER_SHARED_BORROW_GATE_REGISTRY_STATE:
+        OnceLock<Mutex<BTreeMap<usize, Arc<Mutex<()>>>>> = OnceLock::new();
+
+    ENV_WRAPPER_SHARED_BORROW_GATE_REGISTRY_STATE.get_or_init(|| {
+        trace!(
+            target: "bitcoinleveldb_env::global_state",
+            label = "env_wrapper_shared_borrow_gate_registry_state.initialize",
+        );
+        Mutex::new(BTreeMap::new())
+    })
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/interface.rs ]
+pub trait Env {}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/log.rs ]
+pub fn log(info_log: Rc<RefCell<dyn Logger>>, format: *const u8, args: &[&str]) {
+    let fmt_preview = unsafe {
+        if format.is_null() {
+            warn!("log called with null format pointer");
+            "<null-format>"
+        } else {
+            match CStr::from_ptr(format as *const c_char).to_str() {
+                Ok(s) => s,
+                Err(_) => {
+                    warn!("log called with non-utf8 format string");
+                    "<non-utf8-format>"
+                }
+            }
+        }
+    };
+
+    trace!(
+        format = %fmt_preview,
+        arg_count = args.len(),
+        "log forwarding to Logger::logv"
+    );
+
+    info_log.borrow_mut().logv(format, args);
+
+    debug!(
+        format = %fmt_preview,
+        arg_count = args.len(),
+        "log completed Logger::logv call"
+    );
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/new_logger.rs ]
+pub trait NewLogger {
+    fn new_logger(&mut self, fname: &String, result: *mut *mut Box<dyn Logger>) -> Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/rc_writable_file_adapter.rs ]
+pub struct RcWritableFileAdapter  {
+    inner: Rc<RefCell<dyn WritableFile>>,
+}
+
+
+impl WritableFile for RcWritableFileAdapter {}
+
+impl Named for RcWritableFileAdapter {
+
+    fn name(&self) -> Cow<'_,str> {
+        trace!("RcWritableFileAdapter::get_name");
+        Cow::Owned("[rc-writable-file-adapter]".to_string())
+    }
+}
+
+impl WritableFileAppend for RcWritableFileAdapter {
+
+    fn append(&mut self, data: &Slice) -> Status {
+        trace!(
+            len = *data.size(),
+            "RcWritableFileAdapter::append forwarding to inner WritableFile"
+        );
+        let status = self.inner.borrow_mut().append(data);
+        debug!(
+            ok = status.is_ok(),
+            "RcWritableFileAdapter::append completed"
+        );
+        status
+    }
+}
+
+impl WritableFileClose for RcWritableFileAdapter {
+
+    fn close(&mut self) -> Status {
+        trace!("RcWritableFileAdapter::close forwarding to inner WritableFile");
+        let status = self.inner.borrow_mut().close();
+        debug!(
+            ok = status.is_ok(),
+            "RcWritableFileAdapter::close completed"
+        );
+        status
+    }
+}
+
+impl WritableFileFlush for RcWritableFileAdapter {
+
+    fn flush(&mut self) -> Status {
+        trace!("RcWritableFileAdapter::flush forwarding to inner WritableFile");
+        let status = self.inner.borrow_mut().flush();
+        debug!(
+            ok = status.is_ok(),
+            "RcWritableFileAdapter::flush completed"
+        );
+        status
+    }
+}
+
+impl WritableFileSync for RcWritableFileAdapter {
+
+    fn sync(&mut self) -> Status {
+        trace!("RcWritableFileAdapter::sync forwarding to inner WritableFile");
+        let status = self.inner.borrow_mut().sync();
+        debug!(
+            ok = status.is_ok(),
+            "RcWritableFileAdapter::sync completed"
+        );
+        status
+    }
+}
+
+// ---------------- [ File: bitcoinleveldb-env/src/read_file_to_string.rs ]
+pub fn read_file_to_string(env: Rc<RefCell<dyn Env>>, fname: &String, data: *mut String) -> Status {
+    use std::ptr;
+
+    trace!(file = %fname, "read_file_to_string: start");
+
+    // C++: data->clear();
+    let data_ref: &mut String = unsafe { &mut *data };
+    data_ref.clear();
+
+    // C++: SequentialFile* file; Status s = env->NewSequentialFile(fname, &file);
+    let mut file_ptr: *mut Box<dyn SequentialFile> = ptr::null_mut();
+    let mut status = {
+        let mut env_ref = env.borrow_mut();
+        env_ref.new_sequential_file(fname, &mut file_ptr)
+    };
+
+    if !status.is_ok() {
+        debug!(
+            file = %fname,
+            status_str = %status.to_string(),
+            "read_file_to_string: NewSequentialFile failed"
+        );
+        return status;
+    }
+
+    // Take ownership of the allocated file object (mirrors C++ delete file).
+    // We were given a `*mut Box<dyn SequentialFile>` so we first reconstruct
+    // that outer Box, then borrow the inner `Box<dyn SequentialFile>` mutably.
+    let mut file_holder: Box<Box<dyn SequentialFile>> = unsafe {
+        assert!(
+            !file_ptr.is_null(),
+            "Env::NewSequentialFile returned a null file pointer"
+        );
+        Box::from_raw(file_ptr)
+    };
+
+    let file: &mut Box<dyn SequentialFile> = file_holder.as_mut();
+
+    const K_BUFFER_SIZE: usize = 8192;
+    let mut scratch  = vec![0u8; K_BUFFER_SIZE];
+    let mut fragment = Slice::default();
+
+    loop {
+        // C++: s = file->Read(kBufferSize, &fragment, space);
+        status = file.read(K_BUFFER_SIZE, &mut fragment, scratch.as_mut_ptr());
+        if !status.is_ok() {
+            debug!(
+                file = %fname,
+                status_str = %status.to_string(),
+                "read_file_to_string: read failed"
+            );
+            break;
+        }
+
+        // C++: data->append(fragment.data(), fragment.size());
+        unsafe {
+            let len = fragment.size();
+            if *len > 0 {
+                let ptr = *fragment.data() as *const u8;
+                let bytes = std::slice::from_raw_parts(ptr, *len);
+                let chunk = String::from_utf8_lossy(bytes);
+                data_ref.push_str(&chunk);
+            }
+        }
+
+        // C++: if (fragment.empty()) break;
+        if fragment.empty() {
+            debug!(
+                file = %fname,
+                "read_file_to_string: reached EOF (empty fragment)"
+            );
+            break;
+        }
+    }
+
+    // `file_holder` drops here, mirroring `delete file` in C++.
+    debug!(
+        file = %fname,
+        ok = status.is_ok(),
+        "read_file_to_string: completed"
+    );
+    status
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/schedule.rs ]
+pub trait Schedule {
+    fn schedule(&mut self, function: fn(arg: *mut c_void) -> c_void, arg: *mut c_void);
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/set_current_file.rs ]
+pub fn set_current_file(env: Rc<RefCell<dyn Env>>, dbname: &String, descriptor_number: u64) -> Status {
+    trace!(
+        dbname = %dbname,
+        descriptor_number,
+        "set_current_file: start"
+    );
+
+    // C++: std::string manifest = DescriptorFileName(dbname, descriptor_number);
+    let manifest = descriptor_file_name(dbname, descriptor_number);
+
+    // C++: Slice contents = manifest;
+    let mut contents = Slice::from(&manifest);
+
+    // C++: assert(contents.starts_with(dbname + "/"));
+    let prefix_string = {
+        let mut s = dbname.clone();
+        s.push('/');
+        s
+    };
+    let prefix_slice = Slice::from(&prefix_string);
+    assert!(
+        contents.starts_with(&prefix_slice),
+        "set_current_file: manifest '{}' does not start with '{}'",
+        manifest,
+        prefix_string,
+    );
+
+    // C++: contents.remove_prefix(dbname.size() + 1);
+    contents.remove_prefix(dbname.len() + 1);
+
+    // C++: std::string tmp = TempFileName(dbname, descriptor_number);
+    let tmp = temp_file_name(dbname, descriptor_number);
+
+    // C++: Status s = WriteStringToFileSync(env, contents.ToString() + "\n", tmp);
+    let content_string = {
+        let mut s = contents.to_string();
+        s.push('\n');
+        s
+    };
+    let content_slice = Slice::from(&content_string);
+
+    trace!(
+        dbname = %dbname,
+        tmp = %tmp,
+        "set_current_file: writing CURRENT contents to temporary file"
+    );
+
+    let mut status = write_string_to_file_sync(env.clone(), &content_slice, &tmp);
+
+    if status.is_ok() {
+        let current_name = current_file_name(dbname);
+        trace!(
+            tmp = %tmp,
+            current = %current_name,
+            "set_current_file: renaming temporary file to CURRENT"
+        );
+        status = {
+            let mut env_ref = env.borrow_mut();
+            env_ref.rename_file(&tmp, &current_name)
+        };
+    }
+
+    if !status.is_ok() {
+        trace!(
+            tmp = %tmp,
+            status_str = %status.to_string(),
+            "set_current_file: operation failed, deleting temporary file"
+        );
+        let mut env_ref = env.borrow_mut();
+        let _ = env_ref.delete_file(&tmp);
+    }
+
+    debug!(
+        dbname = %dbname,
+        descriptor_number,
+        ok = status.is_ok(),
+        "set_current_file: completed"
+    );
+    status
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/start_thread.rs ]
+pub trait StartThread {
+    fn start_thread(&mut self, function: fn(arg: *mut c_void) -> c_void, arg: *mut c_void);
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/time.rs ]
+pub trait NowMicros {
+    fn now_micros(&mut self) -> u64;
+}
+
+
+pub trait SleepForMicroseconds {
+    fn sleep_for_microseconds(&mut self, micros: i32);
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/write_string_to_file.rs ]
+pub fn write_string_to_file(env: Rc<RefCell<dyn Env>>, data: &Slice, fname: &String) -> Status {
+    trace!(
+        file = %fname,
+        data_len = *data.size(),
+        "write_string_to_file: delegating to do_write_string_to_file (should_sync=false)"
+    );
+    do_write_string_to_file(env, data, fname, false)
+}
+
+
+pub fn write_string_to_file_sync(env: Rc<RefCell<dyn Env>>, data: &Slice, fname: &String) -> Status {
+    trace!(
+        file = %fname,
+        data_len = *data.size(),
+        "write_string_to_file_sync: delegating to do_write_string_to_file (should_sync=true)"
+    );
+    do_write_string_to_file(env, data, fname, true)
+}
+
+
+// ---------------- [ File: bitcoinleveldb-env/src/write_string_to_file_impl.rs ]
+pub fn do_write_string_to_file(
+    env:         Rc<RefCell<dyn Env>>,
+    data:        &Slice,
+    fname:       &String,
+    should_sync: bool
+) -> Status
+{
+    use std::ptr;
+
+    trace!(
+        file = %fname,
+        should_sync,
+        data_len = *data.size(),
+        "do_write_string_to_file: start"
+    );
+
+    // C++: WritableFile* file; Status s = env->NewWritableFile(fname, &file);
+    let mut file_ptr: *mut Box<dyn WritableFile> = ptr::null_mut();
+    let mut status = {
+        let mut env_ref = env.borrow_mut();
+        env_ref.new_writable_file(fname, &mut file_ptr)
+    };
+
+    if !status.is_ok() {
+        debug!(
+            file = %fname,
+            status_str = %status.to_string(),
+            "do_write_string_to_file: NewWritableFile failed"
+        );
+        return status;
+    }
+
+    // Take ownership of allocated file (mirrors C++ delete file).
+    // We were given `*mut Box<dyn WritableFile>`, so reconstruct the outer Box
+    // and then borrow the inner `Box<dyn WritableFile>` mutably.
+    let mut file_holder: Box<Box<dyn WritableFile>> = unsafe {
+        assert!(
+            !file_ptr.is_null(),
+            "Env::NewWritableFile returned a null file pointer"
+        );
+        Box::from_raw(file_ptr)
+    };
+
+    let file: &mut Box<dyn WritableFile> = file_holder.as_mut();
+
+    // C++: s = file->Append(data);
+    status = file.append(data);
+
+    // C++: if (s.ok() && should_sync) { s = file->Sync(); }
+    if status.is_ok() && should_sync {
+        trace!(file = %fname, "do_write_string_to_file: calling Sync");
+        status = file.sync();
+    }
+
+    // C++: if (s.ok()) { s = file->Close(); }
+    if status.is_ok() {
+        trace!(file = %fname, "do_write_string_to_file: calling Close");
+        status = file.close();
+    }
+
+    // `file_holder` drops here, mirroring `delete file` in C++.
+
+    // C++: if (!s.ok()) { env->DeleteFile(fname); }
+    if !status.is_ok() {
+        debug!(
+            file = %fname,
+            status_str = %status.to_string(),
+            "do_write_string_to_file: error, deleting file"
+        );
+        let mut env_ref = env.borrow_mut();
+        let _ = env_ref.delete_file(fname);
+    }
+
+    debug!(
+        file = %fname,
+        should_sync,
+        ok = status.is_ok(),
+        "do_write_string_to_file: completed"
+    );
+    status
+}
+
+
+// ---------------- [ Dep crate: bitcoinleveldb-file ]
+// ---------------- [ File: bitcoinleveldb-file/src/create_dir.rs ]
+pub trait CreateDir {
+    fn create_dir(&mut self, dirname: &String) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/delete_dir.rs ]
+pub trait DeleteDir {
+    fn delete_dir(&mut self, dirname: &String) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/delete_file.rs ]
+pub trait DeleteFile {
+    fn delete_file(&mut self, fname: &String) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/file_exists.rs ]
+pub trait FileExists {
+    fn file_exists(&mut self, fname: &String) -> bool;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/file_names.rs ]
+pub fn make_file_name(dbname: &String, number: u64, suffix: *const u8) -> String {
+    use std::ffi::CStr;
+    use std::os::raw::c_char;
+    use tracing::{debug, trace};
+
+    // SAFETY: All call sites in this module pass a static NUL-terminated byte string.
+    let suffix_str: &str = unsafe {
+        if suffix.is_null() {
+            ""
+        } else {
+            // If suffix contains invalid UTF-8 (shouldn't happen for our constants),
+            // fall back to empty suffix to preserve control-flow (still returns a name).
+            CStr::from_ptr(suffix as *const c_char)
+                .to_str()
+                .unwrap_or("")
+        }
+    };
+
+    trace!(dbname = %dbname, number, suffix = %suffix_str, "constructing file name");
+    let buf = format!("/{number:06}.{suffix}", number = number, suffix = suffix_str);
+    let out = format!("{db}{buf}", db = dbname, buf = buf);
+    debug!(result = %out, "constructed file name");
+    out
+}
+
+
+pub fn table_file_name(dbname: &String, number: u64) -> String {
+    use tracing::{debug, trace};
+
+    assert!(number > 0);
+    trace!(dbname = %dbname, number, "table_file_name");
+    let out = make_file_name(dbname, number, b"ldb\0".as_ptr());
+    debug!(result = %out, "table_file_name constructed");
+    out
+}
+
+
+pub fn sst_table_file_name(dbname: &String, number: u64) -> String {
+    use tracing::{debug, trace};
+
+    assert!(number > 0);
+    trace!(dbname = %dbname, number, "sst_table_file_name");
+    let out = make_file_name(dbname, number, b"sst\0".as_ptr());
+    debug!(result = %out, "sst_table_file_name constructed");
+    out
+}
+
+
+pub fn descriptor_file_name(dbname: &String, number: u64) -> String {
+    use tracing::{debug, trace};
+
+    assert!(number > 0);
+    trace!(dbname = %dbname, number, "descriptor_file_name");
+    let buf = format!("/MANIFEST-{num:06}", num = number);
+    let out = format!("{db}{buf}", db = dbname, buf = buf);
+    debug!(result = %out, "descriptor_file_name constructed");
+    out
+}
+
+
+pub fn current_file_name(dbname: &String) -> String {
+    use tracing::{debug, trace};
+
+    trace!(dbname = %dbname, "current_file_name");
+    let out = format!("{}/CURRENT", dbname);
+    debug!(result = %out, "current_file_name constructed");
+    out
+}
+
+
+pub fn temp_file_name(dbname: &String, number: u64) -> String {
+    use tracing::{debug, trace};
+
+    assert!(number > 0);
+    trace!(dbname = %dbname, number, "temp_file_name");
+    let out = make_file_name(dbname, number, b"dbtmp\0".as_ptr());
+    debug!(result = %out, "temp_file_name constructed");
+    out
+}
+
+
+pub fn info_log_file_name(dbname: &String) -> String {
+    use tracing::{debug, trace};
+
+    trace!(dbname = %dbname, "info_log_file_name");
+    let out = format!("{}/LOG", dbname);
+    debug!(result = %out, "info_log_file_name constructed");
+    out
+}
+
+
+pub fn old_info_log_file_name(dbname: &String) -> String {
+    use tracing::{debug, trace};
+
+    trace!(dbname = %dbname, "old_info_log_file_name");
+    let out = format!("{}/LOG.old", dbname);
+    debug!(result = %out, "old_info_log_file_name constructed");
+    out
+}
+
+
+pub fn log_file_name(dbname: &String, number: u64) -> String {
+    use tracing::{debug, trace};
+
+    assert!(number > 0);
+    trace!(dbname = %dbname, number, "log_file_name");
+    let out = make_file_name(dbname, number, b"log\0".as_ptr());
+    debug!(result = %out, "log_file_name constructed");
+    out
+}
+
+
+pub fn lock_file_name(dbname: &String) -> String {
+    use tracing::{debug, trace};
+
+    trace!(dbname = %dbname, "lock_file_name");
+    let out = format!("{}/LOCK", dbname);
+    debug!(result = %out, "lock_file_name constructed");
+    out
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/file_type.rs ]
+#[derive(Hash,PartialEq,Eq,Copy,Clone,Debug)]
+pub enum FileType {
+    LogFile,
+    DBLockFile,
+    TableFile,
+    DescriptorFile,
+    CurrentFile,
+    TempFile,
+    InfoLogFile,
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/find_file.rs ]
+pub fn find_file(icmp: &InternalKeyComparator, files: &[*mut FileMetaData], key_: &Slice) -> i32 {
+    use tracing::{trace, debug};
+
+    trace!("find_file: begin binary search over {} files", files.len());
+
+    let mut left:  u32 = 0;
+    let mut right: u32 = files.len() as u32;
+
+    while left < right {
+        let mid = (left + right) / 2;
+
+        // SAFETY:
+        // The original C++ used raw pointers. We preserve this exactly.
+        // The caller provides a Vec<*mut FileMetaData> and the semantics
+        // require dereferencing these pointers just as in C++.
+        let f_ptr = files[mid as usize];
+        let f: &FileMetaData = unsafe {
+            &*f_ptr
+        };
+
+        let largest_encoded = f.largest().encode();
+        let cmp = icmp.compare(&largest_encoded, key_);
+
+        debug!(
+            mid       = mid,
+            left      = left,
+            right     = right,
+            cmp       = cmp,
+            file_num  = f.number(),
+            file_size = f.file_size(),
+            "find_file: inspection step"
+        );
+
+        if cmp < 0 {
+            // f->largest < key  → all files ≤ mid are uninteresting
+            left = mid + 1;
+        } else {
+            // f->largest ≥ key → mid might contain answer
+            right = mid;
+        }
+    }
+
+    trace!("find_file: completed with index={}", right);
+
+    right as i32
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/get_children.rs ]
+pub trait GetChildren {
+    fn get_children(&mut self, dir: &String, result: *mut Vec<String>) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/get_file_size.rs ]
+pub trait GetFileSize {
+    fn get_file_size(&mut self, fname: &String, file_size: *mut u64) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/lock_file.rs ]
+pub trait FileLock {}
+
+
+pub trait LockFile {
+    fn lock_file(&mut self, fname: &String, lock: *mut *mut Box<dyn FileLock>) -> crate::Status;
+}
+
+
+pub trait UnlockFile {
+    fn unlock_file(&mut self, lock: *mut Box<dyn FileLock>) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/metadata.rs ]
+#[derive(Debug, Getters, MutGetters, Setters, Builder, Clone)]
+#[getset(get = "pub", get_mut = "pub", set = "pub")]
+pub struct FileMetaData  {
+    refs:          i32,
+    allowed_seeks: i32,
+    number:        u64,
+    file_size:     u64,
+    smallest:      InternalKey,
+    largest:       InternalKey,
+}
+
+
+impl Default for FileMetaData {
+
+    fn default() -> Self {
+        trace!("FileMetaData::default");
+        Self {
+            refs:          0,
+            allowed_seeks: 1 << 30,
+            number:        0,
+            file_size:     0,
+            smallest:      Default::default(),
+            largest:       Default::default(),
+        }
+    }
+}
+
+// ---------------- [ File: bitcoinleveldb-file/src/new_appendable_file.rs ]
+pub trait NewAppendableFile {
+    fn new_appendable_file(&mut self, fname: &String, result: *mut *mut Box<dyn WritableFile>) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/new_random_access_file.rs ]
+pub trait NewRandomAccessFile {
+    fn new_random_access_file(&mut self, fname: &String, result: *mut *mut Box<dyn RandomAccessFile>) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/new_sequential_file.rs ]
+pub trait NewSequentialFile {
+    fn new_sequential_file(&mut self, fname: &String, result: *mut *mut Box<dyn SequentialFile>) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/new_writable_file.rs ]
+pub trait NewWritableFile {
+    fn new_writable_file(&mut self, fname: &String, result: *mut *mut Box<dyn WritableFile>) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/parse_file_name.rs ]
+pub fn parse_file_name(filename: &String, number: *mut u64, ty: *mut FileType) -> bool {
+    use tracing::{debug, trace};
+
+    #[inline]
+    fn consume_decimal_number(input: &str) -> Option<(u64, &str)> {
+        // Parse a non-empty run of decimal digits into u64 without locale
+        // and with overflow checking; return (value, remaining_suffix).
+        let mut v: u128 = 0;
+        let mut idx = 0usize;
+        for (i, b) in input.as_bytes().iter().enumerate() {
+            if !b.is_ascii_digit() {
+                break;
+            }
+            idx = i + 1;
+            let d = (b - b'0') as u128;
+            v = v
+                .checked_mul(10)?
+                .checked_add(d)?;
+            if v > u64::MAX as u128 {
+                return None;
+            }
+        }
+        if idx == 0 {
+            return None;
+        }
+        Some((v as u64, &input[idx..]))
+    }
+
+    trace!(filename = %filename, "parse_file_name enter");
+
+    let mut rest = filename.as_str();
+
+    // Simple fixed-name cases
+    if rest == "CURRENT" {
+        unsafe {
+            *number = 0;
+            *ty = FileType::CurrentFile;
+        }
+        debug!("parsed CURRENT -> type=CurrentFile, number=0");
+        return true;
+    } else if rest == "LOCK" {
+        unsafe {
+            *number = 0;
+            *ty = FileType::DBLockFile;
+        }
+        debug!("parsed LOCK -> type=DBLockFile, number=0");
+        return true;
+    } else if rest == "LOG" || rest == "LOG.old" {
+        unsafe {
+            *number = 0;
+            *ty = FileType::InfoLogFile;
+        }
+        debug!(variant = %rest, "parsed info log name -> type=InfoLogFile, number=0");
+        return true;
+    } else if let Some(tail) = rest.strip_prefix("MANIFEST-") {
+        // MANIFEST-<number> with no trailing suffix
+        if let Some((num, remain)) = consume_decimal_number(tail) {
+            if remain.is_empty() {
+                unsafe {
+                    *number = num;
+                    *ty = FileType::DescriptorFile;
+                }
+                debug!(number = num, "parsed MANIFEST -> type=DescriptorFile");
+                return true;
+            }
+        }
+        debug!("failed parsing MANIFEST-* pattern");
+        return false;
+    }
+
+    // Numeric prefix followed by a known suffix
+    if let Some((num, suffix)) = consume_decimal_number(rest) {
+        let parsed = if suffix == ".log" {
+            unsafe {
+                *ty = FileType::LogFile;
+                *number = num;
+            }
+            true
+        } else if suffix == ".sst" || suffix == ".ldb" {
+            unsafe {
+                *ty = FileType::TableFile;
+                *number = num;
+            }
+            true
+        } else if suffix == ".dbtmp" {
+            unsafe {
+                *ty = FileType::TempFile;
+                *number = num;
+            }
+            true
+        } else {
+            false
+        };
+
+        if parsed {
+            debug!(number = num, suffix = %suffix, "parsed numeric file name");
+        } else {
+            debug!(suffix = %suffix, "unsupported suffix for numeric file name");
+        }
+        return parsed;
+    }
+
+    debug!("parse_file_name: no pattern matched");
+    false
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/random_access_file.rs ]
+pub trait RandomAccessFile {}
+
+
+pub trait RandomAccessFileRead {
+    fn read(
+        &self,
+        offset:  u64,
+        n:       usize,
+        result:  *mut Slice,
+        scratch: *mut u8
+    ) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/rename_file.rs ]
+pub trait RenameFile {
+    fn rename_file(&mut self, src: &String, target: &String) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/sequential_file.rs ]
+pub trait SequentialFile {}
+
+
+pub trait SequentialFileRead {
+    fn read(
+        &mut self,
+        n:         usize,
+        result:    *mut Slice,
+        scratch:   *mut u8
+    ) -> crate::Status;
+}
+
+
+pub trait SequentialFileSkip {
+    fn skip(&mut self, n: u64) -> crate::Status;
+}
+
+
+// ---------------- [ File: bitcoinleveldb-file/src/stdout.rs ]
+pub struct StdoutPrinter  { }
+
+
+impl WritableFile for StdoutPrinter {}
+
+impl WritableFileClose for StdoutPrinter {
+
+    fn close(&mut self) -> crate::Status {
+        use tracing::debug;
+    
+        debug!("StdoutPrinter::close -> OK");
+        crate::Status::ok()
+    }
+}
+
+impl WritableFileAppend for StdoutPrinter {
+
+    fn append(&mut self, data: &Slice) -> crate::Status {
+        use libc::{self, c_void};
+        use libc_stdhandle::stdout;
+        use tracing::trace;
+    
+        trace!(len = data.size(), "StdoutPrinter::append: writing to stdout");
+    
+        unsafe {
+            libc::fwrite(
+                *data.data() as *const c_void,
+                1,
+                *data.size(),
+                stdout(),
+            );
+        }
+    
+        crate::Status::ok()
+    }
+}
+
+impl WritableFileFlush for StdoutPrinter {
+
+    fn flush(&mut self) -> crate::Status {
+        use tracing::debug;
+    
+        debug!("StdoutPrinter::flush -> OK");
+        crate::Status::ok()
+    }
+}
+
+impl WritableFileSync for StdoutPrinter {
+
+    fn sync(&mut self) -> crate::Status {
+        use tracing::debug;
+    
+        // No-op for stdout; mirrors C++ which returned OK.
+        debug!("StdoutPrinter::sync -> OK (no-op)");
+        crate::Status::ok()
+    }
+}
+
+impl Named for StdoutPrinter {
+
+    fn name(&self) -> Cow<'_,str> {
+        Cow::Owned("[stdout]".to_string())
+    }
+}
+
+// ---------------- [ File: bitcoinleveldb-file/src/writable_file.rs ]
+pub trait WritableFile {}
+
+
+pub trait WritableFileAppend {
+    fn append(&mut self, data: &Slice) -> crate::Status;
+}
+
+
+pub trait WritableFileClose {
+    fn close(&mut self) -> crate::Status;
+}
+
+
+pub trait WritableFileFlush {
+    fn flush(&mut self) -> crate::Status;
+}
+
+
+pub trait WritableFileSync {
+    fn sync(&mut self) -> crate::Status;
+}
+
+
+impl From<Rc<RefCell<dyn WritableFile>>> for Box<dyn WritableFile> {
+
+    fn from(dest: Rc<RefCell<dyn WritableFile>>) -> Self {
+        todo!();
+        /*
+           : dest(dest),
+           : block_offset(0),
+           InitTypeCrc(type_crc_);
+        */
+    }
+}
+
+impl WritableFile for Box<dyn WritableFile> {}
+
+impl WritableFileAppend for Box<dyn WritableFile> {
+
+    fn append(&mut self, data: &Slice) -> crate::Status {
+        (**self).append(data)
+    }
+}
+
+impl WritableFileClose for Box<dyn WritableFile> {
+
+    fn close(&mut self) -> crate::Status {
+        (**self).close()
+    }
+}
+
+impl WritableFileFlush for Box<dyn WritableFile> {
+
+    fn flush(&mut self) -> crate::Status {
+        (**self).flush()
+    }
+}
+
+impl WritableFileSync for Box<dyn WritableFile> {
+
+    fn sync(&mut self) -> crate::Status {
+        (**self).sync()
+    }
+}
+
+impl Named for Box<dyn WritableFile> {
+
+    fn name(&self) -> Cow<'_,str> {
+        (**self).name()
+    }
+}
+
+// ---------------- [ Dep crate: bitcoinleveldb-slice ]
+// ---------------- [ File: bitcoinleveldb-slice/src/lib.rs ]
+#[derive(Copy,Clone,Default,Getters)]
+#[getset(get = "pub")]
+pub struct Range  {
+    start: Slice,
+    limit: Slice,
+}
+
+
+impl Range {
+
+    pub fn new(s: Slice, l: Slice) -> Self {
+        Self { start: s, limit: l }
+    }
+}
+
+
+
+// ---------------- [ File: bitcoinleveldb-slice/src/slice.rs ]
+#[derive(Copy,Clone,Debug, Getters, Setters)]
+#[getset(get = "pub", set = "pub")]
+pub struct Slice  {
+    data: *const u8,
+    size: usize,
+}
+
+
+impl Default for Slice {
+
+    fn default() -> Self {
+        info!("Creating a default Slice (empty)");
+        Self {
+            data: b"".as_ptr(),
+            size: 0,
+        }
+    }
+}
+
+impl Slice {
+
+    #[inline]
+    pub fn from_bytes(bytes: &[u8]) -> Self {
+        Self::from_ptr_len(bytes.as_ptr(), bytes.len())
+    }
+
+    #[inline]
+    pub fn from_str(s: &str) -> Self {
+        Self::from_ptr_len(s.as_ptr(), s.len())
+    }
+
+    #[inline]
+    pub fn as_bytes(&self) -> &[u8] {
+        let len = *self.size();
+        let ptr = *self.data();
+    
+        if len == 0 {
+            if ptr.is_null() {
+                warn!(
+                    data_ptr = ?ptr,
+                    "Slice::as_bytes: empty Slice has null data pointer; returning empty slice defensively"
+                );
+            } else {
+                trace!(
+                    data_ptr = ?ptr,
+                    "Slice::as_bytes: empty Slice; returning empty slice"
+                );
+            }
+            return &[];
+        }
+    
+        assert!(
+            !ptr.is_null(),
+            "Slice::as_bytes: non-empty Slice requires non-null data pointer (len={})",
+            len
+        );
+    
+        unsafe { core::slice::from_raw_parts(ptr, len) }
+    }
+}
+
+impl Index<usize> for Slice {
+
+    type Output = u8;
+
+    fn index(&self, i: usize) -> &Self::Output {
+        debug!("Indexing into Slice at position {}", i);
+        assert!(
+            i < self.size,
+            "Index out of range: i={} >= size={}",
+            i,
+            self.size
+        );
+    
+        assert!(
+            !self.data.is_null(),
+            "Indexing into Slice requires non-null data pointer for non-empty slice (size={})",
+            self.size
+        );
+    
+        unsafe { &*self.data.add(i) }
+    }
+}
+
+impl PartialEq for Slice {
+
+    fn eq(&self, other: &Self) -> bool {
+        trace!("Checking equality of two Slices");
+    
+        if self.size != other.size {
+            return false;
+        }
+    
+        if self.size == 0 {
+            return true;
+        }
+    
+        assert!(
+            !self.data.is_null() && !other.data.is_null(),
+            "Slice::eq: non-empty slices require non-null data pointers (len={})",
+            self.size
+        );
+    
+        unsafe {
+            // compare_bytes returns an i32 (< 0, == 0, or > 0),
+            // so check if result == 0 for equality
+            let cmp = compare_bytes(self.data, other.data, self.size);
+            cmp == 0
+        }
+    }
+}
+
+impl Eq for Slice {}
+
+impl From<&String> for Slice {
+
+    fn from(s: &String) -> Self {
+        info!("Creating a Slice from &String");
+        Self {
+            data: s.as_ptr(),
+            size: s.len(),
+        }
+    }
+}
+
+impl From<&str> for Slice {
+
+    fn from(s: &str) -> Self {
+        info!("Creating a Slice from &str");
+        Self {
+            data: s.as_ptr(),
+            size: s.len(),
+        }
+    }
+}
+
+impl From<*const u8> for Slice {
+
+    fn from(s: *const u8) -> Self {
+        info!("Creating a Slice from a raw C-string pointer");
+        if s.is_null() {
+            warn!("Received a null pointer in Slice::from(*const u8); returning empty slice");
+            return Self::default();
+        }
+        unsafe {
+            let c_str = CStr::from_ptr(s as *const i8);
+            let bytes = c_str.to_bytes();
+            Self {
+                data: bytes.as_ptr(),
+                size: bytes.len(),
+            }
+        }
+    }
+}
+
+impl From<&[u8]> for Slice {
+
+    fn from(bytes: &[u8]) -> Self {
+        info!(
+            "Creating a Slice from &[u8] (len = {})",
+            bytes.len()
+        );
+    
+        if bytes.is_empty() {
+            trace!("Received empty byte slice; returning empty Slice");
+            return Slice {
+                data: b"".as_ptr(),
+                size: 0,
+            };
+        }
+    
+        let ptr = bytes.as_ptr();
+        let len = bytes.len();
+    
+        trace!(
+            "Slice::from(&[u8]) -> data={:p}, size={}",
+            ptr,
+            len
+        );
+    
+        Slice {
+            data: ptr,
+            size: len,
+        }
+    }
+}
+
+impl Slice {
+
+    pub fn from_ptr_len(d: *const u8, n: usize) -> Self {
+        info!(
+            "Creating a Slice from pointer {:p} with length {}",
+            d, n
+        );
+    
+        if n == 0 {
+            if d.is_null() {
+                warn!(
+                    "Slice::from_ptr_len: received null pointer with zero length; canonicalizing to empty slice"
+                );
+                return Self {
+                    data: b"".as_ptr(),
+                    size: 0,
+                };
+            }
+    
+            trace!(
+                "Slice::from_ptr_len: zero-length slice with non-null pointer {:p}",
+                d
+            );
+    
+            return Self { data: d, size: 0 };
+        }
+    
+        assert!(
+            !d.is_null(),
+            "Slice::from_ptr_len: pointer must be non-null when length is non-zero (len={})",
+            n
+        );
+    
+        Self { data: d, size: n }
+    }
+
+    pub fn empty(&self) -> bool {
+        let is_empty = self.size == 0;
+        trace!("Checking if Slice is empty -> {}", is_empty);
+        is_empty
+    }
+
+    pub fn clear(&mut self) {
+        info!("Clearing Slice to become empty");
+        self.data = b"".as_ptr();
+        self.size = 0;
+    }
+
+    pub fn remove_prefix(&mut self, n: usize) {
+        info!("Removing prefix of length {} from Slice", n);
+    
+        if n == 0 {
+            trace!(
+                "Slice::remove_prefix: n=0 no-op (size={})",
+                self.size
+            );
+            return;
+        }
+    
+        assert!(
+            n <= self.size,
+            "remove_prefix({}) out of range for size {}",
+            n,
+            self.size
+        );
+    
+        assert!(
+            !self.data.is_null(),
+            "Slice::remove_prefix: data pointer must not be null when removing a non-zero prefix (n={}, size={})",
+            n,
+            self.size
+        );
+    
+        unsafe {
+            self.data = self.data.add(n);
+        }
+    
+        self.size -= n;
+        trace!("New size after remove_prefix = {}", self.size);
+    }
+
+    pub fn to_string(&self) -> String {
+        trace!("Converting Slice to a Rust String");
+        if self.size == 0 {
+            String::new()
+        } else {
+            assert!(
+                !self.data.is_null(),
+                "Slice::to_string: non-empty Slice requires non-null data pointer (len={})",
+                self.size
+            );
+    
+            unsafe {
+                let bytes = std::slice::from_raw_parts(self.data, self.size);
+                String::from_utf8_lossy(bytes).into_owned()
+            }
+        }
+    }
+
+    pub fn starts_with(&self, x: &Slice) -> bool {
+        trace!("Checking if Slice starts with another Slice prefix");
+    
+        if x.size == 0 {
+            return true;
+        }
+    
+        if self.size < x.size {
+            return false;
+        }
+    
+        assert!(
+            !self.data.is_null() && !x.data.is_null(),
+            "Slice::starts_with: non-empty slices require non-null data pointers (self_len={}, prefix_len={})",
+            self.size,
+            x.size
+        );
+    
+        unsafe {
+            // compare_bytes returns i32;
+            // prefix is equal if cmp == 0
+            let cmp = compare_bytes(self.data, x.data, x.size);
+            cmp == 0
+        }
+    }
+
+    #[inline]
+    pub fn compare(&self, b: &Slice) -> i32 {
+        debug!("Comparing two Slices via compare()");
+        let min_len = if self.size < b.size { self.size } else { b.size };
+    
+        if min_len == 0 {
+            if self.size < b.size {
+                return -1;
+            } else if self.size > b.size {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
+    
+        assert!(
+            !self.data.is_null() && !b.data.is_null(),
+            "Slice::compare: non-empty slices require non-null data pointers (a_len={}, b_len={}, min_len={})",
+            self.size,
+            b.size,
+            min_len
+        );
+    
+        unsafe {
+            // compare_bytes returns negative if self < b,
+            // 0 if equal, positive if self > b, up to min_len
+            let cmp = compare_bytes(self.data, b.data, min_len);
+            if cmp != 0 {
+                // If the initial min_len bytes differ, cmp is already
+                // an i32 less than, equal to, or greater than zero.
+                return cmp;
+            } else {
+                // The first min_len bytes are identical;
+                // decide by comparing lengths
+                if self.size < b.size {
+                    -1
+                } else if self.size > b.size {
+                    1
+                } else {
+                    0
+                }
+            }
+        }
+    }
+}
+
+// ---------------- [ Dep crate: bitcoinleveldb-status ]
+// ---------------- [ File: bitcoinleveldb-status/src/status.rs ]
+#[derive(Clone,Debug, Getters, Setters, Builder)]
+#[getset(get = "pub", set = "pub")]
+pub struct Status  {
+    state: Option<Box<[u8]>>,
+}
+
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StatusCode {
+    Ok,
+    NotFound,
+    Corruption,
+    NotSupported,
+    InvalidArgument,
+    IOError,
+}
+
+
+impl Default for Status {
+
+    fn default() -> Self {
+        info!("Creating a default (OK) Status");
+        Self { state: None }
+    }
+}
+
+impl Drop for Status {
+
+    fn drop(&mut self) {
+        if self.state.is_some() {
+            debug!("Dropping non-OK Status with message/data");
+        } else {
+            debug!("Dropping OK Status");
+        }
+    }
+}
+
+impl Status {
+
+    pub fn new_from_other(mut rhs: Status) -> Self {
+        info!("new_from_other (move) constructor invoked");
+        let ret = Self { state: rhs.state.take() };
+        // In C++, we'd set rhs.state_ = nullptr; which is analogous to `rhs.state.take()` in Rust.
+        ret
+    }
+
+    pub fn new_from_other_copy(rhs: &Status) -> Self {
+        info!("new_from_other_copy invoked");
+        if let Some(ref boxed) = rhs.state {
+            // Copy it
+            let new_copy = Self::copy_state(boxed);
+            Self { state: Some(new_copy) }
+        } else {
+            // OK
+            Self { state: None }
+        }
+    }
+
+    pub fn ok() -> Self {
+        info!("Creating an OK status");
+        Self { state: None }
+    }
+
+    pub fn not_found(msg: &Slice, msg2: Option<&Slice>) -> Self {
+        Self::new_error(StatusCode::NotFound, msg, msg2)
+    }
+
+    pub fn corruption(msg: &Slice, msg2: Option<&Slice>) -> Self {
+        Self::new_error(StatusCode::Corruption, msg, msg2)
+    }
+
+    pub fn not_supported(msg: &Slice, msg2: Option<&Slice>) -> Self {
+        Self::new_error(StatusCode::NotSupported, msg, msg2)
+    }
+
+    pub fn invalid_argument(msg: &Slice, msg2: Option<&Slice>) -> Self {
+        Self::new_error(StatusCode::InvalidArgument, msg, msg2)
+    }
+
+    pub fn io_error(msg: &Slice, msg2: Option<&Slice>) -> Self {
+        Self::new_error(StatusCode::IOError, msg, msg2)
+    }
+
+    pub fn is_ok(&self) -> bool {
+        trace!("Status::is_ok called");
+        self.state.is_none()
+    }
+
+    pub fn is_not_found(&self) -> bool {
+        self.code() == StatusCode::NotFound
+    }
+
+    pub fn is_corruption(&self) -> bool {
+        self.code() == StatusCode::Corruption
+    }
+
+    pub fn is_io_error(&self) -> bool {
+        self.code() == StatusCode::IOError
+    }
+
+    pub fn is_not_supported_error(&self) -> bool {
+        self.code() == StatusCode::NotSupported
+    }
+
+    pub fn is_invalid_argument(&self) -> bool {
+        self.code() == StatusCode::InvalidArgument
+    }
+
+    pub fn code(&self) -> StatusCode {
+        if let Some(ref st) = self.state {
+            // st[4] is the code
+            let code_raw = st[4];
+            match code_raw {
+                0 => StatusCode::Ok,
+                1 => StatusCode::NotFound,
+                2 => StatusCode::Corruption,
+                3 => StatusCode::NotSupported,
+                4 => StatusCode::InvalidArgument,
+                5 => StatusCode::IOError,
+                _ => {
+                    warn!("Unknown code encountered: {}", code_raw);
+                    StatusCode::IOError
+                }
+            }
+        } else {
+            StatusCode::Ok
+        }
+    }
+
+    pub fn assign_from_other_copy(&mut self, rhs: &Status) -> &mut Status {
+        info!("assign_from_other_copy invoked");
+        if self.state.as_ref().map(|s| s.as_ptr()) != rhs.state.as_ref().map(|s| s.as_ptr()) {
+            // They differ; free old state and copy
+            self.state = if let Some(ref boxed) = rhs.state {
+                Some(Self::copy_state(boxed))
+            } else {
+                None
+            };
+        }
+        self
+    }
+
+    pub fn assign_from_other_move(&mut self, rhs: &mut Status) -> &mut Status {
+        info!("assign_from_other_move invoked");
+        let old = self.state.take();
+        debug!("Dropping old state in move-assign");
+        drop(old); // drop any existing data
+        self.state = rhs.state.take();
+        self
+    }
+
+    pub fn to_string(&self) -> String {
+        if self.is_ok() {
+            return "OK".to_owned();
+        }
+        let code_part = match self.code() {
+            StatusCode::Ok => "OK",
+            StatusCode::NotFound => "NotFound: ",
+            StatusCode::Corruption => "Corruption: ",
+            StatusCode::NotSupported => "Not implemented: ",
+            StatusCode::InvalidArgument => "Invalid argument: ",
+            StatusCode::IOError => "IO error: ",
+        };
+        let mut result = String::from(code_part);
+    
+        // The stored message is after byte 5, with length stored in [0..4].
+        if let Some(ref st) = self.state {
+            use std::slice;
+            // read length
+            let mut length_bytes = [0u8; 4];
+            length_bytes.copy_from_slice(&st[0..4]);
+            let msg_len = u32::from_le_bytes(length_bytes) as usize;
+            let msg_data = &st[5..(5 + msg_len)];
+            let msg_str = String::from_utf8_lossy(msg_data);
+            result.push_str(&msg_str);
+        }
+        result
+    }
+
+    fn new_error(code: StatusCode, msg: &Slice, msg2: Option<&Slice>) -> Self {
+        let binding = Slice::default();
+        let msg2 = msg2.unwrap_or(&binding);
+        // Compute the total size
+        let len1 = msg.size();
+        let len2 = msg2.size();
+        // If len2 > 0, we'll add ": " to separate them
+        let total_len = len1 + if *len2 > 0 { 2 + len2 } else { 0 };
+        // We'll store [4 bytes: total_len, 1 byte: code, rest: message(s)]
+        let mut data = vec![0u8; total_len + 5];
+        // Fill first 4 bytes with the message length in little-endian
+        let len_bytes = (total_len as u32).to_le_bytes();
+        data[0..4].copy_from_slice(&len_bytes);
+        // code in data[4]
+        data[4] = code as u8;
+        // copy msg data if non-empty
+        if *len1 > 0 {
+            unsafe {
+                // We explicitly specify <u8> so the compiler matches `*const u8` -> `*mut u8`.
+                std::ptr::copy_nonoverlapping::<u8>(
+                    *msg.data() as *const u8,
+                    data.as_mut_ptr().add(5),
+                    *len1,
+                );
+            }
+        }
+        // if there's a second message, add ": "
+        if *len2 > 0 {
+            let idx = 5 + len1;
+            data[idx] = b':';
+            data[idx + 1] = b' ';
+            unsafe {
+                std::ptr::copy_nonoverlapping::<u8>(
+                    *msg2.data() as *const u8,
+                    data.as_mut_ptr().add(idx + 2),
+                    *len2,
+                );
+            }
+        }
+        info!(
+            "Creating an error status with code={:?}, length={} ({} + {})",
+            code, total_len, len1, len2
+        );
+        Self {
+            state: Some(data.into_boxed_slice()),
+        }
+    }
+
+    fn copy_state(src: &Box<[u8]>) -> Box<[u8]> {
+        info!("Copying status state");
+        let mut clone_vec = vec![0u8; src.len()];
+        clone_vec.copy_from_slice(src);
+        clone_vec.into_boxed_slice()
+    }
+}
+
+
+here is what we see:
+
+running 6 tests
+test testenv::testenv_exhaustive_behavior_suite::testenv_deref_exposes_envwrapper_target_rc_identity ... ok
+test testenv::testenv_exhaustive_behavior_suite::testenv_filters_only_dot_and_dotdot_when_configured_and_base_returns_ok ... ok
+test testenv::testenv_exhaustive_behavior_suite::testenv_defaults_do_not_filter_dot_entries_and_propagate_ok_status ... ok
+test testenv::testenv_exhaustive_behavior_suite::testenv_trait_get_children_invocation_matches_inherent_method ... ok
+test testenv::testenv_exhaustive_behavior_suite::testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots ... FAILED
+test testenv::testenv_exhaustive_behavior_suite::testenv_forwards_env_supertrait_methods_to_base_env_wrapper ... ok
+
+failures:
+
+---- testenv::testenv_exhaustive_behavior_suite::testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots stdout ----
+===== BEGIN_TEST: testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots =====
+
+thread 'testenv::testenv_exhaustive_behavior_suite::testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots' (2197436) panicked at bitcoinleveldb-testenv/src/testenv.rs:1207:9:
+assertion `left == right` failed
+  left: []
+ right: [".", "..", "alpha", "beta"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+---------------------------------------------------------[trace_events: testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots]
+DEBUG  [bitcoinleveldb_testenv::testenv::testenv_exhaustive_behavi Creating new BacktraceGuard, test_name = testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots, enable_backtrace = false
+INFO   [bitcoinleveldb_testenv::testenv::testenv_exhaustive_behavi Disabling RUST_BACKTRACE for test: testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots
+INFO   [bitcoinleveldb_slice::slice]                               Creating a Slice from &str
+INFO   [bitcoinleveldb_slice::slice]                               Creating a default Slice (empty)
+INFO   [bitcoinleveldb_status::status]                             Creating an error status with code=IOError, length=8 (8 + 0)
+INFO   [bitcoinleveldb_status::status]                             new_from_other_copy invoked
+INFO   [bitcoinleveldb_status::status]                             Copying status state
+TRACE  [bitcoinleveldb_status::status]                             Status::is_ok called
+DEBUG  [bitcoinleveldb_testenv::tests::fixture]                    GetChildrenScriptStep::with_status, ok = false, code = IOError, children_len = 4
+INFO   [bitcoinleveldb_testenv::tests::fixture]                    ScriptedEnvState::new, steps_len = 1
+DEBUG  [bitcoinleveldb_testenv::tests::fixture]                    ScriptedEnv::new
+TRACE  [bitcoinleveldb_testenv::testenv]                           TestEnv::new: constructing test environment wrapper
+TRACE  [bitcoinleveldb_env::env_wrapper]                           EnvWrapper::new constructing wrapper
+TRACE  [bitcoinleveldb_env::global_state]                          label = "env_wrapper_target_identity_key", identity_key = 105553141432432
+TRACE  [bitcoinleveldb_env::global_state]                          label = "env_wrapper_shared_borrow_gate_for_target.entry", identity_key = 105553141432432
+TRACE  [bitcoinleveldb_env::global_state]                          label = "env_wrapper_shared_borrow_gate_for_target.install_new", identity_key = 105553141432432
+DEBUG  [bitcoinleveldb_env::env_wrapper]                           EnvWrapper::new constructed
+DEBUG  [bitcoinleveldb_testenv::testenv]                           TestEnv::new: constructed, ignore_dot_files = false
+INFO   [bitcoinleveldb_testenv::testenv]                           TestEnv::set_ignore_dot_files: updated configuration, previous = false, current = true
+TRACE  [bitcoinleveldb_testenv::tests]                             invoke_get_children: calling TestEnv::get_children, dir = dir2
+TRACE  [bitcoinleveldb_testenv::testenv]                           TestEnv::get_children: entering, dir = dir2, ignore_dot_files = true
+TRACE  [bitcoinleveldb_env::env_wrapper]                           EnvWrapper::get_children forwarding to target Env, dir = dir2
+TRACE  [bitcoinleveldb_env::global_state]                          label = "env_wrapper_target_identity_key", identity_key = 105553141432432
+TRACE  [bitcoinleveldb_env::env_wrapper]                           label = "env_wrapper.with_serialized_target_access.entry", operation_label = "get_children", target_identity_key = 105553141432432
+TRACE  [bitcoinleveldb_testenv::tests::fixture]                    ScriptedEnv::get_children: begin, dir = dir2, result_is_null = false
+TRACE  [bitcoinleveldb_status::status]                             Status::is_ok called
+DEBUG  [bitcoinleveldb_testenv::tests::fixture]                    ScriptedEnv::get_children: filled result, dir = dir2, ok = false, code = IOError
+INFO   [bitcoinleveldb_status::status]                             new_from_other_copy invoked
+INFO   [bitcoinleveldb_status::status]                             Copying status state
+DEBUG  [bitcoinleveldb_status::status]                             Dropping non-OK Status with message/data
+TRACE  [bitcoinleveldb_env::env_wrapper]                           label = "env_wrapper.with_serialized_target_access.exit", operation_label = "get_children", target_identity_key = 105553141432432
+TRACE  [bitcoinleveldb_status::status]                             Status::is_ok called
+DEBUG  [bitcoinleveldb_env::env_wrapper]                           EnvWrapper::get_children completed, dir = dir2, ok = false
+TRACE  [bitcoinleveldb_status::status]                             Status::is_ok called
+TRACE  [bitcoinleveldb_status::status]                             Status::is_ok called
+DEBUG  [bitcoinleveldb_status::status]                             Dropping non-OK Status with message/data
+DEBUG  [bitcoinleveldb_status::status]                             Dropping non-OK Status with message/data
+DEBUG  [bitcoinleveldb_status::status]                             Dropping non-OK Status with message/data
+===== END_TEST: testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots =====
+
+
+failures:
+    testenv::testenv_exhaustive_behavior_suite::testenv_does_not_filter_when_base_returns_error_even_if_configured_to_ignore_dots
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+

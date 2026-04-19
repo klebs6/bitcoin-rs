@@ -46,8 +46,8 @@ NO_FAIL_FAST := --no-fail-fast
 ACTIVE := bitcoinsecp256k1-eccontext
 
 ACTIVE := bitcoinleveldb-harness       #loc: 297
-ACTIVE := bitcoinleveldbt-issue178 #sigkill
 ACTIVE := bitcoinleveldbt-sparsemerge #hang
+ACTIVE := bitcoinleveldbt-issue178 #sigkill
 ACTIVE := bitcoinleveldbt-randomized
 ACTIVE := bitcoinleveldbt-snapshot
 #ACTIVE := bitcoinleveldb-snapshot
