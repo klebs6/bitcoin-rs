@@ -95,9 +95,7 @@ pub fn snapshot_trait_object_parts(snapshot: &dyn Snapshot) -> (*const (), *cons
     parts
 }
 
-pub fn dbtest_snapshot_dispatch_concrete_implementation_observation_from_snapshot_ref(
-    snapshot: &dyn Snapshot,
-) -> BitcoinLevelDbTestSnapshotDispatchConcreteImplementationObservation {
+pub fn dbtest_snapshot_dispatch_concrete_implementation_observation_from_snapshot_ref(snapshot: &dyn Snapshot) -> BitcoinLevelDbTestSnapshotDispatchConcreteImplementationObservation {
     trace!(
         target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
         event = "dbtest_snapshot_dispatch_concrete_implementation_observation_from_snapshot_ref_entry",
@@ -117,30 +115,9 @@ pub fn dbtest_snapshot_dispatch_concrete_implementation_observation_from_snapsho
             snapshot,
         );
 
-    let snapshot_sequence_number_hint = match implementation_kind {
-        SnapshotDispatchConcreteImplementationKind::ModelSnapshot => None,
-        SnapshotDispatchConcreteImplementationKind::SnapshotImpl => {
-            let snapshot_impl_ptr = snapshot_data_ptr as *const SnapshotImpl;
-
-            match snapshot_impl_ptr.is_null() {
-                true => {
-                    warn!(
-                        target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
-                        event = "dbtest_snapshot_dispatch_concrete_implementation_observation_from_snapshot_ref_null_snapshot_impl_ptr",
-                        label = "bitcoinleveldbt_util.snapshot_type_dispatch_glue.dbtest_snapshot_dispatch_concrete_implementation_observation_from_snapshot_ref.null_snapshot_impl_ptr"
-                    );
-                    None
-                }
-                false => {
-                    let sequence_number = unsafe {
-                        *(*snapshot_impl_ptr).sequence_number()
-                    };
-                    Some(sequence_number)
-                }
-            }
-        }
-        SnapshotDispatchConcreteImplementationKind::Unsupported => None,
-    };
+    // Use the trait method so forwarding wrappers preserve their own layout.
+    let snapshot_sequence_number_hint =
+        snapshot.snapshot_sequence_number_for_read_reconstruction();
 
     let observation_builder =
         BitcoinLevelDbTestSnapshotDispatchConcreteImplementationObservationBuilder::default()
@@ -179,9 +156,7 @@ pub fn dbtest_snapshot_dispatch_concrete_implementation_observation_from_snapsho
     observation
 }
 
-pub fn dbtest_snapshot_dispatch_concrete_implementation_kind_from_snapshot_ref(
-    snapshot: &dyn Snapshot,
-) -> SnapshotDispatchConcreteImplementationKind {
+pub fn dbtest_snapshot_dispatch_concrete_implementation_kind_from_snapshot_ref(snapshot: &dyn Snapshot) -> SnapshotDispatchConcreteImplementationKind {
     trace!(
         target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
         event = "dbtest_snapshot_dispatch_concrete_implementation_kind_from_snapshot_ref_entry",
@@ -195,26 +170,8 @@ pub fn dbtest_snapshot_dispatch_concrete_implementation_kind_from_snapshot_ref(
     let snapshot_impl_vtable_ptr_value =
         snapshot_impl_vtable_ptr() as usize;
 
-    let implementation_kind = match (
-        snapshot_vtable_ptr_value == model_snapshot_vtable_ptr_value,
-        snapshot_vtable_ptr_value == snapshot_impl_vtable_ptr_value,
-    ) {
-        (true, false) => SnapshotDispatchConcreteImplementationKind::ModelSnapshot,
-        (false, true) => SnapshotDispatchConcreteImplementationKind::SnapshotImpl,
-        (false, false) => SnapshotDispatchConcreteImplementationKind::Unsupported,
-        (true, true) => {
-            warn!(
-                target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",
-                event = "dbtest_snapshot_dispatch_concrete_implementation_kind_from_snapshot_ref_ambiguous_vtable_match",
-                label = "bitcoinleveldbt_util.snapshot_type_dispatch_glue.dbtest_snapshot_dispatch_concrete_implementation_kind_from_snapshot_ref.ambiguous_vtable_match",
-                snapshot_vtable_ptr_value = snapshot_vtable_ptr_value,
-                model_snapshot_vtable_ptr_value = model_snapshot_vtable_ptr_value,
-                snapshot_impl_vtable_ptr_value = snapshot_impl_vtable_ptr_value
-            );
-
-            SnapshotDispatchConcreteImplementationKind::Unsupported
-        }
-    };
+    // Vtable addresses are diagnostic metadata, not stable type identities.
+    let implementation_kind = snapshot.snapshot_runtime_implementation_kind();
 
     trace!(
         target: "bitcoinleveldbt_util::snapshot_type_dispatch_glue",

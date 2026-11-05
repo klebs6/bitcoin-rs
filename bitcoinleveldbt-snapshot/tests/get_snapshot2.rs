@@ -89,6 +89,11 @@ mod get_snapshot2_tests {
                 let v1 = dbtest_fixture_owned_string("v1");
                 let v2 = dbtest_fixture_owned_string("v2");
 
+                // Each option configuration starts with a fresh database. Each
+                // completed key case adds two puts; capture follows this case's first put.
+                let expected_snapshot_sequence_number: SequenceNumber =
+                    (2 * i + 1) as SequenceNumber;
+
                 let observation =
                     IdenticalSnapshotsCompactionDiagnosticObservation::new(
                         dbtest,
@@ -124,19 +129,19 @@ mod get_snapshot2_tests {
                         internal_entries_after_compaction,
                     } => {
                         assert_eq!(
-                            Some(1),
+                            Some(expected_snapshot_sequence_number),
                             snapshot_one_sequence_number_hint,
                             "released snapshot must retain the original sequence before compaction diagnostics; entries_before_compaction={}",
                             internal_entries_before_compaction
                         );
                         assert_eq!(
-                            Some(1),
+                            Some(expected_snapshot_sequence_number),
                             snapshot_two_sequence_number_hint,
                             "second snapshot must retain the original sequence through compaction diagnostics; entries_before_compaction={}",
                             internal_entries_before_compaction
                         );
                         assert_eq!(
-                            Some(1),
+                            Some(expected_snapshot_sequence_number),
                             snapshot_three_sequence_number_hint,
                             "third snapshot must retain the original sequence through compaction diagnostics; entries_before_compaction={}",
                             internal_entries_before_compaction
