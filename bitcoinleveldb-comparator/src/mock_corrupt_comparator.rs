@@ -26,5 +26,5 @@ impl FindShortSuccessor for MockCorruptComparator {
 
 impl SliceComparator for MockCorruptComparator {
 
-    fn bytewise_comparator(&self) -> *const (dyn SliceComparator + 'static) { todo!() }
+    fn bytewise_comparator(&self) -> *const (dyn SliceComparator + 'static) { crate::bytewise_comparator() }
 }
