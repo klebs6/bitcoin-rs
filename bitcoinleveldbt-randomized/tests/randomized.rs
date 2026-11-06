@@ -12,21 +12,23 @@ use bitcoinleveldb_batch::*;
 use bitcoinleveldb_dbinterface::*;
 use bitcoinleveldb_modeldb::*;
 
+#[path = "support/randomized_operations.rs"]
+mod randomized_operations;
+use randomized_operations::{BatchMutation, Mutation, OperationGenerator, LEGACY_STEPS_PER_CONFIGURATION};
+
 #[test]
 #[ignore = "long stress; use a resource-controlled runner explicitly"]
 fn db_test_randomized() {
-    let mut rnd = Random::new(bitcoinleveldbt_util::random_seed() as u32);
+    let mut operations = OperationGenerator::new(bitcoinleveldbt_util::random_seed() as u32);
 
     let mut body = |dbtest: &mut DBTest| {
+        operations.begin_configuration();
         let opts = dbtest.current_options();
         let mut model = ModelDB::new(&opts);
-        const N: i32 = 10000;
+        const N: i32 = LEGACY_STEPS_PER_CONFIGURATION as i32;
 
         let mut model_snap: Option<Box<dyn Snapshot>> = None;
         let mut db_snap: Option<Box<dyn Snapshot>> = None;
-
-        let mut k = String::new();
-        let mut v = String::new();
 
         let mut step: i32 = 0;
         while step < N {
@@ -35,69 +37,39 @@ fn db_test_randomized() {
             }
 
             // TODO(sanjay): Test Get() works
-            let p = rnd.uniform(100);
-
-            if p < 45 {
-                // Put
-                k = dbtest_random_key((&mut rnd) as *mut Random);
-                v = dbtest_random_string(
-                    (&mut rnd) as *mut Random,
-                    if rnd.one_in(20) {
-                        100 + (rnd.uniform(100) as i32)
-                    } else {
-                        rnd.uniform(8) as i32
-                    },
-                );
-
-                let write_options = WriteOptions::default();
-                let ks = Slice::from(&k);
-                let vs = Slice::from(&v);
-
-                assert!(model.put(&write_options, &ks, &vs).is_ok());
-                assert!(dbtest.put(&k, &v).is_ok());
-
-            } else if p < 90 {
-                // Delete
-                k = dbtest_random_key((&mut rnd) as *mut Random);
-
-                let write_options = WriteOptions::default();
-                let ks = Slice::from(&k);
-
-                assert!(model.delete(&write_options, &ks).is_ok());
-                assert!(dbtest.delete(&k).is_ok());
-
-            } else {
-                // Multi-element batch
-                let mut b = WriteBatch::default();
-                let num = rnd.uniform(8) as i32;
-
-                let mut i: i32 = 0;
-                while i < num {
-                    if i == 0 || !rnd.one_in(10) {
-                        k = dbtest_random_key((&mut rnd) as *mut Random);
-                    } else {
-                        // Periodically re-use the same key from the previous iter, so
-                        // we have multiple entries in the write batch for the same key
-                    }
-
-                    if rnd.one_in(2) {
-                        v = dbtest_random_string((&mut rnd) as *mut Random, rnd.uniform(10) as i32);
-                        let ks = Slice::from(&k);
-                        let vs = Slice::from(&v);
-                        b.put(&ks, &vs);
-                    } else {
-                        let ks = Slice::from(&k);
-                        b.delete(&ks);
-                    }
-
-                    i += 1;
+            let operation = operations.next_operation();
+            match operation.mutation {
+                Mutation::Put { key: k, value: v } => {
+                    let write_options = WriteOptions::default();
+                    let ks = Slice::from(&k);
+                    let vs = Slice::from(&v);
+                    assert!(model.put(&write_options, &ks, &vs).is_ok());
+                    assert!(dbtest.put(&k, &v).is_ok());
                 }
-
-                let write_options = WriteOptions::default();
-                assert!(model.write(&write_options, (&mut b) as *mut WriteBatch).is_ok());
-                assert!(unsafe {
-                    (*dbtest.dbfull()).write(&write_options, (&mut b) as *mut WriteBatch)
-                }.is_ok());
+                Mutation::Delete { key: k } => {
+                    let write_options = WriteOptions::default();
+                    let ks = Slice::from(&k);
+                    assert!(model.delete(&write_options, &ks).is_ok());
+                    assert!(dbtest.delete(&k).is_ok());
+                }
+                Mutation::Batch(updates) => {
+                    let mut b = WriteBatch::default();
+                    for update in updates {
+                        match update {
+                            BatchMutation::Put { key, value } => {
+                                b.put(&Slice::from(&key), &Slice::from(&value));
+                            }
+                            BatchMutation::Delete { key } => {
+                                b.delete(&Slice::from(&key));
+                            }
+                        }
+                    }
+                    let write_options = WriteOptions::default();
+                    assert!(model.write(&write_options, (&mut b) as *mut WriteBatch).is_ok());
+                    assert!(unsafe {
+                        (*dbtest.dbfull()).write(&write_options, (&mut b) as *mut WriteBatch)
+                    }.is_ok());
+                }
             }
 
             if (step % 100) == 0 {
@@ -149,3 +121,4 @@ fn db_test_randomized() {
 
     dbtest_fixture_run_across_option_configurations(&mut body);
 }
+

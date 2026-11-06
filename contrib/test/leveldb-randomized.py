@@ -15,13 +15,20 @@ import subprocess
 import sys
 import uuid
 
-WORKFLOW = "leveldb-randomized-check002"
+WORKFLOW = "leveldb-randomized-check003"
+# Keep the same lock as the preceding command, so old and new invocations
+# cannot concurrently validate the shared repository/cache.
+LOCK_WORKFLOW = "leveldb-randomized-check002"
 CONTROLLER_PATH = "contrib/repair/bitcoinleveldb-randomized-bounded001.py"
 CONTROLLER_SHA256 = "bd8fbea7164f83d2b5ae80c45bf831a2da7c5b456ca10753fac09e09d4d88fc4"
 SHELL_SHA256 = "8f316c4f007426302e26962e13def8c7d5bc0efa85d5e1549c55e85ba0d7c651"
 CRATE = "bitcoinleveldbt-randomized"
 STRESS = {"randomized": "db_test_randomized", "bisect": "db_test_bisect_randomized"}
 CASES = [("bounded_default", 0), ("bounded_reuse", 1), ("bounded_filter", 2), ("bounded_uncompressed", 3)]
+REPLAY_CASES = [(name, "REPLAY_CONTRACT_OK case=" + name) for name in (
+    "replay_matches_legacy_tape", "replay_preserves_configuration_offsets",
+    "replay_preserves_short_prefixes", "replay_covers_batch_order")]
+TARGETS = set(STRESS) | {"bounded_contracts", "replay_contracts"}
 BUILD = ["cargo", "test", "--offline", "--locked", "--jobs", "1", "-p", CRATE, "--no-run", "--message-format=json"]
 RUSTC_VV = """rustc 1.97.0-nightly (9eb3be26b 2026-05-18)
 binary: rustc
@@ -176,7 +183,7 @@ def _load_json(path):
 
 def artifacts_from(controller, result, target_dir, repo):
     found = {}
-    expected = set(STRESS) | {"bounded_contracts"}
+    expected = TARGETS
     for line in controller.log_text(result).splitlines():
         try:
             item = json.loads(line)
@@ -203,8 +210,16 @@ def artifacts_from(controller, result, target_dir, repo):
             raise RuntimeError("Cargo returned different executables for one target.")
         found[name] = record
     if set(found) != expected:
-        raise RuntimeError("Capped Cargo output did not identify all three expected integration-test executables.")
+        raise RuntimeError("Capped Cargo output did not identify all four expected integration-test executables.")
     return found
+
+
+def replay_summary(text, marker):
+    rows = [tuple(map(int, match.groups())) for line in text.splitlines()
+            if (match := re.match(r"^test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored;", line))]
+    if rows != [(1, 0, 0)] or text.splitlines().count(marker) != 1:
+        raise RuntimeError("Replay contract did not produce its single passing test and exact completion marker.")
+    return {"passed": 1, "failed": 0, "ignored": 0, "marker": marker, "last_progress": text.splitlines()[-12:]}
 
 
 def verify(repo, target_dir, directory, before_phase=None):
@@ -218,7 +233,7 @@ def verify(repo, target_dir, directory, before_phase=None):
         controller, controller_path = load_controller(repo)
         env, report["cleared_git_selection_variables"] = checked_environment()
         _, common = repository_dirs(repo)
-        metadata = common / "codex-repairs" / WORKFLOW
+        metadata = common / "codex-repairs" / LOCK_WORKFLOW
         metadata.mkdir(parents=True, exist_ok=True)
         lock_path = metadata / "run.lock"
         if lock_path.is_symlink():
@@ -260,7 +275,10 @@ def verify(repo, target_dir, directory, before_phase=None):
         artifacts = artifacts_from(controller, built, target_dir, repo)
         report["artifacts"] = artifacts
         listings = {}
-        for target, expected in [(name, {function}) for name, function in STRESS.items()] + [("bounded_contracts", {name for name, _ in CASES})]:
+        expected_lists = [(name, {function}) for name, function in STRESS.items()] + [
+            ("bounded_contracts", {name for name, _ in CASES}),
+            ("replay_contracts", {name for name, _ in REPLAY_CASES})]
+        for target, expected in expected_lists:
             path = Path(artifacts[target]["path"])
             if fingerprint(path) != artifacts[target]["fingerprint"]:
                 raise RuntimeError("Compiled test executable changed before metadata inspection.")
@@ -279,11 +297,23 @@ def verify(repo, target_dir, directory, before_phase=None):
             atomic_json(report_path, report)
         if fingerprint(Path(artifacts["bounded_contracts"]["path"])) != artifacts["bounded_contracts"]["fingerprint"]:
             raise RuntimeError("Bounded executable changed during verification.")
+        for name, marker in REPLAY_CASES:
+            path = Path(artifacts["replay_contracts"]["path"])
+            if fingerprint(path) != artifacts["replay_contracts"]["fingerprint"]:
+                raise RuntimeError("Replay-contract executable changed before case execution.")
+            result = phase(name, [str(path), "--exact", name, "--nocapture", "--test-threads=1"],
+                           extra={"BITCOIN_RS_RANDOMIZED_GUARD": "v1", "TEST_RANDOM_SEED": "301"},
+                           tmpdir=directory / ("case-data-" + name))
+            report["cases"][name] = replay_summary(controller.log_text(result), marker)
+            atomic_json(report_path, report)
+        if fingerprint(Path(artifacts["replay_contracts"]["path"])) != artifacts["replay_contracts"]["fingerprint"]:
+            raise RuntimeError("Replay-contract executable changed during verification.")
         final = snapshot("inputs-after")
         report["inputs_after_sha256"] = hashlib.sha256(encoded(final)).hexdigest()
         if final != initial:
             raise RuntimeError("Repository/build inputs or Git index changed during verification; results were not accepted.")
-        report.update(outcome="passed", phase="complete", bounded_passed=4, stress_ignored=2, inputs_preserved=True)
+        report.update(outcome="passed", phase="complete", bounded_passed=4,
+                      replay_passed=len(REPLAY_CASES), stress_ignored=2, inputs_preserved=True)
         atomic_json(report_path, report)
         return report
     except BaseException as error:
