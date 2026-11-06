@@ -1,0 +1,1800 @@
+{
+  "base": "a8beeac26124749a69d0ad6f7a999891f8be73f1",
+  "bounded_cases": {
+    "bounded_default": {
+      "failed": 0,
+      "ignored": 0,
+      "last_progress": [
+        "BOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=cleanup.before",
+        "DBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false",
+        "BOUNDED_RANDOMIZED_OK config=0 steps=34",
+        "ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.07s",
+        "",
+        "          Finished with result: success",
+        "Main processes terminated with: code=exited, status=0/SUCCESS",
+        "               Service runtime: 301ms",
+        "             CPU time consumed: 136ms",
+        "                   Memory peak: 13.3M (swap: 0B)"
+      ],
+      "marker": "BOUNDED_RANDOMIZED_OK config=0 steps=34",
+      "passed": 1
+    },
+    "bounded_filter": {
+      "failed": 0,
+      "ignored": 0,
+      "last_progress": [
+        "BOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=cleanup.before",
+        "DBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false",
+        "BOUNDED_RANDOMIZED_OK config=2 steps=34",
+        "ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.08s",
+        "",
+        "          Finished with result: success",
+        "Main processes terminated with: code=exited, status=0/SUCCESS",
+        "               Service runtime: 319ms",
+        "             CPU time consumed: 120ms",
+        "                   Memory peak: 13.2M (swap: 0B)"
+      ],
+      "marker": "BOUNDED_RANDOMIZED_OK config=2 steps=34",
+      "passed": 1
+    },
+    "bounded_reuse": {
+      "failed": 0,
+      "ignored": 0,
+      "last_progress": [
+        "BOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=cleanup.before",
+        "DBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false",
+        "BOUNDED_RANDOMIZED_OK config=1 steps=34",
+        "ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.05s",
+        "",
+        "          Finished with result: success",
+        "Main processes terminated with: code=exited, status=0/SUCCESS",
+        "               Service runtime: 282ms",
+        "             CPU time consumed: 117ms",
+        "                   Memory peak: 12.9M (swap: 0B)"
+      ],
+      "marker": "BOUNDED_RANDOMIZED_OK config=1 steps=34",
+      "passed": 1
+    },
+    "bounded_uncompressed": {
+      "failed": 0,
+      "ignored": 0,
+      "last_progress": [
+        "BOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=cleanup.before",
+        "DBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false",
+        "BOUNDED_RANDOMIZED_OK config=3 steps=34",
+        "ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.10s",
+        "",
+        "          Finished with result: success",
+        "Main processes terminated with: code=exited, status=0/SUCCESS",
+        "               Service runtime: 208ms",
+        "             CPU time consumed: 97ms",
+        "                   Memory peak: 13M (swap: 0B)"
+      ],
+      "marker": "BOUNDED_RANDOMIZED_OK config=3 steps=34",
+      "passed": 1
+    }
+  },
+  "bounded_passed": 4,
+  "budgets": {
+    "build": {
+      "file": 536870912,
+      "high": 3221225472,
+      "memory": 4294967296,
+      "output": 2097152,
+      "seconds": 600,
+      "tasks": 128
+    },
+    "case": {
+      "file": 16777216,
+      "high": 402653184,
+      "memory": 536870912,
+      "output": 1048576,
+      "seconds": 30,
+      "tasks": 64
+    },
+    "probe": {
+      "file": 16777216,
+      "high": 100663296,
+      "memory": 134217728,
+      "output": 1048576,
+      "seconds": 10,
+      "tasks": 32
+    }
+  },
+  "build_command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--jobs",
+    "1",
+    "-p",
+    "bitcoinleveldbt-randomized",
+    "--no-run",
+    "--message-format=json"
+  ],
+  "file_hashes": {
+    "bitcoinleveldbt-randomized/tests/bisect.rs": "c494c7e27c3728b32617e72f3ac5c19c9ac5ab9f10638fde96b3e51f4fb4bc69",
+    "bitcoinleveldbt-randomized/tests/bounded_contracts.rs": "af6c2e76de680d22dafea5ea90bdcf79c02ed1fe7e3868de549631636cc39d72",
+    "bitcoinleveldbt-randomized/tests/randomized.rs": "849e32904508688b43fd976322a0f76d288b55daa730e2c0c8e6aa82a52c3506",
+    "contrib/repair/bitcoinleveldb-randomized-bounded001.py": "bd8fbea7164f83d2b5ae80c45bf831a2da7c5b456ca10753fac09e09d4d88fc4"
+  },
+  "full_coverage_claimed": false,
+  "full_stress": "not rerun",
+  "protected_test_lists": {
+    "bisect": [
+      "db_test_bisect_randomized"
+    ],
+    "bounded_contracts": [
+      "bounded_default",
+      "bounded_filter",
+      "bounded_reuse",
+      "bounded_uncompressed"
+    ],
+    "randomized": [
+      "db_test_randomized"
+    ]
+  },
+  "resource_readouts": {
+    "bounded_default": {
+      "budget": {
+        "file": 16777216,
+        "high": 402653184,
+        "memory": 536870912,
+        "output": 1048576,
+        "seconds": 30,
+        "tasks": 64
+      },
+      "cleanup": {
+        "reset": {
+          "exit_code": 1,
+          "stderr": "",
+          "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-bounded_default-04a0c8abff8e.service: Unit bitcoin-rs-guard-bounded_default-04a0c8abff8e.service not loaded.\n"
+        },
+        "stop": {
+          "exit_code": 5,
+          "stderr": "",
+          "stdout": "Failed to stop bitcoin-rs-guard-bounded_default-04a0c8abff8e.service: Unit bitcoin-rs-guard-bounded_default-04a0c8abff8e.service not loaded.\n"
+        }
+      },
+      "cwd": "/home/kleb/bitcoin-rs-randomized-bounded-repair",
+      "data_bytes": 5802,
+      "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/case-data-bounded_default",
+      "data_entries": 9,
+      "elapsed_seconds": 0.3405658300007417,
+      "exit_code": 0,
+      "final_cgroup": {
+        "cpu.max": null,
+        "memory.current": null,
+        "memory.events": null,
+        "memory.high": null,
+        "memory.max": null,
+        "memory.oom.group": null,
+        "memory.peak": null,
+        "memory.swap.max": null,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_default-04a0c8abff8e.service",
+        "pids.max": null
+      },
+      "kind": "case",
+      "label": "bounded_default",
+      "live_cgroup": [],
+      "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/bounded_default-04a0c8abff8e/output.log",
+      "outcome": "exited",
+      "output_bytes": 24095,
+      "postmortem": {
+        "ActiveState": "inactive",
+        "CPUQuotaPerSecUSec": "infinity",
+        "CPUUsageNSec": "[not set]",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "not-found",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "[not set]",
+        "MemorySwapMax": "infinity",
+        "OOMPolicy": "",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "infinity",
+        "SendSIGKILL": "yes",
+        "SubState": "dead",
+        "TasksMax": "38331",
+        "TimeoutStopUSec": "1min 30s",
+        "Type": ""
+      },
+      "probe": {
+        "kernel": {
+          "cpu.max": "100000 100000",
+          "headroom": {
+            "ancestors": [
+              {
+                "current": 3214503936,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+              },
+              {
+                "current": 3274354688,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+              },
+              {
+                "current": 21708619776,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+              },
+              {
+                "current": 21708636160,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice"
+              },
+              {
+                "current": null,
+                "maximum": null,
+                "path": "/sys/fs/cgroup"
+              }
+            ],
+            "mem_available_bytes": 19064344576,
+            "required_bytes": 805306368
+          },
+          "memory.current": "14012416",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "402653184",
+          "memory.max": "536870912",
+          "memory.oom.group": "1",
+          "memory.peak": "14012416",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_default-04a0c8abff8e.service",
+          "pids.max": "64",
+          "rlimit_core": [
+            0,
+            0
+          ],
+          "rlimit_fsize": [
+            16777216,
+            16777216
+          ]
+        },
+        "ok": true,
+        "pid": 43467
+      },
+      "tail": "32 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=0 step=32 phase=put.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=33 phase=put.after\nBOUNDED_RANDOMIZED_PHASE config=0 step=33 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=33 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=33 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=33 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=33 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=0 step=33 phase=put.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=put.after\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=snapshot.release.before\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=snapshot.release.after\nBOUNDED_RANDOMIZED_PHASE config=0 step=34 phase=cleanup.before\nDBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false\nBOUNDED_RANDOMIZED_OK config=0 steps=34\nok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.07s\n\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 301ms\n             CPU time consumed: 136ms\n                   Memory peak: 13.3M (swap: 0B)\n",
+      "unit": "bitcoin-rs-guard-bounded_default-04a0c8abff8e.service",
+      "verified": true,
+      "verified_properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "CPUUsageNSec": "111206000",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_default-04a0c8abff8e.service",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "loaded",
+        "MemoryHigh": "402653184",
+        "MemoryMax": "536870912",
+        "MemoryPeak": "14012416",
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "30s",
+        "SendSIGKILL": "yes",
+        "SubState": "running",
+        "TasksMax": "64",
+        "TimeoutStopUSec": "3s",
+        "Type": "exec"
+      }
+    },
+    "bounded_filter": {
+      "budget": {
+        "file": 16777216,
+        "high": 402653184,
+        "memory": 536870912,
+        "output": 1048576,
+        "seconds": 30,
+        "tasks": 64
+      },
+      "cleanup": {
+        "reset": {
+          "exit_code": 1,
+          "stderr": "",
+          "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-bounded_filter-cfd8c43b0361.service: Unit bitcoin-rs-guard-bounded_filter-cfd8c43b0361.service not loaded.\n"
+        },
+        "stop": {
+          "exit_code": 5,
+          "stderr": "",
+          "stdout": "Failed to stop bitcoin-rs-guard-bounded_filter-cfd8c43b0361.service: Unit bitcoin-rs-guard-bounded_filter-cfd8c43b0361.service not loaded.\n"
+        }
+      },
+      "cwd": "/home/kleb/bitcoin-rs-randomized-bounded-repair",
+      "data_bytes": 4773,
+      "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/case-data-bounded_filter",
+      "data_entries": 8,
+      "elapsed_seconds": 0.3441902429995025,
+      "exit_code": 0,
+      "final_cgroup": {
+        "cpu.max": null,
+        "memory.current": null,
+        "memory.events": null,
+        "memory.high": null,
+        "memory.max": null,
+        "memory.oom.group": null,
+        "memory.peak": null,
+        "memory.swap.max": null,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_filter-cfd8c43b0361.service",
+        "pids.max": null
+      },
+      "kind": "case",
+      "label": "bounded_filter",
+      "live_cgroup": [],
+      "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/bounded_filter-cfd8c43b0361/output.log",
+      "outcome": "exited",
+      "output_bytes": 24377,
+      "postmortem": {
+        "ActiveState": "inactive",
+        "CPUQuotaPerSecUSec": "infinity",
+        "CPUUsageNSec": "[not set]",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "not-found",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "[not set]",
+        "MemorySwapMax": "infinity",
+        "OOMPolicy": "",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "infinity",
+        "SendSIGKILL": "yes",
+        "SubState": "dead",
+        "TasksMax": "38331",
+        "TimeoutStopUSec": "1min 30s",
+        "Type": ""
+      },
+      "probe": {
+        "kernel": {
+          "cpu.max": "100000 100000",
+          "headroom": {
+            "ancestors": [
+              {
+                "current": 3213840384,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+              },
+              {
+                "current": 3273179136,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+              },
+              {
+                "current": 21706817536,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+              },
+              {
+                "current": 21706833920,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice"
+              },
+              {
+                "current": null,
+                "maximum": null,
+                "path": "/sys/fs/cgroup"
+              }
+            ],
+            "mem_available_bytes": 19079389184,
+            "required_bytes": 805306368
+          },
+          "memory.current": "13602816",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "402653184",
+          "memory.max": "536870912",
+          "memory.oom.group": "1",
+          "memory.peak": "13602816",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_filter-cfd8c43b0361.service",
+          "pids.max": "64",
+          "rlimit_core": [
+            0,
+            0
+          ],
+          "rlimit_fsize": [
+            16777216,
+            16777216
+          ]
+        },
+        "ok": true,
+        "pid": 43649
+      },
+      "tail": "32 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=2 step=32 phase=put.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=33 phase=put.after\nBOUNDED_RANDOMIZED_PHASE config=2 step=33 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=33 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=33 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=33 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=33 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=2 step=33 phase=put.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=put.after\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=snapshot.release.before\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=snapshot.release.after\nBOUNDED_RANDOMIZED_PHASE config=2 step=34 phase=cleanup.before\nDBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false\nBOUNDED_RANDOMIZED_OK config=2 steps=34\nok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.08s\n\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 319ms\n             CPU time consumed: 120ms\n                   Memory peak: 13.2M (swap: 0B)\n",
+      "unit": "bitcoin-rs-guard-bounded_filter-cfd8c43b0361.service",
+      "verified": true,
+      "verified_properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "CPUUsageNSec": "105072000",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_filter-cfd8c43b0361.service",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "loaded",
+        "MemoryHigh": "402653184",
+        "MemoryMax": "536870912",
+        "MemoryPeak": "13602816",
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "30s",
+        "SendSIGKILL": "yes",
+        "SubState": "running",
+        "TasksMax": "64",
+        "TimeoutStopUSec": "3s",
+        "Type": "exec"
+      }
+    },
+    "bounded_reuse": {
+      "budget": {
+        "file": 16777216,
+        "high": 402653184,
+        "memory": 536870912,
+        "output": 1048576,
+        "seconds": 30,
+        "tasks": 64
+      },
+      "cleanup": {
+        "reset": {
+          "exit_code": 1,
+          "stderr": "",
+          "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-bounded_reuse-285777fef60a.service: Unit bitcoin-rs-guard-bounded_reuse-285777fef60a.service not loaded.\n"
+        },
+        "stop": {
+          "exit_code": 5,
+          "stderr": "",
+          "stdout": "Failed to stop bitcoin-rs-guard-bounded_reuse-285777fef60a.service: Unit bitcoin-rs-guard-bounded_reuse-285777fef60a.service not loaded.\n"
+        }
+      },
+      "cwd": "/home/kleb/bitcoin-rs-randomized-bounded-repair",
+      "data_bytes": 0,
+      "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/case-data-bounded_reuse",
+      "data_entries": 0,
+      "elapsed_seconds": 0.31356989399955637,
+      "exit_code": 0,
+      "final_cgroup": {
+        "cpu.max": null,
+        "memory.current": null,
+        "memory.events": null,
+        "memory.high": null,
+        "memory.max": null,
+        "memory.oom.group": null,
+        "memory.peak": null,
+        "memory.swap.max": null,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_reuse-285777fef60a.service",
+        "pids.max": null
+      },
+      "kind": "case",
+      "label": "bounded_reuse",
+      "live_cgroup": [],
+      "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/bounded_reuse-285777fef60a/output.log",
+      "outcome": "exited",
+      "output_bytes": 24992,
+      "postmortem": {
+        "ActiveState": "inactive",
+        "CPUQuotaPerSecUSec": "infinity",
+        "CPUUsageNSec": "[not set]",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "not-found",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "[not set]",
+        "MemorySwapMax": "infinity",
+        "OOMPolicy": "",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "infinity",
+        "SendSIGKILL": "yes",
+        "SubState": "dead",
+        "TasksMax": "38331",
+        "TimeoutStopUSec": "1min 30s",
+        "Type": ""
+      },
+      "probe": {
+        "kernel": {
+          "cpu.max": "100000 100000",
+          "headroom": {
+            "ancestors": [
+              {
+                "current": 3214069760,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+              },
+              {
+                "current": 3273359360,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+              },
+              {
+                "current": 21706883072,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+              },
+              {
+                "current": 21706899456,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice"
+              },
+              {
+                "current": null,
+                "maximum": null,
+                "path": "/sys/fs/cgroup"
+              }
+            ],
+            "mem_available_bytes": 19076628480,
+            "required_bytes": 805306368
+          },
+          "memory.current": "13602816",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "402653184",
+          "memory.max": "536870912",
+          "memory.oom.group": "1",
+          "memory.peak": "13602816",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_reuse-285777fef60a.service",
+          "pids.max": "64",
+          "rlimit_core": [
+            0,
+            0
+          ],
+          "rlimit_fsize": [
+            16777216,
+            16777216
+          ]
+        },
+        "ok": true,
+        "pid": 43560
+      },
+      "tail": "32 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=1 step=32 phase=put.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=33 phase=put.after\nBOUNDED_RANDOMIZED_PHASE config=1 step=33 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=33 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=33 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=33 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=33 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=1 step=33 phase=put.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=put.after\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=snapshot.release.before\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=snapshot.release.after\nBOUNDED_RANDOMIZED_PHASE config=1 step=34 phase=cleanup.before\nDBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false\nBOUNDED_RANDOMIZED_OK config=1 steps=34\nok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.05s\n\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 282ms\n             CPU time consumed: 117ms\n                   Memory peak: 12.9M (swap: 0B)\n",
+      "unit": "bitcoin-rs-guard-bounded_reuse-285777fef60a.service",
+      "verified": true,
+      "verified_properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "CPUUsageNSec": "94446000",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_reuse-285777fef60a.service",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "loaded",
+        "MemoryHigh": "402653184",
+        "MemoryMax": "536870912",
+        "MemoryPeak": "13602816",
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "30s",
+        "SendSIGKILL": "yes",
+        "SubState": "running",
+        "TasksMax": "64",
+        "TimeoutStopUSec": "3s",
+        "Type": "exec"
+      }
+    },
+    "bounded_uncompressed": {
+      "budget": {
+        "file": 16777216,
+        "high": 402653184,
+        "memory": 536870912,
+        "output": 1048576,
+        "seconds": 30,
+        "tasks": 64
+      },
+      "cleanup": {
+        "reset": {
+          "exit_code": 1,
+          "stderr": "",
+          "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-bounded_uncompressed-e0061405ae99.service: Unit bitcoin-rs-guard-bounded_uncompressed-e0061405ae99.service not loaded.\n"
+        },
+        "stop": {
+          "exit_code": 5,
+          "stderr": "",
+          "stdout": "Failed to stop bitcoin-rs-guard-bounded_uncompressed-e0061405ae99.service: Unit bitcoin-rs-guard-bounded_uncompressed-e0061405ae99.service not loaded.\n"
+        }
+      },
+      "cwd": "/home/kleb/bitcoin-rs-randomized-bounded-repair",
+      "data_bytes": 5724,
+      "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/case-data-bounded_uncompressed",
+      "data_entries": 9,
+      "elapsed_seconds": 0.2506178359999467,
+      "exit_code": 0,
+      "final_cgroup": {
+        "cpu.max": null,
+        "memory.current": null,
+        "memory.events": null,
+        "memory.high": null,
+        "memory.max": null,
+        "memory.oom.group": null,
+        "memory.peak": null,
+        "memory.swap.max": null,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_uncompressed-e0061405ae99.service",
+        "pids.max": null
+      },
+      "kind": "case",
+      "label": "bounded_uncompressed",
+      "live_cgroup": [],
+      "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/bounded_uncompressed-e0061405ae99/output.log",
+      "outcome": "exited",
+      "output_bytes": 24580,
+      "postmortem": {
+        "ActiveState": "inactive",
+        "CPUQuotaPerSecUSec": "infinity",
+        "CPUUsageNSec": "[not set]",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "not-found",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "[not set]",
+        "MemorySwapMax": "infinity",
+        "OOMPolicy": "",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "infinity",
+        "SendSIGKILL": "yes",
+        "SubState": "dead",
+        "TasksMax": "38331",
+        "TimeoutStopUSec": "1min 30s",
+        "Type": ""
+      },
+      "probe": {
+        "kernel": {
+          "cpu.max": "100000 100000",
+          "headroom": {
+            "ancestors": [
+              {
+                "current": 3214446592,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+              },
+              {
+                "current": 3274100736,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+              },
+              {
+                "current": 21707137024,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+              },
+              {
+                "current": 21707153408,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice"
+              },
+              {
+                "current": null,
+                "maximum": null,
+                "path": "/sys/fs/cgroup"
+              }
+            ],
+            "mem_available_bytes": 19085963264,
+            "required_bytes": 805306368
+          },
+          "memory.current": "13672448",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "402653184",
+          "memory.max": "536870912",
+          "memory.oom.group": "1",
+          "memory.peak": "13672448",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_uncompressed-e0061405ae99.service",
+          "pids.max": "64",
+          "rlimit_core": [
+            0,
+            0
+          ],
+          "rlimit_fsize": [
+            16777216,
+            16777216
+          ]
+        },
+        "ok": true,
+        "pid": 43738
+      },
+      "tail": "ep=32 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=3 step=32 phase=put.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=33 phase=put.after\nBOUNDED_RANDOMIZED_PHASE config=3 step=33 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=33 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=33 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=33 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=33 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=3 step=33 phase=put.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=put.after\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.live.model.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.live.database.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.saved.model.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.saved.database.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=compare.after\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=snapshot.release.before\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=snapshot.release.after\nBOUNDED_RANDOMIZED_PHASE config=3 step=34 phase=cleanup.before\nDBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false\nBOUNDED_RANDOMIZED_OK config=3 steps=34\nok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.10s\n\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 208ms\n             CPU time consumed: 97ms\n                   Memory peak: 13M (swap: 0B)\n",
+      "unit": "bitcoin-rs-guard-bounded_uncompressed-e0061405ae99.service",
+      "verified": true,
+      "verified_properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "CPUUsageNSec": "75850000",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-bounded_uncompressed-e0061405ae99.service",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "loaded",
+        "MemoryHigh": "402653184",
+        "MemoryMax": "536870912",
+        "MemoryPeak": "13672448",
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "30s",
+        "SendSIGKILL": "yes",
+        "SubState": "running",
+        "TasksMax": "64",
+        "TimeoutStopUSec": "3s",
+        "Type": "exec"
+      }
+    },
+    "compile-tests": {
+      "budget": {
+        "file": 536870912,
+        "high": 3221225472,
+        "memory": 4294967296,
+        "output": 2097152,
+        "seconds": 600,
+        "tasks": 128
+      },
+      "cleanup": {
+        "reset": {
+          "exit_code": 1,
+          "stderr": "",
+          "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-compile-tests-0020fb1ea756.service: Unit bitcoin-rs-guard-compile-tests-0020fb1ea756.service not loaded.\n"
+        },
+        "stop": {
+          "exit_code": 5,
+          "stderr": "",
+          "stdout": "Failed to stop bitcoin-rs-guard-compile-tests-0020fb1ea756.service: Unit bitcoin-rs-guard-compile-tests-0020fb1ea756.service not loaded.\n"
+        }
+      },
+      "cwd": "/home/kleb/bitcoin-rs-randomized-bounded-repair",
+      "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/compile-tests-0020fb1ea756/test-data",
+      "elapsed_seconds": 333.56081859700043,
+      "exit_code": 0,
+      "final_cgroup": {
+        "cpu.max": null,
+        "memory.current": null,
+        "memory.events": null,
+        "memory.high": null,
+        "memory.max": null,
+        "memory.oom.group": null,
+        "memory.peak": null,
+        "memory.swap.max": null,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+        "pids.max": null
+      },
+      "kind": "build",
+      "label": "compile-tests",
+      "live_cgroup": [
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "3200204800",
+          "memory.events": {
+            "high": 144,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "3222167552",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+          "pids.max": "128"
+        },
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "3220959232",
+          "memory.events": {
+            "high": 154,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "3222167552",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+          "pids.max": "128"
+        },
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "3220971520",
+          "memory.events": {
+            "high": 273,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "3222167552",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+          "pids.max": "128"
+        },
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "3169390592",
+          "memory.events": {
+            "high": 273,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "3222167552",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+          "pids.max": "128"
+        },
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "3192188928",
+          "memory.events": {
+            "high": 273,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "3222167552",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+          "pids.max": "128"
+        },
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "3198898176",
+          "memory.events": {
+            "high": 273,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "3222167552",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+          "pids.max": "128"
+        },
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "3185258496",
+          "memory.events": {
+            "high": 273,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "3222167552",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+          "pids.max": "128"
+        },
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "3189530624",
+          "memory.events": {
+            "high": 354,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "3222167552",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+          "pids.max": "128"
+        }
+      ],
+      "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/compile-tests-0020fb1ea756/output.log",
+      "outcome": "exited",
+      "output_bytes": 485115,
+      "postmortem": {
+        "ActiveState": "inactive",
+        "CPUQuotaPerSecUSec": "infinity",
+        "CPUUsageNSec": "[not set]",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "not-found",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "[not set]",
+        "MemorySwapMax": "infinity",
+        "OOMPolicy": "",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "infinity",
+        "SendSIGKILL": "yes",
+        "SubState": "dead",
+        "TasksMax": "38331",
+        "TimeoutStopUSec": "1min 30s",
+        "Type": ""
+      },
+      "probe": {
+        "kernel": {
+          "cpu.max": "100000 100000",
+          "headroom": {
+            "ancestors": [
+              {
+                "current": 397742080,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+              },
+              {
+                "current": 456781824,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+              },
+              {
+                "current": 18610614272,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+              },
+              {
+                "current": 18610630656,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice"
+              },
+              {
+                "current": null,
+                "maximum": null,
+                "path": "/sys/fs/cgroup"
+              }
+            ],
+            "mem_available_bytes": 19454963712,
+            "required_bytes": 4563402752
+          },
+          "memory.current": "13611008",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "13611008",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+          "pids.max": "128",
+          "rlimit_core": [
+            0,
+            0
+          ],
+          "rlimit_fsize": [
+            536870912,
+            536870912
+          ]
+        },
+        "ok": true,
+        "pid": 33941
+      },
+      "tail": "-randomized/Cargo.toml\",\"target\":{\"kind\":[\"test\"],\"crate_types\":[\"bin\"],\"name\":\"bounded_contracts\",\"src_path\":\"/home/kleb/bitcoin-rs-randomized-bounded-repair/bitcoinleveldbt-randomized/tests/bounded_contracts.rs\",\"edition\":\"2024\",\"doc\":false,\"doctest\":false,\"test\":true},\"profile\":{\"opt_level\":\"3\",\"debuginfo\":2,\"debug_assertions\":true,\"overflow_checks\":true,\"test\":true},\"features\":[],\"filenames\":[\"/home/kleb/bitcoin-rs/target/debug/deps/bounded_contracts-1a0ccd8c2cb064d0\"],\"executable\":\"/home/kleb/bitcoin-rs/target/debug/deps/bounded_contracts-1a0ccd8c2cb064d0\",\"fresh\":false}\n{\"reason\":\"compiler-artifact\",\"package_id\":\"path+file:///home/kleb/bitcoin-rs-randomized-bounded-repair/bitcoinleveldbt-randomized#0.1.0\",\"manifest_path\":\"/home/kleb/bitcoin-rs-randomized-bounded-repair/bitcoinleveldbt-randomized/Cargo.toml\",\"target\":{\"kind\":[\"lib\"],\"crate_types\":[\"lib\"],\"name\":\"bitcoinleveldbt_randomized\",\"src_path\":\"/home/kleb/bitcoin-rs-randomized-bounded-repair/bitcoinleveldbt-randomized/src/lib.rs\",\"edition\":\"2024\",\"doc\":true,\"doctest\":true,\"test\":true},\"profile\":{\"opt_level\":\"3\",\"debuginfo\":2,\"debug_assertions\":true,\"overflow_checks\":true,\"test\":true},\"features\":[],\"filenames\":[\"/home/kleb/bitcoin-rs/target/debug/deps/bitcoinleveldbt_randomized-3cceeab0fe9a8f92\"],\"executable\":\"/home/kleb/bitcoin-rs/target/debug/deps/bitcoinleveldbt_randomized-3cceeab0fe9a8f92\",\"fresh\":false}\n{\"reason\":\"build-finished\",\"success\":true}\n    Finished `test` profile [optimized + debuginfo] target(s) in 5m 31s\nwarning: the following packages contain code that will be rejected by a future version of Rust: proc-macro-error2 v2.0.1\nnote: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 5min 33.533s\n             CPU time consumed: 5min 26.624s\n                   Memory peak: 3G (swap: 0B)\n",
+      "unit": "bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+      "verified": true,
+      "verified_properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "CPUUsageNSec": "74677000",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-0020fb1ea756.service",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "loaded",
+        "MemoryHigh": "3221225472",
+        "MemoryMax": "4294967296",
+        "MemoryPeak": "13611008",
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "10min",
+        "SendSIGKILL": "yes",
+        "SubState": "running",
+        "TasksMax": "128",
+        "TimeoutStopUSec": "3s",
+        "Type": "exec"
+      }
+    },
+    "list-bisect": {
+      "budget": {
+        "file": 16777216,
+        "high": 402653184,
+        "memory": 536870912,
+        "output": 1048576,
+        "seconds": 30,
+        "tasks": 64
+      },
+      "cleanup": {
+        "reset": {
+          "exit_code": 1,
+          "stderr": "",
+          "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-list-bisect-c74382c6db11.service: Unit bitcoin-rs-guard-list-bisect-c74382c6db11.service not loaded.\n"
+        },
+        "stop": {
+          "exit_code": 5,
+          "stderr": "",
+          "stdout": "Failed to stop bitcoin-rs-guard-list-bisect-c74382c6db11.service: Unit bitcoin-rs-guard-list-bisect-c74382c6db11.service not loaded.\n"
+        }
+      },
+      "cwd": "/home/kleb/bitcoin-rs-randomized-bounded-repair",
+      "data_bytes": 0,
+      "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/list-bisect-c74382c6db11/test-data",
+      "data_entries": 0,
+      "elapsed_seconds": 0.13430631599931075,
+      "exit_code": 0,
+      "final_cgroup": {
+        "cpu.max": null,
+        "memory.current": null,
+        "memory.events": null,
+        "memory.high": null,
+        "memory.max": null,
+        "memory.oom.group": null,
+        "memory.peak": null,
+        "memory.swap.max": null,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-bisect-c74382c6db11.service",
+        "pids.max": null
+      },
+      "kind": "case",
+      "label": "list-bisect",
+      "live_cgroup": [],
+      "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/list-bisect-c74382c6db11/output.log",
+      "outcome": "exited",
+      "output_bytes": 430,
+      "postmortem": {
+        "ActiveState": "inactive",
+        "CPUQuotaPerSecUSec": "infinity",
+        "CPUUsageNSec": "[not set]",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "not-found",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "[not set]",
+        "MemorySwapMax": "infinity",
+        "OOMPolicy": "",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "infinity",
+        "SendSIGKILL": "yes",
+        "SubState": "dead",
+        "TasksMax": "38331",
+        "TimeoutStopUSec": "1min 30s",
+        "Type": ""
+      },
+      "probe": {
+        "kernel": {
+          "cpu.max": "100000 100000",
+          "headroom": {
+            "ancestors": [
+              {
+                "current": 3213488128,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+              },
+              {
+                "current": 3272761344,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+              },
+              {
+                "current": 21688082432,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+              },
+              {
+                "current": 21688098816,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice"
+              },
+              {
+                "current": null,
+                "maximum": null,
+                "path": "/sys/fs/cgroup"
+              }
+            ],
+            "mem_available_bytes": 19074015232,
+            "required_bytes": 805306368
+          },
+          "memory.current": "13602816",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "402653184",
+          "memory.max": "536870912",
+          "memory.oom.group": "1",
+          "memory.peak": "13602816",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-bisect-c74382c6db11.service",
+          "pids.max": "64",
+          "rlimit_core": [
+            0,
+            0
+          ],
+          "rlimit_fsize": [
+            16777216,
+            16777216
+          ]
+        },
+        "ok": true,
+        "pid": 43161
+      },
+      "tail": "D-Bus property CPUAccounting is deprecated, ignoring assignment: CPUAccounting=yes\nRunning as unit: bitcoin-rs-guard-list-bisect-c74382c6db11.service\ndb_test_bisect_randomized: test\n\n1 test, 0 benchmarks\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 107ms\n             CPU time consumed: 79ms\n                   Memory peak: 12.9M (swap: 0B)\n",
+      "unit": "bitcoin-rs-guard-list-bisect-c74382c6db11.service",
+      "verified": true,
+      "verified_properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "CPUUsageNSec": "76577000",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-bisect-c74382c6db11.service",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "loaded",
+        "MemoryHigh": "402653184",
+        "MemoryMax": "536870912",
+        "MemoryPeak": "13602816",
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "30s",
+        "SendSIGKILL": "yes",
+        "SubState": "running",
+        "TasksMax": "64",
+        "TimeoutStopUSec": "3s",
+        "Type": "exec"
+      }
+    },
+    "list-bounded_contracts": {
+      "budget": {
+        "file": 16777216,
+        "high": 402653184,
+        "memory": 536870912,
+        "output": 1048576,
+        "seconds": 30,
+        "tasks": 64
+      },
+      "cleanup": {
+        "reset": {
+          "exit_code": 1,
+          "stderr": "",
+          "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-list-bounded_contracts-ed800927ff15.service: Unit bitcoin-rs-guard-list-bounded_contracts-ed800927ff15.service not loaded.\n"
+        },
+        "stop": {
+          "exit_code": 5,
+          "stderr": "",
+          "stdout": "Failed to stop bitcoin-rs-guard-list-bounded_contracts-ed800927ff15.service: Unit bitcoin-rs-guard-list-bounded_contracts-ed800927ff15.service not loaded.\n"
+        }
+      },
+      "cwd": "/home/kleb/bitcoin-rs-randomized-bounded-repair",
+      "data_bytes": 0,
+      "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/list-bounded_contracts-ed800927ff15/test-data",
+      "data_entries": 0,
+      "elapsed_seconds": 0.2564837419995456,
+      "exit_code": 0,
+      "final_cgroup": {
+        "cpu.max": null,
+        "memory.current": null,
+        "memory.events": null,
+        "memory.high": null,
+        "memory.max": null,
+        "memory.oom.group": null,
+        "memory.peak": null,
+        "memory.swap.max": null,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-bounded_contracts-ed800927ff15.service",
+        "pids.max": null
+      },
+      "kind": "case",
+      "label": "list-bounded_contracts",
+      "live_cgroup": [],
+      "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/list-bounded_contracts-ed800927ff15/output.log",
+      "outcome": "exited",
+      "output_bytes": 501,
+      "postmortem": {
+        "ActiveState": "inactive",
+        "CPUQuotaPerSecUSec": "infinity",
+        "CPUUsageNSec": "[not set]",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "not-found",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "[not set]",
+        "MemorySwapMax": "infinity",
+        "OOMPolicy": "",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "infinity",
+        "SendSIGKILL": "yes",
+        "SubState": "dead",
+        "TasksMax": "38331",
+        "TimeoutStopUSec": "1min 30s",
+        "Type": ""
+      },
+      "probe": {
+        "kernel": {
+          "cpu.max": "100000 100000",
+          "headroom": {
+            "ancestors": [
+              {
+                "current": 3214417920,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+              },
+              {
+                "current": 3273760768,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+              },
+              {
+                "current": 21694943232,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+              },
+              {
+                "current": 21694943232,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice"
+              },
+              {
+                "current": null,
+                "maximum": null,
+                "path": "/sys/fs/cgroup"
+              }
+            ],
+            "mem_available_bytes": 19072790528,
+            "required_bytes": 805306368
+          },
+          "memory.current": "14266368",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "402653184",
+          "memory.max": "536870912",
+          "memory.oom.group": "1",
+          "memory.peak": "14266368",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-bounded_contracts-ed800927ff15.service",
+          "pids.max": "64",
+          "rlimit_core": [
+            0,
+            0
+          ],
+          "rlimit_fsize": [
+            16777216,
+            16777216
+          ]
+        },
+        "ok": true,
+        "pid": 43248
+      },
+      "tail": "D-Bus property CPUAccounting is deprecated, ignoring assignment: CPUAccounting=yes\nRunning as unit: bitcoin-rs-guard-list-bounded_contracts-ed800927ff15.service\nbounded_default: test\nbounded_filter: test\nbounded_reuse: test\nbounded_uncompressed: test\n\n4 tests, 0 benchmarks\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 232ms\n             CPU time consumed: 107ms\n                   Memory peak: 13.6M (swap: 0B)\n",
+      "unit": "bitcoin-rs-guard-list-bounded_contracts-ed800927ff15.service",
+      "verified": true,
+      "verified_properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "CPUUsageNSec": "103922000",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-bounded_contracts-ed800927ff15.service",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "loaded",
+        "MemoryHigh": "402653184",
+        "MemoryMax": "536870912",
+        "MemoryPeak": "14266368",
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "30s",
+        "SendSIGKILL": "yes",
+        "SubState": "running",
+        "TasksMax": "64",
+        "TimeoutStopUSec": "3s",
+        "Type": "exec"
+      }
+    },
+    "list-randomized": {
+      "budget": {
+        "file": 16777216,
+        "high": 402653184,
+        "memory": 536870912,
+        "output": 1048576,
+        "seconds": 30,
+        "tasks": 64
+      },
+      "cleanup": {
+        "reset": {
+          "exit_code": 1,
+          "stderr": "",
+          "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-list-randomized-026505906f52.service: Unit bitcoin-rs-guard-list-randomized-026505906f52.service not loaded.\n"
+        },
+        "stop": {
+          "exit_code": 5,
+          "stderr": "",
+          "stdout": "Failed to stop bitcoin-rs-guard-list-randomized-026505906f52.service: Unit bitcoin-rs-guard-list-randomized-026505906f52.service not loaded.\n"
+        }
+      },
+      "cwd": "/home/kleb/bitcoin-rs-randomized-bounded-repair",
+      "data_bytes": 0,
+      "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/list-randomized-026505906f52/test-data",
+      "data_entries": 0,
+      "elapsed_seconds": 0.3357164640001429,
+      "exit_code": 0,
+      "final_cgroup": {
+        "cpu.max": null,
+        "memory.current": null,
+        "memory.events": null,
+        "memory.high": null,
+        "memory.max": null,
+        "memory.oom.group": null,
+        "memory.peak": null,
+        "memory.swap.max": null,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-randomized-026505906f52.service",
+        "pids.max": null
+      },
+      "kind": "case",
+      "label": "list-randomized",
+      "live_cgroup": [],
+      "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/list-randomized-026505906f52/output.log",
+      "outcome": "exited",
+      "output_bytes": 428,
+      "postmortem": {
+        "ActiveState": "inactive",
+        "CPUQuotaPerSecUSec": "infinity",
+        "CPUUsageNSec": "[not set]",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "not-found",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "[not set]",
+        "MemorySwapMax": "infinity",
+        "OOMPolicy": "",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "infinity",
+        "SendSIGKILL": "yes",
+        "SubState": "dead",
+        "TasksMax": "38331",
+        "TimeoutStopUSec": "1min 30s",
+        "Type": ""
+      },
+      "probe": {
+        "kernel": {
+          "cpu.max": "100000 100000",
+          "headroom": {
+            "ancestors": [
+              {
+                "current": 3213611008,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+              },
+              {
+                "current": 3272806400,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+              },
+              {
+                "current": 21687795712,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+              },
+              {
+                "current": 21687812096,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice"
+              },
+              {
+                "current": null,
+                "maximum": null,
+                "path": "/sys/fs/cgroup"
+              }
+            ],
+            "mem_available_bytes": 19055824896,
+            "required_bytes": 805306368
+          },
+          "memory.current": "13488128",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "402653184",
+          "memory.max": "536870912",
+          "memory.oom.group": "1",
+          "memory.peak": "13488128",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-randomized-026505906f52.service",
+          "pids.max": "64",
+          "rlimit_core": [
+            0,
+            0
+          ],
+          "rlimit_fsize": [
+            16777216,
+            16777216
+          ]
+        },
+        "ok": true,
+        "pid": 43074
+      },
+      "tail": "D-Bus property CPUAccounting is deprecated, ignoring assignment: CPUAccounting=yes\nRunning as unit: bitcoin-rs-guard-list-randomized-026505906f52.service\ndb_test_randomized: test\n\n1 test, 0 benchmarks\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 283ms\n             CPU time consumed: 126ms\n                   Memory peak: 13.3M (swap: 0B)\n",
+      "unit": "bitcoin-rs-guard-list-randomized-026505906f52.service",
+      "verified": true,
+      "verified_properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "CPUUsageNSec": "117316000",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-randomized-026505906f52.service",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "loaded",
+        "MemoryHigh": "402653184",
+        "MemoryMax": "536870912",
+        "MemoryPeak": "13488128",
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "30s",
+        "SendSIGKILL": "yes",
+        "SubState": "running",
+        "TasksMax": "64",
+        "TimeoutStopUSec": "3s",
+        "Type": "exec"
+      }
+    },
+    "native-tools": {
+      "budget": {
+        "file": 536870912,
+        "high": 3221225472,
+        "memory": 4294967296,
+        "output": 2097152,
+        "seconds": 600,
+        "tasks": 128
+      },
+      "cleanup": {
+        "reset": {
+          "exit_code": 1,
+          "stderr": "",
+          "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-native-tools-c46ff9f23a3f.service: Unit bitcoin-rs-guard-native-tools-c46ff9f23a3f.service not loaded.\n"
+        },
+        "stop": {
+          "exit_code": 5,
+          "stderr": "",
+          "stdout": "Failed to stop bitcoin-rs-guard-native-tools-c46ff9f23a3f.service: Unit bitcoin-rs-guard-native-tools-c46ff9f23a3f.service not loaded.\n"
+        }
+      },
+      "cwd": "/home/kleb/bitcoin-rs-randomized-bounded-repair",
+      "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/native-tools-c46ff9f23a3f/test-data",
+      "elapsed_seconds": 1.7314595069997267,
+      "exit_code": 0,
+      "final_cgroup": {
+        "cpu.max": null,
+        "memory.current": null,
+        "memory.events": null,
+        "memory.high": null,
+        "memory.max": null,
+        "memory.oom.group": null,
+        "memory.peak": null,
+        "memory.swap.max": null,
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-c46ff9f23a3f.service",
+        "pids.max": null
+      },
+      "kind": "build",
+      "label": "native-tools",
+      "live_cgroup": [
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "36192256",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "36192256",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-c46ff9f23a3f.service",
+          "pids.max": "128"
+        },
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "110469120",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "110469120",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-c46ff9f23a3f.service",
+          "pids.max": "128"
+        },
+        {
+          "cpu.max": "100000 100000",
+          "memory.current": "162287616",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "162287616",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-c46ff9f23a3f.service",
+          "pids.max": "128"
+        }
+      ],
+      "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-randomized-bounded001/runs/20261106T135322Z-385d7989/guard/native-tools-c46ff9f23a3f/output.log",
+      "outcome": "exited",
+      "output_bytes": 637,
+      "postmortem": {
+        "ActiveState": "inactive",
+        "CPUQuotaPerSecUSec": "infinity",
+        "CPUUsageNSec": "[not set]",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "not-found",
+        "MemoryHigh": "infinity",
+        "MemoryMax": "infinity",
+        "MemoryPeak": "[not set]",
+        "MemorySwapMax": "infinity",
+        "OOMPolicy": "",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "infinity",
+        "SendSIGKILL": "yes",
+        "SubState": "dead",
+        "TasksMax": "38331",
+        "TimeoutStopUSec": "1min 30s",
+        "Type": ""
+      },
+      "probe": {
+        "kernel": {
+          "cpu.max": "100000 100000",
+          "headroom": {
+            "ancestors": [
+              {
+                "current": 396685312,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+              },
+              {
+                "current": 456114176,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+              },
+              {
+                "current": 18617856000,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+              },
+              {
+                "current": 18617872384,
+                "maximum": "max",
+                "path": "/sys/fs/cgroup/user.slice"
+              },
+              {
+                "current": null,
+                "maximum": null,
+                "path": "/sys/fs/cgroup"
+              }
+            ],
+            "mem_available_bytes": 19417264128,
+            "required_bytes": 4563402752
+          },
+          "memory.current": "13602816",
+          "memory.events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "memory.high": "3221225472",
+          "memory.max": "4294967296",
+          "memory.oom.group": "1",
+          "memory.peak": "13602816",
+          "memory.swap.max": "0",
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-c46ff9f23a3f.service",
+          "pids.max": "128",
+          "rlimit_core": [
+            0,
+            0
+          ],
+          "rlimit_fsize": [
+            536870912,
+            536870912
+          ]
+        },
+        "ok": true,
+        "pid": 33822
+      },
+      "tail": "D-Bus property CPUAccounting is deprecated, ignoring assignment: CPUAccounting=yes\nRunning as unit: bitcoin-rs-guard-native-tools-c46ff9f23a3f.service\nrustc 1.97.0-nightly (9eb3be26b 2026-05-18)\nbinary: rustc\ncommit-hash: 9eb3be26b46eccea1de7448ea9cc3c1d20bb1a35\ncommit-date: 2026-05-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.97.0-nightly\nLLVM version: 22.1.4\ncargo 1.97.0-nightly (4d1f98451 2026-05-15)\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 1.706s\n             CPU time consumed: 1.222s\n                   Memory peak: 154.7M (swap: 0B)\n",
+      "unit": "bitcoin-rs-guard-native-tools-c46ff9f23a3f.service",
+      "verified": true,
+      "verified_properties": {
+        "ActiveState": "active",
+        "CPUQuotaPerSecUSec": "1s",
+        "CPUUsageNSec": "75646000",
+        "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-c46ff9f23a3f.service",
+        "ExecMainCode": "0",
+        "ExecMainStatus": "0",
+        "KillMode": "control-group",
+        "LoadState": "loaded",
+        "MemoryHigh": "3221225472",
+        "MemoryMax": "4294967296",
+        "MemoryPeak": "13864960",
+        "MemorySwapMax": "0",
+        "OOMPolicy": "kill",
+        "RemainAfterExit": "no",
+        "Restart": "no",
+        "Result": "success",
+        "RuntimeMaxUSec": "10min",
+        "SendSIGKILL": "yes",
+        "SubState": "running",
+        "TasksMax": "128",
+        "TimeoutStopUSec": "3s",
+        "Type": "exec"
+      }
+    }
+  },
+  "rustflags": "-Awarnings",
+  "seed": 301,
+  "shell_sha256": "8f316c4f007426302e26962e13def8c7d5bc0efa85d5e1549c55e85ba0d7c651",
+  "stress_ignored": 2,
+  "toolchain": {
+    "cargo_version": "cargo 1.97.0-nightly (4d1f98451 2026-05-15)",
+    "commit_hash": "9eb3be26b46eccea1de7448ea9cc3c1d20bb1a35",
+    "host": "x86_64-unknown-linux-gnu",
+    "llvm_version": "22.1.4",
+    "release": "1.97.0-nightly",
+    "rustc_vv": "rustc 1.97.0-nightly (9eb3be26b 2026-05-18)\nbinary: rustc\ncommit-hash: 9eb3be26b46eccea1de7448ea9cc3c1d20bb1a35\ncommit-date: 2026-05-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.97.0-nightly\nLLVM version: 22.1.4",
+    "sysroot": "/nix/store/znf1qh1fy9db3sxrv5vwf8i4r343rf79-rust-default-1.97.0-nightly-2026-05-19",
+    "target_libdir": "/nix/store/znf1qh1fy9db3sxrv5vwf8i4r343rf79-rust-default-1.97.0-nightly-2026-05-19/lib/rustlib/x86_64-unknown-linux-gnu/lib"
+  },
+  "workflow": "leveldb-randomized-bounded001"
+}

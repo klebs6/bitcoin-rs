@@ -12,7 +12,8 @@ use bitcoinleveldb_batch::*;
 use bitcoinleveldb_dbinterface::*;
 use bitcoinleveldb_modeldb::*;
 
-#[traced_test]
+#[test]
+#[ignore = "long stress; use a resource-controlled runner explicitly"]
 fn db_test_randomized() {
     let mut rnd = Random::new(bitcoinleveldbt_util::random_seed() as u32);
 

@@ -1139,7 +1139,8 @@ fn bitcoinleveldbt_randomized_bisect_minimal_failing_prefix_for_option_configura
 
 }
 
-#[traced_test]
+#[test]
+#[ignore = "long stress; use a resource-controlled runner explicitly"]
 fn db_test_bisect_randomized() {
     let seed = random_seed() as u32;
     let executed_prefix_length: i32 = 10000i32;
