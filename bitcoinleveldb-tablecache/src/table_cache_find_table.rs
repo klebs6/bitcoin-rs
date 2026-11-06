@@ -55,7 +55,7 @@ impl TableCache {
 
                 {
                     let env_rc = self.env_handle();
-                    let mut env_ref = env_rc.borrow_mut();
+                    let mut env_ref = EnvWrapper::new(env_rc);
                     let mut file_box_ptr: *mut Box<dyn RandomAccessFile> =
                         core::ptr::null_mut();
 
@@ -83,7 +83,7 @@ impl TableCache {
                         sst_table_file_name(self.dbname_str(), file_number);
 
                     let env_rc = self.env_handle();
-                    let mut env_ref = env_rc.borrow_mut();
+                    let mut env_ref = EnvWrapper::new(env_rc);
                     let mut file_box_ptr: *mut Box<dyn RandomAccessFile> =
                         core::ptr::null_mut();
 

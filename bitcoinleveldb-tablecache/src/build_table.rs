@@ -65,7 +65,7 @@ pub fn build_table(
                 core::ptr::null_mut();
             {
                 let env_rc = env.clone();
-                let mut env_ref = env_rc.borrow_mut();
+                let mut env_ref = EnvWrapper::new(env_rc);
                 trace!(
                     "build_table: calling Env::new_writable_file for '{}'",
                     fname
@@ -230,7 +230,7 @@ pub fn build_table(
             );
 
             let env_rc = env.clone();
-            let mut env_ref = env_rc.borrow_mut();
+            let mut env_ref = EnvWrapper::new(env_rc);
             let delete_status = env_ref.delete_file(&fname);
             if !delete_status.is_ok() {
                 error!(

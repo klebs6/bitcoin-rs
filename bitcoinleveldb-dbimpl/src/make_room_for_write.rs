@@ -12,8 +12,8 @@ impl DBImpl {
         self.mutex.assert_held();
         assert!(!self.writers.is_empty());
 
-        let env: Rc<RefCell<dyn Env>> = match self.options.env().as_ref() {
-            Some(e) => e.clone(),
+        let mut env: EnvWrapper = match self.options.env().as_ref() {
+            Some(e) => EnvWrapper::new(e.clone()),
             None => {
                 tracing::error!("make_room_for_write: Options.env is None");
                 return Status::invalid_argument(
@@ -72,7 +72,7 @@ impl DBImpl {
                     self.mutex.unlock();
                 }
 
-                env.borrow_mut().sleep_for_microseconds(1000);
+                env.sleep_for_microseconds(1000);
 
                 // Do not delay a single write more than once.
                 allow_delay = false;
@@ -175,7 +175,7 @@ impl DBImpl {
 
             let mut new_logfile_ptr: *mut Box<dyn WritableFile> = core::ptr::null_mut();
 
-            s = env.borrow_mut().new_writable_file(
+            s = env.new_writable_file(
                 &fname,
                 &mut new_logfile_ptr as *mut *mut Box<dyn WritableFile>,
             );
