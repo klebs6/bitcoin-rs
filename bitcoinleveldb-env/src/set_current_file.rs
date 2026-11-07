@@ -11,7 +11,17 @@ pub fn set_current_file(
     dbname:             &String,
     descriptor_number:  u64,
 ) -> Status {
+    let mut env = EnvWrapper::new(env);
+    set_current_file_with_env(&mut env, dbname, descriptor_number)
+}
 
+/// Install CURRENT through an existing Env view. No environment Rc is cloned or
+/// dropped here; the caller retains the target and provides its synchronization.
+pub fn set_current_file_with_env(
+    env:                &mut dyn Env,
+    dbname:             &String,
+    descriptor_number:  u64,
+) -> Status {
     trace!(
         dbname = %dbname,
         descriptor_number,
@@ -58,7 +68,7 @@ pub fn set_current_file(
         "set_current_file: writing CURRENT contents to temporary file"
     );
 
-    let mut status = write_string_to_file_sync(env.clone(), &content_slice, &tmp);
+    let mut status = do_write_string_to_file_with_env(env, &content_slice, &tmp, true);
 
     if status.is_ok() {
         let current_name = current_file_name(dbname);
@@ -67,10 +77,7 @@ pub fn set_current_file(
             current = %current_name,
             "set_current_file: renaming temporary file to CURRENT"
         );
-        status = {
-            let mut env_ref = env.borrow_mut();
-            env_ref.rename_file(&tmp, &current_name)
-        };
+        status = env.rename_file(&tmp, &current_name);
     }
 
     if !status.is_ok() {
@@ -79,8 +86,7 @@ pub fn set_current_file(
             status_str = %status.to_string(),
             "set_current_file: operation failed, deleting temporary file"
         );
-        let mut env_ref = env.borrow_mut();
-        let _ = env_ref.delete_file(&tmp);
+        let _ = env.delete_file(&tmp);
     }
 
     debug!(

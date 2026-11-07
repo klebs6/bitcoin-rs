@@ -193,6 +193,33 @@ impl core::fmt::Debug for Options {
 
 impl Options {
 
+    /// Copy settings used by cached SSTables without acquiring an Env owner.
+    ///
+    /// TableCache keeps its environment alive until after it destroys its
+    /// cached tables. Table readers use the comparator, filter and I/O settings
+    /// here, but never the environment. Construct this field by field: cloning
+    /// an Options and then clearing `env` would still modify its Rc counters.
+    /// This does not change the ordinary Clone implementation.
+    pub fn snapshot_for_table(&self) -> Self {
+        Self {
+            comparator: Arc::clone(&self.comparator),
+            create_if_missing: self.create_if_missing,
+            error_if_exists: self.error_if_exists,
+            paranoid_checks: self.paranoid_checks,
+            env: None,
+            info_log: self.info_log,
+            write_buffer_size: self.write_buffer_size,
+            max_open_files: self.max_open_files,
+            block_cache: self.block_cache,
+            block_size: self.block_size,
+            block_restart_interval: self.block_restart_interval,
+            max_file_size: self.max_file_size,
+            compression: self.compression,
+            reuse_logs: self.reuse_logs,
+            filter_policy: Arc::clone(&self.filter_policy),
+        }
+    }
+
     pub fn with_env(env: Rc<RefCell<dyn Env>>) -> Self {
         let mut x = Self::default();
         x.set_env(Some(env));
@@ -260,6 +287,61 @@ impl Default for Options {
             // A no-op / pass-through filter is the closest semantic match.
             filter_policy:          Arc::new(NullFilterPolicy::default()),
         }
+    }
+}
+
+#[cfg(test)]
+mod table_option_snapshot_contracts {
+    use super::*;
+
+    #[test]
+    fn table_snapshot_preserves_settings_without_env_owner() {
+        let mut options = Options::with_env(bitcoinleveldb_posixenv::PosixEnv::shared());
+        options.create_if_missing = true;
+        options.error_if_exists = true;
+        options.paranoid_checks = true;
+        options.write_buffer_size = 12345;
+        options.max_open_files = 73;
+        options.block_size = 257;
+        options.block_restart_interval = 3;
+        options.max_file_size = 45678;
+        options.compression = CompressionType::None;
+        options.reuse_logs = true;
+
+        let env = options.env.as_ref().unwrap();
+        let owners_before = Rc::strong_count(env);
+        let snapshot = options.snapshot_for_table();
+
+        assert_eq!(Rc::strong_count(env), owners_before);
+        assert!(snapshot.env.is_none());
+        assert!(Arc::ptr_eq(&snapshot.comparator, &options.comparator));
+        assert!(Arc::ptr_eq(&snapshot.filter_policy, &options.filter_policy));
+        assert_eq!(snapshot.create_if_missing, options.create_if_missing);
+        assert_eq!(snapshot.error_if_exists, options.error_if_exists);
+        assert_eq!(snapshot.paranoid_checks, options.paranoid_checks);
+        assert_eq!(snapshot.info_log, options.info_log);
+        assert_eq!(snapshot.write_buffer_size, options.write_buffer_size);
+        assert_eq!(snapshot.max_open_files, options.max_open_files);
+        assert_eq!(snapshot.block_cache, options.block_cache);
+        assert_eq!(snapshot.block_size, options.block_size);
+        assert_eq!(snapshot.block_restart_interval, options.block_restart_interval);
+        assert_eq!(snapshot.max_file_size, options.max_file_size);
+        assert_eq!(snapshot.compression, options.compression);
+        assert_eq!(snapshot.reuse_logs, options.reuse_logs);
+        drop(snapshot);
+        assert_eq!(Rc::strong_count(env), owners_before);
+    }
+
+    #[test]
+    fn ordinary_options_clone_keeps_env_ownership() {
+        let options = Options::with_env(bitcoinleveldb_posixenv::PosixEnv::shared());
+        let env = options.env.as_ref().unwrap();
+        let owners_before = Rc::strong_count(env);
+        let cloned = options.clone();
+        assert!(Rc::ptr_eq(cloned.env.as_ref().unwrap(), env));
+        assert_eq!(Rc::strong_count(env), owners_before + 1);
+        drop(cloned);
+        assert_eq!(Rc::strong_count(env), owners_before);
     }
 }
 

@@ -125,11 +125,10 @@ impl VersionEditLogAndApply for VersionSet {
                     descriptor_file_name(self.dbname(), self.manifest_file_number());
                 e.set_next_file(self.next_file_number());
 
-                let env_rc = (*self.options())
-                    .env()
-                    .as_ref()
-                    .expect("VersionSet::log_and_apply: Options.env is None")
-                    .clone();
+                assert!(
+                    (*self.options()).env().is_some(),
+                    "VersionSet::log_and_apply: Options.env is None"
+                );
 
                 let mut file_box_ptr: *mut Box<dyn WritableFile> = core::ptr::null_mut();
 
@@ -141,8 +140,7 @@ impl VersionEditLogAndApply for VersionSet {
                 );
 
                 let t_create_manifest = std::time::Instant::now();
-                s = env_rc
-                    .borrow_mut()
+                s = self.env_mut()
                     .new_writable_file(&new_manifest_file, &mut file_box_ptr);
 
                 tracing::info!(
@@ -275,11 +273,10 @@ impl VersionEditLogAndApply for VersionSet {
                 // If we just created a new descriptor file, install it by writing a
                 // new CURRENT file that points to it.
                 if s.is_ok() && !new_manifest_file.is_empty() {
-                    let env_rc = (*self.options())
-                        .env()
-                        .as_ref()
-                        .expect("VersionSet::log_and_apply: Options.env is None")
-                        .clone();
+                    assert!(
+                        (*self.options()).env().is_some(),
+                        "VersionSet::log_and_apply: Options.env is None"
+                    );
 
                     tracing::info!(
                         ?tid,
@@ -289,7 +286,16 @@ impl VersionEditLogAndApply for VersionSet {
                     );
 
                     let t_set_current = std::time::Instant::now();
-                    s = set_current_file(env_rc, self.dbname(), self.manifest_file_number());
+                    // CURRENT publication must not clone/drop an Env Rc while
+                    // mu is released. The persistent wrapper gates each Env
+                    // call and holds no gate when mu is reacquired below.
+                    let current_dbname = self.dbname().clone();
+                    let current_manifest_number = self.manifest_file_number();
+                    s = set_current_file_with_env(
+                        self.env_mut(),
+                        &current_dbname,
+                        current_manifest_number,
+                    );
 
                     tracing::info!(
                         ?tid,
@@ -355,13 +361,12 @@ impl VersionEditLogAndApply for VersionSet {
                         self.set_descriptor_file(VersionSet::null_writable_file_ptr());
                     }
 
-                    let env_rc = (*self.options())
-                        .env()
-                        .as_ref()
-                        .expect("VersionSet::log_and_apply: Options.env is None")
-                        .clone();
+                    assert!(
+                        (*self.options()).env().is_some(),
+                        "VersionSet::log_and_apply: Options.env is None"
+                    );
 
-                    let del_status = env_rc.borrow_mut().delete_file(&new_manifest_file);
+                    let del_status = self.env_mut().delete_file(&new_manifest_file);
                     if !del_status.is_ok() {
                         tracing::warn!(
                             ?tid,

@@ -10,9 +10,10 @@ crate::ix!();
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/table_cache.cc]
 
 pub struct TableCache {
-    env:     Rc<RefCell<dyn Env>>,
+    env:     EnvWrapper,
     dbname:  String,
     options: Rc<Options>,
+    table_options: Options,
     cache:   *mut Cache,
 }
 
@@ -73,9 +74,10 @@ impl TableCache {
         };
 
         TableCache {
-            env:     env_rc,
+            env:     EnvWrapper::new(env_rc),
             dbname:  dbname.clone(),
             options: Rc::new(options.clone()),
+            table_options: options.snapshot_for_table(),
             cache:   cache_ptr,
         }
     }
@@ -86,7 +88,12 @@ impl TableCache {
             "TableCache::env_handle: cloning Env handle for dbname='{}'",
             self.dbname
         );
-        self.env.clone()
+        self.env.target()
+    }
+
+    #[inline]
+    pub(crate) fn env_mut(&mut self) -> &mut dyn Env {
+        &mut self.env
     }
 
     #[inline]
@@ -102,6 +109,13 @@ impl TableCache {
     #[inline]
     pub fn options_ref(&self) -> &Options {
         &*self.options
+    }
+
+    /// Cached tables need no independent environment ownership. The cache is
+    /// destroyed in Drop before either environment-owning field is dropped.
+    #[inline]
+    pub(crate) fn table_options_ref(&self) -> &Options {
+        &self.table_options
     }
 }
 

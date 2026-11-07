@@ -1,0 +1,2028 @@
+{
+  "base": "a8beeac26124749a69d0ad6f7a999891f8be73f1",
+  "compaction_algorithm_changed": false,
+  "file_hashes": {
+    "bitcoinleveldb-dbimpl/src/make_room_for_write.rs": "9772dc4b58a9089072bba0b6f4488b3f1f2dd91128b991f8ba9a9e40a1f0ce47",
+    "bitcoinleveldb-tablecache/src/build_table.rs": "15ffa9102de62d2baa5a330fb3798de723743dc5da976fc75b0841807f7e52ca",
+    "bitcoinleveldb-tablecache/src/table_cache_find_table.rs": "eb99da595fe9a1e4c05b6c8821a2b6d167279ba89b4fb797005c07a701ceeb8f",
+    "bitcoinleveldbt-sparsemerge/src/bitcoinleveldbt_sparsemerge.rs": "d4d7c0a7b514532faaaac82d3e51c59ea848e3def607a73889263bf1b43a6fdb",
+    "contrib/repair/bitcoinleveldb-sparsemerge-borrow002.py": "3309c858377db05201b3f431f55e6f1ff6f6d2a5e14d17ae21220464e9dd1e38",
+    "contrib/test/leveldb-sparsemerge-borrow.py": "38e6d648790bac4062fae3ed7f166fab0b517dd4224aeed9f667046d57e21fda",
+    "contrib/test/sparsemerge_borrow_resource_guard.py": "b823684a678ee02ea7390ebf31ab92c458ff3cd4eaa64d79908a12c420fbb9cc",
+    "doc/testing/leveldb-sparsemerge-borrow.md": "aa1297b79ec33d0335a393ea315bb03142aa05dd3eb1967eab0153c5cd7294fc"
+  },
+  "full_coverage_claimed": false,
+  "production_database_law_changed": true,
+  "unsafe_buffered_baseline": "not run; original source retained at base",
+  "verification": {
+    "artifact": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "0c6d230de0dbd87547e7f9e86f33e86b0940b7ccf978b606dcfa6ffe2aa75dcc",
+        "size": 60997840
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue178-diagnostic001/cargo-target/debug/deps/bitcoinleveldbt_sparsemerge-bc41809dbee003f8"
+    },
+    "build_command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--jobs",
+      "1",
+      "-p",
+      "bitcoinleveldbt-sparsemerge",
+      "--lib",
+      "--no-run",
+      "--message-format=json"
+    ],
+    "case_budgets": {
+      "diagnostic": {
+        "data": 134217728,
+        "entries": 4096,
+        "file": 16777216,
+        "high": 402653184,
+        "memory": 536870912,
+        "output": 1048576,
+        "seconds": 30,
+        "tasks": 64
+      },
+      "stress": {
+        "data": 536870912,
+        "entries": 4096,
+        "file": 268435456,
+        "high": 1610612736,
+        "memory": 2147483648,
+        "output": 1048576,
+        "seconds": 600,
+        "tasks": 64
+      }
+    },
+    "cases": {
+      "db_test_env_borrow_gate_rotation": {
+        "executed_name": "bitcoinleveldbt_sparsemerge::db_test_env_borrow_gate_rotation",
+        "exit_code": 0,
+        "failed": 0,
+        "failure_before_cutoff": false,
+        "guard_outcome": "exited",
+        "ignored": 0,
+        "last_phase": "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=fixture_drop_return done=64 total=64",
+        "last_progress": [
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=reopen_return done=64 total=64",
+          "",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=fixture_drop_enter done=64 total=64",
+          "DBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false",
+          "",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=fixture_drop_return done=64 total=64",
+          "SPARSEMERGE_CONTRACT_OK case=db_test_env_borrow_gate_rotation",
+          "ok",
+          "",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.78s",
+          "",
+          "          Finished with result: success",
+          "Main processes terminated with: code=exited, status=0/SUCCESS",
+          "               Service runtime: 1.005s",
+          "             CPU time consumed: 251ms",
+          "                   Memory peak: 11.5M (swap: 0B)"
+        ],
+        "marker": "SPARSEMERGE_CONTRACT_OK case=db_test_env_borrow_gate_rotation",
+        "native_case_completed": true,
+        "outcome": "passed",
+        "overlap_readouts": [],
+        "panic_evidence": [],
+        "passed": 1,
+        "profile": "diagnostic",
+        "progress": [
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=fixture_create_enter done=0 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=fixture_create_return done=0 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_enter done=0 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_return done=8 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_enter done=8 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_return done=16 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_enter done=16 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_return done=24 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_enter done=24 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_return done=32 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_enter done=32 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_return done=40 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_enter done=40 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_return done=48 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_enter done=48 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_return done=56 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_enter done=56 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=flush_return done=64 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=reopen_enter done=64 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=reopen_return done=64 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=fixture_drop_enter done=64 total=64",
+          "SPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=fixture_drop_return done=64 total=64"
+        ],
+        "target": "bitcoinleveldbt_sparsemerge",
+        "termination_reason": "exited",
+        "test_summary": {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 1,
+          "state": "ok"
+        }
+      },
+      "db_test_sparse_merge": {
+        "executed_name": "bitcoinleveldbt_sparsemerge::db_test_sparse_merge",
+        "exit_code": 0,
+        "failed": 0,
+        "failure_before_cutoff": false,
+        "guard_outcome": "exited",
+        "ignored": 0,
+        "last_phase": "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fixture_drop_return done=100000 total=100000",
+        "last_progress": [
+          "SPARSEMERGE_OVERLAP stage=compact_l1 bytes=0 limit=20971520",
+          "",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fixture_drop_enter done=100000 total=100000",
+          "DBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false",
+          "",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fixture_drop_return done=100000 total=100000",
+          "SPARSEMERGE_CONTRACT_OK case=db_test_sparse_merge",
+          "ok",
+          "",
+          "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 4.76s",
+          "",
+          "          Finished with result: success",
+          "Main processes terminated with: code=exited, status=0/SUCCESS",
+          "               Service runtime: 4.934s",
+          "             CPU time consumed: 4.126s",
+          "                   Memory peak: 214.3M (swap: 0B)"
+        ],
+        "marker": "SPARSEMERGE_CONTRACT_OK case=db_test_sparse_merge",
+        "native_case_completed": true,
+        "outcome": "passed",
+        "overlap_readouts": [
+          {
+            "bytes": 2118411,
+            "limit_bytes": 20971520,
+            "satisfies_original_assertion": true,
+            "stage": "sparse_flush"
+          },
+          {
+            "bytes": 2118364,
+            "limit_bytes": 20971520,
+            "satisfies_original_assertion": true,
+            "stage": "compact_l0"
+          },
+          {
+            "bytes": 0,
+            "limit_bytes": 20971520,
+            "satisfies_original_assertion": true,
+            "stage": "compact_l1"
+          }
+        ],
+        "panic_evidence": [],
+        "passed": 1,
+        "profile": "stress",
+        "progress": [
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fixture_create_enter done=0 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fixture_create_return done=0 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=reopen_enter done=0 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=reopen_return done=0 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fill_levels_enter done=0 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fill_levels_return done=0 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=0 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=8192 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=16384 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=24576 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=32768 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=40960 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=49152 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=57344 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=65536 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=73728 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=81920 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=90112 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=98304 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=base_flush_enter done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=base_flush_return done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=base_compact_l0_enter done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=base_compact_l0_return done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_updates_enter done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_updates_return done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_flush_enter done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_flush_return done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_compact_l0_enter done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_compact_l0_return done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_compact_l1_enter done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_compact_l1_return done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fixture_drop_enter done=100000 total=100000",
+          "SPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fixture_drop_return done=100000 total=100000"
+        ],
+        "target": "bitcoinleveldbt_sparsemerge",
+        "termination_reason": "exited",
+        "test_summary": {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 1,
+          "state": "ok"
+        }
+      }
+    },
+    "cleared_git_selection_variables": [],
+    "controller_sha256": "b823684a678ee02ea7390ebf31ab92c458ff3cd4eaa64d79908a12c420fbb9cc",
+    "failure_before_cutoff": false,
+    "full_coverage_claimed": false,
+    "head": "a8beeac26124749a69d0ad6f7a999891f8be73f1",
+    "implementation_repair": "serialize Env access during memtable/log rotation, SST build, and table-cache open",
+    "inputs_after_sha256": "3d9d770742ece99ae746e0c9b2c02954b0dd74d2538b8f5e2165288b911ed19e",
+    "inputs_before_sha256": "3d9d770742ece99ae746e0c9b2c02954b0dd74d2538b8f5e2165288b911ed19e",
+    "inputs_preserved": true,
+    "logging_policy": {
+      "RUST_LOG": "off",
+      "progress": "explicit stderr records"
+    },
+    "original_case": "db_test_sparse_merge",
+    "original_case_completed": true,
+    "original_workload": {
+      "bulk_key_prefix": "B",
+      "fill_levels": [
+        "A",
+        "Z"
+      ],
+      "keys": 100000,
+      "overlap_limit_bytes": 20971520,
+      "scenario": "original sparse-merge fill, compact, overlap assertions",
+      "value_bytes": 1000
+    },
+    "outcome": "passed",
+    "overlap_readouts": [
+      {
+        "bytes": 2118411,
+        "limit_bytes": 20971520,
+        "satisfies_original_assertion": true,
+        "stage": "sparse_flush"
+      },
+      {
+        "bytes": 2118364,
+        "limit_bytes": 20971520,
+        "satisfies_original_assertion": true,
+        "stage": "compact_l0"
+      },
+      {
+        "bytes": 0,
+        "limit_bytes": 20971520,
+        "satisfies_original_assertion": true,
+        "stage": "compact_l1"
+      }
+    ],
+    "panic_evidence": [],
+    "passed": 2,
+    "phase": "complete",
+    "protected_test_list": [
+      "bitcoinleveldbt_sparsemerge::db_test_env_borrow_gate_rotation",
+      "bitcoinleveldbt_sparsemerge::db_test_sparse_merge"
+    ],
+    "readouts": {
+      "compile-tests": {
+        "budget": {
+          "file": 536870912,
+          "high": 3221225472,
+          "memory": 4294967296,
+          "output": 2097152,
+          "seconds": 600,
+          "tasks": 128
+        },
+        "cleanup": {
+          "reset": {
+            "exit_code": 1,
+            "stderr": "",
+            "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-compile-tests-8ea12646ad40.service: Unit bitcoin-rs-guard-compile-tests-8ea12646ad40.service not loaded.\n"
+          },
+          "stop": {
+            "exit_code": 5,
+            "stderr": "",
+            "stdout": "Failed to stop bitcoin-rs-guard-compile-tests-8ea12646ad40.service: Unit bitcoin-rs-guard-compile-tests-8ea12646ad40.service not loaded.\n"
+          }
+        },
+        "cwd": "/home/kleb/bitcoin-rs-sparsemerge-borrow-repair",
+        "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/compile-tests-8ea12646ad40/test-data",
+        "elapsed_seconds": 12.712049898999794,
+        "exit_code": 0,
+        "final_cgroup": {
+          "cpu.max": null,
+          "memory.current": null,
+          "memory.events": null,
+          "memory.high": null,
+          "memory.max": null,
+          "memory.oom.group": null,
+          "memory.peak": null,
+          "memory.swap.max": null,
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+          "pids.max": null
+        },
+        "kind": "build",
+        "label": "compile-tests",
+        "live_cgroup": [
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "662073344",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "775032832",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+            "pids.max": "128"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "634433536",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "775032832",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+            "pids.max": "128"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "679227392",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "775032832",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+            "pids.max": "128"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "690393088",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "775032832",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+            "pids.max": "128"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "691564544",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "775032832",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+            "pids.max": "128"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "608018432",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "788029440",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+            "pids.max": "128"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "700219392",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "788029440",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+            "pids.max": "128"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "671559680",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "788029440",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+            "pids.max": "128"
+          }
+        ],
+        "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/compile-tests-8ea12646ad40/output.log",
+        "outcome": "exited",
+        "output_bytes": 526093,
+        "postmortem": {
+          "ActiveState": "inactive",
+          "CPUQuotaPerSecUSec": "infinity",
+          "CPUUsageNSec": "[not set]",
+          "ControlGroup": "",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "not-found",
+          "MemoryHigh": "infinity",
+          "MemoryMax": "infinity",
+          "MemoryPeak": "[not set]",
+          "MemorySwapMax": "infinity",
+          "OOMPolicy": "",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "infinity",
+          "SendSIGKILL": "yes",
+          "SubState": "dead",
+          "TasksMax": "38331",
+          "TimeoutStopUSec": "1min 30s",
+          "Type": ""
+        },
+        "probe": {
+          "kernel": {
+            "cpu.max": "100000 100000",
+            "headroom": {
+              "ancestors": [
+                {
+                  "current": 8180555776,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+                },
+                {
+                  "current": 8267522048,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+                },
+                {
+                  "current": 28476526592,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+                },
+                {
+                  "current": 28476542976,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice"
+                },
+                {
+                  "current": null,
+                  "maximum": null,
+                  "path": "/sys/fs/cgroup"
+                }
+              ],
+              "mem_available_bytes": 17053020160,
+              "required_bytes": 4563402752
+            },
+            "memory.current": "12070912",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "12070912",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+            "pids.max": "128",
+            "rlimit_core": [
+              0,
+              0
+            ],
+            "rlimit_fsize": [
+              536870912,
+              536870912
+            ]
+          },
+          "ok": true,
+          "pid": 67009
+        },
+        "tail": "arsemerge-borrow-repair/bitcoinleveldbt-dbtest/Cargo.toml\",\"target\":{\"kind\":[\"lib\"],\"crate_types\":[\"lib\"],\"name\":\"bitcoinleveldbt_dbtest\",\"src_path\":\"/home/kleb/bitcoin-rs-sparsemerge-borrow-repair/bitcoinleveldbt-dbtest/src/lib.rs\",\"edition\":\"2024\",\"doc\":true,\"doctest\":true,\"test\":true},\"profile\":{\"opt_level\":\"3\",\"debuginfo\":2,\"debug_assertions\":true,\"overflow_checks\":true,\"test\":false},\"features\":[],\"filenames\":[\"/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue178-diagnostic001/cargo-target/debug/deps/libbitcoinleveldbt_dbtest-70ee2b1e7f3d2939.rlib\",\"/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue178-diagnostic001/cargo-target/debug/deps/libbitcoinleveldbt_dbtest-70ee2b1e7f3d2939.rmeta\"],\"executable\":null,\"fresh\":false}\n   Compiling bitcoinleveldbt-sparsemerge v0.1.0 (/home/kleb/bitcoin-rs-sparsemerge-borrow-repair/bitcoinleveldbt-sparsemerge)\n{\"reason\":\"compiler-artifact\",\"package_id\":\"path+file:///home/kleb/bitcoin-rs-sparsemerge-borrow-repair/bitcoinleveldbt-sparsemerge#0.1.0\",\"manifest_path\":\"/home/kleb/bitcoin-rs-sparsemerge-borrow-repair/bitcoinleveldbt-sparsemerge/Cargo.toml\",\"target\":{\"kind\":[\"lib\"],\"crate_types\":[\"lib\"],\"name\":\"bitcoinleveldbt_sparsemerge\",\"src_path\":\"/home/kleb/bitcoin-rs-sparsemerge-borrow-repair/bitcoinleveldbt-sparsemerge/src/lib.rs\",\"edition\":\"2024\",\"doc\":true,\"doctest\":true,\"test\":true},\"profile\":{\"opt_level\":\"3\",\"debuginfo\":2,\"debug_assertions\":true,\"overflow_checks\":true,\"test\":true},\"features\":[],\"filenames\":[\"/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue178-diagnostic001/cargo-target/debug/deps/bitcoinleveldbt_sparsemerge-bc41809dbee003f8\"],\"executable\":\"/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue178-diagnostic001/cargo-target/debug/deps/bitcoinleveldbt_sparsemerge-bc41809dbee003f8\",\"fresh\":false}\n{\"reason\":\"build-finished\",\"success\":true}\n    Finished `test` profile [optimized + debuginfo] target(s) in 10.61s\nwarning: the following packages contain code that will be rejected by a future version of Rust: proc-macro-error2 v2.0.1\nnote: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 12.690s\n             CPU time consumed: 11.928s\n                   Memory peak: 751.5M (swap: 0B)\n",
+        "unit": "bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+        "verified": true,
+        "verified_properties": {
+          "ActiveState": "active",
+          "CPUQuotaPerSecUSec": "1s",
+          "CPUUsageNSec": "88100000",
+          "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-compile-tests-8ea12646ad40.service",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "loaded",
+          "MemoryHigh": "3221225472",
+          "MemoryMax": "4294967296",
+          "MemoryPeak": "12070912",
+          "MemorySwapMax": "0",
+          "OOMPolicy": "kill",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "10min",
+          "SendSIGKILL": "yes",
+          "SubState": "running",
+          "TasksMax": "128",
+          "TimeoutStopUSec": "3s",
+          "Type": "exec"
+        }
+      },
+      "db_test_env_borrow_gate_rotation": {
+        "budget": {
+          "data": 134217728,
+          "entries": 4096,
+          "file": 16777216,
+          "high": 402653184,
+          "memory": 536870912,
+          "output": 1048576,
+          "seconds": 30,
+          "tasks": 64
+        },
+        "cleanup": {
+          "reset": {
+            "exit_code": 1,
+            "stderr": "",
+            "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service: Unit bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service not loaded.\n"
+          },
+          "stop": {
+            "exit_code": 5,
+            "stderr": "",
+            "stdout": "Failed to stop bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service: Unit bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service not loaded.\n"
+          }
+        },
+        "cwd": "/home/kleb/bitcoin-rs-sparsemerge-borrow-repair",
+        "data_bytes": 0,
+        "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/case-data-db_test_env_borrow_gate_rotation",
+        "data_entries": 0,
+        "elapsed_seconds": 1.0231150440004058,
+        "exit_code": 0,
+        "final_cgroup": {
+          "cpu.max": null,
+          "memory.current": null,
+          "memory.events": null,
+          "memory.high": null,
+          "memory.max": null,
+          "memory.oom.group": null,
+          "memory.peak": null,
+          "memory.swap.max": null,
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service",
+          "pids.max": null
+        },
+        "kind": "case",
+        "label": "db_test_env_borrow_gate_rotation",
+        "live_cgroup": [
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "11456512",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "402653184",
+            "memory.max": "536870912",
+            "memory.oom.group": "1",
+            "memory.peak": "12070912",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service",
+            "pids.max": "64"
+          },
+          {
+            "cpu.max": null,
+            "memory.current": null,
+            "memory.events": null,
+            "memory.high": null,
+            "memory.max": null,
+            "memory.oom.group": null,
+            "memory.peak": null,
+            "memory.swap.max": null,
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service",
+            "pids.max": null
+          }
+        ],
+        "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/db_test_env_borrow_gate_rotation-86a349f30738/output.log",
+        "outcome": "exited",
+        "output_bytes": 6035,
+        "postmortem": {
+          "ActiveState": "inactive",
+          "CPUQuotaPerSecUSec": "infinity",
+          "CPUUsageNSec": "[not set]",
+          "ControlGroup": "",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "not-found",
+          "MemoryHigh": "infinity",
+          "MemoryMax": "infinity",
+          "MemoryPeak": "[not set]",
+          "MemorySwapMax": "infinity",
+          "OOMPolicy": "",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "infinity",
+          "SendSIGKILL": "yes",
+          "SubState": "dead",
+          "TasksMax": "38331",
+          "TimeoutStopUSec": "1min 30s",
+          "Type": ""
+        },
+        "probe": {
+          "kernel": {
+            "cpu.max": "100000 100000",
+            "headroom": {
+              "ancestors": [
+                {
+                  "current": 8074559488,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+                },
+                {
+                  "current": 8161189888,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+                },
+                {
+                  "current": 28390711296,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+                },
+                {
+                  "current": 28390727680,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice"
+                },
+                {
+                  "current": null,
+                  "maximum": null,
+                  "path": "/sys/fs/cgroup"
+                }
+              ],
+              "mem_available_bytes": 16675438592,
+              "required_bytes": 805306368
+            },
+            "memory.current": "12070912",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "402653184",
+            "memory.max": "536870912",
+            "memory.oom.group": "1",
+            "memory.peak": "12070912",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service",
+            "pids.max": "64",
+            "rlimit_core": [
+              0,
+              0
+            ],
+            "rlimit_fsize": [
+              16777216,
+              16777216
+            ]
+          },
+          "ok": true,
+          "pid": 67560
+        },
+        "tail": "ESS case=db_test_env_borrow_gate_rotation phase=reopen_enter done=64 total=64\nDBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false\n[dbimpl-recover-log-live] event=dbimpl_recover_log_file_entry dbname='/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/case-data-db_test_env_borrow_gate_rotation/db_test.67562.0' log_number=147 last_log=true save_manifest_ptr=126039193803239 edit_ptr=126039193803456 max_sequence_ptr=126039193802832 reuse_logs_enabled=false paranoid_checks=false write_buffer_size=4194304\n[dbimpl-recover-log-live] event=dbimpl_recover_log_file_exit dbname='/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/case-data-db_test_env_borrow_gate_rotation/db_test.67562.0' log_number=147 file='/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/case-data-db_test_env_borrow_gate_rotation/db_test.67562.0/000147.log' status_ok=true status='OK' elapsed_ms=0 records_seen=0 short_records=0 batches_inserted=0 bytes_replayed=0 max_record_len=0 max_batch_count=0 last_batch_sequence_start=0 last_batch_sequence_end=0 compactions=0 memtable_allocations=0 reuse_attempted=false reused_existing_log=false reused_mem_from_recovery=false created_empty_mem_for_reuse=false file_size_status='not_attempted' append_status='not_attempted' append_output_null=false lfile_size=0 tail_mem_flushed_to_l0=false save_manifest_value=true max_sequence_value=0\nDBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false\n\nSPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=reopen_return done=64 total=64\n\nSPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=fixture_drop_enter done=64 total=64\nDBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false\n\nSPARSEMERGE_PROGRESS case=db_test_env_borrow_gate_rotation phase=fixture_drop_return done=64 total=64\nSPARSEMERGE_CONTRACT_OK case=db_test_env_borrow_gate_rotation\nok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.78s\n\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 1.005s\n             CPU time consumed: 251ms\n                   Memory peak: 11.5M (swap: 0B)\n",
+        "unit": "bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service",
+        "verified": true,
+        "verified_properties": {
+          "ActiveState": "active",
+          "CPUQuotaPerSecUSec": "1s",
+          "CPUUsageNSec": "66455000",
+          "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_env_borrow_gate_rotation-86a349f30738.service",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "loaded",
+          "MemoryHigh": "402653184",
+          "MemoryMax": "536870912",
+          "MemoryPeak": "12070912",
+          "MemorySwapMax": "0",
+          "OOMPolicy": "kill",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "30s",
+          "SendSIGKILL": "yes",
+          "SubState": "running",
+          "TasksMax": "64",
+          "TimeoutStopUSec": "3s",
+          "Type": "exec"
+        }
+      },
+      "db_test_sparse_merge": {
+        "budget": {
+          "data": 536870912,
+          "entries": 4096,
+          "file": 268435456,
+          "high": 1610612736,
+          "memory": 2147483648,
+          "output": 1048576,
+          "seconds": 600,
+          "tasks": 64
+        },
+        "cleanup": {
+          "reset": {
+            "exit_code": 1,
+            "stderr": "",
+            "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service: Unit bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service not loaded.\n"
+          },
+          "stop": {
+            "exit_code": 5,
+            "stderr": "",
+            "stdout": "Failed to stop bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service: Unit bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service not loaded.\n"
+          }
+        },
+        "cwd": "/home/kleb/bitcoin-rs-sparsemerge-borrow-repair",
+        "data_bytes": 205185211,
+        "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/case-data-db_test_sparse_merge",
+        "data_entries": 107,
+        "elapsed_seconds": 4.957114941000327,
+        "exit_code": 0,
+        "final_cgroup": {
+          "cpu.max": null,
+          "memory.current": null,
+          "memory.events": null,
+          "memory.high": null,
+          "memory.max": null,
+          "memory.oom.group": null,
+          "memory.peak": null,
+          "memory.swap.max": null,
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+          "pids.max": null
+        },
+        "kind": "case",
+        "label": "db_test_sparse_merge",
+        "live_cgroup": [
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "37122048",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "1610612736",
+            "memory.max": "2147483648",
+            "memory.oom.group": "1",
+            "memory.peak": "37122048",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+            "pids.max": "64"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "73994240",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "1610612736",
+            "memory.max": "2147483648",
+            "memory.oom.group": "1",
+            "memory.peak": "77111296",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+            "pids.max": "64"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "99835904",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "1610612736",
+            "memory.max": "2147483648",
+            "memory.oom.group": "1",
+            "memory.peak": "99835904",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+            "pids.max": "64"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "125169664",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "1610612736",
+            "memory.max": "2147483648",
+            "memory.oom.group": "1",
+            "memory.peak": "125169664",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+            "pids.max": "64"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "122433536",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "1610612736",
+            "memory.max": "2147483648",
+            "memory.oom.group": "1",
+            "memory.peak": "128290816",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+            "pids.max": "64"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "120721408",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "1610612736",
+            "memory.max": "2147483648",
+            "memory.oom.group": "1",
+            "memory.peak": "137523200",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+            "pids.max": "64"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "131276800",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "1610612736",
+            "memory.max": "2147483648",
+            "memory.oom.group": "1",
+            "memory.peak": "137523200",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+            "pids.max": "64"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "179662848",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "1610612736",
+            "memory.max": "2147483648",
+            "memory.oom.group": "1",
+            "memory.peak": "179662848",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+            "pids.max": "64"
+          }
+        ],
+        "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/db_test_sparse_merge-41e05d54e93b/output.log",
+        "outcome": "exited",
+        "output_bytes": 5641,
+        "postmortem": {
+          "ActiveState": "inactive",
+          "CPUQuotaPerSecUSec": "infinity",
+          "CPUUsageNSec": "[not set]",
+          "ControlGroup": "",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "not-found",
+          "MemoryHigh": "infinity",
+          "MemoryMax": "infinity",
+          "MemoryPeak": "[not set]",
+          "MemorySwapMax": "infinity",
+          "OOMPolicy": "",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "infinity",
+          "SendSIGKILL": "yes",
+          "SubState": "dead",
+          "TasksMax": "38331",
+          "TimeoutStopUSec": "1min 30s",
+          "Type": ""
+        },
+        "probe": {
+          "kernel": {
+            "cpu.max": "100000 100000",
+            "headroom": {
+              "ancestors": [
+                {
+                  "current": 8074928128,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+                },
+                {
+                  "current": 8161255424,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+                },
+                {
+                  "current": 28392243200,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+                },
+                {
+                  "current": 28392259584,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice"
+                },
+                {
+                  "current": null,
+                  "maximum": null,
+                  "path": "/sys/fs/cgroup"
+                }
+              ],
+              "mem_available_bytes": 16707960832,
+              "required_bytes": 2415919104
+            },
+            "memory.current": "12070912",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "1610612736",
+            "memory.max": "2147483648",
+            "memory.oom.group": "1",
+            "memory.peak": "12226560",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+            "pids.max": "64",
+            "rlimit_core": [
+              0,
+              0
+            ],
+            "rlimit_fsize": [
+              268435456,
+              268435456
+            ]
+          },
+          "ok": true,
+          "pid": 67657
+        },
+        "tail": "\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=81920 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=90112 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=98304 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=bulk_put done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=base_flush_enter done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=base_flush_return done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=base_compact_l0_enter done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=base_compact_l0_return done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_updates_enter done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_updates_return done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_flush_enter done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_flush_return done=100000 total=100000\nSPARSEMERGE_OVERLAP stage=sparse_flush bytes=2118411 limit=20971520\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_compact_l0_enter done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_compact_l0_return done=100000 total=100000\nSPARSEMERGE_OVERLAP stage=compact_l0 bytes=2118364 limit=20971520\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_compact_l1_enter done=100000 total=100000\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=sparse_compact_l1_return done=100000 total=100000\nSPARSEMERGE_OVERLAP stage=compact_l1 bytes=0 limit=20971520\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fixture_drop_enter done=100000 total=100000\nDBImpl::drop enter: scheduled=false bg_error_ok=true shutting_down=false\n\nSPARSEMERGE_PROGRESS case=db_test_sparse_merge phase=fixture_drop_return done=100000 total=100000\nSPARSEMERGE_CONTRACT_OK case=db_test_sparse_merge\nok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 4.76s\n\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 4.934s\n             CPU time consumed: 4.126s\n                   Memory peak: 214.3M (swap: 0B)\n",
+        "unit": "bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+        "verified": true,
+        "verified_properties": {
+          "ActiveState": "active",
+          "CPUQuotaPerSecUSec": "1s",
+          "CPUUsageNSec": "66508000",
+          "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-db_test_sparse_merge-41e05d54e93b.service",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "loaded",
+          "MemoryHigh": "1610612736",
+          "MemoryMax": "2147483648",
+          "MemoryPeak": "12226560",
+          "MemorySwapMax": "0",
+          "OOMPolicy": "kill",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "10min",
+          "SendSIGKILL": "yes",
+          "SubState": "running",
+          "TasksMax": "64",
+          "TimeoutStopUSec": "3s",
+          "Type": "exec"
+        }
+      },
+      "inputs-after": {
+        "budget": {
+          "file": 16777216,
+          "high": 100663296,
+          "memory": 134217728,
+          "output": 1048576,
+          "seconds": 10,
+          "tasks": 32
+        },
+        "cleanup": {
+          "reset": {
+            "exit_code": 1,
+            "stderr": "",
+            "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-inputs-after-c8e142e7593a.service: Unit bitcoin-rs-guard-inputs-after-c8e142e7593a.service not loaded.\n"
+          },
+          "stop": {
+            "exit_code": 5,
+            "stderr": "",
+            "stdout": "Failed to stop bitcoin-rs-guard-inputs-after-c8e142e7593a.service: Unit bitcoin-rs-guard-inputs-after-c8e142e7593a.service not loaded.\n"
+          }
+        },
+        "cwd": "/home/kleb/bitcoin-rs-sparsemerge-borrow-repair",
+        "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/inputs-after-c8e142e7593a/test-data",
+        "elapsed_seconds": 1.2755700530005925,
+        "exit_code": 0,
+        "final_cgroup": {
+          "cpu.max": null,
+          "memory.current": null,
+          "memory.events": null,
+          "memory.high": null,
+          "memory.max": null,
+          "memory.oom.group": null,
+          "memory.peak": null,
+          "memory.swap.max": null,
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-inputs-after-c8e142e7593a.service",
+          "pids.max": null
+        },
+        "kind": "probe",
+        "label": "inputs-after",
+        "live_cgroup": [
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "12578816",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "100663296",
+            "memory.max": "134217728",
+            "memory.oom.group": "1",
+            "memory.peak": "12578816",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-inputs-after-c8e142e7593a.service",
+            "pids.max": "32"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "15159296",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "100663296",
+            "memory.max": "134217728",
+            "memory.oom.group": "1",
+            "memory.peak": "15523840",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-inputs-after-c8e142e7593a.service",
+            "pids.max": "32"
+          }
+        ],
+        "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/inputs-after-c8e142e7593a/output.log",
+        "outcome": "exited",
+        "output_bytes": 407,
+        "postmortem": {
+          "ActiveState": "inactive",
+          "CPUQuotaPerSecUSec": "infinity",
+          "CPUUsageNSec": "[not set]",
+          "ControlGroup": "",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "not-found",
+          "MemoryHigh": "infinity",
+          "MemoryMax": "infinity",
+          "MemoryPeak": "[not set]",
+          "MemorySwapMax": "infinity",
+          "OOMPolicy": "",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "infinity",
+          "SendSIGKILL": "yes",
+          "SubState": "dead",
+          "TasksMax": "38331",
+          "TimeoutStopUSec": "1min 30s",
+          "Type": ""
+        },
+        "probe": {
+          "kernel": {
+            "cpu.max": "100000 100000",
+            "headroom": {
+              "ancestors": [
+                {
+                  "current": 8074878976,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+                },
+                {
+                  "current": 8161734656,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+                },
+                {
+                  "current": 28384346112,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+                },
+                {
+                  "current": 28384362496,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice"
+                },
+                {
+                  "current": null,
+                  "maximum": null,
+                  "path": "/sys/fs/cgroup"
+                }
+              ],
+              "mem_available_bytes": 16866066432,
+              "required_bytes": 402653184
+            },
+            "memory.current": "12046336",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "100663296",
+            "memory.max": "134217728",
+            "memory.oom.group": "1",
+            "memory.peak": "12087296",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-inputs-after-c8e142e7593a.service",
+            "pids.max": "32",
+            "rlimit_core": [
+              0,
+              0
+            ],
+            "rlimit_fsize": [
+              16777216,
+              16777216
+            ]
+          },
+          "ok": true,
+          "pid": 67761
+        },
+        "tail": "D-Bus property CPUAccounting is deprecated, ignoring assignment: CPUAccounting=yes\nRunning as unit: bitcoin-rs-guard-inputs-after-c8e142e7593a.service\nSPARSEMERGE_INPUTS_RECORDED\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 1.246s\n             CPU time consumed: 731ms\n                   Memory peak: 14.8M (swap: 0B)\n",
+        "unit": "bitcoin-rs-guard-inputs-after-c8e142e7593a.service",
+        "verified": true,
+        "verified_properties": {
+          "ActiveState": "active",
+          "CPUQuotaPerSecUSec": "1s",
+          "CPUUsageNSec": "65740000",
+          "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-inputs-after-c8e142e7593a.service",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "loaded",
+          "MemoryHigh": "100663296",
+          "MemoryMax": "134217728",
+          "MemoryPeak": "12087296",
+          "MemorySwapMax": "0",
+          "OOMPolicy": "kill",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "10s",
+          "SendSIGKILL": "yes",
+          "SubState": "running",
+          "TasksMax": "32",
+          "TimeoutStopUSec": "3s",
+          "Type": "exec"
+        }
+      },
+      "inputs-before": {
+        "budget": {
+          "file": 16777216,
+          "high": 100663296,
+          "memory": 134217728,
+          "output": 1048576,
+          "seconds": 10,
+          "tasks": 32
+        },
+        "cleanup": {
+          "reset": {
+            "exit_code": 1,
+            "stderr": "",
+            "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-inputs-before-fc725415027f.service: Unit bitcoin-rs-guard-inputs-before-fc725415027f.service not loaded.\n"
+          },
+          "stop": {
+            "exit_code": 5,
+            "stderr": "",
+            "stdout": "Failed to stop bitcoin-rs-guard-inputs-before-fc725415027f.service: Unit bitcoin-rs-guard-inputs-before-fc725415027f.service not loaded.\n"
+          }
+        },
+        "cwd": "/home/kleb/bitcoin-rs-sparsemerge-borrow-repair",
+        "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/inputs-before-fc725415027f/test-data",
+        "elapsed_seconds": 0.7804454659999465,
+        "exit_code": 0,
+        "final_cgroup": {
+          "cpu.max": null,
+          "memory.current": null,
+          "memory.events": null,
+          "memory.high": null,
+          "memory.max": null,
+          "memory.oom.group": null,
+          "memory.peak": null,
+          "memory.swap.max": null,
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-inputs-before-fc725415027f.service",
+          "pids.max": null
+        },
+        "kind": "probe",
+        "label": "inputs-before",
+        "live_cgroup": [
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "12550144",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "100663296",
+            "memory.max": "134217728",
+            "memory.oom.group": "1",
+            "memory.peak": "12554240",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-inputs-before-fc725415027f.service",
+            "pids.max": "32"
+          }
+        ],
+        "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/inputs-before-fc725415027f/output.log",
+        "outcome": "exited",
+        "output_bytes": 407,
+        "postmortem": {
+          "ActiveState": "inactive",
+          "CPUQuotaPerSecUSec": "infinity",
+          "CPUUsageNSec": "[not set]",
+          "ControlGroup": "",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "not-found",
+          "MemoryHigh": "infinity",
+          "MemoryMax": "infinity",
+          "MemoryPeak": "[not set]",
+          "MemorySwapMax": "infinity",
+          "OOMPolicy": "",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "infinity",
+          "SendSIGKILL": "yes",
+          "SubState": "dead",
+          "TasksMax": "38331",
+          "TimeoutStopUSec": "1min 30s",
+          "Type": ""
+        },
+        "probe": {
+          "kernel": {
+            "cpu.max": "100000 100000",
+            "headroom": {
+              "ancestors": [
+                {
+                  "current": 8179920896,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+                },
+                {
+                  "current": 8266268672,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+                },
+                {
+                  "current": 28471324672,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+                },
+                {
+                  "current": 28471341056,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice"
+                },
+                {
+                  "current": null,
+                  "maximum": null,
+                  "path": "/sys/fs/cgroup"
+                }
+              ],
+              "mem_available_bytes": 17072705536,
+              "required_bytes": 402653184
+            },
+            "memory.current": "12345344",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "100663296",
+            "memory.max": "134217728",
+            "memory.oom.group": "1",
+            "memory.peak": "12345344",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-inputs-before-fc725415027f.service",
+            "pids.max": "32",
+            "rlimit_core": [
+              0,
+              0
+            ],
+            "rlimit_fsize": [
+              16777216,
+              16777216
+            ]
+          },
+          "ok": true,
+          "pid": 66783
+        },
+        "tail": "D-Bus property CPUAccounting is deprecated, ignoring assignment: CPUAccounting=yes\nRunning as unit: bitcoin-rs-guard-inputs-before-fc725415027f.service\nSPARSEMERGE_INPUTS_RECORDED\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 756ms\n             CPU time consumed: 672ms\n                   Memory peak: 14.4M (swap: 0B)\n",
+        "unit": "bitcoin-rs-guard-inputs-before-fc725415027f.service",
+        "verified": true,
+        "verified_properties": {
+          "ActiveState": "active",
+          "CPUQuotaPerSecUSec": "1s",
+          "CPUUsageNSec": "67963000",
+          "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-inputs-before-fc725415027f.service",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "loaded",
+          "MemoryHigh": "100663296",
+          "MemoryMax": "134217728",
+          "MemoryPeak": "12345344",
+          "MemorySwapMax": "0",
+          "OOMPolicy": "kill",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "10s",
+          "SendSIGKILL": "yes",
+          "SubState": "running",
+          "TasksMax": "32",
+          "TimeoutStopUSec": "3s",
+          "Type": "exec"
+        }
+      },
+      "list-sparsemerge": {
+        "budget": {
+          "data": 134217728,
+          "entries": 4096,
+          "file": 16777216,
+          "high": 402653184,
+          "memory": 536870912,
+          "output": 1048576,
+          "seconds": 30,
+          "tasks": 64
+        },
+        "cleanup": {
+          "reset": {
+            "exit_code": 1,
+            "stderr": "",
+            "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-list-sparsemerge-039e7ac06676.service: Unit bitcoin-rs-guard-list-sparsemerge-039e7ac06676.service not loaded.\n"
+          },
+          "stop": {
+            "exit_code": 5,
+            "stderr": "",
+            "stdout": "Failed to stop bitcoin-rs-guard-list-sparsemerge-039e7ac06676.service: Unit bitcoin-rs-guard-list-sparsemerge-039e7ac06676.service not loaded.\n"
+          }
+        },
+        "cwd": "/home/kleb/bitcoin-rs-sparsemerge-borrow-repair",
+        "data_bytes": 0,
+        "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/list-sparsemerge-039e7ac06676/test-data",
+        "data_entries": 0,
+        "elapsed_seconds": 0.2901742779995402,
+        "exit_code": 0,
+        "final_cgroup": {
+          "cpu.max": null,
+          "memory.current": null,
+          "memory.events": null,
+          "memory.high": null,
+          "memory.max": null,
+          "memory.oom.group": null,
+          "memory.peak": null,
+          "memory.swap.max": null,
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-sparsemerge-039e7ac06676.service",
+          "pids.max": null
+        },
+        "kind": "case",
+        "label": "list-sparsemerge",
+        "live_cgroup": [],
+        "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/list-sparsemerge-039e7ac06676/output.log",
+        "outcome": "exited",
+        "output_bytes": 529,
+        "postmortem": {
+          "ActiveState": "inactive",
+          "CPUQuotaPerSecUSec": "infinity",
+          "CPUUsageNSec": "[not set]",
+          "ControlGroup": "",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "not-found",
+          "MemoryHigh": "infinity",
+          "MemoryMax": "infinity",
+          "MemoryPeak": "[not set]",
+          "MemorySwapMax": "infinity",
+          "OOMPolicy": "",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "infinity",
+          "SendSIGKILL": "yes",
+          "SubState": "dead",
+          "TasksMax": "38331",
+          "TimeoutStopUSec": "1min 30s",
+          "Type": ""
+        },
+        "probe": {
+          "kernel": {
+            "cpu.max": "100000 100000",
+            "headroom": {
+              "ancestors": [
+                {
+                  "current": 8074559488,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+                },
+                {
+                  "current": 8160890880,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+                },
+                {
+                  "current": 28389089280,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+                },
+                {
+                  "current": 28389105664,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice"
+                },
+                {
+                  "current": null,
+                  "maximum": null,
+                  "path": "/sys/fs/cgroup"
+                }
+              ],
+              "mem_available_bytes": 16656556032,
+              "required_bytes": 805306368
+            },
+            "memory.current": "12079104",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "402653184",
+            "memory.max": "536870912",
+            "memory.oom.group": "1",
+            "memory.peak": "12079104",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-sparsemerge-039e7ac06676.service",
+            "pids.max": "64",
+            "rlimit_core": [
+              0,
+              0
+            ],
+            "rlimit_fsize": [
+              16777216,
+              16777216
+            ]
+          },
+          "ok": true,
+          "pid": 67465
+        },
+        "tail": "D-Bus property CPUAccounting is deprecated, ignoring assignment: CPUAccounting=yes\nRunning as unit: bitcoin-rs-guard-list-sparsemerge-039e7ac06676.service\nbitcoinleveldbt_sparsemerge::db_test_env_borrow_gate_rotation: test\nbitcoinleveldbt_sparsemerge::db_test_sparse_merge: test\n\n2 tests, 0 benchmarks\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 260ms\n             CPU time consumed: 115ms\n                   Memory peak: 11.7M (swap: 0B)\n",
+        "unit": "bitcoin-rs-guard-list-sparsemerge-039e7ac06676.service",
+        "verified": true,
+        "verified_properties": {
+          "ActiveState": "active",
+          "CPUQuotaPerSecUSec": "1s",
+          "CPUUsageNSec": "110941000",
+          "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-list-sparsemerge-039e7ac06676.service",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "loaded",
+          "MemoryHigh": "402653184",
+          "MemoryMax": "536870912",
+          "MemoryPeak": "12079104",
+          "MemorySwapMax": "0",
+          "OOMPolicy": "kill",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "30s",
+          "SendSIGKILL": "yes",
+          "SubState": "running",
+          "TasksMax": "64",
+          "TimeoutStopUSec": "3s",
+          "Type": "exec"
+        }
+      },
+      "native-tools": {
+        "budget": {
+          "file": 536870912,
+          "high": 3221225472,
+          "memory": 4294967296,
+          "output": 2097152,
+          "seconds": 600,
+          "tasks": 128
+        },
+        "cleanup": {
+          "reset": {
+            "exit_code": 1,
+            "stderr": "",
+            "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-native-tools-70c77a3538d9.service: Unit bitcoin-rs-guard-native-tools-70c77a3538d9.service not loaded.\n"
+          },
+          "stop": {
+            "exit_code": 5,
+            "stderr": "",
+            "stdout": "Failed to stop bitcoin-rs-guard-native-tools-70c77a3538d9.service: Unit bitcoin-rs-guard-native-tools-70c77a3538d9.service not loaded.\n"
+          }
+        },
+        "cwd": "/home/kleb/bitcoin-rs-sparsemerge-borrow-repair",
+        "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/native-tools-70c77a3538d9/test-data",
+        "elapsed_seconds": 1.9966691469999205,
+        "exit_code": 0,
+        "final_cgroup": {
+          "cpu.max": null,
+          "memory.current": null,
+          "memory.events": null,
+          "memory.high": null,
+          "memory.max": null,
+          "memory.oom.group": null,
+          "memory.peak": null,
+          "memory.swap.max": null,
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-70c77a3538d9.service",
+          "pids.max": null
+        },
+        "kind": "build",
+        "label": "native-tools",
+        "live_cgroup": [
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "29708288",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "29708288",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-70c77a3538d9.service",
+            "pids.max": "128"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "76210176",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "76210176",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-70c77a3538d9.service",
+            "pids.max": "128"
+          },
+          {
+            "cpu.max": "100000 100000",
+            "memory.current": "133898240",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "134160384",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-70c77a3538d9.service",
+            "pids.max": "128"
+          }
+        ],
+        "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/native-tools-70c77a3538d9/output.log",
+        "outcome": "exited",
+        "output_bytes": 686,
+        "postmortem": {
+          "ActiveState": "inactive",
+          "CPUQuotaPerSecUSec": "infinity",
+          "CPUUsageNSec": "[not set]",
+          "ControlGroup": "",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "not-found",
+          "MemoryHigh": "infinity",
+          "MemoryMax": "infinity",
+          "MemoryPeak": "[not set]",
+          "MemorySwapMax": "infinity",
+          "OOMPolicy": "",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "infinity",
+          "SendSIGKILL": "yes",
+          "SubState": "dead",
+          "TasksMax": "38331",
+          "TimeoutStopUSec": "1min 30s",
+          "Type": ""
+        },
+        "probe": {
+          "kernel": {
+            "cpu.max": "100000 100000",
+            "headroom": {
+              "ancestors": [
+                {
+                  "current": 8181080064,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+                },
+                {
+                  "current": 8268017664,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+                },
+                {
+                  "current": 28476960768,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+                },
+                {
+                  "current": 28476977152,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice"
+                },
+                {
+                  "current": null,
+                  "maximum": null,
+                  "path": "/sys/fs/cgroup"
+                }
+              ],
+              "mem_available_bytes": 17088761856,
+              "required_bytes": 4563402752
+            },
+            "memory.current": "12066816",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "3221225472",
+            "memory.max": "4294967296",
+            "memory.oom.group": "1",
+            "memory.peak": "12066816",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-70c77a3538d9.service",
+            "pids.max": "128",
+            "rlimit_core": [
+              0,
+              0
+            ],
+            "rlimit_fsize": [
+              536870912,
+              536870912
+            ]
+          },
+          "ok": true,
+          "pid": 66880
+        },
+        "tail": "D-Bus property CPUAccounting is deprecated, ignoring assignment: CPUAccounting=yes\nRunning as unit: bitcoin-rs-guard-native-tools-70c77a3538d9.service; invocation ID: f9e5f6931ec34317a94be1ffeaff3d15\nrustc 1.97.0-nightly (9eb3be26b 2026-05-18)\nbinary: rustc\ncommit-hash: 9eb3be26b46eccea1de7448ea9cc3c1d20bb1a35\ncommit-date: 2026-05-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.97.0-nightly\nLLVM version: 22.1.4\ncargo 1.97.0-nightly (4d1f98451 2026-05-15)\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 1.977s\n             CPU time consumed: 1.398s\n                   Memory peak: 154.4M (swap: 0B)\n",
+        "unit": "bitcoin-rs-guard-native-tools-70c77a3538d9.service",
+        "verified": true,
+        "verified_properties": {
+          "ActiveState": "active",
+          "CPUQuotaPerSecUSec": "1s",
+          "CPUUsageNSec": "97673000",
+          "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-native-tools-70c77a3538d9.service",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "loaded",
+          "MemoryHigh": "3221225472",
+          "MemoryMax": "4294967296",
+          "MemoryPeak": "12066816",
+          "MemorySwapMax": "0",
+          "OOMPolicy": "kill",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "10min",
+          "SendSIGKILL": "yes",
+          "SubState": "running",
+          "TasksMax": "128",
+          "TimeoutStopUSec": "3s",
+          "Type": "exec"
+        }
+      },
+      "preflight": {
+        "budget": {
+          "file": 16777216,
+          "high": 100663296,
+          "memory": 134217728,
+          "output": 1048576,
+          "seconds": 10,
+          "tasks": 32
+        },
+        "cleanup": {
+          "reset": {
+            "exit_code": 1,
+            "stderr": "",
+            "stdout": "Failed to reset failed state of unit bitcoin-rs-guard-preflight-b737e34665c8.service: Unit bitcoin-rs-guard-preflight-b737e34665c8.service not loaded.\n"
+          },
+          "stop": {
+            "exit_code": 5,
+            "stderr": "",
+            "stdout": "Failed to stop bitcoin-rs-guard-preflight-b737e34665c8.service: Unit bitcoin-rs-guard-preflight-b737e34665c8.service not loaded.\n"
+          }
+        },
+        "cwd": "/home/kleb/bitcoin-rs-sparsemerge-borrow-repair",
+        "data_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/preflight-b737e34665c8/test-data",
+        "elapsed_seconds": 0.16319549800027744,
+        "exit_code": 0,
+        "final_cgroup": {
+          "cpu.max": null,
+          "memory.current": null,
+          "memory.events": null,
+          "memory.high": null,
+          "memory.max": null,
+          "memory.oom.group": null,
+          "memory.peak": null,
+          "memory.swap.max": null,
+          "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-preflight-b737e34665c8.service",
+          "pids.max": null
+        },
+        "kind": "probe",
+        "label": "preflight",
+        "live_cgroup": [],
+        "log": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification/guard/preflight-b737e34665c8/output.log",
+        "outcome": "exited",
+        "output_bytes": 391,
+        "postmortem": {
+          "ActiveState": "inactive",
+          "CPUQuotaPerSecUSec": "infinity",
+          "CPUUsageNSec": "[not set]",
+          "ControlGroup": "",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "not-found",
+          "MemoryHigh": "infinity",
+          "MemoryMax": "infinity",
+          "MemoryPeak": "[not set]",
+          "MemorySwapMax": "infinity",
+          "OOMPolicy": "",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "infinity",
+          "SendSIGKILL": "yes",
+          "SubState": "dead",
+          "TasksMax": "38331",
+          "TimeoutStopUSec": "1min 30s",
+          "Type": ""
+        },
+        "probe": {
+          "kernel": {
+            "cpu.max": "100000 100000",
+            "headroom": {
+              "ancestors": [
+                {
+                  "current": 8180113408,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice"
+                },
+                {
+                  "current": 8267448320,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service"
+                },
+                {
+                  "current": 28475465728,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice/user-1000.slice"
+                },
+                {
+                  "current": 28475482112,
+                  "maximum": "max",
+                  "path": "/sys/fs/cgroup/user.slice"
+                },
+                {
+                  "current": null,
+                  "maximum": null,
+                  "path": "/sys/fs/cgroup"
+                }
+              ],
+              "mem_available_bytes": 17068933120,
+              "required_bytes": 402653184
+            },
+            "memory.current": "12328960",
+            "memory.events": {
+              "high": 0,
+              "low": 0,
+              "max": 0,
+              "oom": 0,
+              "oom_group_kill": 0,
+              "oom_kill": 0
+            },
+            "memory.high": "100663296",
+            "memory.max": "134217728",
+            "memory.oom.group": "1",
+            "memory.peak": "12361728",
+            "memory.swap.max": "0",
+            "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-preflight-b737e34665c8.service",
+            "pids.max": "32",
+            "rlimit_core": [
+              0,
+              0
+            ],
+            "rlimit_fsize": [
+              16777216,
+              16777216
+            ]
+          },
+          "ok": true,
+          "pid": 66691
+        },
+        "tail": "D-Bus property CPUAccounting is deprecated, ignoring assignment: CPUAccounting=yes\nRunning as unit: bitcoin-rs-guard-preflight-b737e34665c8.service\nGUARD_PREFLIGHT_OK\n          Finished with result: success\nMain processes terminated with: code=exited, status=0/SUCCESS\n               Service runtime: 140ms\n             CPU time consumed: 85ms\n                   Memory peak: 12M (swap: 0B)\n",
+        "unit": "bitcoin-rs-guard-preflight-b737e34665c8.service",
+        "verified": true,
+        "verified_properties": {
+          "ActiveState": "active",
+          "CPUQuotaPerSecUSec": "1s",
+          "CPUUsageNSec": "67102000",
+          "ControlGroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/bitcoin-rs-guard-preflight-b737e34665c8.service",
+          "ExecMainCode": "0",
+          "ExecMainStatus": "0",
+          "KillMode": "control-group",
+          "LoadState": "loaded",
+          "MemoryHigh": "100663296",
+          "MemoryMax": "134217728",
+          "MemoryPeak": "12361728",
+          "MemorySwapMax": "0",
+          "OOMPolicy": "kill",
+          "RemainAfterExit": "no",
+          "Restart": "no",
+          "Result": "success",
+          "RuntimeMaxUSec": "10s",
+          "SendSIGKILL": "yes",
+          "SubState": "running",
+          "TasksMax": "32",
+          "TimeoutStopUSec": "3s",
+          "Type": "exec"
+        }
+      }
+    },
+    "regression_case": "db_test_env_borrow_gate_rotation",
+    "regression_case_completed": true,
+    "regression_completed": true,
+    "repository": "/home/kleb/bitcoin-rs-sparsemerge-borrow-repair",
+    "run_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-borrow002/runs/20261106T194654Z-6d10b8f7/verification",
+    "selected_cases": [
+      "db_test_env_borrow_gate_rotation",
+      "db_test_sparse_merge"
+    ],
+    "selected_test_bindings": {
+      "db_test_env_borrow_gate_rotation": "bitcoinleveldbt_sparsemerge::db_test_env_borrow_gate_rotation",
+      "db_test_sparse_merge": "bitcoinleveldbt_sparsemerge::db_test_sparse_merge"
+    },
+    "shell_sha256": "8f316c4f007426302e26962e13def8c7d5bc0efa85d5e1549c55e85ba0d7c651",
+    "target_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue178-diagnostic001/cargo-target",
+    "termination_reason": "exited",
+    "test_count": 2,
+    "validation_reused": false,
+    "workflow": "leveldb-sparsemerge-borrow-check002",
+    "workspace_suite": "not run"
+  },
+  "workflow": "leveldb-sparsemerge-borrow002"
+}

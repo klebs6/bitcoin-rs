@@ -28,6 +28,21 @@ pub fn build_table(
     iter:        *mut LevelDBIterator,
     meta:        *mut FileMetaData,
 ) -> crate::Status {
+    let mut env = EnvWrapper::new(env);
+    build_table_with_env(dbname, &mut env, options, table_cache, iter, meta)
+}
+
+/// Build a table through an existing Env view without creating or releasing an
+/// Rc owner of the environment. The caller keeps the target alive and provides
+/// the Env view's synchronization for the duration of this call.
+pub fn build_table_with_env(
+    dbname:      &String,
+    env:         &mut dyn Env,
+    options:     &Options,
+    table_cache: *mut TableCache,
+    iter:        *mut LevelDBIterator,
+    meta:        *mut FileMetaData,
+) -> crate::Status {
     unsafe {
 
         assert!(
@@ -64,13 +79,11 @@ pub fn build_table(
             let mut file_box_ptr: *mut Box<dyn WritableFile> =
                 core::ptr::null_mut();
             {
-                let env_rc = env.clone();
-                let mut env_ref = env_rc.borrow_mut();
                 trace!(
                     "build_table: calling Env::new_writable_file for '{}'",
                     fname
                 );
-                status = env_ref.new_writable_file(&fname, &mut file_box_ptr);
+                status = env.new_writable_file(&fname, &mut file_box_ptr);
             }
 
             if status.is_ok() {
@@ -229,9 +242,7 @@ pub fn build_table(
                 fname
             );
 
-            let env_rc = env.clone();
-            let mut env_ref = env_rc.borrow_mut();
-            let delete_status = env_ref.delete_file(&fname);
+            let delete_status = env.delete_file(&fname);
             if !delete_status.is_ok() {
                 error!(
                     "build_table: failed to delete partial table file '{}' after error",
