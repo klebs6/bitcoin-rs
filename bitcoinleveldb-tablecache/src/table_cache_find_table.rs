@@ -54,8 +54,6 @@ impl TableCache {
                     table_file_name(self.dbname_str(), file_number);
 
                 {
-                    let env_rc = self.env_handle();
-                    let mut env_ref = EnvWrapper::new(env_rc);
                     let mut file_box_ptr: *mut Box<dyn RandomAccessFile> =
                         core::ptr::null_mut();
 
@@ -64,7 +62,7 @@ impl TableCache {
                         fname
                     );
 
-                    status = env_ref.new_random_access_file(
+                    status = self.env_mut().new_random_access_file(
                         &fname,
                         &mut file_box_ptr,
                     );
@@ -82,8 +80,6 @@ impl TableCache {
                     let old_fname =
                         sst_table_file_name(self.dbname_str(), file_number);
 
-                    let env_rc = self.env_handle();
-                    let mut env_ref = EnvWrapper::new(env_rc);
                     let mut file_box_ptr: *mut Box<dyn RandomAccessFile> =
                         core::ptr::null_mut();
 
@@ -93,7 +89,7 @@ impl TableCache {
                         old_fname
                     );
 
-                    let s2 = env_ref.new_random_access_file(
+                    let s2 = self.env_mut().new_random_access_file(
                         &old_fname,
                         &mut file_box_ptr,
                     );
@@ -127,7 +123,7 @@ impl TableCache {
                             Rc::new(RefCell::new(adapter));
 
                         let open_result = bitcoinleveldb_table::Table::open(
-                            self.options_ref(),
+                            self.table_options_ref(),
                             file_rc,
                             file_size,
                         );
@@ -226,6 +222,58 @@ mod table_cache_find_table_tests {
     use std::cell::RefCell;
     use std::ptr;
     use std::rc::Rc;
+
+    #[test]
+    fn cached_table_open_and_eviction_preserve_env_owner_count() {
+        let (env, _state) = make_in_memory_env();
+        let options = make_options_with_env(env.clone());
+        let dbname = String::from("cached_table_env_owner_count");
+        let owners_before_cache = Rc::strong_count(&env);
+        let mut table_cache = TableCache::new(&dbname, &options, 4);
+        let owners_with_cache = Rc::strong_count(&env);
+        assert_eq!(owners_with_cache, owners_before_cache + 2);
+        assert!(table_cache.options_ref().env().is_some());
+        assert!(table_cache.table_options_ref().env().is_none());
+
+        let mut meta = FileMetaData::default();
+        meta.set_number(71);
+        let source = make_iterator_from_kv_pairs(&[(b"key".to_vec(), b"value".to_vec())]);
+        let status = build_table(
+            &dbname,
+            env.clone(),
+            &options,
+            &mut table_cache,
+            source,
+            &mut meta,
+        );
+        unsafe { drop(Box::from_raw(source)); }
+        assert!(status.is_ok());
+        assert_eq!(Rc::strong_count(&env), owners_with_cache);
+
+        table_cache.evict(*meta.number());
+        assert_eq!(Rc::strong_count(&env), owners_with_cache);
+        let iterator = table_cache.new_iterator(
+            &ReadOptions::default(),
+            *meta.number(),
+            *meta.file_size(),
+            ptr::null_mut(),
+        );
+        assert!(!iterator.is_null());
+        assert_eq!(Rc::strong_count(&env), owners_with_cache);
+        unsafe {
+            (*iterator).seek_to_first();
+            assert!((*iterator).valid());
+            assert_eq!((*iterator).key().to_string(), "key");
+            assert_eq!((*iterator).value().to_string(), "value");
+            assert!((*iterator).status().is_ok());
+            drop(Box::from_raw(iterator));
+        }
+        assert_eq!(Rc::strong_count(&env), owners_with_cache);
+        table_cache.evict(*meta.number());
+        assert_eq!(Rc::strong_count(&env), owners_with_cache);
+        drop(table_cache);
+        assert_eq!(Rc::strong_count(&env), owners_before_cache);
+    }
 
     #[traced_test]
     fn find_table_returns_error_when_random_access_creation_fails() {

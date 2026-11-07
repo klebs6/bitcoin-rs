@@ -7,6 +7,18 @@ pub fn do_write_string_to_file(
     fname:       &String,
     should_sync: bool,
 ) -> Status {
+    let mut env = EnvWrapper::new(env);
+    do_write_string_to_file_with_env(&mut env, data, fname, should_sync)
+}
+
+/// Write through a caller-owned Env view without changing environment Rc
+/// ownership. The caller keeps the target alive and supplies its synchronization.
+pub fn do_write_string_to_file_with_env(
+    env:         &mut dyn Env,
+    data:        &Slice,
+    fname:       &String,
+    should_sync: bool,
+) -> Status {
     use std::ptr;
 
     trace!(
@@ -18,10 +30,7 @@ pub fn do_write_string_to_file(
 
     // C++: WritableFile* file; Status s = env->NewWritableFile(fname, &file);
     let mut file_ptr: *mut Box<dyn WritableFile> = ptr::null_mut();
-    let mut status = {
-        let mut env_ref = env.borrow_mut();
-        env_ref.new_writable_file(fname, &mut file_ptr)
-    };
+    let mut status = env.new_writable_file(fname, &mut file_ptr);
 
     if !status.is_ok() {
         debug!(
@@ -69,8 +78,7 @@ pub fn do_write_string_to_file(
             status_str = %status.to_string(),
             "do_write_string_to_file: error, deleting file"
         );
-        let mut env_ref = env.borrow_mut();
-        let _ = env_ref.delete_file(fname);
+        let _ = env.delete_file(fname);
     }
 
     debug!(

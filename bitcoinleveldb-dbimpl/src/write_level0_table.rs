@@ -11,16 +11,13 @@ impl DBImpl {
     ) -> crate::Status {
         self.mutex.assert_held();
 
-        let env_rc: Rc<RefCell<dyn Env>> = match self.options.env().as_ref() {
-            Some(e) => e.clone(),
-            None => {
-                tracing::error!("write_level_0table: Options.env is None");
-                return Status::invalid_argument(
-                    &Slice::from_str("env"),
-                    Some(&Slice::from_str("missing from Options")),
-                );
-            }
-        };
+        if self.options.env().is_none() {
+            tracing::error!("write_level_0table: Options.env is None");
+            return Status::invalid_argument(
+                &Slice::from_str("env"),
+                Some(&Slice::from_str("missing from Options")),
+            );
+        }
 
         let start_micros: u64 = self.env.as_mut().now_micros();
 
@@ -39,9 +36,12 @@ impl DBImpl {
             self.mutex.unlock();
         }
 
-        s = build_table(
+        // The DB-owned wrapper outlives this background operation. Borrow it
+        // rather than changing the shared Env Rc count while the DB mutex is
+        // released; individual Env calls retain the wrapper's access gate.
+        s = build_table_with_env(
             &self.dbname,
-            env_rc.clone(),
+            self.env.as_mut(),
             &self.options,
             self.table_cache as *mut TableCache,
             iter,

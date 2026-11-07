@@ -1,0 +1,243 @@
+{
+  "artifacts": {
+    "bitcoinleveldb_dbimpl": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "2aa31222b0a2a9a71817c0760d6cf21355031b76d03d162953c3d370c228822b",
+        "size": 102623992
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-ownership011/cargo-target/debug/deps/bitcoinleveldb_dbimpl-9b7a17dc47e8a6da"
+    },
+    "bitcoinleveldb_options": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "10497695d3e28cd702f9f470ae6f81e612df821a975b6959dd51c729a19cfd2b",
+        "size": 57279888
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-ownership011/cargo-target/debug/deps/bitcoinleveldb_options-9b404c1a9b345120"
+    },
+    "bitcoinleveldb_tablecache": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "84b101115f5f2a3d3ef9129fb39d8c92926019850fb767c176bb251d14674c28",
+        "size": 64625864
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-ownership011/cargo-target/debug/deps/bitcoinleveldb_tablecache-f3fee267febd9370"
+    },
+    "bitcoinleveldb_versionset": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "c836d9f1f9671e574c14c93bcb52bb0138f69de3e0d58941497771af9e7b22e9",
+        "size": 86152392
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-ownership011/cargo-target/debug/deps/bitcoinleveldb_versionset-00d40500da14b6c8"
+    },
+    "bitcoinleveldbt_sparsemerge": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "57750c5af48c7c17bd0f7baa31307d8e02b72bb8f4a1f37b9582dc9d617cc1b8",
+        "size": 63773448
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-ownership011/cargo-target/debug/deps/bitcoinleveldbt_sparsemerge-060f38b77b156fef"
+    }
+  },
+  "base": "e1736f59dc8e10b301cd4c0c3ea10302a9c46e1a",
+  "cases": [
+    {
+      "error": null,
+      "expected_name": "options::table_option_snapshot_contracts::table_snapshot_preserves_settings_without_env_owner",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_options"
+    },
+    {
+      "error": null,
+      "expected_name": "options::table_option_snapshot_contracts::ordinary_options_clone_keeps_env_ownership",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_options"
+    },
+    {
+      "error": null,
+      "expected_name": "table_cache_find_table::table_cache_find_table_tests::cached_table_open_and_eviction_preserve_env_owner_count",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_tablecache"
+    },
+    {
+      "error": null,
+      "expected_name": "build_table::build_table_behavior_tests::build_table_with_empty_iterator_produces_no_file",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_tablecache"
+    },
+    {
+      "error": null,
+      "expected_name": "build_table::build_table_behavior_tests::build_table_with_single_entry_builds_and_verifies_table",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_tablecache"
+    },
+    {
+      "error": null,
+      "expected_name": "build_table::build_table_behavior_tests::build_table_propagates_iterator_status_on_error",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_tablecache"
+    },
+    {
+      "error": null,
+      "expected_name": "write_level0_table::write_level0_table_interface_contract_suite::write_level_0table_returns_error_when_options_env_is_none",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_dbimpl"
+    },
+    {
+      "error": null,
+      "expected_name": "make_room_for_write::make_room_for_write_interface_contract_suite::make_room_for_write_returns_error_when_options_env_is_none_without_touching_memtable",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_dbimpl"
+    },
+    {
+      "error": null,
+      "expected_name": "version_set_log_and_apply::version_set_log_and_apply_exhaustive_test_suite::log_and_apply_persists_edit_so_recover_sees_it",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_versionset"
+    },
+    {
+      "error": null,
+      "expected_name": "version_set_log_and_apply::version_set_log_and_apply_exhaustive_test_suite::log_and_apply_multiple_edits_monotonically_increase_file_numbers",
+      "failed": 0,
+      "ignored": 0,
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldb_versionset"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_sparsemerge::db_test_env_borrow_gate_rotation",
+      "failed": 0,
+      "ignored": 0,
+      "marker": "SPARSEMERGE_CONTRACT_OK case=db_test_env_borrow_gate_rotation",
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldbt_sparsemerge"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_sparsemerge::db_test_sparse_merge",
+      "failed": 0,
+      "ignored": 0,
+      "marker": "SPARSEMERGE_CONTRACT_OK case=db_test_sparse_merge",
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 1,
+      "target": "bitcoinleveldbt_sparsemerge"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_sparsemerge::db_test_sparse_merge",
+      "failed": 0,
+      "ignored": 0,
+      "marker": "SPARSEMERGE_CONTRACT_OK case=db_test_sparse_merge",
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 2,
+      "target": "bitcoinleveldbt_sparsemerge"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_sparsemerge::db_test_sparse_merge",
+      "failed": 0,
+      "ignored": 0,
+      "marker": "SPARSEMERGE_CONTRACT_OK case=db_test_sparse_merge",
+      "outcome": "passed",
+      "passed": 1,
+      "repetition": 3,
+      "target": "bitcoinleveldbt_sparsemerge"
+    }
+  ],
+  "cause_established": false,
+  "debuggers_used": false,
+  "expected_test_count": 14,
+  "file_hashes": {
+    "bitcoinleveldb-dbimpl/src/make_room_for_write.rs": "87a2253217a7fbd061851b27ab8b36a6630cf6e66b517fe5363328687f370150",
+    "bitcoinleveldb-dbimpl/src/write_level0_table.rs": "4145c64477b41291f5590eb4d74b74e09500e7bcaf362c2d9def9d2df2f4b7b6",
+    "bitcoinleveldb-env/src/set_current_file.rs": "b9289f6b2547ce6382c72b6e5b7f20a6188394716c99bc2fb836d1733d7ed623",
+    "bitcoinleveldb-env/src/write_string_to_file_impl.rs": "123ba773e3f27ba314da9d542d05e6497a829abcfcffbd62573920c0d66923ac",
+    "bitcoinleveldb-options/src/options.rs": "cfc0f70481e91334bc4e6996ff9a9c98815410b1ab7409fb27ba776ef0b70649",
+    "bitcoinleveldb-tablecache/src/build_table.rs": "91d5a3a9aa73b8d354a64bb889b585cf932cd1ccd51b174fc673a2f209878d09",
+    "bitcoinleveldb-tablecache/src/table_cache.rs": "5776f2440d894cf0b18218d8b76f565087f66b54723cd243ec9c873a88f8b3f3",
+    "bitcoinleveldb-tablecache/src/table_cache_find_table.rs": "3a7b2b072dd7290f0b37563cb44d9eb50c9a5a39da2773e3342bf7b643f79af5",
+    "bitcoinleveldb-versionset/src/version_set.rs": "2fa6dd52d536e3ddfecd311daa00bd2a48ffc0f98cdd5e3eaffdaac83556d30e",
+    "bitcoinleveldb-versionset/src/version_set_log_and_apply.rs": "1c9c03b5aa08148c5ca2f202bcda4b58d9b3fc07b19d213f1e8e023a7775d75a",
+    "contrib/repair/bitcoinleveldb-sparsemerge-ownership011.py": "978011c0e6aaae1345a11e123e19688cefd94eb7cd2c5e43374ed24fcff1ef55",
+    "doc/testing/leveldb-sparsemerge-ownership011.md": "c913f1fd021523f509d0a6772aa7bae4c854f0cc4425686a853ff1b92b004038"
+  },
+  "full_coverage_claimed": false,
+  "master_at_validation": "3d099856f684b262201329722a9087fbc35ccc1d",
+  "ordinary_sparsemerge_repetitions": 3,
+  "passed": 14,
+  "qualification_scope": "Isolated candidate for audited internal Env ownership paths; public Rc Env API is not made universally thread-safe.",
+  "repair_qualified": true,
+  "retained_source_receipt": {
+    "canonical_sha256": "e2f0768b8b8a4d8d16c7214b6c5906f947f739f58ba75c2d3a6a3079a2bd417b",
+    "fingerprint": {
+      "kind": "file",
+      "mode": 384,
+      "sha256": "45dfe13f1f9edf082e8ad50f03c0e95b4c3ce0d30f69f7293402b96bd8d5236e",
+      "size": 9506709
+    },
+    "outcome": "verified",
+    "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-sparsemerge-ownership-source010/runs/20261107T163531Z-32619697/OWNERSHIP_SOURCE_RETURN.json",
+    "retained_artifact_reverified": true,
+    "source_count_verified": 1130
+  },
+  "workflow": "leveldb-sparsemerge-ownership011"
+}

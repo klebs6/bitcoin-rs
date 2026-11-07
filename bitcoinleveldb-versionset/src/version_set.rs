@@ -67,6 +67,13 @@ pub struct VersionSet {
 }
 
 impl VersionSet {
+    /// Borrow the wrapper owned by this VersionSet without cloning its Env Rc.
+    /// The wrapper serializes each forwarded call and releases its gate before
+    /// the caller can reacquire a database mutex.
+    pub(crate) fn env_mut(&mut self) -> &mut dyn Env {
+        self.env.as_mut()
+    }
+
     #[inline]
     pub(crate) fn dummy_versions_mut_ptr(&mut self) -> *mut Version {
         core::ptr::addr_of_mut!(self.dummy_versions)
