@@ -1,0 +1,151 @@
+{
+  "base": "2a5093e69dd91dc6d770e7e8ed1d201751f9ad5c",
+  "base_tree": "061d6ba025e0d2803bf4add4029aebc978d1fbfd",
+  "commands": {
+    "facade": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--jobs",
+      "1",
+      "-p",
+      "bitcoin-leveldb",
+      "--lib",
+      "--tests",
+      "--no-run",
+      "--message-format=json"
+    ],
+    "harness": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--jobs",
+      "1",
+      "-p",
+      "bitcoinleveldb-harness",
+      "--lib",
+      "--tests",
+      "--no-run",
+      "--message-format=json"
+    ]
+  },
+  "compilations": {
+    "facade": {
+      "artifacts": {
+        "bitcoin-leveldb::bitcoin_leveldb": {
+          "fingerprint": {
+            "kind": "file",
+            "mode": 493,
+            "sha256": "66bb93de7fdec043b61137cc2acb38321e14606aceab9a175f4275f2948e646b",
+            "size": 6982816
+          },
+          "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-facade-harness-compile030/cargo-target/debug/deps/bitcoin_leveldb-e29e16b47917020f"
+        }
+      },
+      "cargo_exit_code": 0,
+      "diagnostic_levels": {
+        "failure-note": 2,
+        "warning": 2348
+      },
+      "evidence_file": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-facade-harness-compile030/runs/20261108T192119Z-18da1f5b/cargo-facade.json",
+      "evidence_fingerprint": {
+        "kind": "file",
+        "mode": 384,
+        "sha256": "423245cd972bf4e91c11d5c0ebeae8b0ca3cb0d94695d878454d5e1327ab2ccc",
+        "size": 3620
+      },
+      "expected_artifacts": [
+        "bitcoin-leveldb::bitcoin_leveldb"
+      ],
+      "native_cases_executed": 0,
+      "observer_exit_code": 0,
+      "outcome": "compiled",
+      "priority_records_observed": 2,
+      "priority_records_omitted": 0,
+      "priority_records_retained": 2,
+      "repair_qualified": false,
+      "schema": "bitcoinrs-compile030-qualification-v1",
+      "scope": "fresh successful offline no-run compilation only; no native-case qualification",
+      "validation_reused": false
+    },
+    "harness": {
+      "artifacts": {
+        "bitcoinleveldb-harness::bitcoinleveldb_harness": {
+          "fingerprint": {
+            "kind": "file",
+            "mode": 493,
+            "sha256": "fc386086a6cec549e7d102fe7f0a39fc7847ff583512296b386b6672428a7405",
+            "size": 7003872
+          },
+          "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-facade-harness-compile030/cargo-target/debug/deps/bitcoinleveldb_harness-c849dd8d04bb4c47"
+        },
+        "bitcoinleveldb-harness::harness": {
+          "fingerprint": {
+            "kind": "file",
+            "mode": 493,
+            "sha256": "4a16ee53bb8f236d31f936a03377609a8b580cb8ec358bbb30c55a7b718b8a59",
+            "size": 82962800
+          },
+          "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-facade-harness-compile030/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+        }
+      },
+      "cargo_exit_code": 0,
+      "diagnostic_levels": {
+        "failure-note": 2,
+        "warning": 2380
+      },
+      "evidence_file": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-facade-harness-compile030/runs/20261108T192119Z-18da1f5b/cargo-harness.json",
+      "evidence_fingerprint": {
+        "kind": "file",
+        "mode": 384,
+        "sha256": "39b97ae4ffe780031ee8431c7c0bcf43bd560ed4aea743da7aa3b23c12894646",
+        "size": 4167
+      },
+      "expected_artifacts": [
+        "bitcoinleveldb-harness::bitcoinleveldb_harness",
+        "bitcoinleveldb-harness::harness"
+      ],
+      "native_cases_executed": 0,
+      "observer_exit_code": 0,
+      "outcome": "compiled",
+      "priority_records_observed": 2,
+      "priority_records_omitted": 0,
+      "priority_records_retained": 2,
+      "repair_qualified": false,
+      "schema": "bitcoinrs-compile030-qualification-v1",
+      "scope": "fresh successful offline no-run compilation only; no native-case qualification",
+      "validation_reused": false
+    }
+  },
+  "compile_qualified": true,
+  "controller_revision": 1,
+  "full_coverage_claimed": false,
+  "guard_sha256": "3accdfb32cc1904c6177361a05afcc0b6ade8ea14fc8df728a9e477048e1b9aa",
+  "native_tests_started": false,
+  "prior_report": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-facade-harness-baseline028/runs/20261108T185235Z-7ccb8aac/BASELINE_RETURN.json",
+  "prior_report_fingerprint": {
+    "kind": "file",
+    "mode": 384,
+    "sha256": "205d72d83e041235db8651e129cf48295a8ffd24945e0a0355e0cf699600dc8a",
+    "size": 999730
+  },
+  "repair_qualified": false,
+  "run_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-facade-harness-compile030/runs/20261108T192119Z-18da1f5b",
+  "runtime_validation_claimed": false,
+  "source_plan": {
+    "bitcoin-leveldb/src/lib.rs": "280728671a8c62ecfb4bcf420f1800e651e66edcfdc64a8965f2e63ad41e8875",
+    "bitcoinleveldbt-dbtest/src/lib.rs": "b00cdeeab476eb2ca52171cdad72a8efbae0b1429f0118ac23a0887a42e86426",
+    "contrib/repair/bitcoinleveldb-facade-harness-compile030.py": "f8f46facc717b96247594c715fe0699891b6431b6d4779e8febf02155c80c95b",
+    "doc/testing/leveldb-facade-harness-compile030.md": "34cf592020d5607674faf9104e7dcec74d2687707aae5062b7e7917021caeaaf"
+  },
+  "source_review": {
+    "facade": "Remove two unresolved facade exports: the benchmark crate is not a declared facade dependency, and the metadata crate is absent from the captured checkout. All other declared facade exports remain in their original order.",
+    "preserved": "Every manifest, lockfile, harness implementation, test body, workload size, oracle, execution policy and runtime behavior is unchanged by this two-file source payload.",
+    "shared_test_types": "Add explicit public reexports of TestArgs and TestType from bitcoinleveldbt-util through bitcoinleveldbt-dbtest. That existing direct dependency owns the types; reexporting preserves their identity and exposes the API already named by harness library and integration-test imports.",
+    "validation_scope": "Source bindings and import/dependency structure are checked in Python fixtures. Fresh guarded no-run Cargo compilation is still required; native tests and full coverage are not claimed."
+  },
+  "test_count": 0,
+  "workflow": "leveldb-facade-harness-compile030"
+}
