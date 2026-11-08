@@ -16,7 +16,9 @@ use bitcoinleveldb_modeldb::*;
 
 #[path = "support/randomized_operations.rs"]
 mod randomized_operations;
-use randomized_operations::{BatchMutation, Mutation, OperationGenerator, LEGACY_STEPS_PER_CONFIGURATION};
+#[path = "support/execution_controls.rs"]
+mod execution_controls;
+use randomized_operations::{BatchMutation, Mutation, OperationGenerator, LEGACY_STEPS_PER_CONFIGURATION, OPTION_CONFIGURATION_COUNT};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Getters, Builder)]
 #[getset(get = "pub")]
@@ -354,7 +356,7 @@ fn bitcoinleveldbt_randomized_execute_prefix_and_return_first_failure(
     let mut model = ModelDB::new(&opts);
 
     let mut model_snap: Option<Box<dyn Snapshot>> = None;
-    let mut db_snap: Option<Box<dyn Snapshot>> = None;
+    let mut db_snap = execution_controls::DatabaseSnapshotLease::new();
 
     let mut last_key = String::new();
     let mut last_value_length_bytes: usize = 0usize;
@@ -363,8 +365,12 @@ fn bitcoinleveldbt_randomized_execute_prefix_and_return_first_failure(
         BitcoinLevelDbTRandomizedBisectOperationKindField::NoneYet;
     let mut last_operation_selector_probability: u32 = 0u32;
 
+    execution_controls::progress("db_test_bisect_randomized", option_configuration_index as usize, 0, executed_prefix_length as usize, "configuration.entry");
     let mut step: i32 = 0i32;
     while step < executed_prefix_length {
+        if step % 100 == 0 {
+            execution_controls::progress("db_test_bisect_randomized", option_configuration_index as usize, step as usize, executed_prefix_length as usize, "iteration");
+        }
         let operation = operations.next_operation();
         last_operation_selector_probability = operation.selector;
         last_key = operation.last_key.clone();
@@ -892,7 +898,7 @@ fn bitcoinleveldbt_randomized_execute_prefix_and_return_first_failure(
                 }
 
                 model_snap = Some(model.get_snapshot());
-                db_snap = Some(unsafe { (*dbtest.dbfull()).get_snapshot() });
+                unsafe { db_snap.acquire(dbtest.dbfull() as *mut dyn DB); }
             }
             false => {}
         }
@@ -915,6 +921,8 @@ fn bitcoinleveldbt_randomized_execute_prefix_and_return_first_failure(
         }
         None => {}
     }
+
+    execution_controls::progress("db_test_bisect_randomized", option_configuration_index as usize, step as usize, executed_prefix_length as usize, "configuration.return");
 
     trace!(
         target: "bitcoinleveldbt_randomized::randomized",
@@ -1099,6 +1107,7 @@ fn bitcoinleveldbt_randomized_bisect_minimal_failing_prefix_for_option_configura
 #[test]
 #[ignore = "long stress; use a resource-controlled runner explicitly"]
 fn db_test_bisect_randomized() {
+    execution_controls::require_stress_protection("db_test_bisect_randomized");
     let seed = random_seed() as u32;
     let executed_prefix_length: i32 = LEGACY_STEPS_PER_CONFIGURATION as i32;
 
@@ -1109,7 +1118,10 @@ fn db_test_bisect_randomized() {
         );
 
     match first_failure_observation {
-        None => {}
+        None => {
+            execution_controls::complete("db_test_bisect_randomized", OPTION_CONFIGURATION_COUNT,
+                                         OPTION_CONFIGURATION_COUNT * LEGACY_STEPS_PER_CONFIGURATION);
+        }
         Some(first_failure) => {
             let bisected_failure =
                 bitcoinleveldbt_randomized_bisect_minimal_failing_prefix_for_option_configuration(

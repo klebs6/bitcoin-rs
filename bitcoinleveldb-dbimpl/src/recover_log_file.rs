@@ -35,18 +35,6 @@ impl DBImpl {
             "DBImpl::recover_log_file: enter"
         );
 
-        eprintln!(
-            "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_entry dbname='{}' log_number={} last_log={} save_manifest_ptr={} edit_ptr={} max_sequence_ptr={} reuse_logs_enabled={} paranoid_checks={} write_buffer_size={}",
-            self.dbname,
-            log_number,
-            last_log,
-            save_manifest as usize,
-            edit as usize,
-            max_sequence as usize,
-            reuse_logs_enabled,
-            paranoid_checks,
-            write_buffer_size,
-        );
 
         // Open the log file
         let fname: String = log_file_name(&self.dbname, log_number);
@@ -85,15 +73,6 @@ impl DBImpl {
                 "DBImpl::recover_log_file: sequential-file open failed"
             );
 
-            eprintln!(
-                "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_open_failure dbname='{}' log_number={} file='{}' status_before_ignore='{}' status_after_ignore='{}' elapsed_ms={}",
-                self.dbname,
-                log_number,
-                fname,
-                status_before_ignore,
-                status_after_ignore,
-                t_enter.elapsed().as_millis() as u64,
-            );
 
             return status;
         }
@@ -109,12 +88,6 @@ impl DBImpl {
                 "Env returned ok but output sequential file pointer was null"
             );
 
-            eprintln!(
-                "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_open_null_output dbname='{}' log_number={} file='{}'",
-                self.dbname,
-                log_number,
-                fname,
-            );
 
             let msg: Slice = Slice::from_str("new_sequential_file returned ok but output was null");
             let fname_slice: Slice = Slice::from(&fname);
@@ -138,12 +111,6 @@ impl DBImpl {
                     "DBImpl::recover_log_file: Options.info_log is None"
                 );
 
-                eprintln!(
-                    "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_missing_info_log dbname='{}' log_number={} file='{}'",
-                    self.dbname,
-                    log_number,
-                    fname,
-                );
 
                 let msg: Slice = Slice::from_str("Options.info_log missing during recover_log_file");
                 let fname_slice: Slice = Slice::from(&fname);
@@ -224,17 +191,6 @@ impl DBImpl {
                 );
 
                 if records_seen == 1 || (records_seen % 128) == 0 {
-                    eprintln!(
-                        "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_progress dbname='{}' log_number={} records_seen={} batches_inserted={} bytes_replayed={} compactions={} short_records={} status_ok={} phase='short_record'",
-                        self.dbname,
-                        log_number,
-                        records_seen,
-                        batches_inserted,
-                        bytes_replayed,
-                        compactions,
-                        records_skipped_short,
-                        status.is_ok(),
-                    );
                 }
 
                 reader.emit_corruption_to_reporter(record_len, &reason);
@@ -283,15 +239,6 @@ impl DBImpl {
                     "Failed inserting batch into memtable during recovery"
                 );
 
-                eprintln!(
-                    "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_insert_failure dbname='{}' log_number={} file='{}' record_index={} status_before_ignore='{}' status_after_ignore='{}'",
-                    self.dbname,
-                    log_number,
-                    fname,
-                    records_seen,
-                    status_before_ignore,
-                    status_after_ignore,
-                );
 
                 break;
             }
@@ -338,21 +285,6 @@ impl DBImpl {
                     "DBImpl::recover_log_file: replay progress"
                 );
 
-                eprintln!(
-                    "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_progress dbname='{}' log_number={} records_seen={} batches_inserted={} bytes_replayed={} record_len={} batch_count={} batch_sequence_start={} batch_sequence_end={} approx_mem={} compactions={} short_records={}",
-                    self.dbname,
-                    log_number,
-                    records_seen,
-                    batches_inserted,
-                    bytes_replayed,
-                    record_len,
-                    count_u64,
-                    batch_sequence_start,
-                    last_seq,
-                    approx_mem,
-                    compactions,
-                    records_skipped_short,
-                );
             }
 
             if unsafe { (*mem).approximate_memory_usage() } > *self.options.write_buffer_size() {
@@ -381,16 +313,6 @@ impl DBImpl {
                     "Memtable full during recovery; compacting to level-0"
                 );
 
-                eprintln!(
-                    "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_memtable_full dbname='{}' log_number={} records_seen={} batches_inserted={} approx_mem={} write_buffer_size={} compactions={}",
-                    self.dbname,
-                    log_number,
-                    records_seen,
-                    batches_inserted,
-                    approx_mem,
-                    write_buffer_size,
-                    compactions,
-                );
 
                 status = self.write_level_0table(mem, edit, core::ptr::null_mut());
 
@@ -412,14 +334,6 @@ impl DBImpl {
                         "write_level_0table failed during recovery"
                     );
 
-                    eprintln!(
-                        "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_write_l0_failure dbname='{}' log_number={} file='{}' status='{}' compactions={}",
-                        self.dbname,
-                        log_number,
-                        fname,
-                        status.to_string(),
-                        compactions,
-                    );
 
                     // Reflect errors immediately so that conditions like full
                     // file-systems cause the DB::Open() to fail.
@@ -497,13 +411,6 @@ impl DBImpl {
                         "Reusing old log"
                     );
 
-                    eprintln!(
-                        "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_reuse_success dbname='{}' log_number={} file='{}' lfile_size={}",
-                        self.dbname,
-                        log_number,
-                        fname,
-                        lfile_size,
-                    );
 
                     let writable_box: Box<dyn WritableFile> = unsafe { *Box::from_raw(append_file) };
                     self.logfile = Rc::new(RefCell::new(writable_box));
@@ -536,14 +443,6 @@ impl DBImpl {
                         "ReuseLogs enabled but could not open appendable file; falling back"
                     );
 
-                    eprintln!(
-                        "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_reuse_fallback dbname='{}' log_number={} file='{}' append_status='{}' append_output_null={}",
-                        self.dbname,
-                        log_number,
-                        fname,
-                        append_status_text,
-                        append_output_null,
-                    );
                 }
             } else {
                 tracing::debug!(
@@ -557,13 +456,6 @@ impl DBImpl {
                     "DBImpl::recover_log_file: file-size query failed; skipping log reuse"
                 );
 
-                eprintln!(
-                    "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_reuse_skipped_file_size dbname='{}' log_number={} file='{}' file_size_status='{}'",
-                    self.dbname,
-                    log_number,
-                    fname,
-                    file_size_status_text,
-                );
             }
         } else {
             tracing::debug!(
@@ -658,36 +550,6 @@ impl DBImpl {
             "DBImpl::recover_log_file: exit"
         );
 
-        eprintln!(
-            "[dbimpl-recover-log-live] event=dbimpl_recover_log_file_exit dbname='{}' log_number={} file='{}' status_ok={} status='{}' elapsed_ms={} records_seen={} short_records={} batches_inserted={} bytes_replayed={} max_record_len={} max_batch_count={} last_batch_sequence_start={} last_batch_sequence_end={} compactions={} memtable_allocations={} reuse_attempted={} reused_existing_log={} reused_mem_from_recovery={} created_empty_mem_for_reuse={} file_size_status='{}' append_status='{}' append_output_null={} lfile_size={} tail_mem_flushed_to_l0={} save_manifest_value={} max_sequence_value={}",
-            self.dbname,
-            log_number,
-            fname,
-            status.is_ok(),
-            status.to_string(),
-            t_enter.elapsed().as_millis() as u64,
-            records_seen,
-            records_skipped_short,
-            batches_inserted,
-            bytes_replayed,
-            max_record_len,
-            max_batch_count,
-            last_batch_sequence_start,
-            last_batch_sequence_end,
-            compactions,
-            memtable_allocations,
-            reuse_attempted,
-            reused_existing_log,
-            reused_mem_from_recovery,
-            created_empty_mem_for_reuse,
-            file_size_status_text,
-            append_status_text,
-            append_output_null,
-            lfile_size,
-            tail_mem_flushed_to_l0,
-            if save_manifest.is_null() { false } else { unsafe { *save_manifest } },
-            if max_sequence.is_null() { 0 } else { unsafe { *max_sequence } },
-        );
 
         status
     }

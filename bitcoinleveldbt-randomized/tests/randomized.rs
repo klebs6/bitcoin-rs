@@ -14,26 +14,33 @@ use bitcoinleveldb_modeldb::*;
 
 #[path = "support/randomized_operations.rs"]
 mod randomized_operations;
+#[path = "support/execution_controls.rs"]
+mod execution_controls;
 use randomized_operations::{BatchMutation, Mutation, OperationGenerator, LEGACY_STEPS_PER_CONFIGURATION};
 
 #[test]
 #[ignore = "long stress; use a resource-controlled runner explicitly"]
 fn db_test_randomized() {
+    execution_controls::require_stress_protection("db_test_randomized");
     let mut operations = OperationGenerator::new(bitcoinleveldbt_util::random_seed() as u32);
 
+    let mut completed_configurations: usize = 0;
+    let mut completed_steps: usize = 0;
     let mut body = |dbtest: &mut DBTest| {
+        let configuration = completed_configurations;
+        execution_controls::progress("db_test_randomized", configuration, 0, LEGACY_STEPS_PER_CONFIGURATION, "configuration.entry");
         operations.begin_configuration();
         let opts = dbtest.current_options();
         let mut model = ModelDB::new(&opts);
         const N: i32 = LEGACY_STEPS_PER_CONFIGURATION as i32;
 
         let mut model_snap: Option<Box<dyn Snapshot>> = None;
-        let mut db_snap: Option<Box<dyn Snapshot>> = None;
+        let mut db_snap = execution_controls::DatabaseSnapshotLease::new();
 
         let mut step: i32 = 0;
         while step < N {
             if step % 100 == 0 {
-                eprintln!("Step {} of {}", step, N);
+                execution_controls::progress("db_test_randomized", configuration, step as usize, N as usize, "iteration");
             }
 
             // TODO(sanjay): Test Get() works
@@ -103,7 +110,7 @@ fn db_test_randomized() {
                 assert!(compare_iterators(step, model_ptr, reopened_db_ptr, None, None));
 
                 model_snap = Some(model.get_snapshot());
-                db_snap = Some(unsafe { (*dbtest.dbfull()).get_snapshot() });
+                unsafe { db_snap.acquire(dbtest.dbfull() as *mut dyn DB); }
             }
 
             step += 1;
@@ -117,8 +124,13 @@ fn db_test_randomized() {
                 (*dbtest.dbfull()).release_snapshot(snapshot);
             }
         }
+        completed_configurations += 1;
+        completed_steps += step as usize;
+        execution_controls::progress("db_test_randomized", configuration, step as usize, N as usize, "configuration.return");
     };
 
     dbtest_fixture_run_across_option_configurations(&mut body);
+    // The fixture and its database have returned from teardown before success.
+    execution_controls::complete("db_test_randomized", completed_configurations, completed_steps);
 }
 
