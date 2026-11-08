@@ -1,6 +1,114 @@
 // ---------------- [ File: bitcoinleveldbt-issue320/src/bitcoinleveldbt_issue320.rs ]
 crate::ix!();
 
+// Execution profiles change only these four workload bounds. The original
+// profile retains seed zero, the 1 KiB generator, flags and PRNG/C-API ordering.
+#[derive(Clone, Copy)]
+struct Issue320ExecutionProfile {
+    case_name: &'static str,
+    model_slots: usize,
+    snapshot_slots: usize,
+    target_size: u32,
+    steps: u32,
+}
+
+const ISSUE320_FULL_PROFILE: Issue320ExecutionProfile = Issue320ExecutionProfile {
+    case_name: "issue320_test", model_slots: 10000, snapshot_slots: 100,
+    target_size: 10000, steps: 200000,
+};
+const ISSUE320_BOUNDED_PROFILE: Issue320ExecutionProfile = Issue320ExecutionProfile {
+    case_name: "issue320_bounded_diagnostic", model_slots: 64, snapshot_slots: 8,
+    target_size: 32, steps: 256,
+};
+
+fn issue320_guard_limits_valid(memory: &str, pids: &str, swap_limit_text: &str, oom: &str, cpu: &str) -> bool {
+    let memory = match memory.parse::<u64>() { Ok(value) => value, Err(_) => return false };
+    let pids = match pids.parse::<u64>() { Ok(value) => value, Err(_) => return false };
+    let fields: Vec<&str> = cpu.split_whitespace().collect();
+    if fields.len() != 2 { return false; }
+    let quota = match fields[0].parse::<u64>() { Ok(value) => value, Err(_) => return false };
+    let period = match fields[1].parse::<u64>() { Ok(value) => value, Err(_) => return false };
+    memory > 0 && memory <= 2 * 1024 * 1024 * 1024
+        && pids > 0 && pids <= 64 && swap_limit_text == "0" && oom == "1"
+        && quota > 0 && period > 0 && quota <= period
+}
+
+fn issue320_read_control(path: &std::path::Path) -> String {
+    match std::fs::read_to_string(path) {
+        Ok(value) => value.trim().to_owned(),
+        Err(error) => panic!("use the protected Issue320 runner: cannot read {}: {}", path.display(), error),
+    }
+}
+
+fn issue320_require_protection() {
+    assert!(matches!(std::env::var("BITCOIN_RS_ISSUE320_GUARD"), Ok(value) if value == "v1"),
+            "use the protected Issue320 runner; this case requires verified cgroup limits");
+    let memberships = issue320_read_control(std::path::Path::new("/proc/self/cgroup"));
+    let unified = match memberships.lines().find_map(|line| line.strip_prefix("0::")) {
+        Some(value) => value,
+        None => panic!("use the protected Issue320 runner: unified cgroup membership missing"),
+    };
+    let membership_path = std::path::Path::new(unified);
+    assert!(membership_path.is_absolute(), "invalid unified cgroup path");
+    assert!(membership_path.components().all(|part| matches!(part,
+            std::path::Component::RootDir | std::path::Component::Normal(_))),
+            "invalid unified cgroup path components");
+    let group = std::path::Path::new("/sys/fs/cgroup").join(unified.trim_start_matches('/'));
+    let memory = issue320_read_control(&group.join("memory.max"));
+    let pids = issue320_read_control(&group.join("pids.max"));
+    let swap_limit_text = issue320_read_control(&group.join("memory.swap.max"));
+    let oom = issue320_read_control(&group.join("memory.oom.group"));
+    let cpu = issue320_read_control(&group.join("cpu.max"));
+    assert!(issue320_guard_limits_valid(&memory, &pids, &swap_limit_text, &oom, &cpu),
+            "use the protected Issue320 runner: finite memory<=2GiB,pids<=64,swap=0,grouped OOM and CPU<=1 required");
+    eprintln!("ISSUE320_GUARD cgroup={} memory={} pids={} cpu={}", group.display(), memory, pids, cpu);
+}
+
+fn issue320_progress(profile: Issue320ExecutionProfile, phase: &str, done: u32) {
+    eprintln!("ISSUE320_PROGRESS case={} phase={} done={} total={}", profile.case_name, phase, done, profile.steps);
+}
+
+fn issue320_progress_step(profile: Issue320ExecutionProfile, done: u32) -> bool {
+    let interval = if profile.steps <= 256 { 32 } else { 1000 };
+    done == 1 || done == profile.steps || done % interval == 0
+}
+
+#[test]
+fn issue320_execution_profile_contract() {
+    assert_eq!((ISSUE320_FULL_PROFILE.model_slots, ISSUE320_FULL_PROFILE.snapshot_slots,
+                ISSUE320_FULL_PROFILE.target_size, ISSUE320_FULL_PROFILE.steps), (10000, 100, 10000, 200000));
+    assert_eq!((ISSUE320_BOUNDED_PROFILE.model_slots, ISSUE320_BOUNDED_PROFILE.snapshot_slots,
+                ISSUE320_BOUNDED_PROFILE.target_size, ISSUE320_BOUNDED_PROFILE.steps), (64, 8, 32, 256));
+    assert!(ISSUE320_BOUNDED_PROFILE.target_size < ISSUE320_BOUNDED_PROFILE.model_slots as u32);
+    assert_eq!(ISSUE320_FULL_PROFILE.case_name, "issue320_test");
+    assert_eq!(ISSUE320_BOUNDED_PROFILE.case_name, "issue320_bounded_diagnostic");
+}
+
+#[test]
+fn issue320_guard_predicate_rejects_unbounded_and_invalid_controls() {
+    assert!(issue320_guard_limits_valid("2147483648", "64", "0", "1", "100000 100000"));
+    assert!(issue320_guard_limits_valid("536870912", "32", "0", "1", "50000 100000"));
+    for controls in [
+        ("max", "64", "0", "1", "100000 100000"),
+        ("0", "64", "0", "1", "100000 100000"),
+        ("2147483649", "64", "0", "1", "100000 100000"),
+        ("536870912", "max", "0", "1", "100000 100000"),
+        ("536870912", "65", "0", "1", "100000 100000"),
+        ("536870912", "0", "0", "1", "100000 100000"),
+        ("536870912", "64", "max", "1", "100000 100000"),
+        ("536870912", "64", "1", "1", "100000 100000"),
+        ("536870912", "64", "0", "0", "100000 100000"),
+        ("536870912", "64", "0", "1", "max 100000"),
+        ("536870912", "64", "0", "1", "100001 100000"),
+        ("536870912", "64", "0", "1", "0 100000"),
+        ("536870912", "64", "0", "1", "100000 0"),
+        ("536870912", "64", "0", "1", "100000"),
+    ] {
+        assert!(!issue320_guard_limits_valid(controls.0, controls.1, controls.2, controls.3, controls.4));
+    }
+}
+
+
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/issues/issue320_test.cc]
 
 /**
@@ -141,8 +249,25 @@ fn bitcoinleveldb_test__issue320_test_rs__get_value_string_or_panic(
     out
 }
 
-#[traced_test]
+#[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
 fn issue320_test() {
+    issue320_require_protection();
+    issue320_run_profile(ISSUE320_FULL_PROFILE);
+}
+
+#[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
+fn issue320_bounded_diagnostic() {
+    issue320_require_protection();
+    issue320_run_profile(ISSUE320_BOUNDED_PROFILE);
+}
+
+fn issue320_run_profile(profile: Issue320ExecutionProfile) {
+    // ISSUE320020_MONITOR_BEGIN:entry
+    issue320_progress(profile, "entry", 0);
+    // ISSUE320020_MONITOR_END:entry
+
     trace!(
         target: "bitcoinleveldbt_issue320::issue320_test",
         event = "issue320_test_entry"
@@ -154,9 +279,9 @@ fn issue320_test() {
         let delete_before_put = false;
         let keep_snapshots = true;
 
-        let mut test_map: Vec<Option<(String, String)>> = vec![None; 10000usize];
+        let mut test_map: Vec<Option<(String, String)>> = vec![None; profile.model_slots];
         let mut snapshots: Vec<*const LevelDBSnapshot> =
-            vec![core::ptr::null(); 100usize];
+            vec![core::ptr::null(); profile.snapshot_slots];
 
         let dbpath = unique_db_path("/leveldb_issue320_test");
 
@@ -173,6 +298,10 @@ fn issue320_test() {
 
         leveldb_options_set_create_if_missing(options, 1u8);
 
+
+        // ISSUE320020_MONITOR_BEGIN:initial-destroy-before
+        issue320_progress(profile, "initial_destroy.before", 0);
+        // ISSUE320020_MONITOR_END:initial-destroy-before
         let mut destroy_err: *mut u8 = core::ptr::null_mut();
         leveldb_destroy_db(
             options,
@@ -180,8 +309,16 @@ fn issue320_test() {
             (&mut destroy_err) as *mut *mut u8,
         );
         bitcoinleveldb_test__issue320_test_rs__free_err_if_non_null(destroy_err);
+        // ISSUE320020_MONITOR_BEGIN:initial-destroy-after
+        issue320_progress(profile, "initial_destroy.after", 0);
+        // ISSUE320020_MONITOR_END:initial-destroy-after
+
 
         let mut err: *mut u8 = core::ptr::null_mut();
+
+        // ISSUE320020_MONITOR_BEGIN:open-before
+        issue320_progress(profile, "open.before", 0);
+        // ISSUE320020_MONITOR_END:open-before
         let db: *mut LevelDB = leveldb_open(
             options,
             dbname.as_ptr(),
@@ -189,16 +326,32 @@ fn issue320_test() {
         );
         assert!(err.is_null());
         assert!(!db.is_null());
+        // ISSUE320020_MONITOR_BEGIN:open-after
+        issue320_progress(profile, "open.after", 0);
+        // ISSUE320020_MONITOR_END:open-after
 
-        let target_size: u32 = 10000u32;
+
+        let target_size: u32 = profile.target_size;
         let mut num_items: u32 = 0u32;
         let mut count: u32 = 0u32;
+        // ISSUE320020_MONITOR_BEGIN:counters
+        let mut inserted = 0u32;
+        let mut overwritten = 0u32;
+        let mut deleted = 0u32;
+        let mut snapshots_created = 0u32;
+        let mut snapshots_rotated = 0u32;
+        // ISSUE320020_MONITOR_END:counters
 
-        while count < 200000u32 {
+
+        while count < profile.steps {
             count += 1u32;
-            if (count % 1000u32) == 0u32 {
-                eprintln!("count: {}", count);
+
+            // ISSUE320020_MONITOR_BEGIN:progress
+            if issue320_progress_step(profile, count) {
+                issue320_progress(profile, "iteration", count);
             }
+            // ISSUE320020_MONITOR_END:progress
+
 
             let index = generate_random_number(test_map.len() as i32) as usize;
             let batch: *mut LevelDBWriteBatch = leveldb_writebatch_create();
@@ -207,6 +360,10 @@ fn issue320_test() {
             match test_map[index].take() {
                 None => {
                     num_items += 1u32;
+                    // ISSUE320020_MONITOR_BEGIN:insert-count
+                    inserted += 1;
+                    // ISSUE320020_MONITOR_END:insert-count
+
 
                     let key = create_random_string(index as i32);
                     let value = create_random_string(index as i32);
@@ -246,8 +403,16 @@ fn issue320_test() {
                             key.len(),
                         );
                         num_items -= 1u32;
+                        // ISSUE320020_MONITOR_BEGIN:delete-count
+                        deleted += 1;
+                        // ISSUE320020_MONITOR_END:delete-count
+
                         test_map[index] = None;
                     } else {
+
+                        // ISSUE320020_MONITOR_BEGIN:overwrite-count
+                        overwritten += 1;
+                        // ISSUE320020_MONITOR_END:overwrite-count
                         value = create_random_string(index as i32);
                         if delete_before_put {
                             leveldb_writebatch_delete(
@@ -268,6 +433,12 @@ fn issue320_test() {
                 }
             }
 
+
+            // ISSUE320020_MONITOR_BEGIN:write-before
+            if issue320_progress_step(profile, count) {
+                issue320_progress(profile, "write.before", count);
+            }
+            // ISSUE320020_MONITOR_END:write-before
             leveldb_write(
                 db,
                 woptions,
@@ -276,24 +447,55 @@ fn issue320_test() {
             );
             assert!(err.is_null());
             leveldb_writebatch_destroy(batch);
+            // ISSUE320020_MONITOR_BEGIN:write-after
+            if issue320_progress_step(profile, count) {
+                issue320_progress(profile, "write.after", count);
+            }
+            // ISSUE320020_MONITOR_END:write-after
+
 
             if keep_snapshots && generate_random_number(10) == 0 {
                 let i = generate_random_number(snapshots.len() as i32) as usize;
                 if !snapshots[i].is_null() {
+
+                    // ISSUE320020_MONITOR_BEGIN:snapshot-rotation-count
+                    snapshots_rotated += 1;
+                    // ISSUE320020_MONITOR_END:snapshot-rotation-count
                     leveldb_release_snapshot(db, snapshots[i]);
                 }
                 snapshots[i] = leveldb_create_snapshot(db);
+                // ISSUE320020_MONITOR_BEGIN:snapshot-count
+                snapshots_created += 1;
+                // ISSUE320020_MONITOR_END:snapshot-count
+
             }
         }
 
+
+        // ISSUE320020_MONITOR_BEGIN:release-before
+        issue320_progress(profile, "release.before", count);
+        // ISSUE320020_MONITOR_END:release-before
         for snapshot in snapshots.iter() {
             if !snapshot.is_null() {
                 leveldb_release_snapshot(db, *snapshot);
             }
         }
 
-        leveldb_close(db);
 
+        // ISSUE320020_MONITOR_BEGIN:release-after-close-before
+        issue320_progress(profile, "release.after", count);
+        issue320_progress(profile, "close.before", count);
+        // ISSUE320020_MONITOR_END:release-after-close-before
+        leveldb_close(db);
+        // ISSUE320020_MONITOR_BEGIN:close-after
+        issue320_progress(profile, "close.after", count);
+        // ISSUE320020_MONITOR_END:close-after
+
+
+
+        // ISSUE320020_MONITOR_BEGIN:cleanup-before
+        issue320_progress(profile, "cleanup.before", count);
+        // ISSUE320020_MONITOR_END:cleanup-before
         let mut cleanup_err: *mut u8 = core::ptr::null_mut();
         leveldb_destroy_db(
             options,
@@ -305,12 +507,22 @@ fn issue320_test() {
         leveldb_readoptions_destroy(roptions);
         leveldb_writeoptions_destroy(woptions);
         leveldb_options_destroy(options);
+        // ISSUE320020_MONITOR_BEGIN:cleanup-after-counts
+        issue320_progress(profile, "cleanup.after", count);
+        eprintln!("ISSUE320_COUNTS case={} steps={} inserted={} overwritten={} deleted={} snapshots={} rotations={}",
+                  profile.case_name, count, inserted, overwritten, deleted, snapshots_created, snapshots_rotated);
+        // ISSUE320020_MONITOR_END:cleanup-after-counts
+
     }
 
     trace!(
         target: "bitcoinleveldbt_issue320::issue320_test",
         event = "issue320_test_exit"
     );
+
+    // ISSUE320020_MONITOR_BEGIN:completed
+    eprintln!("ISSUE320_CASE_OK case={}", profile.case_name);
+    // ISSUE320020_MONITOR_END:completed
 }
 
 fn issuesissue320_test_main(
@@ -710,7 +922,9 @@ mod issue320_snapshot_probe_tests {
     }
 
     #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_probe_single_key_without_snapshot_keeps_only_newest_version_after_manual_compaction() {
+        issue320_require_protection();
         let dbname = issue320_probe_db_path(
             "issue320_probe_single_key_without_snapshot",
         );
@@ -763,7 +977,9 @@ mod issue320_snapshot_probe_tests {
     }
 
     #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_probe_single_key_with_live_snapshot_survives_flush_without_manual_compaction() {
+        issue320_require_protection();
         let dbname = issue320_probe_db_path(
             "issue320_probe_single_key_live_snapshot_flush_only",
         );
@@ -817,7 +1033,9 @@ mod issue320_snapshot_probe_tests {
     }
 
     #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_probe_single_key_with_live_snapshot_manual_compaction_reports_retained_versions_on_failure() {
+        issue320_require_protection();
         let dbname = issue320_probe_db_path(
             "issue320_probe_single_key_live_snapshot_manual_compaction",
         );
@@ -888,7 +1106,9 @@ mod issue320_snapshot_probe_tests {
     }
 
     #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_probe_single_key_with_live_snapshot_reopen_reports_before_and_after_state_compactly() {
+        issue320_require_protection();
         let dbname = issue320_probe_db_path(
             "issue320_probe_single_key_live_snapshot_reopen",
         );
@@ -1511,7 +1731,9 @@ mod issue320_two_key_reducer_tests {
     }
 
     #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_reducer_two_keys_one_snapshot_matches_model_after_forced_compactions() {
+        issue320_require_protection();
         run_reducer(ReducerConfig {
             name: "issue320_reducer_two_keys_one_snapshot_after_compactions",
             waves: 3,
@@ -1522,7 +1744,9 @@ mod issue320_two_key_reducer_tests {
     }
 
     #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_reducer_two_keys_one_snapshot_matches_model_after_reopen_with_wal_tail() {
+        issue320_require_protection();
         run_reducer(ReducerConfig {
             name: "issue320_reducer_two_keys_one_snapshot_after_reopen_with_wal_tail",
             waves: 3,
@@ -1533,7 +1757,9 @@ mod issue320_two_key_reducer_tests {
     }
 
     #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_reducer_two_keys_two_snapshots_matches_model_after_forced_compactions() {
+        issue320_require_protection();
         run_reducer(ReducerConfig {
             name: "issue320_reducer_two_keys_two_snapshots_after_compactions",
             waves: 3,
@@ -1544,7 +1770,9 @@ mod issue320_two_key_reducer_tests {
     }
 
     #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_reducer_two_keys_two_snapshots_matches_model_after_reopen_with_wal_tail() {
+        issue320_require_protection();
         run_reducer(ReducerConfig {
             name: "issue320_reducer_two_keys_two_snapshots_after_reopen_with_wal_tail",
             waves: 3,
@@ -2127,43 +2355,55 @@ mod issue320_fanout_reducer_tests {
         snapshot_waves: &[0, 2],
     };
 
-    #[traced_test]
+    #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_flush_only_fanout_8_keys_one_snapshot_matches_model_after_forced_compactions() {
+        issue320_require_protection();
         run_issue320_flush_only_fanout_case_after_forced_compactions(
             ISSUE320_FANOUT_8_KEYS_1_SNAPSHOT,
         );
     }
 
-    #[traced_test]
+    #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_flush_only_fanout_16_keys_one_snapshot_matches_model_after_forced_compactions() {
+        issue320_require_protection();
         run_issue320_flush_only_fanout_case_after_forced_compactions(
             ISSUE320_FANOUT_16_KEYS_1_SNAPSHOT,
         );
     }
 
-    #[traced_test]
+    #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_flush_only_fanout_32_keys_two_snapshots_matches_model_after_forced_compactions() {
+        issue320_require_protection();
         run_issue320_flush_only_fanout_case_after_forced_compactions(
             ISSUE320_FANOUT_32_KEYS_2_SNAPSHOTS,
         );
     }
 
-    #[traced_test]
+    #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_flush_only_fanout_8_keys_one_snapshot_matches_model_after_reopen_with_verified_nonempty_wal() {
+        issue320_require_protection();
         run_issue320_reopen_case_with_verified_nonempty_wal(
             ISSUE320_FANOUT_8_KEYS_1_SNAPSHOT,
         );
     }
 
-    #[traced_test]
+    #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_flush_only_fanout_16_keys_one_snapshot_matches_model_after_reopen_with_verified_nonempty_wal() {
+        issue320_require_protection();
         run_issue320_reopen_case_with_verified_nonempty_wal(
             ISSUE320_FANOUT_16_KEYS_1_SNAPSHOT,
         );
     }
 
-    #[traced_test]
+    #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_flush_only_fanout_32_keys_two_snapshots_matches_model_after_reopen_with_verified_nonempty_wal() {
+        issue320_require_protection();
         run_issue320_reopen_case_with_verified_nonempty_wal(
             ISSUE320_FANOUT_32_KEYS_2_SNAPSHOTS,
         );
@@ -2456,8 +2696,10 @@ mod issue320_isolation_tests {
             .to_string()
     }
 
-    #[traced_test]
+    #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_control_overwrite_only_without_snapshots_matches_model_after_forced_compactions() {
+        issue320_require_protection();
         let dbname = issue320_test_db_path(
             "leveldb_issue320_isolation_control_without_snapshots",
         );
@@ -2483,8 +2725,10 @@ mod issue320_isolation_tests {
         let _ = std::fs::remove_dir_all(&dbname);
     }
 
-    #[traced_test]
+    #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_overwrite_only_with_live_snapshots_matches_model_after_forced_compactions() {
+        issue320_require_protection();
         let dbname = issue320_test_db_path(
             "leveldb_issue320_isolation_with_live_snapshots",
         );
@@ -2510,8 +2754,10 @@ mod issue320_isolation_tests {
         let _ = std::fs::remove_dir_all(&dbname);
     }
 
-    #[traced_test]
+    #[test]
+#[ignore = "resource-controlled database case; use contrib/repair/bitcoinleveldb-issue320-controlled020.py"]
     fn issue320_overwrite_only_with_live_snapshots_matches_model_after_reopen() {
+        issue320_require_protection();
         let dbname = issue320_test_db_path(
             "leveldb_issue320_isolation_with_live_snapshots_reopen",
         );

@@ -1,0 +1,597 @@
+{
+  "artifacts": {
+    "bitcoinleveldbt-issue320::bitcoinleveldbt_issue320": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "ac09485935acd765b927a2d50a75a48dfd0b7ec4c4bfa5d9a38e6d997661b6f9",
+        "size": 66491472
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/cargo-target/debug/deps/bitcoinleveldbt_issue320-45a8423c23bb416e"
+    }
+  },
+  "base": "9845b3664d48d58ddcdd2dc9e7fa3c11783d3f85",
+  "bounded_profile": {
+    "classification": "scaled workload, not a literal full-profile prefix",
+    "model_slots": 64,
+    "snapshot_slots": 8,
+    "steps": 256,
+    "target_size": 32
+  },
+  "build_command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--jobs",
+    "1",
+    "-p",
+    "bitcoinleveldbt-issue320",
+    "--lib",
+    "--no-run",
+    "--message-format=json"
+  ],
+  "cases": [
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_execution_profile_contract",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "issue320_execution_profile_contract",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "pure_contract"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_guard_predicate_rejects_unbounded_and_invalid_controls",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "issue320_guard_predicate_rejects_unbounded_and_invalid_controls",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "pure_contract"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_bounded_diagnostic",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_bounded_diagnostic",
+      "marker": "ISSUE320_CASE_OK case=issue320_bounded_diagnostic",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "bounded_diagnostic"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_isolation_tests::issue320_control_overwrite_only_without_snapshots_matches_model_after_forced_compactions",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_control_overwrite_only_without_snapshots_matches_model_after_forced_compactions",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_fanout_reducer_tests::issue320_flush_only_fanout_16_keys_one_snapshot_matches_model_after_forced_compactions",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_flush_only_fanout_16_keys_one_snapshot_matches_model_after_forced_compactions",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_fanout_reducer_tests::issue320_flush_only_fanout_16_keys_one_snapshot_matches_model_after_reopen_with_verified_nonempty_wal",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_flush_only_fanout_16_keys_one_snapshot_matches_model_after_reopen_with_verified_nonempty_wal",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_fanout_reducer_tests::issue320_flush_only_fanout_32_keys_two_snapshots_matches_model_after_forced_compactions",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_flush_only_fanout_32_keys_two_snapshots_matches_model_after_forced_compactions",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_fanout_reducer_tests::issue320_flush_only_fanout_32_keys_two_snapshots_matches_model_after_reopen_with_verified_nonempty_wal",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_flush_only_fanout_32_keys_two_snapshots_matches_model_after_reopen_with_verified_nonempty_wal",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_fanout_reducer_tests::issue320_flush_only_fanout_8_keys_one_snapshot_matches_model_after_forced_compactions",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_flush_only_fanout_8_keys_one_snapshot_matches_model_after_forced_compactions",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_fanout_reducer_tests::issue320_flush_only_fanout_8_keys_one_snapshot_matches_model_after_reopen_with_verified_nonempty_wal",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_flush_only_fanout_8_keys_one_snapshot_matches_model_after_reopen_with_verified_nonempty_wal",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_isolation_tests::issue320_overwrite_only_with_live_snapshots_matches_model_after_forced_compactions",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_overwrite_only_with_live_snapshots_matches_model_after_forced_compactions",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_isolation_tests::issue320_overwrite_only_with_live_snapshots_matches_model_after_reopen",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_overwrite_only_with_live_snapshots_matches_model_after_reopen",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_snapshot_probe_tests::issue320_probe_single_key_with_live_snapshot_manual_compaction_reports_retained_versions_on_failure",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_probe_single_key_with_live_snapshot_manual_compaction_reports_retained_versions_on_failure",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_snapshot_probe_tests::issue320_probe_single_key_with_live_snapshot_reopen_reports_before_and_after_state_compactly",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_probe_single_key_with_live_snapshot_reopen_reports_before_and_after_state_compactly",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_snapshot_probe_tests::issue320_probe_single_key_with_live_snapshot_survives_flush_without_manual_compaction",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_probe_single_key_with_live_snapshot_survives_flush_without_manual_compaction",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_snapshot_probe_tests::issue320_probe_single_key_without_snapshot_keeps_only_newest_version_after_manual_compaction",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_probe_single_key_without_snapshot_keeps_only_newest_version_after_manual_compaction",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_two_key_reducer_tests::issue320_reducer_two_keys_one_snapshot_matches_model_after_forced_compactions",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_reducer_two_keys_one_snapshot_matches_model_after_forced_compactions",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_two_key_reducer_tests::issue320_reducer_two_keys_one_snapshot_matches_model_after_reopen_with_wal_tail",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_reducer_two_keys_one_snapshot_matches_model_after_reopen_with_wal_tail",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_two_key_reducer_tests::issue320_reducer_two_keys_two_snapshots_matches_model_after_forced_compactions",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_reducer_two_keys_two_snapshots_matches_model_after_forced_compactions",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_two_key_reducer_tests::issue320_reducer_two_keys_two_snapshots_matches_model_after_reopen_with_wal_tail",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_reducer_two_keys_two_snapshots_matches_model_after_reopen_with_wal_tail",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "existing_database_case"
+    },
+    {
+      "error": null,
+      "expected_name": "bitcoinleveldbt_issue320::issue320_test",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "issue320_test",
+      "marker": "ISSUE320_CASE_OK case=issue320_test",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "full_original"
+    }
+  ],
+  "controller_revision": 2,
+  "controller_transition": {
+    "all_twenty_one_cases_must_run": true,
+    "archive_files": {
+      "previous-candidate-sources/bitcoinleveldbt-issue320/src/bitcoinleveldbt_issue320.rs": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "c8dd6f1f13c1d2679491c67753759a436f83e8b2f2d753abcd96d262e4e9eb1b",
+          "size": 90811
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-candidate-sources/bitcoinleveldbt-issue320/src/bitcoinleveldbt_issue320.rs"
+      },
+      "previous-candidate-sources/contrib/repair/bitcoinleveldb-issue320-controlled020.py": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "b37bc0748c4d827e9640c26a990e728f7a3fa649cc32ed961e0706229804834f",
+          "size": 189508
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-candidate-sources/contrib/repair/bitcoinleveldb-issue320-controlled020.py"
+      },
+      "previous-candidate-sources/doc/testing/leveldb-issue320-controlled020.md": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "32e629d3bbac90efce2af042ac4837fd9689f68e32bad784f15f63218338b25a",
+          "size": 4810
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-candidate-sources/doc/testing/leveldb-issue320-controlled020.md"
+      },
+      "previous-cargo-artifacts.json": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "d61fac8c31831cb971cfef05d3eee284adf0ae11b0d21630b6acc6dc0f7e8d6b",
+          "size": 8259
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-cargo-artifacts.json"
+      },
+      "previous-cargo.spec.json": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "f43cb6a057b279b109ac9616b306be55096fdbb72642cc4548079e905abaecec",
+          "size": 524
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-cargo.spec.json"
+      },
+      "previous-controller.py": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "b37bc0748c4d827e9640c26a990e728f7a3fa649cc32ed961e0706229804834f",
+          "size": 189508
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-controller.py"
+      },
+      "previous-logs/compile-issue320-tests.log": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "ed4d6b92a8bf90d4bd9660dcb2ac2723b661e008563a8c129ed188090368d9a7",
+          "size": 29922
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-logs/compile-issue320-tests.log"
+      },
+      "previous-logs/git-add.log": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "52d5570b3870caecce0ba3ee57c6844da327ac033613963c3534ff6206c2d739",
+          "size": 407
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-logs/git-add.log"
+      },
+      "previous-logs/git-worktree.log": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "e056666eade47377f6118810de6a1794f2a24ae6472526f8b27e63c3c9824823",
+          "size": 413
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-logs/git-worktree.log"
+      },
+      "previous-logs/inputs-before.log": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "703743f8656b4884375464cdced09c3a084a45d59e3a13b4e429e8270b712ddf",
+          "size": 416
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-logs/inputs-before.log"
+      },
+      "previous-logs/install-source.log": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "b2a612b63e6b5cbc030c2eba9716fb5b5b3ca40e7f8c224095d1f2e63a13f62c",
+          "size": 409
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-logs/install-source.log"
+      },
+      "previous-logs/preflight.log": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "788f8114f11597ac830e6b91a62b659c7aa2b8a791181cbd462d4531d6f58a38",
+          "size": 394
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-logs/preflight.log"
+      },
+      "previous-logs/read-configured-identity.log": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "9ba2655a7971d3d25576bcb1431cfd5c2edb0c6246e517849f391b8a84246f8a",
+          "size": 433
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-logs/read-configured-identity.log"
+      },
+      "previous-logs/seed-private-cache.log": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "2eafae1a9a72f4257c7dd9a2f8f82bf51cc0f64788b7fc0d39ad49b95f527325",
+          "size": 512
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-logs/seed-private-cache.log"
+      },
+      "previous-report.json": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "f081969a83eab00f754be70968b565dfbc882b92d0e044df0f002b0f0ffaa9b3",
+          "size": 140011
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-report.json"
+      },
+      "previous-state-before-compiler-review.json": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "e237eb07c3731cceaf431a14fd653723781a393915f27c046e603a853968b36f",
+          "size": 786
+        },
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-state-before-compiler-review.json"
+      }
+    },
+    "classification": "introduced_guard_local_binding_collides_with_glob_imported_swap",
+    "controller_fingerprint": {
+      "kind": "file",
+      "mode": 448,
+      "sha256": "b37bc0748c4d827e9640c26a990e728f7a3fa649cc32ed961e0706229804834f",
+      "size": 189508
+    },
+    "controller_path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/issue320-controller020.py",
+    "native_tests_executed": 0,
+    "original_source_plan": {
+      "bitcoinleveldbt-issue320/src/bitcoinleveldbt_issue320.rs": "c8dd6f1f13c1d2679491c67753759a436f83e8b2f2d753abcd96d262e4e9eb1b",
+      "contrib/repair/bitcoinleveldb-issue320-controlled020.py": "b37bc0748c4d827e9640c26a990e728f7a3fa649cc32ed961e0706229804834f",
+      "doc/testing/leveldb-issue320-controlled020.md": "32e629d3bbac90efce2af042ac4837fd9689f68e32bad784f15f63218338b25a"
+    },
+    "previous_candidate_sources": {
+      "bitcoinleveldbt-issue320/src/bitcoinleveldbt_issue320.rs": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "c8dd6f1f13c1d2679491c67753759a436f83e8b2f2d753abcd96d262e4e9eb1b",
+        "size": 90811
+      },
+      "contrib/repair/bitcoinleveldb-issue320-controlled020.py": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "b37bc0748c4d827e9640c26a990e728f7a3fa649cc32ed961e0706229804834f",
+        "size": 189508
+      },
+      "doc/testing/leveldb-issue320-controlled020.md": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "32e629d3bbac90efce2af042ac4837fd9689f68e32bad784f15f63218338b25a",
+        "size": 4810
+      }
+    },
+    "previous_state_fingerprint": {
+      "kind": "file",
+      "mode": 384,
+      "sha256": "e237eb07c3731cceaf431a14fd653723781a393915f27c046e603a853968b36f",
+      "size": 786
+    },
+    "previous_state_path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d/previous-state-before-compiler-review.json",
+    "report_fingerprint": {
+      "kind": "file",
+      "mode": 384,
+      "sha256": "f081969a83eab00f754be70968b565dfbc882b92d0e044df0f002b0f0ffaa9b3",
+      "size": 140011
+    },
+    "report_path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/ISSUE320_REPAIR_RETURN.json",
+    "retained_bindings": {
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/ISSUE320_REPAIR_RETURN.json": {
+        "kind": "file",
+        "mode": 384,
+        "sha256": "f081969a83eab00f754be70968b565dfbc882b92d0e044df0f002b0f0ffaa9b3",
+        "size": 140011
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/cargo-artifacts.json": {
+        "kind": "file",
+        "mode": 384,
+        "sha256": "d61fac8c31831cb971cfef05d3eee284adf0ae11b0d21630b6acc6dc0f7e8d6b",
+        "size": 8259
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/cargo.spec.json": {
+        "kind": "file",
+        "mode": 384,
+        "sha256": "f43cb6a057b279b109ac9616b306be55096fdbb72642cc4548079e905abaecec",
+        "size": 524
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/guard/compile-issue320-tests-db7d4f9d361d/output.log": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "ed4d6b92a8bf90d4bd9660dcb2ac2723b661e008563a8c129ed188090368d9a7",
+        "size": 29922
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/guard/git-add-6ebad457fbfc/output.log": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "52d5570b3870caecce0ba3ee57c6844da327ac033613963c3534ff6206c2d739",
+        "size": 407
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/guard/git-worktree-2d6082efd0d5/output.log": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "e056666eade47377f6118810de6a1794f2a24ae6472526f8b27e63c3c9824823",
+        "size": 413
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/guard/inputs-before-8b3bad25751d/output.log": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "703743f8656b4884375464cdced09c3a084a45d59e3a13b4e429e8270b712ddf",
+        "size": 416
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/guard/install-source-a5a3802fae5d/output.log": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "b2a612b63e6b5cbc030c2eba9716fb5b5b3ca40e7f8c224095d1f2e63a13f62c",
+        "size": 409
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/guard/preflight-cb49b3d7af30/output.log": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "788f8114f11597ac830e6b91a62b659c7aa2b8a791181cbd462d4531d6f58a38",
+        "size": 394
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/guard/read-configured-identity-5ed3aebf38fb/output.log": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "9ba2655a7971d3d25576bcb1431cfd5c2edb0c6246e517849f391b8a84246f8a",
+        "size": 433
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/guard/seed-private-cache-8a99264fb73d/output.log": {
+        "kind": "file",
+        "mode": 420,
+        "sha256": "2eafae1a9a72f4257c7dd9a2f8f82bf51cc0f64788b7fc0d39ad49b95f527325",
+        "size": 512
+      },
+      "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T065134Z-b76f99ff/issue320-controller020.py": {
+        "kind": "file",
+        "mode": 448,
+        "sha256": "b37bc0748c4d827e9640c26a990e728f7a3fa649cc32ed961e0706229804834f",
+        "size": 189508
+      }
+    },
+    "review_id": "issue320020-r1-pre-native-swap-binding-collision",
+    "rust_change": "rename exactly four guard binding/reference tokens to swap_limit_text",
+    "test_validation_reused": false
+  },
+  "execution_policy": "nineteen explicitly guarded database cases; two default pure contracts",
+  "full_coverage_claimed": false,
+  "full_randomized_stress": "not rerun",
+  "historical_freeze_cause_established": false,
+  "intake_binding": {
+    "fingerprint": {
+      "kind": "file",
+      "mode": 384,
+      "sha256": "4bab014b2fdd2d98b5ab1d74e4d7ff85b882cf41ee3c083950bab42ddcf209ec",
+      "size": 815818
+    },
+    "input_count": 106,
+    "qualification": "selected_source_preservation_only",
+    "report": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-final-crates-intake019/runs/20261108T062738Z-9a59dd6e/FINAL_CRATES_INTAKE_RETURN.json",
+    "source_before_sha256": "29a8594d990cebc044926ce878e584d6af7b4b524a5aa9a132cbaf747cd78e71"
+  },
+  "original_full_case_completed": true,
+  "original_profile": {
+    "key_bytes": 1024,
+    "model_slots": 10000,
+    "seed": 0,
+    "snapshot_slots": 100,
+    "steps": 200000,
+    "target_size": 10000,
+    "value_bytes": 1024
+  },
+  "run_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-issue320-controlled020/runs/20261108T074029Z-db4c138d",
+  "source_plan": {
+    "bitcoinleveldbt-issue320/src/bitcoinleveldbt_issue320.rs": "267f1aa5a7860161191dc32adb2dcf2dd4228ca0c476ff75443f00f241006937",
+    "contrib/repair/bitcoinleveldb-issue320-controlled020.py": "5a18ae65a4889f8eeb4c0a100aa85fb22092ea7df1b5c6a5c4c3383a1c4eff7d",
+    "doc/testing/leveldb-issue320-controlled020.md": "3a7d97b6fde999084da90a3bf455a70151f6d7e0dcf9859a03d16597066f04c3"
+  },
+  "test_count": 21,
+  "workflow": "leveldb-issue320-controlled020"
+}
