@@ -1,0 +1,445 @@
+{
+  "artifacts": {
+    "bitcoinleveldb-file::bitcoinleveldb_file": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "bac2a477dccef79d67ebc50e0aa0af5006856edc85c10c44a70ab5437708fad7",
+        "size": 45814640
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared017/cargo-target/debug/deps/bitcoinleveldb_file-43e047c5e278650f"
+    },
+    "bitcoinleveldb-file::filename": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "11b8b6defe07a4967e37ccd9b7e57f5a30d8ae18a975707114f7f7b9b8956a5d",
+        "size": 46073608
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared017/cargo-target/debug/deps/filename-068617037f6f5c24"
+    },
+    "bitcoinleveldb-file::writable_file_shared": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "15556e4a53b19188c2985d7ce8e37db7aea26d2f7d949520c27f7ea7cc12dffe",
+        "size": 9358704
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared017/cargo-target/debug/deps/writable_file_shared-11117f244e87f814"
+    },
+    "bitcoinleveldb-versionsetutil::find_file_and_overlap": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "e273ccaafd77d5c62be6128355c6b288abca30c0aa11a7b1e7939b0a7be5517b",
+        "size": 58763520
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared017/cargo-target/debug/deps/find_file_and_overlap-6981c69588a5ef36"
+    }
+  },
+  "base": "a788779b925d8813f8601787f432837726ba97d1",
+  "before_bindings": {
+    "bitcoinleveldb-file/src/find_file.rs": "42db6099ab6cecdeb90dee3ff949814d7158d4a96d5d5da3c5b88199fa42423f",
+    "bitcoinleveldb-file/src/writable_file.rs": "7ef8df19c58a6b04e12f70cb36747b9dcce66d3642997af6d1744b7398c83410",
+    "bitcoinleveldb-versionsetutil/Cargo.toml": "2db7a6b85ac5b4f22df3c9f994bca64834a527b28597a04fb902ab76d844d4eb",
+    "bitcoinleveldb-versionsetutil/src/imports.rs": "9ec4b73a59a7450c8134098851d49a7dc16c46045d5e6175c988b336ca4cba62",
+    "bitcoinleveldb-versionsetutil/src/lib.rs": "be8eba310fcd85ddef4a13f19e29b8e52b13df850530b75a9fb4f5ec578236b7",
+    "bitcoinleveldb-versionsetutil/src/some_file_overlaps_range.rs": "827cf175997c9ff2060c764e7a7317bd9a35f7e5feaacf2dbf22872a313af5b9",
+    "shell.nix": "8f316c4f007426302e26962e13def8c7d5bc0efa85d5e1549c55e85ba0d7c651"
+  },
+  "build_commands": [
+    [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--jobs",
+      "1",
+      "-p",
+      "bitcoinleveldb-file",
+      "--lib",
+      "--tests",
+      "--no-run",
+      "--message-format=json"
+    ],
+    [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--jobs",
+      "1",
+      "-p",
+      "bitcoinleveldb-versionsetutil",
+      "--test",
+      "find_file_and_overlap",
+      "--no-run",
+      "--message-format=json"
+    ]
+  ],
+  "cases": [
+    {
+      "artifact_key": "bitcoinleveldb-file::writable_file_shared",
+      "error": null,
+      "expected_name": "shared_writable_file_forwards_calls_bytes_and_success_statuses",
+      "failed": 0,
+      "ignored": 0,
+      "label": "shared_writable_file_forwards_calls_bytes_and_success_statuses",
+      "marker": "SHARED_WRITABLE_FILE_CONTRACT_OK case=shared_writable_file_forwards_calls_bytes_and_success_statuses",
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::writable_file_shared",
+      "error": null,
+      "expected_name": "shared_writable_file_preserves_each_error_code_and_message",
+      "failed": 0,
+      "ignored": 0,
+      "label": "shared_writable_file_preserves_each_error_code_and_message",
+      "marker": "SHARED_WRITABLE_FILE_CONTRACT_OK case=shared_writable_file_preserves_each_error_code_and_message",
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::writable_file_shared",
+      "error": null,
+      "expected_name": "shared_writable_file_observes_external_changes_and_shared_identity",
+      "failed": 0,
+      "ignored": 0,
+      "label": "shared_writable_file_observes_external_changes_and_shared_identity",
+      "marker": "SHARED_WRITABLE_FILE_CONTRACT_OK case=shared_writable_file_observes_external_changes_and_shared_identity",
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::writable_file_shared",
+      "error": null,
+      "expected_name": "shared_writable_file_name_is_owned_snapshot_without_retained_borrow",
+      "failed": 0,
+      "ignored": 0,
+      "label": "shared_writable_file_name_is_owned_snapshot_without_retained_borrow",
+      "marker": "SHARED_WRITABLE_FILE_CONTRACT_OK case=shared_writable_file_name_is_owned_snapshot_without_retained_borrow",
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::writable_file_shared",
+      "error": null,
+      "expected_name": "shared_writable_file_conversion_and_drop_do_not_perform_io",
+      "failed": 0,
+      "ignored": 0,
+      "label": "shared_writable_file_conversion_and_drop_do_not_perform_io",
+      "marker": "SHARED_WRITABLE_FILE_CONTRACT_OK case=shared_writable_file_conversion_and_drop_do_not_perform_io",
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::writable_file_shared",
+      "error": null,
+      "expected_name": "shared_writable_file_keeps_last_owner_alive_until_box_drop",
+      "failed": 0,
+      "ignored": 0,
+      "label": "shared_writable_file_keeps_last_owner_alive_until_box_drop",
+      "marker": "SHARED_WRITABLE_FILE_CONTRACT_OK case=shared_writable_file_keeps_last_owner_alive_until_box_drop",
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::writable_file_shared",
+      "error": null,
+      "expected_name": "shared_writable_file_preserves_refcell_borrow_conflicts",
+      "failed": 0,
+      "ignored": 0,
+      "label": "shared_writable_file_preserves_refcell_borrow_conflicts",
+      "marker": "SHARED_WRITABLE_FILE_CONTRACT_OK case=shared_writable_file_preserves_refcell_borrow_conflicts",
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::writable_file_shared",
+      "error": null,
+      "expected_name": "shared_writable_file_releases_borrow_when_inner_operation_unwinds",
+      "failed": 0,
+      "ignored": 0,
+      "label": "shared_writable_file_releases_borrow_when_inner_operation_unwinds",
+      "marker": "SHARED_WRITABLE_FILE_CONTRACT_OK case=shared_writable_file_releases_borrow_when_inner_operation_unwinds",
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::filename",
+      "error": null,
+      "expected_name": "file_name_test_parse",
+      "failed": 0,
+      "ignored": 0,
+      "label": "file_name_test_parse",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::filename",
+      "error": null,
+      "expected_name": "file_name_test_construction",
+      "failed": 0,
+      "ignored": 0,
+      "label": "file_name_test_construction",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::bitcoinleveldb_file",
+      "error": null,
+      "expected_name": "find_file::find_file_leveldb_semantics_tests::find_file_returns_zero_for_empty_file_vector",
+      "failed": 0,
+      "ignored": 0,
+      "label": "find_file_returns_zero_for_empty_file_vector",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::bitcoinleveldb_file",
+      "error": null,
+      "expected_name": "find_file::find_file_leveldb_semantics_tests::find_file_binary_search_over_three_disjoint_ranges",
+      "failed": 0,
+      "ignored": 0,
+      "label": "find_file_binary_search_over_three_disjoint_ranges",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-file::bitcoinleveldb_file",
+      "error": null,
+      "expected_name": "find_file::find_file_leveldb_semantics_tests::find_file_single_file_edge_cases_across_key_space",
+      "failed": 0,
+      "ignored": 0,
+      "label": "find_file_single_file_edge_cases_across_key_space",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-versionsetutil::find_file_and_overlap",
+      "error": null,
+      "expected_name": "find_file_and_overlap_spec::verify_find_file_on_empty_set",
+      "failed": 0,
+      "ignored": 0,
+      "label": "verify_find_file_on_empty_set",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-versionsetutil::find_file_and_overlap",
+      "error": null,
+      "expected_name": "find_file_and_overlap_spec::verify_find_file_with_single_file",
+      "failed": 0,
+      "ignored": 0,
+      "label": "verify_find_file_with_single_file",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-versionsetutil::find_file_and_overlap",
+      "error": null,
+      "expected_name": "find_file_and_overlap_spec::verify_find_file_with_multiple_non_overlapping_files",
+      "failed": 0,
+      "ignored": 0,
+      "label": "verify_find_file_with_multiple_non_overlapping_files",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-versionsetutil::find_file_and_overlap",
+      "error": null,
+      "expected_name": "find_file_and_overlap_spec::verify_some_file_overlaps_range_with_null_boundaries_disjoint",
+      "failed": 0,
+      "ignored": 0,
+      "label": "verify_some_file_overlaps_range_with_null_boundaries_disjoint",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-versionsetutil::find_file_and_overlap",
+      "error": null,
+      "expected_name": "find_file_and_overlap_spec::verify_overlap_sequence_checks_in_find_file_harness",
+      "failed": 0,
+      "ignored": 0,
+      "label": "verify_overlap_sequence_checks_in_find_file_harness",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    },
+    {
+      "artifact_key": "bitcoinleveldb-versionsetutil::find_file_and_overlap",
+      "error": null,
+      "expected_name": "find_file_and_overlap_spec::verify_overlapping_files_with_non_disjoint_flag",
+      "failed": 0,
+      "ignored": 0,
+      "label": "verify_overlapping_files_with_non_disjoint_flag",
+      "marker": null,
+      "outcome": "passed",
+      "passed": 1
+    }
+  ],
+  "compiler_failure_cause_established": true,
+  "controller_revision": 2,
+  "controller_transition": {
+    "classification": "controller_false_positive_on_explanatory_failure_note",
+    "compiler_builds_succeeded": true,
+    "controller_fingerprint": {
+      "kind": "file",
+      "mode": 448,
+      "sha256": "d06c6b1a70e268b3e800f0ad4bbe893908b0df73ece1534dc8746c827ddcac68",
+      "size": 112482
+    },
+    "controller_path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared017/runs/20261108T044236Z-6afe5698/writable-file-controller017.py",
+    "error_or_ice_diagnostics": 0,
+    "native_tests_executed": 0,
+    "original_source_plan": {
+      "bitcoinleveldb-file/src/find_file.rs": "1e1225a726d79e37104769ab6adb2e62e7ca9c079035aba3ad26663b3898bfdd",
+      "bitcoinleveldb-file/src/writable_file.rs": "df861de99b07227dc2a2149fad4c605d10621973d4df39cc07c6a1c693a68d48",
+      "bitcoinleveldb-file/tests/writable_file_shared.rs": "83ab55cc74302fb1bbf3076e882fd0fa44a2ec29b4bd24fd5637f7ec5f1b0902",
+      "bitcoinleveldb-versionsetutil/tests/find_file_and_overlap.rs": "c6f61a64fdad40052bf68313cc5aeaa0bb347d06dd784ab5096f9d80b3f48769",
+      "contrib/repair/bitcoinleveldb-writablefile-shared017.py": "d06c6b1a70e268b3e800f0ad4bbe893908b0df73ece1534dc8746c827ddcac68",
+      "doc/testing/leveldb-writablefile-shared017.md": "1393e49b506aa83a32f6f9772563855504118a20bb5b0327146f8addc5e0de87"
+    },
+    "previous_state_fingerprint": {
+      "kind": "file",
+      "mode": 384,
+      "sha256": "0b39e595734ee1ead8a7625382f37c5201b8630c2192b73512a17ea3e4f807e9",
+      "size": 1149
+    },
+    "previous_state_path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared017/runs/20261108T051800Z-fe79ad70/previous-state-before-controller-review.json",
+    "report_fingerprint": {
+      "kind": "file",
+      "mode": 384,
+      "sha256": "ad8bbf2d71897f81fc6c1abc22b744a6e7db3c008de2bbdd3c98edd521394351",
+      "size": 151342
+    },
+    "report_path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared017/runs/20261108T044236Z-6afe5698/WRITABLE_FILE_REPAIR_RETURN.json",
+    "rust_paths_unchanged": [
+      "bitcoinleveldb-file/src/writable_file.rs",
+      "bitcoinleveldb-file/tests/writable_file_shared.rs",
+      "bitcoinleveldb-file/src/find_file.rs",
+      "bitcoinleveldb-versionsetutil/tests/find_file_and_overlap.rs"
+    ],
+    "test_validation_reused": false
+  },
+  "full_coverage_claimed": false,
+  "full_randomized_stress": "not rerun",
+  "historical_sparsemerge_abort_cause_established": false,
+  "lineage": {
+    "before_bindings": {
+      "bitcoinleveldb-file/src/find_file.rs": "42db6099ab6cecdeb90dee3ff949814d7158d4a96d5d5da3c5b88199fa42423f",
+      "bitcoinleveldb-file/src/writable_file.rs": "7ef8df19c58a6b04e12f70cb36747b9dcce66d3642997af6d1744b7398c83410",
+      "bitcoinleveldb-versionsetutil/Cargo.toml": "2db7a6b85ac5b4f22df3c9f994bca64834a527b28597a04fb902ab76d844d4eb",
+      "bitcoinleveldb-versionsetutil/src/imports.rs": "9ec4b73a59a7450c8134098851d49a7dc16c46045d5e6175c988b336ca4cba62",
+      "bitcoinleveldb-versionsetutil/src/lib.rs": "be8eba310fcd85ddef4a13f19e29b8e52b13df850530b75a9fb4f5ec578236b7",
+      "bitcoinleveldb-versionsetutil/src/some_file_overlaps_range.rs": "827cf175997c9ff2060c764e7a7317bd9a35f7e5feaacf2dbf22872a313af5b9",
+      "shell.nix": "8f316c4f007426302e26962e13def8c7d5bc0efa85d5e1549c55e85ba0d7c651"
+    },
+    "compiler016_controller_fingerprint": {
+      "kind": "file",
+      "mode": 448,
+      "sha256": "f65690030c2773da0ca3d77e244cfce844790f0c031a46aba64d463289627873",
+      "size": 59801
+    },
+    "compiler016_report_fingerprint": {
+      "kind": "file",
+      "mode": 384,
+      "sha256": "328fd36ce5f835fe62d63b7b38b0a8aef0ceee1f0493898ecbf68a17a7808c05",
+      "size": 119510
+    },
+    "compiler016_report_path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-compile016/runs/20261108T041654Z-097ad300/COMPILER_DIAGNOSTIC_RETURN.json",
+    "compiler_error": "E0425: misplaced overlap tests call a higher-crate helper",
+    "failed_repair015": {
+      "candidate": {
+        "branch": "refs/heads/repair/leveldb-writablefile-shared",
+        "changed_paths": [
+          "bitcoinleveldb-file/src/writable_file.rs",
+          "bitcoinleveldb-file/tests/writable_file_shared.rs",
+          "contrib/repair/bitcoinleveldb-writablefile-shared015.py",
+          "doc/testing/leveldb-writablefile-shared015.md"
+        ],
+        "head": "a788779b925d8813f8601787f432837726ba97d1",
+        "index_entries": {
+          "bitcoinleveldb-file/src/writable_file.rs": [
+            "100644",
+            "095c81066be39b7b08e50e02a368510fb11e786e"
+          ],
+          "bitcoinleveldb-file/tests/writable_file_shared.rs": [
+            "100644",
+            "93a172d571ea7f18ef57579c1f6944ecd0f1345f"
+          ],
+          "contrib/repair/bitcoinleveldb-writablefile-shared015.py": [
+            "100755",
+            "d5d37764e19e5bbabd713778f62ad85823165e20"
+          ],
+          "doc/testing/leveldb-writablefile-shared015.md": [
+            "100644",
+            "4e3c71cb9ae08075f71123429a16aeaa8024f6e5"
+          ]
+        }
+      },
+      "controller_fingerprint": {
+        "kind": "file",
+        "mode": 448,
+        "sha256": "d2ab9c4583284d91eec10db22914e5779e0400b1ba0324df95088a9f59bbfe1a",
+        "size": 105754
+      },
+      "native_tests_started": false,
+      "prior_cargo_exit_code": 101,
+      "prior_rendered_bytes_omitted": 571215,
+      "report_fingerprint": {
+        "kind": "file",
+        "mode": 384,
+        "sha256": "8b3c33270c04e566049c9f168cdba1a32be6b03df6752217170baa2e0c08de7e",
+        "size": 158828
+      },
+      "report_path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared015/runs/20261108T035429Z-804585ba/WRITABLE_FILE_REPAIR_RETURN.json",
+      "source_plan": {
+        "bitcoinleveldb-file/src/writable_file.rs": "df861de99b07227dc2a2149fad4c605d10621973d4df39cc07c6a1c693a68d48",
+        "bitcoinleveldb-file/tests/writable_file_shared.rs": "83ab55cc74302fb1bbf3076e882fd0fa44a2ec29b4bd24fd5637f7ec5f1b0902",
+        "contrib/repair/bitcoinleveldb-writablefile-shared015.py": "d2ab9c4583284d91eec10db22914e5779e0400b1ba0324df95088a9f59bbfe1a",
+        "doc/testing/leveldb-writablefile-shared015.md": "16223aa70ef00e5d0b0f57559e9dd0401b1d0244655b6a1b48ccd98cd108006c"
+      },
+      "state_fingerprint": {
+        "kind": "file",
+        "mode": 384,
+        "sha256": "2e94474cc8aea2d95a1291538849e45a0f9a41874d7c01fb97ae131697584e0b",
+        "size": 804
+      },
+      "state_path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared015/state.json"
+    },
+    "native_tests_started_in_predecessors": false
+  },
+  "relocation": {
+    "assertion_count": 88,
+    "find_assertion_count": 24,
+    "module_bytes_unchanged": true,
+    "moved_module_bytes": 9461,
+    "moved_module_sha256": "c38f0fb8eb5d071aa7611fb0be2fb3d78e8f151c488ea950a7ee226500784e77",
+    "original_find_file_sha256": "42db6099ab6cecdeb90dee3ff949814d7158d4a96d5d5da3c5b88199fa42423f",
+    "overlap_assertion_count": 64,
+    "retained_prefix_sha256": "1e1225a726d79e37104769ab6adb2e62e7ca9c079035aba3ad26663b3898bfdd",
+    "test_count": 6
+  },
+  "run_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-writablefile-shared017/runs/20261108T051800Z-fe79ad70",
+  "source_plan": {
+    "bitcoinleveldb-file/src/find_file.rs": "1e1225a726d79e37104769ab6adb2e62e7ca9c079035aba3ad26663b3898bfdd",
+    "bitcoinleveldb-file/src/writable_file.rs": "df861de99b07227dc2a2149fad4c605d10621973d4df39cc07c6a1c693a68d48",
+    "bitcoinleveldb-file/tests/writable_file_shared.rs": "83ab55cc74302fb1bbf3076e882fd0fa44a2ec29b4bd24fd5637f7ec5f1b0902",
+    "bitcoinleveldb-versionsetutil/tests/find_file_and_overlap.rs": "c6f61a64fdad40052bf68313cc5aeaa0bb347d06dd784ab5096f9d80b3f48769",
+    "contrib/repair/bitcoinleveldb-writablefile-shared017.py": "df33fb34cd4ee8c6671f9d2274a91d8ba151365c0a3e02717fc104f2a9c47c43",
+    "doc/testing/leveldb-writablefile-shared017.md": "ed34770c49a8546ccba39057950605f83aa58895893119495dbeb49e209a25d0"
+  },
+  "test_count": 19,
+  "workflow": "leveldb-writablefile-shared017"
+}

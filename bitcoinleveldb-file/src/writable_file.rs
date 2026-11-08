@@ -38,23 +38,51 @@ pub trait WritableFileSync {
 
 impl From<Rc<RefCell<dyn WritableFile>>> for Box<dyn WritableFile> {
 
-    /**
-      | Create a writer that will append data to
-      | "*dest".
-      |
-      | "*dest" must be initially empty.
-      |
-      | "*dest" must remain live while this LogWriter is
-      | in use.
-      */
+    /// Transfer this shared handle into a boxed forwarding adapter.
+    ///
+    /// The adapter keeps the existing file alive without cloning the Rc or
+    /// changing its contents. Operations use the same RefCell borrow rules as
+    /// direct access to the shared file. Dropping the adapter releases its Rc;
+    /// closing or syncing the file remains an explicit caller operation.
     fn from(dest: Rc<RefCell<dyn WritableFile>>) -> Self {
-    
-        todo!();
-        /*
-           : dest(dest),
-           : block_offset(0),
-           InitTypeCrc(type_crc_);
-        */
+        Box::new(SharedWritableFileAdapter { inner: dest })
+    }
+}
+
+struct SharedWritableFileAdapter {
+    inner: Rc<RefCell<dyn WritableFile>>,
+}
+
+impl WritableFile for SharedWritableFileAdapter {}
+
+impl WritableFileAppend for SharedWritableFileAdapter {
+    fn append(&mut self, data: &Slice) -> crate::Status {
+        self.inner.borrow_mut().append(data)
+    }
+}
+
+impl WritableFileClose for SharedWritableFileAdapter {
+    fn close(&mut self) -> crate::Status {
+        self.inner.borrow_mut().close()
+    }
+}
+
+impl WritableFileFlush for SharedWritableFileAdapter {
+    fn flush(&mut self) -> crate::Status {
+        self.inner.borrow_mut().flush()
+    }
+}
+
+impl WritableFileSync for SharedWritableFileAdapter {
+    fn sync(&mut self) -> crate::Status {
+        self.inner.borrow_mut().sync()
+    }
+}
+
+impl Named for SharedWritableFileAdapter {
+    fn name(&self) -> Cow<'_,str> {
+        // An inner borrowed name cannot outlive the temporary RefCell guard.
+        Cow::Owned(self.inner.borrow().name().into_owned())
     }
 }
 
