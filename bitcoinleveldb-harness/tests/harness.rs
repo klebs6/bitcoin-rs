@@ -1,5 +1,8 @@
 // ---------------- [ File: bitcoinleveldb-harness/tests/harness.rs ]
 use bitcoin_imports::*;
+
+#[path = "support/execution_controls.rs"]
+mod execution_controls;
 use bitcoinleveldbt_dbtest::{TestArgs, TestType};
 use bitcoinleveldb_harness::Harness;
 use bitcoinleveldb_iterator::{LevelDBIterator, MockStubIterator};
@@ -188,8 +191,14 @@ fn harness_test_arg_matrix() -> Vec<TestArgs> {
 /**
    Test empty table/block.
   */
-#[traced_test]
+#[test]
 fn harness_empty() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_empty
+    execution_controls::require_case_protection("harness_empty", execution_controls::Profile::Case);
+    execution_controls::phase("harness_empty", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_empty
+
+    {
     /*
       for (int i = 0; i < kNumTestArgs; i++) {
         Init(kTestArgList[i]);
@@ -215,6 +224,12 @@ fn harness_empty() {
 
         i += 1;
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_empty
+    execution_controls::complete("harness_empty");
+    // HARNESS031_MONITOR_END:complete-harness_empty
 }
 
 /**
@@ -223,8 +238,14 @@ fn harness_empty() {
   | such blocks, but the Java version of leveldb
   | seems to.
   */
-#[traced_test]
+#[test]
 fn harness_zero_restart_points_in_block() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_zero_restart_points_in_block
+    execution_controls::require_case_protection("harness_zero_restart_points_in_block", execution_controls::Profile::Case);
+    execution_controls::phase("harness_zero_restart_points_in_block", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_zero_restart_points_in_block
+
+    {
     /*
       char data[sizeof(uint32_t)];
       memset(data, 0, sizeof(data));
@@ -270,14 +291,26 @@ fn harness_zero_restart_points_in_block() {
 
         drop(Box::from_raw(iter));
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_zero_restart_points_in_block
+    execution_controls::complete("harness_zero_restart_points_in_block");
+    // HARNESS031_MONITOR_END:complete-harness_zero_restart_points_in_block
 }
 
 /**
   | Test the empty key
   |
   */
-#[traced_test]
+#[test]
 fn harness_simple_empty_key() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_simple_empty_key
+    execution_controls::require_case_protection("harness_simple_empty_key", execution_controls::Profile::Case);
+    execution_controls::phase("harness_simple_empty_key", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_simple_empty_key
+
+    {
     /*
       for (int i = 0; i < kNumTestArgs; i++) {
         Init(kTestArgList[i]);
@@ -307,10 +340,22 @@ fn harness_simple_empty_key() {
 
         i += 1;
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_simple_empty_key
+    execution_controls::complete("harness_simple_empty_key");
+    // HARNESS031_MONITOR_END:complete-harness_simple_empty_key
 }
 
-#[traced_test]
+#[test]
 fn harness_simple_single() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_simple_single
+    execution_controls::require_case_protection("harness_simple_single", execution_controls::Profile::Case);
+    execution_controls::phase("harness_simple_single", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_simple_single
+
+    {
     /*
       for (int i = 0; i < kNumTestArgs; i++) {
         Init(kTestArgList[i]);
@@ -340,10 +385,22 @@ fn harness_simple_single() {
 
         i += 1;
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_simple_single
+    execution_controls::complete("harness_simple_single");
+    // HARNESS031_MONITOR_END:complete-harness_simple_single
 }
 
-#[traced_test]
+#[test]
 fn harness_simple_multi() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_simple_multi
+    execution_controls::require_case_protection("harness_simple_multi", execution_controls::Profile::Case);
+    execution_controls::phase("harness_simple_multi", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_simple_multi
+
+    {
     /*
       for (int i = 0; i < kNumTestArgs; i++) {
         Init(kTestArgList[i]);
@@ -385,10 +442,22 @@ fn harness_simple_multi() {
 
         i += 1;
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_simple_multi
+    execution_controls::complete("harness_simple_multi");
+    // HARNESS031_MONITOR_END:complete-harness_simple_multi
 }
 
-#[traced_test]
+#[test]
 fn harness_simple_special_key() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_simple_special_key
+    execution_controls::require_case_protection("harness_simple_special_key", execution_controls::Profile::Case);
+    execution_controls::phase("harness_simple_special_key", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_simple_special_key
+
+    {
     /*
       for (int i = 0; i < kNumTestArgs; i++) {
         Init(kTestArgList[i]);
@@ -421,10 +490,23 @@ fn harness_simple_special_key() {
 
         i += 1;
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_simple_special_key
+    execution_controls::complete("harness_simple_special_key");
+    // HARNESS031_MONITOR_END:complete-harness_simple_special_key
 }
 
-#[traced_test]
+#[test]
+#[ignore = "long stress; use the resource-controlled harness031 runner explicitly"]
 fn harness_randomized() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_randomized
+    execution_controls::require_case_protection("harness_randomized", execution_controls::Profile::Stress);
+    execution_controls::phase("harness_randomized", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_randomized
+
+    {
     /*
       for (int i = 0; i < kNumTestArgs; i++) {
         Init(kTestArgList[i]);
@@ -455,6 +537,10 @@ fn harness_randomized() {
 
     let mut i: i32 = 0;
     while i < k_num_test_args {
+
+        // HARNESS031_MONITOR_BEGIN:randomized-config
+        execution_controls::progress("harness_randomized", "configuration.enter", i as usize, i as usize, k_num_test_args as usize);
+        // HARNESS031_MONITOR_END:randomized-config
         harness.init(&test_args[i as usize]);
 
         let mut rnd = Random::new(leveldb_test_random_seed().wrapping_add(5));
@@ -462,6 +548,10 @@ fn harness_randomized() {
         let mut num_entries: i32 = 0;
         while num_entries < 2000 {
             if (num_entries % 10) == 0 {
+
+                // HARNESS031_MONITOR_BEGIN:randomized-entries
+                execution_controls::progress("harness_randomized", "entries.prepare", i as usize, num_entries as usize, 2000);
+                // HARNESS031_MONITOR_END:randomized-entries
                 tracing::info!(
                     target: "bitcoinleveldb_harness_tests",
                     label = "bitcoinleveldb_harness_tests.harness_randomized.case_progress",
@@ -494,10 +584,23 @@ fn harness_randomized() {
 
         i += 1;
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_randomized
+    execution_controls::complete("harness_randomized");
+    // HARNESS031_MONITOR_END:complete-harness_randomized
 }
 
-#[traced_test]
+#[test]
+#[ignore = "long stress; use the resource-controlled harness031 runner explicitly"]
 fn harness_randomized_longdb() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_randomized_longdb
+    execution_controls::require_case_protection("harness_randomized_longdb", execution_controls::Profile::Stress);
+    execution_controls::phase("harness_randomized_longdb", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_randomized_longdb
+
+    {
     /*
       Random rnd(test::RandomSeed());
       TestArgs args = {DB_TEST, false, 16};
@@ -541,6 +644,12 @@ fn harness_randomized_longdb() {
 
     let mut e: i32 = 0;
     while e < num_entries {
+
+        // HARNESS031_MONITOR_BEGIN:longdb-insert
+        if e % 8192 == 0 {
+            execution_controls::progress("harness_randomized_longdb", "insert.before", 0, e as usize, num_entries as usize);
+        }
+        // HARNESS031_MONITOR_END:longdb-insert
         let mut v: String = String::new();
 
         let klen: u32 = rnd.skewed(4);
@@ -555,7 +664,15 @@ fn harness_randomized_longdb() {
         e += 1;
     }
 
+
+    // HARNESS031_MONITOR_BEGIN:longdb-test-before
+    execution_controls::progress("harness_randomized_longdb", "verify.enter", 0, num_entries as usize, num_entries as usize);
+    // HARNESS031_MONITOR_END:longdb-test-before
     harness.test(&mut rnd as *mut Random);
+    // HARNESS031_MONITOR_BEGIN:longdb-test-after
+    execution_controls::progress("harness_randomized_longdb", "verify.return", 0, num_entries as usize, num_entries as usize);
+    // HARNESS031_MONITOR_END:longdb-test-after
+
 
     // We must have created enough data to force merging
     let mut files: i32 = 0;
@@ -586,10 +703,22 @@ fn harness_randomized_longdb() {
     }
 
     assert!(files > 0);
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_randomized_longdb
+    execution_controls::complete("harness_randomized_longdb");
+    // HARNESS031_MONITOR_END:complete-harness_randomized_longdb
 }
 
-#[traced_test]
+#[test]
 fn harness_db_pointer_is_null_when_not_db_test() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_db_pointer_is_null_when_not_db_test
+    execution_controls::require_case_protection("harness_db_pointer_is_null_when_not_db_test", execution_controls::Profile::Case);
+    execution_controls::phase("harness_db_pointer_is_null_when_not_db_test", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_db_pointer_is_null_when_not_db_test
+
+    {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
         label = "bitcoinleveldb_harness_tests.harness_db_pointer_is_null_when_not_db_test",
@@ -610,10 +739,22 @@ fn harness_db_pointer_is_null_when_not_db_test() {
 
         i += 1;
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_db_pointer_is_null_when_not_db_test
+    execution_controls::complete("harness_db_pointer_is_null_when_not_db_test");
+    // HARNESS031_MONITOR_END:complete-harness_db_pointer_is_null_when_not_db_test
 }
 
-#[traced_test]
+#[test]
 fn harness_reinitialization_switches_constructor_types_without_panicking() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_reinitialization_switches_constructor_types_without_panicking
+    execution_controls::require_case_protection("harness_reinitialization_switches_constructor_types_without_panicking", execution_controls::Profile::Case);
+    execution_controls::phase("harness_reinitialization_switches_constructor_types_without_panicking", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_reinitialization_switches_constructor_types_without_panicking
+
+    {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
         label = "bitcoinleveldb_harness_tests.harness_reinitialization_switches_constructor_types_without_panicking",
@@ -645,10 +786,22 @@ fn harness_reinitialization_switches_constructor_types_without_panicking() {
 
     let mut rnd2 = Random::new(leveldb_test_random_seed().wrapping_add(12));
     harness.test(&mut rnd2 as *mut Random);
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_reinitialization_switches_constructor_types_without_panicking
+    execution_controls::complete("harness_reinitialization_switches_constructor_types_without_panicking");
+    // HARNESS031_MONITOR_END:complete-harness_reinitialization_switches_constructor_types_without_panicking
 }
 
-#[traced_test]
+#[test]
 fn harness_duplicate_keys_overwrite_previous_value() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_duplicate_keys_overwrite_previous_value
+    execution_controls::require_case_protection("harness_duplicate_keys_overwrite_previous_value", execution_controls::Profile::Case);
+    execution_controls::phase("harness_duplicate_keys_overwrite_previous_value", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_duplicate_keys_overwrite_previous_value
+
+    {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
         label = "bitcoinleveldb_harness_tests.harness_duplicate_keys_overwrite_previous_value",
@@ -675,10 +828,22 @@ fn harness_duplicate_keys_overwrite_previous_value() {
 
         i += 1;
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_duplicate_keys_overwrite_previous_value
+    execution_controls::complete("harness_duplicate_keys_overwrite_previous_value");
+    // HARNESS031_MONITOR_END:complete-harness_duplicate_keys_overwrite_previous_value
 }
 
-#[traced_test]
+#[test]
 fn harness_handles_embedded_nul_and_empty_values() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_handles_embedded_nul_and_empty_values
+    execution_controls::require_case_protection("harness_handles_embedded_nul_and_empty_values", execution_controls::Profile::Case);
+    execution_controls::phase("harness_handles_embedded_nul_and_empty_values", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_handles_embedded_nul_and_empty_values
+
+    {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
         label = "bitcoinleveldb_harness_tests.harness_handles_embedded_nul_and_empty_values",
@@ -706,10 +871,22 @@ fn harness_handles_embedded_nul_and_empty_values() {
 
         i += 1;
     }
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_handles_embedded_nul_and_empty_values
+    execution_controls::complete("harness_handles_embedded_nul_and_empty_values");
+    // HARNESS031_MONITOR_END:complete-harness_handles_embedded_nul_and_empty_values
 }
 
-#[traced_test]
+#[test]
 fn harness_pick_random_key_returns_foo_on_empty_keyset() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_pick_random_key_returns_foo_on_empty_keyset
+    execution_controls::require_case_protection("harness_pick_random_key_returns_foo_on_empty_keyset", execution_controls::Profile::Case);
+    execution_controls::phase("harness_pick_random_key_returns_foo_on_empty_keyset", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_pick_random_key_returns_foo_on_empty_keyset
+
+    {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
         label = "bitcoinleveldb_harness_tests.harness_pick_random_key_returns_foo_on_empty_keyset",
@@ -730,10 +907,22 @@ fn harness_pick_random_key_returns_foo_on_empty_keyset() {
     let k = harness.pick_random_key(&mut rnd as *mut Random, &keys);
 
     assert_eq!(k, "foo");
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_pick_random_key_returns_foo_on_empty_keyset
+    execution_controls::complete("harness_pick_random_key_returns_foo_on_empty_keyset");
+    // HARNESS031_MONITOR_END:complete-harness_pick_random_key_returns_foo_on_empty_keyset
 }
 
-#[traced_test]
+#[test]
 fn harness_to_string_formats_iterator_entries_and_end_sentinel() {
+    // HARNESS031_MONITOR_BEGIN:entry-harness_to_string_formats_iterator_entries_and_end_sentinel
+    execution_controls::require_case_protection("harness_to_string_formats_iterator_entries_and_end_sentinel", execution_controls::Profile::Case);
+    execution_controls::phase("harness_to_string_formats_iterator_entries_and_end_sentinel", "entry");
+    // HARNESS031_MONITOR_END:entry-harness_to_string_formats_iterator_entries_and_end_sentinel
+
+    {
     tracing::info!(
         target: "bitcoinleveldb_harness_tests",
         label = "bitcoinleveldb_harness_tests.harness_to_string_formats_iterator_entries_and_end_sentinel",
@@ -751,4 +940,10 @@ fn harness_to_string_formats_iterator_entries_and_end_sentinel() {
 
     let got = harness.to_string(&iter as *const LevelDBIterator);
     assert_eq!(got, "'k->v'");
+
+    }
+
+    // HARNESS031_MONITOR_BEGIN:complete-harness_to_string_formats_iterator_entries_and_end_sentinel
+    execution_controls::complete("harness_to_string_formats_iterator_entries_and_end_sentinel");
+    // HARNESS031_MONITOR_END:complete-harness_to_string_formats_iterator_entries_and_end_sentinel
 }

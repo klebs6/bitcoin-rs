@@ -1,0 +1,1520 @@
+{
+  "artifacts": {
+    "bitcoin-leveldb::bitcoin_leveldb": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "6c2a8bab8c7902e1b162e0f1aeb68c3bb3ac8ecec07b7f01a0a2b18db30c6c1c",
+        "size": 6982808
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/bitcoin_leveldb-e29e16b47917020f"
+    },
+    "bitcoinleveldb-harness::bitcoinleveldb_harness": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "945ff718c2a05d74578b946128a67cbcd18df9002bac9f69df1acbc45c09dc98",
+        "size": 7003864
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/bitcoinleveldb_harness-c849dd8d04bb4c47"
+    },
+    "bitcoinleveldb-harness::execution_control_contracts": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "ce90039c2aacc5e48309b01fd615d32ddbefc02acb4a36261504faac6a72b3c4",
+        "size": 7168584
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/execution_control_contracts-96d881ebaa2cfa05"
+    },
+    "bitcoinleveldb-harness::harness": {
+      "fingerprint": {
+        "kind": "file",
+        "mode": 493,
+        "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+        "size": 65650600
+      },
+      "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+    }
+  },
+  "base": "fceccea344550ced58044a34dce9e1c677c54bb9",
+  "base_tree": "3f15b24845aac80af16dac7c7c840f68cadf9abe",
+  "case_guards": {
+    "admission_accepts_complete_controls": {
+      "assessment": {
+        "error": null,
+        "expected_name": "admission_accepts_complete_controls",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTROL_CONTRACT_OK case=admission_accepts_complete_controls",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_accepts_complete_controls-d29897a56b69/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "c408094fd985d317057436bd0e67714071f6f5f4580c1116368f9b84ca6c7be2",
+          "size": 631
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_accepts_complete_controls-d29897a56b69/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "f218a7c84b7ea42d201c58f785dd868a4f8cd95a98ddd875540820e3764e511f",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_accepts_complete_controls-d29897a56b69/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "8de9c61ce877470d12b03bad6e341e3f4ce27607380ca4b10dcf8c2e9bff967d",
+          "size": 13026
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_accepts_complete_controls-d29897a56b69/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "42ac096d8648d4486bc5e59e8635ff2d2cf85ff5ff808f5084de2ad8f843d196",
+          "size": 1546
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_accepts_complete_controls-d29897a56b69/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "d093534cd5195f07b22975035423cd45494f801818db168c2d7b4796f1321d42",
+          "size": 5899
+        }
+      },
+      "kind": "case",
+      "label": "admission_accepts_complete_controls",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "admission_accepts_complete_controls",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_accepts_complete_controls",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_accepts_complete_controls",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_accepts_complete_controls",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_accepts_complete_controls",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_accepts_complete_controls"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "ce90039c2aacc5e48309b01fd615d32ddbefc02acb4a36261504faac6a72b3c4",
+          "size": 7168584
+        },
+        "key": "bitcoinleveldb-harness::execution_control_contracts",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/execution_control_contracts-96d881ebaa2cfa05"
+      }
+    },
+    "admission_rejects_missing_or_weakened_controls": {
+      "assessment": {
+        "error": null,
+        "expected_name": "admission_rejects_missing_or_weakened_controls",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTROL_CONTRACT_OK case=admission_rejects_missing_or_weakened_controls",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_rejects_missing_or_weakened_co-50e623db7a06/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "00d3c554c1f26d8bbf415ad5ff0508aaa73ab7749c37a1b03a5e17c0086986f1",
+          "size": 658
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_rejects_missing_or_weakened_co-50e623db7a06/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "14fa3381721979f4f61c5663f6249e1ad131fefa92b980f1c23a12feb9a8530d",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_rejects_missing_or_weakened_co-50e623db7a06/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "aeb4458827aaa606fea90fdb091b39f9f21e05e14eddfb83e1cd7b99a193467f",
+          "size": 13113
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_rejects_missing_or_weakened_co-50e623db7a06/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "695c14b715756e62ea4e1e62fe4c4b6028dbddfc7a430e66e632e1fc60e8619a",
+          "size": 1551
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/admission_rejects_missing_or_weakened_co-50e623db7a06/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "eaf9d5b60ee631a494c6418d88a3962c459a6f9bc4fe7f2c237bd24d431c07a4",
+          "size": 6597
+        }
+      },
+      "kind": "case",
+      "label": "admission_rejects_missing_or_weakened_controls",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "admission_rejects_missing_or_weakened_controls",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_rejects_missing_or_weakened_controls",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_rejects_missing_or_weakened_controls",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_rejects_missing_or_weakened_controls",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_rejects_missing_or_weakened_controls",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-admission_rejects_missing_or_weakened_controls"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "ce90039c2aacc5e48309b01fd615d32ddbefc02acb4a36261504faac6a72b3c4",
+          "size": 7168584
+        },
+        "key": "bitcoinleveldb-harness::execution_control_contracts",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/execution_control_contracts-96d881ebaa2cfa05"
+      }
+    },
+    "harness_db_pointer_is_null_when_not_db_test": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_db_pointer_is_null_when_not_db_test",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_db_pointer_is_null_when_not_db_test",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_db_pointer_is_null_when_not_db_t-7a81118317ea/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "9f8b932b92c06698aaa61e10e692552cb280a86838077da63505ea6ffaf21869",
+          "size": 1353
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_db_pointer_is_null_when_not_db_t-7a81118317ea/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "051a9c4e30ffbc0b47a2bfb1d812fc70ec734301885ac6c684c9d9132a161934",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_db_pointer_is_null_when_not_db_t-7a81118317ea/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "aa1a365752f0ae61c423b5cf6fb7a37e0f486022f7771600594898011b6b3932",
+          "size": 13072
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_db_pointer_is_null_when_not_db_t-7a81118317ea/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "4d35285274e80d2c1d1814c450149f017f8a9a40e024ad2475db6aa4a2e55cd4",
+          "size": 1551
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_db_pointer_is_null_when_not_db_t-7a81118317ea/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "9d5d2a1629d7a84385f686967768979fea05a4502dd0704fa2c309c27a7140a8",
+          "size": 7111
+        }
+      },
+      "kind": "case",
+      "label": "harness_db_pointer_is_null_when_not_db_test",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_db_pointer_is_null_when_not_db_test",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_db_pointer_is_null_when_not_db_test",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_db_pointer_is_null_when_not_db_test",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_db_pointer_is_null_when_not_db_test",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_db_pointer_is_null_when_not_db_test",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_db_pointer_is_null_when_not_db_test"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_duplicate_keys_overwrite_previous_value": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_duplicate_keys_overwrite_previous_value",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_duplicate_keys_overwrite_previous_value",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_duplicate_keys_overwrite_previou-84ddcf44e661/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "bdbfdff060b091225d0a8383c705225f4725e3d9aad78e26dc037418a5b86aa7",
+          "size": 1612
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_duplicate_keys_overwrite_previou-84ddcf44e661/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "c6f5d091b76dfcd011c48dc9b853a223ec2f51c19779d890194e7953a4f91357",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_duplicate_keys_overwrite_previou-84ddcf44e661/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "a8fd3126613de6f2837ada43f594a269d5c5bddee7723872b47c1abf7fd201ab",
+          "size": 13100
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_duplicate_keys_overwrite_previou-84ddcf44e661/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "e88f50ffaf40f01b160767874c8cfa62d41a07f502cbfb5b572200d9e822be4f",
+          "size": 1551
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_duplicate_keys_overwrite_previou-84ddcf44e661/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "120c92b27564534f7cadf0e2bf93490714c709703821f78ebaa871b9958b2321",
+          "size": 7548
+        }
+      },
+      "kind": "case",
+      "label": "harness_duplicate_keys_overwrite_previous_value",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_duplicate_keys_overwrite_previous_value",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_duplicate_keys_overwrite_previous_value",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_duplicate_keys_overwrite_previous_value",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_duplicate_keys_overwrite_previous_value",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_duplicate_keys_overwrite_previous_value",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_duplicate_keys_overwrite_previous_value"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_empty": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_empty",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_empty",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_empty-0eb437ecf053/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "84e7914740b065b2b007e2371fe4c14e05fafa7ff2b2012faa6bc66e6b1acde6",
+          "size": 1422
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_empty-0eb437ecf053/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "9caca097bd4ef4f1fd358c56a6c57faf64dc7ed664b9c7405381a26c2d8f5d25",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_empty-0eb437ecf053/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "bf76fdfa40529cd10486f0ea9583026c2857f07ebb8bc2f0111ee0c4cc6c0f73",
+          "size": 12808
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_empty-0eb437ecf053/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "b93362256bd0f6202bac604feff138537e979c6e61ce3c2a8df94ca22ed374bc",
+          "size": 1524
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_empty-0eb437ecf053/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "719cccb627c1376c8feeee44aa2a0071a6fe9870e8a185b69d81130e803ef051",
+          "size": 6988
+        }
+      },
+      "kind": "case",
+      "label": "harness_empty",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_empty",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_empty",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_empty",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_empty",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_empty",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_empty"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_handles_embedded_nul_and_empty_values": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_handles_embedded_nul_and_empty_values",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_handles_embedded_nul_and_empty_values",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_handles_embedded_nul_and_empty_v-785ee080e725/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "44c0d9fcb0d7ff495ac4f1767700b2bc5c16be0e3c2841b4f0cca08b5ae3cdb4",
+          "size": 1604
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_handles_embedded_nul_and_empty_v-785ee080e725/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "e5750d10b93505fac161f56ba3097a783808a8ceb3873d9eba41a4dda9fba259",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_handles_embedded_nul_and_empty_v-785ee080e725/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "dddfcaf42ec8f75314ec4f57fa7244f0ddd91fd17c27edc4cfdea654fc4c5ae9",
+          "size": 13086
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_handles_embedded_nul_and_empty_v-785ee080e725/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "3da8d60bd61c76f9f928491020d9f224fbaf9afe6ea799490095b401ae379a7e",
+          "size": 1551
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_handles_embedded_nul_and_empty_v-785ee080e725/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "95b66fb87ae4a51452f1b75ba5f724e3bcf446b4ac08b9c12185a0e7277d12f8",
+          "size": 7533
+        }
+      },
+      "kind": "case",
+      "label": "harness_handles_embedded_nul_and_empty_values",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_handles_embedded_nul_and_empty_values",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_handles_embedded_nul_and_empty_values",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_handles_embedded_nul_and_empty_values",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_handles_embedded_nul_and_empty_values",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_handles_embedded_nul_and_empty_values",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_handles_embedded_nul_and_empty_values"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_pick_random_key_returns_foo_on_empty_keyset": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_pick_random_key_returns_foo_on_empty_keyset",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_pick_random_key_returns_foo_on_empty_keyset",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_pick_random_key_returns_foo_on_e-6624cb3c42c3/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "3963dd6e16431824f2e02a2e5800608c4a38361dca6b401e3d765649c58fcaa1",
+          "size": 1044
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_pick_random_key_returns_foo_on_e-6624cb3c42c3/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "4bbc7e324bdf8320eb8c5447e2eb46c91e54dfa05542987324759e6a62ffd5a8",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_pick_random_key_returns_foo_on_e-6624cb3c42c3/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "1eb287d084eee87ae8dd327e876f9ac24a2a969d296f713d89800e076b435f88",
+          "size": 13128
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_pick_random_key_returns_foo_on_e-6624cb3c42c3/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "d550bee9e456dbdc295601ec5d1f51c6952b232a75ff80b88bcc382b9095204b",
+          "size": 1551
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_pick_random_key_returns_foo_on_e-6624cb3c42c3/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "0f624e451a65f275ebe7187ace26a02be6a368fca272ca0caf0c43808a43aa89",
+          "size": 6391
+        }
+      },
+      "kind": "case",
+      "label": "harness_pick_random_key_returns_foo_on_empty_keyset",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_pick_random_key_returns_foo_on_empty_keyset",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_pick_random_key_returns_foo_on_empty_keyset",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_pick_random_key_returns_foo_on_empty_keyset",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_pick_random_key_returns_foo_on_empty_keyset",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_pick_random_key_returns_foo_on_empty_keyset",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_pick_random_key_returns_foo_on_empty_keyset"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_randomized": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_randomized",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_randomized",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized-fc581d28eb60/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "abedeb7901c56ca9791cf109a310fae3ccf78b115a8fc0e007b53b69c76567c1",
+          "size": 42306
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized-fc581d28eb60/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "0553f2abc0d7f67e63ac1301c75a6dd118a316d51492ae62b14290f4baa67a5c",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized-fc581d28eb60/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "3721f7d4a800b6af6761872f1bbbdcc4bb78beb464e17582f9e70bac3fe70098",
+          "size": 12872
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized-fc581d28eb60/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "6b0caf0d4180e14211d05c112e42f0080e6c0ae1dcf31cd1e64896dd421de35e",
+          "size": 1534
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized-fc581d28eb60/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "3d22216fdff591d2de670f7e919e27dd5ecee848d12b1af837c159a965fdd91c",
+          "size": 51358
+        }
+      },
+      "kind": "stress",
+      "label": "harness_randomized",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_randomized",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_randomized_longdb": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_randomized_longdb",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_randomized_longdb",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized_longdb-8ffe76bd96da/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "e5a10c64991ae6a0f4ff3c5f0010172a55b7137f414b25963bb0bfee7358cf33",
+          "size": 2718
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized_longdb-8ffe76bd96da/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "47d70d45ccd9ab0569e6f0d1b24b86b1265a9454f66648a45a3feb4a656c5fce",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized_longdb-8ffe76bd96da/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "190d149eddd9898cf47b6b79744210de714f829d4a690739c3a219198b86cb94",
+          "size": 12935
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized_longdb-8ffe76bd96da/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "2d4b485c140b680ecfebd2d61e015aa60485a83cce343d158f9471c903619d15",
+          "size": 1541
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_randomized_longdb-8ffe76bd96da/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "f8ee804eae5ef3b6e4467b6134c6f9ccc686a539979e25a7d777d8fe01210a18",
+          "size": 9110
+        }
+      },
+      "kind": "stress",
+      "label": "harness_randomized_longdb",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_randomized_longdb",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized_longdb",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized_longdb",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized_longdb",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized_longdb",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_randomized_longdb"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_reinitialization_switches_constructor_types_without_panicking": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_reinitialization_switches_constructor_types_without_panicking",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_reinitialization_switches_constructor_types_without_panicking",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_reinitialization_switches_constr-1f483ef7a640/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "23673273c67356f280752b83e7881897508cf2ac7ef4215992fb648ec75bfddb",
+          "size": 1116
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_reinitialization_switches_constr-1f483ef7a640/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "87304a40ac326f967ea88ea395f9120b2a54a58246f222cea652a69bc5870285",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_reinitialization_switches_constr-1f483ef7a640/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "b8a70924660e4aa9abe039d3d442606708b1d40148849ece4f2bdd8345e62e42",
+          "size": 13254
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_reinitialization_switches_constr-1f483ef7a640/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "3252e8fe182f59305b73da1f9cc84a063ab8c0b01ad8ccd6b896e616c3b335e6",
+          "size": 1551
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_reinitialization_switches_constr-1f483ef7a640/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "6dd0180b7fada55ef090396f1a189b556bdd0ee2bf7dcfca6e1583050645658f",
+          "size": 6517
+        }
+      },
+      "kind": "case",
+      "label": "harness_reinitialization_switches_constructor_types_without_panicking",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_reinitialization_switches_constructor_types_without_panicking",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_reinitialization_switches_constructor_types_without_panicking",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_reinitialization_switches_constructor_types_without_panicking",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_reinitialization_switches_constructor_types_without_panicking",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_reinitialization_switches_constructor_types_without_panicking",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_reinitialization_switches_constructor_types_without_panicking"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_simple_empty_key": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_simple_empty_key",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_simple_empty_key",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_empty_key-c5f671c6a46b/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "d2cf902fe2d0e33bb02f3ac376730a5c4e42b1ec595705ec6be566420f874953",
+          "size": 1488
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_empty_key-c5f671c6a46b/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "24d739e962e83945927c5ffe737b60bcc3290c6f4e0024891ff221d1894e2842",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_empty_key-c5f671c6a46b/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "ff9ac8b012aaa18053d4b16814c4c6749dbd67ba661470876fc3da0d686dbdcb",
+          "size": 12907
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_empty_key-c5f671c6a46b/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "b5b3feaa3727bd72182a49aa9fd65b6130fe57656dd6aeede6d52166ae4cd8ee",
+          "size": 1535
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_empty_key-c5f671c6a46b/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "c112997a5e4e487aff7e7d3fb7256484c71a0b655064ee4156ed8ea146992901",
+          "size": 7066
+        }
+      },
+      "kind": "case",
+      "label": "harness_simple_empty_key",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_simple_empty_key",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_empty_key",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_empty_key",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_empty_key",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_empty_key",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_empty_key"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_simple_multi": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_simple_multi",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_simple_multi",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_multi-2e6d450187f8/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "5c6475fa3014a9f2a10047a159587ab9a7bb1de6e008fe3b0f5abeedcdc78d0f",
+          "size": 1464
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_multi-2e6d450187f8/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "9e544f1284e8e3dc189dec62776f091a31e0a34328a0cf0ca4a7a311f5043b57",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_multi-2e6d450187f8/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "67a85bc937be5b6f23384bc8e54cbe6649a7c0a05025cca23394c68e1d5e340a",
+          "size": 12871
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_multi-2e6d450187f8/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "9ad8ab4d6a754ec430ff0cc9200ba7150996be0fff1a934a73ebb799e0dbafd8",
+          "size": 1531
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_multi-2e6d450187f8/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "2666d9c5c7fb5b8507d0a00a437a92c9afbe1cc5d0d0886dd5bf1b272d9ed3f1",
+          "size": 7120
+        }
+      },
+      "kind": "case",
+      "label": "harness_simple_multi",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_simple_multi",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_multi",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_multi",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_multi",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_multi",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_multi"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_simple_single": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_simple_single",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_simple_single",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_single-240dc6566fc6/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "d3fc0c64f34b9cda4d5c8fee9681f8f26eecad45b3f3ea4e913b37ff8ca6fe5d",
+          "size": 1519
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_single-240dc6566fc6/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "7bbd7199c213eafc8fbe9c6f390a43a941854de2c31a9c6fd1a5935614f487aa",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_single-240dc6566fc6/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "86f6d965fef32d3a77aa97aa75d30271a9ecb2fd9abaad8fbf0c3579eecdf269",
+          "size": 12880
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_single-240dc6566fc6/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "0cdaf0cf1d7e8a87c3dcc34af8a1cb7f8ed10af5f69e9cb4839e0ad85672a36d",
+          "size": 1532
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_single-240dc6566fc6/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "e95301b7e8495f0a342688cbd7bfd1578f848c3752c4317050af36e30845403d",
+          "size": 7188
+        }
+      },
+      "kind": "case",
+      "label": "harness_simple_single",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_simple_single",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_single",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_single",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_single",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_single",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_single"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_simple_special_key": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_simple_special_key",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_simple_special_key",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_special_key-cd18e4e4c04f/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "1b3bec85b406956401eea55709b360f536a1c9a7e2c76fad7285cf723169d925",
+          "size": 1500
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_special_key-cd18e4e4c04f/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "6ddd3e026438d17fc7fcda6f1197ea3df6db1d39ef7fe17cda0b5272061836d3",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_special_key-cd18e4e4c04f/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "572882d10b7b01ba1c9e075d99d507c91e911a7fd6fc337010e7ca0f21b1664b",
+          "size": 12925
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_special_key-cd18e4e4c04f/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "6354bc6e277310c416ee70b8c4aa0f783b393b8a962e1d650a61a85bb7dcc2cb",
+          "size": 1537
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_simple_special_key-cd18e4e4c04f/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "23f14e1e9de86a4a3f6f5cc6565919c4fe540520d88fc24a1790e001322dc6f8",
+          "size": 7233
+        }
+      },
+      "kind": "case",
+      "label": "harness_simple_special_key",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_simple_special_key",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_special_key",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_special_key",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_special_key",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_special_key",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_simple_special_key"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_to_string_formats_iterator_entries_and_end_sentinel": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_to_string_formats_iterator_entries_and_end_sentinel",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_to_string_formats_iterator_entries_and_end_sentinel",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_to_string_formats_iterator_entri-343908d1d619/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "a1bb9acf86a94fecf74a12d175cb1c2f7509c54cdecccb0d0a89f181380575b2",
+          "size": 1076
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_to_string_formats_iterator_entri-343908d1d619/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "d20145af2c76d9d88a9d63e1f94cb6eb2257e95e9fc73d3154df55053ef11542",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_to_string_formats_iterator_entri-343908d1d619/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "dbe96982cd9cc3496f6e5e1c29f1b570857de8ae1981b8f7eba32571fbc9c1bd",
+          "size": 13184
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_to_string_formats_iterator_entri-343908d1d619/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "5e4d26c2f44b5b2ecce4198b1c4e01870b304f278631d3a10e3bb20e93727413",
+          "size": 1551
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_to_string_formats_iterator_entri-343908d1d619/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "ca0dfdf5b67bbc7f53699ea688ae02ea75c0b01403c3d9898e2cf6e051797685",
+          "size": 6447
+        }
+      },
+      "kind": "case",
+      "label": "harness_to_string_formats_iterator_entries_and_end_sentinel",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_to_string_formats_iterator_entries_and_end_sentinel",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_to_string_formats_iterator_entries_and_end_sentinel",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_to_string_formats_iterator_entries_and_end_sentinel",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_to_string_formats_iterator_entries_and_end_sentinel",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_to_string_formats_iterator_entries_and_end_sentinel",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_to_string_formats_iterator_entries_and_end_sentinel"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    },
+    "harness_zero_restart_points_in_block": {
+      "assessment": {
+        "error": null,
+        "expected_name": "harness_zero_restart_points_in_block",
+        "failed": 0,
+        "ignored": 0,
+        "marker": "HARNESS_CONTRACT_OK case=harness_zero_restart_points_in_block",
+        "outcome": "passed",
+        "passed": 1
+      },
+      "guard_files": {
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_zero_restart_points_in_block-c38882362e11/output.log": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "a84905f3086b6cea605ce11bbbfd235b3101da8c3a2b739336ffda070bfdd317",
+          "size": 976
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_zero_restart_points_in_block-c38882362e11/permit": {
+          "kind": "file",
+          "mode": 420,
+          "sha256": "387f71b6cfc7e7d578314a95cfb4a95042afae9851dfe352af0d9b3a34b0d22a",
+          "size": 32
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_zero_restart_points_in_block-c38882362e11/plan.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "b3dfaf100564cf979cd010658013c9d6efb8cd4c9c86f68017220e31bcd2a9c0",
+          "size": 13015
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_zero_restart_points_in_block-c38882362e11/probe.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "b9b10c35eb3a274e7ebbe10da8994bf6b43b11a451de53a2748c45db014667d7",
+          "size": 1547
+        },
+        "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/guard/harness_zero_restart_points_in_block-c38882362e11/result.json": {
+          "kind": "file",
+          "mode": 384,
+          "sha256": "d1074d838c132bc626c0c75571fc98a7601d0f35b6d7eaa14bb497249e1e01f6",
+          "size": 6241
+        }
+      },
+      "kind": "case",
+      "label": "harness_zero_restart_points_in_block",
+      "required_environment": {
+        "BITCOIN_RS_HARNESS031_CASE": "harness_zero_restart_points_in_block",
+        "BITCOIN_RS_HARNESS031_CASE_DATA": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_zero_restart_points_in_block",
+        "BITCOIN_RS_HARNESS031_PROTECTED": "1",
+        "RUST_LOG": "off",
+        "TEMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_zero_restart_points_in_block",
+        "TEST_RANDOM_SEED": "301",
+        "TEST_TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_zero_restart_points_in_block",
+        "TMP": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_zero_restart_points_in_block",
+        "TMPDIR": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/case-data-harness_zero_restart_points_in_block"
+      },
+      "selected_artifact": {
+        "fingerprint": {
+          "kind": "file",
+          "mode": 493,
+          "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+          "size": 65650600
+        },
+        "key": "bitcoinleveldb-harness::harness",
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+      }
+    }
+  },
+  "cases": [
+    {
+      "error": null,
+      "expected_name": "admission_accepts_complete_controls",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "admission_accepts_complete_controls",
+      "marker": "HARNESS_CONTROL_CONTRACT_OK case=admission_accepts_complete_controls",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "pure",
+      "target": "execution_control_contracts"
+    },
+    {
+      "error": null,
+      "expected_name": "admission_rejects_missing_or_weakened_controls",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "admission_rejects_missing_or_weakened_controls",
+      "marker": "HARNESS_CONTROL_CONTRACT_OK case=admission_rejects_missing_or_weakened_controls",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "pure",
+      "target": "execution_control_contracts"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_empty",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_empty",
+      "marker": "HARNESS_CONTRACT_OK case=harness_empty",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_zero_restart_points_in_block",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_zero_restart_points_in_block",
+      "marker": "HARNESS_CONTRACT_OK case=harness_zero_restart_points_in_block",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_simple_empty_key",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_simple_empty_key",
+      "marker": "HARNESS_CONTRACT_OK case=harness_simple_empty_key",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_simple_single",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_simple_single",
+      "marker": "HARNESS_CONTRACT_OK case=harness_simple_single",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_simple_multi",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_simple_multi",
+      "marker": "HARNESS_CONTRACT_OK case=harness_simple_multi",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_simple_special_key",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_simple_special_key",
+      "marker": "HARNESS_CONTRACT_OK case=harness_simple_special_key",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_db_pointer_is_null_when_not_db_test",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_db_pointer_is_null_when_not_db_test",
+      "marker": "HARNESS_CONTRACT_OK case=harness_db_pointer_is_null_when_not_db_test",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_reinitialization_switches_constructor_types_without_panicking",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_reinitialization_switches_constructor_types_without_panicking",
+      "marker": "HARNESS_CONTRACT_OK case=harness_reinitialization_switches_constructor_types_without_panicking",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_duplicate_keys_overwrite_previous_value",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_duplicate_keys_overwrite_previous_value",
+      "marker": "HARNESS_CONTRACT_OK case=harness_duplicate_keys_overwrite_previous_value",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_handles_embedded_nul_and_empty_values",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_handles_embedded_nul_and_empty_values",
+      "marker": "HARNESS_CONTRACT_OK case=harness_handles_embedded_nul_and_empty_values",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_pick_random_key_returns_foo_on_empty_keyset",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_pick_random_key_returns_foo_on_empty_keyset",
+      "marker": "HARNESS_CONTRACT_OK case=harness_pick_random_key_returns_foo_on_empty_keyset",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_to_string_formats_iterator_entries_and_end_sentinel",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": false,
+      "label": "harness_to_string_formats_iterator_entries_and_end_sentinel",
+      "marker": "HARNESS_CONTRACT_OK case=harness_to_string_formats_iterator_entries_and_end_sentinel",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "case",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_randomized",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "harness_randomized",
+      "marker": "HARNESS_CONTRACT_OK case=harness_randomized",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "full_original",
+      "target": "harness"
+    },
+    {
+      "error": null,
+      "expected_name": "harness_randomized_longdb",
+      "failed": 0,
+      "ignored": 0,
+      "ignored_by_default": true,
+      "label": "harness_randomized_longdb",
+      "marker": "HARNESS_CONTRACT_OK case=harness_randomized_longdb",
+      "outcome": "passed",
+      "passed": 1,
+      "profile": "full_original",
+      "target": "harness"
+    }
+  ],
+  "commands": {
+    "facade": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--jobs",
+      "1",
+      "-p",
+      "bitcoin-leveldb",
+      "--lib",
+      "--tests",
+      "--no-run",
+      "--message-format=json"
+    ],
+    "harness": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--jobs",
+      "1",
+      "-p",
+      "bitcoinleveldb-harness",
+      "--lib",
+      "--tests",
+      "--no-run",
+      "--message-format=json"
+    ]
+  },
+  "compilations": {
+    "facade": {
+      "artifacts": {
+        "bitcoin-leveldb::bitcoin_leveldb": {
+          "fingerprint": {
+            "kind": "file",
+            "mode": 493,
+            "sha256": "6c2a8bab8c7902e1b162e0f1aeb68c3bb3ac8ecec07b7f01a0a2b18db30c6c1c",
+            "size": 6982808
+          },
+          "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/bitcoin_leveldb-e29e16b47917020f"
+        }
+      },
+      "cargo_exit_code": 0,
+      "diagnostic_levels": {
+        "failure-note": 2,
+        "warning": 2348
+      },
+      "evidence_file": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/cargo-facade.json",
+      "evidence_fingerprint": {
+        "kind": "file",
+        "mode": 384,
+        "sha256": "6a8e33187df0e3b398cf31a944cdf0973ab13a8e2feac6cb02ec0ad22a86679c",
+        "size": 3578
+      },
+      "expected_artifacts": [
+        "bitcoin-leveldb::bitcoin_leveldb"
+      ],
+      "native_cases_executed": 0,
+      "observer_exit_code": 0,
+      "outcome": "compiled",
+      "priority_records_observed": 2,
+      "priority_records_omitted": 0,
+      "priority_records_retained": 2,
+      "repair_qualified": false,
+      "schema": "bitcoinrs-compile031-qualification-v1",
+      "scope": "fresh successful offline no-run compilation only; no native-case qualification",
+      "validation_reused": false
+    },
+    "harness": {
+      "artifacts": {
+        "bitcoinleveldb-harness::bitcoinleveldb_harness": {
+          "fingerprint": {
+            "kind": "file",
+            "mode": 493,
+            "sha256": "945ff718c2a05d74578b946128a67cbcd18df9002bac9f69df1acbc45c09dc98",
+            "size": 7003864
+          },
+          "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/bitcoinleveldb_harness-c849dd8d04bb4c47"
+        },
+        "bitcoinleveldb-harness::execution_control_contracts": {
+          "fingerprint": {
+            "kind": "file",
+            "mode": 493,
+            "sha256": "ce90039c2aacc5e48309b01fd615d32ddbefc02acb4a36261504faac6a72b3c4",
+            "size": 7168584
+          },
+          "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/execution_control_contracts-96d881ebaa2cfa05"
+        },
+        "bitcoinleveldb-harness::harness": {
+          "fingerprint": {
+            "kind": "file",
+            "mode": 493,
+            "sha256": "54653f0f4eaf45df8c056c80278d15b1d919ccb98d2c9dbef2b50a61725f02cf",
+            "size": 65650600
+          },
+          "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/cargo-target/debug/deps/harness-10b6dc67b2cdf261"
+        }
+      },
+      "cargo_exit_code": 0,
+      "diagnostic_levels": {
+        "failure-note": 2,
+        "warning": 2386
+      },
+      "evidence_file": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138/cargo-harness.json",
+      "evidence_fingerprint": {
+        "kind": "file",
+        "mode": 384,
+        "sha256": "12a0f9897bf5d9ea6f010e7e418e843b0ed40d55e43a063a4096c0eda2fadf6c",
+        "size": 4666
+      },
+      "expected_artifacts": [
+        "bitcoinleveldb-harness::bitcoinleveldb_harness",
+        "bitcoinleveldb-harness::execution_control_contracts",
+        "bitcoinleveldb-harness::harness"
+      ],
+      "native_cases_executed": 0,
+      "observer_exit_code": 0,
+      "outcome": "compiled",
+      "priority_records_observed": 2,
+      "priority_records_omitted": 0,
+      "priority_records_retained": 2,
+      "repair_qualified": false,
+      "schema": "bitcoinrs-compile031-qualification-v1",
+      "scope": "fresh successful offline no-run compilation only; no native-case qualification",
+      "validation_reused": false
+    }
+  },
+  "completed_full_cases": [
+    "harness_randomized",
+    "harness_randomized_longdb"
+  ],
+  "controller_revision": 1,
+  "full_coverage_claimed": false,
+  "full_harness_stress": "passed",
+  "guard_sha256": "3accdfb32cc1904c6177361a05afcc0b6ade8ea14fc8df728a9e477048e1b9aa",
+  "native_tests_started": true,
+  "original_full_cases_completed": true,
+  "original_master": "2a5093e69dd91dc6d770e7e8ed1d201751f9ad5c",
+  "original_master_tree": "061d6ba025e0d2803bf4add4029aebc978d1fbfd",
+  "prior_report": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-facade-harness-compile030/runs/20261108T192119Z-18da1f5b/COMPILE_REPAIR_RETURN.json",
+  "prior_report_fingerprint": {
+    "kind": "file",
+    "mode": 384,
+    "sha256": "1fbfcd28cca57f6c1fecf8743452c49f818b1899712dde2e40f17906bf178867",
+    "size": 1842786
+  },
+  "repair_qualified": true,
+  "run_directory": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-harness-controlled031/runs/20261108T200451Z-074b3138",
+  "runtime_validation_claimed": true,
+  "source_plan": {
+    "bitcoinleveldb-harness/tests/execution_control_contracts.rs": "a8edaf491f113b189870d64471a1d67bf92ebcadd1a5ab4338178d00839809e9",
+    "bitcoinleveldb-harness/tests/harness.rs": "3a0df764b3a1332ce5f69690cb0b73ecdba14907159fc6cc72b9c56b0fc80cb2",
+    "bitcoinleveldb-harness/tests/support/execution_controls.rs": "a817ff945618c1569e77b44853a24df652986612ab0f0c06809750b5585100a5",
+    "contrib/repair/bitcoinleveldb-harness-controlled031.py": "4f2c794ebd78d0bcccd8f85c8c2c983f9ad11ef9a6a32b3c908ac58f63ca3141",
+    "doc/testing/leveldb-harness-controlled031.md": "2b5fdd3184d9c42e17509c41ee3c4b5ce0b76652130aab2a6660cc4707488f62"
+  },
+  "source_review": {
+    "body_preservation": "Inverse source projection retains every original helper, operation stream, argument matrix, workload size and assertion; added progress only reads existing counters.",
+    "completion": "Original body locals and fixture teardown leave an inner lexical scope before the completion marker is emitted.",
+    "execution_policy": "Plain test attributes, true resource admission before all fourteen original bodies, two heavy cases ignored by default, seed301/quiet logging/private per-case temporary roots.",
+    "oracle_limits": "Existing iterator checks do not assert iterator status, and manual raw iterator cleanup is not made panic-safe by this change. No full coverage or historical lockup cause is claimed.",
+    "storage": "Fresh empty Cargo target; no optional cache duplication; pinned guard keeps its existing 2 GiB free-space floor.",
+    "workloads": {
+      "argument_configurations": 16,
+      "full_original_cases": 2,
+      "longdb_add_calls": 100000,
+      "ordinary_cases": 12,
+      "randomized_add_calls": 171600,
+      "randomized_harness_test_calls": 960,
+      "randomized_sizes_per_configuration": 60
+    }
+  },
+  "test_count": 16,
+  "test_lists": {
+    "all": {
+      "bitcoin-leveldb::bitcoin_leveldb": [],
+      "bitcoinleveldb-harness::bitcoinleveldb_harness": [],
+      "bitcoinleveldb-harness::execution_control_contracts": [
+        "admission_accepts_complete_controls",
+        "admission_rejects_missing_or_weakened_controls"
+      ],
+      "bitcoinleveldb-harness::harness": [
+        "harness_db_pointer_is_null_when_not_db_test",
+        "harness_duplicate_keys_overwrite_previous_value",
+        "harness_empty",
+        "harness_handles_embedded_nul_and_empty_values",
+        "harness_pick_random_key_returns_foo_on_empty_keyset",
+        "harness_randomized",
+        "harness_randomized_longdb",
+        "harness_reinitialization_switches_constructor_types_without_panicking",
+        "harness_simple_empty_key",
+        "harness_simple_multi",
+        "harness_simple_single",
+        "harness_simple_special_key",
+        "harness_to_string_formats_iterator_entries_and_end_sentinel",
+        "harness_zero_restart_points_in_block"
+      ]
+    },
+    "ignored": {
+      "bitcoin-leveldb::bitcoin_leveldb": [],
+      "bitcoinleveldb-harness::bitcoinleveldb_harness": [],
+      "bitcoinleveldb-harness::execution_control_contracts": [],
+      "bitcoinleveldb-harness::harness": [
+        "harness_randomized",
+        "harness_randomized_longdb"
+      ]
+    }
+  },
+  "workflow": "leveldb-harness-controlled031"
+}
