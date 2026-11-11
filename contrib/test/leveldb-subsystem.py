@@ -14,7 +14,7 @@ from urllib.parse import unquote, urlsplit
 
 _CAT_MAX_PACKAGES055=256
 _CAT_MAX_TARGETS055=256
-_CAT_MAX_JSON055=8*1024*1024
+_CAT_MAX_JSON055=16*1024*1024
 _OBS_MACHINE055=128*1024*1024
 _OBS_RECORD055=1024*1024
 _OBS_EVIDENCE055=2*1024*1024
@@ -120,14 +120,33 @@ def _package_identity055(identity,manifest):
     if(parsed.scheme!='file'or parsed.netloc not in('','localhost')or Path(unquote(parsed.path))!=manifest.parent):
         raise RuntimeError('Package ID differs from its workspace manifest directory')
 
+
+def metadata_context055(metadata,repo):
+    """Validate Cargo metadata using the same16MiB ceiling as its guarded capture."""
+    if type(metadata)is not dict:
+        raise RuntimeError('Cargo metadata must be an object; observed '+type(metadata).__name__)
+    packages=metadata.get('packages');members=metadata.get('workspace_members')
+    context={'canonical_bytes':len(_encode055(metadata)),'limit_bytes':_CAT_MAX_JSON055,
+        'workspace_root':metadata.get('workspace_root'),'expected_workspace_root':str(repo),
+        'version':metadata.get('version'),'packages_type':type(packages).__name__,
+        'package_count':len(packages)if type(packages)is list else None,
+        'members_type':type(members).__name__,'member_count':len(members)if type(members)is list else None}
+    problems=[]
+    if context['canonical_bytes']>_CAT_MAX_JSON055:problems.append('metadata exceeds16MiB')
+    if metadata.get('workspace_root')!=str(repo):problems.append('workspace_root differs')
+    if type(metadata.get('version'))is not int or metadata['version']!=1:problems.append('format version is not1')
+    if type(packages)is not list:problems.append('packages is not a list')
+    elif len(packages)>4096:problems.append('package count exceeds4096')
+    if type(members)is not list:problems.append('workspace_members is not a list')
+    elif len(members)>4096:problems.append('member count exceeds4096')
+    if problems:
+        raise RuntimeError('Cargo metadata context: '+', '.join(problems)+'; '+json.dumps(context,sort_keys=True))
+    return context
+
 def discover055(metadata,repo):
     """Return current selected workspace packages, including explicit feature exclusions."""
     repo=_path055(repo);fd=_directory055(repo);os.close(fd)
-    if(type(metadata)is not dict or len(_encode055(metadata))>_CAT_MAX_JSON055
-            or metadata.get('workspace_root')!=str(repo)or metadata.get('version')!=1
-            or type(metadata.get('packages'))is not list or len(metadata['packages'])>4096
-            or type(metadata.get('workspace_members'))is not list or len(metadata['workspace_members'])>4096):
-        raise RuntimeError('Cargo metadata lacks a bounded exact workspace context')
+    metadata_context055(metadata,repo)
     members=metadata['workspace_members']
     if any(type(x)is not str for x in members)or len(members)!=len(set(members)):
         raise RuntimeError('Workspace membership contains malformed or duplicate package IDs')
@@ -924,6 +943,7 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
         phase('workspace-metadata', nix_command(['--metadata055', repo, metadata_file]), kind='build',
               extra={'CARGO_TARGET_DIR': str(target), 'CARGO_BUILD_JOBS': '1', 'CARGO_INCREMENTAL': '0'})
         metadata, meta_fp = read_json055(metadata_file)
+        report['metadata_context'] = metadata_context055(metadata, repo)
         chosen = select_packages055(discover055(metadata, repo), packages)
         report['metadata_fingerprint'] = meta_fp
         report['packages'] = chosen
