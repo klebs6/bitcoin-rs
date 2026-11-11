@@ -27,7 +27,7 @@ import uuid
 from types import MappingProxyType
 sys.dont_write_bytecode = True
 MIB033 = 1024 * 1024
-GUARD_SHA033 = '343a2736464a2c5f6c3d4da64a025292c92045126b28def7a1dc33f0492ed91b'
+GUARD_SHA033 = '97b4ee49e7dfd2d120f4e91d7912d2df8efd764d26ec372097d67cb2ec3093ae'
 INPUT_CODE_PATHS033 = ('contrib/test/leveldb-final-crates.py', 'contrib/test/leveldb_resource_guard.py')
 
 

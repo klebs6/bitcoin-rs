@@ -8,6 +8,7 @@ import re
 import resource
 import selectors
 import shutil
+import stat
 import subprocess
 import sys
 import time
@@ -42,6 +43,63 @@ def _atomic_json(path, value):
         stream.flush()
         os.fsync(stream.fileno())
     os.replace(temporary, path)
+
+
+def _publish_permit(path, nonce):
+    """Publish the unchanged child nonce only after its full bytes are durable."""
+    if type(nonce) is not str or re.fullmatch(r"[0-9a-f]{32}", nonce) is None:
+        raise ValueError("Execution authorization must be one32-character lowercase hexadecimal nonce.")
+    path = Path(path)
+    if not path.is_absolute() or ".." in path.parts or path.name in ("", ".", ".."):
+        raise ValueError("Execution authorization requires a literal absolute destination.")
+    directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    temporary = ".permit-tmp-" + uuid.uuid4().hex
+    made, identity = False, None
+    try:
+        parent = os.fstat(directory)
+        if parent.st_uid != os.getuid() or stat.S_IMODE(parent.st_mode) != 0o700:
+            raise RuntimeError("Execution authorization directory must be private and owned.")
+        try:
+            os.stat(path.name, dir_fd=directory, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            raise FileExistsError("Execution authorization destination already exists.")
+        descriptor = os.open(temporary, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                             0o600, dir_fd=directory)
+        made = True
+        try:
+            info = os.fstat(descriptor)
+            identity = (info.st_dev, info.st_ino)
+            if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_nlink != 1:
+                raise RuntimeError("Execution authorization temporary file is not ordinary and owned.")
+            os.fchmod(descriptor, 0o600)
+            with os.fdopen(descriptor, "wb") as stream:
+                descriptor = None
+                stream.write(nonce.encode("ascii"))
+                stream.flush()
+                os.fsync(stream.fileno())
+        finally:
+            if descriptor is not None:
+                os.close(descriptor)
+        try:
+            os.stat(path.name, dir_fd=directory, follow_symlinks=False)
+        except FileNotFoundError:
+            pass
+        else:
+            raise FileExistsError("Execution authorization destination appeared before publication.")
+        os.replace(temporary, path.name, src_dir_fd=directory, dst_dir_fd=directory)
+        made = False
+        os.fsync(directory)
+    finally:
+        if made:
+            try:
+                current = os.stat(temporary, dir_fd=directory, follow_symlinks=False)
+                if identity is not None and (current.st_dev, current.st_ino) == identity:
+                    os.unlink(temporary, dir_fd=directory)
+            except FileNotFoundError:
+                pass
+        os.close(directory)
 
 
 def _events(path):
@@ -316,7 +374,7 @@ class Guard:
                             if not _service_controls(properties, budget):
                                 reason = "controls_unavailable"
                             else:
-                                Path(plan["permit"]).write_text(plan["nonce"])
+                                _publish_permit(plan["permit"], plan["nonce"])
                                 result["verified"] = True
                     if now - last_sample >= 0.1:
                         last_sample = now

@@ -90,3 +90,36 @@ test, exit zero, verified controls and any required completion marker. Heavy
 workloads whose trace collectors exhausted the routine envelope run with
 ordinary `#[test]` registration; their bodies, assertions and workload sizes
 remain intact. They retain the routine limits.
+
+## Focused continuation after a failed or interrupted run
+
+Use the receipt from the preceding run to execute only failed and unexecuted
+checks:
+
+```sh
+python3 bitcoin-leveldb/check.py --failed-from /absolute/path/to/SUBSYSTEM_RETURN.json
+```
+
+A controller return containing its nested verification report is also accepted.
+The path must identify a retained receipt in this repository's repair metadata.
+The runner discovers the current workspace, compiles only packages with pending
+checks, and lists their current targets. Successful exact cases and successful
+doctest commands from the baseline are retained as historical evidence and are
+not executed again. Newly discovered tests are pending. A failed compilation
+remains pending until fresh compilation and its discovered tests succeed.
+
+Each focused receipt carries accumulated pass identities and the remaining
+checklist forward, so the next focused retry keeps prior successes. Historical
+results retain their original report and source references. Fresh counts include
+only commands actually executed in the current invocation. Focused success does
+not claim a fresh full-suite run; full verification remains an explicit choice.
+
+The resource guard now publishes its unchanged nonce atomically after writing
+and syncing its private temporary file. Child nonce comparison, kernel probes,
+service verification and all resource budgets remain intact. This removes a
+partial-file publication window; it does not authorize an unverified command.
+
+The repair controller clears only the explicitly disposable `return-buffer`
+before preservation checking and replaces it with the complete report after
+checks finish. Retained workflow receipts and source files are not transport
+buffers.

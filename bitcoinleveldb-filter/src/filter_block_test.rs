@@ -90,7 +90,7 @@ mod test_filter_block {
         // Expect \x00\x00\x00\x00\x0b for an empty block
         assert_eq!(escaped, "\\x00\\x00\\x00\\x00\\x0b");
 
-        let reader = FilterBlockReader::new(Box::new(TestHashFilter), &block);
+        let reader = FilterBlockReader::new(Arc::new(TestHashFilter), &block);
         // Should treat empty as "maybe match" except offset array says no actual filters
         // Implementation might treat as "match" if invalid or no offset => true
         assert!(reader.key_may_match(0, &Slice::from_ptr_len(b"foo".as_ptr(), 3)));
@@ -114,7 +114,7 @@ mod test_filter_block {
         builder.add_key(&Slice::from_ptr_len(b"hello".as_ptr(), 5));
 
         let block = builder.finish();
-        let reader = FilterBlockReader::new(Box::new(TestHashFilter), &block);
+        let reader = FilterBlockReader::new(Arc::new(TestHashFilter), &block);
 
         assert!(reader.key_may_match(100, &Slice::from_ptr_len(b"foo".as_ptr(), 3)));
         assert!(reader.key_may_match(100, &Slice::from_ptr_len(b"bar".as_ptr(), 3)));
@@ -151,7 +151,7 @@ mod test_filter_block {
         builder.add_key(&Slice::from_ptr_len(b"hello".as_ptr(), 5));
 
         let block = builder.finish();
-        let reader = FilterBlockReader::new(Box::new(TestHashFilter), &block);
+        let reader = FilterBlockReader::new(Arc::new(TestHashFilter), &block);
 
         // For the first filter => offset=0 => "foo", offset=2000 => "bar"
         assert!(reader.key_may_match(0, &Slice::from_ptr_len(b"foo".as_ptr(), 3)));

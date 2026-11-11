@@ -433,7 +433,7 @@ import uuid
 sys.dont_write_bytecode = True
 MIB055 = 1024 * 1024
 WORKFLOW055 = 'leveldb-subsystem055'
-SUPPORT_SHA055 = '2c9ac9d06ac048e41444c6c29ee25e222088d6d7580f4b31b3ef6b04994a9d66'
+SUPPORT_SHA055 = 'ebe9a5b35a13b5a5ebe43b7561c14df272b4b4b2f1ae0ecfcb20bf911c48e2ca'
 SCRIPT055 = Path(__file__).absolute()
 TOOL_PATHS055 = ('contrib/test/leveldb-subsystem.py', 'bitcoin-leveldb/check.py')
 _SUPPORT055 = None
@@ -826,11 +826,247 @@ def assess_case057(result, log, expected_name, marker=None):
     return assessment
 
 
+"""Retained history and pending-check selection; no historical command execution."""
+
+def _successful_row058(report, label):
+    row = report.get('readouts', {}).get(label, {})
+    proof = report.get('execution_bindings', {}).get(label, {})
+    return (isinstance(row, dict) and row.get('verified') is True
+            and row.get('outcome') == 'exited' and type(row.get('exit_code')) is int
+            and row['exit_code'] == 0 and proof.get('command_bound') is True
+            and proof.get('kernel_controls_verified') is True)
+
+
+def _history_token058(value):
+    return isinstance(value, str) and bool(value) and len(value.encode()) <= 8192 and not re.search(r'\s', value)
+
+
+def empty_history058():
+    return {'compiled': set(), 'lists': {}, 'passed': {}, 'docs': {}, 'customs': {},
+            'sources': [], 'workspace_packages': []}
+
+
+def history_from_report058(value, source):
+    """Read a generated receipt into compact historical identities, never fresh counts."""
+    if not isinstance(value, dict):
+        raise RuntimeError('Focus baseline must be a structured report.')
+    report = value.get('verification', value)
+    if not isinstance(report, dict) or not isinstance(report.get('repository'), str):
+        raise RuntimeError('Focus baseline lacks its working-tree report.')
+    history = empty_history058()
+    state = report.get('continuation_state058')
+    if state is None and report.get('run_mode058') == 'failed-and-unexecuted':
+        raise RuntimeError('Focused receipt lacks continuation history; select its earlier retained baseline.')
+    if state is not None:
+        if (not isinstance(state, dict) or state.get('schema') != 'bitcoinrs-subsystem-continuation058-v1'
+                or state.get('repository') != report['repository']):
+            raise RuntimeError('Focus continuation state has an unsupported schema/context.')
+        references = state.get('sources')
+        if not isinstance(references, list) or len(references) > 1024 or any(not isinstance(x, dict) for x in references):
+            raise RuntimeError('Focus history references are malformed or excessive.')
+        for reference in references:
+            if reference.get('kind') == 'current_run':
+                if reference.get('run_directory') != report.get('run_directory'):
+                    raise RuntimeError('Current-run history reference differs from the baseline receipt.')
+                reference = dict(source, kind='retained_report')
+            elif reference.get('kind') != 'retained_report':
+                raise RuntimeError('Unsupported focus history reference kind.')
+            history['sources'].append(dict(reference))
+        compiled = state.get('compiled_packages')
+        if (not isinstance(compiled, list) or len(compiled) > 256
+                or any(not _history_token058(x) for x in compiled) or len(compiled) != len(set(compiled))):
+            raise RuntimeError('Focus compiled-package history is malformed.')
+        history['compiled'] = set(compiled)
+        lists = state.get('target_lists')
+        if not isinstance(lists, dict) or len(lists) > 65536:
+            raise RuntimeError('Focus test-list history is malformed.')
+        total = 0
+        for key, record in lists.items():
+            if (not _history_token058(key) or not isinstance(record, dict)
+                    or not isinstance(record.get('all'), list) or not isinstance(record.get('ignored'), list)):
+                raise RuntimeError('Focus target-list record is malformed.')
+            names, ignored = record['all'], record['ignored']
+            total += len(names)
+            if (total > 20000 or any(not _history_token058(x) for x in names + ignored)
+                    or len(names) != len(set(names)) or len(ignored) != len(set(ignored))
+                    or not set(ignored).issubset(names)):
+                raise RuntimeError('Focus target-list identities are invalid or excessive.')
+            history['lists'][key] = {'all': list(names), 'ignored': list(ignored)}
+        for field, width in (('passed_native', 3), ('passed_doctests', 1), ('passed_customs', 2)):
+            records = state.get(field)
+            if not isinstance(records, list) or len(records) > 20000:
+                raise RuntimeError('Focus pass history is malformed or excessive.')
+            destination = history[{'passed_native': 'passed', 'passed_doctests': 'docs', 'passed_customs': 'customs'}[field]]
+            for record in records:
+                if (not isinstance(record, list) or len(record) != width + 1
+                        or any(not _history_token058(x) for x in record[:-1])
+                        or type(record[-1]) is not int or not 0 <= record[-1] < len(history['sources'])):
+                    raise RuntimeError('Focus pass/source identity is malformed.')
+                identity = record[0] if width == 1 else tuple(record[:-1])
+                if identity in destination:
+                    raise RuntimeError('Focus history repeats a pass identity.')
+                destination[identity] = record[-1]
+        history['workspace_packages'] = state.get('workspace_packages', [])
+        if not isinstance(history['workspace_packages'], list) or len(history['workspace_packages']) > 256:
+            raise RuntimeError('Focus workspace catalog is malformed.')
+        return history, report
+
+    history['sources'] = [dict(source, kind='retained_report')]
+    history['workspace_packages'] = report.get('workspace_packages', report.get('packages', []))
+    if not isinstance(history['workspace_packages'], list) or len(history['workspace_packages']) > 256:
+        raise RuntimeError('Focus baseline package catalog is malformed.')
+    compilations = report.get('compilations', {})
+    if not isinstance(compilations, dict):
+        raise RuntimeError('Focus baseline compilation records are malformed.')
+    for name, compilation in compilations.items():
+        evidence = compilation.get('evidence', {}) if isinstance(compilation, dict) else {}
+        if (evidence.get('outcome') in {'compiled', 'compiled_no_native_targets'}
+                and _successful_row058(report, compilation.get('guard_label'))):
+            history['compiled'].add(name)
+    lists = report.get('test_lists', {})
+    if not isinstance(lists, dict):
+        raise RuntimeError('Focus baseline test lists are malformed.')
+    history['lists'] = lists.copy()
+    for case in report.get('cases', []):
+        assessment = case.get('assessment', {}) if isinstance(case, dict) else {}
+        if assessment.get('outcome') != 'passed':
+            continue
+        if (assessment.get('passed'), assessment.get('failed'), assessment.get('ignored')) != (1, 0, 0):
+            raise RuntimeError('Focus baseline claims a pass without one exact successful test.')
+        package, name, label = case.get('package'), case.get('name'), case.get('guard_label')
+        if not _successful_row058(report, label):
+            raise RuntimeError('Focus baseline pass lacks successful verified execution evidence.')
+        evidence = compilations.get(package, {}).get('evidence', {})
+        artifacts = evidence.get('artifacts', {})
+        matches = [(key, artifact) for key, artifact in artifacts.items()
+                   if artifact.get('target', {}).get('name') == case.get('target')
+                   and equal055(artifact.get('fingerprint'), case.get('artifact_fingerprint'))]
+        if len(matches) != 1:
+            raise RuntimeError('Focus baseline pass cannot be bound to one historical Cargo target/artifact.')
+        target, artifact = matches[0]
+        row = report['readouts'][label]
+        if (row.get('command', [])[:3] != [artifact['path'], '--exact', name]
+                or assessment.get('expected_name') != name
+                or name not in lists.get(package + '::' + target, {}).get('all', [])):
+            raise RuntimeError('Focus baseline pass differs from its exact selected test/list.')
+        identity = (package, target, name)
+        if identity in history['passed']:
+            raise RuntimeError('Focus baseline repeats a native pass identity.')
+        history['passed'][identity] = 0
+    if len(history['passed']) != report.get('passed'):
+        raise RuntimeError('Focus baseline native pass count does not match its qualified identities.')
+    for name, record in report.get('doctests', {}).items():
+        value = record.get('evidence', {})
+        spec = {'repo': report['repository'], 'package': name,
+                'command': ['cargo', 'test', '--offline', '--locked', '--jobs', '1', '-p', name,
+                            '--doc', '--', '--include-ignored', '--test-threads=1']}
+        row = report.get('readouts', {}).get(record.get('guard_label'), {})
+        if (qualify_doc055(spec, value, row)
+                and _successful_row058(report, record.get('guard_label'))):
+            history['docs'][name] = 0
+    for record in report.get('custom_harnesses', []):
+        if record.get('outcome') != 'passed' or not _successful_row058(report, record.get('guard_label')):
+            continue
+        package = record['package']
+        artifacts = compilations.get(package, {}).get('evidence', {}).get('artifacts', {})
+        matches = [key for key, artifact in artifacts.items()
+                   if artifact.get('target', {}).get('name') == record.get('target')
+                   and artifact.get('target', {}).get('harness') is False]
+        if len(matches) != 1:
+            raise RuntimeError('Focus baseline custom harness has an ambiguous Cargo target.')
+        history['customs'][(package, matches[0])] = 0
+    return history, report
+
+
+def load_focus058(repo, path):
+    base = support055()
+    path = Path(os.path.abspath(Path(path).expanduser()))
+    _, common = base.repository_dirs033(repo)
+    if '..' in path.parts or common / 'codex-repairs' not in path.parents:
+        raise RuntimeError('Focus receipt must be retained inside this repository repair metadata.')
+    fingerprint, raw = base.read_file033(path, 32 * MIB055)
+    value = _json055(raw)
+    if canonical055(value) != raw:
+        raise RuntimeError('Focus receipt is not canonical generated JSON.')
+    report = value.get('verification', value) if isinstance(value, dict) else None
+    if not isinstance(report, dict) or report.get('repository') != str(repo):
+        raise RuntimeError('Focus receipt belongs to a different working tree.')
+    source = {'path': str(path), 'fingerprint': fingerprint, 'candidate_head': value.get('candidate_head', report.get('current_head')),
+              'run_directory': report.get('run_directory')}
+    history, previous = history_from_report058(value, source)
+    return history, {'path': str(path), 'fingerprint': fingerprint, 'candidate_head': source['candidate_head'],
+                     'run_directory': previous.get('run_directory'), 'previous_outcome': previous.get('outcome'),
+                     'retained_native_passes': len(history['passed']), 'retained_doctest_commands': len(history['docs']),
+                     'retained_custom_commands': len(history['customs']),
+                     'interpretation': 'Historical results under their recorded source and controls; not fresh executions or a current full-suite claim.'}
+
+
+def package_pending058(package, history):
+    name = package['name']
+    if name not in history['compiled']:
+        return True
+    for target in package['targets']:
+        if not target['native_eligible']:
+            continue
+        key = target['key']
+        if target.get('excluded_by_default_features') and name + '::' + key not in history['lists']:
+            continue
+        if target.get('harness') is False:
+            if (name, key) not in history['customs']:
+                return True
+            continue
+        record = history['lists'].get(name + '::' + key)
+        if record is None or any((name, key, case) not in history['passed'] for case in record['all']):
+            return True
+    return any(target.get('doctest_eligible') for target in package['targets']) and name not in history['docs']
+
+
+def continuation_state058(report, previous):
+    """Carry accumulated history forward without converting it into fresh proof."""
+    history = previous if previous is not None else empty_history058()
+    compiled = set(history['compiled'])
+    lists = dict(history['lists'])
+    passed, docs, customs = dict(history['passed']), dict(history['docs']), dict(history['customs'])
+    sources = list(history['sources'])
+    index = len(sources)
+    sources.append({'kind': 'current_run', 'run_directory': report.get('run_directory'),
+                    'candidate_head': report.get('current_head')})
+    for name, record in report.get('compilations', {}).items():
+        if (record.get('qualified058') is True
+                and record.get('evidence', {}).get('outcome') in {'compiled', 'compiled_no_native_targets'}
+                and _successful_row058(report, record.get('guard_label'))):
+            compiled.add(name)
+        else:
+            compiled.discard(name)
+    lists.update(report.get('test_lists', {}))
+    for case in report.get('cases', []):
+        if case['assessment']['outcome'] == 'passed' and _successful_row058(report, case.get('guard_label')):
+            passed[(case['package'], case['target_key'], case['name'])] = index
+    for name, record in report.get('doctests', {}).items():
+        if (record.get('qualified058') is True and record.get('evidence', {}).get('outcome') == 'passed'
+                and _successful_row058(report, record.get('guard_label'))):
+            docs[name] = index
+    for record in report.get('custom_harnesses', []):
+        if record.get('outcome') == 'passed' and _successful_row058(report, record.get('guard_label')):
+            customs[(record['package'], record['target_key'])] = index
+    return {'schema': 'bitcoinrs-subsystem-continuation058-v1', 'repository': report['repository'],
+            'workspace_packages': report.get('workspace_packages', history['workspace_packages']),
+            'compiled_packages': sorted(compiled), 'target_lists': lists,
+            'passed_native': [list(key) + [source] for key, source in sorted(passed.items())],
+            'passed_doctests': [[key, source] for key, source in sorted(docs.items())],
+            'passed_customs': [list(key) + [source] for key, source in sorted(customs.items())],
+            'sources': sources,
+            'interpretation': 'Historical and fresh entries retain separate source references; this state is a continuation inventory, not a new full-suite qualification.'}
+
+
+
 def verify055(repo, *, run_directory=None, target_directory=None, already_locked=False,
-              before_phase=None, packages=None):
+              before_phase=None, packages=None, focus_report_path=None):
     base = support055()
     report = {'workflow': WORKFLOW055, 'outcome': 'failed', 'phase': 'preflight',
               'repository': str(repo), 'validation_reused': False, 'source_writes_started': False,
+              'run_mode058': 'failed-and-unexecuted' if focus_report_path is not None else 'full',
+              'retained_case_skips': [], 'retained_custom_skips': [],
               'refs_updated': False, 'full_coverage_claimed': False, 'feature_matrix_claimed': False,
               'host_default_features_only': True, 'builds_started': False, 'native_tests_started': False,
               'packages': [], 'cases': [], 'custom_harnesses': [], 'compilations': {},
@@ -851,6 +1087,7 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
     failed_packages = set()
     deferred = []
     observed_known = set()
+    focus_history = None
     try:
         repo = Path(os.path.abspath(Path(repo).expanduser()))
         _, common = base.repository_dirs033(repo)
@@ -882,6 +1119,7 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
         if any((run / leaf).exists() for leaf in ('RUNNING.json', 'SUBSYSTEM_RETURN.json')):
             raise RuntimeError('Run directory is occupied; earlier evidence was retained.')
         report.update(repository=str(repo), run_directory=str(run), target_directory=str(target))
+        report['current_head'] = base.git033(repo, ('rev-parse', 'HEAD')).decode('utf-8').strip()
         json055(run / 'RUNNING.json', {'workflow': WORKFLOW055, 'repository': str(repo), 'phase': 'reserved'})
         gm = base.load_guard033(repo)
         guard = gm.Guard(run / 'guard', SCRIPT055, env)
@@ -978,7 +1216,7 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
                               kind=kind, artifact=artifact, require=False)
             report['native_tests_started'] = True
             assessment = assess_case057(row, text, name, marker)
-            record = {'package': package['name'], 'target': artifact['target']['name'], 'name': name,
+            record = {'package': package['name'], 'target': artifact['target']['name'], 'target_key': artifact['target']['key'], 'name': name,
                       'ignored_explicitly_run': ignored, 'kind': kind, 'assessment': assessment,
                       'guard_label': row['label'], 'artifact_fingerprint': artifact['fingerprint']}
             if known:
@@ -987,6 +1225,11 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
             if assessment['outcome'] != 'passed':
                 failure(package, 'test:' + name, assessment['error'])
 
+        if focus_report_path is not None:
+            focus_history, focus_reference = load_focus058(repo, focus_report_path)
+            report['focus_baseline058'] = focus_reference
+            report['scope'] = ('Focused fresh verification of failed and unexecuted checks from the retained report; '
+                               'historical passes are not executed again or counted as fresh. Source and resource controls remain required.')
         phase('preflight', [sys.executable, '-I', '-S', '-c', "print('SUBSYSTEM055_PREFLIGHT_OK')"], kind='probe')
         capture('initial')
         metadata_file = run / 'cargo-metadata.json'
@@ -994,7 +1237,13 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
               extra={'CARGO_TARGET_DIR': str(target), 'CARGO_BUILD_JOBS': '1', 'CARGO_INCREMENTAL': '0'})
         metadata, meta_fp = read_json055(metadata_file)
         report['metadata_context'] = metadata_context055(metadata, repo)
-        chosen = select_packages055(discover055(metadata, repo), packages)
+        workspace_packages = discover055(metadata, repo)
+        report['workspace_packages'] = workspace_packages
+        report['workspace_package_count058'] = len(workspace_packages)
+        chosen = select_packages055(workspace_packages, packages)
+        if focus_history is not None:
+            chosen = [package for package in chosen if package_pending058(package, focus_history)]
+        report['selected_package_names058'] = [package['name'] for package in chosen]
         report['metadata_fingerprint'] = meta_fp
         report['packages'] = chosen
         expected_known = {(base.TARGETS033[x['crate']]['package'], x['target'], x['name'])
@@ -1022,15 +1271,19 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
                 failure(package, 'compile', 'Compilation or its package/target/executable binding failed; see retained compiler evidence.')
                 capture('after-package-' + format(number, '03d'))
                 continue
+            report['compilations'][name]['qualified058'] = True
             for key, artifact in sorted(artifacts.items()):
                 info = artifact['target']
                 if info.get('harness') is False:
+                    if focus_history is not None and (name, key) in focus_history['customs']:
+                        report['retained_custom_skips'].append([name, key])
+                        continue
                     data = run / ('case-data-custom-' + format(len(report['custom_harnesses']), '05d'))
                     item, _ = phase('custom-' + name + '-' + info['name'], [artifact['path']], kind='stress',
                                     extra={'RUST_LOG': 'off', 'RUST_BACKTRACE': '0', 'TEST_RANDOM_SEED': '301'},
                                     data=data, artifact=artifact, require=False)
                     okay = item.get('outcome') == 'exited' and item.get('exit_code') == 0
-                    report['custom_harnesses'].append({'package': name, 'target': info['name'],
+                    report['custom_harnesses'].append({'package': name, 'target': info['name'], 'target_key': key,
                         'outcome': 'passed' if okay else 'failed', 'internal_case_count': None,
                         'guard_label': item['label'], 'coverage': 'custom command exit status only'})
                     report['native_tests_started'] = True
@@ -1061,9 +1314,6 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
                     continue
                 report.setdefault('test_lists', {})[name + '::' + key] = lists
                 report.setdefault('benchmark_exclusions', {})[name + '::' + key] = benchmark_lists
-                report['expected_test_count'] += len(lists['all'])
-                if report['expected_test_count'] > 20000:
-                    raise RuntimeError('The 20000-case run allowance was reached.')
                 for case_name in lists['all']:
                     known = known_case055(base, name, info['name'], case_name)
                     ignored = case_name in lists['ignored']
@@ -1071,11 +1321,19 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
                         if ignored != known['ignored']:
                             raise RuntimeError('A repaired test changed its explicit ignored/stress classification.')
                         observed_known.add((name, info['name'], case_name))
+                    if focus_history is not None and (name, key, case_name) in focus_history['passed']:
+                        report['retained_case_skips'].append([name, key, case_name])
+                        continue
+                    report['expected_test_count'] += 1
+                    if report['expected_test_count'] > 20000:
+                        raise RuntimeError('The 20000-case run allowance was reached.')
                     if (known and known['profile'] == 'full_original') or (name, case_name) in EXPLICIT_STRESS057:
                         deferred.append((package, artifact, case_name, ignored, known))
                     else:
                         execute_case(package, artifact, case_name, ignored, known)
-            if any(t.get('doctest_eligible') for t in package['targets']):
+            if focus_history is not None and name in focus_history['docs']:
+                report['doctests'][name] = {'outcome': 'retained_baseline_pass', 'fresh_execution': False}
+            elif any(t.get('doctest_eligible') for t in package['targets']):
                 doc_path = run / ('doc-' + name + '.spec.json')
                 doc_evidence = run / ('doc-' + name + '.json')
                 doc_command = ['cargo', 'test', '--offline', '--locked', '--jobs', '1', '-p', name,
@@ -1091,6 +1349,7 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
                     doc_value, doc_fp = read_json055(doc_evidence, 2 * MIB055)
                     report['doctests'][name] = {'evidence': doc_value, 'fingerprint': doc_fp, 'guard_label': doc_row['label']}
                     okay = qualify_doc055(doc_spec, doc_value, doc_row)
+                    report['doctests'][name]['qualified058'] = okay
                 else:
                     okay = False
                 if not okay:
@@ -1150,6 +1409,10 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
                                          for item in package['targets'] if not item['native_eligible']],
                     'failure_count': len(failed),
                     'zero_native_tests_observed': bool(lists) and not any(value['all'] for value in lists)}
+            report['continuation_state058'] = continuation_state058(report, focus_history)
+            report['historical_native_pass_count058'] = len(focus_history['passed']) if focus_history is not None else 0
+            report['fresh_native_pass_count058'] = report['passed']
+            report['focused_verification_passed058'] = report['run_mode058'] == 'failed-and-unexecuted' and report['outcome'] == 'passed'
             report['return_file'] = str(run / 'SUBSYSTEM_RETURN.json')
             json055(run / 'SUBSYSTEM_RETURN.json', report)
         for fd in reversed(locks):
@@ -1194,8 +1457,9 @@ def main055(argv=None):
     parser = argparse.ArgumentParser(description='Run discovered LevelDB workspace crates under finite resource controls.')
     parser.add_argument('--repo', default=str(SCRIPT055.parents[2]))
     parser.add_argument('--crate', action='append', dest='packages', help='An exact discovered package name; repeat to select several.')
+    parser.add_argument('--failed-from', dest='focus_report_path', help='A retained subsystem receipt: execute only failed and unexecuted checks, preserving historical passes separately.')
     args = parser.parse_args(arguments)
-    report = verify055(args.repo, packages=args.packages)
+    report = verify055(args.repo, packages=args.packages, focus_report_path=args.focus_report_path)
     print('BEGIN_SUBSYSTEM_RETURN')
     print(json.dumps(report, sort_keys=True, indent=2))
     print('END_SUBSYSTEM_RETURN')
