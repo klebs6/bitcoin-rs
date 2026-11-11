@@ -97,10 +97,10 @@ mod bitcoinleveldb_db__leveldb_write_rs__exhaustive_test_suite {
             let wopt: *mut LevelDBWriteOptions = crate::leveldb_writeoptions::leveldb_writeoptions_create();
             assert!(!wopt.is_null());
 
-            let mut batch_box: Box<crate::db::LevelDBWriteBatch> =
-                Box::new(crate::db::LevelDBWriteBatch::default());
-            let batch_ptr: *mut crate::db::LevelDBWriteBatch =
-                batch_box.as_mut() as *mut crate::db::LevelDBWriteBatch;
+            let mut batch_box: Box<bitcoinleveldb_writebatch::LevelDBWriteBatch> =
+                Box::new(bitcoinleveldb_writebatch::LevelDBWriteBatch::default());
+            let batch_ptr: *mut bitcoinleveldb_writebatch::LevelDBWriteBatch =
+                batch_box.as_mut() as *mut bitcoinleveldb_writebatch::LevelDBWriteBatch;
 
             let mut err: *mut u8 = core::ptr::null_mut();
             leveldb_write(db, wopt, batch_ptr, (&mut err) as *mut *mut u8);
@@ -149,8 +149,8 @@ mod bitcoinleveldb_db__leveldb_write_rs__exhaustive_test_suite {
             assert!(!wopt.is_null());
             assert!(!ropt.is_null());
 
-            let mut batch_box: Box<crate::db::LevelDBWriteBatch> =
-                Box::new(crate::db::LevelDBWriteBatch::default());
+            let mut batch_box: Box<bitcoinleveldb_writebatch::LevelDBWriteBatch> =
+                Box::new(bitcoinleveldb_writebatch::LevelDBWriteBatch::default());
 
             let key_buf: [u8; 2] = [b'k', b'1'];
             let val_buf: [u8; 2] = [b'v', b'1'];
@@ -160,8 +160,8 @@ mod bitcoinleveldb_db__leveldb_write_rs__exhaustive_test_suite {
 
             batch_box.rep_mut().put(&k, &v);
 
-            let batch_ptr: *mut crate::db::LevelDBWriteBatch =
-                batch_box.as_mut() as *mut crate::db::LevelDBWriteBatch;
+            let batch_ptr: *mut bitcoinleveldb_writebatch::LevelDBWriteBatch =
+                batch_box.as_mut() as *mut bitcoinleveldb_writebatch::LevelDBWriteBatch;
 
             let mut werr: *mut u8 = core::ptr::null_mut();
             leveldb_write(db, wopt, batch_ptr, (&mut werr) as *mut *mut u8);

@@ -779,6 +779,53 @@ def failure_sources055(base, repo, package, allowance):
     return result
 
 
+
+EXPLICIT_STRESS057 = {
+    ('bitcoinleveldbt-issue178', 'bitcoinleveldbt_issue178::issue178_test'):
+        'ISSUE178_CONTRACT_OK case=issue178_test',
+    ('bitcoinleveldbt-sparsemerge', 'bitcoinleveldbt_sparsemerge::db_test_sparse_merge'):
+        'SPARSEMERGE_CONTRACT_OK case=db_test_sparse_merge',
+}
+
+
+def assess_case057(result, log, expected_name, marker=None):
+    """Accept libtest's expected-panic suffix without relaxing exact-case proof."""
+    assessment = {'outcome': 'failed', 'expected_name': expected_name, 'passed': None,
+                  'failed': None, 'ignored': None, 'marker': marker, 'error': None,
+                  'parser': 'exact-libtest-should-panic057'}
+    try:
+        if (not isinstance(result, dict) or result.get('verified') is not True
+                or result.get('outcome') != 'exited' or type(result.get('exit_code')) is not int
+                or result['exit_code'] != 0):
+            raise RuntimeError('Selected case did not exit successfully under verified controls.')
+        if (not isinstance(log, str) or not isinstance(expected_name, str) or not expected_name
+                or re.search(r'\s', expected_name)):
+            raise RuntimeError('Selected case log or expected name is malformed.')
+        heads = re.findall(r'(?m)^test ([^\s]+)(?: - should panic)? \.\.\.(?:[ \t]|$)', log)
+        if heads != [expected_name]:
+            raise RuntimeError('Selected case log does not contain exactly the requested test name.')
+        summaries = [line for line in log.splitlines() if line.startswith('test result:')]
+        if len(summaries) != 1:
+            raise RuntimeError('Selected case log lacks one unambiguous test-result summary.')
+        match = re.fullmatch(r'test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; '
+                             r'(\d+) ignored; (\d+) measured; (\d+) filtered out; finished in .+', summaries[0])
+        if match is None:
+            raise RuntimeError('Selected case summary is malformed.')
+        passed, failed, ignored, measured = map(int, match.group(2, 3, 4, 5))
+        assessment.update(passed=passed, failed=failed, ignored=ignored)
+        if match.group(1) != 'ok' or (passed, failed, ignored, measured) != (1, 0, 0, 0):
+            raise RuntimeError('Selected case did not report exactly one passing non-ignored test.')
+        if marker is not None:
+            if not isinstance(marker, str) or not marker or '\n' in marker:
+                raise RuntimeError('Required case marker is malformed.')
+            if len(re.findall(r'(?<!\S)' + re.escape(marker) + r'(?!\S)', log)) != 1:
+                raise RuntimeError('Selected case required marker is absent or repeated.')
+        assessment['outcome'] = 'passed'
+    except Exception as error:
+        assessment['error'] = str(error)[:1024]
+    return assessment
+
+
 def verify055(repo, *, run_directory=None, target_directory=None, already_locked=False,
               before_phase=None, packages=None):
     base = support055()
@@ -792,7 +839,9 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
               'scope': 'All discovered bitcoinleveldb-*, bitcoinleveldbt-* and bitcoin-leveldb workspace members; '
                        'host/default-feature native tests, ignored tests explicitly executed, custom harness commands, '
                        'and doctests. Benchmark targets and benchmark entries are reported but excluded. '
-                       'Original repaired stress cases run last. No retries or budget increases.',
+                       'All explicitly classified original stress cases run last. No retries or budget increases.',
+              'explicit_stress_cases': [dict(package=p, name=n, marker=m) for (p, n), m in EXPLICIT_STRESS057.items()],
+              'assessment_parser': 'exact-libtest-should-panic057',
               'doctest_envelope': '2 GiB RAM, one CPU, no swap, 600 seconds, 512 MiB private test data; includes rustdoc compilation.'}
     locks = []
     baseline = None
@@ -922,12 +971,13 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
                     command.append('--ignored')
                 command += ['--nocapture', '--test-threads=1']
                 extra = {'RUST_LOG': 'off', 'RUST_BACKTRACE': '0', 'TEST_RANDOM_SEED': '301'}
-                kind = 'stress' if ignored else 'case'
-                marker = None
+                explicit = EXPLICIT_STRESS057.get((package['name'], name))
+                kind = 'stress' if ignored or explicit else 'case'
+                marker = explicit
             row, text = phase('case-' + format(index, '06d'), command, extra=extra, data=data,
                               kind=kind, artifact=artifact, require=False)
             report['native_tests_started'] = True
-            assessment = base.assess_case033(row, text, name, marker)
+            assessment = assess_case057(row, text, name, marker)
             record = {'package': package['name'], 'target': artifact['target']['name'], 'name': name,
                       'ignored_explicitly_run': ignored, 'kind': kind, 'assessment': assessment,
                       'guard_label': row['label'], 'artifact_fingerprint': artifact['fingerprint']}
@@ -1021,7 +1071,7 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
                         if ignored != known['ignored']:
                             raise RuntimeError('A repaired test changed its explicit ignored/stress classification.')
                         observed_known.add((name, info['name'], case_name))
-                    if known and known['profile'] == 'full_original':
+                    if (known and known['profile'] == 'full_original') or (name, case_name) in EXPLICIT_STRESS057:
                         deferred.append((package, artifact, case_name, ignored, known))
                     else:
                         execute_case(package, artifact, case_name, ignored, known)

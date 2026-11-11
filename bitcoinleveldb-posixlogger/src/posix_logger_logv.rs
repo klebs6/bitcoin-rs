@@ -81,16 +81,16 @@ mod posix_logger_logv_tests {
         let mut chunk = [0u8; 1024];
 
         loop {
-            let read = libc::fread(
+            let bytes_read = libc::fread(
                 chunk.as_mut_ptr() as *mut libc::c_void,
                 1,
                 chunk.len(),
                 fp,
             );
-            if read == 0 {
+            if bytes_read == 0 {
                 break;
             }
-            result.extend_from_slice(&chunk[..read]);
+            result.extend_from_slice(&chunk[..bytes_read]);
         }
 
         debug!("read_all_from_file: total bytes read={}", result.len());

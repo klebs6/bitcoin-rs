@@ -1,7 +1,7 @@
 // ---------------- [ File: bitcoinleveldbt-issue474/src/bitcoinleveldbt_issue474.rs ]
 crate::ix!();
 
-#[traced_test]
+#[test]
 fn db_test_fflush_issue474() {
     static K_NUM: i32 = 100000;
 

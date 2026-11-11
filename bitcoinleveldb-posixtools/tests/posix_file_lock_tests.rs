@@ -40,13 +40,13 @@ fn posix_file_lock_reports_consistent_name_tag() {
     let lock = PosixFileLock::new(fd, filename);
 
     assert_eq!(
-        lock.get_name(),
+        lock.name(),
         "[posix-file-lock]",
-        "PosixFileLock::get_name should return a stable adapter tag"
+        "PosixFileLock::name should return a stable adapter tag"
     );
 
     info!(
-        name_tag = lock.get_name(),
+        name_tag = %lock.name(),
         "posix_file_lock_reports_consistent_name_tag: completed"
     );
 }

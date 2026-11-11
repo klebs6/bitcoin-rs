@@ -196,7 +196,7 @@ mod log_reader_read_physical_record_tests {
 
     impl Named for PhysicalSequentialFile {
         fn name(&self) -> Cow<'_,str> {
-            "physical_sequential_file"
+            Cow::Borrowed("physical_sequential_file")
         }
     }
 

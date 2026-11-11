@@ -876,7 +876,7 @@ fn dbc_test_main(
     }
 }
 
-#[traced_test]
+#[test]
 fn bitcoinleveldb_test__c_test_rs__upstream_c_api_roundtrip_passes() {
     let rc = dbc_test_main(0i32, core::ptr::null_mut());
     assert_eq!(rc, 0i32);

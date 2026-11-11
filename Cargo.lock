@@ -4619,6 +4619,10 @@ version = "0.1.0"
 dependencies = [
  "bitcoin-imports",
  "bitcoinleveldb-batch",
+ "bitcoinleveldb-comparator",
+ "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
+ "bitcoinleveldb-key",
  "bitcoinleveldb-memtable",
  "bitcoinleveldb-slice",
 ]

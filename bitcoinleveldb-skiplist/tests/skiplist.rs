@@ -606,7 +606,7 @@ fn run_concurrent(run: i32) {
 }
 
 /// Single-threaded shakeout of the concurrent test harness.
-#[traced_test]
+#[test]
 fn skiplist_concurrent_without_threads() {
     info!("skiplist_concurrent_without_threads: start");
     let mut test = ConcurrentTest::default();

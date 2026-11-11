@@ -11,14 +11,14 @@ use traced_test::*;
 use tracing_setup::*;
 
 //-------------------------------------------[.cpp/bitcoin/src/leveldb/db/fault_injection_test.cc]
-#[traced_test]
+#[test]
 fn fault_injection_test_no_log_reuse() {
     let mut t = FaultInjectionTest::default();
     t.reuse_logs(false);
     t.do_test();
 }
 
-#[traced_test]
+#[test]
 fn fault_injection_test_with_log_reuse() {
     let mut t = FaultInjectionTest::default();
     t.reuse_logs(true);

@@ -43,9 +43,9 @@ pub struct Options {
     /// Use the specified object to interact with the environment, e.g. to
     /// read/write files, schedule background work, etc.
     ///
-    /// Default: `None`. A higher layer is expected to substitute the
-    /// process‑global default environment before first use if this is left
-    /// unset.
+    /// Default: the shared default environment for the current thread,
+    /// returned by `PosixEnv::shared()`. Table-only option snapshots deliberately
+    /// leave this field unset because their owner retains the environment.
     ///
     env:               Option<Rc<RefCell<dyn Env>>>,
 
@@ -388,9 +388,14 @@ mod options_defaults_and_accessors_suite {
         assert_eq!(*opts.compression(), CompressionType::Snappy);
         assert!(!*opts.reuse_logs());
 
+        let expected_env: Rc<RefCell<dyn Env>> =
+            bitcoinleveldb_posixenv::PosixEnv::shared();
         assert!(
-            opts.env().is_none(),
-            "expected Options::default to leave env unset"
+            Rc::ptr_eq(
+                opts.env().as_ref().expect("default options must retain their environment"),
+                &expected_env
+            ),
+            "default options must use this thread's shared environment"
         );
         assert!(
             opts.info_log().is_none(),

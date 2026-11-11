@@ -26,8 +26,9 @@ current executable bytes. Each executable is listed twice to discover all
 tests and the ignored subset. Tests then run individually by exact name with
 one test thread. Ignored tests are explicitly executed. The repaired
 randomized, issue320 and harness cases retain their existing admission
-environment and exact completion markers. The five original stress cases
-run last, after all other selected packages and doctests.
+environment and exact completion markers. The seven explicitly classified original stress cases
+run last, after all other selected packages and doctests. This includes the
+original issue178 and SparseMerge workloads in the existing stress envelope.
 
 Doctests run separately, including ignored doctests. Custom `harness=false`
 targets run once as their own command; the report records their command exit
@@ -82,3 +83,10 @@ historical repair controllers. The one-time installer creates a separate
 tooling branch and commit, verifies the current accepted base, and preserves
 the original working tree and existing staged runner candidate. It does not
 promote its new branch to master.
+
+Expected-panic test output uses libtest's ` - should panic` suffix; the
+runner accepts it while still requiring the exact selected name, one passing
+test, exit zero, verified controls and any required completion marker. Heavy
+workloads whose trace collectors exhausted the routine envelope run with
+ordinary `#[test]` registration; their bodies, assertions and workload sizes
+remain intact. They retain the routine limits.

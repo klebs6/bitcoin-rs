@@ -159,7 +159,7 @@ pub fn mt_thread_body(arg: *mut c_void)  -> c_void {
     unsafe { std::mem::zeroed() }
 }
 
-#[traced_test]
+#[test]
 fn db_test_multi_threaded() {
     let mut body = |dbtest: &mut DBTest| {
         let mut mt = MTState {

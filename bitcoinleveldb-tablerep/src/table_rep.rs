@@ -237,7 +237,7 @@ mod table_rep_drop_lifecycle_tests {
 
     fn construct_table_rep_for_test(
         cache_id: u64,
-        filter_ptr: *mut FilterBlockReader,
+        filter: Option<Box<FilterBlockReader>>,
         filter_data_ptr: *mut u8,
         filter_data_len: usize,
         index_block_ptr: *mut Block,
@@ -245,7 +245,7 @@ mod table_rep_drop_lifecycle_tests {
         trace!(
             "construct_table_rep_for_test: cache_id={}, filter_ptr={:?}, filter_data_ptr={:?}, filter_data_len={}, index_block_ptr={:?}",
             cache_id,
-            filter_ptr,
+            filter.as_deref().map(|reader| reader as *const FilterBlockReader),
             filter_data_ptr,
             filter_data_len,
             index_block_ptr
@@ -256,7 +256,7 @@ mod table_rep_drop_lifecycle_tests {
             status: make_ok_status(),
             file: make_dummy_file_handle(),
             cache_id,
-            filter: filter_ptr,
+            filter,
             filter_data: filter_data_ptr,
             filter_data_len,
             metaindex_handle: BlockHandle::new(),
@@ -265,7 +265,7 @@ mod table_rep_drop_lifecycle_tests {
     }
 
     fn create_filter_block_reader_with_drop_counter(
-    ) -> (*mut FilterBlockReader, Arc<AtomicUsize>) {
+    ) -> (Box<FilterBlockReader>, Arc<AtomicUsize>) {
         trace!(
             "create_filter_block_reader_with_drop_counter: constructing backing filter block contents"
         );
@@ -287,16 +287,14 @@ mod table_rep_drop_lifecycle_tests {
             drops: drop_counter.clone(),
         };
 
-        let reader = FilterBlockReader::new(Box::new(policy), &contents_slice);
+        let reader = FilterBlockReader::new(Arc::new(policy), &contents_slice);
         let boxed = Box::new(reader);
-        let ptr = Box::into_raw(boxed);
-
         trace!(
             "create_filter_block_reader_with_drop_counter: created FilterBlockReader at {:?}",
-            ptr
+            &*boxed as *const FilterBlockReader
         );
 
-        (ptr, drop_counter)
+        (boxed, drop_counter)
     }
 
     fn create_heap_owned_filter_buffer(len: usize) -> (*mut u8, usize) {
@@ -381,7 +379,7 @@ mod table_rep_drop_lifecycle_tests {
 
         let table_rep = construct_table_rep_for_test(
             1,
-            core::ptr::null_mut(),
+            None,
             core::ptr::null_mut(),
             0,
             core::ptr::null_mut(),
@@ -398,12 +396,12 @@ mod table_rep_drop_lifecycle_tests {
     fn drop_table_rep_drops_filter_block_reader_exactly_once() {
         trace!("drop_table_rep_drops_filter_block_reader_exactly_once: begin");
 
-        let (filter_ptr, drop_counter) =
+        let (filter, drop_counter) =
             create_filter_block_reader_with_drop_counter();
 
         let table_rep = construct_table_rep_for_test(
             2,
-            filter_ptr,
+            Some(filter),
             core::ptr::null_mut(),
             0,
             core::ptr::null_mut(),
@@ -438,7 +436,7 @@ mod table_rep_drop_lifecycle_tests {
 
         let table_rep = construct_table_rep_for_test(
             3,
-            core::ptr::null_mut(),
+            None,
             filter_data_ptr,
             filter_data_len,
             core::ptr::null_mut(),
@@ -459,7 +457,7 @@ mod table_rep_drop_lifecycle_tests {
 
         let table_rep = construct_table_rep_for_test(
             4,
-            core::ptr::null_mut(),
+            None,
             core::ptr::null_mut(),
             0,
             index_block_ptr,
@@ -478,7 +476,7 @@ mod table_rep_drop_lifecycle_tests {
             "drop_table_rep_with_all_resources_set_is_safe_and_drops_filter_once: begin"
         );
 
-        let (filter_ptr, drop_counter) =
+        let (filter, drop_counter) =
             create_filter_block_reader_with_drop_counter();
         let (filter_data_ptr, filter_data_len) =
             create_heap_owned_filter_buffer(64);
@@ -486,7 +484,7 @@ mod table_rep_drop_lifecycle_tests {
 
         let table_rep = construct_table_rep_for_test(
             5,
-            filter_ptr,
+            Some(filter),
             filter_data_ptr,
             filter_data_len,
             index_block_ptr,
@@ -522,7 +520,7 @@ mod table_rep_drop_lifecycle_tests {
 
         let table_rep = construct_table_rep_for_test(
             6,
-            core::ptr::null_mut(),
+            None,
             filter_data_ptr,
             0,
             core::ptr::null_mut(),

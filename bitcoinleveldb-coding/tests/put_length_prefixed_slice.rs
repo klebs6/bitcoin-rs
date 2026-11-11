@@ -3,27 +3,8 @@ use bitcoinleveldb_coding::*;
 use bitcoinleveldb_slice::*;
 use bitcoin_imports::*;
 
-#[traced_test]
-fn put_length_prefixed_slice_rejects_too_large_length() {
-    info!("put_length_prefixed_slice_rejects_too_large_length: start");
-
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
-
-    let too_large: usize = (u32::MAX as usize).saturating_add(1);
-    let huge_slice =
-        Slice::from_ptr_len(core::ptr::null::<u8>(), too_large);
-
-    put_length_prefixed_slice(dst, &huge_slice);
-
-    assert_eq!(
-        0,
-        s.len(),
-        "put_length_prefixed_slice_rejects_too_large_length: buffer should remain empty"
-    );
-
-    info!("put_length_prefixed_slice_rejects_too_large_length: success");
-}
+// Length-overflow boundaries are tested through the production conversion
+// helper in src/put_length_prefixed_slice.rs. They require no fabricated Slice.
 
 #[traced_test]
 fn put_length_prefixed_slice_roundtrip_single_value() {

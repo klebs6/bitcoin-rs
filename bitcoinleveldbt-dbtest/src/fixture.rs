@@ -1093,7 +1093,7 @@ fn db_test_minor_compactions_happen() {
     }
 }
 
-#[traced_test]
+#[test]
 fn db_test_iterator_pins_ref() {
     let mut dbtest = DBTest::default();
     assert!(dbtest_fixture_put_literal(&mut dbtest, "foo", "hello").is_ok());
@@ -1274,7 +1274,7 @@ fn db_test_iter_multi_with_delete() {
   | is shutdown during the memtable compaction.
   |
   */
-#[traced_test]
+#[test]
 fn db_test_recover_during_memtable_compaction() {
     let mut body = |dbtest: &mut DBTest| {
         let mut options = dbtest.current_options();
@@ -1357,7 +1357,7 @@ fn db_test_recover_with_large_log() {
     assert!(dbtest.num_table_files_at_level(0) > 1);
 }
 
-#[traced_test]
+#[test]
 fn db_test_compactions_generate_multiple_files() {
     let mut dbtest = DBTest::default();
     let mut options = dbtest.current_options();
@@ -1395,7 +1395,7 @@ fn db_test_compactions_generate_multiple_files() {
     }
 }
 
-#[traced_test]
+#[test]
 fn db_test_repeated_writes_to_same_key() {
     let mut dbtest = DBTest::default();
     let mut options = dbtest.current_options();
@@ -1423,7 +1423,7 @@ fn db_test_repeated_writes_to_same_key() {
     }
 }
 
-#[traced_test]
+#[test]
 fn db_test_approximate_sizes() {
     let mut body = |dbtest: &mut DBTest| {
         let mut options = dbtest.current_options();
@@ -1552,7 +1552,7 @@ fn db_test_approximate_sizes() {
     dbtest_fixture_run_across_option_configurations(&mut body);
 }
 
-#[traced_test]
+#[test]
 fn db_test_approximate_sizes_mix_of_small_and_large() {
     let mut body = |dbtest: &mut DBTest| {
         let mut options = dbtest.current_options();
@@ -2397,7 +2397,7 @@ fn db_test_still_readsst() {
     assert_eq!("bar", dbtest_fixture_get_literal(&mut dbtest, "foo"));
 }
 
-#[traced_test]
+#[test]
 fn db_test_bloom_filter() {
     let mut dbtest = DBTest::default();
 

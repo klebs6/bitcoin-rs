@@ -89,7 +89,7 @@ mod posix_logger_flush_buffer_to_log_file_tests {
         libc::fseek(fp, 0, libc::SEEK_SET);
 
         let mut buffer = vec![0u8; len];
-        let read = libc::fread(
+        let bytes_read = libc::fread(
             buffer.as_mut_ptr() as *mut libc::c_void,
             1,
             len,
@@ -98,9 +98,9 @@ mod posix_logger_flush_buffer_to_log_file_tests {
         debug!(
             "read_exact_from_file: requested={} actually_read={}",
             len,
-            read
+            bytes_read
         );
-        buffer.truncate(read);
+        buffer.truncate(bytes_read);
         buffer
     }
 

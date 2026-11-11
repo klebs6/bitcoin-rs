@@ -14,3 +14,9 @@ bitcoin-imports = { path = "../bitcoin-imports" }
 bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
 bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
 bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+
+[dev-dependencies]
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }

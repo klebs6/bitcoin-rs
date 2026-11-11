@@ -1,94 +1,61 @@
 // ---------------- [ File: bitcoinleveldb-writebatch/tests/writebatch.rs ]
-use bitcoinleveldb_writebatch::*;
-use bitcoinleveldb_memtable::*;
+use bitcoin_imports::*;
+use bitcoinleveldb_batch::{write_batch_internal, WriteBatch};
+use bitcoinleveldb_comparator::bytewise_comparator;
+use bitcoinleveldb_iterator::LevelDBIterator;
+use bitcoinleveldb_iteratorinner::*;
+use bitcoinleveldb_key::{extract_user_key, InternalKeyComparator};
+use bitcoinleveldb_memtable::MemTable;
+use bitcoinleveldb_slice::Slice;
 
 #[traced_test]
 fn mem_table_test_simple() {
-
     info!("mem_table_test_simple: starting");
 
     unsafe {
-        // --------------------------------------------------------------------
-        // InternalKeyComparator cmp(BytewiseComparator());
-        // --------------------------------------------------------------------
         let user_cmp_ptr = bytewise_comparator();
         let icmp = InternalKeyComparator::new(user_cmp_ptr);
-
-        // --------------------------------------------------------------------
-        // MemTable* memtable = new MemTable(cmp);
-        // memtable->Ref();
-        // --------------------------------------------------------------------
-        let memtable_box = Box::new(MemTable::new(&icmp));
-        let memtable_raw: *mut MemTable = Box::into_raw(memtable_box);
+        let memtable_raw = Box::into_raw(Box::new(MemTable::new(&icmp)));
         (*memtable_raw).ref_();
-        info!("mem_table_test_simple: created memtable @ {:?}", memtable_raw);
 
-        // --------------------------------------------------------------------
-        // WriteBatch batch;
-        // WriteBatchInternal::SetSequence(&batch, 100);
-        // --------------------------------------------------------------------
-        let mut batch = WriteBatch::default();
-        WriteBatchInternal::set_sequence(&mut batch, 100);
+        let entries: &[(&[u8], &[u8])] = &[
+            (b"k1", b"v1"),
+            (b"k2", b"v2"),
+            (b"k3", b"v3"),
+            (b"largekey", b"vlarge"),
+        ];
+        let mut batch = WriteBatch::new();
+        write_batch_internal::set_sequence(&mut batch, 100);
+        for &(key, value) in entries {
+            batch.put(&Slice::from(key), &Slice::from(value));
+        }
+        assert_eq!(write_batch_internal::count(&batch), entries.len() as i32);
 
-        // --------------------------------------------------------------------
-        // batch.Put("k1","v1");
-        // batch.Put("k2","v2");
-        // batch.Put("k3","v3");
-        // batch.Put("largekey","vlarge");
-        // --------------------------------------------------------------------
-        batch.put("k1".as_bytes(), "v1".as_bytes());
-        batch.put("k2".as_bytes(), "v2".as_bytes());
-        batch.put("k3".as_bytes(), "v3".as_bytes());
-        batch.put("largekey".as_bytes(), "vlarge".as_bytes());
+        let status = write_batch_internal::insert_into(&batch, memtable_raw);
+        assert!(status.is_ok(), "batch insertion failed: {:?}", status);
 
-        // --------------------------------------------------------------------
-        // ASSERT_TRUE(WriteBatchInternal::InsertInto(&batch, memtable).ok());
-        // --------------------------------------------------------------------
-        let status = WriteBatchInternal::insert_into(&batch, memtable_raw);
-        assert!(
-            status.is_ok(),
-            "WriteBatchInternal::InsertInto returned non-OK: {:?}",
-            status
-        );
-
-        // --------------------------------------------------------------------
-        // Iterator* iter = memtable->NewIterator();
-        // iter->SeekToFirst();
-        // while (iter->Valid()) {
-        //   fprintf(stderr, "key_: '%s' -> '%s'\n", iter->key().ToString().c_str(),
-        //           iter->value().ToString().c_str());
-        //   iter->Next();
-        // }
-        // delete iter;
-        // --------------------------------------------------------------------
         let iter_raw = (*memtable_raw).new_iterator();
+        assert!(!iter_raw.is_null(), "memtable must return an iterator");
         let mut iter_box: Box<LevelDBIterator> = Box::from_raw(iter_raw);
-
         iter_box.seek_to_first();
-
+        let mut observed: Vec<(Vec<u8>, Vec<u8>)> = Vec::new();
         while iter_box.valid() {
-            let key_slice   = iter_box.key();
-            let value_slice = iter_box.value();
-
-            eprintln!(
-                "key_: '{}' -> '{}'",
-                key_slice.to_string(),
-                value_slice.to_string()
-            );
-
+            let internal_key = iter_box.key();
+            let user_key = extract_user_key(&internal_key);
+            let value = iter_box.value();
+            observed.push((user_key.as_bytes().to_vec(), value.as_bytes().to_vec()));
             iter_box.next();
         }
+        assert!(iter_box.status().is_ok(), "memtable iteration must finish successfully");
+        let expected: Vec<(Vec<u8>, Vec<u8>)> = entries.iter()
+            .map(|(key, value)| (key.to_vec(), value.to_vec()))
+            .collect();
+        assert_eq!(observed, expected, "all inserted keys and values must round trip in order");
 
-        // iterator Box dropped automatically here (equivalent of delete iter)
-
-        // --------------------------------------------------------------------
-        // memtable->Unref();
-        // --------------------------------------------------------------------
-        info!("mem_table_test_simple: calling Unref() on memtable");
+        // The iterator borrows the memtable's storage. Release it before the
+        // final unref can destroy the memtable.
+        drop(iter_box);
         (*memtable_raw).unref();
-
-        // DO NOT USE memtable_raw after this point —
-        // Unref may delete the MemTable, exactly like C++.
     }
 
     info!("mem_table_test_simple: completed");

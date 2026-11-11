@@ -555,7 +555,7 @@ fn corruption_test_recover_write_error() {
     assert!(!s.is_ok());
 }
 
-#[traced_test]
+#[test]
 fn corruption_test_new_file_error_during_write() {
     let mut t = CorruptionTest::default();
 
@@ -632,7 +632,7 @@ fn corruption_test_table_file_repair() {
     t.check(95, 99);
 }
 
-#[traced_test]
+#[test]
 fn corruption_test_table_file_index_data() {
     let mut t = CorruptionTest::default();
 
@@ -647,7 +647,7 @@ fn corruption_test_table_file_index_data() {
     t.check(5000, 9999);
 }
 
-#[traced_test]
+#[test]
 fn corruption_test_missing_descriptor() {
     let mut t = CorruptionTest::default();
 
@@ -747,7 +747,7 @@ fn corruption_test_corrupted_descriptor() {
     assert_eq!("hello".to_string(), v);
 }
 
-#[traced_test]
+#[test]
 fn corruption_test_compaction_input_error() {
     let mut t = CorruptionTest::default();
 

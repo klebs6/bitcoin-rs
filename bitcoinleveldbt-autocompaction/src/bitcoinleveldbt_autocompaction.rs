@@ -1270,7 +1270,7 @@ fn auto_compact_test_read_all_empty_other_range_uses_signed_lower_bound_space() 
     );
 }
 
-#[traced_test]
+#[test]
 fn auto_compact_test_parameterized_fixture_preparation_probe_reports_completed_compaction_barriers() {
     bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
         "auto_compact_test_parameterized_fixture_preparation_probe_reports_completed_compaction_barriers",
@@ -1297,7 +1297,7 @@ fn auto_compact_test_parameterized_fixture_preparation_probe_reports_completed_c
     );
 }
 
-#[traced_test]
+#[test]
 fn auto_compact_test_parameterized_small_fixture_read_half_progress_probe_exhibits_early_compaction_or_topology_motion() {
     bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
         "auto_compact_test_parameterized_small_fixture_read_half_progress_probe_exhibits_early_compaction_or_topology_motion",
@@ -1356,7 +1356,7 @@ fn auto_compact_test_parameterized_small_fixture_read_half_progress_probe_exhibi
     );
 }
 
-#[traced_test]
+#[test]
 fn auto_compact_test_read_all_progress_probe_exhibits_early_compaction_or_topology_motion() {
     bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
         "auto_compact_test_read_all_progress_probe_exhibits_early_compaction_or_topology_motion",
@@ -1415,7 +1415,7 @@ fn auto_compact_test_read_all_progress_probe_exhibits_early_compaction_or_topolo
     );
 }
 
-#[traced_test]
+#[test]
 fn auto_compact_test_read_all() {
     bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
         "auto_compact_test_read_all",
@@ -1426,7 +1426,7 @@ fn auto_compact_test_read_all() {
     );
 }
 
-#[traced_test]
+#[test]
 fn auto_compact_test_read_half() {
     bitcoinleveldbt_autocompaction_execute_with_serial_heavy_test_boundary(
         "auto_compact_test_read_half",

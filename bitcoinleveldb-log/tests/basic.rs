@@ -863,7 +863,7 @@ fn log_test_read_write() {
     assert_eq!("EOF", t.read());
 }
 
-#[traced_test]
+#[test]
 fn log_test_many_blocks() {
     let mut t = LogTest::default();
 
@@ -976,7 +976,7 @@ fn log_test_open_for_append() {
     assert_eq!("EOF", t.read());
 }
 
-#[traced_test]
+#[test]
 fn log_test_random_read() {
     let mut t = LogTest::default();
 

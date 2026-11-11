@@ -207,8 +207,8 @@ mod table_builder_addition_tests {
                 "after one Add call num_entries must be 1"
             );
             assert_eq!(
-                rep.last_key_(),
-                "a",
+                rep.last_key_().as_slice(),
+                b"a".as_slice(),
                 "last_key_ must track the last added key"
             );
             assert!(
@@ -264,8 +264,8 @@ mod table_builder_addition_tests {
                 "num_entries must reflect number of Add calls"
             );
             assert_eq!(
-                rep.last_key_(),
-                "c",
+                rep.last_key_().as_slice(),
+                b"c".as_slice(),
                 "last_key_ must track the last key inserted"
             );
         }

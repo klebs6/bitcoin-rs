@@ -47,6 +47,11 @@ impl CondvarSignalExt for Condvar {
 #[cfg(test)]
 mod condvar_signal_ext_wiring_contract_suite_20260303 {
     use super::*;
+    use super::parking_lot::{Condvar, Mutex};
+    use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+    use std::sync::Arc;
+    use std::thread;
+    use std::time::Duration;
 
     struct CondvarSignalExtHandshakeState_20260303 {
         ready: bool,

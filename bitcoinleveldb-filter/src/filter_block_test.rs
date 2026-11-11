@@ -12,10 +12,9 @@ mod test_filter_block {
     pub struct TestHashFilter;
 
     // Now implement all subtraits:
-    impl Name for TestHashFilter {
-        fn name(&self) -> *const u8 {
-            static NAME: &str = "TestHashFilter";
-            NAME.as_ptr()
+    impl Named for TestHashFilter {
+        fn name(&self) -> Cow<'_, str> {
+            Cow::Borrowed("TestHashFilter")
         }
     }
 

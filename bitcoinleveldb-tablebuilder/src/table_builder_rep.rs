@@ -155,7 +155,7 @@ mod table_builder_rep_internal_tests {
         );
 
         unsafe {
-            let fb_raw = rep.filter_block();
+            let fb_raw = *rep.filter_block();
             if !fb_raw.is_null() {
                 trace!("freeing FilterBlockBuilder allocated by TableBuilderRep::new");
                 let _ = Box::from_raw(fb_raw);

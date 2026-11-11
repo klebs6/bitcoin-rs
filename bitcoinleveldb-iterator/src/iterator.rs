@@ -370,13 +370,18 @@ mod iterator_wrapper_behavior_tests {
     }
 
     #[test]
-    #[should_panic]
-    fn seek_panics_when_no_iterator_attached() {
-        trace!("seek_panics_when_no_iterator_attached: start");
-
+    fn seek_without_an_attached_iterator_remains_invalid() {
         let mut wrapper = LevelDBIterator::default();
-        let target = Slice::from("abc");
-        wrapper.seek(&target);
+        assert!(!wrapper.has_iterator());
+        assert!(!wrapper.valid());
+
+        // A detached wrapper is deliberately a graceful no-op for seek;
+        // Table::read_meta relies on this documented production behavior.
+        for target in [Slice::from("abc"), Slice::from(""), Slice::from("xyz")] {
+            wrapper.seek(&target);
+            assert!(!wrapper.has_iterator());
+            assert!(!wrapper.valid());
+        }
     }
 
     #[test]

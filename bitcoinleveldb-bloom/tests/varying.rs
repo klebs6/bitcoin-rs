@@ -2,7 +2,7 @@
 use bitcoinleveldb_bloom::*;
 use bitcoin_imports::*;
 
-#[traced_test]
+#[test]
 fn bloom_filter_varying_lengths_meet_false_positive_requirements() {
     info!("bloom_filter_varying_lengths_meet_false_positive_requirements: start");
 
