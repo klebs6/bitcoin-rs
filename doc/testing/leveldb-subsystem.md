@@ -123,3 +123,30 @@ The repair controller clears only the explicitly disposable `return-buffer`
 before preservation checking and replaces it with the complete report after
 checks finish. Retained workflow receipts and source files are not transport
 buffers.
+
+
+Focused059 completion
+---------------------
+
+The completed focused058 receipt retains 2,039 native passes and 106 successful
+doctest commands across the 107-package workspace inventory. Only writebatch's
+uncompiled integration target and the multithreaded case remain pending.
+
+The writebatch integration test uses ordinary `#[test]` registration. Its body,
+assertions, and iterator-before-memtable teardown order are unchanged; no tracing
+dependency or Cargo.lock change is needed for test registration.
+
+`mt_test::db_test_multi_threaded` runs an unchanged ten-second workload for every
+fixture option configuration. The routine 30-second envelope stopped it after
+two configurations completed and a third started. It is explicitly deferred to
+the existing stress envelope: 2 GiB RAM, one CPU, no swap, 600 seconds, 512 MiB
+private test data, and all existing task, output, and file limits. Other routine
+cases keep their original envelope. The original workload, worker count, key
+count, option iteration, assertions, and per-configuration timing are unchanged.
+This case is qualified by the same exact-one-test libtest summary, current Cargo
+executable binding, and verified guard controls as other generic cases. Its
+stress classification does not require adding a marker to the native test.
+
+Continue from the latest focused receipt using `--failed-from PATH`. A focused
+success completes the accumulated pending inventory with retained source/run
+provenance; it does not turn historical passes into fresh full-suite evidence.

@@ -785,6 +785,9 @@ EXPLICIT_STRESS057 = {
         'ISSUE178_CONTRACT_OK case=issue178_test',
     ('bitcoinleveldbt-sparsemerge', 'bitcoinleveldbt_sparsemerge::db_test_sparse_merge'):
         'SPARSEMERGE_CONTRACT_OK case=db_test_sparse_merge',
+    # Each option configuration includes an unchanged ten-second workload.
+    # This original libtest case has no additional in-body marker.
+    ('bitcoinleveldbt-mt', 'mt_test::db_test_multi_threaded'): None,
 }
 
 
@@ -1210,7 +1213,7 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
                 command += ['--nocapture', '--test-threads=1']
                 extra = {'RUST_LOG': 'off', 'RUST_BACKTRACE': '0', 'TEST_RANDOM_SEED': '301'}
                 explicit = EXPLICIT_STRESS057.get((package['name'], name))
-                kind = 'stress' if ignored or explicit else 'case'
+                kind = 'stress' if ignored or (package['name'], name) in EXPLICIT_STRESS057 else 'case'
                 marker = explicit
             row, text = phase('case-' + format(index, '06d'), command, extra=extra, data=data,
                               kind=kind, artifact=artifact, require=False)

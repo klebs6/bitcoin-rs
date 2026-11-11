@@ -8,7 +8,7 @@ use bitcoinleveldb_key::{extract_user_key, InternalKeyComparator};
 use bitcoinleveldb_memtable::MemTable;
 use bitcoinleveldb_slice::Slice;
 
-#[traced_test]
+#[test]
 fn mem_table_test_simple() {
     info!("mem_table_test_simple: starting");
 
