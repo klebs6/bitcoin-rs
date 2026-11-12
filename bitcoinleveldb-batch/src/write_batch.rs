@@ -48,10 +48,11 @@ pub struct WriteBatch {
 
     /**
       | See comment in write_batch.cc for the
-      | format of rep_
+      | format of rep_. Headers and records are
+      | binary bytes, without a UTF-8 invariant.
       |
       */
-    rep: String,
+    rep: Vec<u8>,
 }
 
 impl Default for WriteBatch {
@@ -68,7 +69,7 @@ impl WriteBatch {
         trace!("WriteBatch::new");
 
         let mut batch = WriteBatch {
-            rep: String::new(),
+            rep: Vec::new(),
         };
         batch.clear();
         batch
@@ -87,10 +88,7 @@ impl WriteBatch {
         );
 
         self.rep_mut().clear();
-        unsafe {
-            let v: &mut Vec<u8> = self.rep_mut().as_mut_vec();
-            v.resize(HEADER, 0u8);
-        }
+        self.rep_mut().resize(HEADER, 0u8);
 
         trace!(
             "WriteBatch::clear: rep_len_after={} rep_cap_after={}",

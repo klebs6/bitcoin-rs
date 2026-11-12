@@ -35,12 +35,13 @@ all-feature coverage, arbitrary binary-data correctness, or memory safety.
 
 ## Remaining release gates
 
-1. **Binary representation.** Coding, batches, keys and block paths currently
-   use Rust `String` storage for binary representations, including unchecked
-   UTF-8 conversion or mutable access to its byte vector. Rust `String` requires
-   valid UTF-8. This is a source-level correctness blocker, including outside
-   optional Snappy support; documentation cannot make the representation valid.
-   Plan a byte-buffer migration with focused compatibility/round-trip tests.
+1. **Binary representation.** The [focused063 follow-up](leveldb-byte-buffers063.md)
+   changes WriteBatch and private InternalKey storage to byte vectors. Its
+   protected result is recorded separately. Coding sinks, legacy key append,
+   blocks, manifest records, retrieval outputs and other owners still need
+   coherent byte-buffer migration. Rust `String` requires valid UTF-8; binary
+   storage and lossy conversion remain source-level release blockers, including
+   outside optional Snappy support.
 2. **Known helper limits.** ModelDB's point `get` path is not implemented, and
    reverse-key comparator conversions are not a general arbitrary-byte ordering
    implementation. Keep these boundaries explicit and decide their public scope.
@@ -56,15 +57,15 @@ all-feature coverage, arbitrary binary-data correctness, or memory safety.
    Git identity. Do not silently move the qualification tag or publish artifacts.
 
 The README/publication pass does not require repeating the entire native test
-inventory. Run the affected Arena package for this production change; later
-binary-buffer and package changes need their own targeted checks. See the
+inventory. The preparation062 Arena change has its own targeted result. The focused063
+binary-buffer follow-up checks batch, key, writebatch and C API crates. Later
+owner and package changes need their own targeted checks. See the
 [bounded testing guide](../testing/leveldb-subsystem.md).
 
 ## Repair reservation lifecycle
 
-The capture found 16 merged repair refs. Twelve attached worktrees were clean;
-their refs can be retired only after verifying the exact tip, master ancestry,
-clean status, and unchanged index. Detaching at the same commit preserves the
+The capture found 16 merged repair refs. Twelve attached worktrees were clean. Preparation062 retired their refs after
+verifying the exact tip, master ancestry, clean status and unchanged index. Detaching at the same commit preserves the
 worktree and its data. A retirement receipt records actual changes and reflog
 copies. Historical one-shot mutation-controller branch reservations are then
 retired; their old branch-name preconditions should not be replayed as if active.

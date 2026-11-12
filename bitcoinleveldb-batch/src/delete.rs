@@ -18,8 +18,8 @@ impl WriteBatch {
         let cur = write_batch_internal::count(self as *const WriteBatch);
         write_batch_internal::set_count(self as *mut WriteBatch, cur + 1);
 
-        unsafe {
-            let rep_vec: &mut Vec<u8> = self.rep_mut().as_mut_vec();
+        {
+            let rep_vec: &mut Vec<u8> = self.rep_mut();
 
             // tag
             rep_vec.push(ValueType::TypeDeletion as u8);

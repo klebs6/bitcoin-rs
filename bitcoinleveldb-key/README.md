@@ -12,6 +12,12 @@ packed sequence/type tag so newer entries are visited first.
 - `InternalFilterPolicy` strips internal tags before delegating filtering to a
   user-key policy.
 
+`InternalKey` owns its serialized representation as `Vec<u8>`. Its
+`encode`/`decode_from` views preserve arbitrary user bytes and tag bytes.
+`append_internal_key_to_vec` appends this binary format to a byte buffer.
+The legacy `append_internal_key(*mut String, ...)` entrypoint still has an
+unresolved binary-storage defect; its remaining callers are a release blocker.
+
 `SequenceNumber` uses a 56-bit limit and `ValueType` distinguishes values from
 deletions. Pointer-backed slices and comparator/filter pointers borrow their
 storage or owners; keep them valid for the operation or adapter lifetime.

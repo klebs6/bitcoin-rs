@@ -124,14 +124,14 @@ mod internal_filter_policy_tests {
     }
 
     fn build_internal_key_bytes(user: &str, seq: SequenceNumber) -> Vec<u8> {
-        let mut s = String::new();
+        let mut s = Vec::new();
         unsafe {
             let user_slice = Slice::from_ptr_len(user.as_ptr(), user.len());
             let parsed =
                 ParsedInternalKey::new(&user_slice, &seq, VALUE_TYPE_FOR_SEEK);
-            append_internal_key(&mut s as *mut String, &parsed);
+            append_internal_key_to_vec(&mut s, &parsed);
         }
-        s.as_bytes().to_vec()
+        s
     }
 
     #[traced_test]

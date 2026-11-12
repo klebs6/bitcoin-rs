@@ -14,9 +14,10 @@ interfaces with raw-pointer contracts; the batch object itself does not perform
 I/O or commit a transaction. Database-level atomic application belongs to the
 caller that writes the batch.
 
-The current implementation stores its binary representation in a `String` buffer.
-This is a representation limitation requiring review for arbitrary bytes, not a
-guarantee that the encoded contents are valid UTF-8.
+The encoded representation is owned as `Vec<u8>` and preserves arbitrary key and
+value bytes, including NUL and invalid UTF-8. The generated `rep`, `rep_mut`, and
+`set_rep` accessors expose this byte buffer; direct mutations must preserve the
+header and record format.
 
 See [the batch representation](src/write_batch.rs),
 [record decoding](src/iterate.rs), and [internal operations](src/internal.rs).
@@ -24,3 +25,5 @@ See [the batch representation](src/write_batch.rs),
 [Source](src/lib.rs) · [Manifest](Cargo.toml) · [Bounded subsystem verification](../doc/testing/leveldb-subsystem.md)
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+
+License: MIT. See the [repository license](../LICENSE).

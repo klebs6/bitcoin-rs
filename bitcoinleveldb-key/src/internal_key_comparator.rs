@@ -245,14 +245,14 @@ mod internal_key_comparator_tests {
     use super::*;
 
     fn build_internal_key_bytes(user: &str, seq: SequenceNumber) -> Vec<u8> {
-        let mut s = String::new();
+        let mut s = Vec::new();
         unsafe {
             let user_slice = Slice::from_ptr_len(user.as_ptr(), user.len());
             let parsed =
                 ParsedInternalKey::new(&user_slice, &seq, ValueType::TypeValue);
-            append_internal_key(&mut s as *mut String, &parsed);
+            append_internal_key_to_vec(&mut s, &parsed);
         }
-        s.as_bytes().to_vec()
+        s
     }
 
     #[traced_test]
@@ -352,15 +352,15 @@ mod internal_key_comparator_tests {
                 vt
             );
 
-            let mut encoded = String::new();
+            let mut encoded = Vec::new();
 
             unsafe {
                 let user_slice = Slice::from_ptr_len(user.as_ptr(), user.len());
                 let parsed = ParsedInternalKey::new(&user_slice, &seq, vt);
-                append_internal_key(&mut encoded as *mut String, &parsed);
+                append_internal_key_to_vec(&mut encoded, &parsed);
             }
 
-            let bytes = encoded.as_bytes().to_vec();
+            let bytes = encoded;
             debug!(
                 "make_internal_key_for_tests: internal_len={}, bytes={:?}",
                 bytes.len(),

@@ -238,17 +238,16 @@ fn format_test_internal_key_shortest_successor() {
     fn ikey_from_str(u: &str, seq: u64, vt: ValueType) -> Vec<u8> {
         trace!("test helper ikey_from_str: u='{}', seq={}, vt={:?}", u, seq, vt);
 
-        // We MUST build through `String` because `append_internal_key`
-        // requires `*mut String`, not a Vec<u8>.
-        let mut tmp = String::new();
+        // Keep the complete internal-key encoding in a byte buffer.
+        let mut tmp = Vec::new();
         unsafe {
             let user_slice = Slice::from_ptr_len(u.as_ptr(), u.len());
             let parsed = ParsedInternalKey::new(&user_slice, &seq, vt);
-            append_internal_key(&mut tmp as *mut String, &parsed);
+            append_internal_key_to_vec(&mut tmp, &parsed);
         }
 
         // Now pull the underlying bytes (LevelDB internal keys are binary).
-        let bytes = tmp.as_bytes().to_vec();
+        let bytes = tmp;
         bytes
     }
 
@@ -256,13 +255,13 @@ fn format_test_internal_key_shortest_successor() {
     fn ikey_from_bytes(u: &[u8], seq: u64, vt: ValueType) -> Vec<u8> {
         trace!("test helper ikey_from_bytes: seq={}, vt={:?}", seq, vt);
 
-        let mut tmp = String::new();
+        let mut tmp = Vec::new();
         unsafe {
             let user_slice = Slice::from_ptr_len(u.as_ptr(), u.len());
             let parsed = ParsedInternalKey::new(&user_slice, &seq, vt);
-            append_internal_key(&mut tmp as *mut String, &parsed);
+            append_internal_key_to_vec(&mut tmp, &parsed);
         }
-        tmp.as_bytes().to_vec()
+        tmp
     }
 
     // Helper: run FindShortSuccessor and return new bytes.

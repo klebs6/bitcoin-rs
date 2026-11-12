@@ -123,10 +123,21 @@ pub fn parse_internal_key(
     }
 }
 
+/// Append an internal key to a byte buffer without imposing a text encoding.
+/// The layout remains the user bytes followed by the little-endian packed tag.
+pub fn append_internal_key_to_vec(result: &mut Vec<u8>, k: &ParsedInternalKey) {
+    let packed = pack_sequence_and_type(k.sequence, k.ty);
+    result.extend_from_slice(slice_as_bytes(&k.user_key));
+    result.extend_from_slice(&encode_fixed64_le(packed));
+}
+
 /**
-  | Append the serialization of "key" to
-  | *result.
+  | Legacy String sink retained for callers awaiting byte-buffer migration.
+  | This API cannot represent general internal-key encodings as valid UTF-8;
+  | binary callers must use append_internal_key_to_vec instead. Its remaining
+  | callers are a release blocker, not a supported binary-text conversion.
   |
+  | Append the serialization of "key" to *result.
   */
 pub fn append_internal_key(result: *mut String, k: &ParsedInternalKey) {
     trace!(
@@ -173,6 +184,23 @@ mod parsed_internal_key_tests {
         let enc = encode_fixed64_le(combined);
         v.extend_from_slice(&enc);
         v
+    }
+
+    #[test]
+    fn byte_append_preserves_prefix_binary_user_and_literal_tag() {
+        let user = [0xff, 0x00, 0x80];
+        let sequence: SequenceNumber = 0x00ff_807f_0201_00aa;
+        let parsed = ParsedInternalKey::new(
+            &Slice::from(&user[..]),
+            &sequence,
+            ValueType::TypeValue,
+        );
+        let mut encoded = vec![0xde, 0xad];
+        append_internal_key_to_vec(&mut encoded, &parsed);
+        assert_eq!(encoded, vec![
+            0xde, 0xad, 0xff, 0x00, 0x80,
+            0x01, 0xaa, 0x00, 0x01, 0x02, 0x7f, 0x80, 0xff,
+        ]);
     }
 
     #[traced_test]

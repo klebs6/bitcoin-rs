@@ -10,7 +10,8 @@ crate::ix!();
   */
 #[derive(Clone)]
 pub struct InternalKey {
-    rep: String,
+    // Serialized internal keys contain arbitrary user bytes and an eight-byte tag.
+    rep: Vec<u8>,
 }
 
 impl Default for InternalKey {
@@ -22,7 +23,7 @@ impl Default for InternalKey {
     fn default() -> Self {
         trace!("InternalKey::default");
         InternalKey {
-            rep: String::new(),
+            rep: Vec::new(),
         }
     }
 }
@@ -57,9 +58,9 @@ impl InternalKey {
             t,
             *user_key_.size()
         );
-        let mut rep = String::new();
+        let mut rep = Vec::new();
         let parsed = ParsedInternalKey::new(user_key_, &s, t);
-        append_internal_key(&mut rep as *mut String, &parsed);
+        append_internal_key_to_vec(&mut rep, &parsed);
         InternalKey { rep }
     }
 
@@ -76,9 +77,8 @@ impl InternalKey {
                 return false;
             }
             let bytes = std::slice::from_raw_parts(data, len);
-            // NOTE: bytes here are LevelDB internal-key bytes; we preserve them as-is.
-            // This is a faithful port of the C++ "string of bytes" representation.
-            self.rep = String::from_utf8_unchecked(bytes.to_vec());
+            // Keep the encoded key byte-for-byte; it has no UTF-8 invariant.
+            self.rep = bytes.to_vec();
         }
         !self.rep.is_empty()
     }
@@ -103,8 +103,11 @@ impl InternalKey {
             *p.sequence(),
             *p.ty()
         );
-        self.rep.clear();
-        append_internal_key(&mut self.rep as *mut String, p);
+        // `p.user_key` may borrow this key's current encoded storage. Read it
+        // completely before replacing that storage.
+        let mut rep = Vec::new();
+        append_internal_key_to_vec(&mut rep, p);
+        self.rep = rep;
     }
 
     pub fn clear(&mut self) {
@@ -133,7 +136,7 @@ impl InternalKey {
         if ok {
             parsed.debug_string()
         } else {
-            let escaped = escape_for_debug(self.rep.as_bytes());
+            let escaped = escape_for_debug(&self.rep);
             format!("(bad){}", escaped)
         }
     }
@@ -172,6 +175,112 @@ mod internal_key_tests {
             let decoded_user_bytes = slice_as_bytes(&decoded_user_slice);
             assert_eq!(decoded_user_bytes, &user_bytes[..]);
         }
+    }
+
+    #[test]
+    fn binary_internal_key_preserves_literal_wire_bytes_at_sequence_limit() {
+        let user = [0xff, 0x00, 0xc0, 0x80, b'a'];
+        let expected = [
+            0xff, 0x00, 0xc0, 0x80, b'a',
+            0x01, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+        ];
+        let key = InternalKey::new(
+            &Slice::from(&user[..]),
+            MAX_SEQUENCE_NUMBER,
+            ValueType::TypeValue,
+        );
+        assert_eq!(slice_as_bytes(&key.encode()), &expected[..]);
+        assert_eq!(slice_as_bytes(&key.user_key()), &user[..]);
+        assert!(core::str::from_utf8(&expected).is_err());
+
+        let mut decoded = InternalKey::default();
+        assert!(decoded.decode_from(&Slice::from(&expected[..])));
+        assert_eq!(slice_as_bytes(&decoded.encode()), &expected[..]);
+        assert_eq!(slice_as_bytes(&decoded.user_key()), &user[..]);
+        assert_eq!(slice_as_bytes(&decoded.clone().encode()), &expected[..]);
+
+        let mut parsed = ParsedInternalKey::default();
+        assert!(parse_internal_key(&decoded.encode(), &mut parsed));
+        assert_eq!(*parsed.sequence(), MAX_SEQUENCE_NUMBER);
+        assert_eq!(*parsed.ty(), ValueType::TypeValue);
+    }
+
+    #[test]
+    fn set_from_replaces_binary_owner_with_exact_little_endian_tag() {
+        let old_user = Slice::from(&b"old"[..]);
+        let mut key = InternalKey::new(&old_user, 0, ValueType::TypeValue);
+        let user = [0x80, 0x00, 0xfe];
+        let sequence: SequenceNumber = 0x00ff_807f_0201_00aa;
+        let user_slice = Slice::from(&user[..]);
+        let parsed = ParsedInternalKey::new(
+            &user_slice,
+            &sequence,
+            ValueType::TypeDeletion,
+        );
+        key.set_from(&parsed);
+        let expected = [
+            0x80, 0x00, 0xfe,
+            0x00, 0xaa, 0x00, 0x01, 0x02, 0x7f, 0x80, 0xff,
+        ];
+        assert_eq!(slice_as_bytes(&key.encode()), &expected[..]);
+        let mut decoded = InternalKey::default();
+        assert!(decoded.decode_from(&Slice::from(&expected[..])));
+        assert_eq!(slice_as_bytes(&decoded.encode()), &expected[..]);
+        assert_eq!(slice_as_bytes(&decoded.user_key()), &user[..]);
+    }
+
+    #[test]
+    fn set_from_accepts_parsed_key_borrowing_its_own_binary_storage() {
+        let user = [0xff, 0x00, 0xc0, 0x80, b'a'];
+        let expected = [
+            0xff, 0x00, 0xc0, 0x80, b'a',
+            0x01, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+        ];
+        let mut key = InternalKey::new(
+            &Slice::from(&user[..]),
+            MAX_SEQUENCE_NUMBER,
+            ValueType::TypeValue,
+        );
+        let mut parsed = ParsedInternalKey::default();
+        assert!(parse_internal_key(&key.encode(), &mut parsed));
+        assert_eq!(slice_as_bytes(parsed.user_key()), &user[..]);
+        assert_eq!(*parsed.sequence(), MAX_SEQUENCE_NUMBER);
+        assert_eq!(*parsed.ty(), ValueType::TypeValue);
+
+        // The parsed view borrows key.rep. Replacement must read those bytes
+        // before the old owner is cleared, overwritten or dropped.
+        key.set_from(&parsed);
+        assert_eq!(slice_as_bytes(&key.encode()), &expected[..]);
+        assert_eq!(slice_as_bytes(&key.user_key()), &user[..]);
+        let mut reparsed = ParsedInternalKey::default();
+        assert!(parse_internal_key(&key.encode(), &mut reparsed));
+        assert_eq!(*reparsed.sequence(), MAX_SEQUENCE_NUMBER);
+        assert_eq!(*reparsed.ty(), ValueType::TypeValue);
+    }
+
+    #[test]
+    fn binary_internal_key_debug_escapes_payload_and_malformed_bytes() {
+        let user = [0xff, 0x00, b'\\', b'"', b'\n'];
+        let key = InternalKey::new(
+            &Slice::from(&user[..]),
+            7,
+            ValueType::TypeValue,
+        );
+        assert_eq!(key.debug_string(), "'\\xff\\x00\\\\\\\"\\n' @ 7 : 1");
+        let structural = format!("{:?}", key);
+        assert!(structural.contains("InternalKey"));
+        assert!(structural.contains("repr"));
+        assert!(!structural.contains('\u{fffd}'));
+        assert!(!structural.contains('\0'));
+
+        let malformed = [0xff, 0x00, 0x80];
+        let mut decoded = InternalKey::default();
+        // decode_from retains its legacy acceptance contract: nonempty is true.
+        assert!(decoded.decode_from(&Slice::from(&malformed[..])));
+        assert_eq!(slice_as_bytes(&decoded.encode()), &malformed[..]);
+        assert_eq!(decoded.debug_string(), "(bad)\\xff\\x00\\x80");
+        assert!(!decoded.decode_from(&Slice::from(&b""[..])));
+        assert_eq!(decoded.debug_string(), "(bad)");
     }
 
     #[traced_test]

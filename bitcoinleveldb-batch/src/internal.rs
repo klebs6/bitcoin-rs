@@ -76,12 +76,10 @@ pub mod write_batch_internal {
                 std::slice::from_raw_parts(*contents.data(), *contents.size())
             };
 
-            let mut s = String::new();
-            {
-                let v: &mut Vec<u8> = s.as_mut_vec();
-                v.extend_from_slice(src);
-            }
-            (*b).set_rep(s);
+            // Copy before replacing the owner: `contents` can refer to the
+            // batch's current buffer (including a view of that buffer).
+            let bytes = src.to_vec();
+            (*b).set_rep(bytes);
 
             trace!(
                 "write_batch_internal::set_contents: new_rep_len={}",
@@ -121,13 +119,14 @@ pub mod write_batch_internal {
                 HEADER
             );
 
-            let src_bytes = std::slice::from_raw_parts((*src).rep().as_ptr(), src_len);
-            let tail = &src_bytes[HEADER..];
-
             let before = (*dst).rep().len();
-            {
-                let dst_vec: &mut Vec<u8> = (*dst).rep_mut().as_mut_vec();
-                dst_vec.extend_from_slice(tail);
+            if std::ptr::eq(dst as *const WriteBatch, src) {
+                // A raw internal caller may append a batch to itself. Vec's
+                // range operation keeps the source valid across reallocation.
+                (*dst).rep_mut().extend_from_within(HEADER..src_len);
+            } else {
+                let tail = &(*src).rep()[HEADER..src_len];
+                (*dst).rep_mut().extend_from_slice(tail);
             }
             trace!(
                 "write_batch_internal::append: dst_len {} -> {}",
@@ -196,7 +195,7 @@ pub mod write_batch_internal {
                 HEADER
             );
 
-            let dst = (*b).rep_mut().as_mut_vec().as_mut_ptr().add(8);
+            let dst = (*b).rep_mut().as_mut_ptr().add(8);
             encode_fixed32(dst, n as u32);
         }
     }
@@ -261,7 +260,7 @@ pub mod write_batch_internal {
                 HEADER
             );
 
-            let dst = (*b).rep_mut().as_mut_vec().as_mut_ptr();
+            let dst = (*b).rep_mut().as_mut_ptr();
             encode_fixed64(dst, seq);
         }
     }
