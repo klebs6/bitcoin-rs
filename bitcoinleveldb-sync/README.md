@@ -1,38 +1,18 @@
 # bitcoinleveldb-sync
 
-`bitcoinleveldb-sync` is a Rust library designed for synchronizing access to resources using a custom lock mechanism. This crate utilizes low-level, high-performance locking principles and is ideal for scenarios that require precise, synchronous control over concurrency.
+Scoped locking helper for LevelDB's raw-mutex call sites.
 
-## Overview
+`MutexLock::new` locks a `parking_lot::RawMutex`; dropping the guard unlocks it,
+including on normal early returns or unwinding. The constructor accepts a
+mutable raw pointer and rejects null. The guard does not own the mutex.
 
-This crate provides a synchronization primitive: `MutexLock`, which relies on a low-level `parking_lot::RawMutex`. This allows for more granular control over locking behavior compared to standard library mutexes. Users are responsible for ensuring correctness when employing these advanced locking techniques.
+Keep the mutex allocated and valid until the guard is dropped, and honor the
+raw mutex's locking and ownership rules. This is a low-level engine helper with
+pointer-based lifetime obligations, not a replacement for a lifetime-checked
+Rust mutex guard.
 
-### Core Features
+See [the guard implementation](src/mutexlock.rs).
 
-- **Scoped Locking**: The `MutexLock` is scoped, automatically releasing the lock when it goes out of scope, preventing deadlocks.
-- **High-Performance**: Utilizing `parking_lot` for highly efficient lock operations suitable for performance-critical applications.
+[Source](src/lib.rs) · [Manifest](Cargo.toml) · [Bounded subsystem verification](../doc/testing/leveldb-subsystem.md)
 
-### Usage
-
-Here is an example of using `MutexLock`:
-
-```rust
-use parking_lot::RawMutex;
-
-let raw_mutex = RawMutex::INIT;
-
-{
-    let _lock = bitcoinleveldb_sync::MutexLock::new(&raw_mutex);
-    // critical section
-}
-// The lock is automatically released here.
-```
-
-### Safety
-
-- The `MutexLock` requires users to provide raw pointers to `parking_lot::RawMutex`. Proper pointer management and safety practices are expected.
-
-- **Panic Safety**: The constructor will panic if given a null pointer.
-
-## Contributing
-
-Contributions and issues are welcome. Please see the [repository](https://github.com/klebs6/bitcoin-rs) for more information.
+[Repository and support](https://github.com/klebs6/bitcoin-rs/issues)

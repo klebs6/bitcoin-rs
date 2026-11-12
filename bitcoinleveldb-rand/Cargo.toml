@@ -14,8 +14,8 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Deterministic LevelDB-compatible Park–Miller pseudo-random number generator for tests and internal randomized decisions; small, fast, and non-cryptographic."
+authors = ["klebs"]
+description = "Deterministic pseudo-random generator used by LevelDB tests and randomized data structures. Random implements the LevelDB-style Park–Miller sequence with a 31-bit state and multiplier 16807."
 documentation = "https://docs.rs/bitcoinleveldb-rand"
 edition = "2021"
 license = "MIT"

@@ -1,20 +1,20 @@
 [package]
 name = "bitcoinleveldbt-mockversionset"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Mock version-set support used by the LevelDB port's fixtures."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
-bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
-bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface", version = "0.1.0" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options", version = "0.1.19" }
+bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache", version = "0.1.0" }
+bitcoin-imports = { path = "../bitcoin-imports", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key", version = "0.1.19" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator", version = "0.1.19" }

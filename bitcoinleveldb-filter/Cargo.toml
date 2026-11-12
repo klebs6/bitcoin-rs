@@ -34,8 +34,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "LevelDB-compatible filter block (Bloom filter) builder and reader used by bitcoin-rs, exposing low-level traits and utilities for constructing and querying per-block filters over SSTable-style key ranges."
+authors = ["klebs"]
+description = "Filter-policy interfaces and the filter blocks stored in LevelDB table files."
 documentation = "https://docs.rs/bitcoinleveldb-filter"
 edition = "2021"
 license = "MIT"

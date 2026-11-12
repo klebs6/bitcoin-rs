@@ -64,9 +64,9 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "POSIX-backed operating-system services for the LevelDB storage engine."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixenv"
 version = "0.1.1"
+repository = "https://github.com/klebs6/bitcoin-rs"

@@ -1,24 +1,24 @@
 [package]
 name = "bitcoinleveldb-emptyiterator"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "An always-invalid LevelDB iterator with a stored status."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

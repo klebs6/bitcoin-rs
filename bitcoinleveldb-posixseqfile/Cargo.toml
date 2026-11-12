@@ -48,11 +48,11 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "POSIX-backed implementation of a LevelDB-compatible SequentialFile using read, lseek, and close for efficient sequential file access in Bitcoin-oriented storage engines."
+description = "POSIX file-descriptor implementation of LevelDB's sequential-file interface. PosixSequentialFile::new(filename, fd) takes ownership of an already-open file descriptor; it does not open the named path. Dropping it closes the descriptor."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixseqfile"
 version = "0.1.1"
 keywords = ["leveldb", "bitcoin", "posix", "sequentialfile", "storage"]
 categories = ["filesystem", "network-programming", "data-structures"]
+repository = "https://github.com/klebs6/bitcoin-rs"

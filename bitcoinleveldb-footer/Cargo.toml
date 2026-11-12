@@ -1,24 +1,24 @@
 [package]
 name = "bitcoinleveldb-footer"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Encoding and decoding of the fixed-size footer at the end of a LevelDB SSTable. Footer contains the metaindex and index BlockHandle values; the serialized footer includes padding and the table magic number."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle" }
-bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle", version = "0.1.0" }
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

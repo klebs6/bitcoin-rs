@@ -1,24 +1,24 @@
 [package]
 name = "bitcoinleveldb-blockutil"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Low-level decoding of a LevelDB table-block entry header."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

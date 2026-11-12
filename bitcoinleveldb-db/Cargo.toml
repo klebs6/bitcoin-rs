@@ -10,27 +10,27 @@ tracing-subscriber.workspace = true
 tracing-setup.workspace = true
 disable_macro.workspace = true
 
-bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl" }
-bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
-bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
-bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
-bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
-bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
-bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
-bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
-bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair" }
-bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom" }
-bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl", version = "0.1.0" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot", version = "0.1.0" }
+bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache", version = "0.1.19" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch", version = "0.1.19" }
+bitcoinleveldb-log = { path = "../bitcoinleveldb-log", version = "0.1.19" }
+bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter", version = "0.1.19" }
+bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor", version = "0.1.0" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env", version = "0.1.19" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator", version = "0.1.19" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface", version = "0.1.0" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv", version = "0.1.1" }
+bitcoinleveldb-repair = { path = "../bitcoinleveldb-repair", version = "0.1.19" }
+bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom", version = "0.1.19" }
+bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch", version = "0.1.0" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -41,8 +41,8 @@ path = "../bitcoin-imports"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "a DB is a persistent ordered map from keys to values.  A DB is safe for concurrent access from multiple threads without any external synchronization"
+authors = ["klebs"]
+description = "C-API-style database handles and Rust functions for the bitcoin-rs LevelDB implementation. This crate exposes raw-pointer operations such as leveldb_open, leveldb_put, leveldb_get, leveldb_write, iterator/snapshot operations, and the corresponding close/destroy/free functions. These are Rust functions; this crate does not declare a C ABI or exported extern \"C\" entry points."
 documentation = "https://docs.rs/bitcoinleveldb-db"
 edition = "2021"
 license = "MIT"

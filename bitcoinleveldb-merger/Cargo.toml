@@ -3,13 +3,13 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dev-dependencies]
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key", version = "0.1.19" }
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-emptyiterator = { path = "../bitcoinleveldb-emptyiterator" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-emptyiterator = { path = "../bitcoinleveldb-emptyiterator", version = "0.1.0" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -32,8 +32,8 @@ path = "../bitcoinleveldb-status"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "an iterator that provides the union of the data in its children.  Takes ownership of the child iterators and will delete them when the result iterator is deleted"
+authors = ["klebs"]
+description = "Merge cursor for sorted LevelDB child iterators."
 documentation = "https://docs.rs/bitcoinleveldb-merger"
 edition = "2021"
 license = "MIT"

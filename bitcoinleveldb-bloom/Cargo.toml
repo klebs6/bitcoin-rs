@@ -36,8 +36,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "LevelDB-compatible Bloom filter policy and test harness for the bitcoin-rs LevelDB port, implementing Kirsch–Mitzenmacher double hashing over byte slices."
+authors = ["klebs"]
+description = "LevelDB-style Bloom filters for the bitcoin-rs storage subsystem. The policy uses the name leveldb.BuiltinBloomFilter2 and records its probe count in the filter's final byte."
 documentation = "https://docs.rs/bitcoinleveldb-bloom"
 edition = "2021"
 license = "MIT"

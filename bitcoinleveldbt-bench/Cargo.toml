@@ -16,9 +16,9 @@ path = "benches/db_bench_sqlite3.rs"
 harness = false
 
 [dependencies]
-bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
-bitcoinleveldb-compat = { path = "../bitcoinleveldb-compat" }
-bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface", version = "0.1.0" }
+bitcoinleveldb-compat = { path = "../bitcoinleveldb-compat", version = "0.1.19" }
+bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch", version = "0.1.0" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -63,8 +63,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "benchmarks for the bitcoin leveldb"
+authors = ["klebs"]
+description = "Benchmark workloads for the LevelDB port, with a separate SQLite comparison implementation."
 documentation = "https://docs.rs/bitcoinleveldbt-bench"
 edition = "2021"
 license = "MIT"

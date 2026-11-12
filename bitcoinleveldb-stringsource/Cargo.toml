@@ -1,23 +1,23 @@
 [package]
 name = "bitcoinleveldb-stringsource"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "In-memory RandomAccessFile implementation used by the LevelDB table and block tests. StringSource::new(&Slice) copies the supplied bytes into owned storage; the original input only needs to remain valid during construction."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

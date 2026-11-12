@@ -14,8 +14,8 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "LevelDB-compatible 32-bit non-cryptographic hash function for raw byte buffers, suitable for hash tables, Bloom filters, and database internals."
+authors = ["klebs"]
+description = "The seeded 32-bit hash used by LevelDB's internal data structures."
 documentation = "https://docs.rs/bitcoinleveldb-hash"
 edition = "2021"
 license = "MIT"

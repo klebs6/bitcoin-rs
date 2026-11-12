@@ -42,11 +42,11 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "POSIX-focused LevelDB support utilities: singleton environment wiring, mmap and open-file limit management, process-local POSIX file-lock tracking, and errno-to-Status translation for Bitcoin-leveldb integrations."
+description = "POSIX locking, resource-limit, error, and environment helpers for LevelDB."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixtools"
 version = "0.1.1"
 keywords = ["leveldb", "posix", "filelocking", "bitcoin", "mmap"]
 categories = ["filesystem", "network-programming", "database", "development-tools", "concurrency"]
+repository = "https://github.com/klebs6/bitcoin-rs"

@@ -6,11 +6,11 @@ version = "0.1.19"
 derive_builder.workspace = true
 tracing.workspace = true
 disable_macro.workspace = true
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot", version = "0.1.0" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key", version = "0.1.19" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -45,8 +45,8 @@ path = "../bitcoinleveldb-log"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "options to control the behavior of a database"
+authors = ["klebs"]
+description = "Database, read, and write configuration for the bitcoin-rs LevelDB port. Options selects the comparator, environment, cache, filter policy, file/block sizes, compression, and open/recovery behavior. ReadOptions controls read-side checksum/cache/snapshot choices; WriteOptions controls write synchronization."
 documentation = "https://docs.rs/bitcoinleveldb-options"
 edition = "2021"
 license = "MIT"

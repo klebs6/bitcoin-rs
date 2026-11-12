@@ -34,8 +34,8 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Rust implementation of LevelDB's Env abstraction for the bitcoinleveldb port, providing environment traits, delegating wrappers, file utilities, and logging helpers closely matching the original C++ API."
+authors = ["klebs"]
+description = "Operating-system services and file helpers used by the LevelDB implementation."
 documentation = "https://docs.rs/bitcoinleveldb-env"
 edition = "2021"
 license = "MIT"

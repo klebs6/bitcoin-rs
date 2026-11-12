@@ -1,23 +1,23 @@
 [package]
 name = "bitcoinleveldb-block"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Read-only LevelDB table data blocks and their iterators."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-blockiter = { path = "../bitcoinleveldb-blockiter" }
-bitcoinleveldb-emptyiterator = { path = "../bitcoinleveldb-emptyiterator" }
-bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator" }
-bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-blockiter = { path = "../bitcoinleveldb-blockiter", version = "0.1.0" }
+bitcoinleveldb-emptyiterator = { path = "../bitcoinleveldb-emptyiterator", version = "0.1.0" }
+bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator", version = "0.1.0" }
+bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents", version = "0.1.0" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

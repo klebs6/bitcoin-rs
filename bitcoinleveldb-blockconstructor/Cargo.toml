@@ -1,21 +1,21 @@
 [package]
 name = "bitcoinleveldb-blockconstructor"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Block-construction fixtures for LevelDB iterator and table tests."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-block = { path = "../bitcoinleveldb-block" }
-bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents" }
-bitcoinleveldb-blockbuilder = { path = "../bitcoinleveldb-blockbuilder" }
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-block = { path = "../bitcoinleveldb-block", version = "0.1.0" }
+bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents", version = "0.1.0" }
+bitcoinleveldb-blockbuilder = { path = "../bitcoinleveldb-blockbuilder", version = "0.1.0" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

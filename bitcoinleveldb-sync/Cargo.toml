@@ -11,8 +11,8 @@ path = "../bitcoin-imports"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "Rust crate for efficient, scoped synchronization using 'parking_lot' raw mutexes."
+authors = ["klebs"]
+description = "Scoped locking helper for LevelDB's raw-mutex call sites."
 documentation = "https://docs.rs/bitcoinleveldb-sync"
 edition = "2021"
 license = "MIT"

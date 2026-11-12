@@ -1,33 +1,33 @@
 [package]
 name = "bitcoinleveldb-tablecache"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Cache of opened LevelDB table files and their readers."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
-bitcoinleveldb-table = { path = "../bitcoinleveldb-table" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-lru = { path = "../bitcoinleveldb-lru" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-tablebuilder = { path = "../bitcoinleveldb-tablebuilder" }
-bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator" }
-bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options", version = "0.1.19" }
+bitcoinleveldb-table = { path = "../bitcoinleveldb-table", version = "0.1.19" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-lru = { path = "../bitcoinleveldb-lru", version = "0.1.19" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldb-tablebuilder = { path = "../bitcoinleveldb-tablebuilder", version = "0.1.0" }
+bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator", version = "0.1.0" }
+bitcoinleveldb-log = { path = "../bitcoinleveldb-log", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

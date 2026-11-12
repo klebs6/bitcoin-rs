@@ -26,8 +26,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Low-level, non-owning byte Slice type for LevelDB-style storage in bitcoin-rs, providing pointer-based views, prefix operations, lexicographic comparison, and FFI-friendly interoperability without copying."
+authors = ["klebs"]
+description = "Non-owning byte views used throughout the LevelDB storage interfaces."
 documentation = "https://docs.rs/bitcoinleveldb-slice"
 edition = "2021"
 license = "MIT"

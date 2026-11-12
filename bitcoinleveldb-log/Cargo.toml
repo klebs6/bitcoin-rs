@@ -65,8 +65,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "an interface for writing log messages"
+authors = ["klebs"]
+description = "Convenience re-exports for the bitcoin-rs LevelDB logging components. This crate's library contains no separate log implementation; it re-exports:"
 documentation = "https://docs.rs/bitcoinleveldb-log"
 edition = "2021"
 license = "MIT"

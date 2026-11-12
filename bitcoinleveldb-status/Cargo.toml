@@ -30,8 +30,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "C++-compatible LevelDB-style `Status` and `StatusCode` implementation used by bitcoin-rs for precise error classification, binary layout compatibility, and FFI with the Bitcoin Core LevelDB fork."
+authors = ["klebs"]
+description = "Result codes and diagnostic messages for LevelDB operations."
 documentation = "https://docs.rs/bitcoinleveldb-status"
 edition = "2021"
 license = "MIT"

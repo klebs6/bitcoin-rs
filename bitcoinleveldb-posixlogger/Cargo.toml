@@ -49,11 +49,11 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "POSIX-backed logging implementation for bitcoinleveldb-style systems that writes timestamped log lines directly to libc::FILE using two-phase buffering and C-compatible format strings."
+description = "POSIX diagnostic logger for the bitcoin-rs LevelDB environment. PosixLogger implements the subsystem's Logger/Logv traits and writes lines with time and thread labels to a C runtime FILE*."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixlogger"
 version = "0.1.1"
 keywords = ["logging", "posix", "libc", "leveldb", "bitcoin"]
 categories = ["network-programming", "development-tools", "filesystem", "os", "rust-patterns"]
+repository = "https://github.com/klebs6/bitcoin-rs"

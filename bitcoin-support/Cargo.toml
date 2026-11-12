@@ -42,7 +42,7 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
+authors = ["klebs"]
 description = "Low-level support primitives for bitcoin-rs: secure allocators with mlock+zeroization, libevent-compatible opaque event handles, optimizer-resistant memory cleansing, alignment and unique-path utilities."
 documentation = "https://docs.rs/bitcoin-support"
 edition = "2021"

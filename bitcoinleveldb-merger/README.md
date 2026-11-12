@@ -1,80 +1,21 @@
 # bitcoinleveldb-merger
 
-This Rust crate is a direct translation from the
-C++ code of the Bitcoin Core system. The purpose
-of this crate is to provide functionality for
-merging sorted sequences, which is used in the
-LevelDB implementation of Bitcoin Core.
+Merge cursor for sorted LevelDB child iterators.
 
-The main token in this crate is `MergingIterator`,
-which represents an iterator that merges multiple
-sorted sequences into a single sorted
-sequence. This iterator is used extensively in the
-compaction process of LevelDB, where it is used to
-merge multiple sorted SSTables into a single,
-larger SSTable.
+`new_merging_iterator` combines sorted children under one comparator. The result
+supports forward and reverse movement and seeks. It does not suppress duplicate
+keys: the same key in multiple children is returned multiple times. With no
+children it returns an empty OK iterator; with one child it returns that child.
 
-The `MergingIterator` uses a `Direction` parameter
-to determine the order of iteration, either
-forwards or backwards. The `find_smallest` method
-is used to find the smallest element in the merged
-sequence that is greater than or equal to a given
-key, which is used in seeking and skipping to
-specific keys during iteration.
+The factory transfers ownership of the child iterators to the returned iterator.
+For multiple children, the implementation owns boxed child wrappers and releases
+them on destruction. All children must be sorted according to the supplied
+comparator, and callers must not retain independent ownership after transfer.
+Key/value slices remain borrowed from the active child.
 
-The complexity of the `MergingIterator` depends on
-the number of sequences being merged and the size
-of those sequences. In the best case, where all
-sequences have the same size, the time complexity
-of merging n sequences of size m is O(nm log n),
-while the worst case time complexity is O(nm log
-nm).
+See [factory and ownership contract](src/new_merging_iterator.rs),
+[merge state](src/merger.rs), and [direction changes](src/next.rs).
 
-In addition to time complexity, memory usage is
-also an important metric when working with the
-`MergingIterator`. This is especially true in the
-context of LevelDB compaction, where memory usage
-can have a significant impact on performance. The
-`MergingIterator` is designed to use a small
-amount of memory, proportional to the number of
-input sequences being merged.
+[Source](src/lib.rs) · [Manifest](Cargo.toml) · [Bounded subsystem verification](../doc/testing/leveldb-subsystem.md)
 
-Overall, the `MergingIterator` plays a critical
-role in the compaction process of LevelDB and is
-essential for maintaining the performance and
-scalability of the database.
-
-57> how does merging work in leveldb? how does it
-relate to compaction?
-
-In LevelDB, merging refers to the process of
-merging multiple sorted SSTables into a single new
-SSTable. This process is performed during
-compaction, which is the process of combining and
-reducing the number of SSTables in the database.
-
-When a new SSTable is created by compaction, it is
-made by merging multiple existing SSTables. The
-merging process is done in sorted order, and the
-resulting SSTable is sorted as well. This allows
-for efficient lookups using binary search.
-
-The merging process is done using the
-`MergingIterator` class, which merges the contents
-of multiple iterators in sorted order. This allows
-for efficient merging of the SSTables, as the
-contents of each SSTable is already sorted.
-
-During the merging process, duplicate keys are
-handled by taking the newest value. If multiple
-SSTables contain the same key with different
-values, the value from the newest SSTable is
-used. This ensures that the resulting SSTable has
-the most up-to-date values for all keys.
-
-Once the merging process is complete, the
-resulting SSTable is written to disk and the
-original SSTables are deleted. This reduces the
-total number of SSTables in the database, which
-helps to keep the size of the database manageable
-and reduce disk usage.
+[Repository and support](https://github.com/klebs6/bitcoin-rs/issues)

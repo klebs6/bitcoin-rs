@@ -6,7 +6,7 @@ path = "../bitcoin-imports"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
+authors = ["klebs"]
 description = "build dependency for specifying cfg aliases and cargo directives"
 documentation = "https://docs.rs/bitcoin-cfg"
 edition = "2021"

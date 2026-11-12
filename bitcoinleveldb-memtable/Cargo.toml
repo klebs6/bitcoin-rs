@@ -5,11 +5,11 @@ version = "0.1.19"
 [dependencies]
 tracing.workspace                    = true
 derive_builder.workspace             = true
-bitcoinleveldb-iterator              = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-blockconstructor      = { path = "../bitcoinleveldb-blockconstructor" }
-bitcoinleveldb-iteratorinner         = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-coding                = { path = "../bitcoinleveldb-coding" }
-bitcoinleveldb-keyconvertingiterator = { path = "../bitcoinleveldb-keyconvertingiterator" }
+bitcoinleveldb-iterator              = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-blockconstructor      = { path = "../bitcoinleveldb-blockconstructor", version = "0.1.0" }
+bitcoinleveldb-iteratorinner         = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldb-coding                = { path = "../bitcoinleveldb-coding", version = "0.1.19" }
+bitcoinleveldb-keyconvertingiterator = { path = "../bitcoinleveldb-keyconvertingiterator", version = "0.1.0" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -52,8 +52,8 @@ path = "../bitcoinleveldb-table"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "in memory MemTable -- typically implemented by a SkipList"
+authors = ["klebs"]
+description = "The in-memory sorted write table for the bitcoin-rs LevelDB port. MemTable stores encoded entries in an arena-backed skiplist, ordered by internal key. add records a sequence number, value/deletion type, key, and value; get performs a sequence-aware lookup, and new_iterator exposes internal entries."
 documentation = "https://docs.rs/bitcoinleveldb-memtable"
 edition = "2021"
 license = "MIT"

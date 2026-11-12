@@ -42,11 +42,11 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "Low-level LevelDB-style log utilities for Bitcoin-oriented storage stacks: record type enums, extended record flags, unsafe Slice-based string/number helpers, CRC32C precomputation, and binary slice manipulation."
+description = "Shared LevelDB log-format definitions and diagnostic formatting helpers."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-logtools"
 version = "0.1.1"
 keywords = ["bitcoin", "leveldb", "logging", "wal", "storage"]
 categories = ["algorithms", "data-structures", "filesystem", "network-programming", "development-tools"]
+repository = "https://github.com/klebs6/bitcoin-rs"

@@ -6,7 +6,7 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
-bitcoinleveldb-posixlogger = { path = "../bitcoinleveldb-posixlogger" }
+bitcoinleveldb-posixlogger = { path = "../bitcoinleveldb-posixlogger", version = "0.1.1" }
 tracing.workspace = true
 
 [dependencies.bitcoin-derive]
@@ -70,8 +70,8 @@ path = "../bitcoinleveldb-util"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "posix file interface"
+authors = ["klebs"]
+description = "POSIX environment facade and file-descriptor test helpers for LevelDB."
 documentation = "https://docs.rs/bitcoinleveldb-posix"
 edition = "2021"
 license = "MIT"

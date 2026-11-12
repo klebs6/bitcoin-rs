@@ -14,8 +14,8 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Typed configuration layer for LevelDB-backed Bitcoin data stores, defining network-aware paths, logical database roles, and LevelDB tuning parameters for use within the bitcoin-rs ecosystem."
+authors = ["klebs"]
+description = "Compile-time constants used by the LevelDB implementation."
 documentation = "https://docs.rs/bitcoinleveldb-cfg"
 edition = "2021"
 license = "MIT"

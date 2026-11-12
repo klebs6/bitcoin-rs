@@ -1,9 +1,9 @@
 [dependencies]
 derive_builder.workspace = true
 tracing.workspace = true
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding", version = "0.1.19" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
@@ -34,8 +34,8 @@ path = "../bitcoinleveldb-status"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "batch processing for the bitcoin leveldb"
+authors = ["klebs"]
+description = "Ordered write batches for the bitcoin-rs LevelDB implementation."
 documentation = "https://docs.rs/bitcoinleveldb-batch"
 edition = "2021"
 license = "MIT"

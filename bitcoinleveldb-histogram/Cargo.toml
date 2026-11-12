@@ -14,8 +14,8 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "LevelDB-compatible fixed-bucket histogram for fast online statistics (min, max, average, percentiles, standard deviation) and mergeable distributions, used by bitcoinleveldb within bitcoin-rs."
+authors = ["klebs"]
+description = "Fixed-bucket online statistics used by LevelDB benchmarks and diagnostics. Histogram tracks sample count, extrema, sum, sum of squares, and 154 buckets without retaining individual samples."
 documentation = "https://docs.rs/bitcoinleveldb-histogram"
 edition = "2021"
 license = "MIT"

@@ -30,8 +30,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Low-level utilities for bitcoin-rs/bitcoinleveldb providing C++-style non-dropping singletons and destructor control via DoNotDestruct and NoDestructor<T>."
+authors = ["klebs"]
+description = "Explicit destructor suppression for long-lived LevelDB support objects."
 documentation = "https://docs.rs/bitcoinleveldb-util"
 edition = "2021"
 license = "MIT"

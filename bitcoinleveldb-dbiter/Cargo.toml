@@ -1,26 +1,26 @@
 [package]
 name        = "bitcoinleveldb-dbiter"
 version     = "0.1.0"
-authors     = ["YourName <you@example.com>"]
 license     = "MIT"
 edition     = "2024"
-description = "todo: write a description here"
+description = "User-visible database iteration over LevelDB internal keys. DBIter filters entries by a snapshot sequence number, hides deletion records and older values, and supports forward and reverse traversal across user keys."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace = true
-bitcoin-imports            = { path = "../bitcoin-imports" }
-bitcoinleveldb-iterator    = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-key         = { path = "../bitcoinleveldb-key" }
-bitcoinleveldb-slice       = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
-bitcoinleveldb-status      = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
-bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
+bitcoin-imports            = { path = "../bitcoin-imports", version = "0.1.19" }
+bitcoinleveldb-iterator    = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-key         = { path = "../bitcoinleveldb-key", version = "0.1.19" }
+bitcoinleveldb-slice       = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface", version = "0.1.0" }
+bitcoinleveldb-status      = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator", version = "0.1.19" }
+bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand", version = "0.1.19" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg", version = "0.1.19" }
 
 [dev-dependencies]
-bitcoinleveldb-merger = { path = "../bitcoinleveldb-merger" }
+bitcoinleveldb-merger = { path = "../bitcoinleveldb-merger", version = "0.1.19" }

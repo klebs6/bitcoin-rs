@@ -46,11 +46,11 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "POSIX-backed implementation of a buffered, durable LevelDB-style WritableFile for the Bitcoin-leveldb stack, using libc syscalls for append, flush, sync, and close with manifest-aware directory syncing."
+description = "Buffered POSIX writes for LevelDB's WritableFile interface."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixwfile"
 version = "0.1.1"
 keywords = ["bitcoin", "leveldb", "posix", "filesystem", "storage"]
 categories = ["database", "database-implementations", "filesystem", "science", "development-tools"]
+repository = "https://github.com/klebs6/bitcoin-rs"

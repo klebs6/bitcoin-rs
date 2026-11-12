@@ -1,22 +1,22 @@
 [package]
 name = "bitcoinleveldb-writebatch"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "C-API-style write-batch handles for the bitcoin-rs LevelDB port. LevelDBWriteBatch wraps the binary WriteBatch implementation in bitcoinleveldb-batch."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
-bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoin-imports = { path = "../bitcoin-imports", version = "0.1.19" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch", version = "0.1.19" }
+bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable", version = "0.1.19" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
 
 [dev-dependencies]
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator", version = "0.1.19" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }

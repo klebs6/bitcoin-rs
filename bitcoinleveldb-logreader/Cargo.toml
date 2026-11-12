@@ -56,11 +56,11 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "Low-level LevelDB-compatible log reader for Rust, reconstructing fragmented WAL records with optional CRC32C checksums, precise corruption reporting, and offset-based resynchronization for Bitcoin-style append-only logs."
+description = "Logical-record reader for LevelDB's block-framed write-ahead log format."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-logreader"
 version = "0.1.1"
 keywords = ["leveldb", "bitcoin", "logreader", "wal", "storage"]
 categories = ["database", "database-implementations", "algorithms", "filesystem", "network-programming"]
+repository = "https://github.com/klebs6/bitcoin-rs"

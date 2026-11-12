@@ -1,24 +1,24 @@
 [package]
 name = "bitcoinleveldb-versionsetutil"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Helpers used by LevelDB version management and compaction selection."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace         = true
 derive_builder.workspace           = true
-bitcoin-imports           = { path = "../bitcoin-imports" }
-bitcoinleveldb-file       = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
-bitcoinleveldb-slice      = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-options    = { path = "../bitcoinleveldb-options" }
-bitcoinleveldb-iterator   = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-key        = { path = "../bitcoinleveldb-key" }
-bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator" }
+bitcoin-imports           = { path = "../bitcoin-imports", version = "0.1.19" }
+bitcoinleveldb-file       = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator", version = "0.1.19" }
+bitcoinleveldb-slice      = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-options    = { path = "../bitcoinleveldb-options", version = "0.1.19" }
+bitcoinleveldb-iterator   = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-key        = { path = "../bitcoinleveldb-key", version = "0.1.19" }
+bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache", version = "0.1.0" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator", version = "0.1.0" }

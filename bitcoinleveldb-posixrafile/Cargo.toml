@@ -48,9 +48,9 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "todo: write a description here"
+description = "POSIX positioned reads for LevelDB random-access files."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-posixrafile"
 version = "0.1.1"
+repository = "https://github.com/klebs6/bitcoin-rs"

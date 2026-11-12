@@ -28,8 +28,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "LevelDB-compatible bytewise comparator and key-shortening logic for arbitrary byte slices, providing Compare, FindShortestSeparator, and FindShortSuccessor traits plus a global BytewiseComparator implementation used in bitcoin-rs."
+authors = ["klebs"]
+description = "Bytewise key ordering and key-shortening operations for the bitcoin-rs LevelDB port. SliceComparator combines comparison, a stable name, shortest separator, short-successor, and bytewise-comparator access."
 documentation = "https://docs.rs/bitcoinleveldb-comparator"
 edition = "2021"
 license = "MIT"

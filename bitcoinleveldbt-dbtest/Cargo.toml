@@ -1,45 +1,45 @@
 [package]
 name = "bitcoinleveldbt-dbtest"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Shared database fixture and core database regressions for the LevelDB port."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace = true
 snap.workspace = true
 lock_api.workspace = true
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface" }
-bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot" }
-bitcoinleveldb-specialenv = { path = "../bitcoinleveldb-specialenv" }
-bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand" }
-bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl" }
-bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
-bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
-bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldbt-util = { path = "../bitcoinleveldbt-util" }
-bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor" }
-bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
-bitcoinleveldb-logtools = { path = "../bitcoinleveldb-logtools" }
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
-bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom" }
-bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache" }
-bitcoinleveldb-tableconstructor = { path = "../bitcoinleveldb-tableconstructor" }
-bitcoinleveldbt-env = { path = "../bitcoinleveldbt-env" }
-bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
-bitcoinleveldb-versionset = { path = "../bitcoinleveldb-versionset" }
-bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
-bitcoinleveldb-modeldb = { path = "../bitcoinleveldb-modeldb" }
-bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
+bitcoin-imports = { path = "../bitcoin-imports", version = "0.1.19" }
+bitcoinleveldb-dbinterface = { path = "../bitcoinleveldb-dbinterface", version = "0.1.0" }
+bitcoinleveldb-snapshot = { path = "../bitcoinleveldb-snapshot", version = "0.1.0" }
+bitcoinleveldb-specialenv = { path = "../bitcoinleveldb-specialenv", version = "0.1.0" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-rand = { path = "../bitcoinleveldb-rand", version = "0.1.19" }
+bitcoinleveldb-dbimpl = { path = "../bitcoinleveldb-dbimpl", version = "0.1.0" }
+bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter", version = "0.1.19" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env", version = "0.1.19" }
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv", version = "0.1.1" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldbt-util = { path = "../bitcoinleveldbt-util", version = "0.1.0" }
+bitcoinleveldb-dbconstructor = { path = "../bitcoinleveldb-dbconstructor", version = "0.1.0" }
+bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg", version = "0.1.19" }
+bitcoinleveldb-logtools = { path = "../bitcoinleveldb-logtools", version = "0.1.1" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key", version = "0.1.19" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator", version = "0.1.19" }
+bitcoinleveldb-bloom = { path = "../bitcoinleveldb-bloom", version = "0.1.19" }
+bitcoinleveldb-cache = { path = "../bitcoinleveldb-cache", version = "0.1.19" }
+bitcoinleveldb-tableconstructor = { path = "../bitcoinleveldb-tableconstructor", version = "0.1.0" }
+bitcoinleveldbt-env = { path = "../bitcoinleveldbt-env", version = "0.1.0" }
+bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit", version = "0.1.19" }
+bitcoinleveldb-versionset = { path = "../bitcoinleveldb-versionset", version = "0.1.0" }
+bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface", version = "0.1.0" }
+bitcoinleveldb-modeldb = { path = "../bitcoinleveldb-modeldb", version = "0.1.0" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch", version = "0.1.19" }

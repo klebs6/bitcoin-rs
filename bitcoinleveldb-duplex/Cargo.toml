@@ -4,9 +4,9 @@ version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -29,8 +29,8 @@ path = "../bitcoinleveldb-status"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "tools for two-level iteration"
+authors = ["klebs"]
+description = "Two-level iteration for LevelDB tables: an index iterator identifies blocks, and a caller-supplied BlockFunction opens each block's data iterator. TwoLevelIterator presents their entries as one forward/reverse sequence, skipping empty blocks and retaining encountered errors in its status."
 documentation = "https://docs.rs/bitcoinleveldb-duplex"
 edition = "2021"
 license = "MIT"

@@ -1,18 +1,18 @@
 [package]
 name = "bitcoinleveldb-blockcontents"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "The byte view and ownership metadata passed between LevelDB block readers and block objects."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace = true
 derive_builder.workspace = true
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

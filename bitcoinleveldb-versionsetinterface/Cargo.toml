@@ -1,19 +1,19 @@
 [package]
 name = "bitcoinleveldb-versionsetinterface"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Traits connecting LevelDB versions, compaction, and file-number allocation."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
-bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }
+bitcoin-imports = { path = "../bitcoin-imports", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key", version = "0.1.19" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options", version = "0.1.19" }
+bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache", version = "0.1.0" }

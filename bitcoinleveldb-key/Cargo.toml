@@ -30,8 +30,8 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Low-level LevelDB-compatible internal key encoding, comparison, and filter-policy utilities used by bitcoin-rs for on-disk key/value layout and MemTable/SSTable lookups."
+authors = ["klebs"]
+description = "Internal-key encoding and comparison for the bitcoin-rs LevelDB port. An internal key appends an eight-byte sequence/type tag to a user key. User keys sort according to their supplied comparator; equal user keys sort by decreasing packed sequence/type tag so newer entries are visited first."
 documentation = "https://docs.rs/bitcoinleveldb-key"
 edition = "2021"
 license = "MIT"

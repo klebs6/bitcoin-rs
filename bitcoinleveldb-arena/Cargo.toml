@@ -26,8 +26,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Low-level bump-allocating memory arena and LCG-based test harness extracted from a Bitcoin LevelDB port, providing raw-pointer allocation, aligned blocks, and memory-usage instrumentation."
+authors = ["klebs"]
+description = "Arena allocation for the bitcoin-rs LevelDB port. Arena hands out raw byte storage from retained blocks and releases its backing storage when dropped."
 documentation = "https://docs.rs/bitcoinleveldb-arena"
 edition = "2021"
 license = "MIT"

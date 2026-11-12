@@ -1,27 +1,27 @@
 [package]
 name = "bitcoinleveldb-tablerep"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Shared representation of an opened LevelDB SSTable, used by bitcoinleveldb-table. TableRep holds table-read options and status, a shared random-access file handle, cache identity, the metaindex handle, index block, and optional filter state."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-block = { path = "../bitcoinleveldb-block" }
-bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle" }
-bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter" }
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options", version = "0.1.19" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-block = { path = "../bitcoinleveldb-block", version = "0.1.0" }
+bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle", version = "0.1.0" }
+bitcoinleveldb-filter = { path = "../bitcoinleveldb-filter", version = "0.1.19" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"

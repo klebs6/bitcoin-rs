@@ -1,19 +1,19 @@
 [package]
 name = "bitcoinleveldb-stringsink"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "An in-memory WritableFile used by LevelDB table construction and tests."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"

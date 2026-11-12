@@ -1,16 +1,16 @@
 [package]
 name = "bitcoinleveldb-compactionstats"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Per-level counters for LevelDB compaction work."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace        = true
 getset.workspace         = true
 derive_builder.workspace = true
-bitcoin-imports = { path = "../bitcoin-imports" }
+bitcoin-imports = { path = "../bitcoin-imports", version = "0.1.19" }

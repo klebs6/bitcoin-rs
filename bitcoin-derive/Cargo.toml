@@ -24,7 +24,7 @@ workspace = true
 proc-macro = true
 
 [package]
-authors = ["klebs <none>"]
+authors = ["klebs"]
 categories = [
     "concurrency",
     "web-programming",

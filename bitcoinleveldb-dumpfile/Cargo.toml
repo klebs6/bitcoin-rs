@@ -4,12 +4,12 @@ version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv" }
-bitcoinleveldb-table = { path = "../bitcoinleveldb-table" }
-bitcoinleveldb-options = { path = "../bitcoinleveldb-options" }
-bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader" }
-bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
+bitcoinleveldb-posixenv = { path = "../bitcoinleveldb-posixenv", version = "0.1.1" }
+bitcoinleveldb-table = { path = "../bitcoinleveldb-table", version = "0.1.19" }
+bitcoinleveldb-options = { path = "../bitcoinleveldb-options", version = "0.1.19" }
+bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader", version = "0.1.1" }
+bitcoinleveldb-versionedit = { path = "../bitcoinleveldb-versionedit", version = "0.1.19" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -48,8 +48,8 @@ path = "../bitcoinleveldb-status"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "tools for persisting objects to disk"
+authors = ["klebs"]
+description = "Text inspection of individual LevelDB storage files."
 documentation = "https://docs.rs/bitcoinleveldb-dumpfile"
 edition = "2021"
 license = "MIT"

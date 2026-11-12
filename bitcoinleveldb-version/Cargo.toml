@@ -5,13 +5,13 @@ version = "0.1.19"
 [dependencies]
 derive_builder.workspace           = true
 tracing.workspace                  = true
-bitcoinleveldb-iterator            = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-versionsetutil = { path = "../bitcoinleveldb-versionsetutil" }
-bitcoinleveldb-duplex = { path = "../bitcoinleveldb-duplex" }
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
-bitcoinleveldbt-mockversionset = { path = "../bitcoinleveldbt-mockversionset" }
+bitcoinleveldb-iterator            = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface", version = "0.1.0" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldb-versionsetutil = { path = "../bitcoinleveldb-versionsetutil", version = "0.1.0" }
+bitcoinleveldb-duplex = { path = "../bitcoinleveldb-duplex", version = "0.1.19" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator", version = "0.1.19" }
+bitcoinleveldbt-mockversionset = { path = "../bitcoinleveldbt-mockversionset", version = "0.1.0" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -58,8 +58,8 @@ path = "../bitcoinleveldb-table"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "tools for working with versions -- each Version keeps track of a set of Table files per level.  The entire set of versions is maintained in a VersionSet"
+authors = ["klebs"]
+description = "An SSTable-file view of the LevelDB database, used by bitcoinleveldb-versionset. Version records files per level, links to neighboring versions, reference counts, and compaction-selection state. Older versions remain available while live iterators still reference their file view."
 documentation = "https://docs.rs/bitcoinleveldb-version"
 edition = "2021"
 license = "MIT"

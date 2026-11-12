@@ -1,15 +1,15 @@
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding" }
-bitcoinleveldb-block = { path = "../bitcoinleveldb-block" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-tablerep = { path = "../bitcoinleveldb-tablerep" }
-bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents" }
-bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator" }
-bitcoinleveldb-footer = { path = "../bitcoinleveldb-footer" }
-bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle" }
-bitcoinleveldb-duplex = { path = "../bitcoinleveldb-duplex" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
+bitcoinleveldb-coding = { path = "../bitcoinleveldb-coding", version = "0.1.19" }
+bitcoinleveldb-block = { path = "../bitcoinleveldb-block", version = "0.1.0" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldb-tablerep = { path = "../bitcoinleveldb-tablerep", version = "0.1.0" }
+bitcoinleveldb-blockcontents = { path = "../bitcoinleveldb-blockcontents", version = "0.1.0" }
+bitcoinleveldb-erroriterator = { path = "../bitcoinleveldb-erroriterator", version = "0.1.0" }
+bitcoinleveldb-footer = { path = "../bitcoinleveldb-footer", version = "0.1.0" }
+bitcoinleveldb-blockhandle = { path = "../bitcoinleveldb-blockhandle", version = "0.1.0" }
+bitcoinleveldb-duplex = { path = "../bitcoinleveldb-duplex", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
 
 [build-dependencies.bitcoin-cfg]
 path = "../bitcoin-cfg"
@@ -68,8 +68,8 @@ path = "../bitcoinleveldb-util"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "abstractions for working with Tables -- a Table is a sorted map from strings to strings.  Tables are immutable and persistent.  A Table may be safely accessed from multiple threads without external synchronization."
+authors = ["klebs"]
+description = "Reading immutable LevelDB table files."
 documentation = "https://docs.rs/bitcoinleveldb-table"
 edition = "2021"
 license = "MIT"

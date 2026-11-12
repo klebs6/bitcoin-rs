@@ -131,8 +131,8 @@ path = "../bitcoinleveldb-util"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "facade into the leveldb subsystem"
+authors = ["klebs"]
+description = "Facade for the modular LevelDB port in bitcoin-rs. It re-exports selected component crates; it does not add a separate ergonomic database wrapper."
 documentation = "https://docs.rs/bitcoin-leveldb"
 edition = "2021"
 license = "MIT"

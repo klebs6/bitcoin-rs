@@ -38,8 +38,8 @@ path = "../bitcoinleveldb-util"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "environment that stores its data in memory and delegates all non-file storage tasks to base_env"
+authors = ["klebs"]
+description = "An in-memory Env implementation for LevelDB tests and transient databases."
 documentation = "https://docs.rs/bitcoinleveldb-memenv"
 edition = "2021"
 license = "MIT"

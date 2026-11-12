@@ -17,8 +17,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Lock-free atomic limiter used to cap concurrent resource usage (e.g., file descriptors and mmaps) in Bitcoin LevelDB integrations, providing a non-blocking counter-based semaphore with debug-time misuse detection."
+authors = ["klebs"]
+description = "A non-blocking resource counter used by LevelDB's POSIX file implementations."
 documentation = "https://docs.rs/bitcoinleveldb-limiter"
 edition = "2021"
 license = "MIT"

@@ -1,3 +1,25 @@
 # bitcoinleveldb-dbimpl
 
-TODO: fill description.
+The persistent LevelDB database implementation behind the `DB` operation traits.
+
+`DBImpl` implements reads, writes and batches, user iterators, snapshots,
+properties, approximate sizes, and manual compaction. Its supporting modules
+coordinate the write-ahead log, mutable/immutable memtables, table cache,
+version edits, recovery, and background compaction.
+
+`DBImpl::new` constructs implementation state; opening and recovery are performed
+through `DBOpen::open`. Returned database and iterator pointers follow the
+ownership contracts in `bitcoinleveldb-dbinterface`. Release iterators and
+snapshots before destroying their database.
+
+This is an implementation layer with raw pointers, explicit locking, and
+environment ownership contracts. Its public state and test hooks are not a
+substitute for the database operation interface.
+
+Source: [crate modules](src/lib.rs) · [manifest](Cargo.toml).
+
+For repository verification, use the [bounded LevelDB test workflow](../doc/testing/leveldb-subsystem.md).
+
+License: MIT (as declared in the manifest).
+
+[Repository and support](https://github.com/klebs6/bitcoin-rs/issues)

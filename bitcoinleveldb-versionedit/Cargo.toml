@@ -40,8 +40,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "LevelDB-compatible VersionEdit encoding/decoding and manipulation utilities used by bitcoin-rs for manifest and version metadata management."
+authors = ["klebs"]
+description = "LevelDB manifest-edit records and their binary encoding."
 documentation = "https://docs.rs/bitcoinleveldb-versionedit"
 edition = "2021"
 license = "MIT"

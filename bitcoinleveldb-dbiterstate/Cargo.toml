@@ -1,21 +1,21 @@
 [package]
 name = "bitcoinleveldb-dbiterstate"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Iterator cleanup state for retained LevelDB memtables and versions."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace = true
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
-bitcoinleveldb-version = { path = "../bitcoinleveldb-version" }
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
-bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface" }
-bitcoinleveldb-key = { path = "../bitcoinleveldb-key" }
-bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
+bitcoin-imports = { path = "../bitcoin-imports", version = "0.1.19" }
+bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable", version = "0.1.19" }
+bitcoinleveldb-version = { path = "../bitcoinleveldb-version", version = "0.1.19" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator", version = "0.1.19" }
+bitcoinleveldb-versionsetinterface = { path = "../bitcoinleveldb-versionsetinterface", version = "0.1.0" }
+bitcoinleveldb-key = { path = "../bitcoinleveldb-key", version = "0.1.19" }
+bitcoinleveldb-cfg = { path = "../bitcoinleveldb-cfg", version = "0.1.19" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }

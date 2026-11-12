@@ -3,7 +3,7 @@ path = "../bitcoin-cfg"
 version = "0.1.19"
 
 [dependencies]
-bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator" }
+bitcoinleveldb-comparator = { path = "../bitcoinleveldb-comparator", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -46,8 +46,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "contains file abstractions from the bitcoin leveldb"
+authors = ["klebs"]
+description = "File interfaces, database filename helpers, and file metadata for LevelDB."
 documentation = "https://docs.rs/bitcoinleveldb-file"
 edition = "2021"
 license = "MIT"

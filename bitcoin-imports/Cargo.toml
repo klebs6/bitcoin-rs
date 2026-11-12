@@ -66,7 +66,7 @@ try-catch.workspace             = true
 winapi.workspace                = true
 
 [package]
-authors = ["klebs <none>"]
+authors = ["klebs"]
 description = "encapsulates most third party deps for the bitcoin ecosystem"
 documentation = "https://docs.rs/bitcoin-imports"
 edition = "2021"

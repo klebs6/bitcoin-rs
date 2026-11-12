@@ -18,8 +18,8 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Low-level, LevelDB-compatible CRC32C (Castagnoli) primitives for Bitcoin-related storage and streaming, including masking, alignment helpers, and optional hardware acceleration probing."
+authors = ["klebs"]
+description = "CRC32C checksums and LevelDB checksum masking."
 documentation = "https://docs.rs/bitcoinleveldb-crc32"
 edition = "2021"
 license = "MIT"

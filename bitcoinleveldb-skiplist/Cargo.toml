@@ -37,8 +37,8 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Arena-backed LevelDB-style skip list for Copy keys with custom comparators, providing lock-free read-friendly ordered storage for internal database and storage engine use."
+authors = ["klebs"]
+description = "Arena-backed ordered set used by the LevelDB memtable. SkipList<K, C> supports insertion, membership tests, ordered search, and traversal with SkipListIterator. Keys satisfy Debug + Copy + Default; comparisons are provided by SkipListComparator<K>."
 documentation = "https://docs.rs/bitcoinleveldb-skiplist"
 edition = "2021"
 license = "MIT"

@@ -1,20 +1,20 @@
 [package]
 name = "bitcoinleveldb-specialenv"
 version = "0.1.0"
-authors = ["YourName <you@example.com>"]
 license = "MIT"
 edition = "2024"
-description = "todo: write a description here"
+description = "Controllable environment wrapper for LevelDB tests. SpecialEnv wraps a shared Env and creates file wrappers that inject selected I/O behavior."
 
 # keywords = []
 # categories = []
 
+repository = "https://github.com/klebs6/bitcoin-rs"
 [dependencies]
 tracing.workspace = true
-bitcoin-imports = { path = "../bitcoin-imports" }
-bitcoinleveldb-status = { path = "../bitcoinleveldb-status" }
-bitcoinleveldb-file = { path = "../bitcoinleveldb-file" }
-bitcoinleveldb-env = { path = "../bitcoinleveldb-env" }
-bitcoin-derive = { path = "../bitcoin-derive" }
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-logtools = { path = "../bitcoinleveldb-logtools" }
+bitcoin-imports = { path = "../bitcoin-imports", version = "0.1.19" }
+bitcoinleveldb-status = { path = "../bitcoinleveldb-status", version = "0.1.19" }
+bitcoinleveldb-file = { path = "../bitcoinleveldb-file", version = "0.1.19" }
+bitcoinleveldb-env = { path = "../bitcoinleveldb-env", version = "0.1.19" }
+bitcoin-derive = { path = "../bitcoin-derive", version = "0.1.19" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-logtools = { path = "../bitcoinleveldb-logtools", version = "0.1.1" }

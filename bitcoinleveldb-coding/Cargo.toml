@@ -18,8 +18,8 @@ version = "0.1.19"
 workspace = true
 
 [package]
-authors = ["klebs <none>"]
-description = "Low-level LevelDB-compatible binary coding primitives for bitcoin-rs: fixed-width little-endian, varint, and length-prefixed encoding/decoding over raw pointers, Strings, and Slices."
+authors = ["klebs"]
+description = "Binary encoding primitives used by the bitcoin-rs LevelDB port: fixed-width little-endian integers, 32/64-bit varints, and length-prefixed slices."
 documentation = "https://docs.rs/bitcoinleveldb-coding"
 edition = "2021"
 license = "MIT"

@@ -4,16 +4,16 @@ version = "0.1.19"
 
 [dependencies]
 tracing.workspace = true
-bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice" }
-bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable" }
-bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator" }
-bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache" }
-bitcoinleveldb-tablebuilder = { path = "../bitcoinleveldb-tablebuilder" }
-bitcoinleveldb-log = { path = "../bitcoinleveldb-log" }
-bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader" }
-bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch" }
-bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner" }
-bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch" }
+bitcoinleveldb-slice = { path = "../bitcoinleveldb-slice", version = "0.1.19" }
+bitcoinleveldb-memtable = { path = "../bitcoinleveldb-memtable", version = "0.1.19" }
+bitcoinleveldb-iterator = { path = "../bitcoinleveldb-iterator", version = "0.1.0" }
+bitcoinleveldb-tablecache = { path = "../bitcoinleveldb-tablecache", version = "0.1.0" }
+bitcoinleveldb-tablebuilder = { path = "../bitcoinleveldb-tablebuilder", version = "0.1.0" }
+bitcoinleveldb-log = { path = "../bitcoinleveldb-log", version = "0.1.19" }
+bitcoinleveldb-logreader = { path = "../bitcoinleveldb-logreader", version = "0.1.1" }
+bitcoinleveldb-writebatch = { path = "../bitcoinleveldb-writebatch", version = "0.1.0" }
+bitcoinleveldb-iteratorinner = { path = "../bitcoinleveldb-iteratorinner", version = "0.1.0" }
+bitcoinleveldb-batch = { path = "../bitcoinleveldb-batch", version = "0.1.19" }
 
 [dependencies.bitcoin-derive]
 path = "../bitcoin-derive"
@@ -68,8 +68,8 @@ path = "../bitcoinleveldb-versionedit"
 version = "0.1.19"
 
 [package]
-authors = ["klebs <none>"]
-description = "allows us to recover the contents of a descriptor from the other files we find"
+authors = ["klebs"]
+description = "Best-effort recovery of LevelDB database files."
 documentation = "https://docs.rs/bitcoinleveldb-repair"
 edition = "2021"
 license = "MIT"

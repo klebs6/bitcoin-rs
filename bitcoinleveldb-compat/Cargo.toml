@@ -21,8 +21,8 @@ workspace = true
 leveldb_snappy = ["snap"]
 
 [package]
-authors = ["klebs <none>"]
-description = "LevelDB-compatible low-level utilities for Bitcoin: Snappy compression shims, accelerated CRC32C, and ported mutex/condvar primitives with tracing, matching the C++ LevelDB/Bitcoin Core interfaces."
+authors = ["klebs"]
+description = "Platform-port helpers used by the bitcoin-rs LevelDB implementation."
 documentation = "https://docs.rs/bitcoinleveldb-compat"
 edition = "2021"
 license = "MIT"

@@ -56,11 +56,11 @@ workspace = true
 workspace = true
 
 [package]
-authors = ["YourName <you@example.com>"]
-description = "Low-level LevelDB-compatible log writer for Bitcoin-oriented storage engines, providing block-based fragmentation, CRC32C-protected physical records, and in-memory mock WritableFile implementations for deterministic testing."
+description = "Writes LevelDB log records to a WritableFile. LogWriter::add_record splits a logical record into full/first/middle/last physical records, writes CRC32C headers, and pads the unused tail of a log block when required."
 edition = "2024"
 license = "MIT"
 name = "bitcoinleveldb-logwriter"
 version = "0.1.1"
 keywords = ["leveldb", "bitcoin", "logwriter", "wal", "storage"]
 categories = ["database", "database-implementations", "algorithms", "science", "development-tools"]
+repository = "https://github.com/klebs6/bitcoin-rs"
