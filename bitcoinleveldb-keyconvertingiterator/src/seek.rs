@@ -15,12 +15,10 @@ impl LevelDBIteratorSeek for KeyConvertingIterator {
         let max_sequence: SequenceNumber = (0x1u64 << 56) - 1;
         let ikey = ParsedInternalKey::new(target, &max_sequence, ValueType::TypeValue);
 
-        let mut encoded = String::new();
-        unsafe {
-            append_internal_key(&mut encoded as *mut String, &ikey);
-        }
+        let mut encoded = Vec::new();
+        append_internal_key_to_vec(&mut encoded, &ikey);
 
-        let encoded_slice = Slice::from(&encoded);
+        let encoded_slice = Slice::from(encoded.as_slice());
 
         unsafe {
             assert!(
@@ -109,5 +107,57 @@ mod key_converting_iterator_seek_tests {
             *drop_flag.borrow(),
             "dropping KeyConvertingIterator in seek() tests must drop underlying iterator"
         );
+    }
+}
+
+#[cfg(test)]
+mod binary_seek_contracts066 {
+    use super::*;
+    use crate::{RecordingInternalIterator, RecordingInternalIteratorState};
+    use std::cell::RefCell;
+    use std::rc::Rc;
+
+    fn adapter() -> (
+        KeyConvertingIterator,
+        Rc<RefCell<RecordingInternalIteratorState>>,
+        Rc<RefCell<bool>>,
+    ) {
+        let shared = Rc::new(RefCell::new(RecordingInternalIteratorState::default()));
+        let dropped = Rc::new(RefCell::new(false));
+        let inner: Box<dyn LevelDBIteratorInterface> = Box::new(RecordingInternalIterator::new(
+            Vec::new(), Status::ok(), shared.clone(), dropped.clone(),
+        ));
+        (KeyConvertingIterator::new(Box::into_raw(inner)), shared, dropped)
+    }
+
+    #[test]
+    fn binary_seek_keeps_distinct_non_utf8_user_keys_and_literal_maximum_tags() {
+        let (mut adapter, shared, dropped) = adapter();
+        let mut first = vec![0xff, 0x00];
+        adapter.seek(&Slice::from(first.as_slice()));
+        first.fill(0x11);
+        adapter.seek(&Slice::from(&[0xfe, 0x00][..]));
+        adapter.seek(&Slice::from(&[][..]));
+        let expected = vec![
+            vec![0xff, 0x00, 0x01, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
+            vec![0xfe, 0x00, 0x01, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
+            vec![0x01, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
+        ];
+        assert_eq!(shared.borrow().seek_targets(), &expected);
+        assert!(!adapter.valid());
+        drop(adapter);
+        assert!(*dropped.borrow());
+    }
+
+    #[test]
+    fn binary_seek_appends_only_the_fixed_tag_after_a_long_binary_user_key() {
+        let (mut adapter, shared, dropped) = adapter();
+        let user = vec![0x80; 128];
+        adapter.seek(&Slice::from(user.as_slice()));
+        let mut expected = user;
+        expected.extend_from_slice(&[0x01, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
+        assert_eq!(shared.borrow().seek_targets().as_slice(), &[expected]);
+        drop(adapter);
+        assert!(*dropped.borrow());
     }
 }

@@ -1,15 +1,38 @@
 // ---------------- [ File: bitcoinleveldb-dbiter/src/save_key.rs ]
 crate::ix!();
 
+/// Assign raw bytes, retaining capacity for the usual disjoint source. A Slice
+/// may also view this destination's allocation, so snapshot that case before
+/// clearing or extending the buffer.
+pub(crate) fn assign_slice_to_buffer(dst: &mut Vec<u8>, source: &Slice) {
+    let bytes = source.as_bytes();
+    let source_start = bytes.as_ptr() as usize;
+    let destination_start = dst.as_ptr() as usize;
+    let overlaps = !bytes.is_empty()
+        && dst.capacity() != 0
+        && source_start < destination_start.saturating_add(dst.capacity())
+        && destination_start < source_start.saturating_add(bytes.len());
+
+    if overlaps {
+        let copied = bytes.to_vec();
+        dst.clear();
+        dst.extend_from_slice(&copied);
+    } else {
+        dst.clear();
+        dst.extend_from_slice(bytes);
+    }
+}
+
 impl DBIter {
+    /// Copy into a caller-owned byte buffer. `dst` must be a non-null, writable
+    /// Vec pointer independent of this DBIter; internal saved-field operations
+    /// use the safe byte helper directly instead of aliasing `&mut self`.
     #[inline]
-    pub fn save_key(&mut self, k: &Slice, dst: *mut String) {
+    pub fn save_key(&mut self, k: &Slice, dst: *mut Vec<u8>) {
         // C++: dst->assign(k.data(), k.size());
+        assert!(!dst.is_null(), "DBIter::save_key: destination must not be null");
         unsafe {
-            let dst_ref: &mut String = &mut *dst;
-            let v: &mut Vec<u8> = dst_ref.as_mut_vec();
-            v.clear();
-            v.extend_from_slice(k.as_bytes());
+            assign_slice_to_buffer(&mut *dst, k);
         }
     }
 
@@ -19,7 +42,7 @@ impl DBIter {
         //      else { saved_value_.clear(); }
 
         if self.saved_value().capacity() > 1048576usize {
-            let mut empty: String = String::new();
+            let mut empty: Vec<u8> = Vec::new();
             core::mem::swap(&mut empty, self.saved_value_mut());
         } else {
             self.saved_value_mut().clear();
@@ -38,11 +61,11 @@ mod dbiter_save_key_suite {
         let (mut dbiter, _calls, _last_len) = build_dbiter_direct(10, 1, vec![]);
 
         let k = Slice::from_bytes(b"abc");
-        let mut dst = String::from("old");
+        let mut dst = b"old".to_vec();
 
-        dbiter.save_key(&k, &mut dst as *mut String);
+        dbiter.save_key(&k, &mut dst as *mut Vec<u8>);
 
-        assert_eq!(dst.as_bytes(), b"abc");
+        assert_eq!(dst.as_slice(), b"abc");
     }
 
     #[traced_test]
@@ -52,9 +75,9 @@ mod dbiter_save_key_suite {
         let (mut dbiter, _calls, _last_len) = build_dbiter_direct(10, 2, vec![]);
 
         let k = Slice::from_bytes(b"");
-        let mut dst = String::from("not-empty");
+        let mut dst = b"not-empty".to_vec();
 
-        dbiter.save_key(&k, &mut dst as *mut String);
+        dbiter.save_key(&k, &mut dst as *mut Vec<u8>);
 
         assert!(dst.is_empty());
     }
@@ -67,11 +90,11 @@ mod dbiter_save_key_suite {
 
         let bytes = "héllö".as_bytes();
         let k = Slice::from_bytes(bytes);
-        let mut dst = String::new();
+        let mut dst = Vec::new();
 
-        dbiter.save_key(&k, &mut dst as *mut String);
+        dbiter.save_key(&k, &mut dst as *mut Vec<u8>);
 
-        assert_eq!(dst.as_bytes(), bytes);
+        assert_eq!(dst.as_slice(), bytes);
     }
 }
 
@@ -85,7 +108,7 @@ mod dbiter_clear_saved_value_suite {
 
         let (mut dbiter, _calls, _last_len) = build_dbiter_direct(10, 1, vec![]);
 
-        *dbiter.saved_value_mut() = String::from("hello");
+        *dbiter.saved_value_mut() = b"hello".to_vec();
         let cap_before = dbiter.saved_value().capacity();
 
         dbiter.clear_saved_value();
@@ -100,9 +123,9 @@ mod dbiter_clear_saved_value_suite {
 
         let (mut dbiter, _calls, _last_len) = build_dbiter_direct(10, 2, vec![]);
 
-        *dbiter.saved_value_mut() = String::new();
+        *dbiter.saved_value_mut() = Vec::new();
         dbiter.saved_value_mut().reserve(2 * 1048576);
-        dbiter.saved_value_mut().push_str("x");
+        dbiter.saved_value_mut().extend_from_slice(b"x");
 
         let cap_before = dbiter.saved_value().capacity();
         assert!(cap_before > 1048576);
@@ -120,7 +143,7 @@ mod dbiter_clear_saved_value_suite {
 
         let (mut dbiter, _calls, _last_len) = build_dbiter_direct(10, 3, vec![]);
 
-        *dbiter.saved_value_mut() = String::new();
+        *dbiter.saved_value_mut() = Vec::new();
         dbiter.saved_value_mut().reserve(2 * 1048576);
 
         let cap_before = dbiter.saved_value().capacity();

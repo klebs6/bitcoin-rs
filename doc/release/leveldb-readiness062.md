@@ -37,8 +37,9 @@ all-feature coverage, arbitrary binary-data correctness, or memory safety.
 
 1. **Binary representation.** The [focused063 follow-up](leveldb-byte-buffers063.md)
    changes WriteBatch and private InternalKey storage to byte vectors. Its
-   protected result is recorded separately. Coding sinks, legacy key append,
-   blocks, manifest records, retrieval outputs and other owners still need
+   protected result is recorded separately. The [iterator066 follow-up](leveldb-iterator-bytes066.md)
+   migrates iterator scratch/saved owners and the raw key append sink. Coding
+   sinks, blocks, manifest records, retrieval outputs and other owners still need
    coherent byte-buffer migration. Rust `String` requires valid UTF-8; binary
    storage and lossy conversion remain source-level release blockers, including
    outside optional Snappy support.

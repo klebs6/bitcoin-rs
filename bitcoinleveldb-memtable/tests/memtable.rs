@@ -200,8 +200,8 @@ fn memtable_encoding_roundtrip_encode_key_and_get_length_prefixed_slice_for_vari
 
         let slice = Slice::from(payload.as_slice());
 
-        let mut scratch = String::new();
-        let scratch_ptr: *mut String = &mut scratch;
+        let mut scratch = Vec::new();
+        let scratch_ptr: *mut Vec<u8> = &mut scratch;
 
         let encoded_ptr = encode_key(scratch_ptr, &slice);
 
@@ -791,13 +791,13 @@ fn memtable_key_comparator_orders_by_user_key_then_sequence_number_descending() 
     let low_seq_slice  = low_seq_key.encode();
     let high_seq_slice = high_seq_key.encode();
 
-    let mut scratch_low  = String::new();
-    let mut scratch_high = String::new();
+    let mut scratch_low  = Vec::new();
+    let mut scratch_high = Vec::new();
 
     let low_ptr =
-        encode_key(&mut scratch_low as *mut String, &low_seq_slice);
+        encode_key(&mut scratch_low as *mut Vec<u8>, &low_seq_slice);
     let high_ptr =
-        encode_key(&mut scratch_high as *mut String, &high_seq_slice);
+        encode_key(&mut scratch_high as *mut Vec<u8>, &high_seq_slice);
 
     let res_high_vs_low = cmp.invoke(high_ptr, low_ptr);
     assert!(
@@ -830,13 +830,13 @@ fn memtable_key_comparator_orders_by_user_key_then_sequence_number_descending() 
     let internal_a_slice = internal_a.encode();
     let internal_b_slice = internal_b.encode();
 
-    let mut scratch_a = String::new();
-    let mut scratch_b = String::new();
+    let mut scratch_a = Vec::new();
+    let mut scratch_b = Vec::new();
 
     let ptr_a =
-        encode_key(&mut scratch_a as *mut String, &internal_a_slice);
+        encode_key(&mut scratch_a as *mut Vec<u8>, &internal_a_slice);
     let ptr_b =
-        encode_key(&mut scratch_b as *mut String, &internal_b_slice);
+        encode_key(&mut scratch_b as *mut Vec<u8>, &internal_b_slice);
 
     let cmp_ab = cmp.invoke(ptr_a, ptr_b);
     assert!(

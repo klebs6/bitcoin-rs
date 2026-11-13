@@ -4,28 +4,22 @@ crate::ix!();
 impl DBIter {
 
     pub fn seek(&mut self, target: &Slice) {
-        self.set_direction(DBIterDirection::Forward);
-        self.clear_saved_value();
-        self.saved_key__mut().clear();
-
+        // The target may view the current reverse key or value. Construct its
+        // final encoding before releasing either saved owner.
         let seq = self.sequence();
         let parsed = ParsedInternalKey::new(target, &seq, ValueType::TypeValue);
+        let mut encoded = Vec::new();
+        append_internal_key_to_vec(&mut encoded, &parsed);
 
-        let dst_ptr: *mut String = {
-            let dst_ref: &mut String = self.saved_key__mut();
-            dst_ref as *mut String
-        };
-        append_internal_key(dst_ptr, &parsed);
+        self.set_direction(DBIterDirection::Forward);
+        self.clear_saved_value();
+        *self.saved_key__mut() = encoded;
 
-        let internal_target: Slice = Slice::from(self.saved_key_());
+        let internal_target: Slice = Slice::from(self.saved_key_().as_slice());
         self.iter().borrow_mut().seek(&internal_target);
 
         if self.iter().borrow().valid() {
-            let tmp_ptr: *mut String = {
-                let tmp_ref: &mut String = self.saved_key__mut();
-                tmp_ref as *mut String
-            };
-            self.find_next_user_entry(false, tmp_ptr /* temporary storage */);
+            self.find_next_user_entry_from_saved(false);
         } else {
             self.set_valid(false);
         }
@@ -38,11 +32,7 @@ impl DBIter {
         self.iter().borrow_mut().seek_to_first();
 
         if self.iter().borrow().valid() {
-            let tmp_ptr: *mut String = {
-                let tmp_ref: &mut String = self.saved_key__mut();
-                tmp_ref as *mut String
-            };
-            self.find_next_user_entry(false, tmp_ptr /* temporary storage */);
+            self.find_next_user_entry_from_saved(false);
         } else {
             self.set_valid(false);
         }

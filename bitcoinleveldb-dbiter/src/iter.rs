@@ -32,14 +32,14 @@ pub struct DBIter {
       |
       */
     #[getset(get="pub(crate)", get_mut="pub(crate)")]
-    saved_key_: String,
+    saved_key_: Vec<u8>,
 
     /**
       | == current raw value when direction_==kReverse
       |
       */
     #[getset(get="pub(crate)", get_mut="pub(crate)")]
-    saved_value: String,
+    saved_value: Vec<u8>,
 
     #[getset(get_copy="pub(crate)", set="pub(crate)")]
     direction: DBIterDirection,
@@ -69,8 +69,8 @@ impl DBIter {
             iter:                      iter,
             sequence:                  s,
             internal_status:           Status::ok(),
-            saved_key_:                String::new(),
-            saved_value:               String::new(),
+            saved_key_:                Vec::new(),
+            saved_value:               Vec::new(),
             direction:                 DBIterDirection::Forward,
             valid:                     false,
             rnd:                       Random::new(seed),

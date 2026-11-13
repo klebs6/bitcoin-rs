@@ -15,6 +15,11 @@ reference. Caller/database locking governs concurrent mutation and access.
 baseline. The database's write-buffer setting controls when a memtable is
 flushed; there is no separate write-buffer container inside this crate.
 
+`encode_key` takes a `*mut Vec<u8>` scratch destination; iterator seek scratch
+and returned slices preserve encoded bytes. Point `get` still has a `String`
+output and performs lossy text conversion, so arbitrary-byte point retrieval
+remains a release blocker. See the [migration record](../doc/release/leveldb-iterator-bytes066.md).
+
 See [lifetime management](src/memtable.rs), [insertions](src/memtable_add.rs),
 and [lookups](src/memtable_get.rs).
 

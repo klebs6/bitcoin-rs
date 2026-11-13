@@ -12,6 +12,11 @@ pointer to the adapter. Do not separately free or continue owning that pointer;
 dropping the adapter reclaims it. Key/value `Slice` views remain borrowed from
 the underlying iterator and must not outlive movement or destruction.
 
+`seek` builds the exact user-key bytes and maximum sequence/type tag in a
+byte buffer before delegation. The recording iterator helpers in this crate
+still have textual convenience interfaces; the binary regression exercises
+the adapter directly. See the [migration record](../doc/release/leveldb-iterator-bytes066.md).
+
 See [construction](src/create.rs), [key conversion](src/key.rs), and
 [ownership cleanup](src/drop.rs).
 

@@ -21,7 +21,7 @@ impl DBIter {
                     if (value_type != ValueType::TypeDeletion)
                         && (self
                             .user_comparator()
-                            .compare(ikey.user_key(), &Slice::from(self.saved_key_()))
+                            .compare(ikey.user_key(), &Slice::from(self.saved_key_().as_slice()))
                             < 0)
                     {
                         // We encountered a non-deleted value in entries for previous keys,
@@ -37,24 +37,14 @@ impl DBIter {
                         let raw_value: Slice = self.iter().borrow().value();
 
                         if self.saved_value().capacity() > (raw_value.as_bytes().len() + 1048576usize) {
-                            let mut empty: String = String::new();
+                            let mut empty: Vec<u8> = Vec::new();
                             core::mem::swap(&mut empty, self.saved_value_mut());
                         }
 
                         let user_key: Slice = extract_user_key(&self.iter().borrow().key());
 
-                        let dst_ptr: *mut String = {
-                            let dst_ref: &mut String = self.saved_key__mut();
-                            dst_ref as *mut String
-                        };
-                        self.save_key(&user_key, dst_ptr);
-
-                        let dst_val: &mut String = self.saved_value_mut();
-                        unsafe {
-                            let v: &mut Vec<u8> = dst_val.as_mut_vec();
-                            v.clear();
-                            v.extend_from_slice(raw_value.as_bytes());
-                        }
+                        assign_slice_to_buffer(self.saved_key__mut(), &user_key);
+                        assign_slice_to_buffer(self.saved_value_mut(), &raw_value);
                     }
                 }
 

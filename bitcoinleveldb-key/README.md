@@ -15,8 +15,9 @@ packed sequence/type tag so newer entries are visited first.
 `InternalKey` owns its serialized representation as `Vec<u8>`. Its
 `encode`/`decode_from` views preserve arbitrary user bytes and tag bytes.
 `append_internal_key_to_vec` appends this binary format to a byte buffer.
-The legacy `append_internal_key(*mut String, ...)` entrypoint still has an
-unresolved binary-storage defect; its remaining callers are a release blocker.
+`append_internal_key` now takes a `*mut Vec<u8>` destination as well; its
+former String sink was a binary-storage defect. This is a Rust signature
+change documented in the [migration record](../doc/release/leveldb-iterator-bytes066.md).
 
 `SequenceNumber` uses a 56-bit limit and `ValueType` distinguishes values from
 deletions. Pointer-backed slices and comparator/filter pointers borrow their

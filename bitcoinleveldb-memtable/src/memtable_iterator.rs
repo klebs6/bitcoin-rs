@@ -8,7 +8,7 @@ pub struct MemTableIterator {
     /**
        For passing to EncodeKey
       */
-    tmp: String,
+    tmp: Vec<u8>,
 }
 
 impl MemTableIterator {
@@ -20,7 +20,7 @@ impl MemTableIterator {
         MemTableIterator {
             table,
             node: core::ptr::null_mut(),
-            tmp:  String::new(),
+            tmp:  Vec::new(),
         }
     }
 

@@ -7,7 +7,7 @@ impl DBIter {
 
         match self.direction() {
             DBIterDirection::Forward => extract_user_key(&self.iter().borrow().key()),
-            DBIterDirection::Reverse => Slice::from(self.saved_key_()),
+            DBIterDirection::Reverse => Slice::from(self.saved_key_().as_slice()),
         }
     }
 
@@ -16,7 +16,7 @@ impl DBIter {
 
         match self.direction() {
             DBIterDirection::Forward => self.iter().borrow().value(),
-            DBIterDirection::Reverse => Slice::from(self.saved_value()),
+            DBIterDirection::Reverse => Slice::from(self.saved_value().as_slice()),
         }
     }
 

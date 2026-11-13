@@ -131,41 +131,21 @@ pub fn append_internal_key_to_vec(result: &mut Vec<u8>, k: &ParsedInternalKey) {
     result.extend_from_slice(&encode_fixed64_le(packed));
 }
 
-/**
-  | Legacy String sink retained for callers awaiting byte-buffer migration.
-  | This API cannot represent general internal-key encodings as valid UTF-8;
-  | binary callers must use append_internal_key_to_vec instead. Its remaining
-  | callers are a release blocker, not a supported binary-text conversion.
-  |
-  | Append the serialization of "key" to *result.
-  */
-pub fn append_internal_key(result: *mut String, k: &ParsedInternalKey) {
-    trace!(
-        "append_internal_key: seq={}, ty={:?}, user_key_len={}",
-        k.sequence,
-        k.ty,
-        *k.user_key.size()
-    );
+/// Append an internal-key encoding to a writable byte-vector destination.
+///
+/// This raw-pointer sink now takes `*mut Vec<u8>` rather than `*mut String`:
+/// internal-key bytes have no UTF-8 invariant. The destination must point to a
+/// live, exclusively writable vector. Copy the input before extending it so a
+/// parsed user-key view may borrow the previous destination allocation.
+pub fn append_internal_key(result: *mut Vec<u8>, k: &ParsedInternalKey) {
     assert!(
         !result.is_null(),
         "append_internal_key: result pointer must not be null"
     );
-
+    let mut encoded = Vec::new();
+    append_internal_key_to_vec(&mut encoded, k);
     unsafe {
-        let s: &mut String = &mut *result;
-        let vec: &mut Vec<u8> = s.as_mut_vec();
-        let user_slice = &k.user_key;
-        let key_len = *user_slice.size();
-
-        if key_len > 0 {
-            let data = *user_slice.data();
-            let bytes = std::slice::from_raw_parts(data, key_len);
-            vec.extend_from_slice(bytes);
-        }
-
-        let packed = pack_sequence_and_type(k.sequence, k.ty);
-        let tag = encode_fixed64_le(packed);
-        vec.extend_from_slice(&tag);
+        (*result).extend_from_slice(encoded.as_slice());
     }
 }
 
@@ -250,5 +230,46 @@ mod parsed_internal_key_tests {
                 "encoding length must be user length + 8"
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod byte_sink_contracts066 {
+    use super::*;
+
+    #[test]
+    fn raw_byte_sink_preserves_prefix_payload_and_literal_sequence_tag() {
+        let user = [0xff, 0x00, 0x80];
+        let sequence: SequenceNumber = 0x00ff_807f_0201_00aa;
+        let parsed = ParsedInternalKey::new(
+            &Slice::from(&user[..]), &sequence, ValueType::TypeValue,
+        );
+        let mut destination = vec![0xde, 0xad];
+        append_internal_key(&mut destination, &parsed);
+        assert_eq!(destination, vec![
+            0xde, 0xad, 0xff, 0x00, 0x80,
+            0x01, 0xaa, 0x00, 0x01, 0x02, 0x7f, 0x80, 0xff,
+        ]);
+    }
+
+    #[test]
+    fn raw_byte_sink_copies_a_user_key_borrowing_its_destination() {
+        let mut destination = vec![0xde, 0xad, 0xff, 0x00];
+        destination.shrink_to_fit();
+        let user = Slice::from(&destination[2..]);
+        let parsed = ParsedInternalKey::new(&user, &MAX_SEQUENCE_NUMBER, ValueType::TypeDeletion);
+        append_internal_key(&mut destination, &parsed);
+        assert_eq!(destination, vec![
+            0xde, 0xad, 0xff, 0x00, 0xff, 0x00,
+            0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+        ]);
+    }
+
+    #[test]
+    #[should_panic(expected = "append_internal_key: result pointer must not be null")]
+    fn raw_byte_sink_rejects_null_destination() {
+        let user = Slice::from(&b"key"[..]);
+        let parsed = ParsedInternalKey::new(&user, &1, ValueType::TypeValue);
+        append_internal_key(core::ptr::null_mut(), &parsed);
     }
 }

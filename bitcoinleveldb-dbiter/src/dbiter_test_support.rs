@@ -104,10 +104,10 @@ pub(crate) fn encode_internal_key_bytes(
     let user = Slice::from_bytes(user_key);
     let pik = ParsedInternalKey::new(&user, &seq, ty);
 
-    let mut dst = String::new();
-    append_internal_key(&mut dst as *mut String, &pik);
+    let mut dst = Vec::new();
+    append_internal_key_to_vec(&mut dst, &pik);
 
-    dst.as_bytes().to_vec()
+    dst
 }
 
 pub(crate) fn make_entry(
@@ -619,5 +619,176 @@ mod dbiter_merger_seam_suite {
 
         it.borrow_mut().next();
         assert_eq!(it.borrow().key().as_bytes(), b"b");
+    }
+}
+
+#[cfg(test)]
+mod binary_byte_owner066_regressions {
+    use super::*;
+
+    fn binary_entries() -> Vec<(Vec<u8>, Vec<u8>)> {
+        vec![
+            make_entry(&[0x00, 0xff], 9, ValueType::TypeValue, &[0xff, 0x09]),
+            make_entry(&[0x00, 0xff], 5, ValueType::TypeValue, &[0xff, 0x00, 0x80]),
+            make_entry(&[0x00, 0xff], 3, ValueType::TypeValue, &[0x01]),
+            make_entry(&[0x80, 0x00], 6, ValueType::TypeDeletion, &[]),
+            make_entry(&[0x80, 0x00], 4, ValueType::TypeValue, &[0xc3, 0x28]),
+            make_entry(&[0x80, 0xff], 5, ValueType::TypeDeletion, &[]),
+            make_entry(&[0x80, 0xff], 4, ValueType::TypeValue, &[0xff]),
+            make_entry(&[0xff, 0x00], 2, ValueType::TypeValue, &[0x00, 0xfe, 0x80]),
+        ]
+    }
+
+    fn expected_at_five() -> Vec<(Vec<u8>, Vec<u8>)> {
+        vec![
+            (vec![0x00, 0xff], vec![0xff, 0x00, 0x80]),
+            (vec![0x80, 0x00], vec![0xc3, 0x28]),
+            (vec![0xff, 0x00], vec![0x00, 0xfe, 0x80]),
+        ]
+    }
+
+    fn assert_wrapped_position(it: &Rc<RefCell<LevelDBIterator>>, key: &[u8], value: &[u8]) {
+        let current = it.borrow();
+        assert!(current.valid());
+        assert_eq!(current.key().as_bytes(), key);
+        assert_eq!(current.value().as_bytes(), value);
+        assert!(current.status().is_ok());
+    }
+
+    #[test]
+    fn binary_fixture_encoder_matches_literal_internal_tag() {
+        let encoded = encode_internal_key_bytes(
+            &[0xff, 0x00, 0x80],
+            0x00ff_807f_0201_00aa,
+            ValueType::TypeValue,
+        );
+        assert_eq!(encoded, vec![
+            0xff, 0x00, 0x80,
+            0x01, 0xaa, 0x00, 0x01, 0x02, 0x7f, 0x80, 0xff,
+        ]);
+        assert!(core::str::from_utf8(&encoded).is_err());
+    }
+
+    #[test]
+    fn binary_iteration_preserves_values_and_snapshot_tombstones_both_directions() {
+        let (it, _calls, _last_len) =
+            build_leveldb_iterator_via_new_db_iterator(5, 301, binary_entries());
+        let expected = expected_at_five();
+        assert_eq!(collect_forward_visible_entries(&it), expected);
+        let mut reverse_expected = expected.clone();
+        reverse_expected.reverse();
+        assert_eq!(collect_reverse_visible_entries(&it), reverse_expected);
+        assert!(it.borrow().status().is_ok());
+
+        let (newer, _calls, _last_len) =
+            build_leveldb_iterator_via_new_db_iterator(6, 301, binary_entries());
+        let expected = vec![expected[0].clone(), expected[2].clone()];
+        assert_eq!(collect_forward_visible_entries(&newer), expected);
+        let mut reverse_expected = expected;
+        reverse_expected.reverse();
+        assert_eq!(collect_reverse_visible_entries(&newer), reverse_expected);
+        assert!(newer.borrow().status().is_ok());
+    }
+
+    #[test]
+    fn binary_direction_changes_and_seek_keep_exact_user_bytes() {
+        let (it, _calls, _last_len) =
+            build_leveldb_iterator_via_new_db_iterator(5, 301, binary_entries());
+        let expected = expected_at_five();
+        it.borrow_mut().seek_to_first();
+        assert_wrapped_position(&it, &expected[0].0, &expected[0].1);
+        it.borrow_mut().next();
+        assert_wrapped_position(&it, &expected[1].0, &expected[1].1);
+        it.borrow_mut().prev();
+        assert_wrapped_position(&it, &expected[0].0, &expected[0].1);
+        it.borrow_mut().next();
+        assert_wrapped_position(&it, &expected[1].0, &expected[1].1);
+        it.borrow_mut().next();
+        assert_wrapped_position(&it, &expected[2].0, &expected[2].1);
+        it.borrow_mut().prev();
+        assert_wrapped_position(&it, &expected[1].0, &expected[1].1);
+        it.borrow_mut().seek_to_last();
+        assert_wrapped_position(&it, &expected[2].0, &expected[2].1);
+        it.borrow_mut().prev();
+        assert_wrapped_position(&it, &expected[1].0, &expected[1].1);
+        it.borrow_mut().next();
+        assert_wrapped_position(&it, &expected[2].0, &expected[2].1);
+        it.borrow_mut().next();
+        assert!(!it.borrow().valid());
+
+        it.borrow_mut().seek(&Slice::from(&[0x80, 0x7f][..]));
+        assert_wrapped_position(&it, &expected[2].0, &expected[2].1);
+        it.borrow_mut().seek(&Slice::from(&[0x80, 0x00][..]));
+        assert_wrapped_position(&it, &expected[1].0, &expected[1].1);
+        it.borrow_mut().seek(&Slice::from(&[0xff, 0xff][..]));
+        assert!(!it.borrow().valid());
+        assert!(it.borrow().status().is_ok());
+    }
+
+    #[test]
+    fn binary_seek_accepts_current_reverse_key_and_large_saved_value_views() {
+        let entries = vec![
+            make_entry(&[0x00, 0xff], 5, ValueType::TypeValue, &[0xc3, 0x28, 0x00]),
+            make_entry(&[0xff, 0x00], 4, ValueType::TypeValue, &[0x00, 0xff]),
+        ];
+        let (mut dbiter, _calls, _last_len) = build_dbiter_direct(5, 301, entries);
+        dbiter.seek_to_last();
+        let key_target = dbiter.key();
+        dbiter.seek(&key_target);
+        assert!(dbiter.valid());
+        assert_eq!(dbiter.key().as_bytes(), &[0xff, 0x00]);
+        assert_eq!(dbiter.value().as_bytes(), &[0x00, 0xff]);
+
+        dbiter.seek_to_last();
+        dbiter.saved_value_mut().reserve(2 * 1048576);
+        assert!(dbiter.saved_value().capacity() > 1048576);
+        // clear_saved_value releases this allocation during seek. The final
+        // encoded target must be built before that owner is cleared/dropped.
+        let value_target = dbiter.value();
+        dbiter.seek(&value_target);
+        assert!(dbiter.valid());
+        assert_eq!(dbiter.key().as_bytes(), &[0x00, 0xff]);
+        assert_eq!(dbiter.value().as_bytes(), &[0xc3, 0x28, 0x00]);
+        assert!(dbiter.status().is_ok());
+    }
+
+    #[test]
+    fn binary_save_key_handles_overlapping_views_and_reuses_disjoint_storage() {
+        let (mut dbiter, _calls, _last_len) = build_dbiter_direct(5, 301, vec![]);
+        let mut destination = Vec::with_capacity(128);
+        destination.extend_from_slice(&[0x00, 0xff, 0x80, 0xfe]);
+        let capacity = destination.capacity();
+        let overlapping = Slice::from_ptr_len(unsafe { destination.as_ptr().add(1) }, 3);
+        dbiter.save_key(&overlapping, &mut destination);
+        assert_eq!(destination, vec![0xff, 0x80, 0xfe]);
+        assert_eq!(destination.capacity(), capacity);
+
+        let address = destination.as_ptr();
+        dbiter.save_key(&Slice::from(&[0xc3, 0x28, 0x00][..]), &mut destination);
+        assert_eq!(destination, vec![0xc3, 0x28, 0x00]);
+        assert_eq!(destination.as_ptr(), address);
+        assert_eq!(destination.capacity(), capacity);
+        dbiter.save_key(&Slice::from(&b""[..]), &mut destination);
+        assert!(destination.is_empty());
+        assert_eq!(destination.capacity(), capacity);
+    }
+
+    #[test]
+    fn binary_raw_skip_helper_preserves_non_utf8_tombstone_key() {
+        let entries = vec![
+            make_entry(&[0x00, 0xff], 5, ValueType::TypeDeletion, &[]),
+            make_entry(&[0x00, 0xff], 4, ValueType::TypeValue, &[0xff]),
+            make_entry(&[0x80, 0x00], 3, ValueType::TypeValue, &[0xc3, 0x28]),
+        ];
+        let (mut dbiter, _calls, _last_len) = build_dbiter_direct(5, 301, entries);
+        dbiter.set_direction(DBIterDirection::Forward);
+        dbiter.iter().borrow_mut().seek_to_first();
+        let mut skip = vec![0x01];
+        dbiter.find_next_user_entry(false, &mut skip);
+        assert_eq!(skip, vec![0x00, 0xff]);
+        assert!(dbiter.valid());
+        assert_eq!(dbiter.key().as_bytes(), &[0x80, 0x00]);
+        assert_eq!(dbiter.value().as_bytes(), &[0xc3, 0x28]);
+        assert!(dbiter.status().is_ok());
     }
 }

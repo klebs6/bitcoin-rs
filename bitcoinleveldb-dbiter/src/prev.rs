@@ -14,11 +14,7 @@ impl DBIter {
 
             let current_user_key: Slice = extract_user_key(&self.iter().borrow().key());
 
-            let dst_ptr: *mut String = {
-                let dst_ref: &mut String = self.saved_key__mut();
-                dst_ref as *mut String
-            };
-            self.save_key(&current_user_key, dst_ptr);
+            assign_slice_to_buffer(self.saved_key__mut(), &current_user_key);
 
             loop {
                 self.iter().borrow_mut().prev();
@@ -31,7 +27,7 @@ impl DBIter {
                 }
 
                 let iter_user_key: Slice = extract_user_key(&self.iter().borrow().key());
-                let saved_key_slice: Slice = Slice::from(self.saved_key_());
+                let saved_key_slice: Slice = Slice::from(self.saved_key_().as_slice());
 
                 if self.user_comparator().compare(&iter_user_key, &saved_key_slice) < 0 {
                     break;

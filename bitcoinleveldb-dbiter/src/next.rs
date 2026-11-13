@@ -34,11 +34,7 @@ impl DBIter {
                 // Store in saved_key_ the current key so we skip it below.
                 let current_user_key: Slice = extract_user_key(&self.iter().borrow().key());
 
-                let dst_ptr: *mut String = {
-                    let dst_ref: &mut String = self.saved_key__mut();
-                    dst_ref as *mut String
-                };
-                self.save_key(&current_user_key, dst_ptr);
+                assign_slice_to_buffer(self.saved_key__mut(), &current_user_key);
 
                 // iter_ is pointing to current key. We can now safely move to the next to
                 // avoid checking current key.
@@ -52,11 +48,7 @@ impl DBIter {
             }
         }
 
-        let skip_ptr: *mut String = {
-            let skip_ref: &mut String = self.saved_key__mut();
-            skip_ref as *mut String
-        };
-        self.find_next_user_entry(true, skip_ptr);
+        self.find_next_user_entry_from_saved(true);
     }
 }
 

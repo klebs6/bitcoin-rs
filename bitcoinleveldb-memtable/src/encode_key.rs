@@ -3,11 +3,12 @@ crate::ix!();
 
 /// Encode a suitable internal key target for "target" and return it.
 /// 
-/// Uses *scratch as scratch space, and the returned pointer will point into
-/// this scratch space.
+/// The byte-vector scratch owns the returned varint32-length-prefixed bytes.
+/// The pointer remains valid until scratch is modified or dropped; target may
+/// borrow its previous allocation because replacement is copied first.
 ///
 pub fn encode_key(
-    scratch: *mut String,
+    scratch: *mut Vec<u8>,
     target:  &Slice,
 ) -> *const u8 {
     trace!(
@@ -21,28 +22,23 @@ pub fn encode_key(
         "encode_key: scratch pointer must not be null"
     );
 
+    let target_len_u32: u32 = (*target.size())
+        .try_into()
+        .expect("encode_key: target length does not fit into u32");
+
+    // Build the complete replacement before mutating scratch: target may be a
+    // borrowed view of its previous buffer. This encoding is binary, not text.
+    let mut encoded = Vec::new();
+    put_varint32_vec(&mut encoded, target_len_u32);
+    encoded.extend_from_slice(slice_as_bytes(target));
+
     unsafe {
-        let s: &mut String = &mut *scratch;
-        s.clear();
-
-        let target_len_u32: u32 = (*target.size())
-            .try_into()
-            .expect("encode_key: target length does not fit into u32");
-
-        let buf: &mut Vec<u8> = s.as_mut_vec();
-
-        // Encode the length prefix as a varint32
-        put_varint32_vec(buf, target_len_u32);
-
-        // Append the raw key bytes
-        let target_bytes = slice_as_bytes(target);
-        buf.extend_from_slice(target_bytes);
-
-        let ptr = buf.as_ptr();
+        *scratch = encoded;
+        let ptr = (*scratch).as_ptr();
         trace!(
             "encode_key: encoded varint_len={} total_len={}",
             varint_length(target_len_u32.into()),
-            buf.len()
+            (*scratch).len()
         );
         ptr
     }

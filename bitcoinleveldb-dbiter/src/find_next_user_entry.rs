@@ -2,7 +2,23 @@
 crate::ix!();
 
 impl DBIter {
-    pub fn find_next_user_entry(&mut self, mut skipping: bool, skip: *mut String) {
+    /// `skip` must point to an initialized writable Vec independent of `self`.
+    /// Internal calls move the saved scratch buffer to a local owner first.
+    pub fn find_next_user_entry(&mut self, skipping: bool, skip: *mut Vec<u8>) {
+        assert!(!skip.is_null(), "DBIter::find_next_user_entry: skip buffer must not be null");
+        unsafe {
+            self.find_next_user_entry_with_buffer(skipping, &mut *skip);
+        }
+    }
+
+    pub(crate) fn find_next_user_entry_from_saved(&mut self, skipping: bool) {
+        let mut skip = core::mem::take(self.saved_key__mut());
+        self.find_next_user_entry_with_buffer(skipping, &mut skip);
+        skip.clear();
+        *self.saved_key__mut() = skip;
+    }
+
+    fn find_next_user_entry_with_buffer(&mut self, mut skipping: bool, skip: &mut Vec<u8>) {
         // Loop until we hit an acceptable entry to yield
         assert!(self.iter().borrow().valid());
 
@@ -22,14 +38,14 @@ impl DBIter {
                         // Arrange to skip all upcoming entries for this key since
                         // they are hidden by this deletion.
                         let user_key: &Slice = ikey.user_key();
-                        self.save_key(user_key, skip);
+                        assign_slice_to_buffer(skip, user_key);
 
                         skipping = true;
                     }
 
                     ValueType::TypeValue => {
                         if skipping {
-                            let skip_slice: Slice = unsafe { Slice::from(&*skip) };
+                            let skip_slice: Slice = Slice::from(skip.as_slice());
 
                             if self.user_comparator().compare(ikey.user_key(), &skip_slice) <= 0 {
                                 // Entry hidden
@@ -77,8 +93,8 @@ mod dbiter_find_next_user_entry_suite {
         dbiter.set_direction(DBIterDirection::Forward);
         dbiter.iter().borrow_mut().seek_to_first();
 
-        let mut tmp = String::new();
-        dbiter.find_next_user_entry(false, &mut tmp as *mut String);
+        let mut tmp = Vec::new();
+        dbiter.find_next_user_entry(false, &mut tmp as *mut Vec<u8>);
 
         assert!(dbiter.valid());
         assert_eq!(dbiter.key().as_bytes(), b"a");
@@ -101,8 +117,8 @@ mod dbiter_find_next_user_entry_suite {
         dbiter.set_direction(DBIterDirection::Forward);
         dbiter.iter().borrow_mut().seek_to_first();
 
-        let mut skip = String::new();
-        dbiter.find_next_user_entry(false, &mut skip as *mut String);
+        let mut skip = Vec::new();
+        dbiter.find_next_user_entry(false, &mut skip as *mut Vec<u8>);
 
         assert!(dbiter.valid());
         assert_eq!(dbiter.key().as_bytes(), b"b");
@@ -123,8 +139,8 @@ mod dbiter_find_next_user_entry_suite {
         dbiter.set_direction(DBIterDirection::Forward);
         dbiter.iter().borrow_mut().seek_to_first();
 
-        let mut skip = String::from("a");
-        dbiter.find_next_user_entry(true, &mut skip as *mut String);
+        let mut skip = b"a".to_vec();
+        dbiter.find_next_user_entry(true, &mut skip as *mut Vec<u8>);
 
         assert!(dbiter.valid());
         assert_eq!(dbiter.key().as_bytes(), b"b");
@@ -146,8 +162,8 @@ mod dbiter_find_next_user_entry_suite {
         dbiter.set_direction(DBIterDirection::Forward);
         dbiter.iter().borrow_mut().seek_to_first();
 
-        let mut tmp = String::new();
-        dbiter.find_next_user_entry(false, &mut tmp as *mut String);
+        let mut tmp = Vec::new();
+        dbiter.find_next_user_entry(false, &mut tmp as *mut Vec<u8>);
 
         assert!(dbiter.valid());
         assert_eq!(dbiter.key().as_bytes(), b"a");
@@ -168,8 +184,8 @@ mod dbiter_find_next_user_entry_suite {
         dbiter.set_direction(DBIterDirection::Forward);
         dbiter.iter().borrow_mut().seek_to_first();
 
-        let mut tmp = String::new();
-        dbiter.find_next_user_entry(false, &mut tmp as *mut String);
+        let mut tmp = Vec::new();
+        dbiter.find_next_user_entry(false, &mut tmp as *mut Vec<u8>);
 
         assert!(dbiter.valid());
         assert_eq!(dbiter.key().as_bytes(), b"a");
@@ -189,8 +205,8 @@ mod dbiter_find_next_user_entry_suite {
         dbiter.set_direction(DBIterDirection::Forward);
         dbiter.iter().borrow_mut().seek_to_first();
 
-        let mut tmp = String::new();
-        dbiter.find_next_user_entry(false, &mut tmp as *mut String);
+        let mut tmp = Vec::new();
+        dbiter.find_next_user_entry(false, &mut tmp as *mut Vec<u8>);
 
         assert!(!dbiter.valid());
         assert!(dbiter.saved_key_().is_empty());

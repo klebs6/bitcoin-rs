@@ -12,6 +12,11 @@ and inspect `status` for an error after traversal. Returned `Slice` values borro
 iterator-managed storage and should be consumed before advancing or destroying
 the iterator.
 
+`DBIter` owns saved keys, saved values and seek/skip scratch as byte vectors.
+The iterator storage preserves binary bytes without a UTF-8 requirement.
+The [byte-owner migration record](../doc/release/leveldb-iterator-bytes066.md)
+documents the raw helper signature changes and remaining subsystem limits.
+
 See [construction](src/lifecycle.rs), [iterator state](src/iter.rs),
 [accessors](src/access.rs), and [visibility logic](src/find_next_user_entry.rs).
 
