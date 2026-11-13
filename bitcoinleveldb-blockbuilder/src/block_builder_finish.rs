@@ -23,21 +23,21 @@ impl BlockBuilder {
             let restarts: Vec<u32> = self.restarts_slice().to_vec();
 
             for restart in &restarts {
-                bitcoinleveldb_coding::put_fixed32(
+                bitcoinleveldb_coding::put_fixed32_bytes(
                     self.buffer_mut(),
                     *restart,
                 );
             }
 
-            bitcoinleveldb_coding::put_fixed32(
+            bitcoinleveldb_coding::put_fixed32_bytes(
                 self.buffer_mut(),
-                restarts.len() as u32,
+                restarts.len().try_into().expect("BlockBuilder::finish: restart count does not fit into u32"),
             );
         }
 
         self.set_finished(true);
 
-        let result = Slice::from(self.buffer_string());
+        let result = Slice::from(self.buffer_bytes());
 
         trace!(
             "BlockBuilder::finish: buffer_len_after={}, result_size={}",
@@ -85,7 +85,7 @@ mod block_builder_finish_and_trailer_tests {
         let total_len = builder.buffer_len();
         assert_eq!(total_len, *slice.size());
 
-        let buf_bytes = builder.buffer_string().as_bytes();
+        let buf_bytes = builder.buffer_bytes();
         assert!(
             buf_bytes.len() >= 4,
             "buffer must contain at least num_restarts trailer"

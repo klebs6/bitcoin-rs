@@ -8,6 +8,23 @@ fn checked_length_prefix(len: usize) -> Option<u32> {
     u32::try_from(len).ok()
 }
 
+/// Append an exact byte payload with its varint32 length.
+///
+/// Returns false without changing `dst` when the length cannot be represented.
+/// The Slice must remain readable for this call; it may refer into `dst`.
+pub fn put_length_prefixed_slice_bytes(dst: &mut Vec<u8>, value: &Slice) -> bool {
+    let prefix = match checked_length_prefix(*value.size()) {
+        Some(prefix) => prefix,
+        None => return false,
+    };
+    // Copy before appending the prefix: the Slice may borrow the old allocation,
+    // and even the first prefix byte can cause the destination to reallocate.
+    let payload = value.as_bytes().to_vec();
+    put_varint32_bytes(dst, prefix);
+    dst.extend_from_slice(&payload);
+    true
+}
+
 pub fn put_length_prefixed_slice(dst: *mut String, value: &Slice) {
     unsafe {
         let len: usize = *value.size();

@@ -4,7 +4,7 @@ crate::ix!();
 impl Drop for BlockConstructor {
     fn drop(&mut self) {
         let block_ptr = self.block_ptr();
-        let data_len  = self.data_string().len();
+        let data_len  = self.data_bytes().len();
 
         trace!(
             "Dropping BlockConstructor {{ block: {:?}, data_len: {} }}",
@@ -62,7 +62,7 @@ mod block_constructor_drop_lifetime_and_cleanup_tests {
         trace!(
             "drop_on_constructor_without_block_is_noop: dropping constructor with block_ptr={:?}, data_len={}",
             ctor.block_ptr(),
-            ctor.data_string().len()
+            ctor.data_bytes().len()
         );
 
         // Explicitly drop to exercise Drop::drop code path; absence of panic is success.
@@ -76,7 +76,7 @@ mod block_constructor_drop_lifetime_and_cleanup_tests {
         trace!(
             "drop_on_constructor_with_live_block_cleans_up_without_panic: dropping constructor with block_ptr={:?}, data_len={}",
             ctor.block_ptr(),
-            ctor.data_string().len()
+            ctor.data_bytes().len()
         );
 
         core::mem::drop(ctor);
@@ -112,7 +112,7 @@ mod block_constructor_drop_lifetime_and_cleanup_tests {
         trace!(
             "drop_after_multiple_finish_impl_calls_does_not_double_free: dropping constructor with final block_ptr={:?}, data_len={}",
             ctor.block_ptr(),
-            ctor.data_string().len()
+            ctor.data_bytes().len()
         );
 
         core::mem::drop(ctor);

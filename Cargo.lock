@@ -3130,6 +3130,7 @@ dependencies = [
  "bitcoinleveldb-file",
  "bitcoinleveldb-filter",
  "bitcoinleveldb-iterator",
+ "bitcoinleveldb-iteratorinner",
  "bitcoinleveldb-key",
  "bitcoinleveldb-options",
  "bitcoinleveldb-rand",

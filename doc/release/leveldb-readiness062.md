@@ -38,9 +38,13 @@ all-feature coverage, arbitrary binary-data correctness, or memory safety.
 1. **Binary representation.** The [focused063 follow-up](leveldb-byte-buffers063.md)
    changes WriteBatch and private InternalKey storage to byte vectors. Its
    protected result is recorded separately. The [iterator066 follow-up](leveldb-iterator-bytes066.md)
-   migrates iterator scratch/saved owners and the raw key append sink. Coding
-   sinks, blocks, manifest records, retrieval outputs and other owners still need
-   coherent byte-buffer migration. Rust `String` requires valid UTF-8; binary
+   migrates iterator scratch/saved owners and the raw key append sink. Its
+   separate066 client receipt records 164 affected native passes and five
+   successful doctest commands. The [block067 follow-up](leveldb-block-bytes067.md)
+   migrates builder keys/block bytes and constructor backing storage, with byte
+   coding append helpers. Remaining legacy coding sinks, table metadata,
+   manifest records, retrieval outputs and other owners still need coherent
+   byte-buffer migration. Rust `String` requires valid UTF-8; binary
    storage and lossy conversion remain source-level release blockers, including
    outside optional Snappy support.
 2. **Known helper limits.** ModelDB's point `get` path is not implemented, and

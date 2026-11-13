@@ -5,7 +5,7 @@ crate::ix!();
 pub struct BlockConstructor  {
     base:       Constructor,
     comparator: Box<dyn SliceComparator>,
-    data:       String,
+    data:       Vec<u8>,
     block:      *mut Block,
 }
 
@@ -24,7 +24,7 @@ impl BlockConstructor {
         BlockConstructor {
             base,
             comparator: cmp,
-            data:       String::new(),
+            data:       Vec::new(),
             block:      core::ptr::null_mut(),
         }
     }
@@ -45,12 +45,12 @@ impl BlockConstructor {
     }
 
     #[inline]
-    pub fn data_string(&self) -> &String {
+    pub fn data_bytes(&self) -> &[u8] {
         &self.data
     }
 
     #[inline]
-    pub fn data_string_mut(&mut self) -> &mut String {
+    pub fn data_bytes_mut(&mut self) -> &mut Vec<u8> {
         &mut self.data
     }
 
@@ -66,7 +66,7 @@ impl BlockConstructor {
 
     pub fn new_iterator(&self) -> *mut LevelDBIterator {
         let block_ptr = self.block_ptr();
-        let data_len  = self.data_string().len();
+        let data_len  = self.data_bytes().len();
         // Safe as a raw pointer: BlockConstructor owns the Box<dyn SliceComparator>
         let cmp_ptr: *const dyn SliceComparator =
             &*self.comparator as *const dyn SliceComparator;
@@ -114,7 +114,7 @@ mod block_constructor_initialization_tests {
             raw_cmp
         );
 
-        assert!(constructor.data_string().is_empty());
+        assert!(constructor.data_bytes().is_empty());
         assert!(constructor.block_ptr().is_null());
 
         let base_data = constructor.base().data();
@@ -145,7 +145,7 @@ mod block_constructor_initialization_tests {
             raw_cmp
         );
 
-        assert!(constructor.data_string().is_empty());
+        assert!(constructor.data_bytes().is_empty());
         assert!(constructor.block_ptr().is_null());
 
         let base_data = constructor.base().data();

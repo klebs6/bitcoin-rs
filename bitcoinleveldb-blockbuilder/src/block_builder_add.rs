@@ -21,6 +21,22 @@ impl BlockBuilder {
             "BlockBuilder::add: called after finish()"
         );
 
+        let _: u32 = key_size.try_into()
+            .expect("BlockBuilder::add: key length does not fit into u32");
+        let value_size_u32: u32 = value_size.try_into()
+            .expect("BlockBuilder::add: value length does not fit into u32");
+
+        // A caller can supply a Slice into an earlier buffer/last-key view.
+        // Copy only those inputs before any append can invalidate their owner.
+        let owned_key = self.input_overlaps_storage(key_)
+            .then(|| key_.as_bytes().to_vec());
+        let owned_value = self.input_overlaps_storage(value)
+            .then(|| value.as_bytes().to_vec());
+        let key_view = owned_key.as_ref().map(|bytes| Slice::from(bytes.as_slice()));
+        let value_view = owned_value.as_ref().map(|bytes| Slice::from(bytes.as_slice()));
+        let key_ = key_view.as_ref().unwrap_or(key_);
+        let value = value_view.as_ref().unwrap_or(value);
+
         let opts: &Options = unsafe {
             let opts_ptr = self.options_ptr();
             assert!(
@@ -42,7 +58,7 @@ impl BlockBuilder {
         let last_key_slice = if self.last_key().is_empty() {
             Slice::default()
         } else {
-            Slice::from(self.last_key())
+            Slice::from(self.last_key().as_slice())
         };
 
         if !self.buffer_is_empty() {
@@ -65,7 +81,8 @@ impl BlockBuilder {
                 shared += 1;
             }
         } else {
-            let offset = self.buffer_len() as u32;
+            let offset: u32 = self.buffer_len().try_into()
+                .expect("BlockBuilder::add: restart offset does not fit into u32");
             trace!(
                 "BlockBuilder::add: starting new restart point at offset {}",
                 offset
@@ -86,34 +103,28 @@ impl BlockBuilder {
 
         {
             let buf: &mut Vec<u8> = self.buffer_as_mut_vec();
-            put_varint32_vec(buf, shared as u32);
-            put_varint32_vec(buf, non_shared as u32);
-            put_varint32_vec(buf, value_size as u32);
+            bitcoinleveldb_coding::put_varint32_bytes(buf, shared.try_into()
+                .expect("BlockBuilder::add: shared length does not fit into u32"));
+            bitcoinleveldb_coding::put_varint32_bytes(buf, non_shared.try_into()
+                .expect("BlockBuilder::add: non-shared length does not fit into u32"));
+            bitcoinleveldb_coding::put_varint32_bytes(buf, value_size_u32);
         }
 
-        unsafe {
-            let key_ptr   = (*key_.data()).add(shared);
-            let key_delta = core::slice::from_raw_parts(key_ptr, non_shared);
-
-            let value_ptr: *const u8 = *value.data();
-            let value_bytes          = core::slice::from_raw_parts(value_ptr, value_size);
-
+        {
+            let key_delta = &key_.as_bytes()[shared..];
+            let value_bytes = value.as_bytes();
             let buf: &mut Vec<u8> = self.buffer_as_mut_vec();
             buf.extend_from_slice(key_delta);
             buf.extend_from_slice(value_bytes);
         }
 
         {
-            let last_vec: &mut Vec<u8> = unsafe { self.last_key_mut().as_mut_vec() };
+            let last_vec: &mut Vec<u8> = self.last_key_mut();
             last_vec.truncate(shared);
-            unsafe {
-                let key_ptr   = (*key_.data()).add(shared);
-                let key_delta = core::slice::from_raw_parts(key_ptr, non_shared);
-                last_vec.extend_from_slice(key_delta);
-            }
+            last_vec.extend_from_slice(&key_.as_bytes()[shared..]);
         }
 
-        let last_slice_check = Slice::from(self.last_key());
+        let last_slice_check = Slice::from(self.last_key().as_slice());
         debug_assert!(
             last_slice_check == *key_,
             "BlockBuilder::add: last_key_ does not match added key"
@@ -162,7 +173,7 @@ mod block_builder_addition_and_prefix_compression_tests {
         );
 
         assert_eq!(*builder.counter(), 1);
-        assert_eq!(builder.last_key(), "alpha");
+        assert_eq!(builder.last_key().as_slice(), b"alpha");
         assert!(!builder.empty());
     }
 

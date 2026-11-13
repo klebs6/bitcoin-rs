@@ -1,27 +1,26 @@
 # bitcoinleveldb-coding
 
-Binary encoding primitives used by the `bitcoin-rs` LevelDB port: fixed-width
-little-endian integers, 32/64-bit varints, and length-prefixed slices.
+Fixed-width little-endian integers, 32/64-bit base-128 varints, and
+length-prefixed slices for the bitcoin-rs LevelDB port.
 
-The `encode_*`/`decode_*` and pointer-range `get_*` functions operate on caller
-storage. `get_varint32`, `get_varint64`, and `get_length_prefixed_slice` consume
-the beginning of a mutable `Slice` on success. `put_*` helpers append encoded
-bytes to the subsystem's `String`-backed buffers; these buffers are used as byte
-containers, not as a promise that arbitrary encoded data is UTF-8 text.
+Use `put_fixed32_bytes`, `put_fixed64_bytes`, `put_varint32_bytes`,
+`put_varint64_bytes`, and `put_length_prefixed_slice_bytes` with `Vec<u8>`
+outputs. They append exact encoded bytes, including bytes outside UTF-8. The
+length-prefixed byte helper copies its input before growing the destination,
+accepts a Slice into the previous destination allocation, and returns `false`
+without appending when its length exceeds `u32::MAX`.
 
-Raw input/output pointers, lengths, and limits must describe live, sufficiently
-sized memory. A decoded `Slice` borrows its original payload. The length prefix
-for `put_length_prefixed_slice` is limited to `u32`; an oversized length is
-rejected without appending data.
+The legacy `String` output helpers remain pending migration. Arbitrary binary
+encodings do not satisfy Rust's `String` UTF-8 invariant; do not use those
+helpers as general binary owners. Their presence remains a release blocker.
 
-See [varint decoding](src/get_varint.rs),
-[length-prefixed output](src/put_length_prefixed_slice.rs), and
-[tests](tests/put_length_prefixed_slice.rs). Encoding helpers alone do not
-establish interoperability of a complete database with another implementation.
+The pointer-range `encode_*`, `decode_*`, and `get_*` functions require live,
+sufficiently sized caller storage. `get_varint32`, `get_varint64`, and
+`get_length_prefixed_slice` consume a mutable Slice on success; decoded slices
+borrow the original payload. See [byte append contracts](tests/byte_append_contracts.rs)
+and [length-prefixed encoding](src/put_length_prefixed_slice.rs).
 
-Part of the [bitcoin-rs LevelDB subsystem](../bitcoin-leveldb/README.md).
-For bounded verification, see the [subsystem testing guide](../doc/testing/leveldb-subsystem.md).
-
-License: MIT. See the [repository license](../LICENSE).
-
-[Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+Part of the [LevelDB subsystem](../bitcoin-leveldb/README.md).
+[Bounded verification](../doc/testing/leveldb-subsystem.md) ·
+[Repository and support](https://github.com/klebs6/bitcoin-rs/issues).
+License: MIT; see the [repository license](../LICENSE).

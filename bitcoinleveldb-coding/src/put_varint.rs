@@ -1,6 +1,24 @@
 // ---------------- [ File: bitcoinleveldb-coding/src/put_varint.rs ]
 crate::ix!();
 
+/// Append the standard base-128 encoding to a byte owner.
+pub fn put_varint32_bytes(dst: &mut Vec<u8>, mut value: u32) {
+    while value >= 0x80 {
+        dst.push((value as u8 & 0x7f) | 0x80);
+        value >>= 7;
+    }
+    dst.push(value as u8);
+}
+
+/// Append the standard base-128 encoding to a byte owner.
+pub fn put_varint64_bytes(dst: &mut Vec<u8>, mut value: u64) {
+    while value >= 0x80 {
+        dst.push((value as u8 & 0x7f) | 0x80);
+        value >>= 7;
+    }
+    dst.push(value as u8);
+}
+
 pub fn put_varint32(dst: *mut String, v: u32) {
     unsafe {
         trace!(

@@ -45,7 +45,7 @@ pub struct BlockBuilder {
       | Destination buffer
       |
       */
-    buffer:   String,
+    buffer:   Vec<u8>,
 
     /**
       | Restart points
@@ -65,7 +65,7 @@ pub struct BlockBuilder {
       */
     finished: bool,
 
-    last_key: String,
+    last_key: Vec<u8>,
 
     block_restart_interval: i32,
 }
@@ -106,11 +106,11 @@ impl BlockBuilder {
 
         BlockBuilder {
             options,
-            buffer:    String::new(),
+            buffer:    Vec::new(),
             restarts,
             counter:   0,
             finished: false,
-            last_key: String::new(),
+            last_key: Vec::new(),
             block_restart_interval: interval,
         }
     }
@@ -145,12 +145,28 @@ impl BlockBuilder {
 
     #[inline]
     pub fn buffer_as_mut_vec(&mut self) -> &mut Vec<u8> {
-        unsafe { self.buffer.as_mut_vec() }
+        &mut self.buffer
     }
 
     #[inline]
-    pub fn buffer_string(&self) -> &String {
+    pub fn buffer_bytes(&self) -> &[u8] {
         &self.buffer
+    }
+
+    /// Slices returned by the public byte accessors may be fed back to add.
+    /// Identify those allocations before either owner can grow or be replaced.
+    pub(crate) fn input_overlaps_storage(&self, input: &Slice) -> bool {
+        if *input.size() == 0 {
+            return false;
+        }
+        let start = *input.data() as usize;
+        let end = start.saturating_add(*input.size());
+        [&self.buffer, &self.last_key].iter().any(|buffer| {
+            let buffer_start = buffer.as_ptr() as usize;
+            buffer.capacity() != 0
+                && start < buffer_start.saturating_add(buffer.capacity())
+                && buffer_start < end
+        })
     }
 
     #[inline]
@@ -250,6 +266,6 @@ mod block_builder_constructor_and_helpers_tests {
             builder.buffer_len()
         );
         assert_eq!(builder.buffer_len(), 3);
-        assert_eq!(builder.buffer_string().as_bytes(), b"xyz");
+        assert_eq!(builder.buffer_bytes(), b"xyz");
     }
 }

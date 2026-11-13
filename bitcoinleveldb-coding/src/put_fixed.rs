@@ -1,6 +1,16 @@
 // ---------------- [ File: bitcoinleveldb-coding/src/put_fixed.rs ]
 crate::ix!();
 
+/// Append the four little-endian bytes without requiring UTF-8 storage.
+pub fn put_fixed32_bytes(dst: &mut Vec<u8>, value: u32) {
+    dst.extend_from_slice(&value.to_le_bytes());
+}
+
+/// Append the eight little-endian bytes without requiring UTF-8 storage.
+pub fn put_fixed64_bytes(dst: &mut Vec<u8>, value: u64) {
+    dst.extend_from_slice(&value.to_le_bytes());
+}
+
 /**
   | Standard Put... routines append to
   | a string
