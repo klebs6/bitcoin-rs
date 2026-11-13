@@ -62,7 +62,7 @@ mod footer_encoding_roundtrip_and_layout_tests {
         footer.set_metaindex_handle(metaindex);
         footer.set_index_handle(index);
 
-        let mut encoded = Vec::new();
+        let mut encoded = Vec::<u8>::new();
         footer.encode_to(&mut encoded as *mut Vec<u8>);
 
         assert_eq!(
@@ -127,7 +127,7 @@ mod footer_encoding_roundtrip_and_layout_tests {
         footer.set_metaindex_handle(metaindex);
         footer.set_index_handle(index);
 
-        let mut encoded = Vec::new();
+        let mut encoded = Vec::<u8>::new();
         footer.encode_to(&mut encoded as *mut Vec<u8>);
 
         let mut bytes = encoded;
@@ -226,7 +226,7 @@ mod footer_encoding_roundtrip_and_layout_tests {
         footer.set_metaindex_handle(metaindex);
         footer.set_index_handle(index);
 
-        let mut encoded = Vec::new();
+        let mut encoded = Vec::<u8>::new();
         footer.encode_to(&mut encoded as *mut Vec<u8>);
 
         let bytes = encoded.as_slice();
