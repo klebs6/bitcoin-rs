@@ -137,8 +137,8 @@ mod footer_decode_from_slice_behavior_tests {
         footer.set_metaindex_handle(metaindex);
         footer.set_index_handle(index);
 
-        let mut encoded = String::new();
-        footer.encode_to(&mut encoded as *mut String);
+        let mut encoded = Vec::new();
+        footer.encode_to(&mut encoded as *mut Vec<u8>);
 
         assert_eq!(
             encoded.len(),
@@ -147,7 +147,7 @@ mod footer_decode_from_slice_behavior_tests {
         );
 
         let trailing: &[u8] = b"TRAIL";
-        let mut encoded_with_trailing = encoded.into_bytes();
+        let mut encoded_with_trailing = encoded;
         encoded_with_trailing.extend_from_slice(trailing);
 
         let mut slice = Slice::from(encoded_with_trailing.as_slice());
@@ -222,10 +222,10 @@ mod footer_decode_from_slice_behavior_tests {
         footer.set_metaindex_handle(metaindex);
         footer.set_index_handle(index);
 
-        let mut encoded = String::new();
-        footer.encode_to(&mut encoded as *mut String);
+        let mut encoded = Vec::new();
+        footer.encode_to(&mut encoded as *mut Vec<u8>);
 
-        let mut bytes = encoded.into_bytes();
+        let mut bytes = encoded;
         let last      = bytes.len() - 1;
         bytes[last] ^= 0xFF;
 

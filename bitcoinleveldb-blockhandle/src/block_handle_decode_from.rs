@@ -55,13 +55,13 @@ mod block_handle_decode_from_edge_case_tests {
     #[traced_test]
     fn decode_from_does_not_modify_handle_on_truncated_input() {
         let sentinel = !0u64;
-        let mut encoded = String::new();
+        let mut encoded = Vec::new();
 
         {
             let mut tmp = BlockHandle::new();
             tmp.set_offset(42);
             tmp.set_size(99);
-            tmp.encode_to(&mut encoded as *mut String);
+            tmp.encode_to(&mut encoded as *mut Vec<u8>);
         }
 
         assert!(
@@ -70,7 +70,7 @@ mod block_handle_decode_from_edge_case_tests {
         );
         encoded.truncate(encoded.len() - 1);
 
-        let mut slice = Slice::from(encoded.as_bytes());
+        let mut slice = Slice::from(encoded.as_slice());
         let mut handle = BlockHandle::new();
         let status = handle.decode_from(&mut slice as *mut Slice);
 
@@ -103,13 +103,13 @@ mod block_handle_decode_from_edge_case_tests {
         handle.set_offset(100);
         handle.set_size(200);
 
-        let mut encoded = String::new();
-        handle.encode_to(&mut encoded as *mut String);
+        let mut encoded = Vec::new();
+        handle.encode_to(&mut encoded as *mut Vec<u8>);
 
         // Append a single extra byte that should remain after decoding.
-        encoded.push('\x01');
+        encoded.push(0x01);
 
-        let mut slice = Slice::from(encoded.as_bytes());
+        let mut slice = Slice::from(encoded.as_slice());
         let mut decoded = BlockHandle::new();
         let status = decoded.decode_from(&mut slice as *mut Slice);
 

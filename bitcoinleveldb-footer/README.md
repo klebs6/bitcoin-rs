@@ -1,21 +1,19 @@
 # bitcoinleveldb-footer
 
-Encoding and decoding of the fixed-size footer at the end of a LevelDB
-SSTable. `Footer` contains the metaindex and index `BlockHandle` values; the
-serialized footer includes padding and the table magic number.
+The fixed footer at the end of a LevelDB SSTable: metaindex and index block
+handles, zero padding, and the eight-byte table magic number.
 
-`encode_to` appends the footer to a destination buffer. `decode_from` validates
-the available length and magic, decodes both handles, and advances the supplied
-`Slice` on success; malformed input returns a corruption `Status`.
-`FOOTER_ENCODED_LENGTH` is the format's fixed footer size. Raw destination/input
-pointers must refer to live storage for each operation.
+`Footer::encode_to(*mut Vec<u8>)` appends exactly `FOOTER_ENCODED_LENGTH` bytes
+after any existing binary prefix. Both handles must be initialized before
+encoding. `decode_from` validates length and magic, decodes the handles, and
+advances its borrowed Slice on success; malformed input returns a corruption
+Status. Raw pointers must describe live storage for each operation.
 
-See [the representation](src/footer.rs),
-[encoding](src/footer_encode_to.rs), and [decoding](src/footer_decode_from.rs).
+See [representation](src/footer.rs), [encoding](src/footer_encode_to.rs),
+[decoding](src/footer_decode_from.rs), and
+[byte contracts](tests/binary_footer_contracts.rs).
 
-Part of the [bitcoin-rs LevelDB subsystem](../bitcoin-leveldb/README.md).
-For bounded verification, see the [subsystem testing guide](../doc/testing/leveldb-subsystem.md).
-
-License: MIT. See the [repository license](../LICENSE).
-
-[Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+Part of the [LevelDB subsystem](../bitcoin-leveldb/README.md).
+[Bounded verification](../doc/testing/leveldb-subsystem.md) ·
+[Repository and support](https://github.com/klebs6/bitcoin-rs/issues).
+License: MIT; see the [repository license](../LICENSE).

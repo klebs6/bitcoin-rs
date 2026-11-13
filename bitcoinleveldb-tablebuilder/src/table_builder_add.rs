@@ -91,16 +91,16 @@ impl TableBuilder {
 
                 r.set_last_key_(last_key_bytes);
 
-                let mut handle_encoding = String::new();
+                let mut handle_encoding = Vec::<u8>::new();
                 {
                     let handle: &mut BlockHandle = r.pending_handle_mut();
-                    let enc_ptr: *mut String = &mut handle_encoding;
+                    let enc_ptr: *mut Vec<u8> = &mut handle_encoding;
                     handle.encode_to(enc_ptr);
                 }
 
                 let last_key_slice = Slice::from(r.last_key_().as_slice());
                 let handle_slice =
-                    Slice::from(handle_encoding.as_bytes());
+                    Slice::from(handle_encoding.as_slice());
 
                 trace!(
                     "TableBuilder::add: emitting index entry; last_key_len={}, handle_len={}",

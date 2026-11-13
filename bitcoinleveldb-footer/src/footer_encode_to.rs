@@ -1,93 +1,44 @@
 // ---------------- [ File: bitcoinleveldb-footer/src/footer_encode_to.rs ]
 crate::ix!();
-    
+
 impl Footer {
 
-    pub fn encode_to(&self, dst: *mut String) {
-        unsafe {
-            // Safety: caller must pass a valid, non-null pointer to a `String`.
-            assert!(
-                !dst.is_null(),
-                "Footer::encode_to: dst pointer is null"
-            );
+    /// Append one fixed-size footer to a binary destination.
+    /// `dst` must point to a live, exclusively accessible `Vec<u8>`.
+    pub fn encode_to(&self, dst: *mut Vec<u8>) {
+        assert!(
+            !dst.is_null(),
+            "Footer::encode_to: dst pointer is null"
+        );
 
-            let original_size = (&(*dst)).len();
+        // Construct the complete footer separately from the caller's prefix.
+        // Block handles occupy at most forty bytes; padding follows both
+        // handles, before the eight-byte little-endian table magic.
+        let mut encoded = Vec::with_capacity(FOOTER_ENCODED_LENGTH);
+        self.metaindex_handle().encode_to(&mut encoded as *mut Vec<u8>);
+        self.index_handle().encode_to(&mut encoded as *mut Vec<u8>);
+        let padding_target = 2 * BLOCK_HANDLE_MAX_ENCODED_LENGTH;
+        assert!(
+            encoded.len() <= padding_target,
+            "Footer::encode_to: handle encoding exceeded maximum length"
+        );
+        encoded.resize(padding_target, 0);
 
-            trace!(
-                target: "bitcoinleveldb_footer::footer_encode_to",
-                original_size,
-                metaindex_offset = self.metaindex_handle().offset(),
-                metaindex_size   = self.metaindex_handle().size(),
-                index_offset     = self.index_handle().offset(),
-                index_size       = self.index_handle().size(),
-                "Footer::encode_to: begin encoding footer"
-            );
+        let magic_lo = (TABLE_MAGIC_NUMBER & 0xffff_ffffu64) as u32;
+        let magic_hi = (TABLE_MAGIC_NUMBER >> 32) as u32;
+        put_fixed32_bytes(&mut encoded, magic_lo);
+        put_fixed32_bytes(&mut encoded, magic_hi);
+        debug_assert_eq!(encoded.len(), FOOTER_ENCODED_LENGTH);
 
-            // Encode the two block handles into `dst`, exactly like LevelDB.
-            self.metaindex_handle().encode_to(dst);
-            self.index_handle().encode_to(dst);
-
-            let len_after_handles = (&(*dst)).len();
-            let padding_target = original_size + 2 * BLOCK_HANDLE_MAX_ENCODED_LENGTH;
-
-            if len_after_handles < padding_target {
-                trace!(
-                    target: "bitcoinleveldb_footer::footer_encode_to",
-                    len_after_handles,
-                    padding_target,
-                    "Footer::encode_to: padding footer encoding with zero bytes"
-                );
-                {
-                    let buf: &mut Vec<u8> = (*dst).as_mut_vec();
-                    let needed = padding_target.saturating_sub(buf.len());
-                    buf.extend(std::iter::repeat(0u8).take(needed));
-                }
-            } else if len_after_handles > padding_target {
-                // This should never happen if BlockHandle::encode_to respects BLOCK_HANDLE_MAX_ENCODED_LENGTH.
-                warn!(
-                    target: "bitcoinleveldb_footer::footer_encode_to",
-                    len_after_handles,
-                    padding_target,
-                    "Footer::encode_to: handle encoding exceeded BLOCK_HANDLE_MAX_ENCODED_LENGTH; footer size will be larger than expected"
-                );
-            } else {
-                trace!(
-                    target: "bitcoinleveldb_footer::footer_encode_to",
-                    len_after_handles,
-                    "Footer::encode_to: no padding required"
-                );
-            }
-
-            // Append the 64-bit table magic as two fixed32 values in little-endian order.
-            let magic_lo: u32 = (TABLE_MAGIC_NUMBER & 0xffff_ffffu64) as u32;
-            let magic_hi: u32 = (TABLE_MAGIC_NUMBER >> 32) as u32;
-
-            trace!(
-                target: "bitcoinleveldb_footer::footer_encode_to",
-                magic_lo,
-                magic_hi,
-                "Footer::encode_to: writing TABLE_MAGIC_NUMBER halves"
-            );
-
-            put_fixed32(dst, magic_lo);
-            put_fixed32(dst, magic_hi);
-
-            let final_len = (&(*dst)).len();
-            let expected_len = original_size + FOOTER_ENCODED_LENGTH;
-
-            debug!(
-                target: "bitcoinleveldb_footer::footer_encode_to",
-                final_len,
-                expected_len,
-                "Footer::encode_to: footer encoding complete"
-            );
-
-            debug_assert_eq!(
-                final_len,
-                expected_len,
-                "Footer::encode_to: encoded footer length mismatch"
-            );
-        }
+        // SAFETY: the public pointer contract requires a live, exclusive Vec.
+        let output = unsafe { &mut *dst };
+        trace!(
+            target: "bitcoinleveldb_footer::footer_encode_to",
+            original_size = output.len(),
+            encoded_size = encoded.len(),
+            "Footer::encode_to: appending binary footer"
+        );
+        output.extend_from_slice(&encoded);
     }
 }
 
@@ -111,8 +62,8 @@ mod footer_encoding_roundtrip_and_layout_tests {
         footer.set_metaindex_handle(metaindex);
         footer.set_index_handle(index);
 
-        let mut encoded = String::new();
-        footer.encode_to(&mut encoded as *mut String);
+        let mut encoded = Vec::new();
+        footer.encode_to(&mut encoded as *mut Vec<u8>);
 
         assert_eq!(
             encoded.len(),
@@ -120,7 +71,7 @@ mod footer_encoding_roundtrip_and_layout_tests {
             "footer_encode_decode_roundtrip_preserves_handles_and_consumes_input: encoded length must equal FOOTER_ENCODED_LENGTH"
         );
 
-        let mut slice   = Slice::from(encoded.as_bytes());
+        let mut slice   = Slice::from(encoded.as_slice());
         let mut decoded = Footer::default();
 
         let status = decoded.decode_from(&mut slice as *mut Slice);
@@ -176,10 +127,10 @@ mod footer_encoding_roundtrip_and_layout_tests {
         footer.set_metaindex_handle(metaindex);
         footer.set_index_handle(index);
 
-        let mut encoded = String::new();
-        footer.encode_to(&mut encoded as *mut String);
+        let mut encoded = Vec::new();
+        footer.encode_to(&mut encoded as *mut Vec<u8>);
 
-        let mut bytes = encoded.into_bytes();
+        let mut bytes = encoded;
         // Flip a bit in the magic number region (last byte).
         let last = bytes.len() - 1;
         bytes[last] ^= 0xFF;
@@ -205,11 +156,11 @@ mod footer_encoding_roundtrip_and_layout_tests {
         footer.set_index_handle(index);
 
         let prefix = "prefix‑data:";
-        let mut dst = prefix.to_string();
-        let prefix_bytes = dst.clone().into_bytes();
+        let mut dst = prefix.as_bytes().to_vec();
+        let prefix_bytes = dst.clone();
         let prefix_len   = prefix_bytes.len();
 
-        footer.encode_to(&mut dst as *mut String);
+        footer.encode_to(&mut dst as *mut Vec<u8>);
 
         assert_eq!(
             dst.len(),
@@ -217,7 +168,7 @@ mod footer_encoding_roundtrip_and_layout_tests {
             "footer_encode_to_preserves_existing_destination_prefix_and_appends_fixed_size_footer: total length must grow by FOOTER_ENCODED_LENGTH"
         );
 
-        let dst_bytes = dst.as_bytes();
+        let dst_bytes = dst.as_slice();
 
         assert_eq!(
             &dst_bytes[..prefix_len],
@@ -275,10 +226,10 @@ mod footer_encoding_roundtrip_and_layout_tests {
         footer.set_metaindex_handle(metaindex);
         footer.set_index_handle(index);
 
-        let mut encoded = String::new();
-        footer.encode_to(&mut encoded as *mut String);
+        let mut encoded = Vec::new();
+        footer.encode_to(&mut encoded as *mut Vec<u8>);
 
-        let bytes = encoded.as_bytes();
+        let bytes = encoded.as_slice();
         assert_eq!(
             bytes.len(),
             FOOTER_ENCODED_LENGTH,
@@ -311,7 +262,7 @@ mod footer_encoding_roundtrip_and_layout_tests {
         let footer = Footer::default();
 
         let result = panic::catch_unwind(|| {
-            let null_dst: *mut String = core::ptr::null_mut();
+            let null_dst: *mut Vec<u8> = core::ptr::null_mut();
             footer.encode_to(null_dst);
         });
 

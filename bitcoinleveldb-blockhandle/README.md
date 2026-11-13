@@ -1,22 +1,21 @@
 # bitcoinleveldb-blockhandle
 
-Block locations and block-reading helpers for LevelDB SSTable files.
-`BlockHandle` records an offset and payload size, encodes them as varints, and
-decodes them with a `Status` result. `BLOCK_TRAILER_SIZE` describes the trailing
-compression-type byte and checksum.
+Block locations and block-reading helpers for LevelDB SSTables. A `BlockHandle`
+records a byte offset and payload size. `encode_to(*mut Vec<u8>)` appends their
+varint64 encodings to byte storage, preserving any existing prefix. Initialize
+both fields first: `u64::MAX` is the uninitialized sentinel. `decode_from`
+consumes a borrowed Slice and returns a Status.
 
-`read_block` reads a handle's payload and trailer through `RandomAccessFile`,
-applies the requested checksum policy, and dispatches uncompressed or Snappy
-contents into `BlockContents`. Its output pointer must be valid. The returned
-contents' ownership flags distinguish borrowed data from allocated storage; keep
-the backing file or buffer alive for borrowed contents.
+`read_block` reads payload and trailer through RandomAccessFile, checks the
+checksum when requested, and handles uncompressed or supported Snappy data.
+The BlockContents ownership flags distinguish borrowed data from allocated
+storage; keep backing storage alive for borrowed contents. Raw pointers must
+refer to live storage for each operation.
 
-See [handles](src/block_handle.rs), [the read path](src/read_block.rs), and
-[`BlockContents`](../bitcoinleveldb-blockcontents/src/block_contents.rs).
+See [handles](src/block_handle.rs), [encoding](src/block_handle_encode_to.rs),
+[reading](src/read_block.rs), and [byte contracts](tests/binary_handle_contracts.rs).
 
-Part of the [bitcoin-rs LevelDB subsystem](../bitcoin-leveldb/README.md).
-For bounded verification, see the [subsystem testing guide](../doc/testing/leveldb-subsystem.md).
-
-License: MIT. See the [repository license](../LICENSE).
-
-[Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+Part of the [LevelDB subsystem](../bitcoin-leveldb/README.md).
+[Bounded verification](../doc/testing/leveldb-subsystem.md) ·
+[Repository and support](https://github.com/klebs6/bitcoin-rs/issues).
+License: MIT; see the [repository license](../LICENSE).

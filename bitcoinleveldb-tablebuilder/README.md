@@ -1,23 +1,26 @@
 # bitcoinleveldb-tablebuilder
 
-Writes immutable sorted LevelDB SSTable files. `TableBuilder` assembles data,
-index, filter, metaindex, and footer blocks, with checksums and the configured
-compression policy.
+Writes immutable sorted LevelDB SSTables: data, index, filter, metaindex, and
+footer blocks, with block checksums and the configured compression policy.
 
-Construct it with `&Options` and a valid `*mut dyn WritableFile`; the file is
-borrowed and is not closed by the builder. Add keys in strictly increasing
-comparator order, optionally `flush` a data block, and call `finish` to complete
-the table or `abandon` to stop building it. Check the returned `Status` and the
-builder's `status`; the caller remains responsible for file close/sync policy.
-Keep borrowed file and policy objects valid while they are used.
+Construct TableBuilder with live Options and a valid `*mut dyn WritableFile`.
+The file is borrowed and is not closed by the builder. Add keys in strictly
+increasing comparator order, optionally flush data blocks, then finish or
+abandon construction. Check returned Status values and the builder status;
+the caller remains responsible for closing and syncing the file. Keep borrowed
+file and policy objects alive while used.
 
-`num_entries` and `file_size` expose progress. See [construction](src/table_builder.rs),
-[entry handling](src/table_builder_add.rs), [finalization](src/table_builder_finish.rs),
-and [raw block writing](src/table_builder_write_raw_block.rs).
+Data/index blocks, previous keys, serialized block handles and footer output
+use byte storage. The optional Snappy compression scratch still uses a legacy
+String output path and remains a separate binary-ownership release blocker;
+default-feature qualification does not establish Snappy feature coverage.
+`num_entries` and `file_size` expose progress.
 
-Part of the [bitcoin-rs LevelDB subsystem](../bitcoin-leveldb/README.md).
-For bounded verification, see the [subsystem testing guide](../doc/testing/leveldb-subsystem.md).
+See [construction](src/table_builder.rs), [entries](src/table_builder_add.rs),
+[finalization and binary metadata test](src/table_builder_finish.rs), and
+[block writing](src/table_builder_write_raw_block.rs).
 
-License: MIT. See the [repository license](../LICENSE).
-
-[Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+Part of the [LevelDB subsystem](../bitcoin-leveldb/README.md).
+[Bounded verification](../doc/testing/leveldb-subsystem.md) ·
+[Repository and support](https://github.com/klebs6/bitcoin-rs/issues).
+License: MIT; see the [repository license](../LICENSE).

@@ -3,7 +3,9 @@ crate::ix!();
     
 impl BlockHandle {
 
-    pub fn encode_to(&self, dst: *mut String) {
+    /// Append the two unsigned varints without interpreting their bytes as text.
+    /// `dst` must point to a live, exclusively accessible `Vec<u8>`.
+    pub fn encode_to(&self, dst: *mut Vec<u8>) {
         unsafe {
             assert!(
                 !dst.is_null(),
@@ -29,8 +31,8 @@ impl BlockHandle {
                 s.len()
             );
 
-            put_varint64_to_string(s, offset);
-            put_varint64_to_string(s, size);
+            put_varint64_bytes(s, offset);
+            put_varint64_bytes(s, size);
 
             trace!(
                 "BlockHandle::encode_to: dst_len_after={}",
@@ -50,12 +52,12 @@ mod block_handle_encode_decode_roundtrip_tests {
         handle.set_offset(12345);
         handle.set_size(67890);
 
-        let mut dst = String::new();
-        handle.encode_to(&mut dst as *mut String);
+        let mut dst = Vec::new();
+        handle.encode_to(&mut dst as *mut Vec<u8>);
 
         trace!("encoded BlockHandle into {} bytes", dst.len());
 
-        let mut slice   = Slice::from(dst.as_bytes());
+        let mut slice   = Slice::from(dst.as_slice());
         let mut decoded = BlockHandle::new();
         let status      = decoded.decode_from(&mut slice as *mut Slice);
 
@@ -75,10 +77,10 @@ mod block_handle_encode_decode_roundtrip_tests {
 
     #[traced_test]
     fn decode_from_reports_corruption_on_invalid_varint() {
-        let mut encoded = String::new();
-        encoded.push('\u{0080}');
+        // Preserve the previous '\u{0080}' fixture's exact two bytes.
+        let encoded = vec![0xc2u8, 0x80];
 
-        let mut slice  = Slice::from(encoded.as_bytes());
+        let mut slice  = Slice::from(encoded.as_slice());
         let mut handle = BlockHandle::new();
 
         trace!(
@@ -99,14 +101,14 @@ mod block_handle_encode_decode_roundtrip_tests {
     )]
     fn encode_to_panics_when_fields_are_uninitialized() {
         let handle = BlockHandle::new();
-        let mut dst = String::new();
+        let mut dst = Vec::new();
 
         trace!(
             "encode_to_panics_when_fields_are_uninitialized: invoking encode_to with sentinel values"
         );
 
         // This should panic because the handle still contains sentinel values.
-        handle.encode_to(&mut dst as *mut String);
+        handle.encode_to(&mut dst as *mut Vec<u8>);
     }
 
     #[traced_test]
@@ -119,16 +121,16 @@ mod block_handle_encode_decode_roundtrip_tests {
         handle2.set_offset(1_000);
         handle2.set_size(250);
 
-        let mut dst = String::new();
-        handle1.encode_to(&mut dst as *mut String);
-        handle2.encode_to(&mut dst as *mut String);
+        let mut dst = Vec::new();
+        handle1.encode_to(&mut dst as *mut Vec<u8>);
+        handle2.encode_to(&mut dst as *mut Vec<u8>);
 
         trace!(
             "encode_to_and_decode_from_two_handles_back_to_back: total_encoded_len={}",
             dst.len()
         );
 
-        let mut slice = Slice::from(dst.as_bytes());
+        let mut slice = Slice::from(dst.as_slice());
 
         let mut decoded1 = BlockHandle::new();
         let status1      = decoded1.decode_from(&mut slice as *mut Slice);
