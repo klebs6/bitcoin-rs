@@ -650,4 +650,22 @@ mod version_set_recover_exhaustive_test_suite {
 
         remove_directory_tree_best_effort(&dir);
     }
+
+
+    #[traced_test]
+    fn recover_rejects_non_utf8_current_before_manifest_lookup() {
+        let mut h = VersionSetRecoveryScenarioHarness::open_for_create_if_missing_flag(
+            "versionset_recover_non_utf8_current", false,
+        );
+        let path = h.database_directory_path().to_path_buf();
+        std::fs::write(path.join("CURRENT"), b"MANIFEST-\xff\n").unwrap();
+
+        let (status, save_manifest) = h.recover_into_current_version_set();
+        assert!(status.is_corruption(), "{}", status.to_string());
+        assert!(status.to_string().contains("UTF-8"));
+        assert!(!save_manifest);
+
+        h.drop_version_set_instance();
+        remove_directory_tree_best_effort(path.as_path());
+    }
 }

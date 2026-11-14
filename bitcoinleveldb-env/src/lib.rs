@@ -10,6 +10,7 @@ x!{interface}
 x!{log}
 x!{new_logger}
 x!{rc_writable_file_adapter}
+x!{read_file_to_bytes}
 x!{read_file_to_string}
 x!{schedule}
 x!{set_current_file}

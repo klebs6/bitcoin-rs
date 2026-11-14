@@ -54,8 +54,11 @@ all-feature coverage, arbitrary binary-data correctness, or memory safety.
    (77 native, three doctest commands) profiles, plus compilation-only harness
    and benchmark compatibility. The [manifest071 follow-up](leveldb-manifest-bytes071.md)
    migrates the remaining coding append sinks, manifest records and compaction
-   pointers. Retrieval outputs and other listed owners still need coherent
-   byte-buffer migration. Rust `String` requires valid UTF-8; binary
+   pointers; its separate071 receipt records318 native passes and five successful
+   doctest commands (zero doctest cases), plus compilation-only harness compatibility.
+   The [Env file076 follow-up](leveldb-env-file-bytes076.md) adds exact byte reads
+   and whole-buffer UTF-8 validation at the text-file boundary. Retrieval outputs
+   and other listed owners still need coherent byte-buffer migration. Rust `String` requires valid UTF-8; binary
    storage and lossy conversion remain source-level release blockers, including
    outside optional Snappy support.
 2. **Known helper limits.** ModelDB's point `get` path is not implemented, and

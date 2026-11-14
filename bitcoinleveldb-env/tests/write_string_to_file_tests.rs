@@ -387,3 +387,105 @@ fn read_file_to_string_stops_on_read_error() {
 
     info!("read_file_to_string_stops_on_read_error: completed");
 }
+
+
+#[traced_test]
+fn read_file_to_bytes_preserves_all_byte_values_across_chunks() {
+    let source: Vec<u8> = (0u8..=255).cycle().take(16_387).collect();
+    let env: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(
+        TestEnvForReadFile::new(source.clone()),
+    ));
+    let mut output = vec![0x42, 0x43];
+    let status = read_file_to_bytes(env, &"binary".to_string(), &mut output);
+    assert!(status.is_ok(), "{}", status.to_string());
+    assert_eq!(output, source);
+}
+
+#[traced_test]
+fn read_file_to_bytes_clears_output_on_open_failure() {
+    let mut env_impl = TestEnvForReadFile::new(Vec::new());
+    env_impl.new_sequential_status = Some(Status::not_found(
+        &Slice::from("missing binary file"), None,
+    ));
+    let env: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(env_impl));
+    let mut output = vec![0xff, 0];
+    let status = read_file_to_bytes(env, &"missing".to_string(), &mut output);
+    assert!(status.is_not_found());
+    assert!(output.is_empty());
+}
+
+#[traced_test]
+fn read_file_to_bytes_retains_successful_prefix_on_read_error() {
+    let source = vec![0, 0xff, 0x80, 0xfe, 0x42, 0x43];
+    let mut env_impl = TestEnvForReadFile::new(source.clone());
+    env_impl.fail_on_read_call = Some(2);
+    let env: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(env_impl));
+    let mut output = vec![0x99];
+    let status = read_file_to_bytes(env, &"partial".to_string(), &mut output);
+    assert!(status.is_io_error());
+    assert_eq!(output, source[..4]);
+}
+
+#[traced_test]
+fn read_file_to_string_preserves_utf8_split_between_reads() {
+    // The mock reads four bytes at a time, splitting the Euro sign and Gothic
+    // letter. The literal replacement character is valid data and stays intact.
+    let source = "abc€x𐍈\0�tail".to_string();
+    let env: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(
+        TestEnvForReadFile::new(source.as_bytes().to_vec()),
+    ));
+    let mut output = "old text".to_string();
+    let status = read_file_to_string(env, &"utf8".to_string(), &mut output);
+    assert!(status.is_ok(), "{}", status.to_string());
+    assert_eq!(output, source);
+}
+
+#[traced_test]
+fn read_file_to_string_rejects_invalid_or_truncated_utf8() {
+    for bytes in [vec![b'a', 0xff, b'b'], vec![b'a', 0xe2, 0x82]] {
+        let env: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(
+            TestEnvForReadFile::new(bytes),
+        ));
+        let mut output = "old text".to_string();
+        let status = read_file_to_string(env, &"invalid text".to_string(), &mut output);
+        assert!(status.is_corruption(), "{}", status.to_string());
+        assert!(status.to_string().contains("UTF-8"));
+        assert!(output.is_empty());
+    }
+}
+
+#[traced_test]
+fn read_file_to_string_preserves_io_error_for_invalid_prefix() {
+    let mut env_impl = TestEnvForReadFile::new(vec![0xff, 0x80, 0xfe, 0xfd, b'x']);
+    env_impl.fail_on_read_call = Some(2);
+    let env: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(env_impl));
+    let mut output = "old text".to_string();
+    let status = read_file_to_string(env, &"io first".to_string(), &mut output);
+    assert!(status.is_io_error(), "{}", status.to_string());
+    assert!(!status.is_corruption());
+    assert!(output.is_empty());
+}
+
+#[traced_test]
+fn read_file_to_string_retains_valid_prefix_on_io_error() {
+    let mut env_impl = TestEnvForReadFile::new(b"abcd-more".to_vec());
+    env_impl.fail_on_read_call = Some(2);
+    let env: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(env_impl));
+    let mut output = "old text".to_string();
+    let status = read_file_to_string(env, &"valid prefix".to_string(), &mut output);
+    assert!(status.is_io_error());
+    assert_eq!(output, "abcd");
+}
+
+#[traced_test]
+fn empty_file_clears_binary_and_text_outputs() {
+    let env: Rc<RefCell<dyn Env>> = Rc::new(RefCell::new(
+        TestEnvForReadFile::new(Vec::new()),
+    ));
+    let mut bytes = vec![0xff, 0];
+    let mut text = "old text".to_string();
+    assert!(read_file_to_bytes(Rc::clone(&env), &"empty".to_string(), &mut bytes).is_ok());
+    assert!(read_file_to_string(env, &"empty".to_string(), &mut text).is_ok());
+    assert!(bytes.is_empty());
+    assert!(text.is_empty());
+}
