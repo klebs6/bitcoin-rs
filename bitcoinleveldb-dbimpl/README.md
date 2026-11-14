@@ -5,7 +5,8 @@ The persistent LevelDB database implementation behind the `DB` operation traits.
 `DBImpl` implements reads, writes and batches, user iterators, snapshots,
 properties, approximate sizes, and manual compaction. Its supporting modules
 coordinate the write-ahead log, mutable/immutable memtables, table cache,
-version edits, recovery, and background compaction.
+version edits, recovery, and background compaction. New-database MANIFEST
+records use byte vectors; filenames remain text.
 
 `DBImpl::new` constructs implementation state; opening and recovery are performed
 through `DBOpen::open`. Returned database and iterator pointers follow the

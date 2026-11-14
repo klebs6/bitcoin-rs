@@ -47,7 +47,7 @@ impl VersionSetBuilder {
                 }
 
                 let encoded = key.encode();
-                (*vset_ptr).compact_pointer_mut()[lvl] = encoded.to_string();
+                (*vset_ptr).compact_pointer_mut()[lvl] = encoded.as_bytes().to_vec();
 
                 debug!(
                     level = lvl_i32,
@@ -222,8 +222,8 @@ mod version_set_builder_apply_exhaustive_test_suite {
 
         builder.apply(&mut edit as *mut VersionEdit);
 
-        let cp_encoded = cp_key.encode().to_string();
-        debug!(cp_encoded = %cp_encoded, "expected compact pointer encoding");
+        let cp_encoded = cp_key.encode().as_bytes().to_vec();
+        debug!(cp_encoded = ?cp_encoded, "expected compact pointer encoding");
         assert_eq!(
             builder.vset_ptr().is_null(),
             false,
@@ -231,8 +231,8 @@ mod version_set_builder_apply_exhaustive_test_suite {
         );
 
         let stored = unsafe { &(*builder.vset_ptr()).compact_pointer_mut()[level as usize] };
-        debug!(stored = %stored, "stored compact pointer");
-        assert_eq!(stored.as_str(), cp_encoded.as_str(), "apply must store compact_pointer encoding");
+        debug!(stored = ?stored, "stored compact pointer");
+        assert_eq!(stored.as_slice(), cp_encoded.as_slice(), "apply must store compact_pointer encoding");
 
         let state = builder.level_state_ref(level as usize);
         assert!(
@@ -261,4 +261,32 @@ mod version_set_builder_apply_exhaustive_test_suite {
 
         remove_directory_tree_best_effort(&dir);
     }
+
+    #[test]
+    fn builder_apply_owns_exact_binary_compact_pointer_bytes_after_sources_drop() {
+        let mut harness = VersionSetAlgorithmScenarioHarness::open_for_test_prefix(
+            "versionset_binary_compact_pointer071",
+        );
+        let _mutex_guard = harness.acquire_version_set_mutex();
+        let vset = harness.version_set_mut() as *mut VersionSet;
+        let base = unsafe { (*vset).current() };
+        let mut builder = VersionSetBuilder::new(vset, base);
+        let user = [0x00u8, 0xff, 0x80, 0xc3, 0x28];
+        let key = InternalKey::new(&Slice::from(user.as_slice()), 128, ValueType::TypeValue);
+        let mut edit = VersionEdit::default();
+        edit.set_compact_pointer(2, &key);
+        builder.apply(&mut edit as *mut VersionEdit);
+        drop(edit);
+        drop(key);
+        let expected = [
+            0x00u8, 0xff, 0x80, 0xc3, 0x28,
+            0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        ];
+        unsafe {
+            assert_eq!((*vset).compact_pointer_mut()[2].as_slice(), &expected);
+            assert!((*vset).compact_pointer_mut()[1].is_empty());
+        }
+        drop(builder);
+    }
+
 }

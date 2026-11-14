@@ -85,12 +85,12 @@ impl Repairer {
 
                 let mut logw = LogWriter::new(dest, 0);
 
-                let mut record = String::new();
+                let mut record = Vec::<u8>::new();
                 unsafe {
-                    (*edit_ptr).encode_to(&mut record as *mut String);
+                    (*edit_ptr).encode_to(&mut record as *mut Vec<u8>);
                 }
 
-                let record_slice = Slice::from(record.as_bytes());
+                let record_slice = Slice::from(record.as_slice());
                 status = logw.add_record(&record_slice);
             }
 

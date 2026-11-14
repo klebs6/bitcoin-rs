@@ -7,8 +7,8 @@ use bitcoin_imports::*;
 fn coding_strings() {
     info!("coding_strings: start");
 
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
 
     let empty_bytes: [u8; 0] = [];
     let foo_bytes = b"foo";
@@ -27,7 +27,7 @@ fn coding_strings() {
     put_length_prefixed_slice(dst, &bar_slice);
     put_length_prefixed_slice(dst, &long_slice);
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let mut input_slice =
         Slice::from_ptr_len(bytes.as_ptr(), bytes.len());
 

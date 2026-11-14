@@ -71,12 +71,12 @@ mod versionedit_access_tests {
         let original = InternalKey::new(&user, SEQ, ValueType::TypeValue);
         let encoded  = original.encode();
 
-        let mut buf = String::new();
+        let mut buf = Vec::<u8>::new();
         unsafe {
-            put_length_prefixed_slice(&mut buf as *mut String, &encoded);
+            put_length_prefixed_slice(&mut buf as *mut Vec<u8>, &encoded);
         }
 
-        let mut slice = Slice::from(buf.as_bytes());
+        let mut slice = Slice::from(buf.as_slice());
         let mut decoded = InternalKey::default();
 
         let ok = get_internal_key(&mut slice, &mut decoded);

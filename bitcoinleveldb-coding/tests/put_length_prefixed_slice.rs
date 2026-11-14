@@ -15,11 +15,11 @@ fn put_length_prefixed_slice_roundtrip_single_value() {
     let slice =
         Slice::from_ptr_len(payload.as_ptr(), payload.len());
 
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
     put_length_prefixed_slice(dst, &slice);
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let mut input_slice =
         Slice::from_ptr_len(bytes.as_ptr(), bytes.len());
     let mut out =

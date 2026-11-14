@@ -11,45 +11,16 @@ pub fn put_fixed64_bytes(dst: &mut Vec<u8>, value: u64) {
     dst.extend_from_slice(&value.to_le_bytes());
 }
 
-/**
-  | Standard Put... routines append to
-  | a string
-  |
-  */
-pub fn put_fixed32(dst: *mut String, value: u32) {
-    unsafe {
-        trace!(
-            value,
-            ptr = ?dst,
-            "put_fixed32: appending fixed32 value to string buffer"
-        );
-        let mut buf = [0u8; core::mem::size_of::<u32>()];
-        encode_fixed32(buf.as_mut_ptr(), value);
-        let s: &mut String = &mut *dst;
-        let vec = s.as_mut_vec();
-        vec.extend_from_slice(&buf);
-        debug!(
-            new_len = vec.len(),
-            "put_fixed32: buffer length after append"
-        );
-    }
+/// Append a fixed-width little-endian value to a live byte-vector sink.
+pub fn put_fixed32(dst: *mut Vec<u8>, value: u32) {
+    assert!(!dst.is_null(), "put_fixed32: dst pointer is null");
+    // SAFETY: the caller supplies an exclusively accessible live Vec<u8>.
+    put_fixed32_bytes(unsafe { &mut *dst }, value);
 }
 
-pub fn put_fixed64(dst: *mut String, value: u64) {
-    unsafe {
-        trace!(
-            value,
-            ptr = ?dst,
-            "put_fixed64: appending fixed64 value to string buffer"
-        );
-        let mut buf = [0u8; core::mem::size_of::<u64>()];
-        encode_fixed64(buf.as_mut_ptr(), value);
-        let s: &mut String = &mut *dst;
-        let vec = s.as_mut_vec();
-        vec.extend_from_slice(&buf);
-        debug!(
-            new_len = vec.len(),
-            "put_fixed64: buffer length after append"
-        );
-    }
+/// Append a fixed-width little-endian value to a live byte-vector sink.
+pub fn put_fixed64(dst: *mut Vec<u8>, value: u64) {
+    assert!(!dst.is_null(), "put_fixed64: dst pointer is null");
+    // SAFETY: the caller supplies an exclusively accessible live Vec<u8>.
+    put_fixed64_bytes(unsafe { &mut *dst }, value);
 }

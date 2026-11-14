@@ -245,7 +245,7 @@ impl CompactionSetupOtherInputs for VersionSet {
                 );
             }
 
-            self.compact_pointer_mut()[level as usize] = largest.encode().to_string();
+            self.compact_pointer_mut()[level as usize] = largest.encode().as_bytes().to_vec();
 
             let edit_ptr: *mut VersionEdit = (*c).edit();
             assert!(

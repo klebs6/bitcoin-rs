@@ -5,8 +5,8 @@ use bitcoin_imports::*;
 #[traced_test]
 fn coding_varint32() {
     info!("coding_varint32: start");
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
     let limit_i = 32 * 32;
 
     for i in 0u32..limit_i {
@@ -14,7 +14,7 @@ fn coding_varint32() {
         put_varint32(dst, v);
     }
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let mut p = bytes.as_ptr();
     let limit = unsafe { p.add(bytes.len()) };
 
@@ -79,13 +79,13 @@ fn coding_varint64() {
         "coding_varint64: generated test values"
     );
 
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
     for &v in &values {
         put_varint64(dst, v);
     }
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let mut p = bytes.as_ptr();
     let limit = unsafe { p.add(bytes.len()) };
 

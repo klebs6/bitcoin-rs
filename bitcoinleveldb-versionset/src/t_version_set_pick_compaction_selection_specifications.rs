@@ -61,7 +61,7 @@ mod version_set_pick_compaction_selection_specifications {
             harness.add_level_file(1, 10, "g", 80, "i", 80);
 
         let compact_pointer =
-            make_value_internal_key_for_user_key("c", 100).encode().to_string();
+            make_value_internal_key_for_user_key("c", 100).encode().as_bytes().to_vec();
         harness.version_set_mut().compact_pointer_mut()[1] = compact_pointer;
 
         let current_version_ptr = harness.current_version_ptr();
@@ -100,7 +100,7 @@ mod version_set_pick_compaction_selection_specifications {
             harness.add_level_file(1, 10, "g", 80, "i", 80);
 
         let compact_pointer =
-            make_value_internal_key_for_user_key("i", 80).encode().to_string();
+            make_value_internal_key_for_user_key("i", 80).encode().as_bytes().to_vec();
         harness.version_set_mut().compact_pointer_mut()[1] = compact_pointer;
 
         let current_version_ptr = harness.current_version_ptr();
@@ -165,4 +165,45 @@ mod version_set_pick_compaction_selection_specifications {
             "seek-triggered compaction must use the exact file recorded in file_to_compact",
         );
     }
+
+    #[test]
+    fn pick_compaction_uses_and_advances_binary_sequence_compact_pointer() {
+        let mut harness = VersionSetAlgorithmScenarioHarness::open_for_test_prefix(
+            "versionset_binary_compact_selection071",
+        );
+        let _mutex_guard = harness.acquire_version_set_mutex();
+        let first = harness.add_level_file(1, 10, "a", 128, "c", 128);
+        let second = harness.add_level_file(1, 10, "d", 128, "f", 128);
+        let third = harness.add_level_file(1, 10, "g", 128, "i", 128);
+        let pointer = make_value_internal_key_for_user_key("c", 128);
+        let mut edit = VersionEdit::default();
+        edit.set_compact_pointer(1, &pointer);
+        let vset = harness.version_set_mut() as *mut VersionSet;
+        {
+            let base = unsafe { (*vset).current() };
+            let mut builder = VersionSetBuilder::new(vset, base);
+            builder.apply(&mut edit as *mut VersionEdit);
+        }
+        let before = [b'c', 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+        unsafe {
+            assert_eq!((*vset).compact_pointer_mut()[1].as_slice(), &before);
+        }
+        let current = harness.current_version_ptr();
+        unsafe {
+            (*current).set_compaction_score(1.0);
+            (*current).set_compaction_level(1);
+        }
+        let compaction_ptr = harness.version_set_mut().pick_compaction();
+        assert!(!compaction_ptr.is_null());
+        let compaction = unsafe { Box::from_raw(compaction_ptr) };
+        let selected = collect_compaction_input_file_numbers(compaction.as_ref(), 0);
+        assert_eq!(selected, vec![second]);
+        assert!(!selected.contains(&first));
+        assert!(!selected.contains(&third));
+        let after = [b'f', 0x01, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+        unsafe {
+            assert_eq!((*vset).compact_pointer_mut()[1].as_slice(), &after);
+        }
+    }
+
 }

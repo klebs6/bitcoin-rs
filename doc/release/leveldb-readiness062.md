@@ -49,9 +49,13 @@ all-feature coverage, arbitrary binary-data correctness, or memory safety.
    fixture correction qualified that group with 111 accumulated native passes
    (94 audited historical,17 fresh), five doctest commands and compilation-only
    harness compatibility. The [compression070 follow-up](leveldb-snappy-bytes070.md)
-   migrates Snappy output/scratch and verifies named default/enabled profiles.
-   Remaining legacy coding sinks, manifest records, retrieval outputs and other
-   owners still need coherent byte-buffer migration. Rust `String` requires valid UTF-8; binary
+   migrates Snappy output/scratch. Its070 client receipt records separate
+   default (74 native, three doctest commands) and named Snappy-enabled
+   (77 native, three doctest commands) profiles, plus compilation-only harness
+   and benchmark compatibility. The [manifest071 follow-up](leveldb-manifest-bytes071.md)
+   migrates the remaining coding append sinks, manifest records and compaction
+   pointers. Retrieval outputs and other listed owners still need coherent
+   byte-buffer migration. Rust `String` requires valid UTF-8; binary
    storage and lossy conversion remain source-level release blockers, including
    outside optional Snappy support.
 2. **Known helper limits.** ModelDB's point `get` path is not implemented, and

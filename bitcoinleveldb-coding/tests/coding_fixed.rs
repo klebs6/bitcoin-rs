@@ -5,14 +5,14 @@ use bitcoin_imports::*;
 #[traced_test]
 fn coding_fixed32() {
     info!("coding_fixed32: start");
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
 
     for v in 0u32..100_000 {
         put_fixed32(dst, v);
     }
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let mut p = bytes.as_ptr();
     let limit = unsafe { p.add(bytes.len()) };
     let mut expected: u32 = 0;
@@ -44,8 +44,8 @@ fn coding_fixed32() {
 #[traced_test]
 fn coding_fixed64() {
     info!("coding_fixed64: start");
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
 
     for power in 0..=63 {
         let v: u64 = 1u64 << power;
@@ -54,7 +54,7 @@ fn coding_fixed64() {
         put_fixed64(dst, v + 1);
     }
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let mut p = bytes.as_ptr();
     let limit = unsafe { p.add(bytes.len()) };
 

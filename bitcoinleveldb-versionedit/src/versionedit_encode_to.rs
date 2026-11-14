@@ -3,7 +3,7 @@ crate::ix!();
 
 impl VersionEdit {
 
-    pub fn encode_to(&self, dst: *mut String) {
+    pub fn encode_to(&self, dst: *mut Vec<u8>) {
         trace!("VersionEdit::encode_to: encoding version edit");
 
         if dst.is_null() {
@@ -86,11 +86,11 @@ mod version_edit_encode_to_tests {
     fn encode_edit_to_bytes(edit: &VersionEdit) -> Vec<u8> {
         trace!("encode_edit_to_bytes(version_edit_encode_to_tests): start");
 
-        let mut buffer = String::new();
-        edit.encode_to(&mut buffer as *mut String);
+        let mut buffer = Vec::<u8>::new();
+        edit.encode_to(&mut buffer as *mut Vec<u8>);
 
-        let bytes = buffer.as_bytes();
-        let mut out = Vec::with_capacity(bytes.len());
+        let bytes = buffer.as_slice();
+        let mut out = Vec::<u8>::with_capacity(bytes.len());
         out.extend_from_slice(bytes);
 
         debug!(

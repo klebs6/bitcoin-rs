@@ -63,7 +63,7 @@ pub struct VersionSet {
     /// InternalKey.
     /// 
     #[getset(get_mut = "pub(crate)")]
-    compact_pointer: [String; NUM_LEVELS],
+    compact_pointer: [Vec<u8>; NUM_LEVELS],
 }
 
 impl VersionSet {
@@ -128,8 +128,8 @@ impl VersionSet {
         let dummy_files: [Vec<*mut FileMetaData>; NUM_LEVELS] =
             core::array::from_fn(|_| Vec::new());
 
-        let compact_pointer_init: [String; NUM_LEVELS] =
-            core::array::from_fn(|_| String::new());
+        let compact_pointer_init: [Vec<u8>; NUM_LEVELS] =
+            core::array::from_fn(|_| Vec::<u8>::new());
 
         // Build the dummy sentinel with null links; we will patch links *after* boxing.
         let dummy_versions = VersionBuilder::default()

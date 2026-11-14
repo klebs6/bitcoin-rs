@@ -25,42 +25,18 @@ pub fn put_length_prefixed_slice_bytes(dst: &mut Vec<u8>, value: &Slice) -> bool
     true
 }
 
-pub fn put_length_prefixed_slice(dst: *mut String, value: &Slice) {
-    unsafe {
-        let len: usize = *value.size();
-        trace!(
-            len,
-            ptr = ?dst,
-            "put_length_prefixed_slice: appending length-prefixed slice"
-        );
-        let prefix = match checked_length_prefix(len) {
-            Some(prefix) => prefix,
-            None => {
-                error!(
-                    len,
-                    "put_length_prefixed_slice: slice length exceeds u32::MAX"
-                );
-                return;
-            }
-        };
-
-        put_varint32(dst, prefix);
-
-        if len == 0 {
-            debug!(
-                "put_length_prefixed_slice: empty slice, nothing more to append"
-            );
-            return;
-        }
-
-        let data_ptr: *const u8 = *value.data();
-        let s: &mut String = &mut *dst;
-        let vec = s.as_mut_vec();
-        let bytes = core::slice::from_raw_parts(data_ptr, len);
-        vec.extend_from_slice(bytes);
-        debug!(
-            new_len = vec.len(),
-            "put_length_prefixed_slice: buffer length after append"
+/// Append a readable Slice to a live byte-vector sink, preserving all bytes.
+/// A length above u32::MAX leaves the destination unchanged, as before.
+/// The value may view the destination's existing allocation.
+pub fn put_length_prefixed_slice(dst: *mut Vec<u8>, value: &Slice) {
+    assert!(!dst.is_null(), "put_length_prefixed_slice: dst pointer is null");
+    // The byte helper checks the length before any payload access and takes a
+    // snapshot before appending the prefix, so a source view survives growth.
+    let appended = put_length_prefixed_slice_bytes(unsafe { &mut *dst }, value);
+    if !appended {
+        error!(
+            len = *value.size(),
+            "put_length_prefixed_slice: slice length exceeds u32::MAX"
         );
     }
 }

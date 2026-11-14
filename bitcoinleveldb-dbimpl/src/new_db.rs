@@ -55,10 +55,10 @@ impl DBImpl {
         {
             let mut log: LogWriter = LogWriter::new(file_rc.clone(), 0);
 
-            let mut record: String = String::new();
+            let mut record = Vec::<u8>::new();
             new_db.encode_to(&mut record);
 
-            let record_slice: Slice = Slice::from_str(&record);
+            let record_slice: Slice = Slice::from(record.as_slice());
             s = log.add_record(&record_slice);
 
             if s.is_ok() {

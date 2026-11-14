@@ -48,7 +48,7 @@ impl PickCompaction for VersionSet {
 
             let mut c_box = Box::new(Compaction::new(self.options(), level));
 
-            let compact_pointer_key: String = self.compact_pointer_mut()[level as usize].clone();
+            let compact_pointer_key: Vec<u8> = self.compact_pointer_mut()[level as usize].clone();
 
             // Pick the first file that comes after compact_pointer_[level]
             unsafe {

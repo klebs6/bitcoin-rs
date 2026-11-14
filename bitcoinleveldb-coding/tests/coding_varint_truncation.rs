@@ -6,11 +6,11 @@ use bitcoin_imports::*;
 fn coding_varint_32truncation() {
     info!("coding_varint_32truncation: start");
     let large_value: u32 = (1u32 << 31) + 100;
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
     put_varint32(dst, large_value);
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let base = bytes.as_ptr();
     let size = bytes.len();
 
@@ -48,11 +48,11 @@ fn coding_varint_32truncation() {
 fn coding_varint_64truncation() {
     info!("coding_varint_64truncation: start");
     let large_value: u64 = (1u64 << 63) + 100u64;
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
     put_varint64(dst, large_value);
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let base = bytes.as_ptr();
     let size = bytes.len();
 

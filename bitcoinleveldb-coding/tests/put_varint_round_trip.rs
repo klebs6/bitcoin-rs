@@ -7,13 +7,13 @@ fn put_varint32_roundtrip_small_set() {
     info!("put_varint32_roundtrip_small_set: start");
     let values: [u32; 5] = [0, 1, 127, 128, 300];
 
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
     for &v in &values {
         put_varint32(dst, v);
     }
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let mut p = bytes.as_ptr();
     let limit = unsafe { p.add(bytes.len()) };
 
@@ -50,13 +50,13 @@ fn put_varint64_roundtrip_small_set() {
         300,
     ];
 
-    let mut s = String::new();
-    let dst = &mut s as *mut String;
+    let mut s = Vec::<u8>::new();
+    let dst = &mut s as *mut Vec<u8>;
     for &v in &values {
         put_varint64(dst, v);
     }
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let mut p = bytes.as_ptr();
     let limit = unsafe { p.add(bytes.len()) };
 

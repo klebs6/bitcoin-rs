@@ -215,8 +215,8 @@ impl VersionEditLogAndApply for VersionSet {
 
                 // Write new record to MANIFEST log
                 if s.is_ok() {
-                    let mut record: String = String::new();
-                    e.encode_to(&mut record as *mut String);
+                    let mut record = Vec::<u8>::new();
+                    e.encode_to(&mut record as *mut Vec<u8>);
 
                     tracing::info!(
                         ?tid,
@@ -227,7 +227,7 @@ impl VersionEditLogAndApply for VersionSet {
                     );
 
                     let t_add_record = std::time::Instant::now();
-                    let rec_slice = Slice::from(record.as_bytes());
+                    let rec_slice = Slice::from(record.as_slice());
                     s = (*self.descriptor_log()).add_record(&rec_slice);
 
                     tracing::info!(

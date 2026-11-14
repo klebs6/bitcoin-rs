@@ -9,7 +9,10 @@ objects use stable-address raw pointers. The supplied options, comparator, and
 table-cache dependencies must remain valid for the version set's use. Database
 locking governs recovery, edit application, and compaction state changes.
 `VersionSetBuilder` applies `VersionEdit` records to construct a version's file
-set; it is storage-engine machinery rather than an application transaction API.
+set. MANIFEST record buffers and encoded compaction pointers use `Vec<u8>`;
+selection compares exact internal-key bytes. Filenames and diagnostic output
+remain text. This is storage-engine machinery rather than an application
+transaction API.
 
 The crate enables the nightly `ptr_metadata` feature. See
 [construction and ownership](src/version_set.rs),

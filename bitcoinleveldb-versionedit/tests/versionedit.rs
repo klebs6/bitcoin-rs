@@ -13,12 +13,12 @@ fn encode_edit_to_bytes(edit: &VersionEdit) -> Vec<u8> {
         "encode_edit_to_bytes: encoding VersionEdit to manifest bytes"
     );
 
-    let mut manifest_record = String::new();
-    let dst_ptr: *mut String = &mut manifest_record;
+    let mut manifest_record = Vec::<u8>::new();
+    let dst_ptr: *mut Vec<u8> = &mut manifest_record;
     edit.encode_to(dst_ptr);
 
     let encoded_len = manifest_record.len();
-    let encoded = manifest_record.into_bytes();
+    let encoded = manifest_record;
 
     debug!(
         target: "versionedit",

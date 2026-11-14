@@ -52,7 +52,7 @@ mod version_set_setup_other_inputs_expansion_decision_specifications {
             collect_compaction_input_file_numbers(compaction.as_ref(), 1);
         let compact_pointer = harness.version_set_mut().compact_pointer_mut()[1].clone();
         let expected_compact_pointer =
-            make_value_internal_key_for_user_key("f", 100).encode().to_string();
+            make_value_internal_key_for_user_key("f", 100).encode().as_bytes().to_vec();
 
         assert_eq!(
             input_level_file_numbers,

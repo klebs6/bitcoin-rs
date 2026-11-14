@@ -6,10 +6,10 @@ use bitcoin_imports::*;
 fn coding_encoding_output() {
     info!("coding_encoding_output: start");
 
-    let mut dst32 = String::new();
-    let dst32_ptr = &mut dst32 as *mut String;
+    let mut dst32 = Vec::<u8>::new();
+    let dst32_ptr = &mut dst32 as *mut Vec<u8>;
     put_fixed32(dst32_ptr, 0x0403_0201);
-    let bytes32 = dst32.as_bytes();
+    let bytes32 = dst32.as_slice();
     assert_eq!(4, bytes32.len(), "coding_encoding_output: fixed32 length");
     assert_eq!(0x01u8, bytes32[0]);
     assert_eq!(0x02u8, bytes32[1]);
@@ -17,10 +17,10 @@ fn coding_encoding_output() {
     assert_eq!(0x04u8, bytes32[3]);
     debug!("coding_encoding_output: fixed32 encoding validated");
 
-    let mut dst64 = String::new();
-    let dst64_ptr = &mut dst64 as *mut String;
+    let mut dst64 = Vec::<u8>::new();
+    let dst64_ptr = &mut dst64 as *mut Vec<u8>;
     put_fixed64(dst64_ptr, 0x0807_0605_0403_0201u64);
-    let bytes64 = dst64.as_bytes();
+    let bytes64 = dst64.as_slice();
     assert_eq!(8, bytes64.len(), "coding_encoding_output: fixed64 length");
     assert_eq!(0x01u8, bytes64[0]);
     assert_eq!(0x02u8, bytes64[1]);

@@ -4,7 +4,8 @@ Best-effort recovery of LevelDB database files.
 
 `repairdb` drives a `Repairer`: it discovers database files, converts recoverable
 log records into tables, scans tables for metadata, and writes a replacement
-manifest and CURRENT file. Files replaced or rejected by the process are moved
+manifest and CURRENT file. The replacement MANIFEST record is encoded into a
+byte vector. Filenames remain text. Files replaced or rejected by the process are moved
 into an archive directory through the repair workflow.
 
 Repair changes the database directory and may discard data that cannot be

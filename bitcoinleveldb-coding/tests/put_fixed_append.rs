@@ -6,9 +6,9 @@ use bitcoin_imports::*;
 fn put_fixed32_and_64_append_after_prefix() {
     info!("put_fixed32_and_64_append_after_prefix: start");
 
-    let mut s = String::from("prefix");
+    let mut s = b"prefix".to_vec();
     let initial_len = s.len();
-    let dst = &mut s as *mut String;
+    let dst = &mut s as *mut Vec<u8>;
 
     let v32: u32 = 0x0a0b_0c0d;
     let v64: u64 = 0x0102_0304_0506_0708u64;
@@ -16,7 +16,7 @@ fn put_fixed32_and_64_append_after_prefix() {
     put_fixed32(dst, v32);
     put_fixed64(dst, v64);
 
-    let bytes = s.as_bytes();
+    let bytes = s.as_slice();
     let total_len = initial_len
         + core::mem::size_of::<u32>()
         + core::mem::size_of::<u64>();

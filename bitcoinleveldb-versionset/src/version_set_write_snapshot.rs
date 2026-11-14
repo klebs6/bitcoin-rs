@@ -76,15 +76,15 @@ impl WriteSnapshot for VersionSet {
             }
         }
 
-        let mut record = String::new();
-        edit.encode_to(&mut record as *mut String);
+        let mut record = Vec::<u8>::new();
+        edit.encode_to(&mut record as *mut Vec<u8>);
 
         debug!(
             record_len = record.len(),
             "VersionSet::write_snapshot: encoded snapshot record"
         );
 
-        let record_slice = Slice::from(record.as_bytes());
+        let record_slice = Slice::from(record.as_slice());
         let s = log.add_record(&record_slice);
 
         trace!("VersionSet::write_snapshot(log): exit; ok={}", s.is_ok());
