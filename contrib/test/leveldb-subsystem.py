@@ -200,6 +200,49 @@ def discover055(metadata,repo):
     if seen_ids!=expected:raise RuntimeError('Selected workspace membership was not fully captured')
     return sorted(result,key=lambda p:p['name'])
 
+# Explicit named Snappy profiles only. Default callers still use the original
+# offline, locked, single-job commands without feature flags.
+_SNAPPY_FEATURES070 = {
+    'bitcoinleveldb-compat': 'leveldb_snappy',
+    'bitcoinleveldb-tablebuilder': 'bitcoinleveldb-compat/leveldb_snappy',
+    'bitcoinleveldb-blockhandle': 'bitcoinleveldb-compat/leveldb_snappy',
+}
+
+def _feature_selection070(value):
+    if value is None:
+        return {}
+    if (type(value) is not dict or len(value) > len(_SNAPPY_FEATURES070)
+            or any(type(name) is not str or type(feature) is not str
+                   or _SNAPPY_FEATURES070.get(name) != feature
+                   for name, feature in value.items())):
+        raise RuntimeError('Only the three explicit Snappy package/feature selections are supported.')
+    return {name: value[name] for name in sorted(value)}
+
+def _test_command070(name, mode, feature=None):
+    if type(name) is not str or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,127}', name):
+        raise RuntimeError('The test package name is malformed.')
+    command = ['cargo', 'test', '--offline', '--locked', '--jobs', '1', '-p', name]
+    if feature is not None:
+        if _SNAPPY_FEATURES070.get(name) != feature:
+            raise RuntimeError('The requested package feature differs from its explicit Snappy profile.')
+        command += ['--features', feature]
+    if mode == 'compile':
+        return command + ['--no-run', '--message-format=json']
+    if mode == 'doc':
+        return command + ['--doc', '--', '--include-ignored', '--test-threads=1']
+    raise RuntimeError('Only no-run compilation and doctest commands are supported.')
+
+def _planned_test_command070(name, mode, command):
+    default = _test_command070(name, mode)
+    if command == default:
+        return default
+    feature = _SNAPPY_FEATURES070.get(name)
+    if feature is not None:
+        enabled = _test_command070(name, mode, feature)
+        if command == enabled:
+            return enabled
+    raise RuntimeError('The command is neither the exact default nor the explicit Snappy profile.')
+
 def _observer_spec055(spec,spec_path):
     if type(spec)is not dict or set(spec)!={'repo','run','target','package','evidence_path','command'}:
         raise RuntimeError('Observer specification differs from its exact six fields')
@@ -218,8 +261,7 @@ def _observer_spec055(spec,spec_path):
     name=package['name']
     if not(name.startswith(('bitcoinleveldb-','bitcoinleveldbt-'))or name=='bitcoin-leveldb')or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_-]{0,127}',name):
         raise RuntimeError('Observer package is outside the declared LevelDB scope')
-    command=['cargo','test','--offline','--locked','--jobs','1','-p',name,'--no-run','--message-format=json']
-    if spec['command']!=command:raise RuntimeError('Observer command is not its exact offline single-package no-run command')
+    command=_planned_test_command070(name,'compile',spec['command'])
     manifest=_path055(package.get('manifest_path'));_package_identity055(package.get('id'),manifest)
     manifest_fp,manifest_raw=_file055(manifest,1024*1024)
     if (repo not in manifest.parents or manifest_fp!=package.get('manifest_fingerprint')
@@ -577,10 +619,7 @@ SUMMARY055 = re.compile(r'^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed
 
 def doc_worker055(spec_path):
     spec, _ = read_json055(spec_path, 2 * MIB055)
-    command = ['cargo', 'test', '--offline', '--locked', '--jobs', '1', '-p',
-               spec['package'], '--doc', '--', '--include-ignored', '--test-threads=1']
-    if command != spec['command']:
-        raise RuntimeError('The doctest command differs from its recorded plan.')
+    command = _planned_test_command070(spec['package'], 'doc', spec['command'])
     env = support055().checked_environment033()
     code, out, err = bounded_command055(command, spec['repo'], env, allowance=16 * MIB055)
     text = out.decode(errors='replace')
@@ -856,6 +895,7 @@ def history_from_report058(value, source):
     report = value.get('verification', value)
     if not isinstance(report, dict) or not isinstance(report.get('repository'), str):
         raise RuntimeError('Focus baseline lacks its working-tree report.')
+    feature_selection = _feature_selection070(report.get('feature_selection070'))
     history = empty_history058()
     state = report.get('continuation_state058')
     if state is None and report.get('run_mode058') == 'failed-and-unexecuted':
@@ -961,8 +1001,7 @@ def history_from_report058(value, source):
     for name, record in report.get('doctests', {}).items():
         value = record.get('evidence', {})
         spec = {'repo': report['repository'], 'package': name,
-                'command': ['cargo', 'test', '--offline', '--locked', '--jobs', '1', '-p', name,
-                            '--doc', '--', '--include-ignored', '--test-threads=1']}
+                'command': _test_command070(name, 'doc', feature_selection.get(name))}
         row = report.get('readouts', {}).get(record.get('guard_label'), {})
         if (qualify_doc055(spec, value, row)
                 and _successful_row058(report, record.get('guard_label'))):
@@ -1001,6 +1040,7 @@ def load_focus058(repo, path):
                      'run_directory': previous.get('run_directory'), 'previous_outcome': previous.get('outcome'),
                      'retained_native_passes': len(history['passed']), 'retained_doctest_commands': len(history['docs']),
                      'retained_custom_commands': len(history['customs']),
+                     'feature_selection070': _feature_selection070(previous.get('feature_selection070')),
                      'interpretation': 'Historical results under their recorded source and controls; not fresh executions or a current full-suite claim.'}
 
 
@@ -1064,14 +1104,18 @@ def continuation_state058(report, previous):
 
 
 def verify055(repo, *, run_directory=None, target_directory=None, already_locked=False,
-              before_phase=None, packages=None, focus_report_path=None):
+              before_phase=None, packages=None, focus_report_path=None, features070=None):
+    feature_selection = _feature_selection070(features070)
+    if feature_selection and (packages is None or set(packages) != set(feature_selection)):
+        raise RuntimeError('Named Snappy verification requires exactly its explicit selected packages.')
     base = support055()
     report = {'workflow': WORKFLOW055, 'outcome': 'failed', 'phase': 'preflight',
               'repository': str(repo), 'validation_reused': False, 'source_writes_started': False,
               'run_mode058': 'failed-and-unexecuted' if focus_report_path is not None else 'full',
               'retained_case_skips': [], 'retained_custom_skips': [],
               'refs_updated': False, 'full_coverage_claimed': False, 'feature_matrix_claimed': False,
-              'host_default_features_only': True, 'builds_started': False, 'native_tests_started': False,
+              'host_default_features_only': not bool(feature_selection),
+              'feature_selection070': feature_selection, 'builds_started': False, 'native_tests_started': False,
               'packages': [], 'cases': [], 'custom_harnesses': [], 'compilations': {},
               'doctests': {}, 'readouts': {}, 'snapshots': [], 'failures': [], 'failed_source': {},
               'inputs_preserved': False, 'expected_test_count': 0, 'passed': 0,
@@ -1082,6 +1126,9 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
               'explicit_stress_cases': [dict(package=p, name=n, marker=m) for (p, n), m in EXPLICIT_STRESS057.items()],
               'assessment_parser': 'exact-libtest-should-panic057',
               'doctest_envelope': '2 GiB RAM, one CPU, no swap, 600 seconds, 512 MiB private test data; includes rustdoc compilation.'}
+    if feature_selection:
+        report['scope'] = ('Explicit named Snappy feature verification for the selected packages only; '
+            'native and doctest execution retain the existing finite controls. No all-features or full-subsystem matrix claim.')
     locks = []
     baseline = None
     baseline_sha = None
@@ -1230,6 +1277,8 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
 
         if focus_report_path is not None:
             focus_history, focus_reference = load_focus058(repo, focus_report_path)
+            if focus_reference['feature_selection070'] != feature_selection:
+                raise RuntimeError('Focus receipt uses a different default/Snappy feature selection.')
             report['focus_baseline058'] = focus_reference
             report['scope'] = ('Focused fresh verification of failed and unexecuted checks from the retained report; '
                                'historical passes are not executed again or counted as fresh. Source and resource controls remain required.')
@@ -1255,8 +1304,7 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
         for number, package in enumerate(chosen):
             name = package['name']
             capture('before-package-' + format(number, '03d'))
-            command = ['cargo', 'test', '--offline', '--locked', '--jobs', '1', '-p', name,
-                       '--no-run', '--message-format=json']
+            command = _test_command070(name, 'compile', feature_selection.get(name))
             spec_path, evidence_path = run / ('compile-' + name + '.spec.json'), run / ('compile-' + name + '.json')
             spec = {'repo': str(repo), 'run': str(run), 'target': str(target), 'package': package,
                     'evidence_path': str(evidence_path), 'command': command}
@@ -1339,8 +1387,7 @@ def verify055(repo, *, run_directory=None, target_directory=None, already_locked
             elif any(t.get('doctest_eligible') for t in package['targets']):
                 doc_path = run / ('doc-' + name + '.spec.json')
                 doc_evidence = run / ('doc-' + name + '.json')
-                doc_command = ['cargo', 'test', '--offline', '--locked', '--jobs', '1', '-p', name,
-                               '--doc', '--', '--include-ignored', '--test-threads=1']
+                doc_command = _test_command070(name, 'doc', feature_selection.get(name))
                 doc_spec = {'repo': str(repo), 'package': name, 'command': doc_command,
                             'evidence_path': str(doc_evidence)}
                 json055(doc_path, doc_spec)

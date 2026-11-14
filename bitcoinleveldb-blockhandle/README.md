@@ -8,6 +8,8 @@ consumes a borrowed Slice and returns a Status.
 
 `read_block` reads payload and trailer through RandomAccessFile, checks the
 checksum when requested, and handles uncompressed or supported Snappy data.
+The compressed-read regression explicitly records whether its Snappy backend
+was available. An unsupported early return is not enabled-backend qualification.
 The BlockContents ownership flags distinguish borrowed data from allocated
 storage; keep backing storage alive for borrowed contents. Raw pointers must
 refer to live storage for each operation.

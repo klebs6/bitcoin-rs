@@ -289,25 +289,25 @@ mod read_block_io_behavior_tests {
 
     #[traced_test]
     fn read_block_snappy_compressed_roundtrip_success() {
-        let payload = b"some-snappy-compressed-block-data";
-        let mut compressed_str = String::new();
+        let payload = b"\x00\xff\x80\xc3\x28\xaa\x55\x7f\x00binary\xfe";
+        let mut compressed = Vec::<u8>::new();
         let compressed_ok = unsafe {
             snappy_compress(
                 payload.as_ptr(),
                 payload.len(),
-                &mut compressed_str
-                    as *mut String,
+                &mut compressed
+                    as *mut Vec<u8>,
             )
         };
 
         if !compressed_ok {
+            eprintln!("SNAPPY_READ_BLOCK070 supported=false");
             warn!(
                 "read_block_snappy_compressed_roundtrip_success: snappy_compress reported feature disabled; skipping test"
             );
             return;
         }
-
-        let compressed = compressed_str.into_bytes();
+        eprintln!("SNAPPY_READ_BLOCK070 supported=true");
 
         let block_bytes = build_test_block_bytes(
             &compressed[..],

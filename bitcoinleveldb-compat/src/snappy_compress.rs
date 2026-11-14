@@ -5,8 +5,11 @@ crate::ix!();
   | Store the snappy compression of
   | "input[0,input_length-1]" in *output.
   |
-  | Returns false if snappy is not supported by
-  | this port.
+  | Replaces the destination only on success; false leaves it unchanged.
+  | Returns false if snappy is not supported by this port or a null
+  | pointer is supplied. Non-null input must describe `length` readable
+  | bytes; output must point to a live, exclusively accessible Vec<u8>.
+  | The input may view the destination's existing allocation.
   */
 #[inline]
 #[cfg(feature = "leveldb_snappy")]
@@ -14,7 +17,7 @@ crate::ix!();
 pub fn snappy_compress(
     input:  *const u8,
     length: usize,
-    output: *mut String,
+    output: *mut Vec<u8>,
 ) -> bool {
     if input.is_null() {
         warn!("snappy_compress called with null input pointer");
@@ -25,34 +28,33 @@ pub fn snappy_compress(
         return false;
     }
 
-    unsafe {
-        let input_slice = std::slice::from_raw_parts(input, length);
+    // Finish all reads before replacing the destination owner: input may be
+    // a live view into output's existing allocation. The encoder returns its
+    // own byte vector, so no mutable output reference overlaps those reads.
+    let result = {
+        let input_slice = unsafe { std::slice::from_raw_parts(input, length) };
         debug!(
             input_len = input_slice.len(),
             "snappy_compress: starting compression"
         );
-
         let mut encoder = snap::raw::Encoder::new();
+        encoder.compress_vec(input_slice)
+    };
 
-        match encoder.compress_vec(input_slice) {
-            Ok(compressed) => {
-                let compressed_len = compressed.len();
-                debug!(
-                    compressed_len,
-                    "snappy_compress: compression succeeded"
-                );
-
-                // NOTE: We intentionally treat `String` as a raw byte container
-                // to mirror the original std::string usage in LevelDB.
-                let compressed_string = String::from_utf8_unchecked(compressed);
-                *output = compressed_string;
-
-                true
-            }
-            Err(err) => {
-                error!(?err, "snappy_compress: compression failed");
-                false
-            }
+    match result {
+        Ok(compressed) => {
+            debug!(
+                compressed_len = compressed.len(),
+                "snappy_compress: compression succeeded"
+            );
+            // SAFETY: output must point to a live, exclusively accessible
+            // Vec<u8>; the input view above is no longer used.
+            unsafe { *output = compressed; }
+            true
+        }
+        Err(err) => {
+            error!(?err, "snappy_compress: compression failed");
+            false
         }
     }
 }
@@ -63,7 +65,7 @@ pub fn snappy_compress(
 pub fn snappy_compress(
     input:  *const u8,
     length: usize,
-    output: *mut String,
+    output: *mut Vec<u8>,
 ) -> bool {
     debug!(
         input_ptr = ?input,
@@ -83,18 +85,18 @@ mod snappy_port_roundtrip_spec {
     #[instrument(level = "trace", skip(payload))]
     fn snappy_roundtrip_via_port(payload: &[u8]) -> Option<Vec<u8>> {
         unsafe {
-            let mut compressed = String::new();
+            let mut compressed = Vec::<u8>::new();
             let ok_compress = snappy_compress(
                 payload.as_ptr(),
                 payload.len(),
-                &mut compressed as *mut String,
+                &mut compressed as *mut Vec<u8>,
             );
             if !ok_compress {
                 warn!("snappy_roundtrip_via_port: compression failed");
                 return None;
             }
 
-            let compressed_bytes = compressed.into_bytes();
+            let compressed_bytes = compressed;
 
             let mut uncompressed_len: usize = 0;
             let ok_len = snappy_get_uncompressed_length(
@@ -144,14 +146,14 @@ mod snappy_port_roundtrip_spec {
     fn snappy_get_uncompressed_length_matches_actual() {
         let payload = b"some payload that compresses reasonably well";
         unsafe {
-            let mut compressed = String::new();
+            let mut compressed = Vec::<u8>::new();
             assert!(snappy_compress(
                 payload.as_ptr(),
                 payload.len(),
-                &mut compressed as *mut String,
+                &mut compressed as *mut Vec<u8>,
             ));
 
-            let compressed_bytes = compressed.into_bytes();
+            let compressed_bytes = compressed;
 
             let mut len_probe: usize = 0;
             assert!(snappy_get_uncompressed_length(

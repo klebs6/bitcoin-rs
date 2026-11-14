@@ -1,27 +1,27 @@
 # bitcoinleveldb-compat
 
-Platform-port helpers used by the `bitcoin-rs` LevelDB implementation.
+Platform-port helpers for the bitcoin-rs LevelDB implementation: mutex/condition
+wrappers, capability constants, CRC32C extension, heap-profile hooks and optional
+Snappy compression. These low-level pointer interfaces are not a stable C ABI.
 
-The crate exports C++-style mutex/condition-variable wrappers, platform capability
-constants, CRC32C extension, heap-profile hooks, and optional Snappy helpers.
-These are low-level compatibility interfaces with explicit pointer and buffer
-contracts, not a general safe FFI layer or a stable C ABI.
+With `leveldb_snappy`, `snappy_compress(input, length, *mut Vec<u8>)` replaces
+the destination with raw Snappy bytes on success. False leaves the existing
+output unchanged. Non-null input must describe readable bytes, and the output
+must be a live, exclusively accessible byte vector. Input may borrow the old
+output allocation; compression finishes reading before replacing that owner.
+Without the feature, Snappy helpers return false without reading the buffers.
+Decoded output ports require enough live writable storage; validate the reported
+uncompressed length against the caller's allocation policy first.
 
-Snappy helpers are enabled by the `leveldb_snappy` Cargo feature; without it they
-return `false`. The enabled compression path currently places compressed bytes
-in a `String` using unchecked UTF-8 conversion. Compressed data need not be UTF-8:
-this is a representation limitation requiring review before enabling that path,
-not an assurance that `String` is an arbitrary-byte container. Default-feature
-qualification does not qualify the optional feature.
+`acceleratedcrc32c` currently uses software CRC32C; its name does not promise
+hardware acceleration. Read the [manifest](Cargo.toml) and
+[port configuration](src/port_config.rs) for capabilities and feature switches.
 
-`acceleratedcrc32c` currently performs software CRC32C extension; its name does
-not promise hardware acceleration. Capability constants and feature switches
-should be read from the [manifest](Cargo.toml) and
-[port configuration](src/port_config.rs), rather than treated as runtime probing.
+See [synchronization](src/port_stdcxx.rs), [compression](src/snappy_compress.rs),
+and [binary codec contracts](tests/binary_snappy_contracts.rs).
+Default and named Snappy results are separate qualification profiles.
 
-See [synchronization wrappers](src/port_stdcxx.rs),
-[compression](src/snappy_compress.rs), and [CRC implementation](src/accelerated_crc32c.rs).
-
-[Source](src/lib.rs) · [Manifest](Cargo.toml) · [Bounded subsystem verification](../doc/testing/leveldb-subsystem.md)
-
-[Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+[LevelDB subsystem](../bitcoin-leveldb/README.md) ·
+[Bounded verification](../doc/testing/leveldb-subsystem.md) ·
+[Repository and support](https://github.com/klebs6/bitcoin-rs/issues).
+License: MIT; see the [repository license](../LICENSE).

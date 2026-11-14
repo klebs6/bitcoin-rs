@@ -68,13 +68,13 @@ impl TableBuilder {
                     let raw_ptr: *const u8 = *raw.data();
                     let raw_len: usize      = *raw.size();
 
-                    let compressed: &mut String = r.compressed_output_mut();
+                    let compressed: &mut Vec<u8> = r.compressed_output_mut();
                     compressed.clear();
 
                     let compressed_ok = bitcoinleveldb_compat::snappy_compress(
                         raw_ptr,
                         raw_len,
-                        compressed as *mut String,
+                        compressed as *mut Vec<u8>,
                     );
 
                     if compressed_ok
@@ -87,7 +87,7 @@ impl TableBuilder {
                             compressed.len()
                         );
                         block_contents =
-                            Slice::from(compressed.as_bytes());
+                            Slice::from(compressed.as_slice());
                     } else {
                         trace!(
                             "TableBuilder::write_block: Snappy compression rejected (ok={}, raw_size={}, compressed_size={}); falling back to no compression",
@@ -234,5 +234,86 @@ mod table_builder_write_block_tests {
         unsafe {
             let _ = Box::from_raw(file_raw as *mut InMemoryWritableFile);
         }
+    }
+}
+
+
+#[cfg(test)]
+mod binary_snappy_table_contracts070 {
+    use super::*;
+
+    #[test]
+    fn binary_snappy_block_preserves_raw_bytes_trailer_and_enabled_roundtrip() {
+        let mut options = Box::new(Options::default());
+        options.set_compression(CompressionType::Snappy);
+        let mut file = Box::new(InMemoryWritableFile::new_for_test("binary_snappy_table070"));
+        let file_ptr: *mut dyn WritableFile = (&mut *file) as *mut InMemoryWritableFile;
+        let mut builder = TableBuilder::new(&options, file_ptr);
+        let mut block = BlockBuilder::new((&*options) as *const Options);
+        let key = [0x00u8, 0xff, 0x80];
+        let value = [0xffu8, 0x00, 0xc3, 0x28].repeat(1024);
+        block.add(&Slice::from(key.as_slice()), &Slice::from(value.as_slice()));
+
+        // Independent literal block layout: shared0, key3, value4096,
+        // arbitrary binary payload, restart0 and one restart entry.
+        let mut raw = vec![0x00u8, 0x03, 0x80, 0x20, 0x00, 0xff, 0x80];
+        raw.extend_from_slice(&value);
+        raw.extend_from_slice(&[0u8, 0, 0, 0, 1, 0, 0, 0]);
+        assert_eq!(raw.len(), 4111);
+        let mut probe = Vec::<u8>::new();
+        let supported = bitcoinleveldb_compat::snappy_compress(
+            raw.as_ptr(), raw.len(), &mut probe as *mut Vec<u8>,
+        );
+        if supported {
+            assert!(probe.len() < raw.len() - raw.len() / 8);
+        }
+
+        let mut handle = BlockHandle::default();
+        builder.write_block(&mut block as *mut BlockBuilder, &mut handle as *mut BlockHandle);
+        assert!(builder.status().is_ok());
+        assert!(block.empty());
+        assert_eq!(handle.offset(), 0);
+        let stored_len = handle.size() as usize;
+        let bytes = file.contents();
+        assert_eq!(bytes.len(), stored_len + BLOCK_TRAILER_SIZE);
+        assert_eq!(builder.file_size(), bytes.len() as u64);
+        let stored = &bytes[..stored_len];
+        let type_byte = bytes[stored_len];
+        eprintln!("SNAPPY_TABLE_BINARY070 supported={} type={}", supported, type_byte);
+        if supported {
+            assert_eq!(type_byte, CompressionType::Snappy as u8);
+            assert!(stored_len < raw.len() - raw.len() / 8);
+            let mut length = usize::MAX;
+            assert!(bitcoinleveldb_compat::snappy_get_uncompressed_length(
+                stored.as_ptr(), stored.len(), &mut length as *mut usize,
+            ));
+            assert_eq!(length, raw.len());
+            let mut decoded = vec![0u8; raw.len()];
+            assert!(bitcoinleveldb_compat::snappy_uncompress(
+                stored.as_ptr(), stored.len(), decoded.as_mut_ptr(),
+            ));
+            assert_eq!(decoded, raw);
+        } else {
+            assert_eq!(type_byte, CompressionType::None as u8);
+            assert_eq!(stored, raw.as_slice());
+        }
+
+        // Check the stored checksum independently with the reflected CRC32C
+        // polynomial, including the compression-type byte in the checksum.
+        let mut crc = !0u32;
+        for &byte in stored.iter().chain(std::iter::once(&type_byte)) {
+            crc ^= u32::from(byte);
+            for _ in 0..8 {
+                crc = (crc >> 1) ^ (0x82f6_3b78u32 & 0u32.wrapping_sub(crc & 1));
+            }
+        }
+        crc = !crc;
+        let masked = crc.rotate_right(15).wrapping_add(0xa282_ead8);
+        assert_eq!(&bytes[stored_len+1..], &masked.to_le_bytes());
+        unsafe {
+            assert!((*builder.rep_ptr()).compressed_output().is_empty());
+        }
+        builder.abandon();
+        drop(builder);
     }
 }

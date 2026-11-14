@@ -45,9 +45,13 @@ all-feature coverage, arbitrary binary-data correctness, or memory safety.
    coding append helpers. Its separate067 client receipt records 105 affected
    native passes, five doctest commands, and compilation-only harness compatibility.
    The [table metadata068 follow-up](leveldb-table-metadata068.md) migrates block
-   handle/footer encoding and their table-builder metadata outputs. Remaining
-   legacy coding sinks, compression scratch, manifest records, retrieval outputs
-   and other owners still need coherent byte-buffer migration. Rust `String` requires valid UTF-8; binary
+   handle/footer encoding and their table-builder metadata outputs. The069
+   fixture correction qualified that group with 111 accumulated native passes
+   (94 audited historical,17 fresh), five doctest commands and compilation-only
+   harness compatibility. The [compression070 follow-up](leveldb-snappy-bytes070.md)
+   migrates Snappy output/scratch and verifies named default/enabled profiles.
+   Remaining legacy coding sinks, manifest records, retrieval outputs and other
+   owners still need coherent byte-buffer migration. Rust `String` requires valid UTF-8; binary
    storage and lossy conversion remain source-level release blockers, including
    outside optional Snappy support.
 2. **Known helper limits.** ModelDB's point `get` path is not implemented, and

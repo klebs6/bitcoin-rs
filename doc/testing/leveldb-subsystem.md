@@ -150,3 +150,28 @@ stress classification does not require adding a marker to the native test.
 Continue from the latest focused receipt using `--failed-from PATH`. A focused
 success completes the accumulated pending inventory with retained source/run
 provenance; it does not turn historical passes into fresh full-suite evidence.
+
+
+## Named Snappy qualification
+
+The runner's Python `verify055` API additionally accepts `features070`, a map
+for exact selected package names. It admits only these named feature choices:
+
+- bitcoinleveldb-compat: `leveldb_snappy`.
+- bitcoinleveldb-tablebuilder: `bitcoinleveldb-compat/leveldb_snappy`.
+- bitcoinleveldb-blockhandle: `bitcoinleveldb-compat/leveldb_snappy`.
+
+The map must match the explicitly requested package set. It adds the named
+Cargo feature to both compilation and doctest commands while retaining the
+same offline/locked/single-job commands, guard limits, executable bindings and
+source snapshots. Reports record `feature_selection070`; default calls record
+an empty map. A continuation must use the same feature selection. Results
+from different selections are separate histories, not interchangeable passes.
+This API does not enable all features or change the default facade command.
+
+The focused compression070 controller verifies the three affected packages
+separately under default selection and the named Snappy selection. The codec's
+measured package features and required writer/reader runtime markers distinguish
+actual enabled compression from default fallback. Benchmark and harness
+consumers receive separate compilation-only checks. No timed benchmark or
+long randomized harness workload is selected by that controller.

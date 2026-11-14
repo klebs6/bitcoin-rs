@@ -11,9 +11,10 @@ the caller remains responsible for closing and syncing the file. Keep borrowed
 file and policy objects alive while used.
 
 Data/index blocks, previous keys, serialized block handles and footer output
-use byte storage. The optional Snappy compression scratch still uses a legacy
-String output path and remains a separate binary-ownership release blocker;
-default-feature qualification does not establish Snappy feature coverage.
+use byte storage. Compression scratch also owns bytes as a vector. Snappy is an optional backend
+provided by bitcoinleveldb-compat; unavailable or insufficient compression falls
+back to raw block storage. Default results and explicit Snappy-enabled results
+are qualified separately; neither implies an all-features/platform matrix.
 `num_entries` and `file_size` expose progress.
 
 See [construction](src/table_builder.rs), [entries](src/table_builder_add.rs),

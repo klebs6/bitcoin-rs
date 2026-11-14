@@ -954,12 +954,12 @@ impl Benchmark {
 
         // See if snappy is working by attempting to compress a compressible string
         let text = b"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy";
-        let mut compressed = String::new();
+        let mut compressed = Vec::<u8>::new();
 
         if !bitcoinleveldb_compat::snappy_compress(
             text.as_ptr(),
             text.len(),
-            &mut compressed as *mut String,
+            &mut compressed as *mut Vec<u8>,
         ) {
             println!("WARNING: Snappy compression is not enabled");
         } else if compressed.len() >= text.len() {
@@ -1298,13 +1298,13 @@ impl Benchmark {
             let mut bytes: i64 = 0;
             let mut produced: i64 = 0;
             let mut ok = true;
-            let mut compressed = String::new();
+            let mut compressed = Vec::<u8>::new();
 
             while ok && bytes < 1024 * 1048576 {
                 ok = bitcoinleveldb_compat::snappy_compress(
                     input_bytes.as_ptr(),
                     input_bytes.len(),
-                    &mut compressed as *mut String,
+                    &mut compressed as *mut Vec<u8>,
                 );
                 produced += compressed.len() as i64;
                 bytes += input_bytes.len() as i64;
@@ -1335,11 +1335,11 @@ impl Benchmark {
             let input = gen.generate(block_size);
             let input_bytes = input.as_bytes();
 
-            let mut compressed = String::new();
+            let mut compressed = Vec::<u8>::new();
             let mut ok = bitcoinleveldb_compat::snappy_compress(
                 input_bytes.as_ptr(),
                 input_bytes.len(),
-                &mut compressed as *mut String,
+                &mut compressed as *mut Vec<u8>,
             );
 
             let mut bytes: i64 = 0;
