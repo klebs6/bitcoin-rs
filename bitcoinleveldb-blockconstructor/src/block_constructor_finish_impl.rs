@@ -108,7 +108,7 @@ mod constructor_kvmap_and_finish_tests {
     }
 
     fn slice_from_str_for_tests(value: &str) -> Slice {
-        Slice::from(value.as_slice())
+        Slice::from(value.as_bytes())
     }
 
     #[traced_test]
