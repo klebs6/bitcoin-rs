@@ -30,10 +30,6 @@ mod delete_convenience_method_contract_suite {
         Delete { key: Vec<u8> },
     }
 
-    fn bytes_of_string(s: &String) -> &[u8] {
-        unsafe { core::slice::from_raw_parts(s.as_ptr(), s.len()) }
-    }
-
     fn decode_fixed32_le(input: &[u8]) -> u32 {
         assert!(input.len() >= 4);
         (input[0] as u32)
@@ -176,7 +172,7 @@ mod delete_convenience_method_contract_suite {
             assert!(!updates.is_null(), "updates must not be null");
             let batch = unsafe { &*updates };
 
-            let rep_bytes = bytes_of_string(batch.rep());
+            let rep_bytes = batch.rep().as_slice();
             let (sequence, count, records) = decode_write_batch_rep(rep_bytes);
 
             debug!(

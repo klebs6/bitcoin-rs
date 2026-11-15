@@ -220,7 +220,7 @@ mod binary_get_contracts {
     struct Database {
         db: *mut LevelDB,
         options: *mut LevelDBOptions,
-        read: *mut LevelDBReadOptions,
+        fixture_read_options: *mut LevelDBReadOptions,
         write: *mut LevelDBWriteOptions,
         name: Vec<u8>,
         snapshots: Vec<(*const LevelDBSnapshot, *mut LevelDBReadOptions)>,
@@ -229,12 +229,12 @@ mod binary_get_contracts {
         fn new() -> Self {
             let mut f = Self {
                 db: core::ptr::null_mut(), options: crate::leveldb_options::leveldb_options_create(),
-                read: crate::leveldb_readoptions::leveldb_readoptions_create(),
+                fixture_read_options: crate::leveldb_readoptions::leveldb_readoptions_create(),
                 write: crate::leveldb_writeoptions::leveldb_writeoptions_create(),
                 name: crate::bitcoinleveldb_db__make_temp_dbname_bytes("binary-get081"),
                 snapshots: Vec::new(),
             };
-            assert!(!f.options.is_null() && !f.read.is_null() && !f.write.is_null());
+            assert!(!f.options.is_null() && !f.fixture_read_options.is_null() && !f.write.is_null());
             crate::leveldb_options::leveldb_options_set_create_if_missing(f.options, 1);
             f.reopen(); f
         }
@@ -250,9 +250,9 @@ mod binary_get_contracts {
             crate::leveldb_put::leveldb_put(self.db, self.write, key.as_ptr(), key.len(), value.as_ptr(), value.len(), &mut error);
             assert!(error.is_null());
         }
-        fn get(&self, key: &[u8], read: *mut LevelDBReadOptions) -> Option<Vec<u8>> {
+        fn get(&self, key: &[u8], fixture_read_options: *mut LevelDBReadOptions) -> Option<Vec<u8>> {
             let mut len = usize::MAX; let mut error = core::ptr::null_mut();
-            let out = leveldb_get(self.db, read, key.as_ptr(), key.len(), &mut len, &mut error);
+            let out = leveldb_get(self.db, fixture_read_options, key.as_ptr(), key.len(), &mut len, &mut error);
             assert!(error.is_null());
             if out.is_null() { assert_eq!(len, 0); return None; }
             let bytes = unsafe { core::slice::from_raw_parts(out, len).to_vec() };
@@ -261,14 +261,14 @@ mod binary_get_contracts {
         }
         fn snapshot(&mut self) -> *mut LevelDBReadOptions {
             let snapshot = crate::leveldb_create_snapshot::leveldb_create_snapshot(self.db);
-            let read = crate::leveldb_readoptions::leveldb_readoptions_create();
-            assert!(!snapshot.is_null() && !read.is_null());
-            crate::leveldb_readoptions::leveldb_readoptions_set_snapshot(read, snapshot);
-            self.snapshots.push((snapshot, read)); read
+            let fixture_read_options = crate::leveldb_readoptions::leveldb_readoptions_create();
+            assert!(!snapshot.is_null() && !fixture_read_options.is_null());
+            crate::leveldb_readoptions::leveldb_readoptions_set_snapshot(fixture_read_options, snapshot);
+            self.snapshots.push((snapshot, fixture_read_options)); fixture_read_options
         }
         fn release_snapshots(&mut self) {
-            for (snapshot, read) in self.snapshots.drain(..) {
-                crate::leveldb_readoptions::leveldb_readoptions_destroy(read);
+            for (snapshot, fixture_read_options) in self.snapshots.drain(..) {
+                crate::leveldb_readoptions::leveldb_readoptions_destroy(fixture_read_options);
                 crate::leveldb_release_snapshot::leveldb_release_snapshot(self.db, snapshot);
             }
         }
@@ -285,7 +285,7 @@ mod binary_get_contracts {
     impl Drop for Database {
         fn drop(&mut self) {
             self.release_snapshots();
-            crate::leveldb_readoptions::leveldb_readoptions_destroy(self.read);
+            crate::leveldb_readoptions::leveldb_readoptions_destroy(self.fixture_read_options);
             crate::leveldb_writeoptions::leveldb_writeoptions_destroy(self.write);
             if !self.db.is_null() { crate::leveldb_close::leveldb_close(self.db); }
             let mut error = core::ptr::null_mut();
@@ -304,32 +304,32 @@ mod binary_get_contracts {
         f.put(&key, &old);
         let snapshot = f.snapshot();
         f.put(&key, &new);
-        assert_eq!(f.get(&key, f.read), Some(new.clone()));
+        assert_eq!(f.get(&key, f.fixture_read_options), Some(new.clone()));
         assert_eq!(f.get(&key, snapshot), Some(old.clone()));
         // Both versions must remain readable after the mutable table is
         // flushed to a real SST while this snapshot is still held.
         f.compact_and_verify_sst();
-        assert_eq!(f.get(&key, f.read), Some(new.clone()));
+        assert_eq!(f.get(&key, f.fixture_read_options), Some(new.clone()));
         assert_eq!(f.get(&key, snapshot), Some(old.clone()));
         // Exercise the checked Rust text bridge through the actual DBImpl vtable.
         let mut text = String::from("unchanged");
-        let status = unsafe { (*f.db).rep().borrow_mut().get((*f.read).rep(), &Slice::from(&key[..]), &mut text) };
+        let status = unsafe { (*f.db).rep().borrow_mut().get((*f.fixture_read_options).rep(), &Slice::from(&key[..]), &mut text) };
         assert!(status.is_corruption()); assert_eq!(text, "unchanged");
         let mut error = core::ptr::null_mut();
         crate::leveldb_delete::leveldb_delete(f.db, f.write, key.as_ptr(), key.len(), &mut error);
-        assert!(error.is_null()); assert_eq!(f.get(&key, f.read), None);
+        assert!(error.is_null()); assert_eq!(f.get(&key, f.fixture_read_options), None);
         assert_eq!(f.get(&key, snapshot), Some(old));
         let mut bytes = vec![0xaa, 0xff];
-        let status = unsafe { (*f.db).rep().borrow_mut().get_bytes((*f.read).rep(), &Slice::from(&key[..]), &mut bytes) };
+        let status = unsafe { (*f.db).rep().borrow_mut().get_bytes((*f.fixture_read_options).rep(), &Slice::from(&key[..]), &mut bytes) };
         assert!(status.is_not_found()); assert_eq!(bytes, vec![0xaa, 0xff]);
         f.release_snapshots();
         f.put(&key, &new);
         f.put(b"empty", &[]);
-        assert_eq!(f.get(b"empty", f.read), Some(Vec::new()));
+        assert_eq!(f.get(b"empty", f.fixture_read_options), Some(Vec::new()));
         f.compact_and_verify_sst();
         f.reopen();
-        assert_eq!(f.get(&key, f.read), Some(new));
-        assert_eq!(f.get(b"empty", f.read), Some(Vec::new()));
-        assert_eq!(f.get(b"missing", f.read), None);
+        assert_eq!(f.get(&key, f.fixture_read_options), Some(new));
+        assert_eq!(f.get(b"empty", f.fixture_read_options), Some(Vec::new()));
+        assert_eq!(f.get(b"missing", f.fixture_read_options), None);
     }
 }

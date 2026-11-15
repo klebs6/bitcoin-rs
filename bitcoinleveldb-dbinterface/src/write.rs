@@ -25,10 +25,6 @@ mod write_interface_contract_suite {
         Delete { key: Vec<u8> },
     }
 
-    fn bytes_of_string(s: &String) -> &[u8] {
-        unsafe { core::slice::from_raw_parts(s.as_ptr(), s.len()) }
-    }
-
     fn decode_fixed32_le(input: &[u8]) -> u32 {
         assert!(input.len() >= 4);
         (input[0] as u32)
@@ -160,7 +156,7 @@ mod write_interface_contract_suite {
             assert!(!updates.is_null(), "updates must not be null");
             let batch = unsafe { &*updates };
 
-            let rep = bytes_of_string(batch.rep());
+            let rep = batch.rep().as_slice();
             let (seq, count, records) = decode_write_batch_rep(rep);
 
             self.last_sequence = Some(seq);
