@@ -1,17 +1,24 @@
 # bitcoinleveldb-reversekeycomparator
 
-A comparator used to exercise non-default key ordering in LevelDB tests.
+A comparator for exercising reversed-byte key ordering in LevelDB tests.
 
-`ReverseKeyComparator` reverses input bytes, converts them with
-`String::from_utf8_lossy`, and compares the resulting strings with the bytewise
-comparator. It does not simply negate ordinary bytewise comparison. Separator
-and successor methods operate in reversed-byte space and reverse the result back.
+`ReverseKeyComparator` compares exact reversed input bytes with the bytewise
+comparator. It supports arbitrary byte keys, including empty keys and embedded
+NULs. This is neither descending bytewise order nor Unicode collation. Separator
+and successor methods shorten keys in reversed-byte space and reverse them back.
 
-The crate also supplies the `reverse` string helper and `increment` test helper.
-`increment` appends a NUL for the bytewise comparator and uses character-reversed
-string handling for other comparator names. Because reversed non-ASCII bytes
-can undergo lossy UTF-8 conversion, this is not a general arbitrary-byte ordering
-or Unicode collation API; it is intended for controlled test keys.
+`reverse(&Slice)` returns `Vec<u8>`. `increment` takes a caller-owned byte-vector
+output pointer: it appends NUL for the bytewise comparator and prepends NUL for
+this comparator. Other custom orderings are outside that helper's contract.
+Its comparator box is consumed; the output pointer must be valid and uniquely
+writable for the call.
+
+The persisted name is `bitcoinrs.ReverseBytewiseComparator.BytesV1`. It deliberately
+differs from the former lossy implementation's `leveldb.ReverseBytewiseComparator`:
+their binary-key orderings are incompatible. Normal recovery rejects a manifest
+with the old name. Recreate a database from original logical records; rewriting
+its manifest name does not convert ordering or recover previously collapsed keys.
+The harness crate's separate comparator implementation is unchanged.
 
 Source: [crate modules](src/lib.rs) · [manifest](Cargo.toml).
 

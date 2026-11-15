@@ -8,21 +8,8 @@ crate::ix!();
   | Used to test non-lexicographic comparators.
   |
   */
-pub fn reverse(key_: &Slice) -> String {
-    unsafe {
-        let ptr = *key_.data();
-        let len = *key_.size();
-        let bytes = core::slice::from_raw_parts(ptr, len);
-
-        // LevelDB’s tests treat these as byte strings; we preserve byte‑level
-        // reversal and then re‑interpret as UTF‑8, matching std::string behavior.
-        let mut rev = Vec::with_capacity(len);
-        for b in bytes.iter().rev() {
-            rev.push(*b);
-        }
-
-        String::from_utf8_lossy(&rev).to_string()
-    }
+pub fn reverse(key_: &Slice) -> Vec<u8> {
+    key_.as_bytes().iter().rev().copied().collect()
 }
 
 pub struct ReverseKeyComparator;
@@ -38,9 +25,7 @@ impl SliceComparator for ReverseKeyComparator {
 
 impl Named for ReverseKeyComparator {
     fn name(&self) -> Cow<'_, str> {
-        Cow::Owned(String::from(
-            "leveldb.ReverseBytewiseComparator",
-        ))
+        Cow::Borrowed("bitcoinrs.ReverseBytewiseComparator.BytesV1")
     }
 }
 
@@ -49,17 +34,17 @@ impl Compare for ReverseKeyComparator {
         let ra = reverse(a);
         let rb = reverse(b);
 
-        let ra_slice = Slice::from(ra.as_bytes());
-        let rb_slice = Slice::from(rb.as_bytes());
+        let ra_slice = Slice::from(ra.as_slice());
+        let rb_slice = Slice::from(rb.as_slice());
 
         unsafe {
             let base =
                 &*bytewise_comparator();
             let r = base.compare(&ra_slice, &rb_slice);
             trace!(
-                "ReverseKeyComparator::compare: a='{}', b='{}', ra='{}', rb='{}', result={}",
-                a.to_string(),
-                b.to_string(),
+                "ReverseKeyComparator::compare: a={:?}, b={:?}, ra={:?}, rb={:?}, result={}",
+                a.as_bytes(),
+                b.as_bytes(),
                 ra,
                 rb,
                 r
@@ -117,37 +102,27 @@ impl FindShortSuccessor for ReverseKeyComparator {
     }
 }
 
+/// Advance a test key for the bytewise comparator or this reverse comparator.
+///
+/// Append NUL for the bytewise name; otherwise prepend NUL, which appends NUL
+/// in reversed-byte space. Other custom orderings are outside this helper's
+/// contract. The destination must be non-null, aligned, valid and uniquely
+/// writable for this call. The supplied comparator box is consumed.
 pub fn increment(
     cmp: Box<dyn SliceComparator>,
-    key_: *mut String,
+    key_: *mut Vec<u8>,
 ) {
-    unsafe {
-        assert!(!key_.is_null(), "increment: key pointer is null");
-        let key = &mut *key_;
+    assert!(!key_.is_null(), "increment: key pointer is null");
+    let key = unsafe { &mut *key_ };
+    let cmp_name = cmp.name();
+    let bytewise_name = unsafe { (&*bytewise_comparator()).name() };
 
-        let cmp_name = cmp.name();
-
-        let bytewise_name = {
-            let bw =
-                &*bytewise_comparator();
-            bw.name()
-        };
-
-        if cmp_name.as_ref() == bytewise_name.as_ref() {
-            trace!(
-                "increment: using bytewise comparator semantics for key='{}'",
-                key
-            );
-            key.push('\0');
-        } else {
-            trace!(
-                "increment: using reverse comparator semantics for key='{}'",
-                key
-            );
-            let mut rev: String = key.chars().rev().collect();
-            rev.push('\0');
-            *key = rev.chars().rev().collect();
-        }
+    if cmp_name.as_ref() == bytewise_name.as_ref() {
+        trace!("increment: bytewise key={:?}", key);
+        key.push(0);
+    } else {
+        trace!("increment: reversed-byte key={:?}", key);
+        key.insert(0, 0);
     }
 }
 
@@ -161,7 +136,7 @@ mod reverse_key_comparator_behavior_tests {
         let slice = Slice::from(&key_bytes[..]);
 
         let reversed = reverse(&slice);
-        assert_eq!(reversed, "fedcba");
+        assert_eq!(reversed.as_slice(), b"fedcba");
     }
 
     #[traced_test]
@@ -174,8 +149,8 @@ mod reverse_key_comparator_behavior_tests {
         let ra = reverse(&a);
         let rb = reverse(&b);
 
-        let ra_slice = Slice::from(ra.as_bytes());
-        let rb_slice = Slice::from(rb.as_bytes());
+        let ra_slice = Slice::from(ra.as_slice());
+        let rb_slice = Slice::from(rb.as_slice());
 
         let base = unsafe {
             &*bytewise_comparator()

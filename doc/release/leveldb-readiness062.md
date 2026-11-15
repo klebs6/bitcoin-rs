@@ -57,13 +57,18 @@ all-feature coverage, arbitrary binary-data correctness, or memory safety.
    pointers; its separate071 receipt records318 native passes and five successful
    doctest commands (zero doctest cases), plus compilation-only harness compatibility.
    The [Env file076 follow-up](leveldb-env-file-bytes076.md) adds exact byte reads
-   and whole-buffer UTF-8 validation at the text-file boundary. Retrieval outputs
+   and whole-buffer UTF-8 validation at the text-file boundary; its076 receipt
+   records136 native passes, two successful doctest commands with zero cases, and
+   compilation-only harness/recovery compatibility. Retrieval outputs
    and other listed owners still need coherent byte-buffer migration. Rust `String` requires valid UTF-8; binary
    storage and lossy conversion remain source-level release blockers, including
    outside optional Snappy support.
-2. **Known helper limits.** ModelDB's point `get` path is not implemented, and
-   reverse-key comparator conversions are not a general arbitrary-byte ordering
-   implementation. Keep these boundaries explicit and decide their public scope.
+2. **Known helper limits.** ModelDB's point `get` path and its text-keyed data
+   paths remain gates. The [reverse077 follow-up](leveldb-reverse-bytes077.md)
+   replaces lossy reversal with exact byte ordering and byte-output helpers.
+   It uses the distinct persistent name `bitcoinrs.ReverseBytewiseComparator.BytesV1`:
+   the former component's binary ordering is incompatible. The separate harness
+   comparator is unchanged. This source still needs its own guarded result.
 3. **Packaged consumer.** Inspect each intended `.crate` file, license/notices,
    examples and includes; establish registry dependency availability and publish
    order; verify a consumer outside the workspace under bounded resources.
