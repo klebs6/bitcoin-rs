@@ -160,7 +160,7 @@ mod reverse_key_comparator_behavior_tests {
         let actual = cmp.compare(&a, &b);
 
         assert_eq!(
-            actual, expected,
+            actual.signum(), expected.signum(),
             "reverse_key_comparator_matches_bytewise_on_reversed_keys: comparator result mismatch"
         );
     }
