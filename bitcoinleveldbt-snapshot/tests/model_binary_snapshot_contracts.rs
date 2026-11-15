@@ -6,7 +6,7 @@ use bitcoinleveldb_modeldb::ModelDB;
 use bitcoinleveldb_options::{Options, ReadOptions, WriteOptions};
 use bitcoinleveldb_slice::Slice;
 use bitcoinleveldb_snapshot::{Snapshot, SnapshotImpl, SnapshotDispatchConcreteImplementationKind};
-use bitcoinleveldbt_dbtest::dbtest_read_options_from_snapshot_ref;
+use bitcoinleveldbt_snapshot::dbtest_read_options_from_snapshot_ref;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 use std::sync::Arc;
