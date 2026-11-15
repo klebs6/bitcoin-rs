@@ -137,8 +137,7 @@ impl<'a> LevelDBIteratorSeekToLast for ModelIter<'a> {
 
 impl<'a> LevelDBIteratorSeek for ModelIter<'a> {
     fn seek(&mut self, target: &Slice) {
-        let t: String = target.to_string();
-        let idx: usize = match self.keys.binary_search(&t) {
+        let idx: usize = match self.keys.binary_search_by(|key| key.as_bytes().cmp(target.as_bytes())) {
             Ok(i)  => i,
             Err(i) => i,
         };

@@ -117,3 +117,12 @@ required. The earlier comparator sign correction078 qualified two fresh library
 cases and retained ten unchanged integration cases at its own source boundary.
 Storage080 is activated; later repair controllers must bind its exact helper
 and policy before verification. ModelDB and other listed release gates remain.
+
+
+## Model byte boundary083
+
+[ModelDB byte storage and typed snapshot payloads](leveldb-model-bytes083.md)
+replace the unfinished getter and lossy model write path. This stage requires
+its own four-package client qualification. The getter stage082 qualified354
+native identities at its retained/fresh source boundaries; it does not replace
+qualification of this new model/snapshot source. Other release gates remain.

@@ -2,7 +2,8 @@
 crate::ix!();
 
 pub struct ModelDBWriteBatchHandler {
-    pub(crate) map: *mut KVMap,
+    pub(crate) map: *mut ModelByteMap,
+    pub(crate) compare: ModelByteCompare,
 }
 
 impl WriteBatchHandler for ModelDBWriteBatchHandler {}
@@ -16,7 +17,7 @@ impl WriteBatchPut for ModelDBWriteBatchHandler {
         );
 
         unsafe {
-            (*self.map).insert(key_.to_string(), value.to_string());
+            model_byte_put(&mut *self.map, key_.as_bytes(), value.as_bytes(), self.compare.as_ref());
         }
     }
 }
@@ -29,7 +30,7 @@ impl WriteBatchDelete for ModelDBWriteBatchHandler {
         );
 
         unsafe {
-            (*self.map).remove(&key_.to_string());
+            model_byte_delete(&mut *self.map, key_.as_bytes(), self.compare.as_ref());
         }
     }
 }
@@ -42,34 +43,36 @@ mod model_db_write_batch_handler_trait_semantics_suite {
     fn model_db_write_batch_handler_put_overwrites_value() {
         tracing::info!("starting model_db_write_batch_handler_put_overwrites_value");
 
-        let mut map: KVMap = KVMap::default();
+        let mut map: ModelByteMap = ModelByteMap::default();
         let mut handler: ModelDBWriteBatchHandler = ModelDBWriteBatchHandler {
-            map: &mut map as *mut KVMap,
+            map: &mut map as *mut ModelByteMap,
+            compare: model_byte_comparator(&Options::default()),
         };
 
         <ModelDBWriteBatchHandler as WriteBatchPut>::put(&mut handler, &Slice::from("k"), &Slice::from("v1"));
-        assert_eq!(map.get("k").cloned(), Some(String::from("v1")));
+        assert_eq!(map.get(b"k".as_slice()).cloned(), Some(b"v1".to_vec()));
 
         <ModelDBWriteBatchHandler as WriteBatchPut>::put(&mut handler, &Slice::from("k"), &Slice::from("v2"));
-        assert_eq!(map.get("k").cloned(), Some(String::from("v2")));
+        assert_eq!(map.get(b"k".as_slice()).cloned(), Some(b"v2".to_vec()));
     }
 
     #[traced_test]
     fn model_db_write_batch_handler_delete_removes_key_and_is_idempotent() {
         tracing::info!("starting model_db_write_batch_handler_delete_removes_key_and_is_idempotent");
 
-        let mut map: KVMap = KVMap::default();
-        map.insert(String::from("k"), String::from("v"));
+        let mut map: ModelByteMap = ModelByteMap::default();
+        map.insert(b"k".to_vec(), b"v".to_vec());
 
         let mut handler: ModelDBWriteBatchHandler = ModelDBWriteBatchHandler {
-            map: &mut map as *mut KVMap,
+            map: &mut map as *mut ModelByteMap,
+            compare: model_byte_comparator(&Options::default()),
         };
 
         <ModelDBWriteBatchHandler as WriteBatchDelete>::delete(&mut handler, &Slice::from("k"));
-        assert!(map.get("k").is_none());
+        assert!(map.get(b"k".as_slice()).is_none());
 
         <ModelDBWriteBatchHandler as WriteBatchDelete>::delete(&mut handler, &Slice::from("k"));
-        assert!(map.get("k").is_none());
+        assert!(map.get(b"k".as_slice()).is_none());
     }
 
     #[traced_test]

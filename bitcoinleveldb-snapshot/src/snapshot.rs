@@ -24,6 +24,16 @@ pub enum SnapshotDispatchConcreteImplementationKind {
 ///
 pub trait Snapshot {
 
+    /// Optional immutable byte-map view for reference-model snapshots.
+    /// This capability describes payload semantics, never concrete object layout.
+    /// A forwarding wrapper must borrow its inner view; unsupported kinds return None.
+    fn snapshot_model_byte_map(
+        &self,
+    ) -> Option<&std::collections::BTreeMap<Vec<u8>, Vec<u8>>> {
+        None
+    }
+
+
     /// Invariant: runtime classification is semantic and must remain stable for
     /// the lifetime of the snapshot object. Callers must not infer this from
     /// trait-object metadata addresses.
@@ -115,5 +125,17 @@ mod snapshot_trait_contract_spec {
         debug!("ensuring SnapshotImpl satisfies Snapshot via generic bound");
         _compile_time_assert_impl::<SnapshotImpl>();
         info!("SnapshotImpl satisfies Snapshot");
+    }
+}
+
+#[cfg(test)]
+mod model_byte_capability_contracts {
+    use super::*;
+    #[test]
+    fn model_byte_view_is_optional_without_concrete_layout_assumptions() {
+        struct Foreign; impl Snapshot for Foreign {}
+        let foreign: &dyn Snapshot = &Foreign;
+        assert!(foreign.snapshot_model_byte_map().is_none());
+        assert!(SnapshotImpl::new(17).snapshot_model_byte_map().is_none());
     }
 }

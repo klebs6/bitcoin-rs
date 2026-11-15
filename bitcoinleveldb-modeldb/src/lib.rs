@@ -3,6 +3,7 @@
 
 x!{modeldb}
 x!{iter}
+x!{byte_model}
 x!{model_db_write_batch_handler}
 x!{base}
 x!{model_snapshot}

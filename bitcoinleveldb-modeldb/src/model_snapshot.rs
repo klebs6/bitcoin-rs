@@ -2,16 +2,19 @@
 crate::ix!();
 
 pub struct ModelSnapshot {
-    map:  KVMap,
+    map: ModelByteMap,
+    text_view: std::sync::OnceLock<Option<KVMap>>,
 }
 
 impl Snapshot for ModelSnapshot {
+    fn snapshot_model_byte_map(&self) -> Option<&ModelByteMap> { Some(&self.map) }
+
 
     fn snapshot_runtime_implementation_kind(&self) -> SnapshotDispatchConcreteImplementationKind {
         trace!(
             target: "bitcoinleveldb_modeldb::snapshot",
             event = "model_snapshot_runtime_implementation_kind_entry",
-            map_len = self.map_ref().len()
+            map_len = self.map.len()
         );
 
         let implementation_kind = SnapshotDispatchConcreteImplementationKind::ModelSnapshot;
@@ -20,7 +23,7 @@ impl Snapshot for ModelSnapshot {
             target: "bitcoinleveldb_modeldb::snapshot",
             event = "model_snapshot_runtime_implementation_kind_exit",
             implementation_kind = ?implementation_kind,
-            map_len = self.map_ref().len()
+            map_len = self.map.len()
         );
 
         implementation_kind
@@ -30,15 +33,15 @@ impl Snapshot for ModelSnapshot {
         trace!(
             target: "bitcoinleveldb_modeldb::snapshot",
             event = "model_snapshot_read_arc_clone_entry",
-            map_len = self.map_ref().len()
+            map_len = self.map.len()
         );
 
-        let snapshot_arc: Arc<dyn Snapshot> = Arc::new(ModelSnapshot::new_from_map(self.map_ref()));
+        let snapshot_arc: Arc<dyn Snapshot> = Arc::new(ModelSnapshot::new_from_byte_map(&self.map));
 
         trace!(
             target: "bitcoinleveldb_modeldb::snapshot",
             event = "model_snapshot_read_arc_clone_exit",
-            map_len = self.map_ref().len()
+            map_len = self.map.len()
         );
 
         Some(snapshot_arc)
@@ -46,14 +49,36 @@ impl Snapshot for ModelSnapshot {
 }
 
 impl ModelSnapshot {
+    /// Compatibility constructor: UTF-8 inputs are copied without transcoding.
     pub fn new_from_map(map: &KVMap) -> Self {
-        tracing::debug!("ModelSnapshot::new_from_map");
-        Self { map: map.clone() }
+        let bytes = map.iter().map(|(key, value)|
+            (key.as_bytes().to_vec(), value.as_bytes().to_vec())).collect();
+        Self::new_from_byte_map(&bytes)
     }
 
+    pub fn new_from_byte_map(map: &ModelByteMap) -> Self {
+        Self { map: map.clone(), text_view: std::sync::OnceLock::new() }
+    }
+
+    pub fn byte_map_ref(&self) -> &ModelByteMap { &self.map }
+
+    /// A complete strict UTF-8 view, or None if any key/value is non-text.
+    /// Conversion is lazy; binary reads and snapshot clones never need this cache.
+    pub fn try_map_ref(&self) -> Option<&KVMap> {
+        self.text_view.get_or_init(|| {
+            let mut text = KVMap::default();
+            for (key, value) in &self.map {
+                text.insert(String::from_utf8(key.clone()).ok()?,
+                    String::from_utf8(value.clone()).ok()?);
+            }
+            Some(text)
+        }).as_ref()
+    }
+
+    /// Legacy text view. Use byte_map_ref for arbitrary LevelDB bytes.
+    /// Panics if this snapshot contains a non-UTF-8 key or value.
     pub fn map_ref(&self) -> &KVMap {
-        tracing::trace!("ModelSnapshot::map_ref");
-        &self.map
+        self.try_map_ref().expect("ModelSnapshot contains binary data; use byte_map_ref")
     }
 }
 

@@ -19,6 +19,10 @@ empty value has a non-null, freeable allocation of length zero; `NotFound`
 returns null and length zero. Both results keep the existing Rust function
 signature; this crate does not add C ABI exports.
 
+Snapshot wrappers forward their inner read capabilities. Their sequence shadow
+is reconstructed through the snapshot interface; it does not copy another
+implementation's object layout or intrusive links.
+
 Start with the [end-to-end handle test](src/lib.rs),
 [open](src/leveldb_open.rs), [get](src/leveldb_get.rs), and
 [buffer release](src/leveldb_free.rs). The lower-level database trait is in

@@ -31,16 +31,11 @@ impl LevelDBSnapshot {
     fn snapshot_shadow_from_option(
         snap: Option<&Box<dyn Snapshot>>
     ) -> SnapshotImpl {
-        match snap {
-            Some(s) => unsafe {
-                let p: *const dyn Snapshot = (&**s) as *const dyn Snapshot;
-                let impl_p: *const SnapshotImpl = p as *const SnapshotImpl;
-                core::ptr::read(impl_p)
-            },
-            None => unsafe {
-                core::mem::MaybeUninit::<SnapshotImpl>::zeroed().assume_init()
-            },
-        }
+        // Reconstruct read metadata through the capability, without copying
+        // another concrete object's layout or its intrusive-list pointers.
+        let sequence = snap.and_then(|inner|
+            inner.snapshot_sequence_number_for_read_reconstruction()).unwrap_or(0);
+        SnapshotImpl::new(sequence)
     }
 
     pub fn new(
@@ -59,6 +54,12 @@ impl LevelDBSnapshot {
 }
 
 impl Snapshot for LevelDBSnapshot {
+    fn snapshot_model_byte_map(
+        &self,
+    ) -> Option<&std::collections::BTreeMap<Vec<u8>, Vec<u8>>> {
+        self.snap.as_deref().and_then(|inner| inner.snapshot_model_byte_map())
+    }
+
 
     fn snapshot_runtime_implementation_kind(&self) -> SnapshotDispatchConcreteImplementationKind {
         trace!(

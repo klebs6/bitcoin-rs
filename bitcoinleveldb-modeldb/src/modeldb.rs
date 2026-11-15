@@ -4,7 +4,7 @@ crate::ix!();
 pub struct ModelDB {
     base:    ModelDBBase,
     options: Options,
-    map:     KVMap,
+    map:     ModelByteMap,
 }
 
 impl ModelDB {
@@ -14,7 +14,7 @@ impl ModelDB {
         Self {
             base: ModelDBBase::default(),
             options: options.clone(),
-            map: KVMap::default(),
+            map: ModelByteMap::default(),
         }
     }
 }
@@ -77,60 +77,41 @@ impl DBDelete for ModelDB {
 }
 
 impl DBGet for ModelDB {
-    fn get(
-        &mut self,
-        options: &ReadOptions,
-        key_:    &Slice,
-        value:   *mut String,
-    ) -> crate::Status {
-        let _ = options;
-        let _ = value;
-
-        tracing::error!(
-            key_len = key_.as_bytes().len(),
-            "ModelDB::get (not implemented)"
-        );
-
-        debug_assert!(false);
-        crate::Status::not_found(key_, None)
+    fn get_bytes(&mut self, options: &ReadOptions, key_: &Slice, value: *mut Vec<u8>) -> Status {
+        if value.is_null() {
+            return Status::invalid_argument(&Slice::from("null ModelDB byte output"), None);
+        }
+        let map = match options.snapshot().as_ref() {
+            None => &self.map,
+            Some(snapshot) => match snapshot.snapshot_model_byte_map() {
+                Some(map) => map,
+                None => return unsupported_model_snapshot(),
+            },
+        };
+        let compare = model_byte_comparator(&self.options);
+        match model_byte_lookup(map, key_.as_bytes(), compare.as_ref()) {
+            Some(bytes) => {
+                // Clone first: key_ may be a valid view into the old output.
+                let saved = bytes.clone();
+                unsafe { *value = saved; }
+                Status::ok()
+            },
+            None => Status::not_found(key_, None),
+        }
     }
 }
 
 impl DBNewIterator for ModelDB {
     fn new_iterator(&mut self, options: &ReadOptions) -> *mut LevelDBIterator {
-        let has_snapshot: bool = options.snapshot().is_some();
-
-        tracing::debug!(
-            has_snapshot = has_snapshot,
-            map_len = self.map.len(),
-            "ModelDB::new_iterator"
-        );
-
-        if options.snapshot().is_none() {
-            let saved: Box<KVMap> = Box::new(self.map.clone());
-            let saved_ptr: *const KVMap = Box::into_raw(saved) as *const KVMap;
-
-            let miter: ModelIter<'static> = ModelIter::<'static>::new(saved_ptr, true);
-            let iter: LevelDBIterator = LevelDBIterator::new(Some(Box::new(miter)));
-
-            Box::into_raw(Box::new(iter))
-        } else {
-            let snapshot_arc: &std::sync::Arc<dyn Snapshot> = options
-                .snapshot()
-                .as_ref()
-                .unwrap();
-
-            let snapshot_ptr: *const dyn Snapshot = std::sync::Arc::as_ptr(snapshot_arc);
-            let model_snapshot_ptr: *const ModelSnapshot = snapshot_ptr as *const ModelSnapshot;
-
-            let snapshot_state_ptr: *const KVMap =
-                unsafe { (*model_snapshot_ptr).map_ref() as *const KVMap };
-
-            let miter: ModelIter<'static> = ModelIter::<'static>::new(snapshot_state_ptr, false);
-            let iter: LevelDBIterator = LevelDBIterator::new(Some(Box::new(miter)));
-
-            Box::into_raw(Box::new(iter))
-        }
+        let compare = model_byte_comparator(&self.options);
+        let iter = match options.snapshot().as_ref() {
+            None => ByteModelIter::new(&self.map, compare),
+            Some(snapshot) => match snapshot.snapshot_model_byte_map() {
+                Some(map) => ByteModelIter::new(map, compare),
+                None => ByteModelIter::error(unsupported_model_snapshot()),
+            },
+        };
+        Box::into_raw(Box::new(LevelDBIterator::new(Some(Box::new(iter)))))
     }
 }
 
@@ -138,7 +119,7 @@ impl DBGetSnapshot for ModelDB {
     fn get_snapshot(&mut self) -> Box<dyn Snapshot> {
         tracing::debug!("ModelDB::get_snapshot");
 
-        Box::new(ModelSnapshot::new_from_map(&self.map))
+        Box::new(ModelSnapshot::new_from_byte_map(&self.map))
     }
 }
 
@@ -161,7 +142,8 @@ impl DBWrite for ModelDB {
         );
 
         let mut handler = ModelDBWriteBatchHandler {
-            map: &mut self.map as *mut KVMap,
+            map: &mut self.map as *mut ModelByteMap,
+            compare: model_byte_comparator(&self.options),
         };
 
         let st: crate::Status = unsafe {
@@ -388,33 +370,15 @@ mod model_db_interface_behavior_suite {
     }
 
     #[traced_test]
-    fn model_db_get_is_not_implemented_panics_or_returns_not_found() {
-        tracing::info!("starting model_db_get_is_not_implemented_panics_or_returns_not_found");
-
-        let options: Options = Options::default();
-        let mut db: ModelDB = ModelDB::new(&options);
-
-        let ro: ReadOptions = ReadOptions::default();
-        let key: Slice = Slice::from("k");
-        let mut value: String = String::new();
-
-        let res: Result<crate::Status, Box<dyn core::any::Any + Send>> =
-            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                DBGet::get(&mut db, &ro, &key, &mut value as *mut String)
-            }));
-
-        match res {
-            Ok(st) => {
-                assert!(
-                    st.is_not_found(),
-                    "expected NotFound when not panicking; got: {}",
-                    st.to_string()
-                );
-            }
-            Err(_) => {
-                tracing::debug!("DBGet::get panicked as expected in debug configurations");
-            }
-        }
+    fn model_db_get_returns_values_and_preserves_missing_output() {
+        let mut db = ModelDB::new(&Options::default());
+        let ro = ReadOptions::default();
+        let mut value = String::from("sentinel");
+        assert!(db.get(&ro, &Slice::from("k"), &mut value).is_not_found());
+        assert_eq!(value, "sentinel");
+        assert!(db.put(&WriteOptions::default(), &Slice::from("k"), &Slice::from("v")).is_ok());
+        assert!(db.get(&ro, &Slice::from("k"), &mut value).is_ok());
+        assert_eq!(value, "v");
     }
 
     #[traced_test]
