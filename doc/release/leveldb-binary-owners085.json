@@ -1,0 +1,1141 @@
+{
+  "baseline_head": "707e3a9aadca098dc4be750caf81fa8915e4c53c",
+  "candidate_source_sha256": {
+    "bitcoin-imports/src/lib.rs": "c33a2ebb7eb755da25e50a74ff68d9c7809ebc043ff9432322e11463fa5c14c0",
+    "bitcoinleveldb-batch/src/delete.rs": "865675cab7c91d24a8b042693d7521039d750e8fb59f36a0d89b13b6c9005005",
+    "bitcoinleveldb-batch/src/internal.rs": "ce9a94b509170089fd3218ed6a6caa68874a49d3632739a6bdf27ff799456f99",
+    "bitcoinleveldb-batch/src/iterate.rs": "17d9bfe97b357563d00e8faad50f922256f6c9720c473209365c873cde154fb3",
+    "bitcoinleveldb-batch/src/put.rs": "7f56976204c4c618e4f1c060494b2f9df0a11cc9335ed76e4265ed89df10cfbc",
+    "bitcoinleveldb-batch/src/write_batch.rs": "23123457912cec434bb814dd8c5f8194c389520298ecbb72f31bda580c677a0b",
+    "bitcoinleveldb-blockbuilder/src/block_builder.rs": "59f936894cf6a1477fd4e551dbca9f43b281a890b5b1ddb4a539a8e053e56595",
+    "bitcoinleveldb-blockbuilder/src/block_builder_add.rs": "181f27ced89e575165befb71e8952ed3ec18614f5b38da3f444bd566f435a775",
+    "bitcoinleveldb-blockbuilder/src/block_builder_finish.rs": "6f55b32dde3b8935a0608e9aa50061013c46c02f4f6daf5d0d741d1652523e54",
+    "bitcoinleveldb-blockbuilder/tests/binary_block_contracts.rs": "02d1118587fb479b470ff756554669d483cf102ebe8adb5a683b5fbd6ca5b5bf",
+    "bitcoinleveldb-blockconstructor/src/block_constructor.rs": "a32c3543b28cbef70447cfdba610338904be16c265bd0553288800ec6b8d5fe1",
+    "bitcoinleveldb-blockconstructor/src/block_constructor_drop.rs": "31da55fd7044a38ad44d9e99858a7d30bf662f0ee6456fc890f6f2054bf8df44",
+    "bitcoinleveldb-blockconstructor/src/block_constructor_finish_impl.rs": "5b2de9d9f2289c5642648699e094a8469515411743ca6dde3e31260779fcbee9",
+    "bitcoinleveldb-blockconstructor/src/constructor.rs": "b393a75f64ae122862f49e02d4da3f01efe9431fafdb8fb8cf1d9f9bae128272",
+    "bitcoinleveldb-blockconstructor/tests/binary_block_contracts.rs": "3f913c9da8c3cf736709824ae57c8b199fef4db6b237a6c459751015d90e1d31",
+    "bitcoinleveldb-blockhandle/src/block_handle_decode_from.rs": "cac6cf2f44bf5230b18ebf0cf295c600ee6a057eac83b1693e4bcc46ce2c6281",
+    "bitcoinleveldb-blockhandle/src/block_handle_encode_to.rs": "5e03032b624c870c0705dc0e9d39619a22fd403fff2359e2e6086ab9fc6053ae",
+    "bitcoinleveldb-blockhandle/src/read_block.rs": "2822cc8ad844b73cf9c8739ef0f42ba2167dee92899a2c0f4162ce443553a43d",
+    "bitcoinleveldb-blockhandle/tests/binary_handle_contracts.rs": "5e3f511481ca93b7f929e759c913ca83e874a41bfc8a41abf3b0af7811015a01",
+    "bitcoinleveldb-blockiter/src/block_iter.rs": "0b382827f3403ad7eada7969f78560bbfcf4b6185494d52c8680dc7b98b96d11",
+    "bitcoinleveldb-blockiter/src/block_iter_key_value.rs": "d383ef665e04a0f27ce68659a9f9422cb895e0dcb4c3fa1405ac10d5008f43f5",
+    "bitcoinleveldb-blockiter/src/block_iter_parse_next_key.rs": "9b9788ecf1437def95109a8313257d33698e12179ece082211b22fa29c264f09",
+    "bitcoinleveldb-blockiter/src/block_iter_seek_to.rs": "e1d9372d844604d7bd3c32700f0399d26b0104e88b5248e7c02dbc31a6ca09aa",
+    "bitcoinleveldb-bloom/src/create_filter.rs": "44469bb94f0990e31f8bfdc7c9a5bb2287a28c8719027c7756164a92a6d98f55",
+    "bitcoinleveldb-cache/src/cache_handle.rs": "a5f80a6d4608c2c90a7364001f014a941b49bc8539f37e272df70bc0f1049dff",
+    "bitcoinleveldb-cache/src/cache_rep.rs": "e8a7f4add77522a0402e97ae6bee1eba6800655f49d55ebae500f4a30cd82f6f",
+    "bitcoinleveldb-coding/src/put_fixed.rs": "287c05cfd7339955e47210b4d2862aab2eb342dbd4ac9b85ddfec5b7169572c9",
+    "bitcoinleveldb-coding/src/put_length_prefixed_slice.rs": "08ab895f2364e9c43b31fe8e7f72165a79484265fd3c665e9ce9a5e082bb17d9",
+    "bitcoinleveldb-coding/src/put_varint.rs": "24fd44eac259ecdccb063bea1f7a16c1be8cd53b875a8455aca776bf0675640f",
+    "bitcoinleveldb-coding/src/slice_to_utf8.rs": "0dc24b05cce2e638a0e846587e65ca58da007287e8312b9cc1d52bded509d196",
+    "bitcoinleveldb-coding/tests/byte_append_contracts.rs": "eb2bf27794663873fd563552d583c638b8f56e7238d9153acf2ded4bd60eb6a2",
+    "bitcoinleveldb-coding/tests/coding_encoding.rs": "907204f4fecb73c550d0fc19dfd18ac68490dbf0a070ef670de6b5f2eda4d2bf",
+    "bitcoinleveldb-coding/tests/coding_fixed.rs": "9ad887ef4624f1690a9015718692dba3490d0cef1a9c6defbe3e1e33a9a33bb8",
+    "bitcoinleveldb-coding/tests/coding_strings.rs": "1addfc29e3338c2a3e8c813eb523568fdd2c1aaac2c8c2bad6ca4cd2e88cd283",
+    "bitcoinleveldb-coding/tests/coding_varint.rs": "821186667ab0ab8529effbc8b705b034e095f2157a3b1eae2f3051c7c1a1baa3",
+    "bitcoinleveldb-coding/tests/coding_varint_truncation.rs": "a45fd5c7b5caacf28b757ff43c7915a2d66432b89788fdd09608b3afbf1fb3e8",
+    "bitcoinleveldb-coding/tests/named_byte_sink_contracts.rs": "97a7826b4e56733acbdd323c1f2c2ad2eb24d18f9cb50170151c9748d045a022",
+    "bitcoinleveldb-coding/tests/put_fixed_append.rs": "f10089a91b6bd06fd212b1d929165dc965e222dd5d91d4f9fab7017a86222822",
+    "bitcoinleveldb-coding/tests/put_length_prefixed_slice.rs": "2864741499f5200a0695f2ad9fa71ce868a15fc91682e323cd665fd5ba443b5e",
+    "bitcoinleveldb-coding/tests/put_varint_round_trip.rs": "cdbbfecd6465c283af44e5f9bc657fa78d18d857938e772c785857b69ffee5d0",
+    "bitcoinleveldb-compat/src/snappy_compress.rs": "0390ec01507af9ce9c2f0db98e492d89678c6649df216d75c546acd7b45d1595",
+    "bitcoinleveldb-compat/tests/binary_snappy_contracts.rs": "d5f0e39633e86d3968745db284b159969502a795664b8e1c2d205fe37e459ac3",
+    "bitcoinleveldb-db/src/leveldb_get.rs": "3d73ff536d9f3c080147de13c4a2a6820f9f74799c0f96fed633f26a10a614cd",
+    "bitcoinleveldb-dbimpl/src/get.rs": "f02332a3dff7dd9d5e4da2f371f3d1c27fd5389e932c18640dfc1c491296b2b8",
+    "bitcoinleveldb-dbimpl/src/new_db.rs": "7fffbfaf5db245e7a71d15a37c25309f6a67486c5b6baea29fd529017d24dfbc",
+    "bitcoinleveldb-dbinterface/src/get.rs": "3c22fd070f0b78bd6a416f93dc5b3ed40f07959491addba9bb1f7a93ac710b6c",
+    "bitcoinleveldb-dbinterface/src/get_property.rs": "d8791a774b7cb290eb8c0e4b9ebaffa5d584305da45d9224454541ac3558691c",
+    "bitcoinleveldb-dbiter/src/find_next_user_entry.rs": "b0e817343c582222122a614998a9703eb2aac68d34c4986bfb9554a3f302b451",
+    "bitcoinleveldb-dbiter/src/find_prev_user_entry.rs": "0d3d9a880106ee8eb47cd632249ef922bd031bc049e7d0e983c114d445e270da",
+    "bitcoinleveldb-dbiter/src/iter.rs": "d8ec1690592ae08009ad35edfaecb1a533079e134131d66abfd5a69782ce4fc2",
+    "bitcoinleveldb-dbiter/src/next.rs": "85f4b1cd16ba9a6054b1be468c00edb31061f68f06a0699680c76d415dd8058f",
+    "bitcoinleveldb-dbiter/src/prev.rs": "1733fa817f65488d4c27ed6ee26a9a20316ad3681ddd03a1dfde5c9c8e2aa801",
+    "bitcoinleveldb-dbiter/src/save_key.rs": "178cbd0c7e8b47587e7f9d16f472cb0eef65df2ec8049768141fc13a364b79e9",
+    "bitcoinleveldb-dbiter/src/seek.rs": "2740d78103031ef7dafe7789e7fa70584ec99c95ec48a5b034539743d0d56914",
+    "bitcoinleveldb-env/src/lib.rs": "f291efcfe08bd7baead5c7882c3d1af6ac97bfc7467e85aa4ccd94fb360de752",
+    "bitcoinleveldb-env/src/read_file_to_bytes.rs": "0f9bcd2f1a256b608a3b652df93d71af5190474a15f94400e4805f52344f528c",
+    "bitcoinleveldb-env/src/read_file_to_string.rs": "3dc6f4a26fdbe415d63bf7ba4b045cd5a3178e6bcddbb04167d7a3340ab061f5",
+    "bitcoinleveldb-env/tests/write_string_to_file_tests.rs": "7705ebdfcca87e08d8ddd0917f1b1b0ebdd301ddca2ff3810580f91de49bd908",
+    "bitcoinleveldb-filter/src/filter_block.rs": "ddef74080d04e99a5d5e80db8a0d13d8da716b1bae4a42ca78939d3b4ba1b570",
+    "bitcoinleveldb-filter/src/filter_policy.rs": "02a099edb2dec21113d4b8bee9541621d627b02fdff6bae58e7c4a895162803a",
+    "bitcoinleveldb-footer/src/footer_decode_from.rs": "c2c67cecd5677b671e87f8496d08bdf030b062abeed900a1fdb91398e3b7b50b",
+    "bitcoinleveldb-footer/src/footer_encode_to.rs": "f87884c826f3778fa699128df37ef8fe66e70d76739bf848bafa99cdfa625044",
+    "bitcoinleveldb-footer/tests/binary_footer_contracts.rs": "90f70b911abac9bc6528b287bee650575a84bb2ec39798ce823f3363dcf37676",
+    "bitcoinleveldb-key/src/encode.rs": "c3ce42c2e54a5a0cd5a9d74567f9590fcad92e8046402e7232698ebb94855062",
+    "bitcoinleveldb-key/src/internal_key.rs": "369e6ec6f8ad4dbfb6a433104d4b7cedfd37852fca972b08fd87b207392f4f12",
+    "bitcoinleveldb-key/src/parsed_internal_key.rs": "b6a1f07ca7c5f64eb364ecba995dd633e5812199d1b6b8c0e679a880fe7af2a3",
+    "bitcoinleveldb-logreader/src/log_reader_read_record.rs": "b84b665b4dceb51ce99e3d533e83f0dc9bada0140725ced54cb93a0a76837adf",
+    "bitcoinleveldb-logwriter/src/log_writer.rs": "fba8210e87a4e176252bf90d33bf3c0609cbc63e33d229ce7154de1f68284df8",
+    "bitcoinleveldb-memtable/src/encode_key.rs": "37d069f3181e5aa2d4807eca76e88cc6e0857ef3efc408681aea8578f50142dd",
+    "bitcoinleveldb-memtable/src/memtable_get.rs": "9b0fd96383188d388667b51a98cb1dd5c6629294dd106c328b1598b15e98a813",
+    "bitcoinleveldb-memtable/src/memtable_iterator.rs": "9e9e73371853bbd9f5a0c88d71b4bb61052434527bbb3f3b29fd23bda7fb08f6",
+    "bitcoinleveldb-modeldb/src/iter.rs": "ccdd04181b45c851091a7115206891783b1d3eff2ea3790d84d87a4ac51e6231",
+    "bitcoinleveldb-modeldb/src/model_db_write_batch_handler.rs": "f8aa9e0c881ebfff16f72db0d2f80583faeaede90aec3fd57883f5216cdb22bb",
+    "bitcoinleveldb-modeldb/src/modeldb.rs": "2ef28482e77926dad5ad8d7916dd19bff82db206ae609a60efa20eeeb25ef127",
+    "bitcoinleveldb-repair/src/write_descriptor.rs": "4e06dbe2620438f362697b89b23a66db4668e3d8343264c8432035c96ff3695a",
+    "bitcoinleveldb-reversekeycomparator/src/reverse_key_comparator.rs": "7d23e4431dd3585f3f1a65ae48ec8feec0b084bc98da0133291674825a720620",
+    "bitcoinleveldb-reversekeycomparator/tests/binary_reverse_contracts.rs": "912a5ce3f12eaf2de30665b0e62164769550bdc5b927813385d5cbc23d32bad1",
+    "bitcoinleveldb-slice/src/slice.rs": "5baa49666936037dbb01a0c3cfdc5e24a0e784b02119ee5585604426edcf8042",
+    "bitcoinleveldb-status/src/status.rs": "287b221ad39b5d4d75c7e318d07cce406ead73ae305c2ff6dfb54352583dc688",
+    "bitcoinleveldb-stringsink/src/string_sink.rs": "b009ba3c8ec580980fef1041bad9431bffcb0719707e76389bfe546833995001",
+    "bitcoinleveldb-stringsource/src/string_source.rs": "72187ac16b15011cfefba41f1e774020e44b2942fa1f03f3d3fc9721ce1347e9",
+    "bitcoinleveldb-table/src/table_read_meta.rs": "6d7f0ad76a75fe245098f66e8398f690c6eb89c1827e147c1e6e62eb534675f6",
+    "bitcoinleveldb-tablebuilder/src/table_builder_add.rs": "851fb1edcea21bcf257ba3a21ae96eb86181fe9526507e0cf180f0fe6a38b301",
+    "bitcoinleveldb-tablebuilder/src/table_builder_finish.rs": "742f80d7481985f3154153d5379971ccc1cd4fd1a371681dc59707b7c69ad822",
+    "bitcoinleveldb-tablebuilder/src/table_builder_rep.rs": "cd371e26c198593422783a82e2e563f1773692ae07d3bcd3ff2fb5ad6b2879cd",
+    "bitcoinleveldb-tablebuilder/src/table_builder_write_block.rs": "07acb7aa50f0c7dd48198caf037549ff3f09996e1011e1e004767c36ca6a18ae",
+    "bitcoinleveldb-tableconstructor/src/build_table_into_sink.rs": "f7b9dff7506bc4b298de398714543fba2f1ed103b2c0e4c99f2e3212626ecc51",
+    "bitcoinleveldb-version/src/get.rs": "5228126084ccaa5a2844ad3a4ab170d8485cd3cd65609b304770e7421dd7cd0b",
+    "bitcoinleveldb-versionedit/src/access.rs": "e286288c4bc092f13d50adb15eb812e3f306cf553443c51015eec635a41cec1c",
+    "bitcoinleveldb-versionedit/src/versionedit_decode_from.rs": "e13a54d77a5574fa095090b30902b3e727711669e57613d80ae1931efb29c368",
+    "bitcoinleveldb-versionedit/src/versionedit_encode_to.rs": "cea001060f7721dade25f628e6a93bf3830f72077469a7f415e7e97d4f86166e",
+    "bitcoinleveldb-versionedit/tests/binary_manifest_contracts.rs": "f917c8f204358099d2e3547f1172e950239375a2ab4ea720e78a02edb32e22dc",
+    "bitcoinleveldb-versionedit/tests/versionedit.rs": "7a58a3f9c202044eece56b600cc575453e0a7cf0903a46baf760d6d171c9169c",
+    "bitcoinleveldb-versionset/src/t_version_set_pick_compaction_selection_specifications.rs": "73129f021dbb9b098c7d3973c7fe4c6b4b3eb328173acb8e5fba39e87054d27c",
+    "bitcoinleveldb-versionset/src/t_version_set_setup_other_inputs_expansion_decision_specifications.rs": "74bf5d1008bffc202a348322bb93762292852aca685ff40b55cda63e8d5d24f4",
+    "bitcoinleveldb-versionset/src/version_set.rs": "7c527e59f7e43ef35fa079a35eef774bf8da6a7655428e2efe187d270e2f34d2",
+    "bitcoinleveldb-versionset/src/version_set_builder_apply.rs": "003ff597b368b9102139d52266c4a54a4184e29efbdbadf5510514debf8dec98",
+    "bitcoinleveldb-versionset/src/version_set_log_and_apply.rs": "a4d0e3a41d9c5470ee9351149c2d74a7895fa4b0458a9f4f06a072b03392b7a9",
+    "bitcoinleveldb-versionset/src/version_set_pick_compaction.rs": "bf8d6b8a31d0c6f4d997fae1782b41477a57b66242d6394cf3ac7e13b3df69a5",
+    "bitcoinleveldb-versionset/src/version_set_recover.rs": "bda3e4ccb86c6198bf6d6a0c88c267cce802493fdc53845fcf0469ec734c347e",
+    "bitcoinleveldb-versionset/src/version_set_setup_other_inputs.rs": "344a17d9b8a79231ddd662deb9bedd2316751488b0df3bf02aacacff7727795f",
+    "bitcoinleveldb-versionset/src/version_set_write_snapshot.rs": "6ce87cfd65ed1e6597e8125429c6a0e3547ef359ffb74502e64555afcd9be52e",
+    "bitcoinleveldb-versionsetutil/src/saver.rs": "f61fde0adca40d4329e80c5ec5d0153fa1f7d1e6e0d00ab1d3f2600b5eae2d89",
+    "bitcoinleveldbt-bench/src/db_bench.rs": "b66bea8d85862dcc9bce82489af426c7103e9d2d41515932d9211111ebe2e567",
+    "bitcoinleveldbt-util/src/compressible_string.rs": "918496591578fe7c70af95afd04a850cb3967c5072b8c88c3cd0557eb643dd0d",
+    "bitcoinleveldbt-util/src/random_key.rs": "ea08707fe068c04229c05f9dc3d6f16a77b330ee5dbb2d98eec5fcd36a58a8fd",
+    "bitcoinleveldbt-util/src/random_string.rs": "b83dc967027b69549fb9c646fc27671df2413039e02e6c00d54a098b51c3b1f8",
+    "contrib/test/leveldb-subsystem.py": "1a5d321444bfec6701d31bfb44aa213f9ed4485b9416eab59b3b5da5c2b0175b"
+  },
+  "entries": [
+    {
+      "baseline_owners": [
+        "InternalKey.rep: String"
+      ],
+      "caller_surface": "No downstream patches needed for the private owner. Five in-crate fixture helpers switch to Vec; legacy public append_internal_key(*mut String) remains a separate gate.",
+      "classification": "production_binary_owner",
+      "contract": "Owned user bytes followed by fixed64 little-endian (sequence << 8 | type); Slice views borrow storage. decode_from deliberately accepts every nonempty encoding, even malformed.",
+      "failure": "String::from_utf8_unchecked and legacy append through String::as_mut_vec violate the String invariant for arbitrary user bytes and ordinary high-bit tag bytes.",
+      "files": [
+        "bitcoinleveldb-key/src/internal_key.rs",
+        "bitcoinleveldb-key/src/parsed_internal_key.rs"
+      ],
+      "id": "internal_key",
+      "owners": [
+        "InternalKey.rep: Vec<u8>"
+      ],
+      "recommended_migration": "Private rep -> Vec<u8>; use new append_internal_key_to_vec; keep escaped textual debug output. Proposed edits preserve all existing public InternalKey methods and wire bytes.",
+      "status": "implemented063_verified065_host_default_features"
+    },
+    {
+      "baseline_owners": [
+        "append_internal_key(result:*mut String,...)"
+      ],
+      "caller_surface": "All captured production and test callers now use byte sinks. Raw public destination type changes from String to Vec<u8>.",
+      "classification": "production_public_binary_sink",
+      "contract": "Append exact binary internal-key encoding to caller-owned output.",
+      "failure": "The former String binary sink is removed by066; other public raw-pointer lifetime requirements remain.",
+      "files": [
+        "bitcoinleveldb-key/src/parsed_internal_key.rs"
+      ],
+      "id": "key_legacy_append",
+      "owners": [
+        "append_internal_key(result:*mut Vec<u8>,...)"
+      ],
+      "recommended_migration": "Implemented066: byte-vector raw destination, copy input before append, and byte-helper callers.",
+      "status": "implemented066_verified066_host_default_features"
+    },
+    {
+      "baseline_owners": [
+        "WriteBatch.rep: String"
+      ],
+      "caller_surface": "Generated rep/rep_mut/set_rep Rust accessor types change. Captured direct callers use byte-compatible ptr/len/capacity/truncate operations; no downstream source edit is required by this proposal. Focused client verification selects batch, key, writebatch and C API crates.",
+      "classification": "production_binary_owner",
+      "contract": "12-byte fixed header plus tagged varint-length-prefixed key/value records; contents Slice and parser must see exact bytes.",
+      "failure": "clear/header mutation/put/delete/set_contents/append write arbitrary bytes through String::as_mut_vec. Even sequence/count headers can invalidate UTF-8 independently of payload.",
+      "files": [
+        "bitcoinleveldb-batch/src/write_batch.rs",
+        "bitcoinleveldb-batch/src/put.rs",
+        "bitcoinleveldb-batch/src/delete.rs",
+        "bitcoinleveldb-batch/src/internal.rs",
+        "bitcoinleveldb-batch/src/iterate.rs"
+      ],
+      "id": "write_batch",
+      "owners": [
+        "WriteBatch.rep: Vec<u8>"
+      ],
+      "recommended_migration": "Implemented063: rep Vec<u8>, direct resize/extend and byte-pointer header updates, exact tagged serialization and existing malformed parsing behavior.",
+      "status": "implemented063_verified065_host_default_features"
+    },
+    {
+      "baseline_failure": "Unsafe byte mutation invalidates both String owners; String APIs cannot represent all block images.",
+      "baseline_owners": [
+        "BlockBuilder.buffer: String",
+        "BlockBuilder.last_key: String"
+      ],
+      "caller_surface": "Public generated getset accessors and buffer_string()->&String need explicit byte replacements/caller updates in TableBuilder/BlockConstructor and tests.",
+      "classification": "production_binary_owner",
+      "contract": "Prefix-compressed block: varint shared/unshared/value lengths, key suffix, raw value, fixed32 restart offsets/count. last_key is exact comparator key.",
+      "failure": "Former encoded String owners are migrated by067; protected client qualification is recorded separately.",
+      "files": [
+        "bitcoinleveldb-blockbuilder/src/block_builder.rs",
+        "bitcoinleveldb-blockbuilder/src/block_builder_add.rs",
+        "bitcoinleveldb-blockbuilder/src/block_builder_finish.rs"
+      ],
+      "id": "block_builder",
+      "owners": [
+        "BlockBuilder.buffer: Vec<u8>",
+        "BlockBuilder.last_key: Vec<u8>"
+      ],
+      "recommended_migration": "Implemented067 byte owners and explicitly byte-typed coding append helpers; exact block format retained.",
+      "status": "implemented067_verified067_host_default_features"
+    },
+    {
+      "additional_contract067": "Production key owner already Vec; verify new builder binary blocks directly through Block iteration.",
+      "caller_surface": "key_buffer()/key_buffer_mut() already use Vec; avoid gratuitous public API change.",
+      "classification": "already_byte_backed_production",
+      "contract": "Production reconstructed key is bytes; values and source block are Slice views.",
+      "failure": "No production String key owner found here. Existing unchecked UTF-8 hits are inside cfg(test) helper modules, and must not be reported as production owner defects.",
+      "files": [
+        "bitcoinleveldb-blockiter/src/block_iter.rs",
+        "bitcoinleveldb-blockiter/src/block_iter_key_value.rs",
+        "bitcoinleveldb-blockiter/src/block_iter_parse_next_key.rs",
+        "bitcoinleveldb-blockiter/src/block_iter_seek_to.rs"
+      ],
+      "id": "block_iter",
+      "owners": [
+        "BlockIter.key_: Vec<u8>",
+        "BlockIter.value_: Slice"
+      ],
+      "recommended_migration": "Preserve Vec production owner. Separately replace unsafe test string helpers with byte assertions where binary fixtures are used.",
+      "status": "production_owner_already_byte_backed_test_fixtures_pending"
+    },
+    {
+      "baseline_owners": [
+        "DBIter.saved_key_: String",
+        "DBIter.saved_value: String",
+        "find_next_user_entry(skip:*mut String)",
+        "save_key(dst:*mut String)"
+      ],
+      "caller_surface": "Most accessors are pub(crate); migrate internal pointer signatures together. Iterator trait key()/value() stays Slice.",
+      "classification": "production_binary_owner",
+      "contract": "Reverse iterator owns current user key/value, forward iterator uses saved key as exact comparator skip key; output remains borrowed Slice.",
+      "failure": "Former binary String owners are migrated by066; this is not a proof of all raw Slice lifetimes.",
+      "files": [
+        "bitcoinleveldb-dbiter/src/iter.rs",
+        "bitcoinleveldb-dbiter/src/save_key.rs",
+        "bitcoinleveldb-dbiter/src/find_next_user_entry.rs",
+        "bitcoinleveldb-dbiter/src/find_prev_user_entry.rs",
+        "bitcoinleveldb-dbiter/src/seek.rs",
+        "bitcoinleveldb-dbiter/src/next.rs",
+        "bitcoinleveldb-dbiter/src/prev.rs"
+      ],
+      "id": "db_iter",
+      "owners": [
+        "DBIter.saved_key_: Vec<u8>",
+        "DBIter.saved_value: Vec<u8>",
+        "find_next_user_entry(skip:*mut Vec<u8>)",
+        "save_key(dst:*mut Vec<u8>)"
+      ],
+      "recommended_migration": "Implemented066: byte owners, safe internal scratch movement, byte views and copy-before-release seek handling.",
+      "status": "implemented066_verified066_host_default_features"
+    },
+    {
+      "baseline_owners": [
+        "MemTableIterator.tmp: String",
+        "encode_key(scratch:*mut String,...)"
+      ],
+      "caller_surface": "Private iterator field; public encode_key sink may have fixture callers.",
+      "classification": "production_binary_owner",
+      "contract": "Scratch contains varint key length followed by arbitrary lookup key bytes, and must outlive skiplist seek.",
+      "failure": "Former binary String seek scratch is migrated by066; point-get output remains a separate pending path.",
+      "files": [
+        "bitcoinleveldb-memtable/src/memtable_iterator.rs",
+        "bitcoinleveldb-memtable/src/encode_key.rs"
+      ],
+      "id": "memtable_seek",
+      "owners": [
+        "MemTableIterator.tmp: Vec<u8>",
+        "encode_key(scratch:*mut Vec<u8>,...)"
+      ],
+      "recommended_migration": "Implemented066: exact varint-prefixed byte encoding built before replacing scratch owner.",
+      "status": "implemented066_verified066_host_default_features"
+    },
+    {
+      "baseline_owners": [
+        "MemTable::get(value:*mut String)"
+      ],
+      "caller_surface": "DBImpl::get_bytes -> MemTable/immutable MemTable or Version::get_bytes -> Saver -> Table; byte output across branches.",
+      "classification": "production_byte_output_with_checked_text_adapter",
+      "contract": "Successful lookup must return stored value bytes exactly; tombstone handling and status are separate from output encoding.",
+      "failure": "Byte retrieval and checked legacy text adapter implemented081; qualified082 under its exact source boundary.",
+      "files": [
+        "bitcoinleveldb-memtable/src/memtable_get.rs"
+      ],
+      "id": "memtable_get",
+      "owners": [
+        "MemTable::get_bytes(value:*mut Vec<u8>)",
+        "MemTable::get checked UTF-8 compatibility adapter"
+      ],
+      "recommended_migration": "Implemented081 and qualified082. Prefer byte retrieval for arbitrary values; existing text adapter rejects invalid UTF-8 and retains its documented tombstone/status behavior.",
+      "status": "implemented081_qualified082"
+    },
+    {
+      "baseline_owners": [
+        "Saver.value:*mut String",
+        "Version::get(value:*mut String)",
+        "DBGet::get(value:*mut String)",
+        "DBImpl DBGet implementation"
+      ],
+      "caller_surface": "Rust byte-get surface plus checked legacy text adapters. C-style leveldb_get retains pointer/length ownership; these are Rust functions, not exported C ABI entry points. ModelDB byte retrieval qualified083/084.",
+      "classification": "production_public_binary_output_chain",
+      "contract": "Table callback saves exact value; DBGet is binary data API. C API returns allocated byte pointer plus explicit length.",
+      "failure": "Byte outputs and checked text adapters qualified through082; model byte storage and typed snapshots qualified083/084.",
+      "files": [
+        "bitcoinleveldb-versionsetutil/src/saver.rs",
+        "bitcoinleveldb-version/src/get.rs",
+        "bitcoinleveldb-dbinterface/src/get.rs",
+        "bitcoinleveldb-dbimpl/src/get.rs",
+        "bitcoinleveldb-db/src/leveldb_get.rs",
+        "bitcoinleveldb-modeldb/src/modeldb.rs"
+      ],
+      "id": "saver_version_dbget",
+      "owners": [
+        "Saver.value:*mut Vec<u8>",
+        "Version::get_bytes(value:*mut Vec<u8>)",
+        "DBGet::get_bytes(value:*mut Vec<u8>)",
+        "DBImpl and ModelDB byte-get implementations",
+        "C-style leveldb_get Vec temporary"
+      ],
+      "recommended_migration": "Implemented081/083 and qualified082/084 under recorded source boundaries. DBGetProperty remains textual; legacy text-only third-party implementers default byte retrieval to NotSupported until opting in.",
+      "status": "point_read_chain081_qualified082_model083_qualified084"
+    },
+    {
+      "baseline_owners": [
+        "VersionSet.compact_pointer:[String;NUM_LEVELS]"
+      ],
+      "caller_surface": "Generated accessors/builder types plus selection/expansion tests; keep trace formatting textual and explicitly separate.",
+      "classification": "production_lossy_key_state",
+      "contract": "Each element is an encoded InternalKey used for exact compaction selection comparisons; not a human-readable key description.",
+      "failure": "Former String binary owner removed071; exact affected071 source passed its separate guarded qualification.",
+      "files": [
+        "bitcoinleveldb-versionset/src/version_set.rs",
+        "bitcoinleveldb-versionset/src/version_set_builder_apply.rs",
+        "bitcoinleveldb-versionset/src/version_set_setup_other_inputs.rs",
+        "bitcoinleveldb-versionset/src/version_set_pick_compaction.rs"
+      ],
+      "id": "version_set_compact_pointer",
+      "owners": [
+        "VersionSet.compact_pointer:[Vec<u8>;NUM_LEVELS]"
+      ],
+      "recommended_migration": "Implemented071 as byte-backed output/state; retain exact wire bytes and qualify this source with the focused guarded checks.",
+      "status": "implemented071_verified071_affected_packages"
+    },
+    {
+      "baseline_owners": [
+        "VersionEdit::encode_to(dst:*mut String)",
+        "DBImpl::new_db record:String",
+        "VersionSet log_and_apply/write_snapshot record:String"
+      ],
+      "caller_surface": "VersionEdit public encoder and all manifest creation/apply/snapshot clients, tests. Comparator name is textual; its decode currently uses lossy Slice.to_string and deserves explicit name-validation policy, not arbitrary binary reinterpretation.",
+      "classification": "production_public_binary_sink",
+      "contract": "Manifest tagged varints plus length-prefixed comparator name and encoded InternalKeys; LogWriter receives raw record Slice.",
+      "failure": "Former String binary owner removed071; exact affected071 source passed its separate guarded qualification.",
+      "files": [
+        "bitcoinleveldb-versionedit/src/versionedit_encode_to.rs",
+        "bitcoinleveldb-versionedit/src/versionedit_decode_from.rs",
+        "bitcoinleveldb-dbimpl/src/new_db.rs",
+        "bitcoinleveldb-versionset/src/version_set_log_and_apply.rs",
+        "bitcoinleveldb-versionset/src/version_set_write_snapshot.rs",
+        "bitcoinleveldb-repair/src/write_descriptor.rs"
+      ],
+      "id": "version_edit_manifest",
+      "owners": [
+        "VersionEdit::encode_to(*mut Vec<u8>)",
+        "DBImpl/VersionSet/Repairer manifest records:Vec<u8>"
+      ],
+      "recommended_migration": "Implemented071 as byte-backed output/state; retain exact wire bytes and qualify this source with the focused guarded checks.",
+      "status": "implemented071_verified071_affected_packages"
+    },
+    {
+      "baseline_owners": [
+        "TableBuilderRep.compressed_output:String",
+        "handle_encoding:Vec<u8>",
+        "footer_encoding:Vec<u8>"
+      ],
+      "caller_surface": "getset compressed_output accessors; compat snappy_compress; BlockHandle/Footer encode_to. Keep filter.<policy-name> String when it is genuinely metadata text.",
+      "classification": "production_binary_owner_and_temporaries",
+      "contract": "Owned Snappy output or encoded block handles/footer bytes, passed to BlockBuilder and WritableFile as Slice; metadata filter prefix/name is text.",
+      "failure": "Former String compression owners were removed070 and qualified in the separate default and named Snappy-enabled070 profiles.",
+      "files": [
+        "bitcoinleveldb-tablebuilder/src/table_builder_rep.rs",
+        "bitcoinleveldb-tablebuilder/src/table_builder_write_block.rs",
+        "bitcoinleveldb-tablebuilder/src/table_builder_add.rs",
+        "bitcoinleveldb-tablebuilder/src/table_builder_finish.rs"
+      ],
+      "id": "table_builder",
+      "owners": [
+        "TableBuilderRep.compressed_output:Vec<u8>",
+        "handle_encoding:Vec<u8>",
+        "footer_encoding:Vec<u8>"
+      ],
+      "recommended_migration": "compressed_output/handle_encoding/footer_encoding -> Vec<u8>; consume byte-safe handle/footer/coding/snappy APIs; preserve compression acceptance threshold and raw fallback.",
+      "status": "implemented070_verified070_default_and_named_snappy_profiles"
+    },
+    {
+      "baseline_failure": "Varints/padding/magic are arbitrary bytes, appended through String byte vector mutation.",
+      "baseline_owners": [
+        "BlockHandle::encode_to(dst:*mut String)",
+        "Footer::encode_to(dst:*mut String)"
+      ],
+      "caller_surface": "TableBuilder::add/finish plus footer and handle fixtures; serialized lengths/magic must not change.",
+      "classification": "production_public_binary_sinks",
+      "contract": "Two varint64 block handle fields; fixed footer padding and magic trailer exactly as existing SSTable format.",
+      "failure": "Former String encoder destinations are migrated to byte vectors by068; separate protected client qualification required.",
+      "files": [
+        "bitcoinleveldb-blockhandle/src/block_handle_encode_to.rs",
+        "bitcoinleveldb-footer/src/footer_encode_to.rs"
+      ],
+      "id": "block_handle_footer",
+      "owners": [
+        "BlockHandle::encode_to(dst:*mut Vec<u8>)",
+        "Footer::encode_to(dst:*mut Vec<u8>)"
+      ],
+      "recommended_migration": "Implemented068 with byte coding helpers, initialized handle checks, staged48-byte footer and exact binary prefix append.",
+      "status": "implemented068_verified069_host_default_features"
+    },
+    {
+      "baseline_owners": [
+        "snappy_compress(output:*mut String)"
+      ],
+      "caller_surface": "TableBuilderRep.compressed_output and enabled Snappy tests in compat/read_block.",
+      "classification": "production_public_binary_sink",
+      "contract": "Compressed bytes are opaque; false means unavailable/failed and caller may use raw block.",
+      "failure": "Former String compression owners were removed070 and qualified in the separate default and named Snappy-enabled070 profiles.",
+      "files": [
+        "bitcoinleveldb-compat/src/snappy_compress.rs"
+      ],
+      "id": "compat_snappy",
+      "owners": [
+        "snappy_compress(output:*mut Vec<u8>)"
+      ],
+      "recommended_migration": "Vec output API for enabled and disabled implementations; maintain false/fallback semantics without fake String or lossy transformation.",
+      "status": "implemented070_verified070_default_and_named_snappy_profiles"
+    },
+    {
+      "baseline_owners": [
+        "put_fixed32/put_fixed64(dst:*mut String)",
+        "put_varint32/put_varint64(dst:*mut String)",
+        "put_varint64_to_string(&mut String)",
+        "put_length_prefixed_slice(dst:*mut String)"
+      ],
+      "caller_surface": "BlockHandle/Footer/VersionEdit/MemTable/batch/fixtures; key crate already has local byte helpers so no coding dependency should be added to key.",
+      "classification": "production_public_binary_sinks",
+      "contract": "Serialize exact fixed-width little-endian or varint numbers and arbitrary length-prefixed bytes.",
+      "failure": "Former String binary owner removed071; exact affected071 source passed its separate guarded qualification.",
+      "files": [
+        "bitcoinleveldb-coding/src/put_fixed.rs",
+        "bitcoinleveldb-coding/src/put_varint.rs",
+        "bitcoinleveldb-coding/src/put_length_prefixed_slice.rs"
+      ],
+      "id": "coding_binary_sinks",
+      "new_byte_outputs": [
+        "put_fixed32_bytes",
+        "put_fixed64_bytes",
+        "put_varint32_bytes",
+        "put_varint64_bytes",
+        "put_length_prefixed_slice_bytes"
+      ],
+      "owners": [
+        "put_fixed32/64(*mut Vec<u8>)",
+        "put_varint32/64(*mut Vec<u8>)",
+        "put_length_prefixed_slice(*mut Vec<u8>)"
+      ],
+      "recommended_migration": "Implemented071 as byte-backed output/state; retain exact wire bytes and qualify this source with the focused guarded checks.",
+      "status": "implemented071_verified071_affected_packages"
+    },
+    {
+      "caller_surface": "Verified data consumers include MemTable get, VersionSet compact pointers, ModelDB write/seek and Constructor values. Trace/status formatting may stay text.",
+      "classification": "production_lossy_conversion_boundary",
+      "contract": "Current implementation is explicitly from_utf8_lossy. Appropriate for text/display only; never exact storage transport.",
+      "failure": "Different byte strings can collapse to the same replacement-character String; even valid UTF-8 fragments can be split at read boundaries elsewhere.",
+      "files": [
+        "bitcoinleveldb-slice/src/slice.rs",
+        "bitcoinleveldb-coding/src/slice_to_utf8.rs"
+      ],
+      "id": "slice_to_string",
+      "owners": [
+        "Slice::to_string()->String",
+        "slice_to_utf8(&Slice)->String"
+      ],
+      "recommended_migration": "Use Slice.as_bytes()/owned Vec at binary call sites. If retaining lossy helpers, make text intent explicit and inventory consumers; no global String replacement.",
+      "status": "pending"
+    },
+    {
+      "baseline_owners": [
+        "read_file_to_string(data:*mut String)"
+      ],
+      "caller_surface": "Audit file-content callers, keeping filename/path String separate from raw file content.",
+      "classification": "production_lossy_file_content_output",
+      "contract": "Exact binary byte core; explicit whole-buffer UTF-8 text boundary; I/O-error precedence and successful-prefix semantics.",
+      "failure": "Former per-fragment lossy file conversion removed076; its exact Env/VersionSet source passed separate guarded checks.",
+      "files": [
+        "bitcoinleveldb-env/src/read_file_to_bytes.rs",
+        "bitcoinleveldb-env/src/read_file_to_string.rs",
+        "bitcoinleveldb-env/tests/write_string_to_file_tests.rs",
+        "bitcoinleveldb-versionset/src/version_set_recover.rs"
+      ],
+      "id": "env_read_file",
+      "owners": [
+        "read_file_to_bytes(data:*mut Vec<u8>)",
+        "read_file_to_string(data:*mut String) validates complete UTF-8 buffer"
+      ],
+      "recommended_migration": "Use the byte helper for arbitrary file data. Keep CURRENT callers on validated text. No String byte owner remains in the read core.",
+      "status": "implemented076_verified076_affected_packages"
+    },
+    {
+      "baseline_failure": "Model handler put/delete and iterator seek convert Slice.to_string(), corrupting identity; Constructor::add converts value from_utf8_lossy. BlockConstructor binary dataString is filled with unsafe.as_mut_vec.",
+      "baseline_owners": [
+        "bitcoin_imports::KVMap=HashMap<String,String>",
+        "ModelIter.keys:Vec<String>",
+        "BlockConstructor.data:String",
+        "Constructor add key:&String/value:&Slice"
+      ],
+      "caller_surface": "ModelDB snapshots/iterators; block/table/db constructors; harness and random tests. These are compiled crates with public APIs although mainly test support; do not confuse with cfg(test)-only code.",
+      "classification": "compiled_test_support_binary_coverage_defects",
+      "contract": "Model stores exact keys/values and drives reference comparisons; constructors assemble raw block/table images for subsystem tests.",
+      "failure": "ModelDB is byte-backed with comparator-aware owned iteration and typed snapshots. Constructor/harness KVMap paths still limit binary keys/values.",
+      "files": [
+        "bitcoin-imports/src/lib.rs",
+        "bitcoinleveldb-modeldb/src/model_db_write_batch_handler.rs",
+        "bitcoinleveldb-modeldb/src/iter.rs",
+        "bitcoinleveldb-blockconstructor/src/block_constructor.rs",
+        "bitcoinleveldb-blockconstructor/src/block_constructor_finish_impl.rs",
+        "bitcoinleveldb-blockconstructor/src/constructor.rs",
+        "bitcoinleveldb-tableconstructor/src/build_table_into_sink.rs"
+      ],
+      "id": "model_and_constructor",
+      "owners": [
+        "ModelDB.map:ModelByteMap",
+        "ByteModelIter owned byte rows and comparator",
+        "Legacy ModelIter.keys:Vec<String> retained separately",
+        "bitcoin_imports::KVMap=HashMap<String,String> retained for legacy fixture callers",
+        "BlockConstructor.data:Vec<u8>",
+        "Constructor add key:&String/value:&Slice"
+      ],
+      "recommended_migration": "ModelDB byte ownership and typed snapshots implemented083/qualified084. Remaining constructor/harness migration should add scoped byte maps and preserve comparator order without changing global unrelated KVMap.",
+      "status": "model083_qualified084_constructor_and_harness_pending"
+    },
+    {
+      "baseline_owners": [
+        "reverse(&Slice)->String",
+        "increment(*mut String)"
+      ],
+      "caller_surface": "Published crate production methods (test-support role), not just cfg(test) helpers. Its ASCII-only tests currently miss binary ordering collapse.",
+      "classification": "compiled_test_comparator_exact_byte_ordering",
+      "contract": "Compare reversed exact bytes; reverse-space shortening; append/prepend NUL only for supported bytewise/reverse test orders.",
+      "failure": "Former lossy comparison and String helper removed077; binary ordering changes require a distinct persisted name.",
+      "files": [
+        "bitcoinleveldb-reversekeycomparator/src/reverse_key_comparator.rs",
+        "bitcoinleveldb-reversekeycomparator/tests/binary_reverse_contracts.rs"
+      ],
+      "id": "reverse_comparator",
+      "owners": [
+        "reverse(&Slice)->Vec<u8>",
+        "increment(*mut Vec<u8>)",
+        "Named::name=bitcoinrs.ReverseBytewiseComparator.BytesV1"
+      ],
+      "recommended_migration": "Use byte outputs and the new distinct comparator name. Recreate old-name databases from original logical records; no manifest rename or legacy alias.",
+      "status": "implemented077_qualified078"
+    },
+    {
+      "caller_surface": "Changing random key generator changes exercised workload; version/record this deliberately rather than silently labeling full previous randomized coverage.",
+      "classification": "test_support_workload_semantics_review",
+      "contract": "Random key source describes choosing raw interesting bytes including fd/fe/ff; random value generator samples printable ASCII.",
+      "failure": "Legacy key helpers intentionally encode high bytes as Unicode scalars.085 adds exact-byte APIs, preserves old normal-input tapes, and fixes null-PRNG compressible_string nontermination.",
+      "files": [
+        "bitcoinleveldbt-util/src/random_key.rs",
+        "bitcoinleveldbt-util/src/random_string.rs",
+        "bitcoinleveldbt-util/src/compressible_string.rs"
+      ],
+      "id": "test_random_generators",
+      "owners": [
+        "random_key()->String",
+        "random_string(dst:*mut String)"
+      ],
+      "recommended_migration": "Future byte-key generator should preserve PRNG draw order and raw bytes; compare operation tape to legacy intended workload. Keep text-only generator distinct.",
+      "status": "raw_byte_api085_client_qualification_required_legacy_text_callers_retained"
+    },
+    {
+      "caller_surface": "Do not treat test String payload literals, named-file Cow<str>, or trace conversions as binary owner defects.",
+      "classification": "already_byte_backed_production",
+      "contract": "These core binary buffers already use bytes or borrowed Slice interfaces.",
+      "failure": "CacheRep::slice_to_string is lossy but has no captured call sites; cache operations use slice_to_vec. LogWriter takes a raw record Slice; its manifest callers become byte-backed071.",
+      "files": [
+        "bitcoinleveldb-stringsink/src/string_sink.rs",
+        "bitcoinleveldb-stringsource/src/string_source.rs",
+        "bitcoinleveldb-filter/src/filter_block.rs",
+        "bitcoinleveldb-filter/src/filter_policy.rs",
+        "bitcoinleveldb-bloom/src/create_filter.rs",
+        "bitcoinleveldb-cache/src/cache_rep.rs",
+        "bitcoinleveldb-cache/src/cache_handle.rs",
+        "bitcoinleveldb-logreader/src/log_reader_read_record.rs",
+        "bitcoinleveldb-logwriter/src/log_writer.rs"
+      ],
+      "id": "already_bytes_components",
+      "owners": [
+        "StringSink.contents:Vec<u8>",
+        "StringSource.contents:Vec<u8>",
+        "FilterBlockBuilder.keys/result:Vec<u8>",
+        "FilterPolicy::create_filter(dst:&mut Vec<u8>)",
+        "Bloom output:Vec<u8>",
+        "CacheRep.entries:HashMap<Vec<u8>,...>",
+        "CacheHandle.key:Vec<u8>",
+        "LogReader read_record scratch:&mut Vec<u8>",
+        "LogWriter record input:Slice"
+      ],
+      "recommended_migration": "Retain byte interfaces, add regression coverage only where a connected migration changes them.",
+      "status": "already_byte_backed"
+    },
+    {
+      "caller_surface": "This inventory does not prove arbitrary OS pathname byte support or all unsafe pointer lifetime correctness.",
+      "classification": "intentional_text_interfaces",
+      "contract": "Human-readable/control text with explicit encoding assumptions.",
+      "failure": "No binary owner defect follows solely from String usage. Display can be lossy if intentionally documented; it must not feed key comparisons or persisted binary data.",
+      "files": [
+        "bitcoinleveldb-status/src/status.rs",
+        "bitcoinleveldb-key/src/encode.rs",
+        "bitcoinleveldb-dbinterface/src/get_property.rs",
+        "bitcoinleveldb-table/src/table_read_meta.rs"
+      ],
+      "id": "text_not_binary",
+      "owners": [
+        "Status messages",
+        "debug_string/escape_for_debug output",
+        "filename/dbname/name strings",
+        "DBGetProperty output",
+        "trace output",
+        "filter.<policy name> metadata key"
+      ],
+      "recommended_migration": "Keep String; validate actual text boundaries where required and preserve byte-derived escaping for debug output.",
+      "status": "text_keep"
+    }
+  ],
+  "generator085": {
+    "client_qualification_required": true,
+    "constructor_callers_migrated": false,
+    "legacy_tapes_unchanged": true,
+    "randomized_callers_migrated": false,
+    "raw_api": [
+      "random_key_bytes",
+      "dbtest_random_key_bytes"
+    ]
+  },
+  "missing_referenced_source_paths": [],
+  "named_feature_selection070": {
+    "bitcoinleveldb-blockhandle": "bitcoinleveldb-compat/leveldb_snappy",
+    "bitcoinleveldb-compat": "leveldb_snappy",
+    "bitcoinleveldb-tablebuilder": "bitcoinleveldb-compat/leveldb_snappy"
+  },
+  "non_claims": [
+    "No cause established for any past allocator abort.",
+    "No release qualification or full test coverage claimed.",
+    "No global replacement of textual String values proposed.",
+    "Checked UTF-8 rejection, lossy conversion, Latin-1, base64, or invalid-str wrappers are not binary format compatibility repairs."
+  ],
+  "point_read081": {
+    "byte_owners": [
+      "MemTable::get_bytes",
+      "Saver.value",
+      "Version::get_bytes",
+      "DBGet::get_bytes",
+      "DBImpl::get_bytes",
+      "C leveldb_get temporary"
+    ],
+    "modeldb_byte_capability": "Implemented083 and qualified084: ModelDB::get_bytes preserves byte payloads; inherited text get is checked.",
+    "source_binding_scope": "source_sha256 retains the historical081 getter-stage bindings; model083/084 status supersedes the earlier pending capability observation.",
+    "source_sha256": {
+      "bitcoinleveldb-db/src/leveldb_get.rs": "7f546ef3c1d6c58375845bc246f4ac0a427cbca3d75d2f668c503c855eadb496",
+      "bitcoinleveldb-dbimpl/src/get.rs": "8ac48a4857b25aaba3fefa99bffc3126b21a56ba687779d81bb1971cc7aa6e68",
+      "bitcoinleveldb-dbinterface/src/get.rs": "8d4b3f85030b842d7a24a02a8720f388b3f6e976687c617ef6dcf31e774e4863",
+      "bitcoinleveldb-memtable/src/memtable_get.rs": "6b805f717f67c745c57dc9343ade7353c04162fc572bc78ca5f0eaa1471f7ad9",
+      "bitcoinleveldb-memtable/tests/binary_get_contracts.rs": "9101c0a0d64eb45ed59de127fa4442bde55bdaf2757a62593bf739e24a0d441f",
+      "bitcoinleveldb-version/src/get.rs": "07c199356ba975aeed92f4f82924f1e377f0204461c12d102ebbb2e7dedabbb4",
+      "bitcoinleveldb-versionsetutil/src/saver.rs": "e0cf2974dd25c067a8d78b66b977ef6c758acae38274b2d6a094a2272d747e04"
+    },
+    "storage080": {
+      "helper": {
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-storage-lifecycle080/storage_gate080.py",
+        "sha256": "ef24e27eecb371222461f229104ce23b32fe624edd2b0258c5f11504ab5b77d7",
+        "size": 15171
+      },
+      "policy": {
+        "path": "/home/kleb/bitcoin-rs/.git/codex-repairs/leveldb-storage-lifecycle080/STORAGE_POLICY.json",
+        "sha256": "ddc97cb5eeae6583e4a4d120177a6a7d8b1efba7a8a6213e9fed990c917cd76b",
+        "size": 4303
+      }
+    },
+    "text_compatibility": "Existing get signatures are checked adapters; legacy implementers explicitly default byte retrieval to NotSupported."
+  },
+  "prior_qualification": {
+    "actual_doctest_cases": 0,
+    "candidate_head": "707e3a9aadca098dc4be750caf81fa8915e4c53c",
+    "qualification": {
+      "cumulative_native_passes": 136,
+      "fresh_native_passes": 136,
+      "interpretation": "Historical and fresh evidence retain separate source references; no new full-subsystem claim.",
+      "outcome": "passed",
+      "packages": [
+        "bitcoinleveldb-env",
+        "bitcoinleveldb-versionset"
+      ],
+      "pending_packages": [],
+      "qualified_doctest_commands": 2,
+      "required_regressions_passed": 14,
+      "retained_native_passes": 0
+    },
+    "scope": "Separate076 Env/VersionSet file boundary result; harness/recovery compiled without native workloads.",
+    "workflow": "leveldb-env-file-bytes076"
+  },
+  "regression_inventory063": {
+    "batch": [
+      "binary_records_preserve_literal_wire_format_and_handler_order",
+      "binary_varint_lengths_preserve_128_and_129_byte_payloads",
+      "binary_header_fields_preserve_non_utf8_fixed_width_bytes",
+      "binary_append_set_contents_and_clear_round_trip_exact_bytes",
+      "binary_set_contents_copies_a_view_of_its_current_owner",
+      "binary_internal_self_append_preserves_records_across_reallocation"
+    ],
+    "key": [
+      "internal_key::internal_key_tests::binary_internal_key_preserves_literal_wire_bytes_at_sequence_limit",
+      "internal_key::internal_key_tests::set_from_replaces_binary_owner_with_exact_little_endian_tag",
+      "internal_key::internal_key_tests::binary_internal_key_debug_escapes_payload_and_malformed_bytes",
+      "parsed_internal_key::parsed_internal_key_tests::byte_append_preserves_prefix_binary_user_and_literal_tag",
+      "internal_key::internal_key_tests::set_from_accepts_parsed_key_borrowing_its_own_binary_storage"
+    ]
+  },
+  "regression_inventory066": {
+    "dbiter": [
+      "dbiter_test_support::binary_byte_owner066_regressions::binary_fixture_encoder_matches_literal_internal_tag",
+      "dbiter_test_support::binary_byte_owner066_regressions::binary_iteration_preserves_values_and_snapshot_tombstones_both_directions",
+      "dbiter_test_support::binary_byte_owner066_regressions::binary_direction_changes_and_seek_keep_exact_user_bytes",
+      "dbiter_test_support::binary_byte_owner066_regressions::binary_seek_accepts_current_reverse_key_and_large_saved_value_views",
+      "dbiter_test_support::binary_byte_owner066_regressions::binary_save_key_handles_overlapping_views_and_reuses_disjoint_storage",
+      "dbiter_test_support::binary_byte_owner066_regressions::binary_raw_skip_helper_preserves_non_utf8_tombstone_key"
+    ],
+    "key": [
+      "parsed_internal_key::byte_sink_contracts066::raw_byte_sink_preserves_prefix_payload_and_literal_sequence_tag",
+      "parsed_internal_key::byte_sink_contracts066::raw_byte_sink_copies_a_user_key_borrowing_its_destination",
+      "parsed_internal_key::byte_sink_contracts066::raw_byte_sink_rejects_null_destination"
+    ],
+    "keyconvertingiterator": [
+      "seek::binary_seek_contracts066::binary_seek_keeps_distinct_non_utf8_user_keys_and_literal_maximum_tags",
+      "seek::binary_seek_contracts066::binary_seek_appends_only_the_fixed_tag_after_a_long_binary_user_key"
+    ],
+    "memtable": [
+      "byte_seek_scratch_preserves_literal_varint_boundaries_and_payloads",
+      "byte_seek_scratch_copies_a_view_of_its_previous_allocation",
+      "binary_memtable_iteration_and_seek_preserve_keys_values_and_record_order"
+    ]
+  },
+  "regression_inventory067": [
+    [
+      "bitcoinleveldb-blockbuilder",
+      "binary_block_contracts",
+      "binary_prefix_entries_and_restart_trailer_match_literal_wire_bytes"
+    ],
+    [
+      "bitcoinleveldb-blockbuilder",
+      "binary_block_contracts",
+      "binary_long_key_and_value_keep_literal_multibyte_length_prefixes"
+    ],
+    [
+      "bitcoinleveldb-blockbuilder",
+      "binary_block_contracts",
+      "add_snapshots_key_and_value_views_of_previous_builder_allocations"
+    ],
+    [
+      "bitcoinleveldb-blockbuilder",
+      "binary_block_contracts",
+      "empty_block_empty_entry_and_reset_have_distinct_literal_formats"
+    ],
+    [
+      "bitcoinleveldb-blockconstructor",
+      "binary_block_contracts",
+      "constructor_owns_non_utf8_block_metadata_and_rebuilds_after_iterator_drop"
+    ],
+    [
+      "bitcoinleveldb-blockconstructor",
+      "binary_block_contracts",
+      "binary_builder_block_iteration_seek_and_direction_changes_preserve_exact_bytes"
+    ],
+    [
+      "bitcoinleveldb-coding",
+      "byte_append_contracts",
+      "fixed_byte_sinks_preserve_binary_prefix_and_literal_endianness"
+    ],
+    [
+      "bitcoinleveldb-coding",
+      "byte_append_contracts",
+      "varint_byte_sinks_match_literal_boundaries_for_both_widths"
+    ],
+    [
+      "bitcoinleveldb-coding",
+      "byte_append_contracts",
+      "length_prefixed_byte_sink_preserves_every_byte_and_consumes_exactly_one_record"
+    ],
+    [
+      "bitcoinleveldb-coding",
+      "byte_append_contracts",
+      "length_prefixed_byte_sink_copies_its_previous_allocation_before_growth"
+    ],
+    [
+      "bitcoinleveldb-coding",
+      "byte_append_contracts",
+      "length_prefixed_byte_sink_accepts_an_empty_slice_without_dereferencing_null"
+    ]
+  ],
+  "regression_inventory068": [
+    [
+      "bitcoinleveldb-blockhandle",
+      "binary_handle_contracts",
+      "binary_handle_varints_preserve_prefix_and_literal_wire_bytes"
+    ],
+    [
+      "bitcoinleveldb-blockhandle",
+      "binary_handle_contracts",
+      "binary_handle_largest_initialized_fields_use_literal_twenty_byte_encoding"
+    ],
+    [
+      "bitcoinleveldb-blockhandle",
+      "binary_handle_contracts",
+      "binary_handle_nine_and_ten_byte_boundaries_and_zero_remain_distinct"
+    ],
+    [
+      "bitcoinleveldb-footer",
+      "binary_footer_contracts",
+      "binary_footer_prefix_padding_and_magic_match_literal_wire_bytes"
+    ],
+    [
+      "bitcoinleveldb-footer",
+      "binary_footer_contracts",
+      "binary_footer_maximum_handles_fill_the_region_without_padding"
+    ],
+    [
+      "bitcoinleveldb-footer",
+      "binary_footer_contracts",
+      "binary_footer_back_to_back_encodings_leave_the_exact_binary_suffix"
+    ],
+    [
+      "bitcoinleveldb-tablebuilder",
+      "bitcoinleveldb_tablebuilder",
+      "table_builder_finish::binary_metadata_contracts068::binary_sstable_metadata_preserves_handles_footer_and_three_data_blocks"
+    ]
+  ],
+  "regression_inventory070": [
+    [
+      "bitcoinleveldb-compat",
+      "binary_snappy_contracts",
+      "binary_snappy_literal_wire_roundtrip_or_disabled_output_preservation"
+    ],
+    [
+      "bitcoinleveldb-compat",
+      "binary_snappy_contracts",
+      "binary_snappy_self_borrowed_input_survives_destination_replacement"
+    ],
+    [
+      "bitcoinleveldb-compat",
+      "binary_snappy_contracts",
+      "binary_snappy_empty_input_has_literal_wire_or_preserves_disabled_output"
+    ],
+    [
+      "bitcoinleveldb-compat",
+      "binary_snappy_contracts",
+      "binary_snappy_rejected_null_input_leaves_live_output_unchanged"
+    ],
+    [
+      "bitcoinleveldb-tablebuilder",
+      "bitcoinleveldb_tablebuilder",
+      "table_builder_write_block::binary_snappy_table_contracts070::binary_snappy_block_preserves_raw_bytes_trailer_and_enabled_roundtrip"
+    ],
+    [
+      "bitcoinleveldb-blockhandle",
+      "bitcoinleveldb_blockhandle",
+      "read_block::read_block_io_behavior_tests::read_block_snappy_compressed_roundtrip_success"
+    ]
+  ],
+  "regression_inventory071": [
+    [
+      "bitcoinleveldb-coding",
+      "named_byte_sink_contracts",
+      "named_byte_sinks_append_literal_fixed_varint_and_binary_payloads"
+    ],
+    [
+      "bitcoinleveldb-coding",
+      "named_byte_sink_contracts",
+      "named_length_prefix_snapshots_its_live_destination_view_before_growth"
+    ],
+    [
+      "bitcoinleveldb-coding",
+      "named_byte_sink_contracts",
+      "named_byte_sinks_reject_null_destinations_before_dereference"
+    ],
+    [
+      "bitcoinleveldb-versionedit",
+      "binary_manifest_contracts",
+      "binary_manifest_literal_wire_preserves_prefix_key_bytes_and_field_order"
+    ],
+    [
+      "bitcoinleveldb-versionedit",
+      "binary_manifest_contracts",
+      "binary_manifest_full_width_scalar_varints_match_literal_wire_bytes"
+    ],
+    [
+      "bitcoinleveldb-versionset",
+      "bitcoinleveldb_versionset",
+      "t_version_set_pick_compaction_selection_specifications::version_set_pick_compaction_selection_specifications::pick_compaction_uses_and_advances_binary_sequence_compact_pointer"
+    ],
+    [
+      "bitcoinleveldb-versionset",
+      "bitcoinleveldb_versionset",
+      "version_set_builder_apply::version_set_builder_apply_exhaustive_test_suite::builder_apply_owns_exact_binary_compact_pointer_bytes_after_sources_drop"
+    ],
+    [
+      "bitcoinleveldb-dbimpl",
+      "bitcoinleveldb_dbimpl",
+      "new_db::new_db_interface_and_filesystem_suite::newdb_creates_manifest_and_current_file_for_empty_directory"
+    ],
+    [
+      "bitcoinleveldb-versionset",
+      "bitcoinleveldb_versionset",
+      "version_set_log_and_apply::version_set_log_and_apply_exhaustive_test_suite::log_and_apply_persists_edit_so_recover_sees_it"
+    ],
+    [
+      "bitcoinleveldb-versionset",
+      "bitcoinleveldb_versionset",
+      "version_set_write_snapshot::version_set_write_snapshot_exhaustive_test_suite::write_snapshot_then_recover_preserves_file_state"
+    ],
+    [
+      "bitcoinleveldb-repair",
+      "bitcoinleveldb_repair",
+      "write_descriptor::write_descriptor_manifest_suite::write_descriptor_archives_old_manifests_and_installs_new_manifest_and_current"
+    ]
+  ],
+  "regression_inventory076": [
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_bytes_preserves_all_byte_values_across_chunks"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_bytes_clears_output_on_open_failure"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_bytes_retains_successful_prefix_on_read_error"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_string_preserves_utf8_split_between_reads"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_string_rejects_invalid_or_truncated_utf8"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_string_preserves_io_error_for_invalid_prefix"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_string_retains_valid_prefix_on_io_error"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "empty_file_clears_binary_and_text_outputs"
+    ],
+    [
+      "bitcoinleveldb-versionset",
+      "bitcoinleveldb_versionset",
+      "version_set_recover::version_set_recover_exhaustive_test_suite::recover_rejects_non_utf8_current_before_manifest_lookup"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_string_reads_full_content_in_multiple_chunks"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_string_propagates_new_sequential_file_failure"
+    ],
+    [
+      "bitcoinleveldb-env",
+      "write_string_to_file_tests",
+      "read_file_to_string_stops_on_read_error"
+    ],
+    [
+      "bitcoinleveldb-versionset",
+      "bitcoinleveldb_versionset",
+      "version_set_recover::version_set_recover_exhaustive_test_suite::recover_creates_new_db_when_allowed"
+    ],
+    [
+      "bitcoinleveldb-versionset",
+      "bitcoinleveldb_versionset",
+      "version_set_recover::version_set_recover_exhaustive_test_suite::recover_fails_on_corrupt_current_file_contents"
+    ]
+  ],
+  "regression_inventory077": [
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "reverse_handles_empty_default_slice"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "reverse_preserves_every_byte_and_is_an_involution"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "comparison_distinguishes_all_single_byte_keys"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "binary_order_matches_independent_slice_order_and_is_transitive"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "separator_preserves_binary_order_bounds_and_literal_bytes"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "separator_keeps_prefix_and_adjacent_high_byte_boundaries"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "successor_preserves_binary_order_and_maximal_boundaries"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "bytewise_increment_appends_one_nul_without_text_conversion"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "reverse_increment_prepends_one_nul_without_text_conversion"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "binary_reverse_contracts",
+      "byte_ordering_has_a_distinct_persistent_comparator_identity"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "bitcoinleveldb_reversekeycomparator",
+      "reverse_key_comparator::reverse_key_comparator_behavior_tests::reverse_function_reverses_simple_ascii_keys"
+    ],
+    [
+      "bitcoinleveldb-reversekeycomparator",
+      "bitcoinleveldb_reversekeycomparator",
+      "reverse_key_comparator::reverse_key_comparator_behavior_tests::reverse_key_comparator_matches_bytewise_on_reversed_keys"
+    ]
+  ],
+  "reviewed_baseline_source_sha256": {
+    "bitcoin-imports/src/lib.rs": "c33a2ebb7eb755da25e50a74ff68d9c7809ebc043ff9432322e11463fa5c14c0",
+    "bitcoinleveldb-batch/src/delete.rs": "865675cab7c91d24a8b042693d7521039d750e8fb59f36a0d89b13b6c9005005",
+    "bitcoinleveldb-batch/src/internal.rs": "ce9a94b509170089fd3218ed6a6caa68874a49d3632739a6bdf27ff799456f99",
+    "bitcoinleveldb-batch/src/iterate.rs": "17d9bfe97b357563d00e8faad50f922256f6c9720c473209365c873cde154fb3",
+    "bitcoinleveldb-batch/src/put.rs": "7f56976204c4c618e4f1c060494b2f9df0a11cc9335ed76e4265ed89df10cfbc",
+    "bitcoinleveldb-batch/src/write_batch.rs": "23123457912cec434bb814dd8c5f8194c389520298ecbb72f31bda580c677a0b",
+    "bitcoinleveldb-blockbuilder/src/block_builder.rs": "370e1e25685ba1e524f1c61f0da4073684be8b0be742a92cff21e70e106cd82b",
+    "bitcoinleveldb-blockbuilder/src/block_builder_add.rs": "59fea99f4d9d1384b9404383bb45b16e461c7290088b8c4aa311690a8d7fb9e2",
+    "bitcoinleveldb-blockbuilder/src/block_builder_finish.rs": "4b9affcf335f568841e7889570e35b86cff806105136a61f073438c78dfd9844",
+    "bitcoinleveldb-blockconstructor/src/block_constructor.rs": "23bdd64951a868ec5ad72701aa39b274c8d7b851b6cc9b0bdf1722cf5de80d82",
+    "bitcoinleveldb-blockconstructor/src/block_constructor_finish_impl.rs": "e8f1686c22e5e206290b9e8659882f36593734f94d5b340106bae93db0fe0dfd",
+    "bitcoinleveldb-blockconstructor/src/constructor.rs": "b393a75f64ae122862f49e02d4da3f01efe9431fafdb8fb8cf1d9f9bae128272",
+    "bitcoinleveldb-blockhandle/src/block_handle_encode_to.rs": "b9e022810d357d6e0519457609345b39b476c72c0661eb9ba786feadec1bccfb",
+    "bitcoinleveldb-blockiter/src/block_iter.rs": "0b382827f3403ad7eada7969f78560bbfcf4b6185494d52c8680dc7b98b96d11",
+    "bitcoinleveldb-blockiter/src/block_iter_key_value.rs": "d383ef665e04a0f27ce68659a9f9422cb895e0dcb4c3fa1405ac10d5008f43f5",
+    "bitcoinleveldb-blockiter/src/block_iter_parse_next_key.rs": "9b9788ecf1437def95109a8313257d33698e12179ece082211b22fa29c264f09",
+    "bitcoinleveldb-blockiter/src/block_iter_seek_to.rs": "e1d9372d844604d7bd3c32700f0399d26b0104e88b5248e7c02dbc31a6ca09aa",
+    "bitcoinleveldb-bloom/src/create_filter.rs": "44469bb94f0990e31f8bfdc7c9a5bb2287a28c8719027c7756164a92a6d98f55",
+    "bitcoinleveldb-cache/src/cache_handle.rs": "a5f80a6d4608c2c90a7364001f014a941b49bc8539f37e272df70bc0f1049dff",
+    "bitcoinleveldb-cache/src/cache_rep.rs": "e8a7f4add77522a0402e97ae6bee1eba6800655f49d55ebae500f4a30cd82f6f",
+    "bitcoinleveldb-coding/src/put_fixed.rs": "3c1cc8a7ea95a0d7b9b61632f2061e4d478fd4a73e5e6e9a0f4c7fc1f0a36f96",
+    "bitcoinleveldb-coding/src/put_length_prefixed_slice.rs": "68ef3de7c696d03d4ec7816b7330f20b4d4296fa02800af9e680c397b8128eec",
+    "bitcoinleveldb-coding/src/put_varint.rs": "0dd93c3e5478f5602d53b6014d48b9aa1027f61509228e49e41add609f493c21",
+    "bitcoinleveldb-coding/src/slice_to_utf8.rs": "0dc24b05cce2e638a0e846587e65ca58da007287e8312b9cc1d52bded509d196",
+    "bitcoinleveldb-compat/src/snappy_compress.rs": "a524cdc8561294d96851bb6d37540eb5751368733949c90dc9a327fcabb34baa",
+    "bitcoinleveldb-db/src/leveldb_get.rs": "3d73ff536d9f3c080147de13c4a2a6820f9f74799c0f96fed633f26a10a614cd",
+    "bitcoinleveldb-dbimpl/src/get.rs": "f02332a3dff7dd9d5e4da2f371f3d1c27fd5389e932c18640dfc1c491296b2b8",
+    "bitcoinleveldb-dbimpl/src/new_db.rs": "b43aa1fdddde370aba64b4fe71f4d2e2173ecaa6a170a8a6f544ab26925aa191",
+    "bitcoinleveldb-dbinterface/src/get.rs": "3c22fd070f0b78bd6a416f93dc5b3ed40f07959491addba9bb1f7a93ac710b6c",
+    "bitcoinleveldb-dbinterface/src/get_property.rs": "d8791a774b7cb290eb8c0e4b9ebaffa5d584305da45d9224454541ac3558691c",
+    "bitcoinleveldb-dbiter/src/find_next_user_entry.rs": "d8f93d7746223cc6919e5588e491ccbcd475ec13e1c453266036e32f48a348b3",
+    "bitcoinleveldb-dbiter/src/find_prev_user_entry.rs": "66d93f3bc39f570fca682e71768ee61b4100da0cbb400d75fe2bc6a40b84d12b",
+    "bitcoinleveldb-dbiter/src/iter.rs": "82770e15cece77e5c384c11e71ef9ad22d5b0710b8692659aef9d0c4f4f3c627",
+    "bitcoinleveldb-dbiter/src/next.rs": "7510eaa85cce03df7d45c67498e8f774bd59f4b55f0a965d71a2a8e36ca1e93e",
+    "bitcoinleveldb-dbiter/src/prev.rs": "42a18d7335e9f86b75c9b546a9788d06695575dbd727afb99702a010edcc8d33",
+    "bitcoinleveldb-dbiter/src/save_key.rs": "cb4a2c6b05033697b11d2458adb6333bbaa534e6f6802936cfa02299af7b2ff4",
+    "bitcoinleveldb-dbiter/src/seek.rs": "4d3fa42aed3a0bfdfa0e3ac0765e056dc9418a03f9e4b0a8b9c86a8db81990fd",
+    "bitcoinleveldb-env/src/read_file_to_string.rs": "4a80e13449bbbb2ef1b43b1d3bb1c9f5d306dd6293d5231082d4d19eaff7c9a1",
+    "bitcoinleveldb-filter/src/filter_block.rs": "ddef74080d04e99a5d5e80db8a0d13d8da716b1bae4a42ca78939d3b4ba1b570",
+    "bitcoinleveldb-filter/src/filter_policy.rs": "02a099edb2dec21113d4b8bee9541621d627b02fdff6bae58e7c4a895162803a",
+    "bitcoinleveldb-footer/src/footer_encode_to.rs": "08a9f3cdb6a5a08c7a11220400cf755cb83751d8f7e715782c20bf8bd3959a5c",
+    "bitcoinleveldb-key/src/encode.rs": "c3ce42c2e54a5a0cd5a9d74567f9590fcad92e8046402e7232698ebb94855062",
+    "bitcoinleveldb-key/src/internal_key.rs": "369e6ec6f8ad4dbfb6a433104d4b7cedfd37852fca972b08fd87b207392f4f12",
+    "bitcoinleveldb-key/src/parsed_internal_key.rs": "81496497277d24e61d082f5a9c7590331584ab2ce9efd10c70cb93df3516c8a3",
+    "bitcoinleveldb-logreader/src/log_reader_read_record.rs": "b84b665b4dceb51ce99e3d533e83f0dc9bada0140725ced54cb93a0a76837adf",
+    "bitcoinleveldb-logwriter/src/log_writer.rs": "fba8210e87a4e176252bf90d33bf3c0609cbc63e33d229ce7154de1f68284df8",
+    "bitcoinleveldb-memtable/src/encode_key.rs": "dd87c162697166e4a9b3877ccf2988be2edf8102c8136d48b33e83025c9d266e",
+    "bitcoinleveldb-memtable/src/memtable_get.rs": "9b0fd96383188d388667b51a98cb1dd5c6629294dd106c328b1598b15e98a813",
+    "bitcoinleveldb-memtable/src/memtable_iterator.rs": "db1fbf270a847efc083810f06688efb28435cca48ef6d8ababc31b3c6b244bff",
+    "bitcoinleveldb-modeldb/src/iter.rs": "ccdd04181b45c851091a7115206891783b1d3eff2ea3790d84d87a4ac51e6231",
+    "bitcoinleveldb-modeldb/src/model_db_write_batch_handler.rs": "f8aa9e0c881ebfff16f72db0d2f80583faeaede90aec3fd57883f5216cdb22bb",
+    "bitcoinleveldb-modeldb/src/modeldb.rs": "2ef28482e77926dad5ad8d7916dd19bff82db206ae609a60efa20eeeb25ef127",
+    "bitcoinleveldb-reversekeycomparator/src/reverse_key_comparator.rs": "003594490d006d82c695bce96c46dd0fc5b722d1b7ce3d55fb7a3249dda8f8b7",
+    "bitcoinleveldb-slice/src/slice.rs": "5baa49666936037dbb01a0c3cfdc5e24a0e784b02119ee5585604426edcf8042",
+    "bitcoinleveldb-status/src/status.rs": "287b221ad39b5d4d75c7e318d07cce406ead73ae305c2ff6dfb54352583dc688",
+    "bitcoinleveldb-stringsink/src/string_sink.rs": "b009ba3c8ec580980fef1041bad9431bffcb0719707e76389bfe546833995001",
+    "bitcoinleveldb-stringsource/src/string_source.rs": "72187ac16b15011cfefba41f1e774020e44b2942fa1f03f3d3fc9721ce1347e9",
+    "bitcoinleveldb-table/src/table_read_meta.rs": "6d7f0ad76a75fe245098f66e8398f690c6eb89c1827e147c1e6e62eb534675f6",
+    "bitcoinleveldb-tablebuilder/src/table_builder_add.rs": "dca121936c36a075b62c04786e7e5ede46865fcce3e205652e4e1789332bbb9a",
+    "bitcoinleveldb-tablebuilder/src/table_builder_finish.rs": "fe1eba852eafbe87090ee6e0f9051ae7ec63ceb995839f80d7b5093dd45599f8",
+    "bitcoinleveldb-tablebuilder/src/table_builder_rep.rs": "2902a73645674c724898d1e1f14a54d82c47f58067641782df35df5beb922a17",
+    "bitcoinleveldb-tablebuilder/src/table_builder_write_block.rs": "d3e7e2d154b229c547a52a8327ca48f07beaa2f44c38442571029624bc600ffd",
+    "bitcoinleveldb-tableconstructor/src/build_table_into_sink.rs": "f7b9dff7506bc4b298de398714543fba2f1ed103b2c0e4c99f2e3212626ecc51",
+    "bitcoinleveldb-version/src/get.rs": "5228126084ccaa5a2844ad3a4ab170d8485cd3cd65609b304770e7421dd7cd0b",
+    "bitcoinleveldb-versionedit/src/versionedit_decode_from.rs": "e13a54d77a5574fa095090b30902b3e727711669e57613d80ae1931efb29c368",
+    "bitcoinleveldb-versionedit/src/versionedit_encode_to.rs": "a77f9c184b372b15acb19b9557932ae86947e1e9f82a5794ceff736a6c228bbd",
+    "bitcoinleveldb-versionset/src/version_set.rs": "2fa6dd52d536e3ddfecd311daa00bd2a48ffc0f98cdd5e3eaffdaac83556d30e",
+    "bitcoinleveldb-versionset/src/version_set_builder_apply.rs": "459b408782efb80a6eeba8e7d1298e1d26436d32601e17fc2e2050a931dc651b",
+    "bitcoinleveldb-versionset/src/version_set_log_and_apply.rs": "1c9c03b5aa08148c5ca2f202bcda4b58d9b3fc07b19d213f1e8e023a7775d75a",
+    "bitcoinleveldb-versionset/src/version_set_pick_compaction.rs": "713fa84917a9709335a6c6294e1374404172ba35e80256d4f884d5ae5a3cc223",
+    "bitcoinleveldb-versionset/src/version_set_setup_other_inputs.rs": "8eb5f0a70d4d622170ff153ecf24210619ed011f751b4c33218b8c6c88457874",
+    "bitcoinleveldb-versionset/src/version_set_write_snapshot.rs": "a85cce3289674bea943d54498e53899fc0be6be2c9ac6d433c1ae6a46c966a4e",
+    "bitcoinleveldb-versionsetutil/src/saver.rs": "f61fde0adca40d4329e80c5ec5d0153fa1f7d1e6e0d00ab1d3f2600b5eae2d89",
+    "bitcoinleveldbt-util/src/compressible_string.rs": "918496591578fe7c70af95afd04a850cb3967c5072b8c88c3cd0557eb643dd0d",
+    "bitcoinleveldbt-util/src/random_key.rs": "ea08707fe068c04229c05f9dc3d6f16a77b330ee5dbb2d98eec5fcd36a58a8fd",
+    "bitcoinleveldbt-util/src/random_string.rs": "b83dc967027b69549fb9c646fc27671df2413039e02e6c00d54a098b51c3b1f8"
+  },
+  "schema": "bitcoinrs-leveldb-binary-owners085",
+  "scope": "Generator utility085 requires client qualification. Earlier ownership repairs retain their recorded source/profile scopes; constructor/harness and publication gates remain."
+}

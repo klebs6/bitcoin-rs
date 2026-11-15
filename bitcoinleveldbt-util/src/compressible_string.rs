@@ -5,7 +5,8 @@ crate::ix!();
   | Store in *dst a string of length "len" that
   | will compress to "N*compressed_fraction" bytes
   | and return a Slice that references the
-  | generated data.
+  | generated data. A null PRNG or destination returns an empty Slice
+  | without modifying output or consuming random draws.
   */
 pub fn compressible_string(
     rnd:                 *mut Random,
@@ -22,10 +23,12 @@ pub fn compressible_string(
         len = len
     );
 
-    if dst.is_null() {
+    if rnd.is_null() || dst.is_null() {
         error!(
             target: "bitcoinleveldbt_util::util",
-            event = "compressible_string_null_dst"
+            event = "compressible_string_null_input",
+            rnd_is_null = rnd.is_null(),
+            dst_is_null = dst.is_null()
         );
 
         return Slice::from_ptr_len(core::ptr::null::<u8>(), 0usize);

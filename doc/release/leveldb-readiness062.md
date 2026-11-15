@@ -126,3 +126,12 @@ replace the unfinished getter and lossy model write path. This stage requires
 its own four-package client qualification. The getter stage082 qualified354
 native identities at its retained/fresh source boundaries; it does not replace
 qualification of this new model/snapshot source. Other release gates remain.
+
+
+## Generator utility boundary085
+
+[Byte-key utilities and finite null-input handling](leveldb-generators085.md)
+require their own protected client qualification. The preceding model stage
+qualified181 native identities and15 required regressions through083/084;
+randomized/harness consumers compiled. Raw key APIs are opt-in: existing text
+workload tapes retain their prior behavior until the constructor/harness migration.
