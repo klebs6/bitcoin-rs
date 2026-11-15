@@ -135,3 +135,12 @@ require their own protected client qualification. The preceding model stage
 qualified181 native identities and15 required regressions through083/084;
 randomized/harness consumers compiled. Raw key APIs are opt-in: existing text
 workload tapes retain their prior behavior until the constructor/harness migration.
+
+
+## Constructor/harness byte boundary086
+
+[Scoped byte fixtures and exact harness comparisons](leveldb-constructor-bytes086.md)
+require separate affected-crate and finite-target client qualification.085 passed
+its six generator regressions and one doctest command; direct consumers compiled.
+The new byte fixture path preserves the distinct legacy text workload interfaces.
+Package/release validation remains after this ownership stage.

@@ -4,7 +4,7 @@ crate::ix!();
 #[repr(C)]
 pub struct BlockConstructor  {
     base:       Constructor,
-    comparator: Box<dyn SliceComparator>,
+    comparator: std::sync::Arc<Box<dyn SliceComparator>>,
     data:       Vec<u8>,
     block:      *mut Block,
 }
@@ -19,11 +19,12 @@ impl BlockConstructor {
             cmp_raw
         );
 
-        let base = Constructor::with_default();
+        let comparator = std::sync::Arc::new(cmp);
+        let base = Constructor::with_comparator_owner(comparator.clone());
 
         BlockConstructor {
             base,
-            comparator: cmp,
+            comparator,
             data:       Vec::new(),
             block:      core::ptr::null_mut(),
         }
@@ -41,7 +42,7 @@ impl BlockConstructor {
 
     #[inline]
     pub fn comparator_ref(&self) -> &dyn SliceComparator {
-        &*self.comparator
+        &**self.comparator
     }
 
     #[inline]
@@ -69,7 +70,7 @@ impl BlockConstructor {
         let data_len  = self.data_bytes().len();
         // Safe as a raw pointer: BlockConstructor owns the Box<dyn SliceComparator>
         let cmp_ptr: *const dyn SliceComparator =
-            &*self.comparator as *const dyn SliceComparator;
+            &**self.comparator as *const dyn SliceComparator;
 
         trace!(
             "BlockConstructor::new_iterator: block={:?}, data_len={}, comparator_ptr={:p}",

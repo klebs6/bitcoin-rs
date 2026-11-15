@@ -47,10 +47,7 @@ impl Harness {
                     }
                 };
 
-                assert_eq!(
-                    self.to_string_rev(data, Some((k, v))),
-                    self.to_string(iter as *const LevelDBIterator)
-                );
+                harness_assert_byte_row(&*iter, Some((k.as_bytes(), v.as_bytes())));
                 (&mut *iter).prev();
             }
 

@@ -4,7 +4,7 @@ crate::ix!();
 #[repr(C)]
 pub struct MemTableConstructor  {
     base:                Constructor,
-    user_comparator:     Box<dyn SliceComparator>,
+    user_comparator:     std::sync::Arc<Box<dyn SliceComparator>>,
     internal_comparator: InternalKeyComparator,
     memtable:            *mut MemTable,
 }
@@ -36,14 +36,14 @@ impl MemTableConstructor {
             &*cmp as *const dyn SliceComparator
         );
 
-        let base = Constructor::with_default();
+        let user_comparator = std::sync::Arc::new(cmp);
+        let base = Constructor::with_comparator_owner(user_comparator.clone());
 
         // Hold the user comparator so that the pointer
         // embedded in InternalKeyComparator remains valid.
-        let user_comparator = cmp;
 
         let user_cmp_ptr: *const dyn SliceComparator =
-            &*user_comparator;
+            &**user_comparator;
 
         let internal_comparator =
             InternalKeyComparator::new(
@@ -67,11 +67,16 @@ impl MemTableConstructor {
         }
     }
 
-    pub fn finish_impl(
-        &mut self,
-        _options: &Options,
-        data:     &KVMap,
-    ) -> Status {
+    pub fn finish_impl(&mut self, options: &Options, data: &KVMap) -> Status {
+        self.finish_impl_bytes(options, &constructor_bytes_from_text(data))
+    }
+    pub fn finish_impl_bytes(&mut self, options: &Options, data: &ConstructorByteMap) -> Status {
+        if self.user_comparator.name() != options.comparator().name() {
+            return Status::invalid_argument(&Slice::from("memtable constructor comparator mismatch"), None);
+        }
+        let entries = match constructor_ordered_byte_entries(data, &**self.user_comparator) {
+            Ok(entries) => entries, Err(status) => return status,
+        };
         trace!(
             "MemTableConstructor::finish_impl: entries={}, memtable_ptr={:?}",
             data.len(),
@@ -101,9 +106,9 @@ impl MemTableConstructor {
 
         // Fill the new memtable.
         let mut seq: SequenceNumber = 1;
-        for (k, v) in data.iter() {
-            let key_bytes = k.as_bytes();
-            let val_bytes = v.as_bytes();
+        for (k, v) in entries {
+            let key_bytes = k.as_slice();
+            let val_bytes = v.as_slice();
 
             let key_slice =
                 Slice::from(key_bytes);
@@ -111,7 +116,7 @@ impl MemTableConstructor {
                 Slice::from(val_bytes);
 
             trace!(
-                "MemTableConstructor::finish_impl: inserting seq={} key='{}'",
+                "MemTableConstructor::finish_impl: inserting seq={} key bytes={:?}",
                 seq,
                 k
             );

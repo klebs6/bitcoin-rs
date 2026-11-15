@@ -4,13 +4,10 @@ crate::ix!();
 impl Harness {
 
     pub fn add(&mut self, key_: &String, value: &String) {
-        trace!(
-            target: "bitcoinleveldb_harness",
-            label = "bitcoinleveldb_harness.harness.add.entry",
-            key_len = key_.len(),
-            value_len = value.len(),
-        );
+        self.add_bytes(key_.as_bytes(), value.as_bytes());
+    }
 
+    pub fn add_bytes(&mut self, key: &[u8], value: &[u8]) {
         const TAG_MASK: usize = BITCOINLEVELDB_HARNESS_CONSTRUCTOR_PTR_TAG_MASK;
 
         let tagged: usize = self.constructor as usize;
@@ -19,8 +16,7 @@ impl Harness {
         assert!(!raw.is_null());
 
         unsafe {
-            let v: Slice = Slice::from(value.as_bytes());
-            (&mut *raw).add(key_, &v);
+            (&mut *raw).add_bytes(key, value);
         }
 
         trace!(

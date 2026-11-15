@@ -1,23 +1,24 @@
 # bitcoinleveldb-blockconstructor
 
-Block-construction fixtures for LevelDB iterator and table tests.
+Construction fixtures for comparing LevelDB blocks with tables, memtables and
+databases. `BlockConstructor` owns encoded block bytes and its comparator;
+`new_iterator` borrows that backing storage. Destroy iterators before rebuilding
+or dropping the constructor.
 
-`Constructor` accumulates a string-keyed `KVMap`; `BlockConstructor` serializes
-that map in comparator order and owns the encoded block bytes as `Vec<u8>`.
-`data_bytes` exposes those bytes. It owns its comparator and block, and creates
-LevelDB iterators that borrow them. Finish construction before requesting an
-iterator, and drop all such iterators before rebuilding or dropping the
-constructor or modifying its backing storage.
+The shared `Constructor` owns a scoped `ConstructorByteMap`. `add_bytes` preserves
+literal keys/values and coalesces comparator-equivalent keys: the first key stays,
+the last value wins. `finish_bytes` returns the map plus keys in comparator order,
+then clears the input. The map's own BTreeMap traversal is byte order, not the
+configured comparator order. Comparator names and ordering must match Options;
+matching names alone do not prove matching behavior.
 
-This is test infrastructure. The string-keyed `KVMap` and its conversions remain
-outside a general arbitrary-byte input interface. Byte storage for the encoded
-block does not remove that fixture limitation.
+`finish_impl_bytes` builds a block from a byte map. Direct maps must contain no
+comparator-equivalent duplicates; ambiguous input is rejected. Existing text
+`add`, `data`, `finish` and `finish_impl` signatures remain. Text views and outputs
+validate every key/value; `try_data` is optional, while `data`/`finish` panic for
+binary data rather than converting it. Use the byte APIs for arbitrary values.
+The unrelated global text `KVMap` alias is unchanged.
 
-See [construction](src/block_constructor.rs),
-[finalization](src/block_constructor_finish_impl.rs), and
-[binary block/iterator contracts](tests/binary_block_contracts.rs).
-
-Part of the [LevelDB subsystem](../bitcoin-leveldb/README.md).
-[Bounded verification](../doc/testing/leveldb-subsystem.md) ·
-[Repository and support](https://github.com/klebs6/bitcoin-rs/issues).
-License: MIT; see the [repository license](../LICENSE).
+Source: [shared fixture](src/constructor.rs) · [block construction](src/block_constructor_finish_impl.rs).
+[Manifest](Cargo.toml) · [Bounded verification](../doc/testing/leveldb-subsystem.md)
+License: MIT. [Repository license](../LICENSE) · [Support](https://github.com/klebs6/bitcoin-rs/issues)

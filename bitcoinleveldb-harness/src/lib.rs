@@ -2,6 +2,7 @@
 #[macro_use] mod imports; use imports::*;
 
 x!{add}
+x!{binary_fixture}
 x!{db}
 x!{dispose_constructor_pointer}
 x!{harness}

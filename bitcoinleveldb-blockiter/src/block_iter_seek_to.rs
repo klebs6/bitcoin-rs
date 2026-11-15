@@ -85,12 +85,9 @@ mod block_iter_seek_to_first_last_tests {
 
         assert!(iter.valid());
         let k = iter.key();
-        let key_str = unsafe {
-            let bytes = core::slice::from_raw_parts(*k.data(), *k.size());
-            core::str::from_utf8_unchecked(bytes).to_string()
-        };
-        debug!("seek_to_first landed on key='{}'", key_str);
-        assert_eq!(key_str, "a");
+        let key_str = k.as_bytes().to_vec();
+        debug!("seek_to_first landed on key bytes={:?}", key_str);
+        assert_eq!(key_str, b"a".to_vec());
     }
 
     #[traced_test]
@@ -116,11 +113,8 @@ mod block_iter_seek_to_first_last_tests {
 
         assert!(iter.valid());
         let k = iter.key();
-        let key_str = unsafe {
-            let bytes = core::slice::from_raw_parts(*k.data(), *k.size());
-            core::str::from_utf8_unchecked(bytes).to_string()
-        };
-        trace!("seek_to_last landed on key='{}'", key_str);
-        assert_eq!(key_str, "c");
+        let key_str = k.as_bytes().to_vec();
+        trace!("seek_to_last landed on key bytes={:?}", key_str);
+        assert_eq!(key_str, b"c".to_vec());
     }
 }

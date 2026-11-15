@@ -62,25 +62,10 @@ impl Harness {
                         }
                         model_index += 1;
 
-                        let expected: String = if model_index == keys.len() {
-                            self.to_string_with_data(data, None)
-                        } else {
-                            let k: &String = &keys[model_index];
-                            let v: &String = match data.get(k) {
-                                Some(v) => v,
-                                None => {
-                                    error!(
-                                        target: "bitcoinleveldb_harness",
-                                        label = "bitcoinleveldb_harness.harness.test_random_access.missing_model_value",
-                                        key_len = k.len(),
-                                    );
-                                    panic!();
-                                }
-                            };
-                            self.to_string_with_data(data, Some((k, v)))
-                        };
-
-                        assert_eq!(expected, self.to_string(iter as *const LevelDBIterator));
+                        let expected = keys.get(model_index).map(|key| {
+                            (key.as_bytes(), data.get(key).expect("reference key missing").as_bytes())
+                        });
+                        unsafe { harness_assert_byte_row(&*iter, expected); }
                     }
                 }
 
@@ -96,25 +81,10 @@ impl Harness {
                     }
                     model_index = 0;
 
-                    let expected: String = if model_index == keys.len() {
-                        self.to_string_with_data(data, None)
-                    } else {
-                        let k: &String = &keys[model_index];
-                        let v: &String = match data.get(k) {
-                            Some(v) => v,
-                            None => {
-                                error!(
-                                    target: "bitcoinleveldb_harness",
-                                    label = "bitcoinleveldb_harness.harness.test_random_access.missing_model_value",
-                                    key_len = k.len(),
-                                );
-                                panic!();
-                            }
-                        };
-                        self.to_string_with_data(data, Some((k, v)))
-                    };
-
-                    assert_eq!(expected, self.to_string(iter as *const LevelDBIterator));
+                    let expected = keys.get(model_index).map(|key| {
+                        (key.as_bytes(), data.get(key).expect("reference key missing").as_bytes())
+                    });
+                    unsafe { harness_assert_byte_row(&*iter, expected); }
                 }
 
                 2 => {
@@ -150,25 +120,10 @@ impl Harness {
                         (&mut *iter).seek(&target);
                     }
 
-                    let expected: String = if model_index == keys.len() {
-                        self.to_string_with_data(data, None)
-                    } else {
-                        let k: &String = &keys[model_index];
-                        let v: &String = match data.get(k) {
-                            Some(v) => v,
-                            None => {
-                                error!(
-                                    target: "bitcoinleveldb_harness",
-                                    label = "bitcoinleveldb_harness.harness.test_random_access.missing_model_value",
-                                    key_len = k.len(),
-                                );
-                                panic!();
-                            }
-                        };
-                        self.to_string_with_data(data, Some((k, v)))
-                    };
-
-                    assert_eq!(expected, self.to_string(iter as *const LevelDBIterator));
+                    let expected = keys.get(model_index).map(|key| {
+                        (key.as_bytes(), data.get(key).expect("reference key missing").as_bytes())
+                    });
+                    unsafe { harness_assert_byte_row(&*iter, expected); }
                 }
 
                 3 => {
@@ -188,25 +143,10 @@ impl Harness {
                             model_index -= 1;
                         }
 
-                        let expected: String = if model_index == keys.len() {
-                            self.to_string_with_data(data, None)
-                        } else {
-                            let k: &String = &keys[model_index];
-                            let v: &String = match data.get(k) {
-                                Some(v) => v,
-                                None => {
-                                    error!(
-                                        target: "bitcoinleveldb_harness",
-                                        label = "bitcoinleveldb_harness.harness.test_random_access.missing_model_value",
-                                        key_len = k.len(),
-                                    );
-                                    panic!();
-                                }
-                            };
-                            self.to_string_with_data(data, Some((k, v)))
-                        };
-
-                        assert_eq!(expected, self.to_string(iter as *const LevelDBIterator));
+                        let expected = keys.get(model_index).map(|key| {
+                            (key.as_bytes(), data.get(key).expect("reference key missing").as_bytes())
+                        });
+                        unsafe { harness_assert_byte_row(&*iter, expected); }
                     }
                 }
 
@@ -243,25 +183,10 @@ impl Harness {
                         model_index = left;
                     }
 
-                    let expected: String = if model_index == keys.len() {
-                        self.to_string_with_data(data, None)
-                    } else {
-                        let k: &String = &keys[model_index];
-                        let v: &String = match data.get(k) {
-                            Some(v) => v,
-                            None => {
-                                error!(
-                                    target: "bitcoinleveldb_harness",
-                                    label = "bitcoinleveldb_harness.harness.test_random_access.missing_model_value",
-                                    key_len = k.len(),
-                                );
-                                panic!();
-                            }
-                        };
-                        self.to_string_with_data(data, Some((k, v)))
-                    };
-
-                    assert_eq!(expected, self.to_string(iter as *const LevelDBIterator));
+                    let expected = keys.get(model_index).map(|key| {
+                        (key.as_bytes(), data.get(key).expect("reference key missing").as_bytes())
+                    });
+                    unsafe { harness_assert_byte_row(&*iter, expected); }
                 }
 
                 _ => {

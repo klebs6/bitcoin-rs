@@ -23,6 +23,11 @@ retains a `String` output. See the [migration record](../doc/release/leveldb-get
 adapter validates UTF-8 and returns `Corruption` for an invalid value; a direct
 legacy tombstone lookup still clears the text output.
 
+`MemTableConstructor::finish_impl_bytes` accepts a `ConstructorByteMap` for
+binary comparison fixtures. Its existing text-map entry point remains an adapter.
+The constructor retains its comparator and rejects equivalent duplicate input
+keys; its iterators must die before rebuilding or destruction.
+
 See [lifetime management](src/memtable.rs), [insertions](src/memtable_add.rs),
 and [lookups](src/memtable_get.rs).
 

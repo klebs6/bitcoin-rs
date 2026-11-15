@@ -96,23 +96,17 @@ mod block_iter_key_and_value_access_tests {
         let key   = iter.key();
         let value = iter.value();
 
-        let key_str = unsafe {
-            let bytes = from_raw_parts(*key.data(), *key.size());
-            String::from_utf8_unchecked(bytes.to_vec())
-        };
-        let value_str = unsafe {
-            let bytes = from_raw_parts(*value.data(), *value.size());
-            String::from_utf8_unchecked(bytes.to_vec())
-        };
+        let key_str = key.as_bytes().to_vec();
+        let value_str = value.as_bytes().to_vec();
 
-        trace!("decoded key='{}', value='{}'", key_str, value_str);
+        trace!("decoded key bytes={:?}, value bytes={:?}", key_str, value_str);
         debug!(
             "entry sizes: key={}, value={}",
             *key.size(),
             *value.size()
         );
 
-        assert_eq!(key_str, "a");
-        assert_eq!(value_str, "va");
+        assert_eq!(key_str, b"a".to_vec());
+        assert_eq!(value_str, b"va".to_vec());
     }
 }

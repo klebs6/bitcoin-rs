@@ -4,6 +4,16 @@ crate::ix!();
 impl BlockConstructor {
 
     pub fn finish_impl(&mut self, options: &Options, data: &KVMap) -> crate::Status {
+        self.finish_impl_bytes(options, &constructor_bytes_from_text(data))
+    }
+
+    pub fn finish_impl_bytes(&mut self, options: &Options, data: &ConstructorByteMap) -> crate::Status {
+        if self.comparator_ref().name() != options.comparator().name() {
+            return Status::invalid_argument(&Slice::from("block constructor comparator mismatch"), None);
+        }
+        let entries = match constructor_ordered_byte_entries(data, self.comparator_ref()) {
+            Ok(entries) => entries, Err(status) => return status,
+        };
         let existing_block = self.block_ptr();
         let data_len       = self.data_bytes().len();
 
@@ -29,21 +39,9 @@ impl BlockConstructor {
         let opts_ptr: *const Options = options as *const Options;
         let mut builder = BlockBuilder::new(opts_ptr);
 
-        // To satisfy BlockBuilder's strictly-increasing key requirement,
-        // iterate over the entries in comparator order rather than UTF-8 lexical order.
-        let comparator: &dyn SliceComparator = self.comparator_ref();
-
-        let mut entries: Vec<(&String, &String)> = data.iter().collect();
-        entries.sort_by(|(k1, _), (k2, _)| {
-            let key1: Slice = Slice::from(k1.as_bytes());
-            let key2: Slice = Slice::from(k2.as_bytes());
-            let cmp: i32 = comparator.compare(&key1, &key2);
-            cmp.cmp(&0)
-        });
-
         for (key, value) in entries.into_iter() {
-            let key_bytes:   &[u8] = key.as_bytes();
-            let value_bytes: &[u8] = value.as_bytes();
+            let key_bytes:   &[u8] = key.as_slice();
+            let value_bytes: &[u8] = value.as_slice();
 
             let key_slice   = Slice::from(key_bytes);
             let value_slice = Slice::from(value_bytes);
@@ -110,7 +108,7 @@ mod constructor_kvmap_and_finish_tests {
     }
 
     fn slice_from_str_for_tests(value: &str) -> Slice {
-        Slice::from(value.as_bytes())
+        Slice::from(value.as_slice())
     }
 
     #[traced_test]

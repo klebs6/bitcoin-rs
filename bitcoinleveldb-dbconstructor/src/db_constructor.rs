@@ -63,6 +63,15 @@ impl DBConstructor {
     }
 
     pub fn finish_impl(&mut self, options: &Options, data: &KVMap) -> Status {
+        self.finish_impl_bytes(options, &constructor_bytes_from_text(data))
+    }
+    pub fn finish_impl_bytes(&mut self, options: &Options, data: &ConstructorByteMap) -> Status {
+        if self.comparator.name() != options.comparator().name() {
+            return Status::invalid_argument(&Slice::from("DB constructor comparator mismatch"), None);
+        }
+        let entries = match constructor_ordered_byte_entries(data, self.comparator.as_ref()) {
+            Ok(entries) => entries, Err(status) => return status,
+        };
         tracing::info!(
             target: "bitcoinleveldb_dbconstructor::db_constructor",
             data_len = data.len(),
@@ -88,14 +97,14 @@ impl DBConstructor {
             self.db
                 .expect("DBConstructor::finish_impl: NewDB must initialize db");
 
-        for (k, v) in data.iter() {
+        for (k, v) in entries {
             tracing::trace!(
                 target: "bitcoinleveldb_dbconstructor::db_constructor",
                 "DBConstructor::finish_impl: writing one KV via WriteBatch"
             );
 
-            let key_slice = Slice::from(k);
-            let val_slice = Slice::from(v);
+            let key_slice = Slice::from(k.as_slice());
+            let val_slice = Slice::from(v.as_slice());
 
             let mut batch = WriteBatch::new();
             batch.put(&key_slice, &val_slice);

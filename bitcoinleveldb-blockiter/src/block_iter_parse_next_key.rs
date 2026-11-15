@@ -152,7 +152,7 @@ mod block_iter_parse_next_key_tests {
 
         iter.seek_to_restart_point(0);
 
-        let mut seen = Vec::<(String, String)>::new();
+        let mut seen = Vec::<(Vec<u8>, Vec<u8>)>::new();
 
         loop {
             let parsed = iter.parse_next_key();
@@ -174,17 +174,11 @@ mod block_iter_parse_next_key_tests {
             let k = iter.key();
             let v = iter.value();
 
-            let k_str = unsafe {
-                let bytes = from_raw_parts(*k.data(), *k.size());
-                String::from_utf8_unchecked(bytes.to_vec())
-            };
-            let v_str = unsafe {
-                let bytes = from_raw_parts(*v.data(), *v.size());
-                String::from_utf8_unchecked(bytes.to_vec())
-            };
+            let k_str = k.as_bytes().to_vec();
+            let v_str = v.as_bytes().to_vec();
 
             trace!(
-                "parse_next_key_iterates_over_all_entries: iterated entry key='{}', value='{}'",
+                "parse_next_key_iterates_over_all_entries: iterated entry key bytes={:?}, value bytes={:?}",
                 k_str,
                 v_str
             );
@@ -215,12 +209,12 @@ mod block_iter_parse_next_key_tests {
         );
         assert_eq!(
             seen[0],
-            ("a".to_string(), "v1".to_string()),
+            (b"a".to_vec(), b"v1".to_vec()),
             "first entry must match the first added key/value"
         );
         assert_eq!(
             seen[1],
-            ("b".to_string(), "v2".to_string()),
+            (b"b".to_vec(), b"v2".to_vec()),
             "second entry must match the second added key/value"
         );
     }

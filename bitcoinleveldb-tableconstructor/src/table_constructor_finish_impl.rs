@@ -10,6 +10,14 @@ impl TableConstructor {
     /// 3. Wrap the sink contents in a `StringSource`.
     /// 4. Open a `Table` over that in‑memory file.
     pub fn finish_impl(&mut self, options: &Options, data: &KVMap) -> crate::Status {
+        self.finish_impl_bytes(options, &constructor_bytes_from_text(data))
+    }
+
+    pub fn finish_impl_bytes(&mut self, options: &Options, data: &ConstructorByteMap) -> crate::Status {
+        if self.base().comparator_ref().name() != options.comparator().name() {
+            return Status::invalid_argument(&Slice::from("table constructor comparator mismatch"), None);
+        }
+        if let Err(status) = constructor_ordered_byte_entries(data, options.comparator().as_ref()) { return status; }
         trace!(
             "TableConstructor::finish_impl: entries={}",
             data.len()
@@ -20,7 +28,7 @@ impl TableConstructor {
 
         // Step 1: build the table image into an in‑memory sink.
         let (mut status, sink, file_size_bytes): (crate::Status, StringSink, u64) =
-            build_table_into_sink(options, data);
+            build_table_bytes_into_sink(options, data);
 
         if !status.is_ok() {
             return status;
