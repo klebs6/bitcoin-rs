@@ -16,6 +16,11 @@ must be released through the corresponding database implementation.
 Implementing `DB` does not itself add synchronization or durability; those
 properties depend on the implementation and correct use of its contracts.
 
+`DBGet::get_bytes` reads arbitrary value bytes into a `Vec<u8>` output. Its
+default returns `NotSupported` until an implementation opts in. The default
+text `get` adapter validates UTF-8 and preserves its output on errors; existing
+implementations may override that legacy text method.
+
 Source: [crate modules](src/lib.rs) · [manifest](Cargo.toml).
 
 For repository verification, use the [bounded LevelDB test workflow](../doc/testing/leveldb-subsystem.md).

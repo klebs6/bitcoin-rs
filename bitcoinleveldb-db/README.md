@@ -14,6 +14,11 @@ with their matching functions, and release snapshots through their owning
 database before closing it. These pointer/ownership obligations are not encoded
 in Rust lifetimes.
 
+`leveldb_get` returns literal value bytes with their explicit length. A found
+empty value has a non-null, freeable allocation of length zero; `NotFound`
+returns null and length zero. Both results keep the existing Rust function
+signature; this crate does not add C ABI exports.
+
 Start with the [end-to-end handle test](src/lib.rs),
 [open](src/leveldb_open.rs), [get](src/leveldb_get.rs), and
 [buffer release](src/leveldb_free.rs). The lower-level database trait is in

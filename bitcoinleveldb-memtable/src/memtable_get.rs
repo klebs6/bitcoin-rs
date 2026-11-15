@@ -9,12 +9,13 @@ impl MemTable {
     /// If memtable contains a deletion for key, store a NotFound() error in
     /// *status and return true.
     /// 
-    /// Else, return false.
+    /// Both a deletion and an absent key leave the byte output unchanged.
+    /// Else, return false and preserve the supplied status.
     ///
-    pub fn get(
+    pub fn get_bytes(
         &mut self,
         key_:   &LookupKey,
-        value: *mut String,
+        value: *mut Vec<u8>,
         s:     *mut Status,
     ) -> bool {
         trace!("MemTable::get: begin lookup");
@@ -180,12 +181,9 @@ impl MemTable {
                                 *value_slice.size()
                             );
 
-                            let out: &mut String =
-                                &mut *value;
-                            out.clear();
-                            out.push_str(
-                                &value_slice.to_string(),
-                            );
+                            // Materialize before assigning the destination; no UTF-8 invariant
+                            // applies to a LevelDB value.
+                            *value = value_slice.as_bytes().to_vec();
                             return true;
                         }
                         Some(ValueType::TypeDeletion) => {
@@ -200,9 +198,6 @@ impl MemTable {
                                     None,
                                 );
                             *s = st;
-                            let out: &mut String =
-                                &mut *value;
-                            out.clear();
                             return true;
                         }
                         None => {
@@ -221,4 +216,29 @@ impl MemTable {
         false
     }
 
+
+    /// Checked legacy text adapter. A direct memtable tombstone still clears
+    /// the text output as before; get_bytes preserves its output on tombstones.
+    /// Invalid UTF-8 returns true with Corruption and preserves the text output.
+    pub fn get(&mut self, key_: &LookupKey, value: *mut String, s: *mut Status) -> bool {
+        assert!(!value.is_null(), "MemTable::get: value pointer must not be null");
+        assert!(!s.is_null(), "MemTable::get: Status pointer must not be null");
+        let mut bytes = Vec::new();
+        let mut status = Status::ok();
+        if !self.get_bytes(key_, &mut bytes, &mut status) {
+            return false;
+        }
+        unsafe {
+            if status.is_ok() {
+                match String::from_utf8(bytes) {
+                    Ok(text) => { *value = text; return true; }
+                    Err(_) => status = Status::corruption(&Slice::from("memtable value is not valid UTF-8"), None),
+                }
+            } else if status.is_not_found() {
+                (*value).clear();
+            }
+            *s = status;
+        }
+        true
+    }
 }

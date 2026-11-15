@@ -2,7 +2,13 @@
 crate::ix!();
 
 impl DBGet for DBImpl {
-    fn get(&mut self, options: &ReadOptions, key_: &Slice, value: *mut String) -> crate::Status {
+    fn get_bytes(&mut self, options: &ReadOptions, key_: &Slice, value: *mut Vec<u8>) -> crate::Status {
+        if value.is_null() {
+            return Status::invalid_argument(&Slice::from("get_bytes: null output"), None);
+        }
+        // Commit only after a successful read. A tombstone, miss or I/O error
+        // cannot overwrite the caller's previous output.
+        let mut bytes = Vec::new();
         let mut s: Status = Status::ok();
 
         self.mutex.lock();
@@ -42,12 +48,12 @@ impl DBGet for DBImpl {
             // First look in the memtable, then in the immutable memtable (if any).
             let lkey: LookupKey = LookupKey::new(key_, snapshot);
 
-            if unsafe { (*mem).get(&lkey, value, &mut s) } {
+            if unsafe { (*mem).get_bytes(&lkey, &mut bytes, &mut s) } {
                 // Done
-            } else if !imm.is_null() && unsafe { (*imm).get(&lkey, value, &mut s) } {
+            } else if !imm.is_null() && unsafe { (*imm).get_bytes(&lkey, &mut bytes, &mut s) } {
                 // Done
             } else {
-                s = unsafe { (*current).get(options, &lkey, value, &mut stats) };
+                s = unsafe { (*current).get_bytes(options, &lkey, &mut bytes, &mut stats) };
                 have_stat_update = true;
             }
         }
@@ -68,6 +74,9 @@ impl DBGet for DBImpl {
 
         unsafe { self.mutex.unlock() };
 
+        if s.is_ok() {
+            unsafe { *value = bytes; }
+        }
         s
     }
 }

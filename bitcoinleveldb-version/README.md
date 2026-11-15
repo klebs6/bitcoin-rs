@@ -12,6 +12,9 @@ version lifetime, while file metadata and the owning version set are represented
 by raw pointers. Access requires the owning database's external synchronization;
 this crate is not a standalone MVCC database or a user snapshot manager.
 
+`get_bytes` reads values into byte vectors. The legacy `get` adapter validates
+UTF-8 and returns `Corruption` for an invalid value, preserving its String output.
+
 See [representation](src/version.rs), [reference management](src/ref_unref.rs),
 [lookup](src/get.rs), and [overlap selection](src/get_overlapping_inputs.rs).
 

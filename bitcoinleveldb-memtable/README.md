@@ -16,9 +16,12 @@ baseline. The database's write-buffer setting controls when a memtable is
 flushed; there is no separate write-buffer container inside this crate.
 
 `encode_key` takes a `*mut Vec<u8>` scratch destination; iterator seek scratch
-and returned slices preserve encoded bytes. Point `get` still has a `String`
-output and performs lossy text conversion, so arbitrary-byte point retrieval
-remains a release blocker. See the [migration record](../doc/release/leveldb-iterator-bytes066.md).
+and returned slices preserve encoded bytes. Point reads preserve bytes through `get_bytes`; the checked text `get` adapter
+retains a `String` output. See the [migration record](../doc/release/leveldb-get-bytes081.md).
+
+`get_bytes` preserves its output on a tombstone or miss. The legacy `get`
+adapter validates UTF-8 and returns `Corruption` for an invalid value; a direct
+legacy tombstone lookup still clears the text output.
 
 See [lifetime management](src/memtable.rs), [insertions](src/memtable_add.rs),
 and [lookups](src/memtable_get.rs).

@@ -36,15 +36,26 @@ pub fn leveldb_get(
         let ropt: &ReadOptions = (*options).rep();
         let k = Slice::from_ptr_len(key_, keylen);
 
-        let mut tmp: String = String::new();
+        let mut tmp = Vec::new();
         let status = (*db)
             .rep()
             .borrow_mut()
-            .get(ropt, &k, (&mut tmp) as *mut String);
+            .get_bytes(ropt, &k, &mut tmp);
 
         if status.is_ok() {
-            *vallen = tmp.as_bytes().len();
-            let out = copy_string(&tmp);
+            // A non-null allocation distinguishes an empty found value from
+            // NotFound without changing the C pointer+length interface.
+            let out = libc::malloc(tmp.len().max(1)) as *mut u8;
+            if out.is_null() {
+                *vallen = 0;
+                let status = Status::io_error(&Slice::from("leveldb_get: allocation failed"), None);
+                let _ = save_error(errptr, &status);
+                return core::ptr::null_mut();
+            }
+            if !tmp.is_empty() {
+                core::ptr::copy_nonoverlapping(tmp.as_ptr(), out, tmp.len());
+            }
+            *vallen = tmp.len();
             trace!(
                 target: "bitcoinleveldb_db::c_api",
                 vallen = *vallen,
@@ -199,5 +210,126 @@ mod bitcoinleveldb_db__leveldb_get_rs__exhaustive_test_suite {
             bitcoinleveldb_db__leveldb_get_rs__free_err_if_non_null(derr);
             crate::leveldb_options::leveldb_options_destroy(options);
         }
+    }
+}
+
+
+#[cfg(test)]
+mod binary_get_contracts {
+    use super::*;
+    struct Database {
+        db: *mut LevelDB,
+        options: *mut LevelDBOptions,
+        read: *mut LevelDBReadOptions,
+        write: *mut LevelDBWriteOptions,
+        name: Vec<u8>,
+        snapshots: Vec<(*const LevelDBSnapshot, *mut LevelDBReadOptions)>,
+    }
+    impl Database {
+        fn new() -> Self {
+            let mut f = Self {
+                db: core::ptr::null_mut(), options: crate::leveldb_options::leveldb_options_create(),
+                read: crate::leveldb_readoptions::leveldb_readoptions_create(),
+                write: crate::leveldb_writeoptions::leveldb_writeoptions_create(),
+                name: crate::bitcoinleveldb_db__make_temp_dbname_bytes("binary-get081"),
+                snapshots: Vec::new(),
+            };
+            assert!(!f.options.is_null() && !f.read.is_null() && !f.write.is_null());
+            crate::leveldb_options::leveldb_options_set_create_if_missing(f.options, 1);
+            f.reopen(); f
+        }
+        fn reopen(&mut self) {
+            assert!(self.snapshots.is_empty());
+            if !self.db.is_null() { crate::leveldb_close::leveldb_close(self.db); self.db = core::ptr::null_mut(); }
+            let mut error = core::ptr::null_mut();
+            self.db = crate::leveldb_open::leveldb_open(self.options, self.name.as_ptr(), &mut error);
+            assert!(error.is_null() && !self.db.is_null());
+        }
+        fn put(&self, key: &[u8], value: &[u8]) {
+            let mut error = core::ptr::null_mut();
+            crate::leveldb_put::leveldb_put(self.db, self.write, key.as_ptr(), key.len(), value.as_ptr(), value.len(), &mut error);
+            assert!(error.is_null());
+        }
+        fn get(&self, key: &[u8], read: *mut LevelDBReadOptions) -> Option<Vec<u8>> {
+            let mut len = usize::MAX; let mut error = core::ptr::null_mut();
+            let out = leveldb_get(self.db, read, key.as_ptr(), key.len(), &mut len, &mut error);
+            assert!(error.is_null());
+            if out.is_null() { assert_eq!(len, 0); return None; }
+            let bytes = unsafe { core::slice::from_raw_parts(out, len).to_vec() };
+            crate::leveldb_free::leveldb_free(out as *mut core::ffi::c_void);
+            Some(bytes)
+        }
+        fn snapshot(&mut self) -> *mut LevelDBReadOptions {
+            let snapshot = crate::leveldb_create_snapshot::leveldb_create_snapshot(self.db);
+            let read = crate::leveldb_readoptions::leveldb_readoptions_create();
+            assert!(!snapshot.is_null() && !read.is_null());
+            crate::leveldb_readoptions::leveldb_readoptions_set_snapshot(read, snapshot);
+            self.snapshots.push((snapshot, read)); read
+        }
+        fn release_snapshots(&mut self) {
+            for (snapshot, read) in self.snapshots.drain(..) {
+                crate::leveldb_readoptions::leveldb_readoptions_destroy(read);
+                crate::leveldb_release_snapshot::leveldb_release_snapshot(self.db, snapshot);
+            }
+        }
+        fn compact_and_verify_sst(&self) {
+            crate::leveldb_compact_range::leveldb_compact_range(self.db, core::ptr::null(), 0, core::ptr::null(), 0);
+            let directory = std::str::from_utf8(&self.name[..self.name.len()-1]).unwrap();
+            let has_table = std::fs::read_dir(directory).unwrap().any(|entry| {
+                let path = entry.unwrap().path();
+                matches!(path.extension().and_then(|s| s.to_str()), Some("ldb") | Some("sst"))
+            });
+            assert!(has_table, "compaction must create an SST before checking file-backed retrieval");
+        }
+    }
+    impl Drop for Database {
+        fn drop(&mut self) {
+            self.release_snapshots();
+            crate::leveldb_readoptions::leveldb_readoptions_destroy(self.read);
+            crate::leveldb_writeoptions::leveldb_writeoptions_destroy(self.write);
+            if !self.db.is_null() { crate::leveldb_close::leveldb_close(self.db); }
+            let mut error = core::ptr::null_mut();
+            crate::leveldb_destroy_db::leveldb_destroy_db(self.options, self.name.as_ptr(), &mut error);
+            if !error.is_null() { crate::leveldb_free::leveldb_free(error as *mut core::ffi::c_void); }
+            crate::leveldb_options::leveldb_options_destroy(self.options);
+        }
+    }
+
+    #[test]
+    fn binary_get_roundtrip_in_memory_snapshot_sst_and_reopen() {
+        let mut f = Database::new();
+        let key: Vec<u8> = (0u8..=255).collect();
+        let old: Vec<u8> = (0u8..=255).collect();
+        let new: Vec<u8> = old.iter().rev().copied().collect();
+        f.put(&key, &old);
+        let snapshot = f.snapshot();
+        f.put(&key, &new);
+        assert_eq!(f.get(&key, f.read), Some(new.clone()));
+        assert_eq!(f.get(&key, snapshot), Some(old.clone()));
+        // Both versions must remain readable after the mutable table is
+        // flushed to a real SST while this snapshot is still held.
+        f.compact_and_verify_sst();
+        assert_eq!(f.get(&key, f.read), Some(new.clone()));
+        assert_eq!(f.get(&key, snapshot), Some(old.clone()));
+        // Exercise the checked Rust text bridge through the actual DBImpl vtable.
+        let mut text = String::from("unchanged");
+        let status = unsafe { (*f.db).rep().borrow_mut().get((*f.read).rep(), &Slice::from(&key[..]), &mut text) };
+        assert!(status.is_corruption()); assert_eq!(text, "unchanged");
+        let mut error = core::ptr::null_mut();
+        crate::leveldb_delete::leveldb_delete(f.db, f.write, key.as_ptr(), key.len(), &mut error);
+        assert!(error.is_null()); assert_eq!(f.get(&key, f.read), None);
+        assert_eq!(f.get(&key, snapshot), Some(old));
+        let mut bytes = vec![0xaa, 0xff];
+        let status = unsafe { (*f.db).rep().borrow_mut().get_bytes((*f.read).rep(), &Slice::from(&key[..]), &mut bytes) };
+        assert!(status.is_not_found()); assert_eq!(bytes, vec![0xaa, 0xff]);
+        f.release_snapshots();
+        f.put(&key, &new);
+        f.put(b"empty", &[]);
+        assert_eq!(f.get(b"empty", f.read), Some(Vec::new()));
+        f.compact_and_verify_sst();
+        f.reopen();
+        assert_eq!(f.get(&key, f.read), Some(new));
+        assert_eq!(f.get(b"empty", f.read), Some(Vec::new()));
+        assert_eq!(f.get(b"missing", f.read), None);
     }
 }

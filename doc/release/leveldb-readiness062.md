@@ -107,3 +107,13 @@ because its commits are merged.
 - [Cargo packaging rules](https://doc.rust-lang.org/cargo/commands/cargo-package.html)
 - [Rust String representation](https://doc.rust-lang.org/std/string/struct.String.html)
 - [Attribution correction record](leveldb-attribution062.md)
+
+
+## Point-read boundary081
+
+The [byte-preserving getter stage](leveldb-get-bytes081.md) adds binary DBImpl
+and C-API point reads with checked text adapters. Its separate client receipt is
+required. The earlier comparator sign correction078 qualified two fresh library
+cases and retained ten unchanged integration cases at its own source boundary.
+Storage080 is activated; later repair controllers must bind its exact helper
+and policy before verification. ModelDB and other listed release gates remain.

@@ -19,7 +19,7 @@ pub struct Saver {
     state:    SaverState,
     ucmp:     Box<dyn SliceComparator>,
     user_key_: Slice,
-    value:    *mut String,
+    value:    *mut Vec<u8>,
 }
 
 impl core::fmt::Debug for Saver {
@@ -80,21 +80,11 @@ pub fn save_value(arg: *mut c_void, ikey_: &Slice, v: &Slice) -> c_void {
                 match s.state {
                     SaverState::Found => {
                         if !s.value.is_null() {
-                            let out: &mut String = &mut *s.value;
-                            let len              = *v.size();
-                            let data_ptr         = *v.data();
-                            let bytes =
-                                std::slice::from_raw_parts(data_ptr, len);
-
-                            debug!(
-                                value_len = len,
-                                "save_value: writing value bytes into destination string"
-                            );
-
-                            // Preserve raw bytes exactly as in C++ std::string::assign.
-                            let new_string =
-                                String::from_utf8_unchecked(bytes.to_vec());
-                            *out = new_string;
+                            // Snapshot before touching the destination: v may be a valid
+                            // borrowed view into its previous byte allocation.
+                            let bytes = v.as_bytes().to_vec();
+                            debug!(value_len = bytes.len(), "save_value: copying value bytes");
+                            *s.value = bytes;
                         } else {
                             debug!(
                                 "save_value: state=Found but destination value pointer is null; skipping write"
@@ -130,19 +120,19 @@ mod saver_callback_spec {
         (ik, encoded)
     }
 
-    fn make_saver(user_key: &str, value_out: &mut String) -> Saver {
+    fn make_saver(user_key: &str, value_out: &mut Vec<u8>) -> Saver {
         let user_slice = Slice::from(user_key);
         Saver {
             state: SaverState::NotFound,
             ucmp: Box::new(BytewiseComparatorImpl::default()),
             user_key_: user_slice,
-            value: value_out as *mut String,
+            value: value_out as *mut Vec<u8>,
         }
     }
 
     #[traced_test]
     fn verify_save_value_marks_corrupt_on_bad_internal_key_encoding() {
-        let mut out = String::new();
+        let mut out = Vec::new();
         let mut saver = make_saver("foo", &mut out);
 
         // Build an ikey Slice that is too short (<8 bytes) so that parse_internal_key fails.
@@ -164,7 +154,7 @@ mod saver_callback_spec {
 
     #[traced_test]
     fn verify_save_value_does_not_modify_state_for_mismatched_user_key() {
-        let mut out = String::from("original");
+        let mut out = b"original".to_vec();
         let mut saver = make_saver("expected", &mut out);
 
         let (_k, encoded) = build_internal_key("different", 1, ValueType::TypeValue);
@@ -177,15 +167,15 @@ mod saver_callback_spec {
             "Saver state should remain NotFound when user keys do not match"
         );
         assert_eq!(
-            "original",
-            out,
-            "Output string should remain unchanged when keys do not match"
+            b"original".as_slice(),
+            out.as_slice(),
+            "Output bytes should remain unchanged when keys do not match"
         );
     }
 
     #[traced_test]
     fn verify_save_value_stores_value_on_matching_typevalue() {
-        let mut out = String::new();
+        let mut out = Vec::new();
         let mut saver = make_saver("user", &mut out);
 
         let (_k, encoded) = build_internal_key("user", 7, ValueType::TypeValue);
@@ -199,20 +189,20 @@ mod saver_callback_spec {
         }
 
         debug!(
-            stored = out.as_str(),
+            stored = ?out,
             "verify_save_value_stores_value_on_matching_typevalue: stored value"
         );
 
         assert_eq!(
-            "stored-value",
-            out,
+            b"stored-value".as_slice(),
+            out.as_slice(),
             "Saver must copy the raw bytes of the supplied value"
         );
     }
 
     #[traced_test]
     fn verify_save_value_sets_deleted_state_without_writing_value() {
-        let mut out = String::from("prior");
+        let mut out = b"prior".to_vec();
         let mut saver = make_saver("user", &mut out);
 
         let (_k, encoded) = build_internal_key("user", 7, ValueType::TypeDeletion);
@@ -226,9 +216,41 @@ mod saver_callback_spec {
         }
 
         assert_eq!(
-            "prior",
-            out,
-            "Value string must not be modified when the entry represents a deletion"
+            b"prior".as_slice(),
+            out.as_slice(),
+            "Value bytes must not be modified when the entry represents a deletion"
         );
+    }
+}
+
+
+#[cfg(test)]
+mod binary_saver_contracts {
+    use super::*;
+    fn saver(out: &mut Vec<u8>) -> Saver {
+        SaverBuilder::default().state(SaverState::NotFound)
+            .ucmp(Box::new(BytewiseComparatorImpl::default()))
+            .user_key_(Slice::from("binary-key")).value(out as *mut Vec<u8>).build().unwrap()
+    }
+    #[test]
+    fn saver_copies_all_bytes_and_empty_values() {
+        let key = InternalKey::new(&Slice::from("binary-key"), 7, ValueType::TypeValue);
+        let encoded = key.encode();
+        let value: Vec<u8> = (0u8..=255).collect();
+        let mut out = Vec::new(); let mut state = saver(&mut out);
+        save_value(&mut state as *mut Saver as *mut c_void, &encoded, &Slice::from(value.as_slice()));
+        assert_eq!(state.state(), SaverState::Found); assert_eq!(out, value);
+        save_value(&mut state as *mut Saver as *mut c_void, &encoded, &Slice::default());
+        assert_eq!(state.state(), SaverState::Found); assert!(out.is_empty());
+    }
+    #[test]
+    fn saver_snapshots_a_valid_destination_view_before_replacement() {
+        let key = InternalKey::new(&Slice::from("binary-key"), 7, ValueType::TypeValue);
+        let encoded = key.encode();
+        let mut out = vec![0xaa, 0xff, 0x00, 0x80, 0xbb];
+        let view = Slice::from(&out[1..4]);
+        let mut state = saver(&mut out);
+        save_value(&mut state as *mut Saver as *mut c_void, &encoded, &view);
+        assert_eq!(state.state(), SaverState::Found); assert_eq!(out, vec![0xff, 0x00, 0x80]);
     }
 }

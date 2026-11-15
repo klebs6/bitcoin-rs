@@ -2,19 +2,38 @@
 crate::ix!();
 
 pub trait DBGet {
+    /// Read a value as UTF-8 text. Use `get_bytes` for arbitrary stored bytes.
+    /// On a missing key, an error, or invalid UTF-8, leave `*value` unchanged.
+    /// A non-null destination must point to a live exclusively writable String.
+    /// Legacy implementations may override this text-only method.
+    fn get(&mut self, options: &ReadOptions, key_: &Slice, value: *mut String) -> crate::Status {
+        if value.is_null() {
+            return crate::Status::invalid_argument(&Slice::from("get: null text output"), None);
+        }
+        let mut bytes = Vec::new();
+        let status = self.get_bytes(options, key_, &mut bytes);
+        if !status.is_ok() {
+            return status;
+        }
+        match String::from_utf8(bytes) {
+            Ok(text) => {
+                unsafe { *value = text; }
+                status
+            }
+            Err(_) => crate::Status::corruption(&Slice::from("get: value is not valid UTF-8"), None),
+        }
+    }
 
-    /// If the database contains an entry for "key" store the corresponding value in *value and
-    /// return OK.
-    /// 
-    /// If there is no entry for "key" leave *value unchanged and return a status for which
-    /// Status::IsNotFound() returns true.
-    /// 
-    /// May return some other Status on an error.
+    /// Read a value without text conversion. On OK, replace `*value` exactly;
+    /// on NotFound or another error, leave it unchanged. A non-null output must
+    /// point to a live exclusively writable Vec<u8>.
     ///
-    fn get(&mut self, 
-            options: &ReadOptions,
-            key_:     &Slice,
-            value:   *mut String) -> crate::Status;
+    /// The default explicitly reports NotSupported. It does not route arbitrary
+    /// bytes through a legacy text implementation. DBImpl implements this path;
+    /// a legacy implementation must opt in before claiming binary retrieval.
+    fn get_bytes(&mut self, _options: &ReadOptions, _key_: &Slice, _value: *mut Vec<u8>) -> crate::Status {
+        crate::Status::not_supported(&Slice::from("get_bytes is not implemented"), None)
+    }
 }
 
 #[cfg(test)]
@@ -121,5 +140,63 @@ mod get_contract_semantics_suite {
         assert_eq!(out, unchanged);
 
         info!("verified get() can be called with empty key and preserves output on NotFound");
+    }
+}
+
+
+#[cfg(test)]
+mod byte_get_contracts {
+    use super::*;
+    struct ByteDb { value: Vec<u8>, found: bool, fail: bool }
+    impl DBGet for ByteDb {
+        fn get_bytes(&mut self, _: &ReadOptions, _: &Slice, out: *mut Vec<u8>) -> crate::Status {
+            if self.fail { return crate::Status::io_error(&Slice::from("test read error"), None); }
+            if !self.found { return crate::Status::not_found(&Slice::default(), None); }
+            unsafe { *out = self.value.clone(); }
+            crate::Status::ok()
+        }
+    }
+    struct LegacyTextDb;
+    impl DBGet for LegacyTextDb {
+        fn get(&mut self, _: &ReadOptions, _: &Slice, out: *mut String) -> crate::Status {
+            unsafe { *out = String::from("legacy text"); }
+            crate::Status::ok()
+        }
+    }
+
+    #[test]
+    fn strict_text_adapter_preserves_utf8_and_rejects_invalid_values_without_mutation() {
+        let options = ReadOptions::default();
+        let key = Slice::default();
+        let mut db = ByteDb { value: "é\0水".as_bytes().to_vec(), found: true, fail: false };
+        let mut text = String::from("sentinel");
+        assert!(db.get(&options, &key, &mut text).is_ok());
+        assert_eq!(text, "é\0水");
+        let binary: Vec<u8> = (0u8..=255).collect();
+        db.value = binary.clone();
+        let prior = text.clone();
+        assert!(db.get(&options, &key, &mut text).is_corruption());
+        assert_eq!(text, prior);
+        let mut bytes = Vec::new();
+        let dynamic: &mut dyn DBGet = &mut db;
+        assert!(dynamic.get_bytes(&options, &key, &mut bytes).is_ok());
+        assert_eq!(bytes, binary);
+        db.found = false;
+        assert!(db.get(&options, &key, &mut text).is_not_found());
+        assert_eq!(text, prior);
+        db.fail = true;
+        assert!(!db.get(&options, &key, &mut text).is_ok());
+        assert_eq!(text, prior);
+    }
+
+    #[test]
+    fn legacy_text_only_implementation_reports_missing_byte_capability_explicitly() {
+        let mut db = LegacyTextDb;
+        let mut out = vec![0xff, 0x00, 0x80];
+        let prior = out.clone();
+        let dynamic: &mut dyn DBGet = &mut db;
+        let status = dynamic.get_bytes(&ReadOptions::default(), &Slice::default(), &mut out);
+        assert!(status.is_not_supported_error());
+        assert_eq!(out, prior);
     }
 }

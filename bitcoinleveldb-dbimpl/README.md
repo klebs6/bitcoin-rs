@@ -17,6 +17,10 @@ This is an implementation layer with raw pointers, explicit locking, and
 environment ownership contracts. Its public state and test hooks are not a
 substitute for the database operation interface.
 
+Point reads expose byte-preserving `DBGet::get_bytes`. The default text `get`
+adapter validates UTF-8 and returns `Corruption` for an invalid value.
+Unsuccessful DB reads leave the output unchanged. Property outputs remain text.
+
 Source: [crate modules](src/lib.rs) · [manifest](Cargo.toml).
 
 For repository verification, use the [bounded LevelDB test workflow](../doc/testing/leveldb-subsystem.md).

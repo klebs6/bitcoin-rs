@@ -9,11 +9,11 @@ impl Version {
     /// file selection, table lookup, and user-key acceptance performed by this
     /// call all observe the active configured comparator rather than a fallback
     /// bytewise comparator.
-    pub fn get(
+    pub fn get_bytes(
         &mut self,
         options: &ReadOptions,
         k:       &LookupKey,
-        value:   *mut String,
+        value:   *mut Vec<u8>,
         stats:   *mut VersionGetStats,
     ) -> Status {
         trace!(
@@ -126,6 +126,24 @@ impl Version {
                 let empty = Slice::default();
                 Status::not_found(&empty, None)
             }
+        }
+    }
+
+    /// Checked text adapter for existing callers. Binary values are available
+    /// through get_bytes; invalid UTF-8 is Corruption, never a fabricated String.
+    pub fn get(&mut self, options: &ReadOptions, k: &LookupKey,
+        value: *mut String, stats: *mut VersionGetStats) -> Status {
+        if value.is_null() {
+            return self.get_bytes(options, k, core::ptr::null_mut(), stats);
+        }
+        let mut bytes = Vec::new();
+        let status = self.get_bytes(options, k, &mut bytes, stats);
+        if !status.is_ok() {
+            return status;
+        }
+        match String::from_utf8(bytes) {
+            Ok(text) => { unsafe { *value = text; } status }
+            Err(_) => Status::corruption(&Slice::from("version value is not valid UTF-8"), None),
         }
     }
 }
