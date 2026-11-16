@@ -23,6 +23,10 @@ Unsuccessful DB reads leave the output unchanged. Property outputs remain text.
 
 Source: [crate modules](src/lib.rs) · [manifest](Cargo.toml).
 
+Tests using the repository-only `DBConstructor` fixture require a checkout.
+Cargo omits that path-only development dependency from the published manifest.
+Standalone packaged execution of those tests is not qualified.
+
 For repository verification, use the [bounded LevelDB test workflow](../doc/testing/leveldb-subsystem.md).
 
 License: MIT (as declared in the manifest).

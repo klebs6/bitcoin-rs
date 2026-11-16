@@ -137,3 +137,16 @@ Git attribution, resource budget or Cargo target directory is replaced.
 See [the boundary record](leveldb-registry-boundary091.md) and the client
 receipt for actual progress. A successful resolution is not API/build or
 publication qualification.
+
+## Packaging development cycle093
+
+The `bitcoinleveldb-dbimpl` development dependency on the local DBConstructor
+fixture is path-only. The runtime/build graph, local path, features, package
+versions, lockfile, and Rust source remain unchanged. Cargo omits this fixture
+from the published dev-dependency table. Tests requiring it are repository-only;
+standalone packaged test execution is not qualified.
+
+The093 controller preserves and inspects retained092 staged archives, then
+performs one fresh archive-only batch. No native test qualification is added.
+Publication remains pending the actual archive and independent-consumer results
+and the other release gates recorded above.
