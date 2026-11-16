@@ -7,7 +7,7 @@ version = "0.1.19"
 
 [package]
 authors = ["klebs"]
-description = "build dependency for specifying cfg aliases and cargo directives"
+description = "Build-script helper emitting the bitcoin-rs workspace cfg aliases and fixed configuration directives."
 documentation = "https://docs.rs/bitcoin-cfg"
 edition = "2021"
 license = "MIT"

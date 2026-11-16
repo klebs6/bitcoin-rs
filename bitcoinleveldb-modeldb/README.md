@@ -28,3 +28,5 @@ For bounded verification, see the [subsystem testing guide](../doc/testing/level
 
 License: MIT (as declared in the manifest).
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+
+[Upstream notices](NOTICE)

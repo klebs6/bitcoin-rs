@@ -43,7 +43,7 @@ workspace = true
 
 [package]
 authors = ["klebs"]
-description = "Low-level support primitives for bitcoin-rs: secure allocators with mlock+zeroization, libevent-compatible opaque event handles, optimizer-resistant memory cleansing, alignment and unique-path utilities."
+description = "Nightly allocation and memory-cleansing helpers, Rust event stand-ins, alignment and candidate-path utilities for bitcoin-rs."
 documentation = "https://docs.rs/bitcoin-support"
 edition = "2021"
 license = "MIT"

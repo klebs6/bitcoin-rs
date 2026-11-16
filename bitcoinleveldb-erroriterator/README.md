@@ -16,6 +16,8 @@ See [the constructor](src/error_iterator.rs),
 Part of the [bitcoin-rs LevelDB subsystem](../bitcoin-leveldb/README.md).
 For bounded verification, see the [subsystem testing guide](../doc/testing/leveldb-subsystem.md).
 
-License: MIT. See the [repository license](../LICENSE).
+License: MIT. See the [repository license](LICENSE).
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+
+[Upstream notices](NOTICE)

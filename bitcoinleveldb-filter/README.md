@@ -23,3 +23,5 @@ For repository verification, use the [bounded LevelDB test workflow](../doc/test
 License: MIT (as declared in the manifest).
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+
+[Upstream notices](NOTICE)

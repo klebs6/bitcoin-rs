@@ -1,0 +1,29 @@
+Bitcoin-rs source and upstream notice bundle
+
+This package is part of https://github.com/klebs6/bitcoin-rs.
+LICENSE preserves the repository's existing MIT notice verbatim, including
+its Bitcoin developer copyright notices.
+
+The modular LevelDB port and its support closure also have upstream origins:
+
+- LevelDB: https://github.com/google/leveldb
+  License text: LICENSE.leveldb
+  Source: https://github.com/google/leveldb/blob/main/LICENSE
+  Copyright (c) 2011 The LevelDB Authors. All rights reserved.
+- CRC32C: https://github.com/google/crc32c
+  License text: LICENSE.crc32c
+  Source: https://github.com/google/crc32c/blob/main/LICENSE
+  Copyright 2017, The CRC32C Authors.
+
+The two upstream license texts were checked against those primary sources
+on 2026-11-15; their line wrapping/blank lines are normalized. These files
+retain notices and conditions for the port and its dependency closure.
+Their inclusion does not attribute every file to every listed holder,
+replace file-specific notices, grant new rights, or rewrite Git authorship.
+
+Source-origin comments identify translated C++ paths where available.
+External Cargo dependencies retain their own licenses and notices; this
+bundle is not a complete license inventory of all external dependencies.
+Package SPDX declarations and source-specific attribution remain a final
+release-review obligation. This preparation preserves the existing declared
+MIT expressions instead of silently changing the project's licensing.

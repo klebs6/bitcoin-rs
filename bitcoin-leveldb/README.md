@@ -21,8 +21,10 @@ into a memory-safe ownership wrapper or establish a C ABI.
 The recorded Linux/default-feature test inventory is qualified. The source
 currently uses nightly Rust features. Publication preparation and known source
 limitations are tracked in the [release-readiness record](../doc/release/leveldb-readiness062.md).
-In particular, the remaining use of `String` for binary representations requires
-correction before claiming general binary-data correctness or release readiness.
+The focused byte-ownership repairs have separate source-bound qualification
+records through stages 063-087. Publication still requires archive, detached
+consumer, dependency, licensing, version and toolchain checks. Scoped test
+success does not establish universal binary-data correctness or memory safety.
 
 Use [check.py](check.py) through the [bounded subsystem testing guide](../doc/testing/leveldb-subsystem.md).
 It discovers the LevelDB workspace packages and supports `--crate NAME` and
@@ -33,4 +35,6 @@ This README intentionally does not advertise an unverified registry version or
 an untested application example. The [manifest](Cargo.toml) and
 [source](src/lib.rs) define the current workspace integration surface.
 
-[Repository and support](https://github.com/klebs6/bitcoin-rs) · [License](../LICENSE)
+[Repository and support](https://github.com/klebs6/bitcoin-rs) · [License](LICENSE)
+
+[Upstream notices](NOTICE)

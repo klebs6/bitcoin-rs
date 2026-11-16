@@ -1,146 +1,113 @@
 # LevelDB publication preparation
 
-Baseline: `leveldb-subsystem-qualified-20261111`, commit
-`0214a455d9f49084dc093d281d4dcce42173de1e`.
+Status: source qualification is recorded; publication remains held for the
+distribution checks below. The current work stays on
+`release/leveldb-readiness062`. Original master, qualification tags and remote
+publication are unchanged by this preparation.
 
-**Status: publication is held pending the source and packaging checks below.**
-The baseline records 107 compiled packages, 2,041 accumulated native passes and
-107 successful doctest commands on the recorded Linux/default-feature setup.
-Those results retain their original run/source provenance; they do not prove
-all-feature coverage, arbitrary binary-data correctness, or memory safety.
+## Qualified source and scope
 
-## This preparation
+The baseline `leveldb-subsystem-qualified-20261111` points to
+`0214a455d9f49084dc093d281d4dcce42173de1e`. Its original receipt records
+107 compiled packages, 2,041 accumulated native passes and 107 successful
+doctest commands on its measured Linux/default-feature configuration.
 
-- Review all 107 crate READMEs against captured source and manifests: 85
-  `bitcoinleveldb-*` components, 21 `bitcoinleveldbt-*` test/support packages,
-  and the `bitcoin-leveldb` facade. Replace placeholders and false APIs, keep
-  useful crate-specific contracts and source links, and avoid unverified examples.
-- Give local path dependencies explicit version requirements matching their
-  existing package versions. No package version is bumped and no registry
-  availability is inferred. The complete recorded local runtime/build closure
-  contains 112 packages; the facade alone reaches 87, including two test-named
-  support packages. Selecting all 85 component libraries plus the facade reaches
-  109 local packages because some component crates aggregate test infrastructure.
-  Package names alone do not define what can be omitted.
-- Correct package descriptions/repository links, remove fabricated placeholder
-  author entries, and remove the invalid `<none>` address from legacy author
-  names. Preserve upstream author metadata and source notices. Do not assign
-  authorship to a guessed identity.
-- Repair Arena backing-allocation ownership: keep the exact allocation layout
-  in a private owner, request the documented alignment, reject zero requests,
-  and check aligned-size arithmetic. Regression coverage accompanies the repair;
-  the protected targeted result is recorded separately.
-- Journal retirement of clean merged repair reservations at their exact tips.
-  Keep their worktree files, indexes, caches and evidence. Hold dirty worktrees.
+Focused stages 063-087 subsequently addressed byte ownership and checked text
+boundaries in batches, keys, iterators, blocks, tables, compression, manifests,
+Env file reads, point reads, ModelDB/snapshots, generators and constructors.
+Their receipts retain their own source/artifact/command bindings. Counts from
+overlapping stages must not be added into a new subsystem-wide pass count.
+
+Recent closures include getter082 (354 cumulative native identities),
+model084 (181), generators085 (six), and constructor087 (70 affected-crate
+identities: 49 retained and 21 fresh, plus four separate finite harness cases).
+The constructor group has five successful doctest commands with zero doctest
+cases. Harness/randomized consumer builds completed; the whole harness and
+full randomized stress were not rerun by these stages.
+
+Named Snappy profiles have their separate070 evidence. These records establish
+their measured contracts, not universal feature coverage, arbitrary pointer
+validity, memory safety or an explanation of the historical allocator abort.
+See the [bounded testing guide](../testing/leveldb-subsystem.md) and the focused
+source records in this directory.
+
+## Public package boundary
+
+The source inventory088 and actual Cargo file listings cover all 107 LevelDB
+seeds and the 112-package declared local runtime/build closure. The closure
+includes optional and target-specific local edges; dev edges are recorded
+separately. It has 40 dependency-first layers and no local cycle.
+
+The facade alone reaches 87 local packages. The85 component libraries plus
+the facade reach109. Selecting all 107 seeds reaches 112. The additional shared
+packages are `bitcoin-cfg`, `bitcoin-crc32c`, `bitcoin-derive`, `bitcoin-imports`
+and `bitcoin-support`. Their names do not make them optional dependencies.
+Selecting the final public package set remains a release decision.
+
+The107 LevelDB READMEs were reviewed in062 and updated alongside later source
+changes. Preparation089 corrects the five shared READMEs and their package
+descriptions against the captured source. In particular, procedural annotations
+do not enforce concurrency rules, event helpers are Rust stand-ins, and
+`SecureString`'s boxed-object allocator does not cover its character buffer.
+
+## Package notices and actual verification
+
+Inventory088 selected every README but no license or notice file in any of
+the 112 packages. Preparation089 adds package-local copies of the existing root
+MIT notice, LevelDB/CRC32C upstream license texts, and an explanatory NOTICE.
+The root MIT file, author metadata and historical Git authorship are preserved.
+Primary-source URLs, capture date and normalized formatting are recorded in
+NOTICE and the [packaging record](leveldb-package-preparation089.md).
+
+These additions require their own guarded Cargo file-selection result.
+Selection is not .crate creation, extraction, or compilation. A complete
+source-specific attribution review and accurate final SPDX declarations remain
+required; retaining additional notices does not itself establish compliance
+for every file or external dependency.
 
 ## Remaining release gates
 
-1. **Binary representation.** The [focused063 follow-up](leveldb-byte-buffers063.md)
-   changes WriteBatch and private InternalKey storage to byte vectors. Its
-   protected result is recorded separately. The [iterator066 follow-up](leveldb-iterator-bytes066.md)
-   migrates iterator scratch/saved owners and the raw key append sink. Its
-   separate066 client receipt records 164 affected native passes and five
-   successful doctest commands. The [block067 follow-up](leveldb-block-bytes067.md)
-   migrates builder keys/block bytes and constructor backing storage, with byte
-   coding append helpers. Its separate067 client receipt records 105 affected
-   native passes, five doctest commands, and compilation-only harness compatibility.
-   The [table metadata068 follow-up](leveldb-table-metadata068.md) migrates block
-   handle/footer encoding and their table-builder metadata outputs. The069
-   fixture correction qualified that group with 111 accumulated native passes
-   (94 audited historical,17 fresh), five doctest commands and compilation-only
-   harness compatibility. The [compression070 follow-up](leveldb-snappy-bytes070.md)
-   migrates Snappy output/scratch. Its070 client receipt records separate
-   default (74 native, three doctest commands) and named Snappy-enabled
-   (77 native, three doctest commands) profiles, plus compilation-only harness
-   and benchmark compatibility. The [manifest071 follow-up](leveldb-manifest-bytes071.md)
-   migrates the remaining coding append sinks, manifest records and compaction
-   pointers; its separate071 receipt records318 native passes and five successful
-   doctest commands (zero doctest cases), plus compilation-only harness compatibility.
-   The [Env file076 follow-up](leveldb-env-file-bytes076.md) adds exact byte reads
-   and whole-buffer UTF-8 validation at the text-file boundary; its076 receipt
-   records136 native passes, two successful doctest commands with zero cases, and
-   compilation-only harness/recovery compatibility. Retrieval outputs
-   and other listed owners still need coherent byte-buffer migration. Rust `String` requires valid UTF-8; binary
-   storage and lossy conversion remain source-level release blockers, including
-   outside optional Snappy support.
-2. **Known helper limits.** ModelDB's point `get` path and its text-keyed data
-   paths remain gates. The [reverse077 follow-up](leveldb-reverse-bytes077.md)
-   replaces lossy reversal with exact byte ordering and byte-output helpers.
-   It uses the distinct persistent name `bitcoinrs.ReverseBytewiseComparator.BytesV1`:
-   the former component's binary ordering is incompatible. The separate harness
-   comparator is unchanged. This source still needs its own guarded result.
-3. **Packaged consumer.** Inspect each intended `.crate` file, license/notices,
-   examples and includes; establish registry dependency availability and publish
-   order; verify a consumer outside the workspace under bounded resources.
-   Workspace path resolution and version declarations are not package verification.
-4. **Features/toolchain.** The current source uses nightly features. Record an
-   explicit supported toolchain and test matrix; do not manufacture an MSRV or
-   imply that default-feature results exercised optional features.
-5. **Release identity/version.** Choose the release version and public package
-   set, finish release notes, and make the final tag with the configured real
-   Git identity. Do not silently move the qualification tag or publish artifacts.
+1. Finalize the public package set and versions, check registry availability,
+   and bind the dependency-first publication plan to those exact versions.
+   Existing development versions are not an approved publication plan.
+2. Create and inspect the actual .crate archives, including normalized
+   manifests, source, licenses/notices, README links and build-script inputs.
+3. Verify a consumer outside the workspace against those artifacts and the
+   intended registry dependencies. `bitcoin-imports` and `bitcoin-support`
+   inherit a Git fork of libevent/libevent-sys; equivalence to registry versions
+   is not established by workspace builds or package listings.
+4. Verify detached build-script behavior. `bitcoin-imports/build.rs` can scan
+   its parent workspace and tests `CARGO_PUBLISH`; the surrounding environment
+   must not be assumed to reproduce a workspace build.
+5. Finalize per-source license/attribution mapping and package SPDX metadata,
+   preserving upstream conditions, notices and contributor provenance.
+6. Record and verify the supported toolchain/platform/feature matrix. The
+   measured088 tools are rustc 1.97.0-nightly (9eb3be26b,2026-05-18), Cargo
+   1.97.0-nightly (4d1f98451,2026-05-15), host x86_64-unknown-linux-gnu on
+   NixOS. No stable-Rust MSRV, AArch64 result, or all-feature result is implied.
+7. Finish release notes and review the concrete candidate before promotion,
+   tagging and publication. Use the configured real Git identity and preserve
+   the existing qualification tags.
 
-The README/publication pass does not require repeating the entire native test
-inventory. The preparation062 Arena change has its own targeted result. The focused063
-binary-buffer follow-up checks batch, key, writebatch and C API crates. Later
-owner and package changes need their own targeted checks. See the
-[bounded testing guide](../testing/leveldb-subsystem.md).
+The known broad `bitcoin-imports` surface includes unrelated `Broken` helper
+methods that call `todo!()`; the shared README now says so. Publication of that
+support surface needs an explicit scope decision. This record does not turn
+the unfinished wider Bitcoin Core implementation into a qualified node API.
 
-## Repair reservation lifecycle
+## Resource and reservation lifecycle
 
-The capture found 16 merged repair refs. Twelve attached worktrees were clean. Preparation062 retired their refs after
-verifying the exact tip, master ancestry, clean status and unchanged index. Detaching at the same commit preserves the
-worktree and its data. A retirement receipt records actual changes and reflog
-copies. Historical one-shot mutation-controller branch reservations are then
-retired; their old branch-name preconditions should not be replayed as if active.
+Storage080 binds subsequent work to the fixed warm Cargo cache, with
+incremental compilation disabled, a 2 GiB reserve and the unchanged sampled
+session/cache growth controls. It is an admission/stop monitor, not a global
+filesystem quota. No per-repair cache or blanket native rerun is required
+for this documentation and packaging step.
 
-Four reservations have dirty/staged/untracked work and remain held:
-`repair/leveldb-final-crates-runner033`,
-`repair/leveldb-randomized-controlled023`,
-`repair/leveldb-writablefile-shared`, and `repair/leveldb-sparsemerge`.
-No worktree, cache, receipt, parked artifact, or directory is disposable merely
-because its commits are merged.
+Preparation062 retired 12 clean merged repair refs by detaching their worktrees
+at the same tips. Files, indexes and retained evidence remain protected.
+Four dirty reservations remain held: `repair/leveldb-final-crates-runner033`,
+`repair/leveldb-randomized-controlled023`, `repair/leveldb-writablefile-shared`
+and `repair/leveldb-sparsemerge`. Merged commits do not make their directories
+or caches disposable.
 
-## Sources and support
-
-- [Repository and issue tracker](https://github.com/klebs6/bitcoin-rs)
-- [Cargo packaging rules](https://doc.rust-lang.org/cargo/commands/cargo-package.html)
-- [Rust String representation](https://doc.rust-lang.org/std/string/struct.String.html)
-- [Attribution correction record](leveldb-attribution062.md)
-
-
-## Point-read boundary081
-
-The [byte-preserving getter stage](leveldb-get-bytes081.md) adds binary DBImpl
-and C-API point reads with checked text adapters. Its separate client receipt is
-required. The earlier comparator sign correction078 qualified two fresh library
-cases and retained ten unchanged integration cases at its own source boundary.
-Storage080 is activated; later repair controllers must bind its exact helper
-and policy before verification. ModelDB and other listed release gates remain.
-
-
-## Model byte boundary083
-
-[ModelDB byte storage and typed snapshot payloads](leveldb-model-bytes083.md)
-replace the unfinished getter and lossy model write path. This stage requires
-its own four-package client qualification. The getter stage082 qualified354
-native identities at its retained/fresh source boundaries; it does not replace
-qualification of this new model/snapshot source. Other release gates remain.
-
-
-## Generator utility boundary085
-
-[Byte-key utilities and finite null-input handling](leveldb-generators085.md)
-require their own protected client qualification. The preceding model stage
-qualified181 native identities and15 required regressions through083/084;
-randomized/harness consumers compiled. Raw key APIs are opt-in: existing text
-workload tapes retain their prior behavior until the constructor/harness migration.
-
-
-## Constructor/harness byte boundary086
-
-[Scoped byte fixtures and exact harness comparisons](leveldb-constructor-bytes086.md)
-require separate affected-crate and finite-target client qualification.085 passed
-its six generator regressions and one doctest command; direct consumers compiled.
-The new byte fixture path preserves the distinct legacy text workload interfaces.
-Package/release validation remains after this ownership stage.
+[Repository and support](https://github.com/klebs6/bitcoin-rs) ·
+[Attribution correction record](leveldb-attribution062.md)

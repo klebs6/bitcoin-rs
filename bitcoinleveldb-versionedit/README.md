@@ -23,4 +23,6 @@ and [decoding](src/versionedit_decode_from.rs).
 [Source](src/lib.rs) · [Manifest](Cargo.toml) ·
 [Bounded verification](../doc/testing/leveldb-subsystem.md) ·
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues).
-License: MIT; see the [repository license](../LICENSE).
+License: MIT; see the [repository license](LICENSE).
+
+[Upstream notices](NOTICE)

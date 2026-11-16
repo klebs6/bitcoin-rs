@@ -67,7 +67,7 @@ winapi.workspace                = true
 
 [package]
 authors = ["klebs"]
-description = "encapsulates most third party deps for the bitcoin ecosystem"
+description = "Shared nightly Rust prelude, dependency re-exports and compatibility helpers for bitcoin-rs."
 documentation = "https://docs.rs/bitcoin-imports"
 edition = "2021"
 license = "MIT"

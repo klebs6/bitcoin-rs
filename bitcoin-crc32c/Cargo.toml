@@ -27,7 +27,7 @@ workspace = true
 
 [package]
 authors = ["klebs"]
-description = "High-performance CRC32C (Castagnoli) implementation with runtime-dispatched SSE4.2 and AArch64 backends plus a portable fallback, suitable for streaming integrity checks in Bitcoin and other systems code."
+description = "CRC32C byte-buffer checksums with incremental extension, portable implementation and architecture-specific dispatch."
 documentation = "https://docs.rs/bitcoin-crc32c"
 edition = "2021"
 license = "MIT"

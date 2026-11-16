@@ -30,7 +30,7 @@ categories = [
     "web-programming",
     "compilers",
 ]
-description = "A procedural macro crate providing attributes for concurrency control, signal-slot mechanisms, and fuzz testing, designed for Bitcoin-related Rust projects."
+description = "Compatibility procedural attributes for translated Bitcoin Core and LevelDB code; thread annotations record documentation rather than enforce locking."
 documentation = "https://docs.rs/bitcoin-derive"
 edition = "2021"
 keywords = [

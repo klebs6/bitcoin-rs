@@ -21,4 +21,6 @@ constructors in both orders with small literal datasets. Original randomized and
 long database targets are separate workloads; use the [bounded subsystem runner](../doc/testing/leveldb-subsystem.md).
 
 [State](src/harness.rs) · [Byte checks](src/binary_fixture.rs) · [Manifest](Cargo.toml)
-License: MIT. [Repository license](../LICENSE) · [Support](https://github.com/klebs6/bitcoin-rs/issues)
+License: MIT. [Repository license](LICENSE) · [Support](https://github.com/klebs6/bitcoin-rs/issues)
+
+[Upstream notices](NOTICE)

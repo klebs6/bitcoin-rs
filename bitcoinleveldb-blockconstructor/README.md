@@ -21,4 +21,6 @@ The unrelated global text `KVMap` alias is unchanged.
 
 Source: [shared fixture](src/constructor.rs) · [block construction](src/block_constructor_finish_impl.rs).
 [Manifest](Cargo.toml) · [Bounded verification](../doc/testing/leveldb-subsystem.md)
-License: MIT. [Repository license](../LICENSE) · [Support](https://github.com/klebs6/bitcoin-rs/issues)
+License: MIT. [Repository license](LICENSE) · [Support](https://github.com/klebs6/bitcoin-rs/issues)
+
+[Upstream notices](NOTICE)

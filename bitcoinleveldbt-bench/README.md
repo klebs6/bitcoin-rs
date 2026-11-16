@@ -14,4 +14,6 @@ See [LevelDB workloads](src/db_bench.rs), [SQLite comparison](src/db_bench_sqlit
 and the [bounded testing guide](../doc/testing/leveldb-subsystem.md).
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues) ·
-[Manifest](Cargo.toml) · [License](../LICENSE).
+[Manifest](Cargo.toml) · [License](LICENSE).
+
+[Upstream notices](NOTICE)

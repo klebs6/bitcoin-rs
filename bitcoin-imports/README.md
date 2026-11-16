@@ -1,42 +1,22 @@
 # bitcoin-imports
 
----
+Shared prelude, re-exports and compatibility helpers for `bitcoin-rs`.
+[src/lib.rs](src/lib.rs), [module utilities](src/util.rs) and the
+[manifest](Cargo.toml) define the actual surface and dependency selection.
 
-`bitcoin-imports` is a Rust crate that provides
-a lightweight and efficient way to manage
-third-party dependencies for the Bitcoin Rust
-workspace. It encapsulates all third-party
-dependencies required by the various subcomponents
-of the Bitcoin Rust workspace, allowing for
-simpler and more consistent management of
-dependencies across the entire project.
+This crate re-exports a broad set of standard-library and third-party items
+and provides workspace macros such as `x!`. Consumers inherit this broad
+dependency surface. Cargo manifests and the lockfile control resolution;
+the prelude does not establish API compatibility between dependency versions.
 
-By providing a centralized location for managing
-third-party dependencies, `bitcoin-imports`
-reduces the risk of conflicts and version
-incompatibilities that can arise when using
-multiple libraries and tools in a large-scale
-project like Bitcoin. It also makes it easier to
-manage updates and changes to dependencies,
-ensuring that the entire project remains
-up-to-date and secure.
+The source uses nightly Rust features. Some unrelated compatibility helpers
+remain placeholders: `Broken`'s dereference and `BrokenDelegate` methods
+currently call `todo!()`. They are not operational Bitcoin node APIs.
 
-In addition to its core dependency management
-functionality, `bitcoin-imports` also provides
-some additional utility functions and tools for
-working with Bitcoin data and blockchain-related
-tasks. These functions and tools are designed to
-work seamlessly with the rest of the Bitcoin Rust
-workspace, providing a cohesive and streamlined
-development experience.
+[build.rs](build.rs) may scan the parent workspace through
+`PersistentWorkspaceTypeMap`. It skips that scan when `CARGO_PUBLISH` is set
+or when the parent manifest is absent. Detached consumer behavior remains
+a release check. The current manifest also inherits Git-fork libevent
+dependencies whose registry substitutes need separate verification.
 
-While `bitcoin-imports` itself may not contain any
-specific mathematical concepts or equations, its
-ability to manage dependencies effectively is
-a critical component of building secure and
-reliable Bitcoin applications and services. By
-providing a simple and efficient way to manage
-dependencies, `bitcoin-imports` enables developers
-to focus on building robust and scalable
-applications that can leverage the unique features
-and benefits of the Rust programming language.
+[Repository and support](https://github.com/klebs6/bitcoin-rs) · [License](LICENSE) · [Upstream notices](NOTICE)

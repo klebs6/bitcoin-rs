@@ -22,4 +22,6 @@ These helpers are test support, not cryptographic randomness or an application
 runtime. Source: [modules](src/lib.rs) · [generator contracts](tests/generator_byte_contracts.rs).
 For bounded repository verification, see the [subsystem testing guide](../doc/testing/leveldb-subsystem.md).
 
-[Repository and support](https://github.com/klebs6/bitcoin-rs) · [Manifest](Cargo.toml) · [License](../LICENSE)
+[Repository and support](https://github.com/klebs6/bitcoin-rs) · [Manifest](Cargo.toml) · [License](LICENSE)
+
+[Upstream notices](NOTICE)

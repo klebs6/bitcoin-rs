@@ -16,4 +16,6 @@ See [construction](src/table_constructor_finish_impl.rs),
 [backing ownership](src/table_constructor.rs), and
 [shared fixture APIs](../bitcoinleveldb-blockconstructor/README.md).
 [Manifest](Cargo.toml) · [Bounded verification](../doc/testing/leveldb-subsystem.md)
-License: MIT. [Repository license](../LICENSE) · [Support](https://github.com/klebs6/bitcoin-rs/issues)
+License: MIT. [Repository license](LICENSE) · [Support](https://github.com/klebs6/bitcoin-rs/issues)
+
+[Upstream notices](NOTICE)

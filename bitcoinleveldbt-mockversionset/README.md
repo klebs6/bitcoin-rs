@@ -8,4 +8,6 @@ Sources: [mock_version_set](src/mock_version_set.rs).
 
 For resource-bounded verification from the repository, use the [subsystem testing guide](../doc/testing/leveldb-subsystem.md). Select this package with `--crate bitcoinleveldbt-mockversionset`; the runner handles its ordinary, ignored and explicitly classified stress cases.
 
-[Repository and support](https://github.com/klebs6/bitcoin-rs) · [Manifest](Cargo.toml) · [License](../LICENSE)
+[Repository and support](https://github.com/klebs6/bitcoin-rs) · [Manifest](Cargo.toml) · [License](LICENSE)
+
+[Upstream notices](NOTICE)

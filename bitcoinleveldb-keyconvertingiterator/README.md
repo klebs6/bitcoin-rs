@@ -23,3 +23,5 @@ See [construction](src/create.rs), [key conversion](src/key.rs), and
 [Source](src/lib.rs) · [Manifest](Cargo.toml) · [Bounded subsystem verification](../doc/testing/leveldb-subsystem.md)
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
+
+[Upstream notices](NOTICE)
