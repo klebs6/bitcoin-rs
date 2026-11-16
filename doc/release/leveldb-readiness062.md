@@ -111,3 +111,29 @@ or caches disposable.
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs) ·
 [Attribution correction record](leveldb-attribution062.md)
+
+
+## Registry/isolated-workspace boundary091
+
+Archive rehearsal090 reached its 150-second process limit without creating an
+archive. The source guard recorded repeated memory-high pressure, with no OOM
+kill. That receipt does not establish the underlying Cargo/dependency cause.
+The controller also lost partial Cargo output on timeout;091 retains streamed
+stdout/stderr and termination status. No protected native tests were rerun.
+
+Preparation091 replaces the inherited bare wildcard requirements for sqlite,
+sqlite3, sqlite3-sys and signal-hook with the exact versions already present
+in the unchanged root lockfile. It changes no package version or Rust source.
+The registry boundary is checked first with only libevent 0.1.0 and
+libevent-sys 0.2.6. When explicitly requested, that small resolver may download
+public registry metadata/source; it executes no downloaded code.
+
+Conditional packaging uses a recorded 112-member workspace projection outside
+both repositories. Member/source bytes remain bound to the qualified source;
+only referenced inherited workspace aliases are retained. Its lockfile starts
+from the original lock bytes and is intentionally derived in that new scope.
+Archive and detached-resolution commands remain offline. No original lock,
+Git attribution, resource budget or Cargo target directory is replaced.
+See [the boundary record](leveldb-registry-boundary091.md) and the client
+receipt for actual progress. A successful resolution is not API/build or
+publication qualification.
