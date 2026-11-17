@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldb-stringsource"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "In-memory RandomAccessFile implementation used by the LevelDB table and block tests. StringSource::new(&Slice) copies the supplied bytes into owned storage; the original input only needs to remain valid during construction."
 

@@ -48,7 +48,7 @@ workspace = true
 [package]
 description = "Buffered POSIX writes for LevelDB's WritableFile interface."
 edition = "2024"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoinleveldb-posixwfile"
 version = "0.1.1"
 keywords = ["bitcoin", "leveldb", "posix", "filesystem", "storage"]

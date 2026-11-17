@@ -25,3 +25,5 @@ For bounded repository verification, see the [subsystem testing guide](../doc/te
 [Repository and support](https://github.com/klebs6/bitcoin-rs) · [Manifest](Cargo.toml) · [License](LICENSE)
 
 [Upstream notices](NOTICE)
+
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

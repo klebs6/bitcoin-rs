@@ -20,6 +20,6 @@ See [handles](src/block_handle.rs), [encoding](src/block_handle_encode_to.rs),
 Part of the [LevelDB subsystem](../bitcoin-leveldb/README.md).
 [Bounded verification](../doc/testing/leveldb-subsystem.md) ·
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues).
-License: MIT; see the [repository license](LICENSE).
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 [Upstream notices](NOTICE)

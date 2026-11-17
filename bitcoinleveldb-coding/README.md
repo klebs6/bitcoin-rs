@@ -23,6 +23,6 @@ See [append contracts](tests/byte_append_contracts.rs) and
 Part of the [LevelDB subsystem](../bitcoin-leveldb/README.md).
 [Bounded verification](../doc/testing/leveldb-subsystem.md) ·
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues).
-License: MIT; see the [repository license](LICENSE).
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 [Upstream notices](NOTICE)

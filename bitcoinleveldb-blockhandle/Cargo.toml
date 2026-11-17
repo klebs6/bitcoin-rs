@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldb-blockhandle"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "Block locations and block-reading helpers for LevelDB SSTable files. BlockHandle records an offset and payload size, encodes them as varints, and decodes them with a Status result. BLOCK_TRAILER_SIZE describes the trailing compression-type byte and checksum."
 

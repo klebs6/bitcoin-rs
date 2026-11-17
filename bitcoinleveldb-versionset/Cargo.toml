@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldb-versionset"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "Manages LevelDB's current and retained SSTable versions, MANIFEST edits, file-number/sequence bookkeeping, and compaction selection. VersionSet owns the linked version list and connects it to the table cache and environment."
 

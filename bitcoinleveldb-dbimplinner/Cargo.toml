@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldb-dbimplinner"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "Internal background-compaction and coordination helpers for the bitcoin-rs LevelDB database implementation. This crate separates scheduling predicates, background-error recording, waiter notification, manual-compaction boundaries, and compaction-state preparation from the main database implementation."
 

@@ -29,7 +29,7 @@ Standalone packaged execution of those tests is not qualified.
 
 For repository verification, use the [bounded LevelDB test workflow](../doc/testing/leveldb-subsystem.md).
 
-License: MIT (as declared in the manifest).
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
 

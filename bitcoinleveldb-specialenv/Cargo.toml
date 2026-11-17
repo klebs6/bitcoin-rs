@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldb-specialenv"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "Controllable environment wrapper for LevelDB tests. SpecialEnv wraps a shared Env and creates file wrappers that inject selected I/O behavior."
 

@@ -17,3 +17,5 @@ Use the [manifest](Cargo.toml) and source for the available attribute names;
 this README does not advertise a registry version or additional guarantees.
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs) · [License](LICENSE) · [Upstream notices](NOTICE)
+
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

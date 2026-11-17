@@ -1,7 +1,7 @@
 [package]
 name        = "bitcoinleveldb-dbiter"
 version     = "0.1.0"
-license     = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition     = "2024"
 description = "User-visible database iteration over LevelDB internal keys. DBIter filters entries by a snapshot sequence number, hides deletion records and older values, and supports forward and reverse traversal across user keys."
 

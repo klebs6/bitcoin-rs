@@ -26,7 +26,7 @@ Use the persistent database implementation for application storage.
 Source: [crate modules](src/lib.rs) · [manifest](Cargo.toml).
 For bounded verification, see the [subsystem testing guide](../doc/testing/leveldb-subsystem.md).
 
-License: MIT (as declared in the manifest).
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
 
 [Upstream notices](NOTICE)

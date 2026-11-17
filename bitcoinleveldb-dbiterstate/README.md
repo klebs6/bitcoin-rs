@@ -20,3 +20,5 @@ See [state and callback implementation](src/iterstate.rs).
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
 
 [Upstream notices](NOTICE)
+
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

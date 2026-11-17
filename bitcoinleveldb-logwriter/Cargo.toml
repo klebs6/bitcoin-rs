@@ -58,7 +58,7 @@ workspace = true
 [package]
 description = "Writes LevelDB log records to a WritableFile. LogWriter::add_record splits a logical record into full/first/middle/last physical records, writes CRC32C headers, and pads the unused tail of a log block when required."
 edition = "2024"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoinleveldb-logwriter"
 version = "0.1.1"
 keywords = ["leveldb", "bitcoin", "logwriter", "wal", "storage"]

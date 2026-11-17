@@ -1,29 +1,36 @@
-Bitcoin-rs source and upstream notice bundle
+bitcoinleveldb-blockhandle source and attribution
 
-This package is part of https://github.com/klebs6/bitcoin-rs.
-LICENSE preserves the repository's existing MIT notice verbatim, including
-its Bitcoin developer copyright notices.
+Part of https://github.com/klebs6/bitcoin-rs.
+Package distribution expression: MIT AND BSD-3-Clause.
 
-The modular LevelDB port and its support closure also have upstream origins:
+LICENSE retains the existing repository MIT notice. Original notices,
+source comments and Git authorship remain unchanged.
 
-- LevelDB: https://github.com/google/leveldb
-  License text: LICENSE.leveldb
-  Source: https://github.com/google/leveldb/blob/main/LICENSE
+Included translated/adapted LevelDB material retains BSD-3-Clause
+conditions alongside the repository MIT context and Rust additions. The
+AND expression records cumulative conditions; it does not offer a choice
+of licenses or attribute every local helper/test to upstream.
+
+Upstream source/header reference checks used bitcoin/bitcoin v22.0.
+This is a reproducible comparison snapshot, not a claim that it was the
+exact historical input revision of the Rust port.
+
+Corresponding upstream files and retained header notices:
+
+- src/leveldb/table/format.cc
+  https://github.com/bitcoin/bitcoin/blob/v22.0/src/leveldb/table/format.cc
   Copyright (c) 2011 The LevelDB Authors. All rights reserved.
-- CRC32C: https://github.com/google/crc32c
-  License text: LICENSE.crc32c
-  Source: https://github.com/google/crc32c/blob/main/LICENSE
-  Copyright 2017, The CRC32C Authors.
 
-The two upstream license texts were checked against those primary sources
-on 2026-11-15; their line wrapping/blank lines are normalized. These files
-retain notices and conditions for the port and its dependency closure.
-Their inclusion does not attribute every file to every listed holder,
-replace file-specific notices, grant new rights, or rewrite Git authorship.
+- src/leveldb/table/format.h
+  https://github.com/bitcoin/bitcoin/blob/v22.0/src/leveldb/table/format.h
+  Copyright (c) 2011 The LevelDB Authors. All rights reserved.
 
-Source-origin comments identify translated C++ paths where available.
-External Cargo dependencies retain their own licenses and notices; this
-bundle is not a complete license inventory of all external dependencies.
-Package SPDX declarations and source-specific attribution remain a final
-release-review obligation. This preparation preserves the existing declared
-MIT expressions instead of silently changing the project's licensing.
+The full LevelDB and CRC32C BSD texts remain in LICENSE.leveldb and
+LICENSE.crc32c. Additional retained texts are reference/closure notices,
+not a claim that every listed upstream work appears in this package.
+External Cargo dependencies retain their own license declarations.
+
+The repository record doc/release/leveldb-source-attribution101.json
+indexes every included code file by hash and records the source witnesses
+and package conclusions. New Rust adaptations/tests are distinguished from
+upstream references; exact historical ancestry is not asserted.

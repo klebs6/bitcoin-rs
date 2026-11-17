@@ -21,3 +21,5 @@ dependencies; [upstream notices](NOTICE) preserve the Google CRC32C and
 LevelDB license texts alongside the repository notice.
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs) · [License](LICENSE) · [Upstream notices](NOTICE)
+
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

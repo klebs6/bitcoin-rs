@@ -44,7 +44,7 @@ workspace = true
 [package]
 description = "Shared LevelDB log-format definitions and diagnostic formatting helpers."
 edition = "2024"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoinleveldb-logtools"
 version = "0.1.1"
 keywords = ["bitcoin", "leveldb", "logging", "wal", "storage"]

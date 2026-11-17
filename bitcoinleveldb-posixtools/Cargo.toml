@@ -44,7 +44,7 @@ workspace = true
 [package]
 description = "POSIX locking, resource-limit, error, and environment helpers for LevelDB."
 edition = "2024"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoinleveldb-posixtools"
 version = "0.1.1"
 keywords = ["leveldb", "posix", "filelocking", "bitcoin", "mmap"]

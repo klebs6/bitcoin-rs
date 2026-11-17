@@ -26,6 +26,6 @@ See [the batch representation](src/write_batch.rs),
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
 
-License: MIT. See the [repository license](LICENSE).
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 [Upstream notices](NOTICE)

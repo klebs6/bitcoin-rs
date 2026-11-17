@@ -50,7 +50,7 @@ workspace = true
 [package]
 description = "POSIX positioned reads for LevelDB random-access files."
 edition = "2024"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoinleveldb-posixrafile"
 version = "0.1.1"
 repository = "https://github.com/klebs6/bitcoin-rs"

@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldb-blockbuilder"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "Builds the prefix-compressed data and index blocks used in LevelDB SSTables. BlockBuilder stores shared-key prefixes, periodic restart keys, and a restart offset array; it does not write an SSTable file itself."
 

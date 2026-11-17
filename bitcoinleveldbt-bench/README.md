@@ -17,3 +17,5 @@ and the [bounded testing guide](../doc/testing/leveldb-subsystem.md).
 [Manifest](Cargo.toml) · [License](LICENSE).
 
 [Upstream notices](NOTICE)
+
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).

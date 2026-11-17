@@ -54,7 +54,7 @@ workspace = true
 [package]
 description = "Read-only memory-mapped implementation of LevelDB's RandomAccessFile traits."
 edition = "2024"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoinleveldb-posixmmaprfile"
 version = "0.1.1"
 keywords = ["mmap", "leveldb", "bitcoin", "randomaccess", "filesystem"]

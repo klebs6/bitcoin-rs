@@ -40,7 +40,7 @@ keywords = [
     "signals",
     "fuzzing",
 ]
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoin-derive"
 repository = "https://github.com/klebs6/bitcoin-rs"
 version = "0.1.19"

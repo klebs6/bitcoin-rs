@@ -50,7 +50,7 @@ workspace = true
 [package]
 description = "POSIX file-descriptor implementation of LevelDB's sequential-file interface. PosixSequentialFile::new(filename, fd) takes ownership of an already-open file descriptor; it does not open the named path. Dropping it closes the descriptor."
 edition = "2024"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoinleveldb-posixseqfile"
 version = "0.1.1"
 keywords = ["leveldb", "bitcoin", "posix", "sequentialfile", "storage"]

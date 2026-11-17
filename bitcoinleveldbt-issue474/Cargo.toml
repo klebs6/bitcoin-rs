@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldbt-issue474"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "Logging/flush regression for upstream LevelDB issue 474."
 

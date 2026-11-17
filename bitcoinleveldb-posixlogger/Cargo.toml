@@ -51,7 +51,7 @@ workspace = true
 [package]
 description = "POSIX diagnostic logger for the bitcoin-rs LevelDB environment. PosixLogger implements the subsystem's Logger/Logv traits and writes lines with time and thread labels to a C runtime FILE*."
 edition = "2024"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoinleveldb-posixlogger"
 version = "0.1.1"
 keywords = ["logging", "posix", "libc", "leveldb", "bitcoin"]

@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldbt-capi"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "Integration regression for the LevelDB port's C-API-style Rust functions."
 

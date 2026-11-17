@@ -18,7 +18,7 @@ and [append/flush behavior](src/append_header_and_payload.rs).
 Part of the [bitcoin-rs LevelDB subsystem](../bitcoin-leveldb/README.md).
 For bounded verification, see the [subsystem testing guide](../doc/testing/leveldb-subsystem.md).
 
-License: MIT. See the [repository license](LICENSE).
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
 

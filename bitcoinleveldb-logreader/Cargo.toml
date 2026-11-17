@@ -58,7 +58,7 @@ workspace = true
 [package]
 description = "Logical-record reader for LevelDB's block-framed write-ahead log format."
 edition = "2024"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 name = "bitcoinleveldb-logreader"
 version = "0.1.1"
 keywords = ["leveldb", "bitcoin", "logreader", "wal", "storage"]

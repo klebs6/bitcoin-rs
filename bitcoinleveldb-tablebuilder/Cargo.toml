@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldb-tablebuilder"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "Writes immutable sorted LevelDB SSTable files. TableBuilder assembles data, index, filter, metaindex, and footer blocks, with checksums and the configured compression policy."
 

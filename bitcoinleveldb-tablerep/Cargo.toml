@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldb-tablerep"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "Shared representation of an opened LevelDB SSTable, used by bitcoinleveldb-table. TableRep holds table-read options and status, a shared random-access file handle, cache identity, the metaindex handle, index block, and optional filter state."
 

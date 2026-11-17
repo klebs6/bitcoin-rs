@@ -1,7 +1,7 @@
 [package]
 name = "bitcoinleveldb-emptyiterator"
 version = "0.1.0"
-license = "MIT"
+license = "MIT AND BSD-3-Clause"
 edition = "2024"
 description = "An always-invalid LevelDB iterator with a stored status."
 

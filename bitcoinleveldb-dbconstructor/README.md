@@ -23,3 +23,5 @@ See [the fixture](src/db_constructor.rs) and [database destruction](src/destroy_
 [Repository and support](https://github.com/klebs6/bitcoin-rs/issues)
 
 [Upstream notices](NOTICE)
+
+License: MIT AND BSD-3-Clause. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
