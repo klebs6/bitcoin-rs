@@ -1,0 +1,4621 @@
+{
+  "package_count": 112,
+  "packages": {
+    "bitcoin-cfg": {
+      "archive": {
+        "sha256": "ec1673e0d8170d9fffb0c7c376996015d6a0ff5927e7263aed03dbd0209e6000",
+        "size": 57328
+      },
+      "filename": "bitcoin-cfg-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "57878fdea1a2a463532d87559971fa52bcc1cf5c8260719ffd6c216404adcc12",
+          "size": 1282
+        },
+        "README.md": {
+          "sha256": "7f9eed85329569f154e650f19d57a24ef6e836a6bf6e32e4ac63d4af5c4eed80",
+          "size": 876
+        }
+      },
+      "license": "MIT",
+      "member_count": 10,
+      "normalized_manifest_sha256": "063514db106effdd64d702f238e24323ed7768e3f47ba1991b78194594dcffb2",
+      "projected_Cargo_toml_orig": {
+        "sha256": "7e82f8742d662249e95b485e88ad2403443768c777a76f40c9573323319ea606",
+        "size": 50886
+      },
+      "repository_manifest": {
+        "sha256": "bcddc64ae9d94aaf63631924e7c60af9d559acc6e2ad43dc9592e6264dbd23d6",
+        "size": 50888
+      },
+      "version": "0.2.0"
+    },
+    "bitcoin-crc32c": {
+      "archive": {
+        "sha256": "de7e5c901b5e8737e2446d99734be7b8fcf061ef54009cfd1401038dcb19c8db",
+        "size": 81210
+      },
+      "filename": "bitcoin-crc32c-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "21481332db59bbe48e2218f981f37df3c8ed7bd5b1ad148547d9ebe4a428a959",
+          "size": 4357
+        },
+        "README.md": {
+          "sha256": "46de703af9250bf970b7730224d2f5648db7da08e585fe8ffb6a212457a84297",
+          "size": 1303
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 27,
+      "normalized_manifest_sha256": "3529417ecc72f2d7ecbc0b86cdfe4fc0b72b116cf314eb53f3aab9bb34d6a7e9",
+      "projected_Cargo_toml_orig": {
+        "sha256": "3e441d5721a86c6b4b789297c88e35bfe98d33b1695d9f8a0b04f779fa75e721",
+        "size": 51391
+      },
+      "repository_manifest": {
+        "sha256": "9ad18e7b8f93456663a5561842f2752984530835b521ec97286fdf247bf16d55",
+        "size": 51394
+      },
+      "version": "0.2.0"
+    },
+    "bitcoin-derive": {
+      "archive": {
+        "sha256": "1429b9acf86fb27a2796785d0e7e3f34d5607599ce50834f6c3d1b1679adc556",
+        "size": 59294
+      },
+      "filename": "bitcoin-derive-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "7419a89ebb399ad39b84b1b6bfd7e35fa7fe9ee6b3b46c4431b0392512b6364e",
+          "size": 1539
+        },
+        "README.md": {
+          "sha256": "5d98230905cad717b39870d659f399cf5d18683e94d82e16377fb499e972e134",
+          "size": 1108
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 12,
+      "normalized_manifest_sha256": "62a4a96bf31c56a1aff621a5bc2f0a7c0824abb17e27be628acdcc48fec43de0",
+      "projected_Cargo_toml_orig": {
+        "sha256": "40f6f68d27ac4dd998dd9f3350a3880114a5e7d3a12edb5934531b3dda26c5a1",
+        "size": 51401
+      },
+      "repository_manifest": {
+        "sha256": "53439f017cceae95042ca81372cd6b07768f23ce9ba9f2171ef77284291fd30c",
+        "size": 51404
+      },
+      "version": "0.2.0"
+    },
+    "bitcoin-imports": {
+      "archive": {
+        "sha256": "e96f6b439e67f1a691701fcbda1a12529adb804d00662b55f46ef19ce285822a",
+        "size": 63256
+      },
+      "filename": "bitcoin-imports-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "b4fd4818de9b46d8ed69c116dedb17f78ba9bd3a8a41dc369c20548a33f7c493",
+          "size": 1286
+        },
+        "README.md": {
+          "sha256": "460d4c5a4ff3bd2e585eb1885eb1759f19cf603988459f9243696c1a97b832e4",
+          "size": 1613
+        }
+      },
+      "license": "MIT",
+      "member_count": 13,
+      "normalized_manifest_sha256": "5eb3d3af488464502bb3253214d0be43f159d68a070525b6a5504c21153cb422",
+      "projected_Cargo_toml_orig": {
+        "sha256": "5005f266ba0f4b9153bb95cd435ee52cd7715bfe4a51e3e7f22b0f47960f9d8a",
+        "size": 53266
+      },
+      "repository_manifest": {
+        "sha256": "af9dac2c9b85e25c5f9c058d3ab3c5ebc7134053afee1fc9da482fc51b07249a",
+        "size": 53267
+      },
+      "version": "0.2.0"
+    },
+    "bitcoin-leveldb": {
+      "archive": {
+        "sha256": "9f0165c6504d8953e36a556ab9799c148872703a0d4d12d146fab328aa2f9650",
+        "size": 65543
+      },
+      "filename": "bitcoin-leveldb-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "2f6643054535f32d96d5cfb9c31035e116a1491d6fd30563cd7a37ead3f2426d",
+          "size": 1286
+        },
+        "README.md": {
+          "sha256": "f7b9574ad8bf36b4cdbe2b069bcc4c904fff6524cece6a3833b1a4cbaa077473",
+          "size": 2113
+        }
+      },
+      "license": "MIT",
+      "member_count": 11,
+      "normalized_manifest_sha256": "6f876e1e32c00cbe9ce4a6ec3c7f9a9aa1bfd96be249066e3903c39233c341f9",
+      "projected_Cargo_toml_orig": {
+        "sha256": "80b5e735eae26493d5a446bcf0f06417b96940587669c728c48e2ebea9a2d80c",
+        "size": 53747
+      },
+      "repository_manifest": {
+        "sha256": "179765db9f5fccd11eda4ffdf543713cb6ee537076d927fa57e468f25fb464a9",
+        "size": 53781
+      },
+      "version": "0.2.0"
+    },
+    "bitcoin-support": {
+      "archive": {
+        "sha256": "65b0457457dc99b1f30a286bb15487ce13611003951cca68342129ea5453765d",
+        "size": 63419
+      },
+      "filename": "bitcoin-support-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "8fd388d5289e3194eb90095e69ca21ae1e934f71071d1570d84c778aeb81596d",
+          "size": 2391
+        },
+        "README.md": {
+          "sha256": "1dc9c55e62f3a62c015a870ca7255ddf0e48867bc7474293705f128e3ec15fcb",
+          "size": 1837
+        }
+      },
+      "license": "MIT",
+      "member_count": 18,
+      "normalized_manifest_sha256": "a6764857bf076dd9fc480d4beacbeb6e17564244aa05730ea3308e7d9c1eae41",
+      "projected_Cargo_toml_orig": {
+        "sha256": "8f594a69a398e71d493ea0fbb578b117624ad08e3b1255ef5b12e105a9730160",
+        "size": 51635
+      },
+      "repository_manifest": {
+        "sha256": "69da26ffbbb0499b5aa62672c0fdb5a1c8ce4794cae3f6540fb479aa474ca016",
+        "size": 51767
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-arena": {
+      "archive": {
+        "sha256": "acd9f1424743db8b0ad2f8487ceef4c230c6b13eea269d71e41fa36d014a7f65",
+        "size": 62328
+      },
+      "filename": "bitcoinleveldb-arena-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "d296e19a4fe5d29cf1b997c857c4eebfbd4e38f573f3862b2d87764afb772b38",
+          "size": 1861
+        },
+        "README.md": {
+          "sha256": "3cd9e8e1f9a12612544ffb68c292e54e5403deccece9b2089aa52b4d5e77472b",
+          "size": 1084
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "156e8d4ffe118513ec95318c877f6a0e6d1fb1d047300ec164e7865bdd4670f3",
+      "projected_Cargo_toml_orig": {
+        "sha256": "233cbb14886d944d615270ad7b1e12125ced5cc53e6768a0626b15a8363bc24b",
+        "size": 51471
+      },
+      "repository_manifest": {
+        "sha256": "a2e6723878a8a6aa8eb30b9fae5ebf7bcf3e691b986abf7a38d6cdfc3b5e4789",
+        "size": 51475
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-batch": {
+      "archive": {
+        "sha256": "57349a601d99ba3515b9c6226dae1c45904481768e4e0e559c8198bfb069ec78",
+        "size": 74524
+      },
+      "filename": "bitcoinleveldb-batch-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "837219dbc8e704577edfa9ee855f82d557650d60a78c47efdcac7bb3a7a7a8fa",
+          "size": 2101
+        },
+        "README.md": {
+          "sha256": "5a1229625e8c2bb83e07a283c92a286b94d7b5af556f9409c54010008fe79512",
+          "size": 1478
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 21,
+      "normalized_manifest_sha256": "38c9255bf791ecd3dbb3c7e7c9ff8a9206c7f29a323e51e82276345a5bf2a408",
+      "projected_Cargo_toml_orig": {
+        "sha256": "554edc67dffa9b474cdc4842a574abfc3941f884d2ef6c9fa04a532a70879a3e",
+        "size": 51700
+      },
+      "repository_manifest": {
+        "sha256": "90a556c12fbe1e5b7f58a230b42fb13fd0fe197c1f83655bdc1ab41d298ecc45",
+        "size": 51697
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-block": {
+      "archive": {
+        "sha256": "69546d26c28c1e03124c2663125f982d01bd81b6b18991242cac9e635d909839",
+        "size": 30762
+      },
+      "filename": "bitcoinleveldb-block-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "eccc51575316af869e949ba57a3beb9d565fe46298f21ed21a5cbde135246191",
+          "size": 1689
+        },
+        "README.md": {
+          "sha256": "e36777e6b30d84a77d283b5a59c88011a275ee3ea32cd1dec6ffc3c4de1607f6",
+          "size": 1012
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 17,
+      "normalized_manifest_sha256": "13f6363a9150142957d80b784a238dd742503c7acb5ff1333bbc834d62bbfef3",
+      "projected_Cargo_toml_orig": {
+        "sha256": "3d6ddafb7fa0e8d5159d5e4c9d169b049b8d46c31d14f517bbed78e277740f74",
+        "size": 2174
+      },
+      "repository_manifest": {
+        "sha256": "f2fe38f12d04f84bf4663ddee2f58e2454dcba7f82632944f6282b767a88357c",
+        "size": 2161
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-blockbuilder": {
+      "archive": {
+        "sha256": "06fdffc9eb50da4d31be7a3c5d91746a5a2e137cbe0fc34f6148b31a027dbaee",
+        "size": 30207
+      },
+      "filename": "bitcoinleveldb-blockbuilder-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "333ea0ee66dbd964d090401291662c3af5329454b04c5fcac16221d87b7a7c0a",
+          "size": 1728
+        },
+        "README.md": {
+          "sha256": "c38fe4599598e8ed68705fc1d9b07eab54eb9408da18b14ba0ff47bc8a1f5fbc",
+          "size": 1343
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 16,
+      "normalized_manifest_sha256": "b0d9f5c29562c80f2c2dc0239a6522560526744b8fadc43f5a629e8728830c48",
+      "projected_Cargo_toml_orig": {
+        "sha256": "7634cf5aee9aa268b6a5dea0af658055a73fb37a5428b06f0ac986cdc9fbd511",
+        "size": 1848
+      },
+      "repository_manifest": {
+        "sha256": "46f1e1e48836cacc4ff38f18d81089a8fd4e9cc02dc84367f1f17daa3da1ae3a",
+        "size": 1855
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-blockconstructor": {
+      "archive": {
+        "sha256": "b5d7381e846abdd66b17b30c053f1a6f1447ee992cc537f364ae3c70cedaf510",
+        "size": 32810
+      },
+      "filename": "bitcoinleveldb-blockconstructor-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "5fe374a7df501b9c22686e81f2a1db69ff66b0af7edf410155dc066795a8a2c8",
+          "size": 1544
+        },
+        "README.md": {
+          "sha256": "c6453a9616398c89cfc2fd993eb90718324a5cf3ff2f68400a32ce17784f8d99",
+          "size": 1573
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 15,
+      "normalized_manifest_sha256": "c60e255b857ddfee9bec9dcee8a71af9b859fd94def23fcddfee5bf2330447df",
+      "projected_Cargo_toml_orig": {
+        "sha256": "95258022c1428d32aa8b1975f9302b542f0d8eddba381ed4ac2cf1830a4bc034",
+        "size": 2094
+      },
+      "repository_manifest": {
+        "sha256": "72a47b5da590a08542cf23a86c6997738cbb40fd80a4343660ce74867324d645",
+        "size": 2089
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-blockcontents": {
+      "archive": {
+        "sha256": "18c2e92d5a70a9be8b99fa05f83a3fd9a27386e78e8d80845b8fdf972209ca8b",
+        "size": 23184
+      },
+      "filename": "bitcoinleveldb-blockcontents-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "044243d8c87d849a563cc95ad94883b7683aef0dbfe96b50e9a883690b576833",
+          "size": 1531
+        },
+        "README.md": {
+          "sha256": "21862ab5c937b136ab2949603f69db913dc6c2629baf1a22f4297f105d8cf2c1",
+          "size": 977
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "84812d7a5f522cb42dd65635aec18fbfa90ec0a2ceb7e1ce23e5224f9c7977b8",
+      "projected_Cargo_toml_orig": {
+        "sha256": "beb8db4c1e05f1e6d860c9ec2f9a404c892aeec825616a39595aafe6664aa18f",
+        "size": 698
+      },
+      "repository_manifest": {
+        "sha256": "b8db2ce49800fdfe34a30e60a69c30b014fd438110f53023ed43eaac359b25e7",
+        "size": 698
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-blockhandle": {
+      "archive": {
+        "sha256": "4cdd375aec11b1b0e48d6714b706ba8846f189153ac9b5d44964c368e5939e90",
+        "size": 35519
+      },
+      "filename": "bitcoinleveldb-blockhandle-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "fd864bde41786bc278954e1584688130005e25a0d0f956a6fc8b915e54003ffa",
+          "size": 1699
+        },
+        "README.md": {
+          "sha256": "e0bc332ac9a19fba09673b97e38efb94843444573553e9cac442a6b6500e8c82",
+          "size": 1365
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 26,
+      "normalized_manifest_sha256": "b36b31518ac2b30ef6d1ef7c89d81659705c557e85199a4b7c72ea5b79e25001",
+      "projected_Cargo_toml_orig": {
+        "sha256": "b0427e38188fd48efe73d4612cf78a0312f7f28db6fdba9363a0d4ce8e6511b7",
+        "size": 2259
+      },
+      "repository_manifest": {
+        "sha256": "2725a518e64f4c0589d11493e1e10560c541b98726c76c7bb50dbe9544040590",
+        "size": 2252
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-blockiter": {
+      "archive": {
+        "sha256": "5c71e7851a5901e2dafaf6421e23688e2d738daed7c2f71876c92ad3cc0a78bf",
+        "size": 31285
+      },
+      "filename": "bitcoinleveldb-blockiter-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "aa791fb45b657ba40e7838f4c72b8315663a2241dc98348420347dfad6c93533",
+          "size": 1527
+        },
+        "README.md": {
+          "sha256": "88f1a490af7d511bd5cf7d6087ace1f9f5378f16a060f15debc001ca75b30dc4",
+          "size": 1188
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 20,
+      "normalized_manifest_sha256": "ee871e5e508b9bc497c15490386ab876f92b31f6c7f61b75cb9a7f04edef2c22",
+      "projected_Cargo_toml_orig": {
+        "sha256": "0e4e51e4265bcbd5d978ff14c9340af8c1b3c895ce0ee2ed5bf856afc31948de",
+        "size": 1986
+      },
+      "repository_manifest": {
+        "sha256": "49171624406b84c23fb22bfe8e82f08201508e1db31f0dc3febe29ec68b4f91c",
+        "size": 1981
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-blockutil": {
+      "archive": {
+        "sha256": "e2224a9f3536978b9d70c948b255b6627f36e020b4db930f1c9bd447ca7a44f7",
+        "size": 24912
+      },
+      "filename": "bitcoinleveldb-blockutil-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "261dd1ad4ee564c4648b1640aacd11c23a324ee51899e75e4af2e9b0aafeee22",
+          "size": 1527
+        },
+        "README.md": {
+          "sha256": "aaea3c6ed8e5bc59dd0c81ef364456d3642b293a945ac3180c1d86d53fc813c4",
+          "size": 1030
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "6569ca2b121895938f97caf750d732f4f10a7c649c95ae4e8ecd1fc631fba1c0",
+      "projected_Cargo_toml_orig": {
+        "sha256": "fd20345d49baacd64ffe5ff37264efe1ac2881f9bc8c54775dd3e4f2c7f6ee14",
+        "size": 880
+      },
+      "repository_manifest": {
+        "sha256": "8e2ee275dc004e9cf5a60b63fd3f61416f7e1e6d8a0c3ff2f92f952e1ff0d18c",
+        "size": 871
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-bloom": {
+      "archive": {
+        "sha256": "218aa226c233ac885ce33ec4979885c5adfb909785adac3548e58b7f391a2dad",
+        "size": 65322
+      },
+      "filename": "bitcoinleveldb-bloom-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "6499c66cebdeab22bc3ee7792172f841518325272f1736ddb880a812194167de",
+          "size": 1697
+        },
+        "README.md": {
+          "sha256": "cfdc2a4e4a2445be06849ed5252c1cf53d3cb886447eb9b76ea8a49236ec2d24",
+          "size": 1277
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 23,
+      "normalized_manifest_sha256": "1c9dfe08c6b6695e83e3cb4ae33397ac7aee56d91e35b2fa1194cbaea4cb882d",
+      "projected_Cargo_toml_orig": {
+        "sha256": "de0f74627fcdedaa117ff2f5dc923f2482f31a0747c2f8be35355252306a5ab6",
+        "size": 51755
+      },
+      "repository_manifest": {
+        "sha256": "8f270f16387599aae50c7734c82538a2a697e75c70efffe54372de9457c5720e",
+        "size": 51763
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-cache": {
+      "archive": {
+        "sha256": "8501c2f28225da632dacfb792c45084487b0bfae27727b40f88c40e3180bcd0e",
+        "size": 67222
+      },
+      "filename": "bitcoinleveldb-cache-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "9e287d36448e59f57451e8e8d8b63e32aabf589871a32f34850094ed4febbae8",
+          "size": 1717
+        },
+        "README.md": {
+          "sha256": "7b4b7bf16811300c1d5cc38876c2cebc766e198d21013d7d1ec273b0f6669b2d",
+          "size": 1575
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 20,
+      "normalized_manifest_sha256": "76d840815db59c905d0e9aff6eca3421a4fc4ec36ac4de03468c35f6978d48af",
+      "projected_Cargo_toml_orig": {
+        "sha256": "2e1af9c64b310afc090a600f67be4fdec2168613259871c4726682bbb9382baf",
+        "size": 51381
+      },
+      "repository_manifest": {
+        "sha256": "5486bae6a1224b6903b835bf6c5b29f0633ed10582b778c59c6a238a87f90f6c",
+        "size": 51386
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-cfg": {
+      "archive": {
+        "sha256": "470b03e7672c7b66307d2d213bb9a836376af508e6eb7d37c45c695f9b3f55dc",
+        "size": 58471
+      },
+      "filename": "bitcoinleveldb-cfg-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "92b6936d3ad52c4fe910b5a9edaeb1c48a86b8fa0a03d4c4e450242c0b89afc8",
+          "size": 1519
+        },
+        "README.md": {
+          "sha256": "41e1b344a4795ad800e930844b98488e24c60f51f78826620ef761e0dab7209b",
+          "size": 1055
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 12,
+      "normalized_manifest_sha256": "b01fd5c5719fc4caa5e5af60ee68480161059e904ef7231756193788c7db4044",
+      "projected_Cargo_toml_orig": {
+        "sha256": "d79d927b6e49d2b31f56a0fdb31574692980dcc465a78582797191f1fa517777",
+        "size": 51204
+      },
+      "repository_manifest": {
+        "sha256": "daaf3b6ee3f4aca3680b185951dfd6fe9eb4d438f529cbf418ad2ffe850a252c",
+        "size": 51208
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-coding": {
+      "archive": {
+        "sha256": "c00ac31f482f8e3dc2e598ad03cfd6db6624394a6b7d0e33ea680f8b2351c07c",
+        "size": 67969
+      },
+      "filename": "bitcoinleveldb-coding-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "93868a5f63b68dfdb7f090da6a7f861c2e438262734a2bcdae0fe1ba2b0e6523",
+          "size": 1690
+        },
+        "README.md": {
+          "sha256": "bb95d2bedc96afb5385dc102fe7e1d06bf564711e0545701172bd12fbe6f0401",
+          "size": 1433
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 38,
+      "normalized_manifest_sha256": "b323d548bcba8955a14c0e456a47a43bf1cb587dd6db3709d9d0fe154b97d9ad",
+      "projected_Cargo_toml_orig": {
+        "sha256": "eecd5aa14a78f37c055df3c0d9dd010aae6e47d07a82070044443dcf87262c58",
+        "size": 51365
+      },
+      "repository_manifest": {
+        "sha256": "64b29f0129c9a894ea4f48ac50aa02987bf995043b249036a8bfc5d8d7c28256",
+        "size": 51370
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-compaction": {
+      "archive": {
+        "sha256": "e6d3f725b13b9600b28717f42eeff7a99768fd53e300dddd0483b1dd8a10a12c",
+        "size": 34865
+      },
+      "filename": "bitcoinleveldb-compaction-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "37b4552cb00a1f087210b5e3cff7cac30155d139720932bebf114fad000c7302",
+          "size": 1532
+        },
+        "README.md": {
+          "sha256": "c23061a575467726f1b7c698e46d11e2a1ab9485a44c7d4e533c3334f29cbcd4",
+          "size": 1280
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 19,
+      "normalized_manifest_sha256": "f3c2d20fa79a1df87b3cf2e40d73a57d020d156a5a4e78f593edf813d59b015c",
+      "projected_Cargo_toml_orig": {
+        "sha256": "6a7b518695855fe85edfa17696e857f895f4efc382b343ffa19a5d08bbde7a33",
+        "size": 1691
+      },
+      "repository_manifest": {
+        "sha256": "c0cb3594f5c9dda8abd5e369af4b3d69e464868fc2fcba88d537fe215698e14f",
+        "size": 1640
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-compactionstats": {
+      "archive": {
+        "sha256": "99f516e6d4c19716246178e943592d121b204fa0c19b15707de53e4472525ada",
+        "size": 22420
+      },
+      "filename": "bitcoinleveldb-compactionstats-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "6bcaf4ef5d08301eea25561628bc229c4f6aceb37386c339a47adb39ab1b9dac",
+          "size": 1529
+        },
+        "README.md": {
+          "sha256": "91a32758e1a27b048f4310c5f57abb7b546c8107e06f5197809e53787a2d5b75",
+          "size": 814
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "00648cbd730e2f4c085c2c7c674cc987ca73af0075d724337c2747cc424f2f36",
+      "projected_Cargo_toml_orig": {
+        "sha256": "27cebc9d0acacdb4a81e8dcf97042c33a6d6fa58889b82b109814378bf62f7b3",
+        "size": 454
+      },
+      "repository_manifest": {
+        "sha256": "bbcfe6a6a1758e3e0a1ca6fc8e5e1fddc9b2bbff612c964c3db4988ce2eaf6b1",
+        "size": 451
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-comparator": {
+      "archive": {
+        "sha256": "8c2d2f643ee0fcbe42a9792c643c771ec0b7b0a53268101299ba42585f4088e3",
+        "size": 62944
+      },
+      "filename": "bitcoinleveldb-comparator-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "018f81303915a21f0cb95ec4b773e5816621053c8401c0b203aa724d5581ce61",
+          "size": 1556
+        },
+        "README.md": {
+          "sha256": "0a536829a04e018831b78f728abac663cc440bb2f58b70ffd77777e7c2067626",
+          "size": 1340
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 20,
+      "normalized_manifest_sha256": "5db4d42e8eb57686866f50375e8772bc8557fc8837c2de29fca2ba3750f22c3c",
+      "projected_Cargo_toml_orig": {
+        "sha256": "54dfdd3e910418f3e5c595b7e65892ebbc1ea7077503c29a51a545acb3587520",
+        "size": 51624
+      },
+      "repository_manifest": {
+        "sha256": "97464f2a5ec695638ce4da43dfe74dd6d21226191f3e092509219a332dbe2cac",
+        "size": 51630
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-compat": {
+      "archive": {
+        "sha256": "c6d4cb6ca6acfd5c3422c7311c26738ec01edd125e946b5352580f511adfe979",
+        "size": 64256
+      },
+      "filename": "bitcoinleveldb-compat-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "b269505fb08653401776d5fe08d9f59b98b0e9db022f8550de23ba896c139671",
+          "size": 1888
+        },
+        "README.md": {
+          "sha256": "56ecc0349cdd297ed34156dec06cf88b97ca39727a5e36eaf82b526587251965",
+          "size": 1607
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 19,
+      "normalized_manifest_sha256": "9aa9e39ec3b260b66df5c8159d18f7b74ff4f46aa66352be3bf4ce753477ccf9",
+      "projected_Cargo_toml_orig": {
+        "sha256": "f6a38b835a59203c622774ac131af5dcff90726adde0234135bfb39235b9aaa1",
+        "size": 51309
+      },
+      "repository_manifest": {
+        "sha256": "201b6d1dba142269a02b3b4c8ee02d82d197064b0bf068bedd70b1bfe6563257",
+        "size": 51313
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-crc32": {
+      "archive": {
+        "sha256": "27c8791d92207637ba2c61781757d019c9af7c84d178f7ffb11c1600a7709a6b",
+        "size": 69193
+      },
+      "filename": "bitcoinleveldb-crc32-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "3b40370c792847ab0e0a765a493c5063234aa2dc8ff4f11a19748c8419dacf3f",
+          "size": 1867
+        },
+        "README.md": {
+          "sha256": "5ecc43ddcbb3af999fb44ed90cf4b8689462671a22cf71b963dff87d05005116",
+          "size": 1076
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "01160e650ddd1db84501953818c2768b4b139f961b97b062af3282ccfb72395c",
+      "projected_Cargo_toml_orig": {
+        "sha256": "1874c4d914242767a249f6160836e799e248f683e9947545023655d6b699ac34",
+        "size": 51241
+      },
+      "repository_manifest": {
+        "sha256": "eba3a019232bb0c985a9bc82ffff430aa2a6996e881fabeabbe7ba2e377c4b3b",
+        "size": 51246
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-db": {
+      "archive": {
+        "sha256": "2e0b8d029a27f7ae8e6f4d95baee2915172afdcaeb226610d3ca6b5d132c886d",
+        "size": 88973
+      },
+      "filename": "bitcoinleveldb-db-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "8825fbeabe669001087f504a6e50d8df7eab25673564dcef602a44ece6a01ed8",
+          "size": 1686
+        },
+        "README.md": {
+          "sha256": "4087f5ea7bf075c2061d60e47765da4d659b0f9db45c8e4ac8db7c1ab032839b",
+          "size": 2000
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 45,
+      "normalized_manifest_sha256": "c885ce19394dec2a6396dfe75457b082eadac759689a301cb6511110ec2be5ce",
+      "projected_Cargo_toml_orig": {
+        "sha256": "bd4217f11343d0f993cd212453d23b05cfba04c0a20c61dcb611d140e1725aaf",
+        "size": 53330
+      },
+      "repository_manifest": {
+        "sha256": "d214bd0180d26757c9c146fd9e4fca2c79900128ed76058167308ba603c3efa4",
+        "size": 53263
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-dbconstructor": {
+      "archive": {
+        "sha256": "36744e2282979cec430d1aaa8e7bb66438386ef5fe3810d842bdce233a432b0f",
+        "size": 33011
+      },
+      "filename": "bitcoinleveldb-dbconstructor-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "57e43c5d48f9ee4a832007ce81b773101491bfe92e5be791366dfd53e843bae4",
+          "size": 1707
+        },
+        "README.md": {
+          "sha256": "0fe06d114591afbe4584d7bfd69a3a8ed94e00c6bc72d74b355eed287431ceda",
+          "size": 1339
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "85720f70d91733fe62cd206fc52e98a9c9d2a0aa3187b33caca6a248c8a68882",
+      "projected_Cargo_toml_orig": {
+        "sha256": "1445c9f9deedfcb5011a45f7b6090f838acd756fa531b014f419233338f1973e",
+        "size": 1757
+      },
+      "repository_manifest": {
+        "sha256": "0cd25f71fea4a8ad56e05c26b9d903f885ad620382afa63fdd170529f563fe04",
+        "size": 1705
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-dbimpl": {
+      "archive": {
+        "sha256": "136ce968b597f39fbeed136c3c66cb997e220b162e4ab2ce2e7f583e7f2a92a9",
+        "size": 95802
+      },
+      "filename": "bitcoinleveldb-dbimpl-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "90fc3b66e2c1cd3af674acff30b2fc5b7f8b39830d5bbcae898daeaf6e35dbdb",
+          "size": 1686
+        },
+        "README.md": {
+          "sha256": "a99bf8b0e9b0f056645641c1a79d067b20423d31500e52edd5575ea7584e3834",
+          "size": 1727
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 57,
+      "normalized_manifest_sha256": "356227c5c58c103b00b647d2ac4df961fd4bb01f0903c964c85b0f479ce30dac",
+      "projected_Cargo_toml_orig": {
+        "sha256": "9c82a52e1d451d4b4c359e68e4897033c38a4a63c7cfcf87a0136e16bd163fc1",
+        "size": 4198
+      },
+      "repository_manifest": {
+        "sha256": "ada46c051b8b8ecd02085484019de6926182cbf922cb390a794663ef45a178b1",
+        "size": 4069
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-dbimplinner": {
+      "archive": {
+        "sha256": "40cd0bbe84ced089e894a15b2e7d44cc23f853fda93f1ed89ed66bf0cd6cd23e",
+        "size": 34770
+      },
+      "filename": "bitcoinleveldb-dbimplinner-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "69de04ab1c8008d14af63ec8db4f920c614baaf03b13ab4c723e3fe65eae5a00",
+          "size": 1527
+        },
+        "README.md": {
+          "sha256": "dca61e11f0f7c754a45f21166e9f103ab3a630195e5ef7ca4646fe1afcaf3d20",
+          "size": 1192
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "ea65aee994abdfdbaf7ebb1965ced39861b8e57b8ec378e498f6f5428018b288",
+      "projected_Cargo_toml_orig": {
+        "sha256": "7e6c07030fb57a6580f839c87a89608885f8490b96b43088f19f4368a2858290",
+        "size": 4009
+      },
+      "repository_manifest": {
+        "sha256": "d951f5fe986bfd928996809b183fdfc35d1986889e4da89415f6024af1e11114",
+        "size": 3887
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-dbimplwriter": {
+      "archive": {
+        "sha256": "d69c2d8629a3ad86d4faa42adb075104fbdcf73ef94b02f3cebc2f06def4e01f",
+        "size": 27137
+      },
+      "filename": "bitcoinleveldb-dbimplwriter-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "8cc00707ac4bb6df4de8442c23eaf14beb8ad29b3559b00c1e4491ef3d92a0c5",
+          "size": 1528
+        },
+        "README.md": {
+          "sha256": "30b0192b6c89257a2ee21d5e92d2220bc9494d0afdea60bd87f555c6bbb0df8f",
+          "size": 979
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "52740f0cf5f6279f3e377fea5efb9c5aab75f4594889cfe17a178cd1b056c299",
+      "projected_Cargo_toml_orig": {
+        "sha256": "f55be3e3fc32ddf7944d9f5abd0c072ce117252a1c6c1703585cb97625f35f58",
+        "size": 707
+      },
+      "repository_manifest": {
+        "sha256": "2e97cea6e97b59c14678552bc37a3016cfb3f2dd293cc5fc17ed8c2f6d7577aa",
+        "size": 694
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-dbinterface": {
+      "archive": {
+        "sha256": "029a2f1ad9c29ddb4c2676427580731b7d36b91d8f6560af6fce0227f13c347b",
+        "size": 38121
+      },
+      "filename": "bitcoinleveldb-dbinterface-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "a30fb6cee55e8a7811264697230f1a596f6d29636dce3a6637e936715187c6a3",
+          "size": 1541
+        },
+        "README.md": {
+          "sha256": "4b3ca781483d3aaaa9f405183e3a13900c8cd8dee9d4cb455af3043ae96224d0",
+          "size": 1518
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 22,
+      "normalized_manifest_sha256": "313671d6eb28aaa2f709a215fd7b0bff3e8cb9421fedab40b5c8b5ea140514c3",
+      "projected_Cargo_toml_orig": {
+        "sha256": "4e490e703bec46e3698a28f1c81c6d6689db8472e4b3fef5881f1a64eb3f9cc3",
+        "size": 1200
+      },
+      "repository_manifest": {
+        "sha256": "e5fe7813a551e76ee1ce0d583dc877af899e7b5d49b81322d658ada8ff363458",
+        "size": 1166
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-dbiter": {
+      "archive": {
+        "sha256": "f6108e310a391834a225cf12a846464320a26f45027ef8f0702aa45b638292b1",
+        "size": 40341
+      },
+      "filename": "bitcoinleveldb-dbiter-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "01d53d89905f481d0dfdaaf1e7557b6b3e367ad13acf7a4ffa26faf972d78a76",
+          "size": 1522
+        },
+        "README.md": {
+          "sha256": "6db09927229ce9a8319987ab296940c6a96f1aca7b6e071a387f4ec0343d3283",
+          "size": 1552
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 23,
+      "normalized_manifest_sha256": "5e85d3f1d8554ac0ce101589952c7e9f79636e205908d6c5785986f684f528c5",
+      "projected_Cargo_toml_orig": {
+        "sha256": "49505b297fe22fb90e40fd4083bcdead29c1b8cb0f21e123eb1eed7e6f3bff95",
+        "size": 1474
+      },
+      "repository_manifest": {
+        "sha256": "feffa04e15c30cb69a1cd2fb994785fd969937ff41c8661686715d8ebac63242",
+        "size": 1442
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-dbiterstate": {
+      "archive": {
+        "sha256": "da994b08546b6c94f557ceacd404644f64c8db6acb4be0a771c1e46ecb2aba62",
+        "size": 29828
+      },
+      "filename": "bitcoinleveldb-dbiterstate-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "41dea60e61c0ad4c81e1405f75e49ad3b920424cdcab6dcb9b8b747ad263980e",
+          "size": 1527
+        },
+        "README.md": {
+          "sha256": "706c29ba2eb2bfca0f906307c578d2a8e922a5925366b68fb17c2b5bab24f834",
+          "size": 1127
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "4820b749477647cfb459f3e8660eaddc50b511ae7c7e6591501a56da3633faaf",
+      "projected_Cargo_toml_orig": {
+        "sha256": "0bd330f37b0820edab5ad2d66f018fcd179e9d14df1e8fd0701a75343e242374",
+        "size": 1018
+      },
+      "repository_manifest": {
+        "sha256": "23b004bcfbab9090d971ee0327a3602035cb04ebba2425e0c493eb7394091206",
+        "size": 993
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-dumpfile": {
+      "archive": {
+        "sha256": "c0f1c82fc80f60c9327f74607010f85093dfcf98e871cadd8cfa3ca21f8af6a7",
+        "size": 71523
+      },
+      "filename": "bitcoinleveldb-dumpfile-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "df9b36336aa8cc807ceb9ab960a6c0e141a67de739008e6647e08d190b4a0b72",
+          "size": 1892
+        },
+        "README.md": {
+          "sha256": "35637169da3e9f367da4eee2f3a800b7384ccf7f651bbeb1b6ac0c44cc1a2001",
+          "size": 1146
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 25,
+      "normalized_manifest_sha256": "ce9aa211f4b35c6888336a707a6cdbce567287c975095a7260993703887b3abe",
+      "projected_Cargo_toml_orig": {
+        "sha256": "82faf167a8a4915bfd718cbea7e6fcfe36027e5ce636196ee6c403488e65ce9d",
+        "size": 52181
+      },
+      "repository_manifest": {
+        "sha256": "dac76e9c148ed8e79e860c722eb697a5030eeaed95d10d348991e7c319e71cc1",
+        "size": 52171
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-duplex": {
+      "archive": {
+        "sha256": "70bdef17eda8e673c1565ba237f17ed79a5b259f3e5f8829affd04f7ce02d4f9",
+        "size": 70305
+      },
+      "filename": "bitcoinleveldb-duplex-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "da68342f13f6eccb4c58f5d64485b2295272ddfe1259a988fbd79b00763cab4d",
+          "size": 1742
+        },
+        "README.md": {
+          "sha256": "715b512930da411ddc159013171daf00d4a1b2fdf21b0db357affbeaacaa1b15",
+          "size": 1283
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 21,
+      "normalized_manifest_sha256": "5ef43c278bb35866137fb02e8e70dcd1e2e9dc44d8477de52fa9ccf778bd42ec",
+      "projected_Cargo_toml_orig": {
+        "sha256": "107969228cbd47041be0bf4ccea4e83ab5b8b65e986a5082eaf09d93d522bb9c",
+        "size": 51803
+      },
+      "repository_manifest": {
+        "sha256": "71f9cb73a53d7e761ebc8cbd2bcec1ca1ccbb2b14daa5cd9791889a106662a4b",
+        "size": 51799
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-emptyiterator": {
+      "archive": {
+        "sha256": "ec7bdb2a89b037a1f2d958ebccd00fd6754557f73ba62630584f0f898b22289e",
+        "size": 26057
+      },
+      "filename": "bitcoinleveldb-emptyiterator-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "62640d2f56a281cc2a947c3fabd0219da405251a988f75a64ce82a5973ff2f50",
+          "size": 1537
+        },
+        "README.md": {
+          "sha256": "d7db8548ddd9350df5e27a6144ccc0537309ae39d5d970bb0d57d7936b653cd9",
+          "size": 1027
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "9b177f3f379cf686483021e6941d2d3e537fa267e242ff2e74b38b0b7af12071",
+      "projected_Cargo_toml_orig": {
+        "sha256": "4541e0234cf27e6562c781ae7aae8b31fa06dea00cc35785b58261f471b6bfe4",
+        "size": 905
+      },
+      "repository_manifest": {
+        "sha256": "09fb1cedb2d634f3d3087558c10f7e8b0cbc3c879dd71b17daefb599ee1e3d55",
+        "size": 894
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-env": {
+      "archive": {
+        "sha256": "a3dbff9fd927197b15405a26da3185b80401f73464f745774da0d1634915bc87",
+        "size": 79092
+      },
+      "filename": "bitcoinleveldb-env-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "5355757fbfa64cefeaaf14ada0109b33856da30781f949deece50db2446a1a4e",
+          "size": 2085
+        },
+        "README.md": {
+          "sha256": "3a1e437a04847b6f8abf0c397312503a4bbce78ad41a0ea2b9509cffe2f1301c",
+          "size": 1561
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 32,
+      "normalized_manifest_sha256": "081f83c7d0c6a96caa4505030d5aab52667ee14b1098660a983a6d60d37c5d79",
+      "projected_Cargo_toml_orig": {
+        "sha256": "ff671102a689642fd1f70bcd53743a49149bdebd08b7f14980a3d460fbf3ac40",
+        "size": 51661
+      },
+      "repository_manifest": {
+        "sha256": "f2f1aa27f17ff5967895d29a5f975caf417a76e329fe6f342a1daf18c2736e5f",
+        "size": 51670
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-erroriterator": {
+      "archive": {
+        "sha256": "ba76bbc39e12a401baa5a870846534e81e3485e20956d4f0b4050491e833aad7",
+        "size": 25279
+      },
+      "filename": "bitcoinleveldb-erroriterator-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "541eb14ad066c612a02649b09a19cfb85d407388d691c44f334ea1c963cbaa17",
+          "size": 1299
+        },
+        "README.md": {
+          "sha256": "54ad58d6241f7e043c5dbefe9634de8e3413c4d81e0a862d917c1f906204ffe8",
+          "size": 1083
+        }
+      },
+      "license": "MIT",
+      "member_count": 11,
+      "normalized_manifest_sha256": "a2319db28b47c3755beaf4a6792c3f0a63c393a8d2c5aa5ff12ee50f98980093",
+      "projected_Cargo_toml_orig": {
+        "sha256": "7a702561e6fc3096d3181f420c1066d95d27692efec0899c6ab99e077be20489",
+        "size": 1057
+      },
+      "repository_manifest": {
+        "sha256": "fddbfb1df09c3d440854cb65a247d67a8890e073859cd9b8c5d13089900b5ebe",
+        "size": 1042
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-file": {
+      "archive": {
+        "sha256": "2228d82599dda7f02c7ea8947b093b08d8816f6835017488c96388f954608a5f",
+        "size": 69250
+      },
+      "filename": "bitcoinleveldb-file-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "f693192538f62b7b0c98cb81abae68cd200e208cb650d66e1f8ee75a26659d94",
+          "size": 1866
+        },
+        "README.md": {
+          "sha256": "d6ecd89bcd81b5e8eb4cddef6532257d71655e11d511063560fe19cb30be9fed",
+          "size": 1243
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 34,
+      "normalized_manifest_sha256": "8540021b3ba7f66283acb63b73c87c78c9a663d274b3c22009d294cba91cfd39",
+      "projected_Cargo_toml_orig": {
+        "sha256": "11cb7e3133d7adc86a74e00245255a153558a27b0d501f37904f84cc0552846b",
+        "size": 51718
+      },
+      "repository_manifest": {
+        "sha256": "a2ac295845d494fc1cd2e6b7a673643e65eb884d612633f64a3ede34e4b25c50",
+        "size": 51724
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-filter": {
+      "archive": {
+        "sha256": "407b59974a0eb6157234271ed5b4081b8e29864dc4785aafbcd6150f413b26ad",
+        "size": 62663
+      },
+      "filename": "bitcoinleveldb-filter-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "e16ab721192598ef25e67b67577db650a91d6d7d818c2de06721b72580215a83",
+          "size": 2112
+        },
+        "README.md": {
+          "sha256": "e31d1355d97b0f96613f09c846a1fba98dcba501bc7f32cdeace93d736ac9acc",
+          "size": 1262
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 16,
+      "normalized_manifest_sha256": "39a0180dba4cdd13467adeea81ab6602bd247f0faf4ca70332c66b9775dd208c",
+      "projected_Cargo_toml_orig": {
+        "sha256": "51069f240565117674e2356ea361458ddc5923d0c82932e8eea69f125c14f791",
+        "size": 51574
+      },
+      "repository_manifest": {
+        "sha256": "a39b83bd8ecc53e336dac5f89a0655d91ceae3df05bb98ba4d4c68316a05a3ac",
+        "size": 51580
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-footer": {
+      "archive": {
+        "sha256": "229ac654938ee2df6472f9d742f975b62a909c493ab792e90960badd0b690c48",
+        "size": 29402
+      },
+      "filename": "bitcoinleveldb-footer-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "08633646219172c3a84608541569c0d8894cd3b03c321101ac09cfce1470fcbf",
+          "size": 1524
+        },
+        "README.md": {
+          "sha256": "1fe9ed2a5e730ff5e207c76ffe4c7ffe0c63cbcf0c52c4a5f8740f823924f343",
+          "size": 1012
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 14,
+      "normalized_manifest_sha256": "f40e71a40477fa5c9db78e1228eb3abdc8ff630f0d44e8dcc670beb074fa9534",
+      "projected_Cargo_toml_orig": {
+        "sha256": "771cf575a3365b64f6c0e5ef89cd9b9a9f821b55891896e14a9b50ac16175d61",
+        "size": 1040
+      },
+      "repository_manifest": {
+        "sha256": "f2bfaafc7bcfc5c79712783683863ad36997cb24cfa69a101263ae354e7e8cd0",
+        "size": 1030
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-harness": {
+      "archive": {
+        "sha256": "1ae58616ac4a87ec802e5604565bdc35f26cda4fa91d6b6eba51e7cc1baefb8c",
+        "size": 45600
+      },
+      "filename": "bitcoinleveldb-harness-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "4ede77b59c76db89b4c8181d65e66c0eede729a2f749a64a99c1af0d203574df",
+          "size": 1535
+        },
+        "README.md": {
+          "sha256": "845bd6f1d61d861c7fcd1781be310470bd63cb18a86e084863f81b3de2de1f23",
+          "size": 1560
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 30,
+      "normalized_manifest_sha256": "05001b2e01014814fc994b7807b02acb2099204459f4e586ceefc5b4e6720120",
+      "projected_Cargo_toml_orig": {
+        "sha256": "2b248f1c76cff492d6e5e01c84d266f9a20d152de0e61c206c1f8b63f951abc4",
+        "size": 1966
+      },
+      "repository_manifest": {
+        "sha256": "2d8510c6622f6b788cabddb62d9736b7aa9dd9e5d2aeea5d940fccce3ceccc9b",
+        "size": 1905
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-hash": {
+      "archive": {
+        "sha256": "413295f2e7807cb29f56a6f1436c5f63d95079bc8f1dcbc05129891939643ef9",
+        "size": 59074
+      },
+      "filename": "bitcoinleveldb-hash-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "315f933f7298b46619167591ddb334ad5fda0581b7ab4d156b10acaefac75b3d",
+          "size": 1854
+        },
+        "README.md": {
+          "sha256": "c06a098e011682f2f333dc791ed63c8624f3ab23409c1e49b00da0b0eb7fc381",
+          "size": 927
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 15,
+      "normalized_manifest_sha256": "b6c69a6d6b97c6312f1b1abcc2980d56d1bd530262e561fd33ee4a5c6aed0af4",
+      "projected_Cargo_toml_orig": {
+        "sha256": "7af814e390e900cb98f4d80e5cee69382f80613c791b76d0c8c0c1b3ca8b1370",
+        "size": 51189
+      },
+      "repository_manifest": {
+        "sha256": "ff29ed0ebf37851c308b2a55348f9403f33a6cfc99f9d8d7a61922fbd8d191bf",
+        "size": 51193
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-histogram": {
+      "archive": {
+        "sha256": "a32946bf9f90684e1eb74ac422dab391251029811e95edb8d3af11bac52e54c0",
+        "size": 61283
+      },
+      "filename": "bitcoinleveldb-histogram-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "30c02ee51736d80e758c75b9a06fcb3d2d914cc8ce793b2ecaf4a1ee5244b3e7",
+          "size": 1705
+        },
+        "README.md": {
+          "sha256": "8b89d5f90310b11545bded7de2f529cff8df91e1db41af990f24e77b794b83da",
+          "size": 1122
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "f04eda02e558949f40e41dc299bc4355104a0c9927591adb7630c0f2630cd05d",
+      "projected_Cargo_toml_orig": {
+        "sha256": "957ae3227c862370204f96f3f2fe66cded059c8e2714c00bf52f821b3e5aba52",
+        "size": 51340
+      },
+      "repository_manifest": {
+        "sha256": "e978666fadc1002159f01b10928a4ae4d6e592de117837a3dc1b24f111351938",
+        "size": 51344
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-iterator": {
+      "archive": {
+        "sha256": "ab57ae3a0a4a9d42745982c36acd8690c0bb0f0c922ea4581066b174cdf501a4",
+        "size": 32750
+      },
+      "filename": "bitcoinleveldb-iterator-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "7eaf6f418244f30d697c788748243f6c0bfa4a8eb897c525bf91b40fb876501f",
+          "size": 1546
+        },
+        "README.md": {
+          "sha256": "058a0f06c3cf1052a22b92cdb8b3c1cc08c33bc0aa8111b22c8bc20c8ccaa0ce",
+          "size": 1227
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 20,
+      "normalized_manifest_sha256": "6dc1eed8846c1f9ad017ec0ffad01f7495e6fe5366765a406727db4d6cd1ab57",
+      "projected_Cargo_toml_orig": {
+        "sha256": "0de3338711ef7a4821964f9b38ebb0308696a7779f0926eccae01be12de82307",
+        "size": 890
+      },
+      "repository_manifest": {
+        "sha256": "4ae945b665a854019241ab41677466f8442c8f295c40014183f8dcc330193868",
+        "size": 880
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-iteratorinner": {
+      "archive": {
+        "sha256": "bfe8b6e3d10da211f2896768d58ba3cbd728b8f8b5fe60c84919492e11bde7dd",
+        "size": 28879
+      },
+      "filename": "bitcoinleveldb-iteratorinner-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "be3ae17132da62a1acd83f1c3e5b3c48857972b8f9c22668f0fe7bcb517a584d",
+          "size": 1729
+        },
+        "README.md": {
+          "sha256": "ae9d18a5be7755ae3bf4871a12bd81f752f386c210e3142aa947d948ea2a2425",
+          "size": 1097
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "8c906d5b18c0caa10485ee83a8eb367833b4e3e066ed3d2b4552980807d06577",
+      "projected_Cargo_toml_orig": {
+        "sha256": "c3b30d46f19ad75e6cd14cd576b9658d17af6f80c078c94bcc0fdb36bfa37bb3",
+        "size": 1689
+      },
+      "repository_manifest": {
+        "sha256": "87e27332c5194a18f25de2626b48cd5dfec35cdc7d794a2b1459e0998f245e6b",
+        "size": 1700
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-key": {
+      "archive": {
+        "sha256": "3ebb5254e65d76f5f7717761a03057b3a348902671cc8edffa80f2b62a6c6e86",
+        "size": 74215
+      },
+      "filename": "bitcoinleveldb-key-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "ca12669509c148ae336efdaeb4e1d049d5d73401e8b08f9ebda7ec4ef8a7b849",
+          "size": 1687
+        },
+        "README.md": {
+          "sha256": "86429f80547e7a860ef7f2d38f6dbfd5e5d140bf70baeea809fccb82aca83d9a",
+          "size": 1816
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 23,
+      "normalized_manifest_sha256": "e4988dde798101d6ced437dde3b590ea8e00d592f05cff203550d5fd956cdbf5",
+      "projected_Cargo_toml_orig": {
+        "sha256": "3112406fb4aaef136baaf3a7cba13375780edc7f4b3e902106a0921beb544a67",
+        "size": 51802
+      },
+      "repository_manifest": {
+        "sha256": "a6bdcab8ee948db5cf3e6f18d47c4b64c731c2d86ecac17bcd966afe3129d205",
+        "size": 51810
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-keyconvertingiterator": {
+      "archive": {
+        "sha256": "487e851a6ed67bb76e9ccb6c0a71aa92ecd27a8a16a777397bf9f305aea563a5",
+        "size": 34455
+      },
+      "filename": "bitcoinleveldb-keyconvertingiterator-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "13d3d2d844752dcf50518d8d674717b5e1772583af09d48dbdaabaf5ad107dfb",
+          "size": 1549
+        },
+        "README.md": {
+          "sha256": "4563330c4313167d8fc650a70de9e3d8d0762c479b9ff77cf09abf511b3a6b84",
+          "size": 1446
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 22,
+      "normalized_manifest_sha256": "0fb013d459dfd80f79803a7738493ae06950baa48a21583c9084e648c3c9dfdc",
+      "projected_Cargo_toml_orig": {
+        "sha256": "61597579ac1d83b49f4dc1877fb1cab420f8c4535b8f4dc2ecba49e3f583dee6",
+        "size": 1003
+      },
+      "repository_manifest": {
+        "sha256": "b305fe4cfebaebe79739030a5f69cd6c71cf71d7837cf32002ffc4ec50e8a266",
+        "size": 989
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-limiter": {
+      "archive": {
+        "sha256": "03754f4341a7543f883bcd27c831bcc0fdf42fc938f3847e0bf9d18bfdd9e214",
+        "size": 59387
+      },
+      "filename": "bitcoinleveldb-limiter-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "535be74e378980b8d558a776503ccad0116c871212fcfeb609b146569551acb6",
+          "size": 1531
+        },
+        "README.md": {
+          "sha256": "b8d21e908476bff22aa0c13bff47c8dfdb6fb2cceaf9d26f031a9a78f19ec6d9",
+          "size": 974
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "494de3e8b8cf6aa43dd81082fd91120579b17ab2660fafc0dde2a049ce0f8cfc",
+      "projected_Cargo_toml_orig": {
+        "sha256": "0de18e1c204632d6c313abbc036f70f46415b3cff408eb83c6fbb1d9438a56b9",
+        "size": 51246
+      },
+      "repository_manifest": {
+        "sha256": "a0a7b84acc5093988f8ded93c7c577c1f2789dd152b38d6a0a24d998a57ac2d5",
+        "size": 51250
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-log": {
+      "archive": {
+        "sha256": "aa8a0a91c35b2d490894636c1016e54eecfc29196ab4d62a247ba44e871cb783",
+        "size": 66115
+      },
+      "filename": "bitcoinleveldb-log-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "840ea8e6261ec3a26b7edd62b4ca9d544a5f75712cc535ac6145ee3a669e5ba4",
+          "size": 1701
+        },
+        "README.md": {
+          "sha256": "9bcc1adb1c3979a313b54f8324b92af9fa10428e4ec6e373b3d9cb042c64633a",
+          "size": 1245
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "88e825fd7fe042c2c4a0e759a4baffb2c813588e20e09935b0334d8812b879b7",
+      "projected_Cargo_toml_orig": {
+        "sha256": "961f92496b0828e8ed01f65933e1dcd140f89ff30411391b21977ad79aa910a3",
+        "size": 52235
+      },
+      "repository_manifest": {
+        "sha256": "d6daffa2a60fff11ed8be30e735378272eb251b055966f939f7669b0d3f0f996",
+        "size": 52247
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-logreader": {
+      "archive": {
+        "sha256": "544f5fab980c575a419bb2934cccd655cb12c44ee9bea29349f49f76c66be7e5",
+        "size": 33675
+      },
+      "filename": "bitcoinleveldb-logreader-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "729e63d703b0343820ef45d9b46b2f6db5ebdcc02000c43a144093450bcaef0b",
+          "size": 1701
+        },
+        "README.md": {
+          "sha256": "d8767a853dcd73b60dee70f5c11a466877a9734741690e16b99adaea6ada7a70",
+          "size": 1329
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 19,
+      "normalized_manifest_sha256": "af9f5c4291bc80f17fa69d424851cfe1dd0d8c6f3d668e9467dce86c9548a2db",
+      "projected_Cargo_toml_orig": {
+        "sha256": "5126e7aba4942301ac02f31b8c56e362ddfbf3a1bfa6b3d7f43d91fae76009cb",
+        "size": 1568
+      },
+      "repository_manifest": {
+        "sha256": "6129ea4c0c8af0a9b20debdd92b79f4d89e8e1188847562d642c7956ed32861e",
+        "size": 1579
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-logtools": {
+      "archive": {
+        "sha256": "0cb02dc9e3d4581535bfadf4bf572f3bec36650380a5bb5315c05917913e441c",
+        "size": 30408
+      },
+      "filename": "bitcoinleveldb-logtools-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "4ce624157cbe862b2bef9febfb45b6f86c8dae069addef2cadc9ea26c3d5d8ee",
+          "size": 1866
+        },
+        "README.md": {
+          "sha256": "6b8b9b6507004aa5c09ae07d9935d238030c12d8dfd97a656f189eb64b4eee5d",
+          "size": 1060
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 20,
+      "normalized_manifest_sha256": "31b6be438dfcce47fe4ddfb014e05054f10fe55ccecbeba495902700fe4631b4",
+      "projected_Cargo_toml_orig": {
+        "sha256": "c682d8e576828abb3e5cc055f62ce0e28910f1fed3284e15bb91c22e36ad1f10",
+        "size": 1305
+      },
+      "repository_manifest": {
+        "sha256": "dda1ff043c7c5f35e0fb03f7ef4ae7e7a9e535b769d4a7eaf41f8a95a960c860",
+        "size": 1315
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-logwriter": {
+      "archive": {
+        "sha256": "443dc3080c1274d22b61c8d391cc3fa09e1dbc9e0212109d49bec0456f5a84f9",
+        "size": 32169
+      },
+      "filename": "bitcoinleveldb-logwriter-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "3b423d2f046279621fe147e8164a1b6f2e9813db996d4452a29fb7bf6f4612fb",
+          "size": 1701
+        },
+        "README.md": {
+          "sha256": "d7aa1d743481a39432ec26af21da7f41f90c3ec534d66e21ca4cbf09b1d9f3c7",
+          "size": 1287
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 30,
+      "normalized_manifest_sha256": "1112b88a46415d7df8282c539eedac1069698088619b65572e21a7e547352081",
+      "projected_Cargo_toml_orig": {
+        "sha256": "3099da34d24fee6783b85a2804b1ac5a079cdb75b626b1b8df5385a41a3ec474",
+        "size": 1706
+      },
+      "repository_manifest": {
+        "sha256": "7859aa946274808a8157362f89c817682de0b87f541fd8878f167e5d3892b430",
+        "size": 1717
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-lru": {
+      "archive": {
+        "sha256": "a04889ba15197fc7810847bbbf14264bb283955e6cc4793f92b7196039776c48",
+        "size": 79487
+      },
+      "filename": "bitcoinleveldb-lru-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "648f0e011a73a1cf5307a6b5902a7ccc931e7267911160495b04d0fa428215ec",
+          "size": 1519
+        },
+        "README.md": {
+          "sha256": "ed829f95f122971e74fe2ad6890e5758ffe429a4d547d06342182eae13a82764",
+          "size": 1367
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 36,
+      "normalized_manifest_sha256": "61edbf9c9b230c305198973449904b5b4c020eb2ad47e35d62189f70e0e68d3a",
+      "projected_Cargo_toml_orig": {
+        "sha256": "ef1b719f7d991d5f857815253e6e7c209e2a4c440319046eaaa2531c84a88ff7",
+        "size": 51685
+      },
+      "repository_manifest": {
+        "sha256": "61999558532a34fd4ff89dc37901b0119b1d31c4c93b2f6b9ed15182050adcd7",
+        "size": 51693
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-memenv": {
+      "archive": {
+        "sha256": "45a0b63b3862c43097dc72e131ff606754260d8ab8e2b17c22216a970f7d865d",
+        "size": 77220
+      },
+      "filename": "bitcoinleveldb-memenv-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "2b44ec41411a0d0949743bcff7389a1c3d6f08167e8363978ae57983d3129940",
+          "size": 1928
+        },
+        "README.md": {
+          "sha256": "bc4b2245de66c632116b8d1b740496831a9235e0f91fdbae58b37e948ed1ef21",
+          "size": 1125
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 45,
+      "normalized_manifest_sha256": "5d0006e4c0a9206f00a529a8d447a13f1690ea3c3f4a0cbfa3f14b8521e5090f",
+      "projected_Cargo_toml_orig": {
+        "sha256": "e3b7c4da71e894768dae70f5cc8b7a5420fd59ea571889854387295707bac4de",
+        "size": 51569
+      },
+      "repository_manifest": {
+        "sha256": "ec72772e1a472a1afff2dbf04a3b485df6ac4f5aad9852d1d0f562766f93515d",
+        "size": 51579
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-memtable": {
+      "archive": {
+        "sha256": "98e2e597752b28552cd2901f8994dcdcb5904019177e5380360c594212d1088f",
+        "size": 75750
+      },
+      "filename": "bitcoinleveldb-memtable-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "c2907f56e0f61f3166820c278679b1e3911cf9b9f58f9d1e72b5e35112eb355f",
+          "size": 1692
+        },
+        "README.md": {
+          "sha256": "010c85a3185b6a7bbdec4cef913bf9c87a9026402ee71da316c23f5971d50284",
+          "size": 2235
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 21,
+      "normalized_manifest_sha256": "1f66b3543788ad1b3dcc7850aabd0fdeee48e4a28cc7298da76ae3abc64847ac",
+      "projected_Cargo_toml_orig": {
+        "sha256": "83a9b5a339d553b066505275f5037414d5f9f958b2696ea68f94299204735c70",
+        "size": 52600
+      },
+      "repository_manifest": {
+        "sha256": "fcfbadd5d5c88feca515089e9d37cb02581155b0813a793f9e9bf73194d55d4a",
+        "size": 52593
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-merger": {
+      "archive": {
+        "sha256": "cbd2a4a4460829049ed85670e47d3aba9f19d2474937000cb2fdd7a2fb29c4bf",
+        "size": 70721
+      },
+      "filename": "bitcoinleveldb-merger-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "9073036c0248ab11cafd0207dd0431beb924452fcad35c417768802809bb5158",
+          "size": 1694
+        },
+        "README.md": {
+          "sha256": "1c784b2e683e4381bce921af7629454b244334fe04822d0bf59c4e1e9a75aaef",
+          "size": 1197
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 23,
+      "normalized_manifest_sha256": "59ce9db6a427c7b1b8058a11dfe792552d6b1486abfcdf37ae0bfe0d77e1e8b7",
+      "projected_Cargo_toml_orig": {
+        "sha256": "4205a03fa215a5403be85f9842463c47eb4a93911d537416908858dbaf44c98c",
+        "size": 51687
+      },
+      "repository_manifest": {
+        "sha256": "2c43d7211f89ece91610a4313846bc22298de0002968c015fe868774fd062442",
+        "size": 51679
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-modeldb": {
+      "archive": {
+        "sha256": "4e578eda7d73c6ebe7705c6b549da5e747f71aba3542dd5c3727695edc1998c4",
+        "size": 39299
+      },
+      "filename": "bitcoinleveldb-modeldb-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "60cb48ab0de8d14761c1c0368b5e31b8cd0533b38c1e6a21967a02baa0481e1b",
+          "size": 1523
+        },
+        "README.md": {
+          "sha256": "98eef154ecbbff771d4ba2e6bc1fd2d5a3c2be1b3543478b2ea4623b695055d3",
+          "size": 1832
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 17,
+      "normalized_manifest_sha256": "fea4e912cada73c3804949a6d2b16797c2c4255a6c87fc2448daf52296e42db2",
+      "projected_Cargo_toml_orig": {
+        "sha256": "55669a431968ac34a3434624a60a41da98b9d93d3c7eaa0d505a57a0d06e3304",
+        "size": 1238
+      },
+      "repository_manifest": {
+        "sha256": "a25b61481fe577356c0bc4432e2ec4c3c04325704dc49a3012aeeb0230afcd0f",
+        "size": 1204
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-options": {
+      "archive": {
+        "sha256": "f416eda4680d325a6af5aa8abc96cfa144bc9e49b39975fd731018dbe5f5e839",
+        "size": 70349
+      },
+      "filename": "bitcoinleveldb-options-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "f648425c1ddf04c38e383ab8439a69a869bc8a19bbe0e4a4a495dac9a66b2218",
+          "size": 1717
+        },
+        "README.md": {
+          "sha256": "17ecee3a88e5a1cee8770f962bd8aee56f079ecf8bc289d70a27f8de35163e1d",
+          "size": 1581
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 18,
+      "normalized_manifest_sha256": "0bab25fdb65be986aecf1c052655d03aee6fd3539a12821896148981581b4915",
+      "projected_Cargo_toml_orig": {
+        "sha256": "7f328724f1a107c420f247758aac6d7436e8ddde2291df4bd5aeb0f4667824d5",
+        "size": 52304
+      },
+      "repository_manifest": {
+        "sha256": "87d4b4b997977da05508edce640c99a9ed133cb90e5cbc04e5e0d0dfaf62e3d4",
+        "size": 52297
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-posix": {
+      "archive": {
+        "sha256": "dd7cf10b5e329b9d68fd2db4ef5d3b3d5b8092019cf383f5efb06381eec9234a",
+        "size": 66276
+      },
+      "filename": "bitcoinleveldb-posix-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "19d2b099a0058b634741de1b8f108397a60788499d563d4be50882199c0b94c3",
+          "size": 1731
+        },
+        "README.md": {
+          "sha256": "8ba86717c62da12cdc80c104426f4ea330dffc06d3e033aee44081ab8a7134da",
+          "size": 1162
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 27,
+      "normalized_manifest_sha256": "e21cda96c9bbb1ecf27b94d9e2fdc5d02425ef066d81595a782107492722d1da",
+      "projected_Cargo_toml_orig": {
+        "sha256": "0affd7c71083a727c3a52639b0681a98676597c6a98b9ef9c71aa9aa48fd1705",
+        "size": 52395
+      },
+      "repository_manifest": {
+        "sha256": "582bc5d73f798c3058a1e7b92c8a1bd1d582ebc7ce3ca5d3264f68a26020843f",
+        "size": 52402
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-posixenv": {
+      "archive": {
+        "sha256": "bf8d588358d2a224a84fe9170c6dbac859f82f2a632bc1e7d19635f551f4479c",
+        "size": 52156
+      },
+      "filename": "bitcoinleveldb-posixenv-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "04f7cf2cb4f0a462d511e8cf1d50f21fcbabf77cb7a2f88718e45261321d6f27",
+          "size": 1530
+        },
+        "README.md": {
+          "sha256": "faa9cfd5c148ddd34fa7bb0244024de8d8aa47892c5efaed86252c10b33dc098",
+          "size": 1151
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 52,
+      "normalized_manifest_sha256": "af4f90d4fd276c3c1ff4af66b0b576705ad9968a4ccb83fd96262f1e922eb842",
+      "projected_Cargo_toml_orig": {
+        "sha256": "fc38194b6aa86f39fbe4c077e698c4c9ba58ed87ca2fbd2c65d3a230083d4e16",
+        "size": 1647
+      },
+      "repository_manifest": {
+        "sha256": "ddf641d25351a1163abe185ab45fe0fc806f8ff80f32d8e183f84f42f52ed182",
+        "size": 1656
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-posixlogger": {
+      "archive": {
+        "sha256": "9b9cd776bd9fda7b8081a840b7b3e73bafa30f0624e3048c069706aebeedf6ad",
+        "size": 33338
+      },
+      "filename": "bitcoinleveldb-posixlogger-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "f8e207033dcaf600257b3872860e2cab776b18a0876916f37d7262b8fbf391f6",
+          "size": 1539
+        },
+        "README.md": {
+          "sha256": "e7d91d4c4d1c76ee7dd75a9703ad9b9a8931850dd51129dc9b219d5fcb118680",
+          "size": 1163
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 23,
+      "normalized_manifest_sha256": "551b0de0a59ca9015518a8628c36f8d9c6001c384a7342738f86e06e2bb834f0",
+      "projected_Cargo_toml_orig": {
+        "sha256": "a37089cc0c47df3135427e3a2cd9e12da8501591e83af80022092615813538da",
+        "size": 1547
+      },
+      "repository_manifest": {
+        "sha256": "89e669737961fa24462f5690bfb2e820fcd151ad59cc50a1c73b9921e81645eb",
+        "size": 1557
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-posixmmaprfile": {
+      "archive": {
+        "sha256": "7a993f00fe488f46d4dbbaf158bf99935324fec4bfd607adbf36ddce18f2b7f3",
+        "size": 28678
+      },
+      "filename": "bitcoinleveldb-posixmmaprfile-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "af0fb53d4ac86990b6054c5fa44a292d03fe2da81e42f3deb3132a0a4558ff04",
+          "size": 1538
+        },
+        "README.md": {
+          "sha256": "ff7d464e93bd011cfa2c9b905e668f7e607bb35b9b3a390f9705a3bcae2c1379",
+          "size": 1301
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 15,
+      "normalized_manifest_sha256": "72b525c4326ec6d69b73baf1c1edc6eafa609b79499c96d8bd1ffc60a77c4119",
+      "projected_Cargo_toml_orig": {
+        "sha256": "864c62ad4ced994e0dc25c25abbcdefdcf8297968f0ac57df63423729c3616c0",
+        "size": 1487
+      },
+      "repository_manifest": {
+        "sha256": "baefa16ea1bb2a982a5212afc77404d982f0e73c274233b31f606a2f5b93cd08",
+        "size": 1497
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-posixrafile": {
+      "archive": {
+        "sha256": "5dbf5b7f5468deb9eee1168cf445b76bc7d1b7762aaaf41e281589d8b7e73ce7",
+        "size": 30523
+      },
+      "filename": "bitcoinleveldb-posixrafile-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "eb54b7d5c253738f4c16d54e78b54d2ead3dfa70af8f280fbe01274336c1bfb9",
+          "size": 1535
+        },
+        "README.md": {
+          "sha256": "b17cc30be3bf27c06cb20e56785cb1bd9eeb6ce9083db0b7faf9d3847cbcd46f",
+          "size": 1169
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 23,
+      "normalized_manifest_sha256": "814467c1bb79693bd47f4649b3fc7a3c4d71bb924fbd808f90bad28a0c6790b4",
+      "projected_Cargo_toml_orig": {
+        "sha256": "bdfecf8b613a9f8c90450af71c508f9a0a5c94be921d3e1fa4d0ca417684d5f5",
+        "size": 1229
+      },
+      "repository_manifest": {
+        "sha256": "05b46a7eb7ad070afd1634ddf8691a8eca2679aca49b74dd5c248ec831dffba4",
+        "size": 1238
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-posixseqfile": {
+      "archive": {
+        "sha256": "15588e47074f09c5bcbb04f58befe86f4d65ed64bfcb57f5ed65343fa1f07b4e",
+        "size": 27938
+      },
+      "filename": "bitcoinleveldb-posixseqfile-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "d1b567552eb93ae2ef4236a7fa8fe1846e60fff3265045b71c095572c3928366",
+          "size": 1536
+        },
+        "README.md": {
+          "sha256": "76b1b1bd11fa3239c885d0f0a3e1faa7dc476484550a97fccace7b8dcc28a85b",
+          "size": 1218
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 18,
+      "normalized_manifest_sha256": "e05e909504c43684ca147a46b93c9e8f80ac1583f805a56f5ca6df99ffa92b73",
+      "projected_Cargo_toml_orig": {
+        "sha256": "5b4187b81c72b1d930ce9eae500e71fd861b28aa0ce0b9d44f9d08e73c7b5db0",
+        "size": 1532
+      },
+      "repository_manifest": {
+        "sha256": "f1315c5f78515811a62c4b5ba7cfb8717c00b8cd8d8f26040df3ab9f47463ed9",
+        "size": 1542
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-posixtools": {
+      "archive": {
+        "sha256": "4e812a241c87e507ee1bae395ed6b0f158c6b878b13cdb7ea6e51ad72b0de1ac",
+        "size": 30599
+      },
+      "filename": "bitcoinleveldb-posixtools-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "8b2a25d88798af0fc2c54c9c72dee71f775c83a7493efa5b4c40155a9b9574cf",
+          "size": 1534
+        },
+        "README.md": {
+          "sha256": "f548aa826db58e26ff7827887ca868031ae2c710727bffc009fca51b3b4855d5",
+          "size": 1225
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 25,
+      "normalized_manifest_sha256": "9cd4adefa55e071196ea0ddbffcab71d8d2ada0c3aaae2b40c36938d82af38f2",
+      "projected_Cargo_toml_orig": {
+        "sha256": "bfca8cdd8af668e05e01759c64e185c756ea5b65158f0cf2e3150bd20dfe6e88",
+        "size": 1304
+      },
+      "repository_manifest": {
+        "sha256": "959f04c0055d0746c4734eb8312c3526f3fdc1d64ffa643b135ebeb7a2cffe78",
+        "size": 1314
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-posixwfile": {
+      "archive": {
+        "sha256": "4fb3a114248dd429738fd93472d1ecc73d5f19c9a47d4ba5f75777307ebbb7f7",
+        "size": 31843
+      },
+      "filename": "bitcoinleveldb-posixwfile-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "0cdc42baac8790f29d219f314169ddc53b22477505b3e0d40f1bad56873cd7a1",
+          "size": 1534
+        },
+        "README.md": {
+          "sha256": "72a70727464b83a4d96154dc5590a747cd9c97d63a9a9078e5ac14f2532798bc",
+          "size": 1111
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 28,
+      "normalized_manifest_sha256": "416fd2471f8a77d4f89d04b582d48d08ac8ae34b3f3c280bb4440b8921a10654",
+      "projected_Cargo_toml_orig": {
+        "sha256": "043cb575f993603a980d8cf46aa892b59cba6a98b57a856b6151366f87d48da8",
+        "size": 1390
+      },
+      "repository_manifest": {
+        "sha256": "b2afd541581c77c83d43019c350b8b31382a7a95973116ce49134a45ece72995",
+        "size": 1400
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-rand": {
+      "archive": {
+        "sha256": "c11605b12a63434952cbb71a84ff2f27eb229667611dd23148629140e14aa0ff",
+        "size": 60641
+      },
+      "filename": "bitcoinleveldb-rand-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "fc389ec3fed77a9c06b5b56092c928e78c291fd87f442e828682e5294e562dd8",
+          "size": 1520
+        },
+        "README.md": {
+          "sha256": "7b5adfbe7a3fc4fef9ec810ff1b2092fedc08866604eeca70708666fb1752db8",
+          "size": 1026
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "472201843945d40365196834d1487cf50903ccfa1a29a80767a1488617c4ef02",
+      "projected_Cargo_toml_orig": {
+        "sha256": "47af2921bebd80c63801f7aec114bf1152e4bb3ee99ce48ff5851a2b652549bd",
+        "size": 51323
+      },
+      "repository_manifest": {
+        "sha256": "3c0a8be249a383e2b4e01d65628dd8f60ea25adbf89b66098eaf17bfa4c1340b",
+        "size": 51327
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-repair": {
+      "archive": {
+        "sha256": "05d5e8e3971d38a60a884a8bd0c941a1eea4e7d4c19226911c3f398cc78dd67c",
+        "size": 77488
+      },
+      "filename": "bitcoinleveldb-repair-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "8eb44d9c7e99dfc3f27002a7e87fbf4ada08f9b38452f8c1a7fa9d6b62ceb264",
+          "size": 1520
+        },
+        "README.md": {
+          "sha256": "0dbf4ba26fae4f821a65a6f4bbd4ce1cf91c99a309f2352c64b9ed5d42649eb1",
+          "size": 1266
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 30,
+      "normalized_manifest_sha256": "2c78a9935148254d0ba4e244df944b69a3cf679bf6bdb795e6d8e228d50c1499",
+      "projected_Cargo_toml_orig": {
+        "sha256": "13dcf00dde5485df09528ae8a9f5db57b350d744c11f98a409a67e34a8c81b93",
+        "size": 52914
+      },
+      "repository_manifest": {
+        "sha256": "30cbee3595bf1225d64613ff54656dac245d01ca183e3d16d154b34cff3a8d0a",
+        "size": 52892
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-reversekeycomparator": {
+      "archive": {
+        "sha256": "82dab859030d428f0f493b56000fdc6ec89ff091e07aef246f0e9f11150a9dde",
+        "size": 25503
+      },
+      "filename": "bitcoinleveldb-reversekeycomparator-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "a559bfc33f9a3a4b0c9ddb6ed1093a4adbb5941eab83a5268265d064881a96d1",
+          "size": 1548
+        },
+        "README.md": {
+          "sha256": "269f7e564945d6b1e16f01d2d5caa4ea8fc94034937a0defc7d1a577265b7ca3",
+          "size": 1600
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 12,
+      "normalized_manifest_sha256": "c728013e11c3232a4898f44df0709fbc60054a305d7865b7ffe373437d7c28a8",
+      "projected_Cargo_toml_orig": {
+        "sha256": "4f0ea68a6c963e941cc4c9c8dc52546db846945e62de87868e8f63c79a5ef4c4",
+        "size": 748
+      },
+      "repository_manifest": {
+        "sha256": "70381896d740e4377af8b5dccc7d3dd044e381033ca5726b9e106338b2cbea61",
+        "size": 745
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-skiplist": {
+      "archive": {
+        "sha256": "95ce63d52ba341f7881d0b2b463f39e6fcf6ddd4fddb71ab93c22076a58cc611",
+        "size": 69374
+      },
+      "filename": "bitcoinleveldb-skiplist-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "d3cff4408798cdce7a5289f708ce414c27ddbb2bf31970243eb77a3cf60a7a7d",
+          "size": 1702
+        },
+        "README.md": {
+          "sha256": "0b0dfb989522d3cf95676be691d2260c56a473fae6bbd9437051c331d6358d59",
+          "size": 1302
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 16,
+      "normalized_manifest_sha256": "da4856eaec52d43185165a67618105b20bee24f91adff0b0d05ffce1d682b12c",
+      "projected_Cargo_toml_orig": {
+        "sha256": "fdba854be2ca4c2633ed95ff9a9069b09d1a725b8c696abd17bc1293ccc606d4",
+        "size": 51882
+      },
+      "repository_manifest": {
+        "sha256": "2532be159b8a3731ae6ce2951b40c942c6e413daa705aadede98ce24da91910e",
+        "size": 51891
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-slice": {
+      "archive": {
+        "sha256": "b691566264861f566ade607401231466fb67d3b08755c56ee845c6721d681c2b",
+        "size": 63695
+      },
+      "filename": "bitcoinleveldb-slice-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "b976f248020cec1e399385c0267dd158adddc83bc84a04e338f6c0118bd042ab",
+          "size": 1541
+        },
+        "README.md": {
+          "sha256": "14409ff188a4efe1df0385e850ec4613dc4cc68122963c85b000260750055d77",
+          "size": 1299
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 12,
+      "normalized_manifest_sha256": "10d50bc288c9083c517072d647d1192b3b1144093f1293337134c1053df84ee5",
+      "projected_Cargo_toml_orig": {
+        "sha256": "fb540e7eac350dc19d1189fc6b67bf4a6dd4bd2dfb55804bdca79f7606a80387",
+        "size": 51378
+      },
+      "repository_manifest": {
+        "sha256": "e2689810dfdd0caaf88810f676884d6db1d4fc5f586d729c03c18a5218b1e610",
+        "size": 51382
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-snapshot": {
+      "archive": {
+        "sha256": "0b4876f9d0d0d5ebcad5deadd6d96578c0c876a7331d5d7b4bc09d871cda2239",
+        "size": 29642
+      },
+      "filename": "bitcoinleveldb-snapshot-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "7bee065d86b07a46f686f5a93a94d7f3ab4871b16b8b066dba8322e10378edf2",
+          "size": 1524
+        },
+        "README.md": {
+          "sha256": "dea4b067bb95e54de42d6cbf290cc478cc9f284b4f71b2a7548050e6ebd4bde8",
+          "size": 1510
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 18,
+      "normalized_manifest_sha256": "1d1e56ef6b4c4ad1ad0f5768015d0d4f05760963c7141f43a6264036a8921b32",
+      "projected_Cargo_toml_orig": {
+        "sha256": "590255963f9f0966779e273261cbbbab93a9c8e7a5b917558282c5dec581e146",
+        "size": 792
+      },
+      "repository_manifest": {
+        "sha256": "c956084c6dd163197c0eb66bc4c163dfb5ee966fabd1b13ced94ad0473fda003",
+        "size": 780
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-specialenv": {
+      "archive": {
+        "sha256": "8896147b536d83bc763d1cd3417b58f4b89ffe81510281ee927e7c17dd33589b",
+        "size": 33288
+      },
+      "filename": "bitcoinleveldb-specialenv-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "6361cc8f8df04217fc006fb427e8880b93f49a1d7422185879c4c183d8634c96",
+          "size": 1526
+        },
+        "README.md": {
+          "sha256": "d72aa12c34eff023e20f50e1bb9341c0d59edd61a962767baaefc323efb59f66",
+          "size": 1182
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 15,
+      "normalized_manifest_sha256": "a53cf7fd0189abe2e32aaf7c0c90142768f376fa89af6de00354bf23e14477bf",
+      "projected_Cargo_toml_orig": {
+        "sha256": "4c0af61222a071263a9b211412ed9e36d78383807425395e7595fabe400eefec",
+        "size": 961
+      },
+      "repository_manifest": {
+        "sha256": "b7c092f971c5c8464e9fbfbb0cf990131971b1240bd082c66fde3e43b8bc1436",
+        "size": 939
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-status": {
+      "archive": {
+        "sha256": "0b358a81fe140481fd234e069af1883474169e43f70d8a0cbf601e560708b12a",
+        "size": 61248
+      },
+      "filename": "bitcoinleveldb-status-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "12007d2c84f4e66b012c7ddc743e7c76dfeb9b8d11ac974d29e26d3573206d97",
+          "size": 1712
+        },
+        "README.md": {
+          "sha256": "6d16781ca8ca77e2d6544a6fb229fbca0b8cdd425293df3b7f9da2261713dbf5",
+          "size": 1119
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 12,
+      "normalized_manifest_sha256": "f5312f413d1ed09d1dee465bc41933b06d869d80c40885efddd9c0a1b98f3a27",
+      "projected_Cargo_toml_orig": {
+        "sha256": "10a6e876c66daea01a268058bda32fc1ef2d07fab5c69c38a778e42e1119dd64",
+        "size": 51456
+      },
+      "repository_manifest": {
+        "sha256": "8065277cc8df0af73e79571d1454343a348b8e0628a09d9d3627c575481e6253",
+        "size": 51461
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-stringsink": {
+      "archive": {
+        "sha256": "e521344dd3332621855a3eecb0b6d4c19645b5b6ac25a9e08ee6b076b5406157",
+        "size": 23783
+      },
+      "filename": "bitcoinleveldb-stringsink-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "79e36e952cbefb2db6d5a4af121a885adbbc840d81777cf87343cf382d633025",
+          "size": 1538
+        },
+        "README.md": {
+          "sha256": "d7d97c04c7ce9fe7ce43234c7e632c6f21b098a36eee84b5cbde91b82ac93478",
+          "size": 906
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "244292d5e51b6d376d8fb0e9f1387863c017f7537cc48a37ae0cee074fcf08fd",
+      "projected_Cargo_toml_orig": {
+        "sha256": "34f83a190201b7fb1e45848b17a08de37762a94b7d7709eea72211aa6ab5da26",
+        "size": 810
+      },
+      "repository_manifest": {
+        "sha256": "a1e8b0acd536576130893f63fa46075ec0d1e8cefc29c2b8b511fe4068303529",
+        "size": 804
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-stringsource": {
+      "archive": {
+        "sha256": "ba4c6b5e304f58d71da9733d31dc6e85f82f9f7d9d95e7b205bb64663910d38e",
+        "size": 24131
+      },
+      "filename": "bitcoinleveldb-stringsource-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "796d735f25480f5bdbb58dfa3a4878233fe99f2d210229ef3fed488c39341cbc",
+          "size": 1540
+        },
+        "README.md": {
+          "sha256": "db6a0a25073268044928777ca5cd5825889b414d4fd5591992900b5a1fa32b27",
+          "size": 1071
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "26dde1950c6dbc7f76fad3a283576c45524e4e732c080c56719909fd360a7e35",
+      "projected_Cargo_toml_orig": {
+        "sha256": "9efc5c967cc4ad05e719a367e4944b60a66a0b99f1cd88c5033a551a673b88e9",
+        "size": 964
+      },
+      "repository_manifest": {
+        "sha256": "522fd184061348bd5b92555f889792ae0d81744265275625b9033ce620592cdf",
+        "size": 958
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-sync": {
+      "archive": {
+        "sha256": "5239db4803e4f119e3d761650514e4c738a2488152b12931eb1b87f1e3cc9055",
+        "size": 57638
+      },
+      "filename": "bitcoinleveldb-sync-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "ae1c0232f76997dea01dede3ab709e8a180e59b6a582c04bf0e02a6f344cdad4",
+          "size": 1526
+        },
+        "README.md": {
+          "sha256": "770f416748f5c68ade62d56867a9eed4866d2a412a6205eeaad9c1b35f2cb787",
+          "size": 910
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 12,
+      "normalized_manifest_sha256": "c5205742ee02f1076eebba809cd8c2f299eaa4cbf324ec9858872ef4cec2617b",
+      "projected_Cargo_toml_orig": {
+        "sha256": "1b7ecef888a0fe0667fd8dc0a25c5bbd9fa7cbebfd763a6124e7f006de7a49a3",
+        "size": 51152
+      },
+      "repository_manifest": {
+        "sha256": "2f90836c328b0b85b39bd1d70f3a0a5641abcdf622251259081b3e62e6e524e3",
+        "size": 51156
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-table": {
+      "archive": {
+        "sha256": "0b649e2e2c566bd78a75c5c7f49d7a5f4ac0349619bd94c09192b542bf8dde27",
+        "size": 71616
+      },
+      "filename": "bitcoinleveldb-table-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "d9135d55616130dd8924ae4572b9c84a1e1094d371f637930f7a33df1d51d066",
+          "size": 1709
+        },
+        "README.md": {
+          "sha256": "8636d6ae091f79fa696b5e2e2ebecd89411896a464d4b869164d80adb96c2e96",
+          "size": 1230
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 21,
+      "normalized_manifest_sha256": "585f698f86d0afc61a3caf0b924177cb2f4b45555ed53210044d466f3cb189c1",
+      "projected_Cargo_toml_orig": {
+        "sha256": "49b1db1a65d6d0132d24363cb3fbfbc480178bdaf1fa080ba689e105cece031a",
+        "size": 52893
+      },
+      "repository_manifest": {
+        "sha256": "37410c96d2f04240c60d2280cb6f3a133950cb527c44f51fda5cd610e2494061",
+        "size": 52870
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-tablebuilder": {
+      "archive": {
+        "sha256": "ba871107d9868e3e98796de3d47380930e6032636b53f311b9adbb12600c40cf",
+        "size": 41597
+      },
+      "filename": "bitcoinleveldb-tablebuilder-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "a3d2926fe5f077a0907db8f42330da3ca622cf5fce154376e7fe4d541a6af4c0",
+          "size": 1748
+        },
+        "README.md": {
+          "sha256": "2c58d41b71edf03a288bbe986255cf404c0761a0b2db437723caede2d8683897",
+          "size": 1577
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 25,
+      "normalized_manifest_sha256": "a31a1bb68356017fa04b56d9ce214b6bd61454d6bcea4336a2059a67a12ace35",
+      "projected_Cargo_toml_orig": {
+        "sha256": "4d67a810af0c6462f62e35a5493d65a283e393f32811fc45e27817708af853b5",
+        "size": 1698
+      },
+      "repository_manifest": {
+        "sha256": "58003ca029b4e6989fd3a37b9d35f54dee9380a7e49f02b5457265ec79704dd4",
+        "size": 1662
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-tablecache": {
+      "archive": {
+        "sha256": "d256996112200d1b1650b8d5f9a1ef262ccce7a4c6d7579e5b212ebfde22c9f2",
+        "size": 47900
+      },
+      "filename": "bitcoinleveldb-tablecache-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "9b9887df1b2032e4066ef3be543fd59ecb37613b8aba85ebba5d4afb04ddfdaf",
+          "size": 2036
+        },
+        "README.md": {
+          "sha256": "977cae3a5e104ba6800685d9eea15b9afccc3dbbd72526ea119fa4697591923f",
+          "size": 1227
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 20,
+      "normalized_manifest_sha256": "3a01e720b19bef54adb895f0dc4d57331ef0b02e85b5d0a0008998011a6ee5c3",
+      "projected_Cargo_toml_orig": {
+        "sha256": "5757dc45301721f9b806ec7e3fb9f125a734aa33e7eaf7775b3bcdd5bf71b8c5",
+        "size": 1667
+      },
+      "repository_manifest": {
+        "sha256": "0281b2b9c646a4ff8070c9bf190228fbc5a27f87ae73220bb41fc437d7156375",
+        "size": 1627
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-tableconstructor": {
+      "archive": {
+        "sha256": "c3a7d5d8a380eafefe8fc7877ac2590e41077cabfd69d90ee10a85e23e9cc43b",
+        "size": 31936
+      },
+      "filename": "bitcoinleveldb-tableconstructor-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "0096915cc753a12737ead7f47b10a052bf4258403cc2b91aa5025fd9029d8282",
+          "size": 1544
+        },
+        "README.md": {
+          "sha256": "517360c197c4f96a5d74303c4e27257b74635d04de969be642d8c8e5aebe5193",
+          "size": 1216
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 16,
+      "normalized_manifest_sha256": "bdd4c1bf67639456f46463e5364c0ce57d28c4d7e4e006ea44a5f80a60601ec0",
+      "projected_Cargo_toml_orig": {
+        "sha256": "4bfb68670259a8592d9e24e141ff9c41315078324c5623f7c75a68e8c3f8b154",
+        "size": 1641
+      },
+      "repository_manifest": {
+        "sha256": "7be895da48fb1184c0f61e45d5be492886bb14db6b6af112f47fdceeacd7c784",
+        "size": 1602
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-tablerep": {
+      "archive": {
+        "sha256": "0afe5b26707f3cbbdc576ad7d2d05542c1bbfe7bebfcd0e01dd26caff14e76c6",
+        "size": 28795
+      },
+      "filename": "bitcoinleveldb-tablerep-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "ccce716364d82a07409be23475eebdf39f3be7d846a5ba0568ab501eb62af701",
+          "size": 1526
+        },
+        "README.md": {
+          "sha256": "d964610bb541e83f3b8934a4e4bd4ea3df97ac0a0321736dd9208ed3940b7f28",
+          "size": 1248
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "314052e5e5931537ea5a8c920d93f9dafc3db24421935b7effd81e094e5d91a2",
+      "projected_Cargo_toml_orig": {
+        "sha256": "b11c478a724b70d941bbda0661341a9da8990f89ffd8802cf4b1d3fd3e9b8a83",
+        "size": 1328
+      },
+      "repository_manifest": {
+        "sha256": "8929f2b32c34b7d658d77c60124112c58107d3e34bb79fb225e3b65b2724d70d",
+        "size": 1308
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-test": {
+      "archive": {
+        "sha256": "3d55abba13c40f3f9dab422d247e9f21ad8007a641628862d26c3c00fdc03b7c",
+        "size": 30442
+      },
+      "filename": "bitcoinleveldb-test-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "d84ab70f2cd0fb60404d553aa11de269b91c3aca314903b52037cb4b50f6dfb4",
+          "size": 1290
+        },
+        "README.md": {
+          "sha256": "f5e309957920b3ab4708d76c9efd33da5291ce5c0e27544dd20f25d9727c8bb0",
+          "size": 909
+        }
+      },
+      "license": "MIT",
+      "member_count": 10,
+      "normalized_manifest_sha256": "e717bf26447cb43ad481b6cd5773dd6324262243d3cfa48b90fd56d389687738",
+      "projected_Cargo_toml_orig": {
+        "sha256": "0e13fa812305d9a9ee43535647c59c5543a71cc7c049c60b3e0429cdb3586504",
+        "size": 1943
+      },
+      "repository_manifest": {
+        "sha256": "6b75bc52982fc68e9d74299bcabf130e0972f604cbda2c84cf8c45f5fe3c6bc9",
+        "size": 1872
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-util": {
+      "archive": {
+        "sha256": "3fc34dd03310897a4c2c8d139769f2efb3095c6263a57eb6733c397ea4f8a6ef",
+        "size": 59007
+      },
+      "filename": "bitcoinleveldb-util-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "a4cc497de056787c7731a0322ab660420a7eca01b676b49b4cde4c03c3fd1179",
+          "size": 1726
+        },
+        "README.md": {
+          "sha256": "222ab00feb104083d14b39dbb2a4da9954508890a63214c7ae195a77c3d9d4ef",
+          "size": 1118
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "1267ff1794df83c4e320408539427ba0042284ea89a8ad82345fdf19a57ba76c",
+      "projected_Cargo_toml_orig": {
+        "sha256": "bc4c81678917bbb3e711085318115589396e29f6753dcdb58ff68a0761e1e139",
+        "size": 51462
+      },
+      "repository_manifest": {
+        "sha256": "7731b1ee0dd8719a21663739a4f1b8456074b1226967528ae4a7ba1062a3e805",
+        "size": 51467
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-version": {
+      "archive": {
+        "sha256": "e24565c2ac738e26e073353c9654dfe5d271e7a995e5c50fd5d896c5f0d06427",
+        "size": 81308
+      },
+      "filename": "bitcoinleveldb-version-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "bc1ead824c7ca503273cff1ce59c67a6b4d7128fc3528cbbe703b63c9f59f8d5",
+          "size": 1531
+        },
+        "README.md": {
+          "sha256": "bd561e18f0ef5d5559e816294516da45c5a323938df5c7632e4384b97871f1d2",
+          "size": 1412
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 30,
+      "normalized_manifest_sha256": "8f8570e069e3b00f26d5061972b1d5d652d8ac37ef727ef204e9508bf96f654e",
+      "projected_Cargo_toml_orig": {
+        "sha256": "d5e812fa79994a997705795d30f76515cfe009a7caa1e629238911e22b3833e4",
+        "size": 52790
+      },
+      "repository_manifest": {
+        "sha256": "4555c2bea8fdab030325c57f06e36f355cda50cd8b8e19c2750590320906df8a",
+        "size": 52777
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-versionedit": {
+      "archive": {
+        "sha256": "745858131e271b0ebd403d4142aa12bc5bac42fb20b3330c463abec691dfbab5",
+        "size": 68639
+      },
+      "filename": "bitcoinleveldb-versionedit-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "ef80fabdfe785a2521fba526a3fbdfc70b7016d42f3c3d3b3fd6b9c87871dc3b",
+          "size": 1897
+        },
+        "README.md": {
+          "sha256": "d57bf6439d4d309f147466c49013ece4f017586814734d19c8b5abadc31de8a3",
+          "size": 1435
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 23,
+      "normalized_manifest_sha256": "5e74a69663a14f4cbe94e1970be804618f21bfc907d4527a4d651e1ae5787d61",
+      "projected_Cargo_toml_orig": {
+        "sha256": "1c1e06ba3a457ec4ab60924c1db74fbd2f867a17e92feee4485b5a88e0f0d9bd",
+        "size": 51742
+      },
+      "repository_manifest": {
+        "sha256": "6a8952d6b9d3c0599281313b1882a6c8e8300a004891a244a17fb90162442295",
+        "size": 51751
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-versioniterator": {
+      "archive": {
+        "sha256": "5acf9fd1742df8cc1cbe236c5f24c02004c4e2895b6d470c61526a6d5b9a0a5a",
+        "size": 30163
+      },
+      "filename": "bitcoinleveldb-versioniterator-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "a156716d3c091f00031d90ab0a941421653d15f5f1e72b2b260937dbefa0d036",
+          "size": 1539
+        },
+        "README.md": {
+          "sha256": "42a78ad4a60c9b3a8489ab613b9e28e529151f16b1983646d9c1c439c5f1b6ee",
+          "size": 1104
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 16,
+      "normalized_manifest_sha256": "e7d3be4734f549e0d4685492e4ff90bb3d29d14caf1118378645cba77ad931d7",
+      "projected_Cargo_toml_orig": {
+        "sha256": "49e6ce2e51a2559622911e62f667d802e1c230c6c47c565b72d72d6dc807dd98",
+        "size": 1161
+      },
+      "repository_manifest": {
+        "sha256": "716569a633653b9c7d41854e6f5a75ef40d8d51df47712fa3e8d868ca8e628a9",
+        "size": 1141
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-versionset": {
+      "archive": {
+        "sha256": "e4f5a04762b9d53af1ec24cc98d6984f42dd8fff900fff82bfbbf997c0dbb030",
+        "size": 94536
+      },
+      "filename": "bitcoinleveldb-versionset-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "d11973f118fcfaaae80b336348fc4e94e7dcf87f2428c77915f111c2f2e94fdb",
+          "size": 1544
+        },
+        "README.md": {
+          "sha256": "b0ef9b93f380052b65d8206d5b5dfd093537f32cabbc5e98a7f81fcadcd60429",
+          "size": 1511
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 70,
+      "normalized_manifest_sha256": "23cccee48db6bbd9c47908b143a1880a62f8c8b0255c5e542eaa96f579745e92",
+      "projected_Cargo_toml_orig": {
+        "sha256": "4bcc06793e16188045b3db067f20e7ace02f3e891dd72e707abb5beb98d3b84b",
+        "size": 3216
+      },
+      "repository_manifest": {
+        "sha256": "53e790426b1b53958bba745401eb304746ace42774077638834651007b022f0a",
+        "size": 3123
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-versionsetinterface": {
+      "archive": {
+        "sha256": "34e6ec3a9d64c33154deeadcdb4f45b09d1ef76e22cd2c2a2058cd18b7620788",
+        "size": 28778
+      },
+      "filename": "bitcoinleveldb-versionsetinterface-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "44c9d0c0ca277d5b0e8c5d3d41bde756a9d91f189c247fd50f4a16032c86e60c",
+          "size": 1541
+        },
+        "README.md": {
+          "sha256": "afea26438a01db356ffd1cf2480f1f13a5337ed18fd46029ea3161209384fc09",
+          "size": 1278
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 14,
+      "normalized_manifest_sha256": "6b37007415692f822e85677b43243dab15ba86ff259fd0006b55e99c899d2d25",
+      "projected_Cargo_toml_orig": {
+        "sha256": "2124404061445c34b2ecf582c08010aabcda47a6daee9c8658c51fbbeb1fc0a6",
+        "size": 904
+      },
+      "repository_manifest": {
+        "sha256": "871bcbb8c8940a497ac508c37f7111708215b86c5f680ed4a30a91d416eeb5e3",
+        "size": 881
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-versionsetutil": {
+      "archive": {
+        "sha256": "686da790b1f085730355a38956a17b8e4c715b5f869a446060ae7a5bb4cf4f9e",
+        "size": 41619
+      },
+      "filename": "bitcoinleveldb-versionsetutil-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "5c74d33d0609c9cbd0f3d836eabc65dd13555b3033f5c0ceadb34dff50c32d82",
+          "size": 1710
+        },
+        "README.md": {
+          "sha256": "c743adb9fe9f9a635189072c06b12a81e805b747636eff2890cc0eee76d8b15a",
+          "size": 1275
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 23,
+      "normalized_manifest_sha256": "ea06d20f4019a2f953b95bd07ca8b89332d3ae2f6b3a68deaa7a131396c19836",
+      "projected_Cargo_toml_orig": {
+        "sha256": "0d581bf1c554c315f47d6fda0194f340bac7c299c181f4709ae7a2d6b262285d",
+        "size": 1275
+      },
+      "repository_manifest": {
+        "sha256": "c05984fe55fdd80fb919c23770fdb41a60f0758c1b32557e02f816fcda6aca36",
+        "size": 1242
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldb-writebatch": {
+      "archive": {
+        "sha256": "1fd5e5bb80319493612434cdcfcb76cb28a2ca0fb1907177f162a35044ed9d36",
+        "size": 27701
+      },
+      "filename": "bitcoinleveldb-writebatch-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "93a7d10efa51bf289441fa9f12adb2b59fa81ad135f1a9a4449c9456c7c71b8d",
+          "size": 1514
+        },
+        "README.md": {
+          "sha256": "6623f60cef0b4bb70916851ec5090baccbb048b3d76400906b3ff558becd8ab6",
+          "size": 1390
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 12,
+      "normalized_manifest_sha256": "574f1ec70ed82ed3a558b9a1203cd4479fbd7d7ebe9a2dffe207a4268b8d1afd",
+      "projected_Cargo_toml_orig": {
+        "sha256": "40c448f41d3fdcaf089a2e834cdfc18434a26bd674ffce9b94cefeb32114e6c8",
+        "size": 1091
+      },
+      "repository_manifest": {
+        "sha256": "a90f959a7a6d60a20d91a9412c967b352cc1535ba429e02db6f3c32f50e4addb",
+        "size": 1065
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-autocompaction": {
+      "archive": {
+        "sha256": "cd396ac1137f39eb2cc54ec7d880d0ec10fd127573b955f5ce797948c64e6dd0",
+        "size": 38630
+      },
+      "filename": "bitcoinleveldbt-autocompaction-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "491adc802edce40b0ad6422aeef8deb284d4f32436547cac27d05a212376cce3",
+          "size": 1549
+        },
+        "README.md": {
+          "sha256": "ba804dcf434c1740bf8995c7f7cc1b710b86fb208d731c9cab0013e09e3e6c2d",
+          "size": 1000
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "b745b42ced68a6f8b94a75ae6e122b232033d4cdacb1e31ac3b6612fe8a5cd99",
+      "projected_Cargo_toml_orig": {
+        "sha256": "19c374c8bfa9ba87f0e1119cd9e5f85bcc559385fce90ec131e3298a26baa9c0",
+        "size": 3133
+      },
+      "repository_manifest": {
+        "sha256": "c3c2b3d59fbeba33c37860729d775b22a7cba306c40f11ea10f9255ec4b88cd2",
+        "size": 3087
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-bench": {
+      "archive": {
+        "sha256": "ee36219b3e4c9b963f360f48552d847a419723657fab4ddd07f0f87cf5ced941",
+        "size": 83697
+      },
+      "filename": "bitcoinleveldbt-bench-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "592e43d896981d195c863ee8bc45b11d405774afaa85f407a256cb66238a6355",
+          "size": 1740
+        },
+        "README.md": {
+          "sha256": "6276010a055679d82d3b71ba9978bf80244de1f1410b7260c94214b04d38b243",
+          "size": 999
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 15,
+      "normalized_manifest_sha256": "5a3aafb49dea69e2b3a0861052133d85755cbe81376b0d8b4444f58ae660cc24",
+      "projected_Cargo_toml_orig": {
+        "sha256": "b3d2f30419f6ddc078bba5f53a1e17c80004d09ecd7bcb6e0fcef94497bc3cfd",
+        "size": 52209
+      },
+      "repository_manifest": {
+        "sha256": "bdc803ef56a5bd8fe130686fbfdd08667bd8ea513df6a0c80e1130c315106825",
+        "size": 52209
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-capi": {
+      "archive": {
+        "sha256": "8ba7cf7dbf309c816fccf64c867611c4cc0ff2a5aa0d565a728c0de561b4e9b3",
+        "size": 34307
+      },
+      "filename": "bitcoinleveldbt-capi-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "5c5123f54dfbd70ca4c02cfe8043e86a5d41870a8e3299f76f4c8ef4b0068e64",
+          "size": 1517
+        },
+        "README.md": {
+          "sha256": "bc88091b8b8c7e24fb07391cbc3a5ecda1e7b6c5326b900b689f75102702e682",
+          "size": 901
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "17ccba831ac0b1f8f335f812bd9cb00ae342895071a699ac9b1c74292296c3b2",
+      "projected_Cargo_toml_orig": {
+        "sha256": "2684412c22d5a187132e288efac0dc59b6bf903e5f68d31bfd177d36b954f916",
+        "size": 2990
+      },
+      "repository_manifest": {
+        "sha256": "4bd16500077c35398c6935d055f8d70cb11cd5e6492b47292274fcb32315ef2e",
+        "size": 2944
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-corruption": {
+      "archive": {
+        "sha256": "d8f82584be762dbdb809a6de71ff285912d556cade698c062e3e544d8780e840",
+        "size": 34072
+      },
+      "filename": "bitcoinleveldbt-corruption-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "1fc845e82f55ee5c3e3d3630305c5897c92bcd545f564e3990c073d296e6b777",
+          "size": 1543
+        },
+        "README.md": {
+          "sha256": "a0cd26625f8f6dc6a9a2a6415e90be8771e7ea83a361c0d8d4ef1a42c0ecb8ee",
+          "size": 905
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "8e12e7698845621a4173f2711a7a6e26815c5d9c9ecb652142e886f63cfbd366",
+      "projected_Cargo_toml_orig": {
+        "sha256": "94e0da08f7220d9e47ce4756b753831af906e1ce2d7eb85c6c7054298ceb3336",
+        "size": 2976
+      },
+      "repository_manifest": {
+        "sha256": "0b456008d1313e824c3b4676a52e2b80ae1c0a9f3e59b1e23618c874958c1139",
+        "size": 2930
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-dbtest": {
+      "archive": {
+        "sha256": "2fca6569e39c04debb5329f7e9ad41078c74965b01cf1748045096433b4fde09",
+        "size": 48439
+      },
+      "filename": "bitcoinleveldbt-dbtest-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "49b6b656e6ed66f7523d9b4c4bc736c8bf00ed92cf67b4fff7b21c41794971e0",
+          "size": 1523
+        },
+        "README.md": {
+          "sha256": "a33d4789456489c2ab27fb12b8aa6c1d1743c489c2009ce56d4e8f4112a8feb4",
+          "size": 995
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 13,
+      "normalized_manifest_sha256": "9e13e20db866b76692ce9397babc39480f40209d2a9b34509259b90b4b6a0199",
+      "projected_Cargo_toml_orig": {
+        "sha256": "d1dc7117904508aeb629a0209b4b71759fe8c1d9410e1bbc9601caf46c0ccc46",
+        "size": 3014
+      },
+      "repository_manifest": {
+        "sha256": "12c3941d174eca3455487b40e049cb2c27c7f628a766b353334993a73aafda1a",
+        "size": 2909
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-env": {
+      "archive": {
+        "sha256": "15b36149376efeb1110ff2248ecca8d5975a9b118aa9b73cd719f729d5cb8df0",
+        "size": 29024
+      },
+      "filename": "bitcoinleveldbt-env-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "5ae4060f0a168e707f1124e14ccdcbfdaa8dff1c52c7be0f465a6f1311426678",
+          "size": 1520
+        },
+        "README.md": {
+          "sha256": "a06a22b9bd6910a458ac5ebd75dcfee6801c0e45b2dfbae0daa657fca832315b",
+          "size": 838
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "be82dc923969866e18bcbb20bf767302291f15677edb46937c39bf569c4f0852",
+      "projected_Cargo_toml_orig": {
+        "sha256": "3ae15ea6c7d9f74dfb7076309bf83ed7a823cd5ebcf17d6145d9c5fd5e97489d",
+        "size": 806
+      },
+      "repository_manifest": {
+        "sha256": "919f8d0a074861ac714806d58c5b8764ba8122527fb84fe832668d200fe0b80a",
+        "size": 788
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-faultinjection": {
+      "archive": {
+        "sha256": "f1b5b99c834f263c16e090a332fa9955b56807d4110b4a512f6aed32137e330a",
+        "size": 37819
+      },
+      "filename": "bitcoinleveldbt-faultinjection-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "cd246e52f7e277b359af8bdc551eac66d1a8b463814dc72141c67c9e30296546",
+          "size": 1553
+        },
+        "README.md": {
+          "sha256": "4a07946366e7aa3e37f5044398fe76d11db46cc4fc6bccdf3fb0341a69cf96a1",
+          "size": 1050
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 19,
+      "normalized_manifest_sha256": "a77b568b8263c02b68230f13d20d3475a8a160a1ceec0ccce5d9360f41b99cf2",
+      "projected_Cargo_toml_orig": {
+        "sha256": "cb24dcd19caadb91242a75308bacf90e3c3406b14803afd58de5129cdb3e976e",
+        "size": 3050
+      },
+      "repository_manifest": {
+        "sha256": "a8c145382bc6e9e2da87e7d235c7926aa64140e446ef2ad07b871f854f47d17b",
+        "size": 3004
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-issue178": {
+      "archive": {
+        "sha256": "46887207984495e9319c22775023c6f7b0bc9cbe015d38c09165c114dd7ba5ff",
+        "size": 32208
+      },
+      "filename": "bitcoinleveldbt-issue178-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "71c70af3bdc58775a5a779a4d828da95c29bae84be2b832e73faeb032a440031",
+          "size": 1545
+        },
+        "README.md": {
+          "sha256": "06cc61a53aead17dc36ccd705da97135f5b5fc8c4adb4c87c385d0e87f4ceef4",
+          "size": 999
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "42f077ef8af00bfd868dc3ef202cf5992eb7f0b290e7123ba5841acd0291e27f",
+      "projected_Cargo_toml_orig": {
+        "sha256": "5d53ea81a078f91c729168c0fce992dd46650f08489ed431c88eccc883c41a52",
+        "size": 3014
+      },
+      "repository_manifest": {
+        "sha256": "8793804a01245ca960ef78d89bd9d9dcbb02ac31e759875af074ae259177959c",
+        "size": 2968
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-issue200": {
+      "archive": {
+        "sha256": "c609a036891f7afe2b8ae49de66d77c2437b70d325f70bf2fc647a88d31924f5",
+        "size": 30938
+      },
+      "filename": "bitcoinleveldbt-issue200-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "aa66510544164fb6641f19e3a49fb58c4bf45d9afedd574b99ae9149cf7c2f4b",
+          "size": 1545
+        },
+        "README.md": {
+          "sha256": "ab87c810075c36c2f145000d72e639b9e433e88c4f444ebabcf6bba01659702f",
+          "size": 856
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "d32fe143766bc3bc1072a884a5c10143c6b6a0a9252e20af7372729e6c1d7049",
+      "projected_Cargo_toml_orig": {
+        "sha256": "38f04bd3848c83c74d6f2b4e647749834fa22c03c8bca4a015e95d00dc26539f",
+        "size": 2989
+      },
+      "repository_manifest": {
+        "sha256": "4b3277ae89a59a48e79831ed13a9e1c11993dd0ecb222390c702b7bb09dd81b9",
+        "size": 2943
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-issue320": {
+      "archive": {
+        "sha256": "e3f975223225c17560baf374b91f1bb7ea91828384d43a36a53802089584cec4",
+        "size": 44317
+      },
+      "filename": "bitcoinleveldbt-issue320-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "8b3b8139fa9c1a40e8380b1b8f9eeea3e7a0960a27fbef7aa34629fb912ac0a1",
+          "size": 1545
+        },
+        "README.md": {
+          "sha256": "e1235083f0f454617b30e568ed19dff1c1951b3d19d3b89a3319dec9dc1d5a1d",
+          "size": 1017
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "d85bbe4f24dbfe9778a5bf383ac76ec51cb029c6e0b045a7a7eed407a2d2643a",
+      "projected_Cargo_toml_orig": {
+        "sha256": "3d9830fbba2b4a21126f6aae00264229fba8c96a0687166b417a86acbdcbd9ba",
+        "size": 2994
+      },
+      "repository_manifest": {
+        "sha256": "ebe9532a919dc5223b390e66361b14f182bb67d59e2c06433481d46d22370ad0",
+        "size": 2948
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-issue44": {
+      "archive": {
+        "sha256": "390d7fe1d13855908b81539a7a101c4b46042a21fbb8bfd4db395da054625620",
+        "size": 30345
+      },
+      "filename": "bitcoinleveldbt-issue44-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "4233dfdc5c43559f049416597e60aa43a4888d135061300a521211380cf6c1a3",
+          "size": 1524
+        },
+        "README.md": {
+          "sha256": "8a1802c1001cdb96a190c394103c54f8195ab05cf4618fe7fd07df44b6c9b713",
+          "size": 850
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "be07e55f8487f9986a28b9a019c3949a369ae6a89bd38851c4724e2406952a70",
+      "projected_Cargo_toml_orig": {
+        "sha256": "ec4abaefd8fb4865f6b63c713120d9fe20617630d54a2062670cd83dd8cc0d33",
+        "size": 3071
+      },
+      "repository_manifest": {
+        "sha256": "8751ea3b255025c23c1cbf71a39518a2303bf76670878f0004c78bbfdbd04eed",
+        "size": 3021
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-issue474": {
+      "archive": {
+        "sha256": "faa2d3125bdeea539b4a993c6186ad7fc3e24103a68c58db0f687ee76fadab05",
+        "size": 30294
+      },
+      "filename": "bitcoinleveldbt-issue474-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "d16cb1d967b3ed345ce46e302c5da87d076c3865617c731491d9d75272b96e99",
+          "size": 1525
+        },
+        "README.md": {
+          "sha256": "64cfa0eccceaed918e39dbceb5a716df3490984c05def5715783124b3a4de80b",
+          "size": 816
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "333901e8b6c8de010e54eb737f0b0f4c1e16a431136e184784cd927c8b01cec2",
+      "projected_Cargo_toml_orig": {
+        "sha256": "261832a7e9285992f6162b419bceead34f56034783c17d54238bc64cd25fb3d5",
+        "size": 3064
+      },
+      "repository_manifest": {
+        "sha256": "1989683e9886da743e2c2f662d19af68208077f93f0ba31f64f093de9d677c9a",
+        "size": 3014
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-mockversionset": {
+      "archive": {
+        "sha256": "01165de337998c19af9dda622a85a9b341ae535241144a2734221a42b5ff037e",
+        "size": 27934
+      },
+      "filename": "bitcoinleveldbt-mockversionset-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "493893680d8d567d630dc8cc54c757147bcd6fad752df0b2ac6cfe1c51a690c2",
+          "size": 1301
+        },
+        "README.md": {
+          "sha256": "905c97ec4b0be25aa818200dfe3af2275db1afa378f687eff05dac7f9abfe8e9",
+          "size": 850
+        }
+      },
+      "license": "MIT",
+      "member_count": 11,
+      "normalized_manifest_sha256": "0692c31946dd2bb335b837fa0a17da71a526993e957f787f63836205bb797519",
+      "projected_Cargo_toml_orig": {
+        "sha256": "c4012c2be44eb0e2ba03d20e9f4f81b4108f6562b3494e15a7f0ab5349f6be85",
+        "size": 984
+      },
+      "repository_manifest": {
+        "sha256": "684da4d34a009d136ffe1d2cdacca92aaf124faaf302b9848e9a61dec9ae45fa",
+        "size": 958
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-mt": {
+      "archive": {
+        "sha256": "2bbfd1ce20e24567be94c1ef420f626b56c00bfc4e4e04ab55a488cf7df74b90",
+        "size": 32167
+      },
+      "filename": "bitcoinleveldbt-mt-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "5775b50422c683000ac73c2dd0ecd22219dc7f9f767e6247257f2b2ac943e3c5",
+          "size": 1519
+        },
+        "README.md": {
+          "sha256": "44096c7c4e9b7ed5463e42b596290f1ba909b24bb9fdf219da134c49afed10f1",
+          "size": 917
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "5e37649bf4092f46b89ea9eb8e1a2fba7c52f70866719a8b1964db843bb2a393",
+      "projected_Cargo_toml_orig": {
+        "sha256": "023df9d859fb4057f80c821118cdf978eb045c3e1581eeeca4a68372d86b63a8",
+        "size": 3084
+      },
+      "repository_manifest": {
+        "sha256": "0ff81978b05442b8e70aa470b25120474c7c59b5d229b6d16b7d0f77ab975345",
+        "size": 3034
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-randomized": {
+      "archive": {
+        "sha256": "c6509ee59a31ac45752114fadd7dbb45e06f86e56d02be9d0a906cfa4bfc5f11",
+        "size": 46398
+      },
+      "filename": "bitcoinleveldbt-randomized-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "c5b34db37124a3bd9740cda7170a176952b36be98d83e9097579cf8eaa2322ad",
+          "size": 1527
+        },
+        "README.md": {
+          "sha256": "2382d57b8d1283cbb067380bf34415c5373c61a6a0144a04ed29b675ec8adee7",
+          "size": 1179
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 18,
+      "normalized_manifest_sha256": "b719dc83a949ebd9cadc1bfad9741cea079ff22f9713b660d5420d4b4ac5d684",
+      "projected_Cargo_toml_orig": {
+        "sha256": "75f953ed06b16add2df89539ce79e72346ef36d53a38cfd56b1b87e7b779f8a5",
+        "size": 3329
+      },
+      "repository_manifest": {
+        "sha256": "d4987efbf40552e80929a2e8069ff6da903d1b8c505dbf09f0314bd16effacd5",
+        "size": 3271
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-recovery": {
+      "archive": {
+        "sha256": "318ff9464b4ee24c026838d6234e646c999681bc32affec40e61d0134cdb6a20",
+        "size": 33678
+      },
+      "filename": "bitcoinleveldbt-recovery-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "1a6d71e272d3054939cf00b2a593934505d011446badde63e6e4974a616dc554",
+          "size": 1537
+        },
+        "README.md": {
+          "sha256": "3f4229e757787cc9715900f150a54ed219db14af991a23a1ac2167aff8c7ca50",
+          "size": 847
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "d6842682cc0e850bd484101ea5462965853e8bf416e670874cfa3caa5edb4002",
+      "projected_Cargo_toml_orig": {
+        "sha256": "8c2f5ccfdb65f049b1a51ab9d7331482ba5d0eee91ad04613305a270b8210bf5",
+        "size": 2978
+      },
+      "repository_manifest": {
+        "sha256": "3e3735385506218e02d68bb6996715181ed6f5e0012647451b4e8bb56b96559a",
+        "size": 2932
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-snapshot": {
+      "archive": {
+        "sha256": "44e14195d8a83532dfc64b9368a52d84aab49f626643b652a6bdd90f28ad2e90",
+        "size": 46645
+      },
+      "filename": "bitcoinleveldbt-snapshot-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "5e2422af12ffceff1f7464b1217229a36fc36f5c32baef2366588bb19ceea714",
+          "size": 1525
+        },
+        "README.md": {
+          "sha256": "f28fa7c8b932d98c2c9d01359341ea22d494cf7d884a77f97f5a4faa05496f1a",
+          "size": 1053
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 31,
+      "normalized_manifest_sha256": "996bff9a6b789271502e095210c586b26dcbb74bf654103ae57d597658927179",
+      "projected_Cargo_toml_orig": {
+        "sha256": "b54e65ff377b1a25e273c3fe96fc95ade500195c515db705573f2bba9fc0a2db",
+        "size": 3225
+      },
+      "repository_manifest": {
+        "sha256": "1fde1cd64c313c8ec6de7d7af1f51eece65b1886b1e97f7fb2bafdec5762f3f8",
+        "size": 3171
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-sparsemerge": {
+      "archive": {
+        "sha256": "e7171ba7105c24523c6a5911669a00721d841532d38ceeecbdbfb030dab180d5",
+        "size": 30855
+      },
+      "filename": "bitcoinleveldbt-sparsemerge-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "d4198b591596251d42f2b252424952db0c28145999573248c80760a8078b931d",
+          "size": 1528
+        },
+        "README.md": {
+          "sha256": "c1721a4060b85402a3d63a43988808d9051ab564cbb02cec5299518bf6861d45",
+          "size": 1017
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "8706e445e5ec058d911aa6893132dd201a7ca112bc2fce27aa50d0679a55cefa",
+      "projected_Cargo_toml_orig": {
+        "sha256": "77a303a2225aa4549b6ddcbf2addd3542e976893bb0da7f5a05733a27fb27714",
+        "size": 583
+      },
+      "repository_manifest": {
+        "sha256": "09be3ed0acbdb2622c4ce2b8da02ec3e4b0cd1c4447fafb37a042b5b0f72dbc4",
+        "size": 576
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-table": {
+      "archive": {
+        "sha256": "6c0e8dde697ff3f71d9e915f5fe7a74f5af50cc5d7639d5b97c953657cb41ea5",
+        "size": 30751
+      },
+      "filename": "bitcoinleveldbt-table-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "efed848503b9ce88fd26b1f04b9d44eafdd40f737e7e0f68578019f487c46bda",
+          "size": 1534
+        },
+        "README.md": {
+          "sha256": "b3d4e939d2c5b3eed0ad7d9b53fb0471774a7b52fe8cb36f2f2139a8e35fa1df",
+          "size": 889
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 11,
+      "normalized_manifest_sha256": "bce02265a8ad2897b453d69aba7cd8216e893161616f42cc77f0d2d8777c14d4",
+      "projected_Cargo_toml_orig": {
+        "sha256": "f36d3f4f7444e02900b18698a79a616da9baf30782b294d0b2da60c2fb27c7f8",
+        "size": 3191
+      },
+      "repository_manifest": {
+        "sha256": "55af12b75b23bc192035085b08068b7cb6daf4a274701010f2a500287ccee1a2",
+        "size": 3138
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-util": {
+      "archive": {
+        "sha256": "4cf53129ad5978465d95583034d3b0948b8d4b89b1aec3b7c921aaa661e167ac",
+        "size": 44186
+      },
+      "filename": "bitcoinleveldbt-util-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "d58973f6c1572a2f104bb1cedb0b65c785bf23c6c684e09237497b779c751cc7",
+          "size": 2051
+        },
+        "README.md": {
+          "sha256": "3f3716085d17f90e564190c0bd32e38cd81cd6750abd853629e27e3ca62ebb5e",
+          "size": 1635
+        }
+      },
+      "license": "MIT AND BSD-3-Clause",
+      "member_count": 36,
+      "normalized_manifest_sha256": "2444c52da1d802e38de689862a240b866376aff29b924487eda79ce61ca45a21",
+      "projected_Cargo_toml_orig": {
+        "sha256": "45bcc85b922c772b4a0847fdc767363bc68775036899e16142e54914a47577f2",
+        "size": 3568
+      },
+      "repository_manifest": {
+        "sha256": "58f578910f2938018bdbac6300e9de6cf0dbadfafbb494dfa70aa8bb447a85b1",
+        "size": 3500
+      },
+      "version": "0.2.0"
+    },
+    "bitcoinleveldbt-versionsettestutil": {
+      "archive": {
+        "sha256": "a276b4bb4534721012a103c815e92360efe57ed5b95966ed78d15d6ce043b23b",
+        "size": 37106
+      },
+      "filename": "bitcoinleveldbt-versionsettestutil-0.2.0.crate",
+      "legal_and_readme": {
+        "LICENSE": {
+          "sha256": "307e1a31707e25e519f734753378a84b570331d903a038cb60a68a189beb645e",
+          "size": 1142
+        },
+        "LICENSE.crc32c": {
+          "sha256": "94cf4b5c90ca857d7b576b95df451b2b77491f2df644158c157b2f8171ff722f",
+          "size": 1450
+        },
+        "LICENSE.leveldb": {
+          "sha256": "b737ff7bdd3573d72e4c49a582b86031a24d4c0d98fe4c7c3c3169e9e3b77318",
+          "size": 1475
+        },
+        "NOTICE": {
+          "sha256": "107227b209c1cad057aa41c6cd45c60a49c72f2eeae20bd999d6268edb2f0bfc",
+          "size": 1305
+        },
+        "README.md": {
+          "sha256": "7360d8ca21f3be9b71a9cec862e338ec0d177ba24f8061886ef54f1a715d7d7c",
+          "size": 993
+        }
+      },
+      "license": "MIT",
+      "member_count": 16,
+      "normalized_manifest_sha256": "a6fedce61bfd47125c417feabee6a62f09b42e091df8b39684754f85db242952",
+      "projected_Cargo_toml_orig": {
+        "sha256": "adcd6e18ced4f2d92e31bf7f78ca93144f4d24b24ca291a4551b2316598be460",
+        "size": 2927
+      },
+      "repository_manifest": {
+        "sha256": "d16404d91a5f96accd0eb1326b8dc456daebdfc743f0627a81d17bc1679e5e89",
+        "size": 2842
+      },
+      "version": "0.2.0"
+    }
+  },
+  "projection": "contrib/release/leveldb-registry-projection096.py",
+  "provenance": "Archives use explicit detached0.2.0 manifests. Git source/shared Core manifests retain repository versions. Original and projected hashes are separate.",
+  "publication_plan": "doc/release/leveldb-publication-plan102.json",
+  "published": false,
+  "qualification": {
+    "archive_members": 2147,
+    "compiler_errors": 0,
+    "compressed_archive_bytes": 5356262,
+    "consumer_lock_sha256": "02ce6f3286adfc0d57178146619987321b050caca09c6e0a148fc868ceb6b526",
+    "consumer_root_artifacts": 1,
+    "expanded_archive_bytes": 21423071,
+    "external_registry_identities": 312,
+    "guarded_phases": 18,
+    "receipt_sha256": "7a430c0cccfae50c684ecd806941d7d33d9d56a9eccd853e33b0786b28c056af",
+    "scope": "Recorded x86_64 Linux/Nix nightly aggregate library check; exact112 archive paths and locked registry graph. Final executable linking/runtime, stable MSRV, other platforms and all-features unmeasured.",
+    "selected_package_artifacts": 112,
+    "workflow": "leveldb-versioned-release102"
+  },
+  "qualified_source_commit": "ce2b34a645131c6216f9d409ab672ef64308a44e",
+  "qualified_source_tree": "aeadad599322d16b63aaf12c8d9a33def2de47e6",
+  "remote_tag_or_registry_availability_verified": false,
+  "schema": "bitcoinrs-leveldb-0.2.0-artifacts103-v1",
+  "source_repository": "https://github.com/klebs6/bitcoin-rs",
+  "version": "0.2.0"
+}

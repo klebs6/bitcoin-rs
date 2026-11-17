@@ -1,71 +1,53 @@
 # LevelDB release readiness
 
-Work remains on `release/leveldb-readiness062`. Original master, existing tags
-and remote publication are unchanged. Release preparation uses the configured
-real Git identity and preserves the [attribution correction record](leveldb-attribution062.md).
+The release branch is `release/leveldb-readiness062`. Original master, tags
+and remote publication remain unchanged by artifact preparation. Real
+configured Git identity and original authorship/history are preserved.
 
-## Source and execution evidence
+## Completed preparation
+
+102 qualified 112 actual `0.2.0` archives with 2147 members. Their independent
+consumer resolved the exact archive paths and 312 locked registry identities,
+then produced all 113 expected library/procedural-macro artifacts with zero
+compiler errors. All 18 guarded phases succeeded. The measured environment
+is x86_64 Linux with the retained Nix/nightly Rust toolchain and aggregate
+library graph. Original source, held/retired work and old evidence remain.
+
+All 107 LevelDB READMEs and five shared READMEs were reviewed. The
+[source attribution record](leveldb-source-attribution101.md) covers 1251 code
+members. Package declarations, NOTICE and README license sentences agree:
+104 packages declare `MIT AND BSD-3-Clause`; eight retain `MIT`.
+
+The [version projection](leveldb-version-projection102.md) gives every selected
+package version `0.2.0` and compatible internal `0.2.x` requirements, while
+shared Core manifests and the root lock retain repository selections.
+The registry native pair is libevent 0.2.0/libevent-sys 0.4.0. The complete
+dependency-first order includes optional, target, build and seven published
+dev edges; the versionless DBImpl fixture stays repository-only.
+
+## Evidence limits
 
 The baseline qualification tag identifies
-`0214a455d9f49084dc093d281d4dcce42173de1e`. Focused 063-087 repairs retain their
-own source/artifact/command bindings. Their overlapping counts are not added
-into a new global test count. Full randomized stress and the whole harness
-were not rerun by packaging work.
+`0214a455d9f49084dc093d281d4dcce42173de1e`; focused 063-087 repairs retain
+their individual source/artifact/command bindings. Overlapping counts are
+not added into a universal test total. Final executable linking/runtime of
+the published dependency graph, stable MSRV, other platforms and all features
+remain unmeasured. Packaging did not rerun whole native suites or full stress.
 
-096 created and inspected 112 development-version archives, including selected
-source, normalized manifests, licenses/notices and README members. Their
-independent default-feature consumer resolved the archive paths and the
-intended registry graph, then completed cargo-check with 113/113 expected
-library/proc-macro artifacts and no compiler errors on the recorded NixOS
-x86_64 host. Original shared Core manifests/configuration/lock retained their
-Git native selections; the tracked publication projection selects registry
-libevent 0.2.0/libevent-sys 0.4.0 explicitly. See
-[the dependency boundary](leveldb-registry-libevent096.md).
+## Publication handoff
 
-These results cover the measured source and graph. Cargo-check is not final
-executable linking or runtime execution of published artifacts. Stable-Rust
-MSRV, other platforms and all-feature qualification are not established.
+See [release notes](leveldb-0.2.0.md) and the
+[exact archive manifest](leveldb-0.2.0-artifacts103.json). 103 seals the existing
+archive bytes and records its separate metadata commit, bundle hash and
+proposed master fast-forward/annotated-tag plan. Its three root-document
+changes require no packaging or native test rerun.
 
-## Package and attribution scope
+Remaining actions are review of that concrete plan, fresh registry checks,
+authenticated host selection and publication. The 099 public snapshot found
+53 names directly owned by klebs6 and 59 names not found, with 0.2.0 absent;
+it reserves no name/version and establishes no authenticated permission.
 
-The prepared local set has 112 packages. The umbrella's full declared local
-runtime/build closure has 87; harness has 88; the test umbrella has 102. All 112
-have a dependency-first order, including the seven published development
-edges. Optional/target edges remain visible. A path-only repository fixture
-omitted from the DBImpl published dev table remains repository-only.
-
-107 LevelDB READMEs and five shared READMEs were reviewed against source.
-101 updates license sentences to match the source-specific declarations.
-[The attribution review](leveldb-source-attribution101.md) and its per-file
-ledger cover 1251 code-like members. Package notices retain applicable upstream
-headers and full license texts; original authorship/history are unchanged.
-
-## Registry survey and remaining publication gates
-
-099 observed 53 existing names, all directly listed under klebs6, and 59 names
-not found. All 195 observed existing versions were 0.1.x. The proposed coherent
-0.2.0 line was absent in that public snapshot. This reserves no name/version
-and verifies no authenticated publishing permission. The public ownership
-survey and final publishing authorization remain separate. Preparation needs
-no registry credentials.
-
-1.102 records all112 packages at0.2.0 in an explicit detached publication
-   projection. Public internal requirements are compatible0.2.x; the verification
-   consumer selects exact0.2.0. Shared Core source manifests/lock remain fixed.
-   See[the versioned plan](leveldb-version-projection102.md).
-2. Combine final-version packaging with these metadata/NOTICE changes in one
-   final archive inspection and independent-consumer qualification. Retained
-   096 archives remain evidence for their original bytes, not future versions.
-3. Record the supported toolchain/platform/features and the exact checked
-   operations. Keep unmeasured final linking/runtime claims separate.
-4. Finish release notes and review the concrete source/artifact/tag plan before
-   promotion, push or publication. Use the existing real identity and a chosen
-   authenticated publication host; preparation reads no credentials.
-
-The102 return must qualify actual versioned artifacts after the101 metadata
-changes. Its source commit records intent, not an assumed archive/check result.
-No whole-suite rerun is required for this declared metadata/version projection.
-Storage080 still binds builds to the fixed warm target, incremental disabled,
-one job, unchanged 2 GiB reserve and original sampled admission/growth controls.
-Source-only work uses the existing source guard and creates no build cache.
-The 12 retired clean worktrees and four dirty held reservations remain protected.
+Storage080 retains the fixed warm target, one job, incremental disabled,
+unchanged reserve and sampled admission/growth controls. 103 uses only the
+existing source guard and creates no build cache. The 12 retired clean
+worktrees and four dirty held reservations remain protected.
