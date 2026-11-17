@@ -49,8 +49,10 @@ and verifies no authenticated publishing permission. The public ownership
 survey and final publishing authorization remain separate. Preparation needs
 no registry credentials.
 
-1. Finalize the public set and release versions with exact internal
-   requirements. Existing development versions remain unchanged by101.
+1.102 records all112 packages at0.2.0 in an explicit detached publication
+   projection. Public internal requirements are compatible0.2.x; the verification
+   consumer selects exact0.2.0. Shared Core source manifests/lock remain fixed.
+   See[the versioned plan](leveldb-version-projection102.md).
 2. Combine final-version packaging with these metadata/NOTICE changes in one
    final archive inspection and independent-consumer qualification. Retained
    096 archives remain evidence for their original bytes, not future versions.
@@ -60,7 +62,9 @@ no registry credentials.
    promotion, push or publication. Use the existing real identity and a chosen
    authenticated publication host; preparation reads no credentials.
 
-No whole-suite rerun is required for the 101 documentation/metadata delta.
+The102 return must qualify actual versioned artifacts after the101 metadata
+changes. Its source commit records intent, not an assumed archive/check result.
+No whole-suite rerun is required for this declared metadata/version projection.
 Storage080 still binds builds to the fixed warm target, incremental disabled,
 one job, unchanged 2 GiB reserve and original sampled admission/growth controls.
 Source-only work uses the existing source guard and creates no build cache.

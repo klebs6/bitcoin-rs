@@ -3,8 +3,8 @@
 
 The repository's shared Core workspace stays on its selected Git fork.
 Apply only to the detached112-member LevelDB package workspace created by
-the release controller. Rust sources, package identities and features stay
-unchanged. This module performs no network, Cargo, Git or publication action.
+the release controller. Rust sources, package names and features stay
+unchanged;102 explicitly derives local versions/requirements at0.2.0. This module performs no network, Cargo, Git or publication action.
 """
 import copy
 import hashlib
@@ -72,4 +72,124 @@ def lock096(text):
         for key in('name','version','source','checksum'):out+=key+' = '+json.dumps(row[key])+'\n'
         out+='dependencies = '+json.dumps(row['dependencies'])+'\n\n'
     if tomllib.loads(out)!=expected:raise RuntimeError('Lock projection exceeded the two native identities and one wrapper edge.')
+    return out
+
+PUBLIC_VERSION102 = '0.2.0'
+
+
+def sections102(document):
+    """Declared dependency tables, including target-specific/dev entries."""
+    for prefix,parent in [((),document)]+[(('target',target),row)for target,row in document.get('target',{}).items()]:
+        for kind in('dependencies','build-dependencies','dev-dependencies'):
+            for alias,value in parent.get(kind,{}).items():
+                yield prefix+(kind,alias),alias,({'version':value}if isinstance(value,str)else value)
+    for alias,value in document.get('workspace',{}).get('dependencies',{}).items():
+        yield('workspace','dependencies',alias),alias,({'version':value}if isinstance(value,str)else value)
+
+
+def table_path102(line):
+    """Parse TOML's quoted table keys instead of splitting cfg strings."""
+    parsed=tomllib.loads(line+'\n__release_marker102__ = true\n');path=[];node=parsed
+    while isinstance(node,dict)and'__release_marker102__'not in node:
+        if len(node)!=1:raise RuntimeError('Ambiguous release manifest table.')
+        key,node=next(iter(node.items()));path.append(key)
+    if not isinstance(node,dict)or node.get('__release_marker102__')is not True:
+        raise RuntimeError('Unsupported release manifest table.')
+    return tuple(path)
+
+
+def inline102(value):
+    if isinstance(value,str):return json.dumps(value,ensure_ascii=False)
+    if isinstance(value,bool):return'true'if value else'false'
+    if isinstance(value,int):return str(value)
+    if isinstance(value,list):return'['+', '.join(inline102(x)for x in value)+']'
+    if isinstance(value,dict):return'{ '+', '.join(json.dumps(k)+' = '+inline102(v)for k,v in value.items())+' }'
+    raise RuntimeError('Unsupported inline release dependency value.')
+
+
+def versions_manifest102(text,original_versions):
+    """Only the selected package identity and existing internal constraints.
+
+    A versionless development fixture remains versionless. Public requirements
+    use Cargo's conventional compatible0.2.x range; the verification consumer
+    selects exact0.2.0 and an unchanged locked external graph.
+    """
+    before=tomllib.loads(text);expected=copy.deepcopy(before);wanted={}
+    if'package'in before:
+        name=before['package']['name']
+        if name not in original_versions or before['package']['version']!=original_versions[name]:
+            raise RuntimeError('Release package is outside the explicit original-version map.')
+        expected['package']['version']=PUBLIC_VERSION102;wanted[('package',)]=PUBLIC_VERSION102
+    for path,alias,value in sections102(before):
+        name=value.get('package',alias)
+        if name not in original_versions or'version'not in value:continue
+        target=expected
+        for key in path[:-1]:target=target[key]
+        if isinstance(target[path[-1]],str):target[path[-1]]=PUBLIC_VERSION102
+        else:target[path[-1]]['version']=PUBLIC_VERSION102
+        wanted[path]=PUBLIC_VERSION102
+    current=();seen=set();lines=[]
+    for line in text.splitlines(keepends=True):
+        match=re.fullmatch(r'\s*(\[(?!\[).+\])\s*(?:#.*)?\n?',line)
+        if match:current=table_path102(match[1])
+        key=re.match(r'^\s*version\s*=',line)
+        assignment=re.match(r'^(\s*(?:[A-Za-z0-9_-]+|"[^"\n]+"|\'[^\'\n]+\')\s*)=',line)
+        alias=None
+        if assignment:
+            single=tomllib.loads(assignment[1]+'= true')
+            if len(single)==1:alias=next(iter(single))
+        inline_path=current+(alias,)if alias else None
+        if inline_path in wanted:
+            target=expected
+            for part in inline_path:target=target[part]
+            lines.append(assignment[1]+'= '+inline102(target)+'\n');seen.add(inline_path)
+        elif key and current in wanted:
+            if current in seen:raise RuntimeError('Duplicate projected version field.')
+            lines.append('version = "'+wanted[current]+'"\n');seen.add(current)
+        else:lines.append(line)
+    after=''.join(lines)
+    if seen!=set(wanted)or tomllib.loads(after)!=expected:
+        raise RuntimeError('Version projection could not express exactly its declared fields; no fallback rewrite.')
+    return after
+
+
+def versions_lock102(text,original_versions,consumer=False):
+    """Change only selected local identities and their qualified references."""
+    before=tomllib.loads(text)
+    if set(before)!={'version','package'}or before['version']!=4:
+        raise RuntimeError('Unsupported retained release lock structure.')
+    expected=copy.deepcopy(before);locals=[p for p in before['package']if p.get('source')is None]
+    if(len({p['name']for p in locals})!=len(locals)
+            or len({(p['name'],p['version'],p.get('source'))for p in before['package']})!=len(before['package'])
+            or any(p['name']in original_versions for p in before['package']if p.get('source'))):
+        raise RuntimeError('Ambiguous duplicate local/registry lock identity.')
+    extra={'leveldb-archive-consumer091'}if consumer else set()
+    if {p['name']for p in locals}!=set(original_versions)|extra:
+        raise RuntimeError('Retained lock local package set differs from the explicit publication set.')
+    selected={p['name']:p for p in locals if p['name']in original_versions}
+    if len(selected)!=112 or any(p['version']!=original_versions[n]for n,p in selected.items()):
+        raise RuntimeError('Retained lock original local versions differ.')
+    before_registry={(p['name'],p['version'],p.get('source'),p.get('checksum'))for p in before['package']if p.get('source')}
+    for package in expected['package']:
+        if package.get('source')is None and package['name']in original_versions:package['version']=PUBLIC_VERSION102
+        values=[]
+        for label in package.get('dependencies',[]):
+            parts=label.split(' ',2)
+            if parts[0]in original_versions and len(parts)>1 and len(parts)==2:
+                if parts[1]!=original_versions[parts[0]]:raise RuntimeError('Selected local lock reference has an unexpected version.')
+                label=parts[0]+' '+PUBLIC_VERSION102
+            values.append(label)
+        if'dependencies'in package:package['dependencies']=values
+    out='# Explicit version-only derivation of the retained release lock.\nversion = 4\n\n'
+    for package in expected['package']:
+        if not set(package)<={'name','version','source','checksum','dependencies'}:raise RuntimeError('Unsupported retained package-lock fields.')
+        out+='[[package]]\n'
+        for key in('name','version','source','checksum'):
+            if key in package:out+=key+' = '+json.dumps(package[key])+'\n'
+        if'dependencies'in package:out+='dependencies = '+json.dumps(package['dependencies'])+'\n'
+        out+='\n'
+    parsed=tomllib.loads(out)
+    if parsed!=expected or {(p['name'],p['version'],p.get('source'),p.get('checksum'))for p in parsed['package']if p.get('source')}!=before_registry:
+        raise RuntimeError('Versioned lock altered an external identity or exceeded the declared local edits.')
+    if consumer and len(before_registry)!=312:raise RuntimeError('Qualified consumer external registry count differs.')
     return out
